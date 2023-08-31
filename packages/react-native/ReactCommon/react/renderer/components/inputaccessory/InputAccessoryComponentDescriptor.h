@@ -21,7 +21,7 @@ class InputAccessoryComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared &shadowNode) const override {
     auto &layoutableShadowNode =
         static_cast<YogaLayoutableShadowNode &>(*shadowNode);
 

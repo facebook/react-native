@@ -45,35 +45,35 @@ class PointerEventsProcessor final {
  public:
   void interceptPointerEvent(
       jsi::Runtime &runtime,
-      EventTarget const *eventTarget,
-      std::string const &type,
+      const EventTarget *eventTarget,
+      const std::string &type,
       ReactEventPriority priority,
-      PointerEvent const &event,
-      DispatchEvent const &eventDispatcher,
-      UIManager const &uiManager);
+      const PointerEvent &event,
+      const DispatchEvent &eventDispatcher,
+      const UIManager &uiManager);
 
   void setPointerCapture(
       PointerIdentifier pointerId,
-      ShadowNode::Shared const &shadowNode);
+      const ShadowNode::Shared &shadowNode);
   void releasePointerCapture(
       PointerIdentifier pointerId,
-      ShadowNode const *shadowNode);
+      const ShadowNode *shadowNode);
   bool hasPointerCapture(
       PointerIdentifier pointerId,
-      ShadowNode const *shadowNode);
+      const ShadowNode *shadowNode);
 
  private:
   ActivePointer *getActivePointer(PointerIdentifier pointerId);
 
-  void registerActivePointer(PointerEvent const &event);
-  void updateActivePointer(PointerEvent const &event);
-  void unregisterActivePointer(PointerEvent const &event);
+  void registerActivePointer(const PointerEvent &event);
+  void updateActivePointer(const PointerEvent &event);
+  void unregisterActivePointer(const PointerEvent &event);
 
   void processPendingPointerCapture(
-      PointerEvent const &event,
+      const PointerEvent &event,
       jsi::Runtime &runtime,
-      DispatchEvent const &eventDispatcher,
-      UIManager const &uiManager);
+      const DispatchEvent &eventDispatcher,
+      const UIManager &uiManager);
 
   ActivePointerRegistry activePointers_;
 

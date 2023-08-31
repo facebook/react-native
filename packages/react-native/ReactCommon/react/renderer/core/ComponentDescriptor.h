@@ -24,7 +24,7 @@ namespace facebook::react {
 class ComponentDescriptorParameters;
 class ComponentDescriptor;
 
-using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
+using SharedComponentDescriptor = std::shared_ptr<const ComponentDescriptor>;
 
 /*
  * Abstract class defining an interface of `ComponentDescriptor`.
@@ -34,8 +34,8 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
  */
 class ComponentDescriptor {
  public:
-  using Shared = std::shared_ptr<ComponentDescriptor const>;
-  using Unique = std::unique_ptr<ComponentDescriptor const>;
+  using Shared = std::shared_ptr<const ComponentDescriptor>;
+  using Unique = std::unique_ptr<const ComponentDescriptor>;
 
   /*
    * `Flavor` is a special concept designed to allow registering instances of
@@ -46,16 +46,16 @@ class ComponentDescriptor {
    * an interoperability layer with old renderer), we are thinking about
    * removing this feature completely after it's no longer needed.
    */
-  using Flavor = std::shared_ptr<void const>;
+  using Flavor = std::shared_ptr<const void>;
 
-  ComponentDescriptor(ComponentDescriptorParameters const &parameters);
+  ComponentDescriptor(const ComponentDescriptorParameters &parameters);
 
   virtual ~ComponentDescriptor() = default;
 
   /*
    * Returns stored instance of `ContextContainer`.
    */
-  ContextContainer::Shared const &getContextContainer() const;
+  const ContextContainer::Shared &getContextContainer() const;
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
@@ -80,7 +80,7 @@ class ComponentDescriptor {
    */
   virtual ShadowNode::Shared createShadowNode(
       const ShadowNodeFragment &fragment,
-      ShadowNodeFamily::Shared const &family) const = 0;
+      const ShadowNodeFamily::Shared &family) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
@@ -113,28 +113,28 @@ class ComponentDescriptor {
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const &family) const = 0;
+      const Props::Shared &props,
+      const ShadowNodeFamily::Shared &family) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      ShadowNodeFamily const &family,
+      const ShadowNodeFamily &family,
       const StateData::Shared &data) const = 0;
 
   /*
    * Creates a shadow node family for particular node.
    */
   virtual ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment) const = 0;
+      const ShadowNodeFamilyFragment &fragment) const = 0;
 
   /*
    * Creates an event emitter for particular node.
    */
   virtual SharedEventEmitter createEventEmitter(
-      InstanceHandle::Shared const &instanceHandle) const = 0;
+      const InstanceHandle::Shared &instanceHandle) const = 0;
 
  protected:
   EventDispatcher::Weak eventDispatcher_;

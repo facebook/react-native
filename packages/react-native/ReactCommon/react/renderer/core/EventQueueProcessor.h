@@ -28,9 +28,9 @@ class EventQueueProcessor {
   void flushStateUpdates(std::vector<StateUpdate> &&states) const;
 
  private:
-  EventPipe const eventPipe_;
-  EventPipeConclusion const eventPipeConclusion_;
-  StatePipe const statePipe_;
+  const EventPipe eventPipe_;
+  const EventPipeConclusion eventPipeConclusion_;
+  const StatePipe statePipe_;
 
   mutable bool hasContinuousEventStarted_{false};
 };

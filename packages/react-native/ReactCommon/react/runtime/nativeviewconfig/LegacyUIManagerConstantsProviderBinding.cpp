@@ -13,8 +13,8 @@ void install(jsi::Runtime &runtime, ProviderType &&provider) {
   auto name = "RN$LegacyInterop_UIManager_getConstants";
   auto hostFunction = [provider = std::move(provider)](
                           jsi::Runtime &runtime,
-                          jsi::Value const & /*thisValue*/,
-                          jsi::Value const * /*arguments*/,
+                          const jsi::Value & /*thisValue*/,
+                          const jsi::Value * /*arguments*/,
                           size_t count) -> jsi::Value {
     if (count != 0) {
       throw new jsi::JSError(runtime, "0 arguments expected.");

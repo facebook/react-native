@@ -34,8 +34,8 @@ class AndroidProgressBarShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const override;
 
  private:
   std::shared_ptr<AndroidProgressBarMeasurementsManager> measurementsManager_;

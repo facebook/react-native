@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-TextLayoutManager::TextLayoutManager(ContextContainer::Shared const &contextContainer)
+TextLayoutManager::TextLayoutManager(const ContextContainer::Shared &contextContainer)
 {
   self_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
@@ -57,7 +57,7 @@ TextMeasurement TextLayoutManager::measure(
       auto &attributedString = attributedStringBox.getValue();
 
       measurement = measureCache_.get(
-          {attributedString, paragraphAttributes, layoutConstraints}, [&](TextMeasureCacheKey const &key) {
+          {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
             auto telemetry = TransactionTelemetry::threadLocalTelemetry();
             if (telemetry) {
               telemetry->willMeasureText();

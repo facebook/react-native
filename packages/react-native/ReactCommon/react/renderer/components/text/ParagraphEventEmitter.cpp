@@ -11,12 +11,12 @@ namespace facebook::react {
 
 static jsi::Value linesMeasurementsPayload(
     jsi::Runtime &runtime,
-    LinesMeasurements const &linesMeasurements) {
+    const LinesMeasurements &linesMeasurements) {
   auto payload = jsi::Object(runtime);
   auto lines = jsi::Array(runtime, linesMeasurements.size());
 
   for (size_t i = 0; i < linesMeasurements.size(); ++i) {
-    auto const &lineMeasurement = linesMeasurements[i];
+    const auto &lineMeasurement = linesMeasurements[i];
     auto jsiLine = jsi::Object(runtime);
     jsiLine.setProperty(runtime, "text", lineMeasurement.text);
     jsiLine.setProperty(runtime, "x", lineMeasurement.frame.origin.x);
@@ -36,7 +36,7 @@ static jsi::Value linesMeasurementsPayload(
 }
 
 void ParagraphEventEmitter::onTextLayout(
-    LinesMeasurements const &linesMeasurements) const {
+    const LinesMeasurements &linesMeasurements) const {
   {
     std::scoped_lock guard(linesMeasurementsMutex_);
     if (linesMeasurementsMetrics_ == linesMeasurements) {

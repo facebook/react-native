@@ -26,7 +26,7 @@ class AndroidTextInputComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidTextInputShadowNode> {
  public:
   AndroidTextInputComponentDescriptor(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(parameters) {
     // Every single `AndroidTextInputShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
@@ -34,8 +34,8 @@ class AndroidTextInputComponentDescriptor final
   }
 
   virtual State::Shared createInitialState(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const &family) const override {
+      const Props::Shared &props,
+      const ShadowNodeFamily::Shared &family) const override {
     int surfaceId = family->getSurfaceId();
 
     yoga::Style::Edges theme;
@@ -70,7 +70,7 @@ class AndroidTextInputComponentDescriptor final
     }
 
     return std::make_shared<AndroidTextInputShadowNode::ConcreteState>(
-        std::make_shared<AndroidTextInputState const>(AndroidTextInputState(
+        std::make_shared<const AndroidTextInputState>(AndroidTextInputState(
             0,
             {},
             {},
@@ -83,7 +83,7 @@ class AndroidTextInputComponentDescriptor final
   }
 
  protected:
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared &shadowNode) const override {
     auto &textInputShadowNode =
         static_cast<AndroidTextInputShadowNode &>(*shadowNode);
 

@@ -22,18 +22,18 @@ class YogaStylableProps : public Props {
   YogaStylableProps() = default;
   YogaStylableProps(
       const PropsParserContext &context,
-      YogaStylableProps const &sourceProps,
-      RawProps const &rawProps,
+      const YogaStylableProps &sourceProps,
+      const RawProps &rawProps,
       bool shouldSetRawProps = true);
 
   void setProp(
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
 #ifdef ANDROID
-  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+  void propsDiffMapBuffer(const Props *oldProps, MapBufferBuilder &builder)
       const override;
 #endif
 
@@ -81,8 +81,8 @@ class YogaStylableProps : public Props {
  private:
   void convertRawPropAliases(
       const PropsParserContext &context,
-      YogaStylableProps const &sourceProps,
-      RawProps const &rawProps);
+      const YogaStylableProps &sourceProps,
+      const RawProps &rawProps);
 };
 
 } // namespace facebook::react

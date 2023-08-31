@@ -436,7 +436,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                          encoding:[NSString defaultCStringEncoding]];
   std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (facebook::react::MapBuffer const &mapBuffer : frames) {
+  for (const facebook::react::MapBuffer &mapBuffer : frames) {
     NSDictionary *frame = @{
       @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
                                    encoding:[NSString defaultCStringEncoding]],

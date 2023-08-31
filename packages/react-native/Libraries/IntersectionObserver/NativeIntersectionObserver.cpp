@@ -66,7 +66,7 @@ NativeIntersectionObserver::takeRecords(jsi::Runtime &runtime) {
   std::vector<NativeIntersectionObserverEntry> nativeModuleEntries;
   nativeModuleEntries.reserve(entries.size());
 
-  for (auto const &entry : entries) {
+  for (const auto &entry : entries) {
     nativeModuleEntries.emplace_back(
         convertToNativeModuleEntry(entry, runtime));
   }

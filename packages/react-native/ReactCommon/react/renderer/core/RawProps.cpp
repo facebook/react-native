@@ -20,7 +20,7 @@ RawProps::RawProps() {
 /*
  * Creates an object with given `runtime` and `value`.
  */
-RawProps::RawProps(jsi::Runtime &runtime, jsi::Value const &value) noexcept {
+RawProps::RawProps(jsi::Runtime &runtime, const jsi::Value &value) noexcept {
   if (value.isNull()) {
     mode_ = Mode::Empty;
     return;
@@ -37,7 +37,7 @@ RawProps::RawProps(jsi::Runtime &runtime, jsi::Value const &value) noexcept {
  * We need this temporary, only because we have a callsite that does not have
  * a `jsi::Runtime` behind the data.
  */
-RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
+RawProps::RawProps(const folly::dynamic &dynamic) noexcept {
   if (dynamic.isNull()) {
     mode_ = Mode::Empty;
     return;
@@ -48,7 +48,7 @@ RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
 }
 
 void RawProps::parse(
-    RawPropsParser const &parser,
+    const RawPropsParser &parser,
     const PropsParserContext & /*unused*/) const noexcept {
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
@@ -84,9 +84,9 @@ bool RawProps::isEmpty() const noexcept {
  * Returns `nullptr` if a prop with the given name does not exist.
  */
 const RawValue *RawProps::at(
-    char const *name,
-    char const *prefix,
-    char const *suffix) const noexcept {
+    const char *name,
+    const char *prefix,
+    const char *suffix) const noexcept {
   react_native_assert(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
@@ -94,9 +94,8 @@ const RawValue *RawProps::at(
 }
 
 void RawProps::iterateOverValues(
-    std::function<
-        void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
-    const {
+    const std::function<
+        void(RawPropsPropNameHash, const char *, RawValue const &)> &fn) const {
   return parser_->iterateOverValues(*this, fn);
 }
 

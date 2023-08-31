@@ -23,7 +23,7 @@ class AndroidProgressBarMeasurementsManager {
 
   Size measure(
       SurfaceId surfaceId,
-      AndroidProgressBarProps const &props,
+      const AndroidProgressBarProps &props,
       LayoutConstraints layoutConstraints) const;
 
  private:

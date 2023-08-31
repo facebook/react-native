@@ -43,14 +43,14 @@ static SurfaceId RCTSurfaceIdForView(UIView *view)
 }
 
 static void RCTPerformMountInstructions(
-    ShadowViewMutationList const &mutations,
+    const ShadowViewMutationList &mutations,
     RCTComponentViewRegistry *registry,
     RCTMountingTransactionObserverCoordinator &observerCoordinator,
     SurfaceId surfaceId)
 {
   SystraceSection s("RCTPerformMountInstructions");
 
-  for (auto const &mutation : mutations) {
+  for (const auto &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         auto &newChildShadowView = mutation.newChildShadowView;
@@ -241,7 +241,7 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)initiateTransaction:(MountingCoordinator const &)mountingCoordinator
+- (void)initiateTransaction:(const MountingCoordinator &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
   RCTAssertMainQueue();
@@ -259,7 +259,7 @@ static void RCTPerformMountInstructions(
   } while (_followUpTransactionRequired);
 }
 
-- (void)performTransaction:(MountingCoordinator const &)mountingCoordinator
+- (void)performTransaction:(const MountingCoordinator &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
@@ -267,15 +267,15 @@ static void RCTPerformMountInstructions(
   auto surfaceId = mountingCoordinator.getSurfaceId();
 
   mountingCoordinator.getTelemetryController().pullTransaction(
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
         _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction, surfaceTelemetry);
       },
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         RCTPerformMountInstructions(
             transaction.getMutations(), _componentViewRegistry, _observerCoordinator, surfaceId);
       },
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         _observerCoordinator.notifyObserversMountingTransactionDidMount(transaction, surfaceTelemetry);
         [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
       });
@@ -283,7 +283,7 @@ static void RCTPerformMountInstructions(
 
 - (void)setIsJSResponder:(BOOL)isJSResponder
     blockNativeResponder:(BOOL)blockNativeResponder
-           forShadowView:(facebook::react::ShadowView const &)shadowView
+           forShadowView:(const facebook::react::ShadowView &)shadowView
 {
   ReactTag reactTag = shadowView.tag;
   RCTExecuteOnMainQueue(^{
@@ -309,7 +309,7 @@ static void RCTPerformMountInstructions(
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 
-  const auto &newViewProps = static_cast<ViewProps const &>(*newProps);
+  const auto &newViewProps = static_cast<const ViewProps &>(*newProps);
 
   if (props[@"transform"] &&
       !CATransform3DEqualToTransform(

@@ -16,9 +16,9 @@ namespace facebook::react {
 
 static TextInputTraits convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    TextInputTraits const &sourceTraits,
-    TextInputTraits const &defaultTraits) {
+    const RawProps &rawProps,
+    const TextInputTraits &sourceTraits,
+    const TextInputTraits &defaultTraits) {
   auto traits = TextInputTraits{};
 
   traits.multiline = convertRawProp(

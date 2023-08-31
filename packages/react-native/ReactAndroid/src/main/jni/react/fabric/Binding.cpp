@@ -272,7 +272,7 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
-  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
+  const auto &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::registerSurface: scheduler disappeared";
@@ -288,7 +288,7 @@ void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
 }
 
 void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
-  auto const &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
+  const auto &surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
@@ -403,7 +403,7 @@ void Binding::installFabricUIManager(
   // TODO: T31905686 Create synchronous Event Beat
   EventBeat::Factory synchronousBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          EventBeat::SharedOwnerBox const &ownerBox)
+          const EventBeat::SharedOwnerBox &ownerBox)
       -> std::unique_ptr<EventBeat> {
     return std::make_unique<AsyncEventBeat>(
         ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
@@ -411,7 +411,7 @@ void Binding::installFabricUIManager(
 
   EventBeat::Factory asynchronousBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          EventBeat::SharedOwnerBox const &ownerBox)
+          const EventBeat::SharedOwnerBox &ownerBox)
       -> std::unique_ptr<EventBeat> {
     return std::make_unique<AsyncEventBeat>(
         ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
@@ -520,8 +520,8 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
 void Binding::schedulerDidDispatchCommand(
     const ShadowView &shadowView,
-    std::string const &commandName,
-    folly::dynamic const &args) {
+    const std::string &commandName,
+    const folly::dynamic &args) {
   auto mountingManager = getMountingManager("schedulerDidDispatchCommand");
   if (!mountingManager) {
     return;
@@ -531,7 +531,7 @@ void Binding::schedulerDidDispatchCommand(
 
 void Binding::schedulerDidSendAccessibilityEvent(
     const ShadowView &shadowView,
-    std::string const &eventType) {
+    const std::string &eventType) {
   auto mountingManager =
       getMountingManager("schedulerDidSendAccessibilityEvent");
   if (!mountingManager) {
@@ -541,7 +541,7 @@ void Binding::schedulerDidSendAccessibilityEvent(
 }
 
 void Binding::schedulerDidSetIsJSResponder(
-    ShadowView const &shadowView,
+    const ShadowView &shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
   auto mountingManager = getMountingManager("schedulerDidSetIsJSResponder");

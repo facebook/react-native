@@ -55,7 +55,7 @@ namespace facebook::react {
 // Cast from one ShadowNode reference to another, terminating if the cast is
 // invalid.
 template <typename ShadowNodeReferenceT>
-ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode) {
+ShadowNodeReferenceT traitCast(const ShadowNode &shadowNode) {
   return details::traitCastRef<ShadowNodeReferenceT>(shadowNode);
 }
 template <typename ShadowNodeReferenceT>
@@ -66,7 +66,7 @@ ShadowNodeReferenceT traitCast(ShadowNode &shadowNode) {
 // Cast from one ShadowNode pointer to another, returning nullptr if the cast is
 // invalid.
 template <typename ShadowNodePointerT>
-ShadowNodePointerT traitCast(ShadowNode const *shadowNode) {
+ShadowNodePointerT traitCast(const ShadowNode *shadowNode) {
   return details::traitCastPointer<ShadowNodePointerT>(shadowNode);
 }
 template <typename ShadowNodePointerT>
@@ -82,9 +82,9 @@ std::shared_ptr<ShadowNodeT> traitCast(
   return details::traitCastShared<ShadowNodeT>(shadowNode);
 }
 template <typename ShadowNodeT, typename ParamT>
-std::shared_ptr<ShadowNodeT const> traitCast(
-    const std::shared_ptr<ParamT const> &shadowNode) {
-  return details::traitCastShared<ShadowNodeT const>(shadowNode);
+std::shared_ptr<const ShadowNodeT> traitCast(
+    const std::shared_ptr<const ParamT> &shadowNode) {
+  return details::traitCastShared<const ShadowNodeT>(shadowNode);
 }
 
 } // namespace facebook::react

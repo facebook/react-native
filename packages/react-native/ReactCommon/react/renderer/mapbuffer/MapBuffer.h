@@ -108,7 +108,7 @@ class MapBuffer {
 
   explicit MapBuffer(std::vector<uint8_t> data);
 
-  MapBuffer(MapBuffer const &buffer) = delete;
+  MapBuffer(const MapBuffer &buffer) = delete;
 
   MapBuffer &operator=(const MapBuffer &other) = delete;
 
@@ -131,7 +131,7 @@ class MapBuffer {
 
   size_t size() const;
 
-  uint8_t const *data() const;
+  const uint8_t *data() const;
 
   uint16_t count() const;
 

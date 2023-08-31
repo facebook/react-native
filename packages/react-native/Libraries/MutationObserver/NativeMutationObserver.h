@@ -89,7 +89,7 @@ class NativeMutationObserver
   // This is passed to `connect` so we can retain references to public instances
   // when mutation occur, before React cleans up unmounted instances.
   jsi::Value getPublicInstanceFromInstanceHandle_ = jsi::Value::undefined();
-  std::function<jsi::Value(ShadowNode const &)>
+  std::function<jsi::Value(const ShadowNode &)>
       getPublicInstanceFromShadowNode_;
 
   bool notifiedMutationObservers_{};
@@ -99,7 +99,7 @@ class NativeMutationObserver
   void notifyMutationObserversIfNecessary();
 
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
-      std::vector<ShadowNode::Shared> const &shadowNodes) const;
+      const std::vector<ShadowNode::Shared> &shadowNodes) const;
 };
 
 } // namespace facebook::react

@@ -27,40 +27,40 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   TextInputProps() = default;
   TextInputProps(
       const PropsParserContext &context,
-      TextInputProps const &sourceProps,
-      RawProps const &rawProps);
+      const TextInputProps &sourceProps,
+      const RawProps &rawProps);
 
   void setProp(
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
 #pragma mark - Props
 
-  TextInputTraits const traits{};
-  ParagraphAttributes const paragraphAttributes{};
+  const TextInputTraits traits{};
+  const ParagraphAttributes paragraphAttributes{};
 
   std::string const defaultValue{};
 
   std::string const placeholder{};
-  SharedColor const placeholderTextColor{};
+  const SharedColor placeholderTextColor{};
 
   int maxLength{};
 
   /*
    * Tint colors
    */
-  SharedColor const cursorColor{};
-  SharedColor const selectionColor{};
+  const SharedColor cursorColor{};
+  const SharedColor selectionColor{};
   // TODO: Rename to `tintColor` and make universal.
-  SharedColor const underlineColorAndroid{};
+  const SharedColor underlineColorAndroid{};
 
   /*
    * "Private" (only used by TextInput.js) props
    */
   std::string const text{};
-  int const mostRecentEventCount{0};
+  const int mostRecentEventCount{0};
 
   bool autoFocus{false};
   std::optional<Selection> selection{};

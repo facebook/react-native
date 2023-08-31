@@ -16,10 +16,10 @@
 namespace facebook::react {
 
 static TextAttributes convertRawProp(
-    PropsParserContext const &context,
-    RawProps const &rawProps,
-    TextAttributes const &sourceTextAttributes,
-    TextAttributes const &defaultTextAttributes) {
+    const PropsParserContext &context,
+    const RawProps &rawProps,
+    const TextAttributes &sourceTextAttributes,
+    const TextAttributes &defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color (not accessed by ViewProps)
@@ -224,7 +224,7 @@ void BaseTextProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char * /*propName*/,
-    RawValue const &value) {
+    const RawValue &value) {
   static auto defaults = TextAttributes{};
 
   switch (hash) {

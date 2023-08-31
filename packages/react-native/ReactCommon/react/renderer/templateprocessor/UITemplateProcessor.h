@@ -49,7 +49,7 @@ class UITemplateProcessor {
       const folly::dynamic &params,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,
-      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
+      const std::shared_ptr<const ReactNativeConfig> &reactNativeConfig);
 
  private:
   static ShadowNode::Shared runCommand(
@@ -59,6 +59,6 @@ class UITemplateProcessor {
       std::vector<folly::dynamic> &registers,
       const ComponentDescriptorRegistry &componentDescriptorRegistry,
       const NativeModuleRegistry &nativeModuleRegistry,
-      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
+      const std::shared_ptr<const ReactNativeConfig> &reactNativeConfig);
 };
 } // namespace facebook::react

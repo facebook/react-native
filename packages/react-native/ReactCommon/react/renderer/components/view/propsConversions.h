@@ -19,11 +19,11 @@ namespace facebook::react {
 // ships fully for View
 static inline yoga::Style::Dimensions convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *widthName,
-    char const *heightName,
-    yoga::Style::Dimensions const &sourceValue,
-    yoga::Style::Dimensions const &defaultValue) {
+    const RawProps &rawProps,
+    const char *widthName,
+    const char *heightName,
+    const yoga::Style::Dimensions &sourceValue,
+    const yoga::Style::Dimensions &defaultValue) {
   auto dimensions = defaultValue;
   dimensions[YGDimensionWidth] = convertRawProp(
       context,
@@ -42,11 +42,11 @@ static inline yoga::Style::Dimensions convertRawProp(
 
 static inline yoga::Style::Edges convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    yoga::Style::Edges const &sourceValue,
-    yoga::Style::Edges const &defaultValue) {
+    const RawProps &rawProps,
+    const char *prefix,
+    const char *suffix,
+    const yoga::Style::Edges &sourceValue,
+    const yoga::Style::Edges &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -125,9 +125,9 @@ static inline yoga::Style::Edges convertRawProp(
 
 static inline yoga::Style::Edges convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    yoga::Style::Edges const &sourceValue,
-    yoga::Style::Edges const &defaultValue) {
+    const RawProps &rawProps,
+    const yoga::Style::Edges &sourceValue,
+    const yoga::Style::Edges &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -170,9 +170,9 @@ static inline yoga::Style::Edges convertRawProp(
 
 static inline yoga::Style convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    yoga::Style const &sourceValue) {
-  auto yogaStyle = yoga::Style{};
+    const RawProps &rawProps,
+    const yoga::Style &sourceValue) {
+  yoga::Style yogaStyle{};
   yogaStyle.direction() = convertRawProp(
       context,
       rawProps,
@@ -328,11 +328,11 @@ static inline yoga::Style convertRawProp(
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleCorners<T> const &sourceValue,
-    CascadedRectangleCorners<T> const &defaultValue) {
+    const RawProps &rawProps,
+    const char *prefix,
+    const char *suffix,
+    const CascadedRectangleCorners<T> &sourceValue,
+    const CascadedRectangleCorners<T> &defaultValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
@@ -442,11 +442,11 @@ static inline CascadedRectangleCorners<T> convertRawProp(
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleEdges<T> const &sourceValue,
-    CascadedRectangleEdges<T> const &defaultValue) {
+    const RawProps &rawProps,
+    const char *prefix,
+    const char *suffix,
+    const CascadedRectangleEdges<T> &sourceValue,
+    const CascadedRectangleEdges<T> &defaultValue) {
   CascadedRectangleEdges<T> result;
 
   result.left = convertRawProp(
@@ -548,9 +548,9 @@ static inline CascadedRectangleEdges<T> convertRawProp(
 // This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    ViewEvents const &sourceValue,
-    ViewEvents const &defaultValue) {
+    const RawProps &rawProps,
+    const ViewEvents &sourceValue,
+    const ViewEvents &defaultValue) {
   ViewEvents result{};
   using Offset = ViewEvents::Offset;
 

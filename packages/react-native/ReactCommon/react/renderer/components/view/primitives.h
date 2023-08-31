@@ -77,11 +77,11 @@ struct ViewEvents {
   }
 };
 
-inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+inline static bool operator==(const ViewEvents &lhs, const ViewEvents &rhs) {
   return lhs.bits == rhs.bits;
 }
 
-inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+inline static bool operator!=(const ViewEvents &lhs, const ViewEvents &rhs) {
   return lhs.bits != rhs.bits;
 }
 

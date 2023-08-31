@@ -108,7 +108,7 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,
     RCTTurboModuleManager *turboModuleManager,
-    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler)
+    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
   // Necessary to allow NativeModules to lookup TurboModules
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
@@ -144,7 +144,7 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
-    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler)
+    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
 #if RCT_USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(

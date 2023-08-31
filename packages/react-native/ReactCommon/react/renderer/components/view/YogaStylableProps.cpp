@@ -21,8 +21,8 @@ namespace facebook::react {
 
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps,
+    const YogaStylableProps &sourceProps,
+    const RawProps &rawProps,
     bool shouldSetRawProps)
     : Props(context, sourceProps, rawProps, shouldSetRawProps),
       yogaStyle(
@@ -37,7 +37,7 @@ YogaStylableProps::YogaStylableProps(
 template <typename T>
 static inline T const getFieldValue(
     const PropsParserContext &context,
-    RawValue const &value,
+    const RawValue &value,
     T const defaultValue) {
   if (value.hasValue()) {
     T res;
@@ -103,7 +103,7 @@ void YogaStylableProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   static const auto ygDefaults = yoga::Style{};
   static const auto defaults = YogaStylableProps{};
 
@@ -161,7 +161,7 @@ void YogaStylableProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  auto const defaultYogaStyle = yoga::Style{};
+  const auto defaultYogaStyle = yoga::Style{};
   return {
       debugStringConvertibleItem(
           "direction", yogaStyle.direction(), defaultYogaStyle.direction()),
@@ -239,8 +239,8 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 
 void YogaStylableProps::convertRawPropAliases(
     const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps) {
+    const YogaStylableProps &sourceProps,
+    const RawProps &rawProps) {
   inset = convertRawProp(
       context,
       rawProps,

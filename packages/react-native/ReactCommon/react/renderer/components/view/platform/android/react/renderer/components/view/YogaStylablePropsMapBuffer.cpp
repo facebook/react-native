@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-MapBuffer convertBorderWidths(yoga::Style::Edges const &border) {
+MapBuffer convertBorderWidths(const yoga::Style::Edges &border) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
       builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));
@@ -34,7 +34,7 @@ MapBuffer convertBorderWidths(yoga::Style::Edges const &border) {
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void YogaStylableProps::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
+    const Props *oldPropsPtr,
     MapBufferBuilder &builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
@@ -46,13 +46,13 @@ void YogaStylableProps::propsDiffMapBuffer(
   // Delegate to base classes
   Props::propsDiffMapBuffer(oldPropsPtr, builder);
 
-  YogaStylableProps const &oldProps =
+  const YogaStylableProps &oldProps =
       *(static_cast<const YogaStylableProps *>(oldPropsPtr));
-  YogaStylableProps const &newProps = *this;
+  const YogaStylableProps &newProps = *this;
 
   if (oldProps.yogaStyle != newProps.yogaStyle) {
-    auto const &oldStyle = oldProps.yogaStyle;
-    auto const &newStyle = newProps.yogaStyle;
+    const auto &oldStyle = oldProps.yogaStyle;
+    const auto &newStyle = newProps.yogaStyle;
 
     if (!(oldStyle.border() == newStyle.border())) {
       builder.putMapBuffer(

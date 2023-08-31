@@ -714,7 +714,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     std::vector<ActivePointer> activePointers;
     activePointers.reserve(_activePointers.size());
 
-    for (auto const &pair : _activePointers) {
+    for (const auto &pair : _activePointers) {
       activePointers.push_back(pair.second);
     }
 

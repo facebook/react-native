@@ -26,11 +26,11 @@ namespace facebook::react {
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 void PrintMutationInstruction(
     std::string message,
-    ShadowViewMutation const &mutation);
+    const ShadowViewMutation &mutation);
 void PrintMutationInstructionRelative(
     std::string message,
-    ShadowViewMutation const &mutation,
-    ShadowViewMutation const &relativeMutation);
+    const ShadowViewMutation &mutation,
+    const ShadowViewMutation &relativeMutation);
 #else
 #define PrintMutationInstruction(a, b)
 #define PrintMutationInstructionRelative(a, b, c)
@@ -48,11 +48,11 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
-      RawValue const &config,
+      const RawValue &config,
       const jsi::Value &successCallbackValue,
       const jsi::Value &failureCallbackValue) const override;
 
-  void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
+  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &
                                           componentDescriptorRegistry) override;
 
   void setReduceDeleteCreateMutation(bool reduceDeleteCreateMutation) override;
@@ -72,7 +72,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      TransactionTelemetry const &telemetry,
+      const TransactionTelemetry &telemetry,
       ShadowViewMutationList mutations) const override;
 
   // Exposed for testing.
@@ -102,9 +102,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   mutable std::vector<LayoutAnimation> inflightAnimations_{};
 
-  bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
-  ComponentDescriptor const &getComponentDescriptorForShadowView(
-      ShadowView const &shadowView) const;
+  bool hasComponentDescriptorForShadowView(const ShadowView &shadowView) const;
+  const ComponentDescriptor &getComponentDescriptorForShadowView(
+      const ShadowView &shadowView) const;
 
   /**
    * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
@@ -117,8 +117,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   ShadowView createInterpolatedShadowView(
       Float progress,
-      ShadowView const &startingView,
-      ShadowView const &finalView) const;
+      const ShadowView &startingView,
+      const ShadowView &finalView) const;
 
   void callCallback(const LayoutAnimationCallbackWrapper &callback) const;
 
@@ -132,7 +132,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * Keyframe animation may have timed-out, or be canceled due to a conflict.
    */
   void queueFinalMutationsForCompletedKeyFrame(
-      AnimationKeyFrame const &keyframe,
+      const AnimationKeyFrame &keyframe,
       ShadowViewMutation::List &mutationsList,
       bool interrupted,
       const std::string &logPrefix) const;
@@ -158,12 +158,12 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
-      ShadowViewMutation const &mutation,
+      const ShadowViewMutation &mutation,
       bool skipLastAnimation = false) const;
 
   void getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      ShadowViewMutationList const &mutations,
+      const ShadowViewMutationList &mutations,
       std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 
   /*
@@ -172,7 +172,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void deleteAnimationsForStoppedSurfaces() const;
 
   void simulateImagePropsMemoryAccess(
-      ShadowViewMutationList const &mutations) const;
+      const ShadowViewMutationList &mutations) const;
 
   /**
    * Interpolates the props values.

@@ -25,7 +25,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using CompactValue = facebook::yoga::CompactValue;
 
  public:
-  using Shared = std::shared_ptr<YogaLayoutableShadowNode const>;
+  using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared =
       butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
 
@@ -35,13 +35,13 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment &fragment,
+      const ShadowNodeFamily::Shared &family,
       ShadowNodeTraits traits);
 
   YogaLayoutableShadowNode(
-      ShadowNode const &sourceShadowNode,
-      ShadowNodeFragment const &fragment);
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment);
 
 #pragma mark - Mutating Methods
 
@@ -51,10 +51,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  void appendChild(ShadowNode::Shared const &child) override;
+  void appendChild(const ShadowNode::Shared &child) override;
   void replaceChild(
-      ShadowNode const &oldChild,
-      ShadowNode::Shared const &newChild,
+      const ShadowNode &oldChild,
+      const ShadowNode::Shared &newChild,
       int32_t suggestedIndex = -1) override;
 
   void updateYogaChildren();
@@ -117,14 +117,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * Return true if child's yogaNode's owner is this->yogaNode_. Otherwise
    * returns false.
    */
-  bool doesOwn(YogaLayoutableShadowNode const &child) const;
+  bool doesOwn(const YogaLayoutableShadowNode &child) const;
 
   /*
    * Appends a Yoga node to the Yoga node associated with this node.
    * The method does *not* do anything besides that (no cloning or `owner` field
    * adjustment).
    */
-  void appendYogaChild(YogaLayoutableShadowNode::Shared const &childNode);
+  void appendYogaChild(const YogaLayoutableShadowNode::Shared &childNode);
 
   /*
    * Makes the child node with a given `index` (and Yoga node associated with) a
@@ -191,7 +191,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - border(Left|Right)Color → border(Start|End)Color
    */
   static void swapLeftAndRightInViewProps(
-      YogaLayoutableShadowNode const &shadowNode);
+      const YogaLayoutableShadowNode &shadowNode);
   /*
    * In yoga node passed as argument, reassigns following values
    * - (left|right) → (start|end)
@@ -199,7 +199,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - padding(Left|Right) → padding(Start|End)
    */
   static void swapLeftAndRightInYogaStyleProps(
-      YogaLayoutableShadowNode const &shadowNode);
+      const YogaLayoutableShadowNode &shadowNode);
 
   /*
    * Combine a base yoga::Style with aliased properties which should be

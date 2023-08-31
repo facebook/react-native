@@ -25,14 +25,14 @@ struct RawEvent;
  */
 class EventDispatcher {
  public:
-  using Shared = std::shared_ptr<EventDispatcher const>;
-  using Weak = std::weak_ptr<EventDispatcher const>;
+  using Shared = std::shared_ptr<const EventDispatcher>;
+  using Weak = std::weak_ptr<const EventDispatcher>;
 
   EventDispatcher(
-      EventQueueProcessor const &eventProcessor,
-      EventBeat::Factory const &synchonousEventBeatFactory,
-      EventBeat::Factory const &asynchronousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox);
+      const EventQueueProcessor &eventProcessor,
+      const EventBeat::Factory &synchonousEventBeatFactory,
+      const EventBeat::Factory &asynchronousEventBeatFactory,
+      const EventBeat::SharedOwnerBox &ownerBox);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
@@ -56,16 +56,16 @@ class EventDispatcher {
   /*
    * Adds provided event listener to the event dispatcher.
    */
-  void addListener(const std::shared_ptr<EventListener const> &listener) const;
+  void addListener(const std::shared_ptr<const EventListener> &listener) const;
 
   /*
    * Removes provided event listener to the event dispatcher.
    */
   void removeListener(
-      const std::shared_ptr<EventListener const> &listener) const;
+      const std::shared_ptr<const EventListener> &listener) const;
 
  private:
-  EventQueue const &getEventQueue(EventPriority priority) const;
+  const EventQueue &getEventQueue(EventPriority priority) const;
 
   std::unique_ptr<UnbatchedEventQueue> synchronousUnbatchedQueue_;
   std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;

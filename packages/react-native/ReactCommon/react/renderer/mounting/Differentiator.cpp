@@ -31,7 +31,7 @@
 
 enum class NoBreadcrumb {};
 
-#define BREADCRUMB_TYPE NoBreadcrumb const &
+#define BREADCRUMB_TYPE const NoBreadcrumb &
 #define DIFF_BREADCRUMB(X) \
   {}
 #define CREATE_DIFF_BREADCRUMB(X) \
@@ -160,7 +160,7 @@ class TinyMap final {
           std::remove_if(
               vector_.begin(),
               vector_.end(),
-              [](auto const &item) { return item.first == 0; }),
+              [](const auto &item) { return item.first == 0; }),
           vector_.end());
     }
     numErased_ = 0;
@@ -176,8 +176,8 @@ class TinyMap final {
  * Sorting comparator for `reorderInPlaceIfNeeded`.
  */
 static bool shouldFirstPairComesBeforeSecondOne(
-    ShadowViewNodePair const *lhs,
-    ShadowViewNodePair const *rhs) noexcept {
+    const ShadowViewNodePair *lhs,
+    const ShadowViewNodePair *rhs) noexcept {
   return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
 }
 
@@ -191,7 +191,7 @@ static void reorderInPlaceIfNeeded(
   }
 
   auto isReorderNeeded = false;
-  for (auto const &pair : pairs) {
+  for (const auto &pair : pairs) {
     if (pair->shadowNode->getOrderIndex() != 0) {
       isReorderNeeded = true;
       break;
@@ -206,7 +206,7 @@ static void reorderInPlaceIfNeeded(
       pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
 }
 
-static inline bool shadowNodeIsConcrete(ShadowNode const &shadowNode) {
+static inline bool shadowNodeIsConcrete(const ShadowNode &shadowNode) {
   return shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
 }
 
@@ -214,8 +214,8 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     ShadowViewNodePair::NonOwningList &pairList,
     ViewNodePairScope &scope,
     Point layoutOffset,
-    ShadowNode const &shadowNode) {
-  for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
+    const ShadowNode &shadowNode) {
+  for (const auto &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
 
 #ifndef ANDROID
@@ -259,7 +259,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
 }
 
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
-    ShadowNode const &shadowNode,
+    const ShadowNode &shadowNode,
     ViewNodePairScope &scope,
     bool allowFlattened,
     Point layoutOffset) {
@@ -294,7 +294,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
  */
 static ShadowViewNodePair::NonOwningList
 sliceChildShadowNodeViewPairsFromViewNodePair(
-    ShadowViewNodePair const &shadowViewNodePair,
+    const ShadowViewNodePair &shadowViewNodePair,
     ViewNodePairScope &scope,
     bool allowFlattened = false) {
   return sliceChildShadowNodeViewPairsV2(
@@ -337,7 +337,7 @@ static_assert(
 static void calculateShadowViewMutationsV2(
     ViewNodePairScope &scope,
     ShadowViewMutation::List &mutations,
-    ShadowView const &parentShadowView,
+    const ShadowView &parentShadowView,
     ShadowViewNodePair::NonOwningList &&oldChildPairs,
     ShadowViewNodePair::NonOwningList &&newChildPairs,
     bool isRecursionRedundant = false);
@@ -357,25 +357,25 @@ static void updateMatchedPairSubtrees(
     OrderedMutationInstructionContainer &mutationContainer,
     TinyMap<Tag, ShadowViewNodePair *> &newRemainingPairs,
     ShadowViewNodePair::NonOwningList &oldChildPairs,
-    ShadowView const &parentShadowView,
-    ShadowViewNodePair const &oldPair,
-    ShadowViewNodePair const &newPair);
+    const ShadowView &parentShadowView,
+    const ShadowViewNodePair &oldPair,
+    const ShadowViewNodePair &newPair);
 
 static void updateMatchedPair(
     OrderedMutationInstructionContainer &mutationContainer,
     bool oldNodeFoundInOrder,
     bool newNodeFoundInOrder,
-    ShadowView const &parentShadowView,
-    ShadowViewNodePair const &oldPair,
-    ShadowViewNodePair const &newPair);
+    const ShadowView &parentShadowView,
+    const ShadowViewNodePair &oldPair,
+    const ShadowViewNodePair &newPair);
 
 static void calculateShadowViewMutationsFlattener(
     ViewNodePairScope &scope,
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer &mutationContainer,
-    ShadowView const &parentShadowView,
+    const ShadowView &parentShadowView,
     TinyMap<Tag, ShadowViewNodePair *> &unvisitedOtherNodes,
-    ShadowViewNodePair const &node,
+    const ShadowViewNodePair &node,
     TinyMap<Tag, ShadowViewNodePair *> *parentSubVisitedOtherNewNodes = nullptr,
     TinyMap<Tag, ShadowViewNodePair *> *parentSubVisitedOtherOldNodes =
         nullptr);
@@ -393,9 +393,9 @@ static void updateMatchedPairSubtrees(
     OrderedMutationInstructionContainer &mutationContainer,
     TinyMap<Tag, ShadowViewNodePair *> &newRemainingPairs,
     ShadowViewNodePair::NonOwningList &oldChildPairs,
-    ShadowView const &parentShadowView,
-    ShadowViewNodePair const &oldPair,
-    ShadowViewNodePair const &newPair) {
+    const ShadowView &parentShadowView,
+    const ShadowViewNodePair &oldPair,
+    const ShadowViewNodePair &newPair) {
   // Are we flattening or unflattening either one? If node was
   // flattened in both trees, there's no change, just continue.
   if (oldPair.flattened && newPair.flattened) {
@@ -511,9 +511,9 @@ static void updateMatchedPair(
     OrderedMutationInstructionContainer &mutationContainer,
     bool oldNodeFoundInOrder,
     bool newNodeFoundInOrder,
-    ShadowView const &parentShadowView,
-    ShadowViewNodePair const &oldPair,
-    ShadowViewNodePair const &newPair) {
+    const ShadowView &parentShadowView,
+    const ShadowViewNodePair &oldPair,
+    const ShadowViewNodePair &newPair) {
   oldPair.otherTreePair = &newPair;
   newPair.otherTreePair = &oldPair;
 
@@ -605,9 +605,9 @@ static void calculateShadowViewMutationsFlattener(
     ViewNodePairScope &scope,
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer &mutationContainer,
-    ShadowView const &parentShadowView,
+    const ShadowView &parentShadowView,
     TinyMap<Tag, ShadowViewNodePair *> &unvisitedOtherNodes,
-    ShadowViewNodePair const &node,
+    const ShadowViewNodePair &node,
     TinyMap<Tag, ShadowViewNodePair *> *parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair *> *parentSubVisitedOtherOldNodes) {
   DEBUG_LOGS({
@@ -661,7 +661,7 @@ static void calculateShadowViewMutationsFlattener(
 
   // Candidates for full tree creation or deletion at the end of this function
   auto deletionCreationCandidatePairs =
-      TinyMap<Tag, ShadowViewNodePair const *>{};
+      TinyMap<Tag, const ShadowViewNodePair *>{};
 
   for (size_t index = 0;
        index < treeChildren.size() && index < treeChildren.size();
@@ -1033,7 +1033,7 @@ static void calculateShadowViewMutationsFlattener(
 static void calculateShadowViewMutationsV2(
     ViewNodePairScope &scope,
     ShadowViewMutation::List &mutations,
-    ShadowView const &parentShadowView,
+    const ShadowView &parentShadowView,
     ShadowViewNodePair::NonOwningList &&oldChildPairs,
     ShadowViewNodePair::NonOwningList &&newChildPairs,
     bool isRecursionRedundant) {
@@ -1142,7 +1142,7 @@ static void calculateShadowViewMutationsV2(
     // We've reached the end of the new children. We can delete+remove the
     // rest.
     for (; index < oldChildPairs.size(); index++) {
-      auto const &oldChildPair = *oldChildPairs[index];
+      const auto &oldChildPair = *oldChildPairs[index];
 
       DEBUG_LOGS({
         LOG(ERROR) << "Differ Branch 2: Deleting Tag/Tree: ["
@@ -1204,7 +1204,7 @@ static void calculateShadowViewMutationsV2(
     // If we don't have any more existing children we can choose a fast path
     // since the rest will all be create+insert.
     for (; index < newChildPairs.size(); index++) {
-      auto const &newChildPair = *newChildPairs[index];
+      const auto &newChildPair = *newChildPairs[index];
 
       DEBUG_LOGS({
         LOG(ERROR) << "Differ Branch 3: Creating Tag/Tree: ["
@@ -1237,7 +1237,7 @@ static void calculateShadowViewMutationsV2(
     // Collect map of tags in the new list
     auto newRemainingPairs = TinyMap<Tag, ShadowViewNodePair *>{};
     auto newInsertedPairs = TinyMap<Tag, ShadowViewNodePair *>{};
-    auto deletionCandidatePairs = TinyMap<Tag, ShadowViewNodePair const *>{};
+    auto deletionCandidatePairs = TinyMap<Tag, const ShadowViewNodePair *>{};
     for (; index < newChildPairs.size(); index++) {
       auto &newChildPair = *newChildPairs[index];
       newRemainingPairs.insert({newChildPair.shadowView.tag, &newChildPair});
@@ -1256,8 +1256,8 @@ static void calculateShadowViewMutationsV2(
 
       // Advance both pointers if pointing to the same element
       if (haveNewPair && haveOldPair) {
-        auto const &oldChildPair = *oldChildPairs[oldIndex];
-        auto const &newChildPair = *newChildPairs[newIndex];
+        const auto &oldChildPair = *oldChildPairs[oldIndex];
+        const auto &newChildPair = *newChildPairs[newIndex];
 
         Tag newTag = newChildPair.shadowView.tag;
         Tag oldTag = oldChildPair.shadowView.tag;
@@ -1301,7 +1301,7 @@ static void calculateShadowViewMutationsV2(
       // We have an old pair, but we either don't have any remaining new pairs
       // or we have one but it's not matched up with the old pair
       if (haveOldPair) {
-        auto const &oldChildPair = *oldChildPairs[oldIndex];
+        const auto &oldChildPair = *oldChildPairs[oldIndex];
 
         Tag oldTag = oldChildPair.shadowView.tag;
 
@@ -1309,9 +1309,9 @@ static void calculateShadowViewMutationsV2(
         // a move. The new node has already been inserted, we just need to
         // remove the node from its old position now, and update the node's
         // subtree.
-        auto const insertedIt = newInsertedPairs.find(oldTag);
+        const auto insertedIt = newInsertedPairs.find(oldTag);
         if (insertedIt != newInsertedPairs.end()) {
-          auto const &newChildPair = *insertedIt->second;
+          const auto &newChildPair = *insertedIt->second;
 
           updateMatchedPair(
               mutationContainer,
@@ -1338,7 +1338,7 @@ static void calculateShadowViewMutationsV2(
         // Should we generate a delete+remove instruction for the old node?
         // If there's an old node and it's not found in the "new" list, we
         // generate remove+delete for this node and its subtree.
-        auto const newIt = newRemainingPairs.find(oldTag);
+        const auto newIt = newRemainingPairs.find(oldTag);
         if (newIt == newRemainingPairs.end()) {
           oldIndex++;
 
@@ -1366,7 +1366,7 @@ static void calculateShadowViewMutationsV2(
           // concrete.
           if (oldChildPair.inOtherTree() &&
               oldChildPair.otherTreePair->isConcreteView) {
-            ShadowView const &otherTreeView =
+            const ShadowView &otherTreeView =
                 oldChildPair.otherTreePair->shadowView;
 
             // Remove, but remove using the *new* node, since we know
@@ -1441,7 +1441,7 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
-      auto const &oldChildPair = *deletionCandidatePair.second;
+      const auto &oldChildPair = *deletionCandidatePair.second;
 
       DEBUG_LOGS({
         LOG(ERROR)
@@ -1483,7 +1483,7 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
-      auto const &newChildPair = *newInsertedPair.second;
+      const auto &newChildPair = *newInsertedPair.second;
 
       DEBUG_LOGS({
         LOG(ERROR)
@@ -1553,8 +1553,8 @@ static void calculateShadowViewMutationsV2(
 static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
     ShadowViewNodePair::OwningList &pairList,
     Point layoutOffset,
-    ShadowNode const &shadowNode) {
-  for (auto const &sharedChildShadowNode : shadowNode.getChildren()) {
+    const ShadowNode &shadowNode) {
+  for (const auto &sharedChildShadowNode : shadowNode.getChildren()) {
     auto &childShadowNode = *sharedChildShadowNode;
 
 #ifndef ANDROID
@@ -1591,7 +1591,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
  * Only used by unit tests currently.
  */
 ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
-    ShadowNode const &shadowNode) {
+    const ShadowNode &shadowNode) {
   auto pairList = ShadowViewNodePair::OwningList{};
 
   if (!shadowNode.getTraits().check(
@@ -1606,8 +1606,8 @@ ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
 }
 
 ShadowViewMutation::List calculateShadowViewMutations(
-    ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode) {
+    const ShadowNode &oldRootShadowNode,
+    const ShadowNode &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.

@@ -19,9 +19,9 @@ namespace facebook::react {
 using AncestorList = ShadowNode::AncestorList;
 
 ShadowNodeFamily::ShadowNodeFamily(
-    ShadowNodeFamilyFragment const &fragment,
+    const ShadowNodeFamilyFragment &fragment,
     EventDispatcher::Weak eventDispatcher,
-    ComponentDescriptor const &componentDescriptor)
+    const ComponentDescriptor &componentDescriptor)
     : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
@@ -32,7 +32,7 @@ ShadowNodeFamily::ShadowNodeFamily(
       componentHandle_(componentDescriptor.getComponentHandle()),
       componentName_(componentDescriptor.getComponentName()) {}
 
-void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
+void ShadowNodeFamily::setParent(const ShadowNodeFamily::Shared &parent) const {
   react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
   if (hasParent_) {
     return;
@@ -63,8 +63,8 @@ const ComponentDescriptor &ShadowNodeFamily::getComponentDescriptor() const {
 }
 
 AncestorList ShadowNodeFamily::getAncestors(
-    ShadowNode const &ancestorShadowNode) const {
-  auto families = butter::small_vector<ShadowNodeFamily const *, 64>{};
+    const ShadowNode &ancestorShadowNode) const {
+  auto families = butter::small_vector<const ShadowNodeFamily *, 64>{};
   auto ancestorFamily = ancestorShadowNode.family_.get();
 
   auto family = this;
@@ -107,7 +107,7 @@ State::Shared ShadowNodeFamily::getMostRecentState() const {
   return mostRecentState_;
 }
 
-void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
+void ShadowNodeFamily::setMostRecentState(const State::Shared &state) const {
   std::unique_lock lock(mutex_);
 
   /*
@@ -127,8 +127,8 @@ void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
   mostRecentState_ = state;
 }
 
-std::shared_ptr<State const> ShadowNodeFamily::getMostRecentStateIfObsolete(
-    State const &state) const {
+std::shared_ptr<const State> ShadowNodeFamily::getMostRecentStateIfObsolete(
+    const State &state) const {
   std::unique_lock lock(mutex_);
   if (!state.isObsolete_) {
     return {};

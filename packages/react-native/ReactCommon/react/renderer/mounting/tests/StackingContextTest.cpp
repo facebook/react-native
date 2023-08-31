@@ -152,11 +152,11 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void mutateViewShadowNodeProps_(
-      std::shared_ptr<ViewShadowNode> const &node,
+      const std::shared_ptr<ViewShadowNode> &node,
       std::function<void(ViewProps &props)> callback) {
     rootShadowNode_ =
         std::static_pointer_cast<RootShadowNode>(rootShadowNode_->cloneTree(
-            node->getFamily(), [&](ShadowNode const &oldShadowNode) {
+            node->getFamily(), [&](const ShadowNode &oldShadowNode) {
               auto viewProps = std::make_shared<ViewShadowNodeProps>();
               callback(*viewProps);
               return oldShadowNode.clone(ShadowNodeFragment{viewProps});
@@ -164,7 +164,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void testViewTree_(
-      std::function<void(StubViewTree const &viewTree)> const &callback) {
+      const std::function<void(StubViewTree const &viewTree)> &callback) {
     rootShadowNode_->layoutIfNeeded();
 
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));
@@ -179,7 +179,7 @@ class StackingContextTest : public ::testing::Test {
 };
 
 TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
 
@@ -280,7 +280,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
     props.hitSlop = EdgeInsets{42, 42, 42, 42};
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
 
@@ -359,7 +359,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   mutateViewShadowNodeProps_(
       nodeBBA_, [](ViewProps &props) { props.shadowColor = blackColor(); });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 4 views in total.
     EXPECT_EQ(viewTree.size(), 4);
 
@@ -466,7 +466,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   mutateViewShadowNodeProps_(
       nodeBD_, [](ViewProps &props) { props.opacity = 0.42; });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 10 views in total.
     EXPECT_EQ(viewTree.size(), 10);
 
@@ -572,7 +572,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     props.zIndex = 8996;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 7 views in total.
     EXPECT_EQ(viewTree.size(), 7);
 
@@ -656,7 +656,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     props.zIndex = 42;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 8 views in total.
     EXPECT_EQ(viewTree.size(), 8);
 
@@ -684,7 +684,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     props.zIndex = {};
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
     // 7 views in total.
     EXPECT_EQ(viewTree.size(), 7);
 
@@ -767,7 +767,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     yogaStyle.display() = YGDisplayNone;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree &viewTree) {
 #ifdef ANDROID
     // T153547836: Android still mounts views with
     // ShadowNodeTraits::Trait::Hidden

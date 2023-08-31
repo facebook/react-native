@@ -27,13 +27,13 @@ namespace facebook::react {
  */
 class Props : public virtual Sealable, public virtual DebugStringConvertible {
  public:
-  using Shared = std::shared_ptr<Props const>;
+  using Shared = std::shared_ptr<const Props>;
 
   Props() = default;
   Props(
       const PropsParserContext &context,
       const Props &sourceProps,
-      RawProps const &rawProps,
+      const RawProps &rawProps,
       bool shouldSetRawProps = true);
   virtual ~Props() = default;
 
@@ -51,7 +51,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
   std::string nativeId;
 
@@ -59,7 +59,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   folly::dynamic rawProps = folly::dynamic::object();
 
   virtual void propsDiffMapBuffer(
-      Props const *oldProps,
+      const Props *oldProps,
       MapBufferBuilder &builder) const;
 #endif
 };

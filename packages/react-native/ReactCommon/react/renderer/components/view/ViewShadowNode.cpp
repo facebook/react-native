@@ -13,12 +13,12 @@
 
 namespace facebook::react {
 
-char const ViewComponentName[] = "View";
+const char ViewComponentName[] = "View";
 
 ViewShadowNodeProps::ViewShadowNodeProps(
-    PropsParserContext const &context,
-    ViewShadowNodeProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext &context,
+    const ViewShadowNodeProps &sourceProps,
+    const RawProps &rawProps)
     : ViewProps(
           context,
           sourceProps,
@@ -26,22 +26,22 @@ ViewShadowNodeProps::ViewShadowNodeProps(
           !CoreFeatures::enableMapBuffer){};
 
 ViewShadowNode::ViewShadowNode(
-    ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
+    const ShadowNodeFragment &fragment,
+    const ShadowNodeFamily::Shared &family,
     ShadowNodeTraits traits)
     : ConcreteViewShadowNode(fragment, family, traits) {
   initialize();
 }
 
 ViewShadowNode::ViewShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   initialize();
 }
 
 void ViewShadowNode::initialize() noexcept {
-  auto &viewProps = static_cast<ViewProps const &>(*props_);
+  auto &viewProps = static_cast<const ViewProps &>(*props_);
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||

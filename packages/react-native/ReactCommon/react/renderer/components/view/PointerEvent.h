@@ -120,9 +120,9 @@ struct PointerEvent : public EventPayload {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const &pointerEvent);
+std::string getDebugName(const PointerEvent &pointerEvent);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    PointerEvent const &pointerEvent,
+    const PointerEvent &pointerEvent,
     DebugStringConvertibleOptions options);
 
 #endif

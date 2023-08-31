@@ -46,8 +46,8 @@ struct Task final : public jsi::NativeState {
 class TaskPriorityComparer {
  public:
   inline bool operator()(
-      std::shared_ptr<Task> const &lhs,
-      std::shared_ptr<Task> const &rhs) {
+      const std::shared_ptr<Task> &lhs,
+      const std::shared_ptr<Task> &rhs) {
     return lhs->expirationTime > rhs->expirationTime;
   }
 };
