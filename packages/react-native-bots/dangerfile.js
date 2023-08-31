@@ -16,6 +16,8 @@ const fetch = require('node-fetch');
 const {validate: validateChangelog} =
   require('@rnx-kit/rn-changelog-generator').default;
 
+warn(`${process.env.DANGER_GITHUB_API_TOKEN.length} errors were detected`);
+
 const isFromPhabricator =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('differential revision:');
