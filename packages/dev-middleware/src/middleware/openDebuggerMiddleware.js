@@ -17,6 +17,7 @@ import type {Logger} from '../types/Logger';
 
 import url from 'url';
 import getDevServerUrl from '../utils/getDevServerUrl';
+import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import queryInspectorTargets from '../utils/queryInspectorTargets';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
@@ -83,7 +84,7 @@ export default function openDebuggerMiddleware({
         debuggerInstances.set(
           appId,
           await browserLauncher.launchDebuggerAppWindow(
-            target.devtoolsFrontendUrl,
+            getDevToolsFrontendUrl(target.webSocketDebuggerUrl),
           ),
         );
         res.end();
