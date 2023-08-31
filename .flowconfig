@@ -10,6 +10,9 @@
 
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
+; Checked-in build output
+<PROJECT_ROOT>/packages/debugger-frontend/dist/
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 

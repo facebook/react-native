@@ -60,6 +60,7 @@
     "@tsconfig/node18": "1.0.1",
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.57.1",
+    "ansi-styles": "^4.2.1",
     "async": "^3.2.2",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
     "babel-plugin-transform-define": "^2.1.2",
@@ -100,8 +101,10 @@
     "prettier-plugin-hermes-parser": "0.14.0",
     "react": "18.2.0",
     "react-test-renderer": "18.2.0",
+    "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
+    "supports-color": "^7.1.0",
     "typescript": "5.0.4",
     "ws": "^6.2.2"
   }
