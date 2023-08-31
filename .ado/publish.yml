@@ -83,7 +83,7 @@ jobs:
         displayName: Actual NPM Publish
         inputs:
           script: |
-            npm publish packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+            npm publish ./packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
 
       # Set the git tag and push the version update back to Github
 
@@ -115,7 +115,7 @@ jobs:
       
 
   - job: RNMacOSInitNpmJSPublish
-    displayName: NPM Publish react-native-macos-init
+    displayName: NPM Publish beachball packages (e.g., react-native-macos-init)
     pool: cxeiss-ubuntu-20-04-large
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
@@ -152,10 +152,10 @@ jobs:
           script: echo "This code is tested as part of an integration test. See the 'Verify react-native-macos-init' task."
 
       - task: CmdLine@2
-        displayName: "Publish react-native-macos-init to npmjs.org"
+        displayName: "Publish beachball packages to npmjs.org"
         inputs:
           script: |
-            npx beachball publish --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
+            npx beachball publish --scope '!packages/react-native' --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
 
       # beachball modifies the package.json files so run manifest generation after it.
       - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
