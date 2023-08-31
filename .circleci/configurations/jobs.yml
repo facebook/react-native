@@ -1124,12 +1124,27 @@ jobs:
                 paths: /tmp/hermes/dSYM/Release
       - store_hermes_apple_artifacts:
           flavor: << parameters.flavor >>
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Release" ]
+          steps:
+            - persist_to_workspace:
+                root: /tmp/hermes/
+                paths:
+                  - hermes-runtime-darwin/hermes-ios-release.tar.gz
+      - when:
+          condition:
+            equal: [ << parameters.flavor >>, "Debug" ]
+          steps:
+            - persist_to_workspace:
+                root: /tmp/hermes/
+                paths:
+                  - hermes-runtime-darwin/hermes-ios-debug.tar.gz
       - persist_to_workspace:
           root: /tmp/hermes/
           paths:
-            - hermes-runtime-darwin
-            - osx-bin
-            - dSYM
+            - osx-bin/<< parameters.flavor >>
+            - dSYM/<< parameters.flavor >>
 
   build_hermesc_windows:
     executor:
