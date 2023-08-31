@@ -115,7 +115,7 @@ def podspec_source(source_type, version, react_native_path)
     when HermesEngineSourceType::DOWNLOAD_PREBUILD_RELEASE_TARBALL
         return podspec_source_download_prebuild_release_tarball(react_native_path, version)
     when HermesEngineSourceType::DOWNLOAD_PREBUILT_NIGHTLY_TARBALL
-        return podspec_source_download_prebuilt_nightly_tarball()
+        return podspec_source_download_prebuilt_nightly_tarball(react_native_path, version)
     else
         abort "[Hermes] Unsupported or invalid source type provided: #{source_type}"
     end
@@ -184,7 +184,7 @@ def podspec_source_download_prebuild_release_tarball(react_native_path, version)
     return {:http => url}
 end
 
-def podspec_source_download_prebuilt_nightly_tarball()
+def podspec_source_download_prebuilt_nightly_tarball(react_native_path, version)
     destination_path = download_nightly_hermes(react_native_path, version)
     url = nightly_tarball_url(version)
     hermes_log("Using nightly tarball from URL: #{url}")
@@ -206,6 +206,11 @@ end
 def download_stable_hermes(react_native_path, version, configuration)
     tarball_url = release_tarball_url(version, configuration)
     download_hermes_tarball(react_native_path, tarball_url, version, configuration)
+end
+
+def download_nightly_hermes(react_native_path, version)
+    tarball_url = nightly_tarball_url(version)
+    download_hermes_tarball(react_native_path, tarball_url, version, :debug)
 end
 
 def download_hermes_tarball(react_native_path, tarball_url, version, configuration)
