@@ -61,7 +61,6 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
-  s.dependency "RCT-Folly/Fabric"
   s.dependency "React-Fabric"
   s.dependency "React-Core/Default"
   s.dependency "React-RCTImage"

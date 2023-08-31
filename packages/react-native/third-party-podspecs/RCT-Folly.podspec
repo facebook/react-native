@@ -22,42 +22,39 @@ Pod::Spec.new do |spec|
   spec.dependency 'glog'
   spec.dependency 'fmt' , '~> 6.2.1'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -faligned-new'
-  spec.source_files = 'folly/String.cpp',
+  spec.source_files = 'folly/dynamic.cpp',
+                      'folly/dynamic.h',
+                      'folly/dynamic-inl.h',
                       'folly/Conv.cpp',
-                      'folly/Demangle.cpp',
-                      'folly/FileUtil.cpp',
-                      'folly/Format.cpp',
-                      'folly/lang/SafeAssert.cpp',
-                      'folly/lang/ToAscii.cpp',
-                      'folly/ScopeGuard.cpp',
-                      'folly/Unicode.cpp',
-                      'folly/dynamic.cpp',
+                      'folly/Conv.h',
                       'folly/json.cpp',
-                      'folly/json_pointer.cpp',
-                      'folly/container/detail/F14Table.cpp',
-                      'folly/detail/Demangle.cpp',
-                      'folly/detail/UniqueInstance.cpp',
-                      'folly/hash/SpookyHashV2.cpp',
-                      'folly/lang/Assume.cpp',
-                      'folly/lang/CString.cpp',
-                      'folly/lang/Exception.cpp',
-                      'folly/memory/detail/MallocImpl.cpp',
-                      'folly/net/NetOps.cpp',
-                      'folly/portability/SysUio.cpp',
-                      'folly/system/ThreadId.h',
-                      'folly/system/ThreadId.cpp',
-                      'folly/*.h',
-                      'folly/container/*.h',
-                      'folly/container/detail/*.h',
-                      'folly/detail/*.h',
-                      'folly/functional/*.h',
-                      'folly/hash/*.h',
-                      'folly/lang/*.h',
-                      'folly/memory/*.h',
-                      'folly/memory/detail/*.h',
-                      'folly/net/*.h',
-                      'folly/net/detail/*.h',
-                      'folly/portability/*.h'
+                      'folly/json.h',
+                      'folly/Bits.h',
+                      'folly/lang/Bits.h',
+                      'folly/MoveWrapper.h',
+                      'folly/Hash.h',
+                      'folly/hash/Hash.h',
+                      'folly/container/F14Map.h',
+                      'folly/container/F14Set.h',
+                      'folly/container/small_vector.h',
+                      'folly/Function.h',
+                      'folly/Executor.h',
+                      'folly/Try.h',
+                      'folly/Try-inl.h',
+                      'folly/Format.h',
+                      'folly/FormatArg.h',
+                      'folly/EvictingCacheMap.h',
+                      'folly/Expected.h',
+                      'folly/CPortability.h',
+                      'folly/CppAttributes.h',
+                      'folly/Likely.h',
+                      'folly/Optional.h',
+                      'folly/Portability.h',
+                      'folly/Processor.h',
+                      'folly/Traits.h',
+                      'folly/Unit.h',
+                      'folly/Utility.h',
+                      'folly/lang/Exception.h',
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -83,29 +80,6 @@ Pod::Spec.new do |spec|
   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
 
-  spec.default_subspec = 'Default'
-
-  spec.subspec 'Default' do
-    # no-op
-  end
-
-  spec.subspec 'Fabric' do |fabric|
-    fabric.source_files = 'folly/SharedMutex.cpp',
-                          'folly/concurrency/CacheLocality.cpp',
-                          'folly/detail/Futex.cpp',
-                          'folly/synchronization/ParkingLot.cpp',
-                          'folly/portability/Malloc.cpp',
-                          'folly/concurrency/CacheLocality.h',
-                          'folly/synchronization/ParkingLot.h',
-                          'folly/synchronization/SanitizeThread.h',
-                          'folly/system/ThreadId.h'
-
-    fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
-                            'folly/synchronization/ParkingLot.h',
-                            'folly/synchronization/SanitizeThread.h',
-                            'folly/system/ThreadId.h'
-  end
-
   spec.subspec 'Futures' do |futures|
     futures.dependency 'libevent'
     futures.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => ["$(inherited)", "$(PODS_ROOT)/Headers/Public/libevent/event"] }
@@ -119,7 +93,6 @@ Pod::Spec.new do |spec|
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
                            'folly/Try.cpp',
-                           'folly/concurrency/CacheLocality.cpp',
                            'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
                            'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseLocal,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',

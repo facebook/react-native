@@ -79,7 +79,6 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage", version
   s.dependency "React-ImageManager"
   s.dependency "React-graphics"
-  s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "glog"
   s.dependency "Yoga"
   s.dependency "React-RCTText"
