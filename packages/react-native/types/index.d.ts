@@ -51,7 +51,7 @@
 //                 Mateusz Wit <https://github.com/MateWW>
 //                 Saad Najmi <https://github.com/saadnajmi>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// Minimum TypeScript Version: 4.1
+// Minimum TypeScript Version: 4.8
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
