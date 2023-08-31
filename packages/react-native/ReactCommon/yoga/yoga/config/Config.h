@@ -9,7 +9,7 @@
 
 #include <yoga/Yoga.h>
 
-#include <yoga/BitUtils.h>
+#include <yoga/bits/EnumBitset.h>
 #include <yoga/Yoga-internal.h>
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
@@ -38,8 +38,6 @@ using CloneWithContextFn = YGNodeRef (*)(
     int childIndex,
     void* cloneContext);
 
-using ExperimentalFeatureSet = detail::EnumBitset<YGExperimentalFeature>;
-
 #pragma pack(push)
 #pragma pack(1)
 // Packed structure of <32-bit options to miminize size per node.
@@ -65,7 +63,7 @@ public:
       YGExperimentalFeature feature,
       bool enabled);
   bool isExperimentalFeatureEnabled(YGExperimentalFeature feature) const;
-  ExperimentalFeatureSet getEnabledExperiments() const;
+  EnumBitset<YGExperimentalFeature> getEnabledExperiments() const;
 
   void setErrata(YGErrata errata);
   void addErrata(YGErrata errata);
@@ -104,7 +102,7 @@ private:
   } logger_;
 
   ConfigFlags flags_{};
-  ExperimentalFeatureSet experimentalFeatures_{};
+  EnumBitset<YGExperimentalFeature> experimentalFeatures_{};
   YGErrata errata_ = YGErrataNone;
   float pointScaleFactor_ = 1.0f;
   void* context_ = nullptr;
