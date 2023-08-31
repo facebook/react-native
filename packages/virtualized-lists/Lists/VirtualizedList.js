@@ -215,8 +215,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
-
-    this.scrollToOffset({offset, animated});
   }
 
   // scrollToItem may be janky without getItemLayout prop. Required linear scan through items -
