@@ -9,25 +9,25 @@
 
 namespace facebook::react {
 
-Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
+const Props::Shared &ShadowNodeFragment::propsPlaceholder() {
   static auto &instance = *new Props::Shared();
   return instance;
 }
 
-ShadowNode::SharedListOfShared const &
+const ShadowNode::SharedListOfShared &
 ShadowNodeFragment::childrenPlaceholder() {
   static auto &instance = *new ShadowNode::SharedListOfShared();
   return instance;
 }
 
-State::Shared const &ShadowNodeFragment::statePlaceholder() {
+const State::Shared &ShadowNodeFragment::statePlaceholder() {
   static auto &instance = *new State::Shared();
   return instance;
 }
 
 using Value = ShadowNodeFragment::Value;
 
-Value::Value(ShadowNodeFragment const &fragment)
+Value::Value(const ShadowNodeFragment &fragment)
     : props(fragment.props),
       children(fragment.children),
       state(fragment.state) {}

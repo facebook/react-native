@@ -17,10 +17,10 @@
 namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
-    EventQueueProcessor const &eventProcessor,
-    EventBeat::Factory const &synchonousEventBeatFactory,
-    EventBeat::Factory const &asynchronousEventBeatFactory,
-    EventBeat::SharedOwnerBox const &ownerBox)
+    const EventQueueProcessor &eventProcessor,
+    const EventBeat::Factory &synchonousEventBeatFactory,
+    const EventBeat::Factory &asynchronousEventBeatFactory,
+    const EventBeat::SharedOwnerBox &ownerBox)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
@@ -76,7 +76,7 @@ const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
 }
 
 void EventDispatcher::addListener(
-    const std::shared_ptr<EventListener const> &listener) const {
+    const std::shared_ptr<const EventListener> &listener) const {
   eventListeners_.addListener(listener);
 }
 
@@ -84,7 +84,7 @@ void EventDispatcher::addListener(
  * Removes provided event listener to the event dispatcher.
  */
 void EventDispatcher::removeListener(
-    const std::shared_ptr<EventListener const> &listener) const {
+    const std::shared_ptr<const EventListener> &listener) const {
   eventListeners_.removeListener(listener);
 }
 

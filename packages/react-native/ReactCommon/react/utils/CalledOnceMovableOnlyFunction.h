@@ -40,10 +40,10 @@ class CalledOnceMovableOnlyFunction {
   /*
    * Not copyable.
    */
-  CalledOnceMovableOnlyFunction(CalledOnceMovableOnlyFunction const &other) =
+  CalledOnceMovableOnlyFunction(const CalledOnceMovableOnlyFunction &other) =
       delete;
   CalledOnceMovableOnlyFunction &operator=(
-      CalledOnceMovableOnlyFunction const &other) = delete;
+      const CalledOnceMovableOnlyFunction &other) = delete;
 
   /*
    * Movable.

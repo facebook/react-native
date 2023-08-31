@@ -21,13 +21,13 @@ class RootProps final : public ViewProps {
   RootProps() = default;
   RootProps(
       const PropsParserContext &context,
-      RootProps const &sourceProps,
-      RawProps const &rawProps);
+      const RootProps &sourceProps,
+      const RawProps &rawProps);
   RootProps(
       const PropsParserContext &context,
-      RootProps const &sourceProps,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext);
+      const RootProps &sourceProps,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext);
 
 #pragma mark - Props
 

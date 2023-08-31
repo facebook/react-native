@@ -6,6 +6,7 @@
  */
 
 #include "RuntimeSchedulerCallInvoker.h"
+#include "RuntimeScheduler.h"
 
 #include <utility>
 

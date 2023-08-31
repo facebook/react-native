@@ -30,9 +30,9 @@ class ComponentBuilder final {
   /*
    * Copyable and movable.
    */
-  ComponentBuilder(ComponentBuilder const &componentBuilder) = default;
+  ComponentBuilder(const ComponentBuilder &componentBuilder) = default;
   ComponentBuilder(ComponentBuilder &&componentBuilder) noexcept = default;
-  ComponentBuilder &operator=(ComponentBuilder const &other) = default;
+  ComponentBuilder &operator=(const ComponentBuilder &other) = default;
   ComponentBuilder &operator=(ComponentBuilder &&other) = default;
 
   /*
@@ -48,7 +48,7 @@ class ComponentBuilder final {
   /*
    * Internal, type-erased version of `build`.
    */
-  ShadowNode::Unshared build(ElementFragment const &elementFragment) const;
+  ShadowNode::Unshared build(const ElementFragment &elementFragment) const;
 
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };

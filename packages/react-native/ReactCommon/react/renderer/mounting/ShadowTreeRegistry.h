@@ -50,7 +50,7 @@ class ShadowTreeRegistry final {
    */
   bool visit(
       SurfaceId surfaceId,
-      std::function<void(const ShadowTree &shadowTree)> const &callback) const;
+      const std::function<void(const ShadowTree &shadowTree)> &callback) const;
 
   /*
    * Enumerates all stored shadow trees.
@@ -58,7 +58,7 @@ class ShadowTreeRegistry final {
    * Can be called from any thread.
    */
   void enumerate(
-      std::function<void(const ShadowTree &shadowTree, bool &stop)> const
+      const std::function<void(const ShadowTree &shadowTree, bool &stop)>
           &callback) const;
 
  private:

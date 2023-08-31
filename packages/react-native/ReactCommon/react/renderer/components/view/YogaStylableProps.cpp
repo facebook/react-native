@@ -12,7 +12,6 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/utils/CoreFeatures.h>
-#include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 
 #include "conversions.h"
@@ -21,8 +20,8 @@ namespace facebook::react {
 
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps,
+    const YogaStylableProps &sourceProps,
+    const RawProps &rawProps,
     bool shouldSetRawProps)
     : Props(context, sourceProps, rawProps, shouldSetRawProps),
       yogaStyle(
@@ -37,7 +36,7 @@ YogaStylableProps::YogaStylableProps(
 template <typename T>
 static inline T const getFieldValue(
     const PropsParserContext &context,
-    RawValue const &value,
+    const RawValue &value,
     T const defaultValue) {
   if (value.hasValue()) {
     T res;
@@ -103,8 +102,9 @@ void YogaStylableProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
-  static const auto ygDefaults = YGStyle{};
+    const RawValue &value) {
+  static const auto ygDefaults = yoga::Style{};
+  static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
 
@@ -133,8 +133,6 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
 
-    static const auto defaults = YogaStylableProps{};
-
     // Aliases
     RAW_SET_PROP_SWITCH_CASE(inset, "inset");
     RAW_SET_PROP_SWITCH_CASE(insetBlock, "insetBlock");
@@ -162,7 +160,7 @@ void YogaStylableProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  auto const defaultYogaStyle = YGStyle{};
+  const auto defaultYogaStyle = yoga::Style{};
   return {
       debugStringConvertibleItem(
           "direction", yogaStyle.direction(), defaultYogaStyle.direction()),
@@ -240,8 +238,8 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 
 void YogaStylableProps::convertRawPropAliases(
     const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps) {
+    const YogaStylableProps &sourceProps,
+    const RawProps &rawProps) {
   inset = convertRawProp(
       context,
       rawProps,

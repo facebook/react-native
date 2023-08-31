@@ -260,7 +260,7 @@ void AndroidTextInputProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

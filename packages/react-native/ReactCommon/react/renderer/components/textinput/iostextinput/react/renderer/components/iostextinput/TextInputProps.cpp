@@ -16,8 +16,8 @@ namespace facebook::react {
 
 TextInputProps::TextInputProps(
     const PropsParserContext &context,
-    TextInputProps const &sourceProps,
-    RawProps const &rawProps)
+    const TextInputProps &sourceProps,
+    const RawProps &rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       traits(convertRawProp(context, rawProps, sourceProps.traits, {})),
@@ -110,7 +110,7 @@ void TextInputProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 }

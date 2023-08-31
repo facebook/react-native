@@ -24,7 +24,7 @@ void MutationObserver::observe(
   }
 }
 
-void MutationObserver::unobserve(ShadowNode const &targetShadowNode) {
+void MutationObserver::unobserve(const ShadowNode &targetShadowNode) {
   // We don't know if it's being observed deeply or not, so we need to check
   // both possibilities.
   deeplyObservedShadowNodes_.erase(
@@ -40,7 +40,7 @@ void MutationObserver::unobserve(ShadowNode const &targetShadowNode) {
       std::remove_if(
           shallowlyObservedShadowNodes_.begin(),
           shallowlyObservedShadowNodes_.end(),
-          [&targetShadowNode](auto const shadowNode) {
+          [&targetShadowNode](const auto shadowNode) {
             return ShadowNode::sameFamily(*shadowNode, targetShadowNode);
           }),
       shallowlyObservedShadowNodes_.end());
@@ -52,8 +52,8 @@ bool MutationObserver::isObserving() const {
 }
 
 static ShadowNode::Shared getShadowNodeInTree(
-    ShadowNode const &shadowNode,
-    ShadowNode const &newTree) {
+    const ShadowNode &shadowNode,
+    const ShadowNode &newTree) {
   auto ancestors = shadowNode.getFamily().getAncestors(newTree);
   if (ancestors.empty()) {
     return nullptr;
@@ -64,8 +64,8 @@ static ShadowNode::Shared getShadowNodeInTree(
 }
 
 static ShadowNode::Shared findNodeOfSameFamily(
-    ShadowNode::ListOfShared const &list,
-    ShadowNode const &node) {
+    const ShadowNode::ListOfShared &list,
+    const ShadowNode &node) {
   for (auto &current : list) {
     if (ShadowNode::sameFamily(node, *current)) {
       return current;
@@ -75,8 +75,8 @@ static ShadowNode::Shared findNodeOfSameFamily(
 }
 
 void MutationObserver::recordMutations(
-    RootShadowNode const &oldRootShadowNode,
-    RootShadowNode const &newRootShadowNode,
+    const RootShadowNode &oldRootShadowNode,
+    const RootShadowNode &newRootShadowNode,
     std::vector<const MutationRecord> &recordedMutations) const {
   // This tracks the nodes that have already been processed by this observer,
   // so we avoid unnecessary work and duplicated entries.
@@ -107,8 +107,8 @@ void MutationObserver::recordMutations(
 
 void MutationObserver::recordMutationsInTarget(
     ShadowNode::Shared targetShadowNode,
-    RootShadowNode const &oldRootShadowNode,
-    RootShadowNode const &newRootShadowNode,
+    const RootShadowNode &oldRootShadowNode,
+    const RootShadowNode &newRootShadowNode,
     bool observeSubtree,
     std::vector<const MutationRecord> &recordedMutations,
     SetOfShadowNodePointers &processedNodes) const {
@@ -143,8 +143,8 @@ void MutationObserver::recordMutationsInTarget(
 
 void MutationObserver::recordMutationsInSubtrees(
     ShadowNode::Shared targetShadowNode,
-    ShadowNode const &oldNode,
-    ShadowNode const &newNode,
+    const ShadowNode &oldNode,
+    const ShadowNode &newNode,
     bool observeSubtree,
     std::vector<const MutationRecord> &recordedMutations,
     SetOfShadowNodePointers processedNodes) const {

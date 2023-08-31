@@ -123,6 +123,11 @@
 {
   return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
 }
+
+- (NSURL *)getBundleURL
+{
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+}
 #endif
 
 @end

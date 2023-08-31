@@ -105,7 +105,7 @@ class Entropy final {
     auto spreadResult = std::vector<std::vector<T>>(deviationLimit * 2);
     std::fill(spreadResult.begin(), spreadResult.end(), std::vector<T>{});
 
-    for (auto const &item : items) {
+    for (const auto &item : items) {
       auto position = int(distribution(generator_) + deviationLimit);
       position = std::max(0, std::min(position, deviationLimit * 2));
 
@@ -115,7 +115,7 @@ class Entropy final {
     }
 
     auto result = std::vector<std::vector<T>>{};
-    for (auto const &chunk : spreadResult) {
+    for (const auto &chunk : spreadResult) {
       if (chunk.size() == 0) {
         continue;
       }

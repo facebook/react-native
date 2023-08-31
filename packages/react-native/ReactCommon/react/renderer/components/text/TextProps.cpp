@@ -20,7 +20,7 @@ void TextProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   BaseTextProps::setProp(context, hash, propName, value);
   Props::setProp(context, hash, propName, value);
 }

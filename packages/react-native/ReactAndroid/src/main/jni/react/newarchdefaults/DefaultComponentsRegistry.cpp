@@ -14,13 +14,13 @@
 
 namespace facebook::react {
 
-std::function<void(std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
+std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
 
 DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory *delegate)
     : delegate_(delegate) {}
 
-std::shared_ptr<ComponentDescriptorProviderRegistry const>
+std::shared_ptr<const ComponentDescriptorProviderRegistry>
 DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
@@ -37,8 +37,8 @@ DefaultComponentsRegistry::initHybrid(
   auto instance = makeCxxInstance(delegate);
 
   auto buildRegistryFunction =
-      [](EventDispatcher::Weak const &eventDispatcher,
-         ContextContainer::Shared const &contextContainer)
+      [](const EventDispatcher::Weak &eventDispatcher,
+         const ContextContainer::Shared &contextContainer)
       -> ComponentDescriptorRegistry::Shared {
     auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(

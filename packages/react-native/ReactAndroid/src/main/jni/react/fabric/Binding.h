@@ -104,15 +104,15 @@ class Binding : public jni::HybridClass<Binding>,
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args) override;
+      const std::string &commandName,
+      const folly::dynamic &args) override;
 
   void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
-      std::string const &eventType) override;
+      const std::string &eventType) override;
 
   void schedulerDidSetIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView &shadowView,
       bool isJSResponder,
       bool blockNativeResponder) override;
 

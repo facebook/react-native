@@ -121,7 +121,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
-  for (auto const &mountItem : cppCommonMountItems) {
+  for (const auto &mountItem : cppCommonMountItems) {
     const auto &mountItemType = mountItem.type;
 
     if (lastType == mountItemType) {
@@ -199,7 +199,7 @@ static inline void writeIntBufferTypePreamble(
 }
 
 // TODO: this method will be removed when binding for components are code-gen
-jni::local_ref<jstring> getPlatformComponentName(ShadowView const &shadowView) {
+jni::local_ref<jstring> getPlatformComponentName(const ShadowView &shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
   if (scrollViewComponentName == shadowView.componentName) {
     const auto &newViewProps =
@@ -228,8 +228,8 @@ static inline float scale(Float value, Float pointScaleFactor) {
 }
 
 jni::local_ref<jobject> FabricMountingManager::getProps(
-    ShadowView const &oldShadowView,
-    ShadowView const &newShadowView) {
+    const ShadowView &oldShadowView,
+    const ShadowView &newShadowView) {
   if (CoreFeatures::enableMapBuffer &&
       newShadowView.traits.check(
           ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
@@ -250,7 +250,7 @@ void FabricMountingManager::executeMount(
     const MountingTransaction &transaction) {
   SystraceSection section("FabricMountingManager::executeMount");
 
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+  std::scoped_lock lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
 
   auto env = jni::Environment::current();
@@ -274,10 +274,16 @@ void FabricMountingManager::executeMount(
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
-    auto const &allocatedViewTags =
+    auto defaultAllocatedViews = butter::set<Tag>{};
+    // Do not remove `defaultAllocatedViews` or initialize `butter::set<Tag>{}`
+    // inline in below ternary expression -
+    // if falsy operand is a value type, the compiler will decide the expression
+    // to be a value type, an unnecessary (sometimes expensive) copy will happen
+    // as a result.
+    const auto &allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
-        : butter::set<Tag>{};
+        : defaultAllocatedViews;
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
@@ -459,7 +465,7 @@ void FabricMountingManager::executeMount(
 
     if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
       auto &views = allocatedViewsIterator->second;
-      for (auto const &mutation : mutations) {
+      for (const auto &mutation : mutations) {
         switch (mutation.type) {
           case ShadowViewMutation::Create:
             views.insert(mutation.newChildShadowView.tag);
@@ -815,7 +821,7 @@ void FabricMountingManager::executeMount(
 
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
-    ShadowView const &shadowView) {
+    const ShadowView &shadowView) {
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
@@ -866,9 +872,9 @@ void FabricMountingManager::preallocateShadowView(
 }
 
 void FabricMountingManager::dispatchCommand(
-    ShadowView const &shadowView,
-    std::string const &commandName,
-    folly::dynamic const &args) {
+    const ShadowView &shadowView,
+    const std::string &commandName,
+    const folly::dynamic &args) {
   static auto dispatchCommand =
       JFabricUIManager::javaClassStatic()
           ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
@@ -885,8 +891,8 @@ void FabricMountingManager::dispatchCommand(
 }
 
 void FabricMountingManager::sendAccessibilityEvent(
-    ShadowView const &shadowView,
-    std::string const &eventType) {
+    const ShadowView &shadowView,
+    const std::string &eventType) {
   static auto sendAccessibilityEventFromJS =
       JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jstring)>(
           "sendAccessibilityEventFromJS");
@@ -897,7 +903,7 @@ void FabricMountingManager::sendAccessibilityEvent(
 }
 
 void FabricMountingManager::setIsJSResponder(
-    ShadowView const &shadowView,
+    const ShadowView &shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
   static auto setJSResponder =

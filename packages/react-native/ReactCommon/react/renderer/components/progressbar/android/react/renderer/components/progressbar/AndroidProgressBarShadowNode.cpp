@@ -24,8 +24,8 @@ void AndroidProgressBarShadowNode::setAndroidProgressBarMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidProgressBarShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext & /*layoutContext*/,
+    const LayoutConstraints &layoutConstraints) const {
   return measurementsManager_->measure(
       getSurfaceId(), getConcreteProps(), layoutConstraints);
 }

@@ -22,12 +22,12 @@ static inline void interpolateViewProps(
     const Props::Shared &oldPropsShared,
     const Props::Shared &newPropsShared,
     Props::Shared &interpolatedPropsShared) {
-  ViewProps const *oldViewProps =
-      static_cast<ViewProps const *>(oldPropsShared.get());
-  ViewProps const *newViewProps =
-      static_cast<ViewProps const *>(newPropsShared.get());
+  const ViewProps *oldViewProps =
+      static_cast<const ViewProps *>(oldPropsShared.get());
+  const ViewProps *newViewProps =
+      static_cast<const ViewProps *>(newPropsShared.get());
   ViewProps *interpolatedProps = const_cast<ViewProps *>(
-      static_cast<ViewProps const *>(interpolatedPropsShared.get()));
+      static_cast<const ViewProps *>(interpolatedPropsShared.get()));
 
   interpolatedProps->opacity = oldViewProps->opacity +
       (newViewProps->opacity - oldViewProps->opacity) * animationProgress;

@@ -14,7 +14,7 @@
 namespace facebook::react {
 
 AsyncEventBeat::AsyncEventBeat(
-    EventBeat::SharedOwnerBox const &ownerBox,
+    const EventBeat::SharedOwnerBox &ownerBox,
     EventBeatManager *eventBeatManager,
     RuntimeExecutor runtimeExecutor,
     jni::global_ref<jobject> javaUIManager)

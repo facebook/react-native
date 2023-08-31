@@ -65,7 +65,7 @@ ConnectionDemux::~ConnectionDemux() = default;
 DebugSessionToken ConnectionDemux::enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   // TODO(#22976087): workaround for ComponentScript contexts never being
   // destroyed.
@@ -91,7 +91,7 @@ DebugSessionToken ConnectionDemux::enableDebugging(
 }
 
 void ConnectionDemux::disableDebugging(DebugSessionToken session) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   if (conns_.find(session) == conns_.end()) {
     return;
   }

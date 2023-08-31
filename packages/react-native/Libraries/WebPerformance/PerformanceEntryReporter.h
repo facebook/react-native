@@ -68,8 +68,8 @@ constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
 
 class PerformanceEntryReporter : public EventLogger {
  public:
-  PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
-  void operator=(PerformanceEntryReporter const &) = delete;
+  PerformanceEntryReporter(const PerformanceEntryReporter &) = delete;
+  void operator=(const PerformanceEntryReporter &) = delete;
 
   // NOTE: This class is not thread safe, make sure that the calls are made from
   // the same thread.

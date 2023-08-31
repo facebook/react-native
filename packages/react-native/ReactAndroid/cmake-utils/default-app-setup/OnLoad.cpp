@@ -36,7 +36,7 @@
 namespace facebook::react {
 
 void registerComponents(
-    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
+    std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
   // Custom Fabric Components go here. You can register custom
   // components coming from your App or from 3rd party libraries here.
   //

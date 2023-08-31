@@ -62,7 +62,7 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  void preparse(RawProps const &rawProps) const noexcept;
+  void preparse(const RawProps &rawProps) const noexcept;
 
   /*
    * Non-generic part of `prepare`.
@@ -72,17 +72,17 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key)
+  const RawValue *at(const RawProps &rawProps, const RawPropsKey &key)
       const noexcept;
 
   /**
    * To be used by RawProps only. Value iterator functions.
    */
   void iterateOverValues(
-      RawProps const &rawProps,
-      std::function<
-          void(RawPropsPropNameHash, const char *, RawValue const &)> const
-          &visit) const;
+      const RawProps &rawProps,
+      const std::function<
+          void(RawPropsPropNameHash, const char *, RawValue const &)> &visit)
+      const;
 
   mutable butter::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};

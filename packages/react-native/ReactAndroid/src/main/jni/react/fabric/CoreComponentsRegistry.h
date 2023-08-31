@@ -24,7 +24,7 @@ class CoreComponentsRegistry
 
   explicit CoreComponentsRegistry(ComponentFactory *delegate);
 
-  static std::shared_ptr<ComponentDescriptorProviderRegistry const>
+  static std::shared_ptr<const ComponentDescriptorProviderRegistry>
   sharedProviderRegistry();
 
  private:

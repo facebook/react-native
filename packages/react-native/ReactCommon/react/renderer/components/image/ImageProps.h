@@ -25,7 +25,7 @@ class ImageProps final : public ViewProps {
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
 #pragma mark - Props
 

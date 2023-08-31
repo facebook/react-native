@@ -73,7 +73,7 @@ void NativeMutationObserver::connect(
 
   // This should always be called from the JS thread, as it's unsafe to call
   // into JS otherwise (via `getPublicInstanceFromInstanceHandle`).
-  getPublicInstanceFromShadowNode_ = [&](ShadowNode const &shadowNode) {
+  getPublicInstanceFromShadowNode_ = [&](const ShadowNode &shadowNode) {
     auto instanceHandle = shadowNode.getInstanceHandle(runtime);
     if (!instanceHandle.isObject() ||
         !getPublicInstanceFromInstanceHandle_.isObject() ||
@@ -88,7 +88,7 @@ void NativeMutationObserver::connect(
 
   notifyMutationObservers_ = std::move(notifyMutationObservers);
 
-  auto onMutationsCallback = [&](std::vector<MutationRecord const> &records) {
+  auto onMutationsCallback = [&](std::vector<const MutationRecord> &records) {
     return onMutations(records);
   };
 
@@ -114,11 +114,11 @@ std::vector<NativeMutationRecord> NativeMutationObserver::takeRecords(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    std::vector<ShadowNode::Shared> const &shadowNodes) const {
+    const std::vector<ShadowNode::Shared> &shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 
-  for (auto const &shadowNode : shadowNodes) {
+  for (const auto &shadowNode : shadowNodes) {
     publicInstances.push_back(getPublicInstanceFromShadowNode_(*shadowNode));
   }
 
@@ -129,7 +129,7 @@ void NativeMutationObserver::onMutations(
     std::vector<const MutationRecord> &records) {
   SystraceSection s("NativeMutationObserver::onMutations");
 
-  for (auto const &record : records) {
+  for (const auto &record : records) {
     pendingRecords_.emplace_back(NativeMutationRecord{
         record.mutationObserverId,
         // FIXME(T157129303) Instead of assuming we can call into JS from here,

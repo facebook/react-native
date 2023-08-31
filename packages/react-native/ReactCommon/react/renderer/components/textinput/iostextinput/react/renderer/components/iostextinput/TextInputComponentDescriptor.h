@@ -18,14 +18,14 @@ namespace facebook::react {
 class TextInputComponentDescriptor final
     : public ConcreteComponentDescriptor<TextInputShadowNode> {
  public:
-  TextInputComponentDescriptor(ComponentDescriptorParameters const &parameters)
+  TextInputComponentDescriptor(const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor<TextInputShadowNode>(parameters) {
     textLayoutManager_ =
-        std::make_shared<TextLayoutManager const>(contextContainer_);
+        std::make_shared<const TextLayoutManager>(contextContainer_);
   }
 
  protected:
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto &concreteShadowNode = static_cast<TextInputShadowNode &>(*shadowNode);
@@ -33,7 +33,7 @@ class TextInputComponentDescriptor final
   }
 
  private:
-  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react

@@ -56,8 +56,8 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:

@@ -17,7 +17,7 @@
 
 namespace facebook::react {
 
-auto contextContainer = std::make_shared<ContextContainer const>();
+auto contextContainer = std::make_shared<const ContextContainer>();
 auto eventDispatcher = std::shared_ptr<EventDispatcher>{nullptr};
 auto viewComponentDescriptor = ViewComponentDescriptor{
     ComponentDescriptorParameters{eventDispatcher, contextContainer}};

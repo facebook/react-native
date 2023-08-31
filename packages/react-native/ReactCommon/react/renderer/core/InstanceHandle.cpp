@@ -11,7 +11,7 @@ namespace facebook::react {
 
 InstanceHandle::InstanceHandle(
     jsi::Runtime &runtime,
-    jsi::Value const &instanceHandle,
+    const jsi::Value &instanceHandle,
     Tag tag)
     : weakInstanceHandle_(
           jsi::WeakObject(runtime, instanceHandle.asObject(runtime))),

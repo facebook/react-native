@@ -11,7 +11,6 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -47,7 +46,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(ComponentDescriptorParameters const &parameters)
+  ConcreteComponentDescriptor(const ComponentDescriptorParameters &parameters)
       : ComponentDescriptor(parameters) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
@@ -66,7 +65,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   ShadowNode::Shared createShadowNode(
       const ShadowNodeFragment &fragment,
-      ShadowNodeFamily::Shared const &family) const override {
+      const ShadowNodeFamily::Shared &family) const override {
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
@@ -117,7 +116,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     if (CoreFeatures::enablePropIteratorSetter) {
       rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
                                      const char *propName,
-                                     RawValue const &fn) {
+                                     const RawValue &fn) {
         shadowNodeProps.get()->setProp(context, hash, propName, fn);
       });
     }
@@ -125,47 +124,23 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNodeProps;
   };
 
-  Props::Shared interpolateProps(
-      const PropsParserContext &context,
-      Float animationProgress,
-      const Props::Shared &props,
-      const Props::Shared &newProps) const override {
-#ifdef ANDROID
-    // On Android only, the merged props should have the same RawProps as the
-    // final props struct
-    Props::Shared interpolatedPropsShared =
-        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
-                             : cloneProps(context, newProps, {}));
-#else
-    Props::Shared interpolatedPropsShared = cloneProps(context, newProps, {});
-#endif
-
-    if (ConcreteShadowNode::BaseTraits().check(
-            ShadowNodeTraits::Trait::ViewKind)) {
-      interpolateViewProps(
-          animationProgress, props, newProps, interpolatedPropsShared);
-    }
-
-    return interpolatedPropsShared;
-  };
-
   virtual State::Shared createInitialState(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const &family) const override {
+      const Props::Shared &props,
+      const ShadowNodeFamily::Shared &family) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        std::make_shared<ConcreteStateData const>(
+        std::make_shared<const ConcreteStateData>(
             ConcreteShadowNode::initialStateData(props, family, *this)),
         family);
   }
 
   virtual State::Shared createState(
-      ShadowNodeFamily const &family,
-      StateData::Shared const &data) const override {
+      const ShadowNodeFamily &family,
+      const StateData::Shared &data) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
@@ -173,13 +148,13 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     react_native_assert(data && "Provided `data` is nullptr.");
 
-    return std::make_shared<ConcreteState const>(
-        std::static_pointer_cast<ConcreteStateData const>(data),
+    return std::make_shared<const ConcreteState>(
+        std::static_pointer_cast<const ConcreteStateData>(data),
         *family.getMostRecentState());
   }
 
   ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment) const override {
+      const ShadowNodeFamilyFragment &fragment) const override {
     return std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
             fragment.tag, fragment.surfaceId, fragment.instanceHandle},
@@ -188,8 +163,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   SharedEventEmitter createEventEmitter(
-      InstanceHandle::Shared const &instanceHandle) const override {
-    return std::make_shared<ConcreteEventEmitter const>(
+      const InstanceHandle::Shared &instanceHandle) const override {
+    return std::make_shared<const ConcreteEventEmitter>(
         std::make_shared<EventTarget>(instanceHandle), eventDispatcher_);
   }
 
@@ -206,7 +181,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
    *   - Set `ShadowNode`'s size from state in
    * `ModalHostViewComponentDescriptor`.
    */
-  virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
+  virtual void adopt(const ShadowNode::Unshared &shadowNode) const {
     // Default implementation does nothing.
     react_native_assert(
         shadowNode->getComponentHandle() == getComponentHandle());

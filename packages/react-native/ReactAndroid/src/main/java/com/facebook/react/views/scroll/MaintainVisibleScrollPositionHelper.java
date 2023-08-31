@@ -103,6 +103,10 @@ public class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup &
     }
 
     View firstVisibleView = mFirstVisibleView.get();
+    if (firstVisibleView == null) {
+      return;
+    }
+
     Rect newFrame = new Rect();
     firstVisibleView.getHitRect(newFrame);
 

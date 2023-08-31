@@ -26,9 +26,11 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.source_files           = "**/*.{h,m}"
+  s.source_files           = "**/*.{h,m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
+  s.framework              = ["MobileCoreServices"]
 
+  s.dependency "Yoga"
   s.dependency "React-Core/RCTTextHeaders", version
 end

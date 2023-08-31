@@ -25,7 +25,7 @@ void ImageShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto imageSource = getImageSource();
-  auto const &currentState = getStateData();
+  const auto &currentState = getStateData();
   bool hasSameRadius =
       getConcreteProps().blurRadius == currentState.getBlurRadius();
   bool hasSameImageSource = currentState.getImageSource() == imageSource;

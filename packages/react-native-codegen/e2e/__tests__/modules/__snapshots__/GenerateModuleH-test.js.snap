@@ -320,7 +320,8 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 };
-  #pragma mark - NativeEnumTurboModuleBaseStateType
+  
+#pragma mark - NativeEnumTurboModuleBaseStateType
 
 template <typename P0>
 struct NativeEnumTurboModuleBaseStateType {
@@ -348,14 +349,15 @@ struct NativeEnumTurboModuleBaseStateTypeBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativeEnumTurboModuleBaseStateType<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const NativeEnumTurboModuleBaseStateType<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
+    return result;
+  }
+};
+
 
 
 #pragma mark - NativeEnumTurboModuleBaseStateTypeWithEnums
@@ -391,33 +393,37 @@ struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
   static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
     return bridging::toJs(rt, value);
   }
+
   static jsi::String regularToJs(jsi::Runtime &rt, P1 value) {
     return bridging::toJs(rt, value);
   }
+
   static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
     return bridging::toJs(rt, value);
   }
+
   static int numToJs(jsi::Runtime &rt, P3 value) {
     return bridging::toJs(rt, value);
   }
+
   static double fractionToJs(jsi::Runtime &rt, P4 value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
+      jsi::Runtime &rt,
+      const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
     result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
-          return result;
-        }
-      };
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeEnumTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -784,7 +790,8 @@ private:
 };
 
 
-  #pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+  
+#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleBaseSomeObj {
@@ -811,23 +818,24 @@ struct NativePartialAnnotationTurboModuleBaseSomeObjBridging {
   static jsi::String aToJs(jsi::Runtime &rt, P0 value) {
     return bridging::toJs(rt, value);
   }
+
   static bool bToJs(jsi::Runtime &rt, P1 value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
+      jsi::Runtime &rt,
+      const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
     if (value.b) {
-            result.setProperty(rt, \\"b\\", bridging::toJs(rt, value.b.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      result.setProperty(rt, \\"b\\", bridging::toJs(rt, value.b.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativePartialAnnotationTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -957,7 +965,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleBaseAnimal
+  
+#pragma mark - SampleTurboModuleBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleBaseAnimal {
@@ -985,14 +994,14 @@ struct SampleTurboModuleBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -1148,7 +1157,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleArraysBaseAnimal
+  
+#pragma mark - SampleTurboModuleArraysBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleArraysBaseAnimal {
@@ -1176,14 +1186,14 @@ struct SampleTurboModuleArraysBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleArraysBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleArraysBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleArraysCxxSpecJSI : public TurboModule {
 protected:
@@ -1339,7 +1349,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleNullableBaseAnimal
+  
+#pragma mark - SampleTurboModuleNullableBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableBaseAnimal {
@@ -1367,14 +1378,14 @@ struct SampleTurboModuleNullableBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleNullableBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleNullableBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleNullableCxxSpecJSI : public TurboModule {
 protected:
@@ -1530,7 +1541,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+  
+#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableAndOptionalBaseAnimal {
@@ -1558,16 +1570,16 @@ struct SampleTurboModuleNullableAndOptionalBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          if (value.name) {
-            result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    if (value.name) {
+      result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI : public TurboModule {
 protected:
@@ -1723,7 +1735,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleOptionalBaseAnimal
+  
+#pragma mark - SampleTurboModuleOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleOptionalBaseAnimal {
@@ -1751,16 +1764,16 @@ struct SampleTurboModuleOptionalBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleOptionalBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          if (value.name) {
-            result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleOptionalBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    if (value.name) {
+      result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleOptionalCxxSpecJSI : public TurboModule {
 protected:
@@ -2295,7 +2308,8 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 };
-  #pragma mark - NativeEnumTurboModuleBaseStateType
+  
+#pragma mark - NativeEnumTurboModuleBaseStateType
 
 template <typename P0>
 struct NativeEnumTurboModuleBaseStateType {
@@ -2323,14 +2337,15 @@ struct NativeEnumTurboModuleBaseStateTypeBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativeEnumTurboModuleBaseStateType<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const NativeEnumTurboModuleBaseStateType<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
+    return result;
+  }
+};
+
 
 
 #pragma mark - NativeEnumTurboModuleBaseStateTypeWithEnums
@@ -2366,33 +2381,37 @@ struct NativeEnumTurboModuleBaseStateTypeWithEnumsBridging {
   static jsi::String stateToJs(jsi::Runtime &rt, P0 value) {
     return bridging::toJs(rt, value);
   }
+
   static jsi::String regularToJs(jsi::Runtime &rt, P1 value) {
     return bridging::toJs(rt, value);
   }
+
   static jsi::String strToJs(jsi::Runtime &rt, P2 value) {
     return bridging::toJs(rt, value);
   }
+
   static int numToJs(jsi::Runtime &rt, P3 value) {
     return bridging::toJs(rt, value);
   }
+
   static double fractionToJs(jsi::Runtime &rt, P4 value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
+      jsi::Runtime &rt,
+      const NativeEnumTurboModuleBaseStateTypeWithEnums<P0, P1, P2, P3, P4> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"state\\", bridging::toJs(rt, value.state, jsInvoker));
     result.setProperty(rt, \\"regular\\", bridging::toJs(rt, value.regular, jsInvoker));
     result.setProperty(rt, \\"str\\", bridging::toJs(rt, value.str, jsInvoker));
     result.setProperty(rt, \\"num\\", bridging::toJs(rt, value.num, jsInvoker));
     result.setProperty(rt, \\"fraction\\", bridging::toJs(rt, value.fraction, jsInvoker));
-          return result;
-        }
-      };
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeEnumTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -2759,7 +2778,8 @@ private:
 };
 
 
-  #pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
+  
+#pragma mark - NativePartialAnnotationTurboModuleBaseSomeObj
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleBaseSomeObj {
@@ -2786,23 +2806,24 @@ struct NativePartialAnnotationTurboModuleBaseSomeObjBridging {
   static jsi::String aToJs(jsi::Runtime &rt, P0 value) {
     return bridging::toJs(rt, value);
   }
+
   static bool bToJs(jsi::Runtime &rt, P1 value) {
     return bridging::toJs(rt, value);
   }
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
+      jsi::Runtime &rt,
+      const NativePartialAnnotationTurboModuleBaseSomeObj<P0, P1> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
     if (value.b) {
-            result.setProperty(rt, \\"b\\", bridging::toJs(rt, value.b.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      result.setProperty(rt, \\"b\\", bridging::toJs(rt, value.b.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativePartialAnnotationTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -2932,7 +2953,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleBaseAnimal
+  
+#pragma mark - SampleTurboModuleBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleBaseAnimal {
@@ -2960,14 +2982,14 @@ struct SampleTurboModuleBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
@@ -3123,7 +3145,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleArraysBaseAnimal
+  
+#pragma mark - SampleTurboModuleArraysBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleArraysBaseAnimal {
@@ -3151,14 +3174,14 @@ struct SampleTurboModuleArraysBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleArraysBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleArraysBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleArraysCxxSpecJSI : public TurboModule {
 protected:
@@ -3314,7 +3337,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleNullableBaseAnimal
+  
+#pragma mark - SampleTurboModuleNullableBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableBaseAnimal {
@@ -3342,14 +3366,14 @@ struct SampleTurboModuleNullableBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleNullableBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleNullableBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name, jsInvoker));
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleNullableCxxSpecJSI : public TurboModule {
 protected:
@@ -3505,7 +3529,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
+  
+#pragma mark - SampleTurboModuleNullableAndOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleNullableAndOptionalBaseAnimal {
@@ -3533,16 +3558,16 @@ struct SampleTurboModuleNullableAndOptionalBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          if (value.name) {
-            result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleNullableAndOptionalBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    if (value.name) {
+      result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI : public TurboModule {
 protected:
@@ -3698,7 +3723,8 @@ private:
 };
 
 
-  #pragma mark - SampleTurboModuleOptionalBaseAnimal
+  
+#pragma mark - SampleTurboModuleOptionalBaseAnimal
 
 template <typename P0>
 struct SampleTurboModuleOptionalBaseAnimal {
@@ -3726,16 +3752,16 @@ struct SampleTurboModuleOptionalBaseAnimalBridging {
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const SampleTurboModuleOptionalBaseAnimal<P0> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-          if (value.name) {
-            result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
-          }
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const SampleTurboModuleOptionalBaseAnimal<P0> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    if (value.name) {
+      result.setProperty(rt, \\"name\\", bridging::toJs(rt, value.name.value(), jsInvoker));
+    }
+    return result;
+  }
+};
 
 class JSI_EXPORT NativeSampleTurboModuleOptionalCxxSpecJSI : public TurboModule {
 protected:

@@ -17,8 +17,10 @@
 
 // TODO: Reconcile missing layoutContext functionality from callbacks in the C
 // API and use that
-#include <yoga/YGNode.h>
+#include <yoga/node/Node.h>
 
+using namespace facebook;
+using namespace facebook::yoga;
 using namespace facebook::yoga::vanillajni;
 
 static inline ScopedLocalRef<jobject> YGNodeJobject(
@@ -139,7 +141,9 @@ static int YGJNILogFunc(
     void* /*layoutContext*/,
     const char* format,
     va_list args) {
-  int result = vsnprintf(NULL, 0, format, args);
+  va_list argsCopy;
+  va_copy(argsCopy, args);
+  int result = vsnprintf(nullptr, 0, format, argsCopy);
   std::vector<char> buffer(1 + result);
   vsnprintf(buffer.data(), buffer.size(), format, args);
 
@@ -192,7 +196,7 @@ static void jni_YGConfigSetLoggerJNI(
     }
 
     *context = newGlobalRef(env, logger);
-    config->setLogger(YGJNILogFunc);
+    static_cast<yoga::Config*>(config)->setLogger(YGJNILogFunc);
   } else {
     if (context != nullptr) {
       delete context;
@@ -280,8 +284,7 @@ static void YGTransferLayoutOutputsRecursive(
     JNIEnv* env,
     jobject thiz,
     YGNodeRef root,
-    void* layoutContext,
-    bool shouldCleanLocalRef) {
+    void* layoutContext) {
   if (!YGNodeGetHasNewLayout(root)) {
     return;
   }
@@ -335,28 +338,26 @@ static void YGTransferLayoutOutputsRecursive(
     arr[borderStartIndex + 3] = YGNodeLayoutGetBorder(root, YGEdgeBottom);
   }
 
-  // Don't change this field name without changing the name of the field in
-  // Database.java
-  auto objectClass = facebook::yoga::vanillajni::make_local_ref(
-      env, env->GetObjectClass(obj.get()));
-  static const jfieldID arrField = facebook::yoga::vanillajni::getFieldId(
-      env, objectClass.get(), "arr", "[F");
+  // Create scope to make sure to release any local refs created here
+  {
+    // Don't change this field name without changing the name of the field in
+    // Database.java
+    auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+        env, env->GetObjectClass(obj.get()));
+    static const jfieldID arrField = facebook::yoga::vanillajni::getFieldId(
+        env, objectClass.get(), "arr", "[F");
 
-  ScopedLocalRef<jfloatArray> arrFinal =
-      make_local_ref(env, env->NewFloatArray(arrSize));
-  env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
-  env->SetObjectField(obj.get(), arrField, arrFinal.get());
-
-  if (shouldCleanLocalRef) {
-    objectClass.reset();
-    arrFinal.reset();
+    ScopedLocalRef<jfloatArray> arrFinal =
+        make_local_ref(env, env->NewFloatArray(arrSize));
+    env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
+    env->SetObjectField(obj.get(), arrField, arrFinal.get());
   }
 
   YGNodeSetHasNewLayout(root, false);
 
   for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
     YGTransferLayoutOutputsRecursive(
-        env, thiz, YGNodeGetChild(root, i), layoutContext, shouldCleanLocalRef);
+        env, thiz, YGNodeGetChild(root, i), layoutContext);
   }
 }
 
@@ -378,17 +379,13 @@ static void jni_YGNodeCalculateLayoutJNI(
     }
 
     const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
-    const bool shouldCleanLocalRef =
-        root->getConfig()->isExperimentalFeatureEnabled(
-            YGExperimentalFeatureFixJNILocalRefOverflows);
     YGNodeCalculateLayoutWithContext(
         root,
         static_cast<float>(width),
         static_cast<float>(height),
         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
         layoutContext);
-    YGTransferLayoutOutputsRecursive(
-        env, obj, root, layoutContext, shouldCleanLocalRef);
+    YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
   } catch (const YogaJniException& jniException) {
     ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
     if (throwable.get()) {
@@ -691,7 +688,7 @@ static void jni_YGNodeSetHasMeasureFuncJNI(
     jobject /*obj*/,
     jlong nativePointer,
     jboolean hasMeasureFunc) {
-  _jlong2YGNodeRef(nativePointer)
+  static_cast<yoga::Node*>(_jlong2YGNodeRef(nativePointer))
       ->setMeasureFunc(hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
 }
 
@@ -718,7 +715,7 @@ static void jni_YGNodeSetHasBaselineFuncJNI(
     jobject /*obj*/,
     jlong nativePointer,
     jboolean hasBaselineFunc) {
-  _jlong2YGNodeRef(nativePointer)
+  static_cast<yoga::Node*>(_jlong2YGNodeRef(nativePointer))
       ->setBaselineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 

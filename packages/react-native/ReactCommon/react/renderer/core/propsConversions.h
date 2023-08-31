@@ -26,7 +26,7 @@ namespace facebook::react {
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     T &result,
     T defaultValue) {
   if (!rawValue.hasValue()) {
@@ -40,7 +40,7 @@ void fromRawValue(
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     T &result) {
   result = (T)rawValue;
 }
@@ -48,7 +48,7 @@ void fromRawValue(
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     std::optional<T> &result) {
   T resultValue;
   fromRawValue(context, rawValue, resultValue);
@@ -58,7 +58,7 @@ void fromRawValue(
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     std::vector<T> &result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
@@ -84,7 +84,7 @@ void fromRawValue(
 template <typename T>
 void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     std::vector<std::vector<T>> &result) {
   if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
     auto items = (std::vector<std::vector<RawValue>>)rawValue;
@@ -110,12 +110,12 @@ void fromRawValue(
 template <typename T, typename U = T>
 T convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *name,
+    const RawProps &rawProps,
+    const char *name,
     T const &sourceValue,
     U const &defaultValue,
-    char const *namePrefix = nullptr,
-    char const *nameSuffix = nullptr) {
+    const char *namePrefix = nullptr,
+    const char *nameSuffix = nullptr) {
   const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
   if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
