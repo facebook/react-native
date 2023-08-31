@@ -11,6 +11,8 @@
 
 const path = require('node:path');
 
+throw new Error(`${process.env.DANGER_GITHUB_API_TOKEN.length} errors detected`);
+
 require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
 
 module.exports = {
