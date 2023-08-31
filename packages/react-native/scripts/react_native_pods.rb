@@ -125,7 +125,7 @@ def use_react_native! (
   pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
 
   if hermes_enabled
-    setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
+    setup_hermes!(:react_native_path => prefix)
   else
     setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
