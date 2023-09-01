@@ -10,9 +10,9 @@
 def setup_bridgeless!(react_native_path: "../node_modules/react-native", use_hermes: true)
     pod "React-jsitracing", :path => "#{react_native_path}/ReactCommon/hermes/executor/"
     pod "React-runtimescheduler", :path => "#{react_native_path}/ReactCommon/react/renderer/runtimescheduler"
-    pod 'React-BridgelessCore', :path => "#{react_native_path}/ReactCommon/react/runtime"
-    pod 'React-BridgelessApple', :path => "#{react_native_path}/ReactCommon/react/runtime/platform/ios"
+    pod 'React-RuntimeCore', :path => "#{react_native_path}/ReactCommon/react/runtime"
+    pod 'React-RuntimeApple', :path => "#{react_native_path}/ReactCommon/react/runtime/platform/ios"
     if use_hermes
-        pod 'React-BridgelessHermes', :path => "#{react_native_path}/ReactCommon/react/runtime"
+        pod 'React-RuntimeHermes', :path => "#{react_native_path}/ReactCommon/react/runtime"
     end
 end

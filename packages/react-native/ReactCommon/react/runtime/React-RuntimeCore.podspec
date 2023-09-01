@@ -22,17 +22,18 @@ folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-BridgelessHermes"
+  s.name                   = "React-RuntimeCore"
   s.version                = version
-  s.summary                = "Bridgeless for React Native."
+  s.summary                = "The React Native Runtime."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.source_files           = "hermes/*.{cpp,h}"
-  s.header_dir             = "react/runtime/hermes"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\"",
+  s.source_files           = "*.{cpp,h}", "nativeviewconfig/*.{cpp,h}"
+  s.exclude_files          = "iostests/*", "tests/**/*.{cpp,h}"
+  s.header_dir             = "react/runtime"
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"${PODS_TARGET_SRCROOT}/../..\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -40,18 +41,22 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'
-    s.module_name             = 'React_BridgelessHermes'
+    s.module_name             = 'React_RuntimeCore'
   end
 
   s.dependency folly_dep_name, folly_version
+  s.dependency "React-jsiexecutor"
+  s.dependency "React-cxxreact"
+  s.dependency "React-runtimeexecutor"
+  s.dependency "glog"
   s.dependency "React-jsi"
-  s.dependency "React-nativeconfig"
-  s.dependency "React-jsitracing"
+  s.dependency "React-jserrorhandler"
+  s.dependency "React-runtimescheduler"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   else
     s.dependency "React-jsc"
-    s.exclude_files = "hermes/*.{cpp,h}"
   end
+
 end
