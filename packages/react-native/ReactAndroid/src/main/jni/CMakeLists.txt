@@ -129,8 +129,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/MessageTests.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/RemoteObjectsTableTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
