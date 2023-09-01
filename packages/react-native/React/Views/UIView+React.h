@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTTransformOrigin.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
@@ -103,6 +104,13 @@
 @property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
 @property (nonatomic, readonly) CGRect reactContentFrame;
+
+/**
+ * The anchorPoint property doesn't work in the same way as on web - updating it updates the frame.
+ * To work around this, we take both the transform and the transform-origin, and compute it ourselves
+ */
+@property (nonatomic, assign) CATransform3D reactTransform;
+@property (nonatomic, assign) RCTTransformOrigin reactTransformOrigin;
 
 /**
  * The (sub)view which represents this view in terms of accessibility.
