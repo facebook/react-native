@@ -41,7 +41,7 @@ exports.examples = [
         views[i] = (
           <View key={i} style={styles.row} collapsable={false}>
             <View style={styles.touchable_area} collapsable={false}>
-              <Text>I am row {i}</Text>
+              <Text testID="row_js_responder_handler">I am row {i}</Text>
             </View>
           </View>
         );

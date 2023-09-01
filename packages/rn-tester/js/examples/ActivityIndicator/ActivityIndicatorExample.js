@@ -73,6 +73,8 @@ exports.examples = [
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
           color="white"
+          testID="default_activity_indicator"
+          accessibilityLabel="Wait for content to load!"
         />
       );
     },
