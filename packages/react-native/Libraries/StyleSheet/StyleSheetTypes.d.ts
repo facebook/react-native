@@ -196,6 +196,8 @@ export interface TransformsStyle {
       >[]
     | string
     | undefined;
+  transformOrigin?: Array<string | number> | string | undefined;
+
   /**
    * @deprecated Use matrix in transform prop instead.
    */

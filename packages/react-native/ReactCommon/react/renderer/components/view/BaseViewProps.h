@@ -55,6 +55,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Transform
   Transform transform{};
+  TransformOrigin transformOrigin{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};
@@ -75,9 +76,8 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(const LayoutMetrics &layoutMetrics) const;
+  Transform resolveTransform(const LayoutMetrics &layoutMetrics) const;
   bool getClipsContentToBounds() const;
-
-#pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;

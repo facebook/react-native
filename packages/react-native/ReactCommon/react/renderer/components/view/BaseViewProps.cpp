@@ -18,6 +18,36 @@
 
 namespace facebook::react {
 
+namespace {
+
+std::array<float, 3> getTranslateForTransformOrigin(
+    float viewWidth,
+    float viewHeight,
+    TransformOrigin transformOrigin) {
+  float viewCenterX = viewWidth / 2;
+  float viewCenterY = viewHeight / 2;
+
+  std::array<float, 3> origin = {viewCenterX, viewCenterY, transformOrigin.z};
+
+  for (size_t i = 0; i < transformOrigin.xy.size(); ++i) {
+    auto &currentOrigin = transformOrigin.xy[i];
+    if (currentOrigin.unit == UnitType::Point) {
+      origin[i] = currentOrigin.value;
+    } else if (currentOrigin.unit == UnitType::Percent) {
+      origin[i] =
+          ((i == 0) ? viewWidth : viewHeight) * currentOrigin.value / 100.0f;
+    }
+  }
+
+  float newTranslateX = -viewCenterX + origin[0];
+  float newTranslateY = -viewCenterY + origin[1];
+  float newTranslateZ = origin[2];
+
+  return std::array{newTranslateX, newTranslateY, newTranslateZ};
+}
+
+} // namespace
+
 BaseViewProps::BaseViewProps(
     const PropsParserContext &context,
     const BaseViewProps &sourceProps,
@@ -119,6 +149,15 @@ BaseViewProps::BaseViewProps(
                                                        "transform",
                                                        sourceProps.transform,
                                                        {})),
+      transformOrigin(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.transformOrigin
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "transformOrigin",
+                    sourceProps.transformOrigin,
+                    {})),
       backfaceVisibility(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.backfaceVisibility
@@ -344,6 +383,25 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
+}
+
+Transform BaseViewProps::resolveTransform(
+    LayoutMetrics const &layoutMetrics) const {
+  float viewWidth = layoutMetrics.frame.size.width;
+  float viewHeight = layoutMetrics.frame.size.height;
+  if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {
+    return transform;
+  }
+  std::array<float, 3> translateOffsets =
+      getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
+  auto newTransform = Transform::Translate(
+      translateOffsets[0], translateOffsets[1], translateOffsets[2]);
+  newTransform = newTransform * transform;
+  newTransform =
+      newTransform *
+      Transform::Translate(
+          -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
+  return newTransform;
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {

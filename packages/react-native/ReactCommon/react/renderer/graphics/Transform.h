@@ -15,6 +15,7 @@
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
 
 #ifdef ANDROID
@@ -43,11 +44,28 @@ enum class TransformOperationType {
   Rotate,
   Skew
 };
+
 struct TransformOperation {
   TransformOperationType type;
   Float x;
   Float y;
   Float z;
+};
+
+struct TransformOrigin {
+  std::array<ValueUnit, 2> xy;
+  float z = 0.0f;
+
+  bool operator==(const TransformOrigin &other) const {
+    return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
+  }
+  bool operator!=(const TransformOrigin &other) const {
+    return !(*this == other);
+  }
+  bool isSet() const {
+    return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined ||
+        xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
+  }
 };
 
 /*

@@ -16,10 +16,11 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Transform.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
-#include <yoga/Yoga.h>
 #include <yoga/node/Node.h>
+#include <algorithm>
 #include <cmath>
 #include <optional>
 
@@ -554,6 +555,47 @@ inline void fromRawValue(
   }
 
   result = transformMatrix;
+}
+
+inline void fromRawValue(
+    const PropsParserContext & /*context*/,
+    const RawValue &value,
+    TransformOrigin &result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  auto origins = (std::vector<RawValue>)value;
+
+  TransformOrigin transformOrigin;
+
+  const size_t maxIndex = 2;
+
+  for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
+    const auto &origin = origins[i];
+    if (origin.hasType<Float>()) {
+      auto originFloat = (float)origin;
+      if (std::isfinite(originFloat)) {
+        transformOrigin.xy[i] = ValueUnit(originFloat, UnitType::Point);
+      } else {
+        transformOrigin.xy[i] = ValueUnit(0.0f, UnitType::Undefined);
+      }
+    } else if (origin.hasType<std::string>()) {
+      const auto stringValue = (std::string)origin;
+
+      if (stringValue.back() == '%') {
+        auto tryValue = folly::tryTo<float>(
+            std::string_view(stringValue).substr(0, stringValue.length() - 1));
+        if (tryValue.hasValue()) {
+          transformOrigin.xy[i] =
+              ValueUnit(tryValue.value(), UnitType::Percent);
+        }
+      }
+    }
+  }
+
+  if (origins.size() >= 3 && origins[2].hasType<Float>()) {
+    transformOrigin.z = (Float)origins[2];
+  }
+
+  result = transformOrigin;
 }
 
 inline void fromRawValue(

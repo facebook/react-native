@@ -261,9 +261,11 @@ using namespace facebook::react;
   }
 
   // `transform`
-  if (oldViewProps.transform != newViewProps.transform &&
+  if ((oldViewProps.transform != newViewProps.transform ||
+       oldViewProps.transformOrigin != newViewProps.transformOrigin) &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
-    self.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+    auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
@@ -396,6 +398,11 @@ using namespace facebook::react;
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
+
+  if (_props->transformOrigin.isSet()) {
+    auto newTransform = _props->resolveTransform(layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
 }
 
