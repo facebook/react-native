@@ -27,7 +27,6 @@
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
-#include <jsi/jsi/jsi.h>
 
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
