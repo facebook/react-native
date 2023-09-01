@@ -913,7 +913,7 @@ public class ReactHostImpl implements ReactHost {
         () -> {
           log(method, "Start");
           ReactMarker.logMarker(
-              ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
+              ReactMarkerConstants.REACT_RUNTIME_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
           return getJsBundleLoader()
               .onSuccess(
@@ -953,7 +953,7 @@ public class ReactHostImpl implements ReactHost {
                           // loading the JS bundle.
                           // TODO T76081936 Move this if we switch to a sync RTE
                           ReactMarker.logMarker(
-                              ReactMarkerConstants.REACT_BRIDGELESS_LOADING_END,
+                              ReactMarkerConstants.REACT_RUNTIME_LOADING_END,
                               BRIDGELESS_MARKER_INSTANCE_KEY);
                         });
 
@@ -1031,7 +1031,7 @@ public class ReactHostImpl implements ReactHost {
         () -> {
           log(method, "Start");
           ReactMarker.logMarker(
-              ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
+              ReactMarkerConstants.REACT_RUNTIME_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
           final BridgelessReactContext reactContext = getOrCreateReactContext();
           final DevSupportManager devSupportManager = getDevSupportManager();
@@ -1070,7 +1070,7 @@ public class ReactHostImpl implements ReactHost {
                           // loading the JS bundle.
                           // TODO T76081936 Move this if we switchto a sync RTE
                           ReactMarker.logMarker(
-                              ReactMarkerConstants.REACT_BRIDGELESS_LOADING_END,
+                              ReactMarkerConstants.REACT_RUNTIME_LOADING_END,
                               BRIDGELESS_MARKER_INSTANCE_KEY);
                         });
                     return instance;
