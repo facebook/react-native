@@ -26,7 +26,7 @@ namespace facebook::react {
  */
 class ContextContainer final {
  public:
-  using Shared = std::shared_ptr<ContextContainer const>;
+  using Shared = std::shared_ptr<const ContextContainer>;
 
   /*
    * Registers an instance of the particular type `T` in the container
@@ -40,7 +40,7 @@ class ContextContainer final {
    *`ReactNativeConfig`.
    */
   template <typename T>
-  void insert(std::string const &key, T const &instance) const {
+  void insert(const std::string &key, T const &instance) const {
     std::unique_lock lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
@@ -50,7 +50,7 @@ class ContextContainer final {
    * Removes an instance stored for a given `key`.
    * Does nothing if the instance was not found.
    */
-  void erase(std::string const &key) const {
+  void erase(const std::string &key) const {
     std::unique_lock lock(mutex_);
 
     instances_.erase(key);
@@ -61,10 +61,10 @@ class ContextContainer final {
    * Values with keys that already exist in the container will be replaced with
    * values from the given container.
    */
-  void update(ContextContainer const &contextContainer) const {
+  void update(const ContextContainer &contextContainer) const {
     std::unique_lock lock(mutex_);
 
-    for (auto const &pair : contextContainer.instances_) {
+    for (const auto &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
       instances_.insert(pair);
     }
@@ -76,7 +76,7 @@ class ContextContainer final {
    * Throws an exception if the instance could not be found.
    */
   template <typename T>
-  T at(std::string const &key) const {
+  T at(const std::string &key) const {
     std::shared_lock lock(mutex_);
 
     react_native_assert(
@@ -91,7 +91,7 @@ class ContextContainer final {
    * Returns an empty optional if the instance could not be found.
    */
   template <typename T>
-  std::optional<T> find(std::string const &key) const {
+  std::optional<T> find(const std::string &key) const {
     std::shared_lock lock(mutex_);
 
     auto iterator = instances_.find(key);

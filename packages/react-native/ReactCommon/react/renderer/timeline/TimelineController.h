@@ -25,7 +25,7 @@ namespace facebook::react {
  */
 class TimelineController final : public UIManagerCommitHook {
  public:
-  using Shared = std::shared_ptr<TimelineController const>;
+  using Shared = std::shared_ptr<const TimelineController>;
 
   /*
    * Creates a `TimelineHandler` associated with given `SurfaceId` and starts
@@ -50,13 +50,13 @@ class TimelineController final : public UIManagerCommitHook {
 #pragma mark - UIManagerCommitHook
 
   RootShadowNode::Unshared shadowTreeWillCommit(
-      ShadowTree const &shadowTree,
-      RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode) noexcept override;
+      const ShadowTree &shadowTree,
+      const RootShadowNode::Shared &oldRootShadowNode,
+      const RootShadowNode::Unshared &newRootShadowNode) noexcept override;
 
-  void commitHookWasRegistered(UIManager const &uiManager) noexcept override;
+  void commitHookWasRegistered(const UIManager &uiManager) noexcept override;
 
-  void commitHookWasUnregistered(UIManager const &uiManager) noexcept override;
+  void commitHookWasUnregistered(const UIManager &uiManager) noexcept override;
 
  private:
   /*
@@ -69,7 +69,7 @@ class TimelineController final : public UIManagerCommitHook {
    */
   mutable butter::map<SurfaceId, std::unique_ptr<Timeline>> timelines_;
 
-  mutable UIManager const *uiManager_;
+  mutable const UIManager *uiManager_;
   mutable SurfaceId lastUpdatedSurface_;
 };
 

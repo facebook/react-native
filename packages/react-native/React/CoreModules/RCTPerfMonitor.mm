@@ -36,8 +36,8 @@
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
-static CGFloat const RCTPerfMonitorBarHeight = 50;
-static CGFloat const RCTPerfMonitorExpandHeight = 250;
+static const CGFloat RCTPerfMonitorBarHeight = 50;
+static const CGFloat RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
 

@@ -30,8 +30,8 @@ class TextLayoutManager {
   /*
    * Not copyable.
    */
-  TextLayoutManager(TextLayoutManager const &) = delete;
-  TextLayoutManager &operator=(TextLayoutManager const &) = delete;
+  TextLayoutManager(const TextLayoutManager &) = delete;
+  TextLayoutManager &operator=(const TextLayoutManager &) = delete;
 
   /*
    * Not movable.
@@ -43,14 +43,14 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      AttributedStringBox const &attributedStringBox,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedStringBox &attributedStringBox,
+      const ParagraphAttributes &paragraphAttributes,
       LayoutConstraints layoutConstraints,
       std::shared_ptr<void> /* hostTextStorage */) const;
 
   std::shared_ptr<void> getHostTextStorage(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedString &attributedString,
+      const ParagraphAttributes &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /**
@@ -59,7 +59,7 @@ class TextLayoutManager {
    */
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
-      ParagraphAttributes const &paragraphAttributes,
+      const ParagraphAttributes &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /*
@@ -67,8 +67,8 @@ class TextLayoutManager {
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedString &attributedString,
+      const ParagraphAttributes &paragraphAttributes,
       Size size) const;
 
   /*
@@ -80,17 +80,17 @@ class TextLayoutManager {
  private:
   TextMeasurement doMeasure(
       AttributedString attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const ParagraphAttributes &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   TextMeasurement doMeasureMapBuffer(
       AttributedString attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const ParagraphAttributes &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLinesMapBuffer(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedString &attributedString,
+      const ParagraphAttributes &paragraphAttributes,
       Size size) const;
 
   void *self_{};

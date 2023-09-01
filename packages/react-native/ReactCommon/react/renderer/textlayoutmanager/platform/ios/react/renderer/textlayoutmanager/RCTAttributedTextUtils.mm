@@ -178,7 +178,7 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
+NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -402,7 +402,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   return nsAttributedString;
 }
 
-NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStringBox const &attributedStringBox)
+NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(const AttributedStringBox &attributedStringBox)
 {
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value:

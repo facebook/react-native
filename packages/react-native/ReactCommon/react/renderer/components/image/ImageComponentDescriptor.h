@@ -20,11 +20,11 @@ namespace facebook::react {
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
-  ImageComponentDescriptor(ComponentDescriptorParameters const &parameters)
+  ImageComponentDescriptor(const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor(parameters),
         imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto &imageShadowNode = static_cast<ImageShadowNode &>(*shadowNode);

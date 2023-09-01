@@ -387,6 +387,16 @@ public class JSPointerDispatcher {
             "Motion Event was ignored. Action=" + action + " Target=" + activeTargetTag);
         return;
     }
+
+    // Update "previous" pointer coordinates and button state
+    Map<Integer, float[]> nextEventCoordinatesByPointerId =
+        new HashMap<>(eventState.getEventCoordinatesByPointerId());
+    mLastEventCoordinatesByPointerId = nextEventCoordinatesByPointerId;
+    mLastButtonState = motionEvent.getButtonState();
+
+    // Clean up any stale pointerIds
+    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
+    mHoveringPointerIds.retainAll(allPointerIds);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -562,21 +572,11 @@ public class JSPointerDispatcher {
 
     Map<Integer, List<TouchTargetHelper.ViewTarget>> nextHitPathByPointerId =
         new HashMap<>(eventState.getHitPathByPointerId());
-    Map<Integer, float[]> nextEventCoordinatesByPointerId =
-        new HashMap<>(eventState.getEventCoordinatesByPointerId());
 
     if (targetTag == UNSELECTED_VIEW_TAG) {
       nextHitPathByPointerId.remove(activePointerId);
-      nextEventCoordinatesByPointerId.remove(activePointerId);
     }
-
     mLastHitPathByPointerId = nextHitPathByPointerId;
-    mLastEventCoordinatesByPointerId = nextEventCoordinatesByPointerId;
-    mLastButtonState = motionEvent.getButtonState();
-
-    // Clean up any stale pointerIds
-    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
-    mHoveringPointerIds.retainAll(allPointerIds);
   }
 
   private void onMove(

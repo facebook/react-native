@@ -14,7 +14,7 @@
 using namespace facebook::react;
 
 TEST(ComponentDescriptorTest, createShadowNode) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
@@ -50,7 +50,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, cloneShadowNode) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
@@ -83,7 +83,7 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, appendChild) {
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(
           ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});

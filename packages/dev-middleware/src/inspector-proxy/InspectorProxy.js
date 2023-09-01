@@ -20,7 +20,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import url from 'url';
 import WS from 'ws';
-import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import Device from './Device';
 
 const debug = require('debug')('Metro:InspectorProxy');
@@ -116,12 +115,19 @@ export default class InspectorProxy {
     const debuggerUrl = `${this._serverBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
     const webSocketDebuggerUrl = 'ws://' + debuggerUrl;
 
+    // For now, `/json/list` returns the legacy built-in `devtools://` URL, to
+    // preserve existing handling by Flipper. This may return a placeholder in
+    // future -- please use the `/open-debugger` endpoint.
+    const devtoolsFrontendUrl =
+      'devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=' +
+      encodeURIComponent(webSocketDebuggerUrl);
+
     return {
       id: `${deviceId}-${page.id}`,
       description: page.app,
       title: page.title,
       faviconUrl: 'https://reactjs.org/favicon.ico',
-      devtoolsFrontendUrl: getDevToolsFrontendUrl(webSocketDebuggerUrl),
+      devtoolsFrontendUrl,
       type: 'node',
       webSocketDebuggerUrl,
       vm: page.vm,

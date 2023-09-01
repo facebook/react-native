@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, nullable) void (^eventInterceptor)(std::string eventName, folly::dynamic event);
 
-- (void)setProps:(folly::dynamic const &)props;
+- (void)setProps:(const folly::dynamic &)props;
 
 - (void)handleCommand:(NSString *)commandName args:(NSArray *)args;
 

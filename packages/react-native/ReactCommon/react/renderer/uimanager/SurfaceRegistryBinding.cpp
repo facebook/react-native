@@ -32,8 +32,8 @@ void throwIfBridgeless(
 void SurfaceRegistryBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
-    std::string const &moduleName,
-    folly::dynamic const &initialProps,
+    const std::string &moduleName,
+    const folly::dynamic &initialProps,
     DisplayMode displayMode) {
   SystraceSection s("SurfaceRegistryBinding::startSurface");
   jsi::Object parameters(runtime);
@@ -67,8 +67,8 @@ void SurfaceRegistryBinding::startSurface(
 void SurfaceRegistryBinding::setSurfaceProps(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
-    std::string const &moduleName,
-    folly::dynamic const &initialProps,
+    const std::string &moduleName,
+    const folly::dynamic &initialProps,
     DisplayMode displayMode) {
   SystraceSection s("UIManagerBinding::setSurfaceProps");
   jsi::Object parameters(runtime);

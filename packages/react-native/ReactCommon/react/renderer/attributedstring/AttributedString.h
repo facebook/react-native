@@ -79,7 +79,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   /*
    * Returns a read-only reference to a list of fragments.
    */
-  Fragments const &getFragments() const;
+  const Fragments &getFragments() const;
 
   /*
    * Returns a reference to a list of fragments.

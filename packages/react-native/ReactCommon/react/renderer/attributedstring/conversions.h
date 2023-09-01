@@ -686,9 +686,9 @@ inline void fromRawValue(
 
 inline ParagraphAttributes convertRawProp(
     const PropsParserContext &context,
-    RawProps const &rawProps,
-    ParagraphAttributes const &sourceParagraphAttributes,
-    ParagraphAttributes const &defaultParagraphAttributes) {
+    const RawProps &rawProps,
+    const ParagraphAttributes &sourceParagraphAttributes,
+    const ParagraphAttributes &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
@@ -745,7 +745,7 @@ inline ParagraphAttributes convertRawProp(
 
 inline void fromRawValue(
     const PropsParserContext &context,
-    RawValue const &value,
+    const RawValue &value,
     AttributedString::Range &result) {
   auto map = (butter::map<std::string, int>)value;
 
@@ -759,7 +759,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(AttributedString::Range const &range) {
+inline std::string toString(const AttributedString::Range &range) {
   return "{location: " + folly::to<std::string>(range.location) +
       ", length: " + folly::to<std::string>(range.length) + "}";
 }
@@ -921,7 +921,7 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   return value;
 }
 
-inline folly::dynamic toDynamic(AttributedString::Range const &range) {
+inline folly::dynamic toDynamic(const AttributedString::Range &range) {
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["location"] = range.location;
   dynamicValue["length"] = range.length;

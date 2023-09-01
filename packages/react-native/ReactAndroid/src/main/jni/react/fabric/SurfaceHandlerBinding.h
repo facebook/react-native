@@ -22,7 +22,7 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   static void registerNatives();
 
-  SurfaceHandlerBinding(SurfaceId surfaceId, std::string const &moduleName);
+  SurfaceHandlerBinding(SurfaceId surfaceId, const std::string &moduleName);
 
   void start();
   void stop();
@@ -48,7 +48,7 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   void setProps(NativeMap *props);
 
-  SurfaceHandler const &getSurfaceHandler();
+  const SurfaceHandler &getSurfaceHandler();
 
  private:
   mutable std::shared_mutex lifecycleMutex_;

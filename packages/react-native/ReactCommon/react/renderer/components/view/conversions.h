@@ -18,8 +18,8 @@
 #include <react/renderer/graphics/Transform.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
-#include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <yoga/node/Node.h>
 #include <cmath>
 #include <optional>
 
@@ -55,16 +55,16 @@ inline float yogaFloatFromFloat(Float value) {
 }
 
 /*
- * `YGFloatOptional` <-> React Native's `Float`
+ * `yoga::FloatOptional` <-> React Native's `Float`
  *
- * `YGFloatOptional` represents optional dimensionless float values in Yoga
+ * `yoga::FloatOptional` represents optional dimensionless float values in Yoga
  * Style object (e.g. `flex`). The most suitable analogy to empty
- * `YGFloatOptional` is `NaN` value.
- * `YGFloatOptional` values are usually parsed from some outside data source
+ * `yoga::FloatOptional` is `NaN` value.
+ * `yoga::FloatOptional` values are usually parsed from some outside data source
  * which usually has some special corresponding representation for an empty
  * value.
  */
-inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
+inline Float floatFromYogaOptionalFloat(yoga::FloatOptional value) {
   if (value.isUndefined()) {
     return std::numeric_limits<Float>::quiet_NaN();
   }
@@ -72,12 +72,12 @@ inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   return floatFromYogaFloat(value.unwrap());
 }
 
-inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
+inline yoga::FloatOptional yogaOptionalFloatFromFloat(Float value) {
   if (std::isnan(value)) {
-    return YGFloatOptional();
+    return yoga::FloatOptional();
   }
 
-  return YGFloatOptional((float)value);
+  return yoga::FloatOptional((float)value);
 }
 
 /*
@@ -113,7 +113,7 @@ inline std::optional<Float> optionalFloatFromYogaValue(
   }
 }
 
-inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
+inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node &yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
   layoutMetrics.frame = Rect{
@@ -406,7 +406,7 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    YGStyle::ValueRepr &result) {
+    yoga::Style::ValueRepr &result) {
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
@@ -440,7 +440,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     YGValue &result) {
-  YGStyle::ValueRepr ygValue{};
+  yoga::Style::ValueRepr ygValue{};
   fromRawValue(context, value, ygValue);
   result = ygValue;
 }
@@ -448,9 +448,9 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    YGFloatOptional &result) {
-  result = value.hasType<float>() ? YGFloatOptional((float)value)
-                                  : YGFloatOptional();
+    yoga::FloatOptional &result) {
+  result = value.hasType<float>() ? yoga::FloatOptional((float)value)
+                                  : yoga::FloatOptional();
 }
 
 inline Float toRadians(
@@ -818,7 +818,7 @@ inline std::string toString(const YGValue &value) {
   }
 }
 
-inline std::string toString(const YGFloatOptional &value) {
+inline std::string toString(const yoga::FloatOptional &value) {
   if (value.isUndefined()) {
     return "undefined";
   }
@@ -826,11 +826,11 @@ inline std::string toString(const YGFloatOptional &value) {
   return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
-inline std::string toString(const YGStyle::Dimensions &value) {
+inline std::string toString(const yoga::Style::Dimensions &value) {
   return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
 }
 
-inline std::string toString(const YGStyle::Edges &value) {
+inline std::string toString(const yoga::Style::Edges &value) {
   static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
       {"left",
        "top",

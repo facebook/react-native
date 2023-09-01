@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-TimelineHandler::TimelineHandler(Timeline const &timeline) noexcept
+TimelineHandler::TimelineHandler(const Timeline &timeline) noexcept
     : timeline_(&timeline) {}
 
 TimelineHandler::TimelineHandler(TimelineHandler &&other) noexcept {
@@ -61,7 +61,7 @@ TimelineFrame::List TimelineHandler::getFrames() const noexcept {
   return timeline_->getFrames();
 }
 
-void TimelineHandler::rewind(TimelineFrame const &frame) const noexcept {
+void TimelineHandler::rewind(const TimelineFrame &frame) const noexcept {
   ensureNotEmpty();
   return timeline_->rewind(frame);
 }

@@ -25,14 +25,14 @@ namespace facebook::react {
 template <typename DataT>
 class ConcreteState : public State {
  public:
-  using Shared = std::shared_ptr<ConcreteState const>;
+  using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
-  using SharedData = std::shared_ptr<Data const>;
+  using SharedData = std::shared_ptr<const Data>;
 
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(SharedData const &data, State const &state)
+  explicit ConcreteState(const SharedData &data, const State &state)
       : State(data, state) {}
 
   /*
@@ -40,8 +40,8 @@ class ConcreteState : public State {
    * `data`.
    */
   explicit ConcreteState(
-      SharedData const &data,
-      ShadowNodeFamily::Shared const &family)
+      const SharedData &data,
+      const ShadowNodeFamily::Shared &family)
       : State(data, family) {}
 
   ~ConcreteState() override = default;
@@ -49,8 +49,8 @@ class ConcreteState : public State {
   /*
    * Returns stored data.
    */
-  Data const &getData() const {
-    return *static_cast<Data const *>(data_.get());
+  const Data &getData() const {
+    return *static_cast<const Data *>(data_.get());
   }
 
   /*
@@ -61,7 +61,7 @@ class ConcreteState : public State {
    */
   void updateState(Data &&newData, EventPriority priority) const {
     updateState(
-        [data{std::move(newData)}](Data const &oldData) -> SharedData {
+        [data{std::move(newData)}](const Data &oldData) -> SharedData {
           return std::make_shared<Data const>(data);
         },
         priority);
@@ -84,7 +84,7 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(Data const &oldData)> callback,
+      std::function<StateData::Shared(const Data &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     auto family = family_.lock();
 
@@ -95,7 +95,7 @@ class ConcreteState : public State {
     }
 
     auto stateUpdate = StateUpdate{
-        family, [=](StateData::Shared const &oldData) -> StateData::Shared {
+        family, [=](const StateData::Shared &oldData) -> StateData::Shared {
           react_native_assert(oldData);
           return callback(*static_cast<Data const *>(oldData.get()));
         }};

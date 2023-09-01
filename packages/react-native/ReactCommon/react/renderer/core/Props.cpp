@@ -39,7 +39,7 @@ void Props::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char * /*propName*/,
-    RawValue const &value) {
+    const RawValue &value) {
   switch (hash) {
     case CONSTEXPR_RAW_PROPS_KEY_HASH("nativeID"):
       fromRawValue(context, value, nativeId, {});
@@ -52,7 +52,7 @@ void Props::setProp(
 constexpr MapBuffer::Key PROPS_NATIVE_ID = 1;
 
 void Props::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
+    const Props *oldPropsPtr,
     MapBufferBuilder &builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
@@ -61,8 +61,8 @@ void Props::propsDiffMapBuffer(
     return;
   }
 
-  Props const &oldProps = *oldPropsPtr;
-  Props const &newProps = *this;
+  const Props &oldProps = *oldPropsPtr;
+  const Props &newProps = *this;
 
   if (oldProps.nativeId != newProps.nativeId) {
     builder.putString(PROPS_NATIVE_ID, nativeId);

@@ -82,14 +82,14 @@ struct LayoutMetrics {
  * `LayoutMetrics` type.
  * The value is comparable by equality with any other `LayoutMetrics` value.
  */
-static LayoutMetrics const EmptyLayoutMetrics = {
+static const LayoutMetrics EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const &object);
+std::string getDebugName(const LayoutMetrics &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    LayoutMetrics const &object,
+    const LayoutMetrics &object,
     DebugStringConvertibleOptions options);
 
 #endif

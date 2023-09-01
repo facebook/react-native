@@ -24,11 +24,11 @@ namespace facebook::react {
 
 using Content = ParagraphShadowNode::Content;
 
-char const ParagraphComponentName[] = "Paragraph";
+const char ParagraphComponentName[] = "Paragraph";
 
 ParagraphShadowNode::ParagraphShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   if (CoreFeatures::enableCleanParagraphYogaNode) {
     if (!fragment.children && !fragment.props) {
@@ -40,8 +40,8 @@ ParagraphShadowNode::ParagraphShadowNode(
   }
 }
 
-Content const &ParagraphShadowNode::getContent(
-    LayoutContext const &layoutContext) const {
+const Content &ParagraphShadowNode::getContent(
+    const LayoutContext &layoutContext) const {
   if (content_.has_value()) {
     return content_.value();
   }
@@ -66,8 +66,8 @@ Content const &ParagraphShadowNode::getContent(
 }
 
 Content ParagraphShadowNode::getContentWithMeasuredAttachments(
-    LayoutContext const &layoutContext,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext &layoutContext,
+    const LayoutConstraints &layoutConstraints) const {
   auto content = getContent(layoutContext);
 
   if (content.attachments.empty()) {
@@ -81,9 +81,9 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 
   auto &fragments = content.attributedString.getFragments();
 
-  for (auto const &attachment : content.attachments) {
+  for (const auto &attachment : content.attachments) {
     auto laytableShadowNode =
-        traitCast<LayoutableShadowNode const *>(attachment.shadowNode);
+        traitCast<const LayoutableShadowNode *>(attachment.shadowNode);
 
     if (laytableShadowNode == nullptr) {
       continue;
@@ -108,13 +108,13 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 }
 
 void ParagraphShadowNode::setTextLayoutManager(
-    std::shared_ptr<TextLayoutManager const> textLayoutManager) {
+    std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
   getStateData().paragraphLayoutManager.setTextLayoutManager(
       std::move(textLayoutManager));
 }
 
-void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
+void ParagraphShadowNode::updateStateIfNeeded(const Content &content) {
   ensureUnsealed();
 
   auto &state = getStateData();
@@ -134,8 +134,8 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measureContent(
-    LayoutContext const &layoutContext,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext &layoutContext,
+    const LayoutConstraints &layoutConstraints) const {
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
@@ -201,7 +201,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   for (size_t i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);
 
-    if (traitCast<LayoutableShadowNode const *>(attachment.shadowNode) ==
+    if (traitCast<const LayoutableShadowNode *>(attachment.shadowNode) ==
         nullptr) {
       // Not a layoutable `ShadowNode`, no need to lay it out.
       continue;
@@ -211,7 +211,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
     paragraphOwningShadowNode = paragraphShadowNode->cloneTree(
         attachment.shadowNode->getFamily(),
-        [&](ShadowNode const &oldShadowNode) {
+        [&](const ShadowNode &oldShadowNode) {
           clonedShadowNode = oldShadowNode.clone({});
           return clonedShadowNode;
         });
@@ -245,7 +245,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   // reflect the changes that we made.
   if (paragraphShadowNode != this) {
     this->children_ =
-        static_cast<ParagraphShadowNode const *>(paragraphShadowNode)
+        static_cast<const ParagraphShadowNode *>(paragraphShadowNode)
             ->children_;
   }
 }

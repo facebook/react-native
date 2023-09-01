@@ -22,7 +22,7 @@ namespace react {
 extern const char RNTMyNativeViewName[] = "RNTMyLegacyNativeView";
 
 void registerComponents(
-    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
+    std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
   registry->add(concreteComponentDescriptorProvider<
                 RNTMyNativeViewComponentDescriptor>());
   registry->add(concreteComponentDescriptorProvider<

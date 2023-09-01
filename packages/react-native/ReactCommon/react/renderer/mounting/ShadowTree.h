@@ -23,7 +23,7 @@
 namespace facebook::react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode const &oldRootShadowNode)>;
+    const RootShadowNode &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -77,10 +77,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate,
-      ContextContainer const &contextContainer);
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext,
+      const ShadowTreeDelegate &delegate,
+      const ContextContainer &contextContainer);
 
   ~ShadowTree();
 
@@ -139,10 +139,10 @@ class ShadowTree final {
   void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
   void emitLayoutEvents(
-      std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
+      std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
 
-  SurfaceId const surfaceId_;
-  ShadowTreeDelegate const &delegate_;
+  const SurfaceId surfaceId_;
+  const ShadowTreeDelegate &delegate_;
   mutable std::shared_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.

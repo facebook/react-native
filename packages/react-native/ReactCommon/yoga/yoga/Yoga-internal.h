@@ -14,9 +14,7 @@
 
 #include <yoga/Yoga.h>
 
-#include "CompactValue.h"
-
-using YGVector = std::vector<YGNodeRef>;
+#include <yoga/style/CompactValue.h>
 
 YG_EXTERN_C_BEGIN
 
@@ -42,8 +40,6 @@ inline bool isUndefined(float value) {
 inline bool isUndefined(double value) {
   return std::isnan(value);
 }
-
-void throwLogicalErrorWithMessage(const char* message);
 
 } // namespace facebook::yoga
 
@@ -151,5 +147,3 @@ public:
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
-
-extern bool YGFloatsEqual(const float a, const float b);

@@ -81,7 +81,7 @@ std::shared_ptr<const ReactNativeConfig> mockReactNativeConfig_ =
 
 TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   auto componentDescriptorRegistry =
       getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
@@ -116,7 +116,7 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
 
 TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto surfaceId = 11;
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   auto componentDescriptorRegistry =
       getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();

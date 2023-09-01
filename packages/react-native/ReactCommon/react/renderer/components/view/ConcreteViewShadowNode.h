@@ -53,16 +53,16 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       Ts...>;
 
   ConcreteViewShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment &fragment,
+      const ShadowNodeFamily::Shared &family,
       ShadowNodeTraits traits)
       : BaseShadowNode(fragment, family, traits) {
     initialize();
   }
 
   ConcreteViewShadowNode(
-      ShadowNode const &sourceShadowNode,
-      ShadowNodeFragment const &fragment)
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment)
       : BaseShadowNode(sourceShadowNode, fragment) {
     initialize();
   }

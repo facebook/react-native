@@ -20,8 +20,8 @@ namespace facebook::react {
 
 BaseViewProps::BaseViewProps(
     const PropsParserContext &context,
-    BaseViewProps const &sourceProps,
-    RawProps const &rawProps,
+    const BaseViewProps &sourceProps,
+    const RawProps &rawProps,
     bool shouldSetRawProps)
     : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
       AccessibilityProps(context, sourceProps, rawProps),
@@ -217,7 +217,7 @@ void BaseViewProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
@@ -278,7 +278,7 @@ void BaseViewProps::setProp(
 
 #pragma mark - Convenience Methods
 
-static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
+static BorderRadii ensureNoOverlap(const BorderRadii &radii, const Size &size) {
   // "Corner curves must not overlap: When the sum of any two adjacent border
   // radii exceeds the size of the border box, UAs must proportionally reduce
   // the used values of all border radii until none of them overlap."
@@ -315,7 +315,7 @@ static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
 }
 
 BorderMetrics BaseViewProps::resolveBorderMetrics(
-    LayoutMetrics const &layoutMetrics) const {
+    const LayoutMetrics &layoutMetrics) const {
   auto isRTL =
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 

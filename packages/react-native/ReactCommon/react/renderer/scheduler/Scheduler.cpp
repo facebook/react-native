@@ -30,7 +30,7 @@
 namespace facebook::react {
 
 Scheduler::Scheduler(
-    SchedulerToolbox const &schedulerToolbox,
+    const SchedulerToolbox &schedulerToolbox,
     UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
@@ -41,7 +41,7 @@ Scheduler::Scheduler(
           "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
-  eventDispatcher_ = std::make_shared<std::optional<EventDispatcher const>>();
+  eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
@@ -84,7 +84,7 @@ Scheduler::Scheduler(
         }
       };
 
-  auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
+  auto statePipe = [uiManager](const StateUpdate &stateUpdate) {
     uiManager->updateState(stateUpdate);
   };
 
@@ -119,7 +119,7 @@ Scheduler::Scheduler(
   contextContainer_->erase(componentDescriptorRegistryKey);
   contextContainer_->insert(
       componentDescriptorRegistryKey,
-      std::weak_ptr<ComponentDescriptorRegistry const>(
+      std::weak_ptr<const ComponentDescriptorRegistry>(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
@@ -178,7 +178,7 @@ Scheduler::~Scheduler() {
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};
   uiManager_->getShadowTreeRegistry().enumerate(
-      [&surfaceIds](ShadowTree const &shadowTree, bool &) {
+      [&surfaceIds](const ShadowTree &shadowTree, bool &) {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
@@ -204,7 +204,7 @@ Scheduler::~Scheduler() {
   for (auto surfaceId : surfaceIds) {
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId,
-        [](ShadowTree const &shadowTree) { shadowTree.commitEmptyTree(); });
+        [](const ShadowTree &shadowTree) { shadowTree.commitEmptyTree(); });
 
     // Removing surfaces is gated because it acquires mutex waiting for commits
     // in flight; in theory, it can deadlock.
@@ -215,13 +215,13 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::registerSurface(
-    SurfaceHandler const &surfaceHandler) const noexcept {
+    const SurfaceHandler &surfaceHandler) const noexcept {
   surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
 }
 
 InspectorData Scheduler::getInspectorDataForInstance(
-    EventEmitter const &eventEmitter) const noexcept {
+    const EventEmitter &eventEmitter) const noexcept {
   return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
       runtimeExecutor_, [=](jsi::Runtime &runtime) -> InspectorData {
         auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
@@ -252,7 +252,7 @@ InspectorData Scheduler::getInspectorDataForInstance(
 }
 
 void Scheduler::unregisterSurface(
-    SurfaceHandler const &surfaceHandler) const noexcept {
+    const SurfaceHandler &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(nullptr);
 }
 
@@ -294,7 +294,7 @@ void Scheduler::renderTemplateToSurface(
   }
 }
 
-ComponentDescriptor const *
+const ComponentDescriptor *
 Scheduler::findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
     ComponentHandle handle) const {
   return componentDescriptorRegistry_
@@ -359,8 +359,8 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
 
 void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared &shadowNode,
-    std::string const &commandName,
-    folly::dynamic const &args) {
+    const std::string &commandName,
+    const folly::dynamic &args) {
   SystraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
@@ -371,7 +371,7 @@ void Scheduler::uiManagerDidDispatchCommand(
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
-    std::string const &eventType) {
+    const std::string &eventType) {
   SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
   if (delegate_ != nullptr) {
@@ -384,7 +384,7 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  * Set JS responder for a view.
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
-    ShadowNode::Shared const &shadowNode,
+    const ShadowNode::Shared &shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) {
   if (delegate_ != nullptr) {
@@ -406,14 +406,14 @@ std::shared_ptr<UIManager> Scheduler::getUIManager() const {
 }
 
 void Scheduler::addEventListener(
-    const std::shared_ptr<EventListener const> &listener) {
+    const std::shared_ptr<const EventListener> &listener) {
   if (eventDispatcher_->has_value()) {
     eventDispatcher_->value().addListener(listener);
   }
 }
 
 void Scheduler::removeEventListener(
-    const std::shared_ptr<EventListener const> &listener) {
+    const std::shared_ptr<const EventListener> &listener) {
   if (eventDispatcher_->has_value()) {
     eventDispatcher_->value().removeListener(listener);
   }

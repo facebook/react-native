@@ -74,7 +74,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
   folly::dynamic getDynamic() const;
 

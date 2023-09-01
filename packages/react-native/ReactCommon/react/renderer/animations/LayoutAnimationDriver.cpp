@@ -32,13 +32,13 @@ void LayoutAnimationDriver::animationMutationsForFrame(
         continue;
       }
 
-      auto const &baselineShadowView = keyframe.viewStart;
-      auto const &finalShadowView = keyframe.viewEnd;
+      const auto &baselineShadowView = keyframe.viewStart;
+      const auto &finalShadowView = keyframe.viewEnd;
 
       // The contract with the "keyframes generation" phase is that any animated
       // node will have a valid configuration.
-      auto const layoutAnimationConfig = animation.layoutAnimationConfig;
-      auto const &mutationConfig =
+      const auto layoutAnimationConfig = animation.layoutAnimationConfig;
+      const auto &mutationConfig =
           (keyframe.type == AnimationConfigurationType::Delete
                ? layoutAnimationConfig.deleteConfig
                : (keyframe.type == AnimationConfigurationType::Create
@@ -81,7 +81,7 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       callCallback(animation.successCallback);
 
       // Queue up "final" mutations for all keyframes in the completed animation
-      for (auto const &keyframe : animation.keyFrames) {
+      for (const auto &keyframe : animation.keyFrames) {
         if (keyframe.invalidated) {
           continue;
         }

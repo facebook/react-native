@@ -37,18 +37,18 @@ class SchedulerDelegate {
 
   virtual void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args) = 0;
+      const std::string &commandName,
+      const folly::dynamic &args) = 0;
 
   virtual void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
-      std::string const &eventType) = 0;
+      const std::string &eventType) = 0;
 
   /*
    * Set JS responder for a view
    */
   virtual void schedulerDidSetIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView &shadowView,
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 

@@ -33,7 +33,7 @@ class EventQueueProcessorTest : public testing::Test {
     };
 
     auto dummyEventPipeConclusion = [](jsi::Runtime &runtime) {};
-    auto dummyStatePipe = [](StateUpdate const &stateUpdate) {};
+    auto dummyStatePipe = [](const StateUpdate &stateUpdate) {};
 
     eventProcessor_ = std::make_unique<EventQueueProcessor>(
         eventPipe, dummyEventPipeConclusion, dummyStatePipe);

@@ -17,8 +17,10 @@
 
 // TODO: Reconcile missing layoutContext functionality from callbacks in the C
 // API and use that
-#include <yoga/YGNode.h>
+#include <yoga/node/Node.h>
 
+using namespace facebook;
+using namespace facebook::yoga;
 using namespace facebook::yoga::vanillajni;
 
 static inline ScopedLocalRef<jobject> YGNodeJobject(
@@ -194,7 +196,7 @@ static void jni_YGConfigSetLoggerJNI(
     }
 
     *context = newGlobalRef(env, logger);
-    config->setLogger(YGJNILogFunc);
+    static_cast<yoga::Config*>(config)->setLogger(YGJNILogFunc);
   } else {
     if (context != nullptr) {
       delete context;
@@ -686,7 +688,7 @@ static void jni_YGNodeSetHasMeasureFuncJNI(
     jobject /*obj*/,
     jlong nativePointer,
     jboolean hasMeasureFunc) {
-  _jlong2YGNodeRef(nativePointer)
+  static_cast<yoga::Node*>(_jlong2YGNodeRef(nativePointer))
       ->setMeasureFunc(hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
 }
 
@@ -713,7 +715,7 @@ static void jni_YGNodeSetHasBaselineFuncJNI(
     jobject /*obj*/,
     jlong nativePointer,
     jboolean hasBaselineFunc) {
-  _jlong2YGNodeRef(nativePointer)
+  static_cast<yoga::Node*>(_jlong2YGNodeRef(nativePointer))
       ->setBaselineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 

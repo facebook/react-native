@@ -36,7 +36,7 @@ using RuntimeExecutor =
  * is no synchronization.
  */
 inline static void executeAsynchronously(
-    RuntimeExecutor const &runtimeExecutor,
+    const RuntimeExecutor &runtimeExecutor,
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
   std::thread([callback = std::move(callback), runtimeExecutor]() mutable {
     runtimeExecutor(std::move(callback));
@@ -51,7 +51,7 @@ inline static void executeAsynchronously(
  * `callback` will be executed.
  */
 inline static void executeSynchronously_CAN_DEADLOCK(
-    RuntimeExecutor const &runtimeExecutor,
+    const RuntimeExecutor &runtimeExecutor,
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
   std::mutex mutex;
   mutex.lock();
@@ -73,7 +73,7 @@ inline static void executeSynchronously_CAN_DEADLOCK(
  * thread.
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-    RuntimeExecutor const &runtimeExecutor,
+    const RuntimeExecutor &runtimeExecutor,
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
@@ -114,7 +114,7 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
 template <typename DataT>
 inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-    RuntimeExecutor const &runtimeExecutor,
+    const RuntimeExecutor &runtimeExecutor,
     std::function<DataT(jsi::Runtime &runtime)> &&callback) noexcept {
   DataT data;
 

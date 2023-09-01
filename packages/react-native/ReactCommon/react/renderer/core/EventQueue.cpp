@@ -64,7 +64,7 @@ void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
   {
     std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
-      auto const position = stateUpdateQueue_.back();
+      const auto position = stateUpdateQueue_.back();
       if (stateUpdate.family == position.family) {
         stateUpdateQueue_.pop_back();
       }

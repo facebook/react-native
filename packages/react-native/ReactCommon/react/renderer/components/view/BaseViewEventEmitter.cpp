@@ -13,7 +13,7 @@ namespace facebook::react {
 #pragma mark - Accessibility
 
 void BaseViewEventEmitter::onAccessibilityAction(
-    std::string const &name) const {
+    const std::string &name) const {
   dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "actionName", name);

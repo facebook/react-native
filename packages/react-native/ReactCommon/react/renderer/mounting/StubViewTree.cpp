@@ -18,18 +18,18 @@
 
 namespace facebook::react {
 
-StubViewTree::StubViewTree(ShadowView const &shadowView) {
+StubViewTree::StubViewTree(const ShadowView &shadowView) {
   auto view = std::make_shared<StubView>();
   view->update(shadowView);
   rootTag_ = shadowView.tag;
   registry_[shadowView.tag] = view;
 }
 
-StubView const &StubViewTree::getRootStubView() const {
+const StubView &StubViewTree::getRootStubView() const {
   return *registry_.at(rootTag_);
 }
 
-StubView const &StubViewTree::getStubView(Tag tag) const {
+const StubView &StubViewTree::getStubView(Tag tag) const {
   return *registry_.at(tag);
 }
 
@@ -37,9 +37,9 @@ size_t StubViewTree::size() const {
   return registry_.size();
 }
 
-void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
+void StubViewTree::mutate(const ShadowViewMutationList &mutations) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
-  for (auto const &mutation : mutations) {
+  for (const auto &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         react_native_assert(mutation.parentShadowView == ShadowView{});
@@ -263,7 +263,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
 }
 
 std::ostream &StubViewTree::dumpTags(std::ostream &stream) {
-  for (auto const &pair : registry_) {
+  for (const auto &pair : registry_) {
     auto &stubView = *registry_.at(pair.first);
     stream << "[" << stubView.tag << "]##"
            << std::hash<ShadowView>{}((ShadowView)stubView) << " ";
@@ -271,7 +271,7 @@ std::ostream &StubViewTree::dumpTags(std::ostream &stream) {
   return stream;
 }
 
-bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
+bool operator==(const StubViewTree &lhs, const StubViewTree &rhs) {
   if (lhs.registry_.size() != rhs.registry_.size()) {
     STUB_VIEW_LOG({
       LOG(ERROR) << "Registry sizes are different. Sizes: LHS: "
@@ -287,7 +287,7 @@ bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
     return false;
   }
 
-  for (auto const &pair : lhs.registry_) {
+  for (const auto &pair : lhs.registry_) {
     auto &lhsStubView = *lhs.registry_.at(pair.first);
     auto &rhsStubView = *rhs.registry_.at(pair.first);
 
@@ -306,7 +306,7 @@ bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
   return true;
 }
 
-bool operator!=(StubViewTree const &lhs, StubViewTree const &rhs) {
+bool operator!=(const StubViewTree &lhs, const StubViewTree &rhs) {
   return !(lhs == rhs);
 }
 

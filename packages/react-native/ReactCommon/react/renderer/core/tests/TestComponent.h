@@ -35,7 +35,7 @@ struct TestState {
   TestState() = default;
 
 #ifdef ANDROID
-  TestState(TestState const &previousState, folly::dynamic &&data){};
+  TestState(const TestState &previousState, folly::dynamic &&data){};
 
   folly::dynamic getDynamic() const {
     return {};

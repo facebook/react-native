@@ -17,14 +17,14 @@
 
 namespace facebook::react {
 
-bool RawPropsKeyMap::hasSameName(Item const &lhs, Item const &rhs) noexcept {
+bool RawPropsKeyMap::hasSameName(const Item &lhs, const Item &rhs) noexcept {
   return lhs.length == rhs.length &&
       (std::memcmp(lhs.name, rhs.name, lhs.length) == 0);
 }
 
 bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
-    Item const &lhs,
-    Item const &rhs) noexcept {
+    const Item &lhs,
+    const Item &rhs) noexcept {
   if (lhs.length != rhs.length) {
     return lhs.length < rhs.length;
   }
@@ -33,7 +33,7 @@ bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
 }
 
 void RawPropsKeyMap::insert(
-    RawPropsKey const &key,
+    const RawPropsKey &key,
     RawPropsValueIndex value) noexcept {
   auto item = Item{};
   item.value = value;
@@ -92,7 +92,7 @@ void RawPropsKeyMap::reindex() noexcept {
 }
 
 RawPropsValueIndex RawPropsKeyMap::at(
-    char const *name,
+    const char *name,
     RawPropsPropNameLength length) noexcept {
   react_native_assert(length > 0);
   react_native_assert(length < kPropNameLengthHardCap);

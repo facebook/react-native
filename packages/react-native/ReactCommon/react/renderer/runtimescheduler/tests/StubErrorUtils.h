@@ -38,7 +38,7 @@ class StubErrorUtils : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override {
+  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
     auto propertyName = name.utf8(runtime);
 
     if (propertyName == "reportFatalError") {
@@ -48,8 +48,8 @@ class StubErrorUtils : public jsi::HostObject {
           1,
           [this](
               jsi::Runtime &runtime,
-              jsi::Value const &,
-              jsi::Value const *arguments,
+              const jsi::Value &,
+              const jsi::Value *arguments,
               size_t) noexcept -> jsi::Value {
             reportFatalCallCount_++;
             return jsi::Value::undefined();

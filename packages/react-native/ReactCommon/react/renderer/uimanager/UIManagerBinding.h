@@ -28,7 +28,7 @@ class UIManagerBinding : public jsi::HostObject {
    */
   static void createAndInstallIfNeeded(
       jsi::Runtime &runtime,
-      std::shared_ptr<UIManager> const &uiManager);
+      const std::shared_ptr<UIManager> &uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
@@ -42,7 +42,7 @@ class UIManagerBinding : public jsi::HostObject {
 
   jsi::Value getInspectorDataForInstance(
       jsi::Runtime &runtime,
-      EventEmitter const &eventEmitter) const;
+      const EventEmitter &eventEmitter) const;
 
   /*
    * Delivers raw event data to JavaScript.
@@ -50,8 +50,8 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void dispatchEvent(
       jsi::Runtime &runtime,
-      EventTarget const *eventTarget,
-      std::string const &type,
+      const EventTarget *eventTarget,
+      const std::string &type,
       ReactEventPriority priority,
       const EventPayload &payload) const;
 
@@ -67,7 +67,7 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
+  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override;
 
   UIManager &getUIManager();
 
@@ -78,13 +78,13 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void dispatchEventToJS(
       jsi::Runtime &runtime,
-      EventTarget const *eventTarget,
-      std::string const &type,
+      const EventTarget *eventTarget,
+      const std::string &type,
       ReactEventPriority priority,
       const EventPayload &payload) const;
 
   std::shared_ptr<UIManager> uiManager_;
-  std::unique_ptr<EventHandler const> eventHandler_;
+  std::unique_ptr<const EventHandler> eventHandler_;
   mutable PointerEventsProcessor pointerEventsProcessor_;
   mutable ReactEventPriority currentEventPriority_;
 };

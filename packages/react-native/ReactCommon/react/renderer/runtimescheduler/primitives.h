@@ -14,7 +14,7 @@
 namespace facebook::react {
 
 struct TaskWrapper : public jsi::HostObject {
-  TaskWrapper(std::shared_ptr<Task> const &task) : task(task) {}
+  TaskWrapper(const std::shared_ptr<Task> &task) : task(task) {}
 
   std::shared_ptr<Task> task;
 };
@@ -34,7 +34,7 @@ inline static jsi::Value valueFromTask(
 
 inline static std::shared_ptr<Task> taskFromValue(
     jsi::Runtime &runtime,
-    jsi::Value const &value) {
+    const jsi::Value &value) {
   if (value.isNull()) {
     return nullptr;
   }

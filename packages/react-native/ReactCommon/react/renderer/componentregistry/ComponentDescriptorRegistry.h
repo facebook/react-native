@@ -38,7 +38,7 @@ class ComponentDescriptorRegistry {
    */
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
-      ComponentDescriptorProviderRegistry const &providerRegistry,
+      const ComponentDescriptorProviderRegistry &providerRegistry,
       ContextContainer::Shared contextContainer);
 
   /*
@@ -46,21 +46,21 @@ class ComponentDescriptorRegistry {
    * If you requesting a ComponentDescriptor and unsure that it's there, you are
    * doing something wrong.
    */
-  ComponentDescriptor const *
+  const ComponentDescriptor *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle componentHandle) const;
 
-  ComponentDescriptor const &at(std::string const &componentName) const;
-  ComponentDescriptor const &at(ComponentHandle componentHandle) const;
+  const ComponentDescriptor &at(const std::string &componentName) const;
+  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
 
   bool hasComponentDescriptorAt(ComponentHandle componentHandle) const;
 
   ShadowNode::Shared createNode(
       Tag tag,
-      std::string const &viewName,
+      const std::string &viewName,
       SurfaceId surfaceId,
-      folly::dynamic const &props,
-      InstanceHandle::Shared const &instanceHandle) const;
+      const folly::dynamic &props,
+      const InstanceHandle::Shared &instanceHandle) const;
 
   void setFallbackComponentDescriptor(
       const SharedComponentDescriptor &descriptor);
@@ -87,7 +87,7 @@ class ComponentDescriptorRegistry {
   mutable butter::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
-  ComponentDescriptorProviderRegistry const &providerRegistry_;
+  const ComponentDescriptorProviderRegistry &providerRegistry_;
   ContextContainer::Shared contextContainer_;
 };
 

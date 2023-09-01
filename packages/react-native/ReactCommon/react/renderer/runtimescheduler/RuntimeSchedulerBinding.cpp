@@ -20,7 +20,7 @@ namespace facebook::react {
 std::shared_ptr<RuntimeSchedulerBinding>
 RuntimeSchedulerBinding::createAndInstallIfNeeded(
     jsi::Runtime &runtime,
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler) {
+    const std::shared_ptr<RuntimeScheduler> &runtimeScheduler) {
   auto runtimeSchedulerModuleName = "nativeRuntimeScheduler";
 
   auto runtimeSchedulerValue =
@@ -67,7 +67,7 @@ bool RuntimeSchedulerBinding::getIsSynchronous() const {
 
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime &runtime,
-    jsi::PropNameID const &name) {
+    const jsi::PropNameID &name) {
   auto propertyName = name.utf8(runtime);
 
   if (propertyName == "unstable_scheduleCallback") {
@@ -77,8 +77,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         3,
         [this](
             jsi::Runtime &runtime,
-            jsi::Value const &,
-            jsi::Value const *arguments,
+            const jsi::Value &,
+            const jsi::Value *arguments,
             size_t) noexcept -> jsi::Value {
           SchedulerPriority priority = fromRawValue(arguments[0].getNumber());
           auto callback = arguments[1].getObject(runtime).getFunction(runtime);
@@ -97,8 +97,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         1,
         [this](
             jsi::Runtime &runtime,
-            jsi::Value const &,
-            jsi::Value const *arguments,
+            const jsi::Value &,
+            const jsi::Value *arguments,
             size_t) noexcept -> jsi::Value {
           runtimeScheduler_->cancelTask(*taskFromValue(runtime, arguments[0]));
           return jsi::Value::undefined();
@@ -112,8 +112,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         0,
         [this](
             jsi::Runtime &,
-            jsi::Value const &,
-            jsi::Value const *,
+            const jsi::Value &,
+            const jsi::Value *,
             size_t) noexcept -> jsi::Value {
           auto shouldYield = runtimeScheduler_->getShouldYield();
           return {shouldYield};
@@ -126,8 +126,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         name,
         0,
         [](jsi::Runtime &,
-           jsi::Value const &,
-           jsi::Value const *,
+           const jsi::Value &,
+           const jsi::Value *,
            size_t) noexcept -> jsi::Value {
           // RequestPaint is left empty by design.
           return jsi::Value::undefined();
@@ -141,8 +141,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         0,
         [this](
             jsi::Runtime &,
-            jsi::Value const &,
-            jsi::Value const *,
+            const jsi::Value &,
+            const jsi::Value *,
             size_t) noexcept -> jsi::Value {
           auto now = runtimeScheduler_->now();
           auto asDouble =
@@ -160,8 +160,8 @@ jsi::Value RuntimeSchedulerBinding::get(
         0,
         [this](
             jsi::Runtime &runtime,
-            jsi::Value const &,
-            jsi::Value const *,
+            const jsi::Value &,
+            const jsi::Value *,
             size_t) noexcept -> jsi::Value {
           auto currentPriorityLevel =
               runtimeScheduler_->getCurrentPriorityLevel();

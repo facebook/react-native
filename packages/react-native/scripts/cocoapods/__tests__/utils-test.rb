@@ -220,7 +220,7 @@ class UtilsTests < Test::Unit::TestCase
     # ============================ #
     # Test - Exclude Architectures #
     # ============================ #
-    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_excludeNothing
+    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withNoValue_leaveUnset
         # Arrange
         user_project_mock = prepare_empty_user_project_mock()
         pods_projects_mock = PodsProjectMock.new()
@@ -233,13 +233,36 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "")
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], nil)
         end
-        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(user_project_mock.save_invocation_count, 0)
         assert_equal(pods_projects_mock.save_invocation_count, 0)
     end
 
-    def test_excludeArchitectures_whenHermesEngineIsIncluded_excludeI386
+    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withExistingValue_preserveExistingValue
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new()
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 0)
+        assert_equal(pods_projects_mock.save_invocation_count, 0)
+    end
+
+    def test_excludeArchitectures_whenHermesEngineIsIncluded_withNoValue_onlyExcludeI386
         # Arrange
         user_project_mock = prepare_empty_user_project_mock()
         pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
@@ -253,6 +276,29 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "i386")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
+    def test_excludeArchitectures_whenHermesEngineIsIncluded_withExistingValue_appendI386
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64 i386")
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
@@ -529,6 +575,32 @@ class UtilsTests < Test::Unit::TestCase
                 '$(inherited) "SomeFlag=1" "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
             )
         end
+    end
+
+    # ==================================== #
+    # Test - Set USE_HERMES Build Setting #
+    # ==================================== #
+
+    def test_setUseHermesBuildSetting_addTheUserSetting
+        # Arrange
+        react_native_path = "react_native/node_modules"
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.set_use_hermes_build_setting(installer, false)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["USE_HERMES"], false)
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+        assert_equal(Pod::UI.collected_messages, ["Setting USE_HERMES build settings"])
     end
 
     # ==================================== #

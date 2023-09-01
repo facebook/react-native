@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                             "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = File.absolute_path('./')
+    s.header_mappings_dir     = './'
     s.module_name             = 'React_Fabric'
   end
 

@@ -17,8 +17,8 @@ namespace facebook::react {
 
 AccessibilityProps::AccessibilityProps(
     const PropsParserContext &context,
-    AccessibilityProps const &sourceProps,
-    RawProps const &rawProps)
+    const AccessibilityProps &sourceProps,
+    const RawProps &rawProps)
     : accessible(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.accessible
                                                  : convertRawProp(
@@ -219,7 +219,7 @@ void AccessibilityProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char * /*propName*/,
-    RawValue const &value) {
+    const RawValue &value) {
   static auto defaults = AccessibilityProps{};
 
   switch (hash) {
