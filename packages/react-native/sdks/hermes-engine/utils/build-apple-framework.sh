@@ -121,9 +121,11 @@ function build_apple_framework {
     fi
 
     # Copy over Hermes and JSI API headers.
-    mkdir -p destroot/include/hermes/Public destroot/include/jsi
+    mkdir -p destroot/include/hermes/{Public,inspector/chrome} destroot/include/jsi
     cp public/hermes/Public/*.h destroot/include/hermes/Public
     cp API/hermes/*.h destroot/include/hermes
+    cp API/hermes/inspector/*.h destroot/include/hermes/inspector
+    cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
     cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
 }
@@ -137,10 +139,12 @@ function prepare_dest_root_for_ci {
   cp -R "./build_catalyst/API/hermes/hermes.framework"* "destroot/Library/Frameworks/catalyst"
   cp "./build_macosx/bin/"* "destroot/bin"
 
-  mkdir -p destroot/include/hermes/Public destroot/include/jsi
+  mkdir -p destroot/include/hermes/{Public,inspector/chrome} destroot/include/jsi
 
   cp public/hermes/Public/*.h destroot/include/hermes/Public
   cp API/hermes/*.h destroot/include/hermes
+  cp API/hermes/inspector/*.h destroot/include/hermes/inspector
+  cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
   cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
 }
 
