@@ -19,7 +19,7 @@ target_include_directories(bridgelesshermes PUBLIC .)
 target_link_libraries(bridgelesshermes
         jsireact
         hermes-engine::libhermes
-        hermes_inspector
+        hermes_inspector_modern
         jsi
         hermes_executor_common
 )

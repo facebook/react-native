@@ -31,9 +31,9 @@ Pod::Spec.new do |s|
   s.platforms              = { :osx => "10.14", :ios => min_ios_version_supported }
   s.source                 = source
   s.source_files           = "executor/*.{cpp,h}",
-                             "inspector/*.{cpp,h}",
-                             "inspector/chrome/*.{cpp,h}",
-                             "inspector/detail/*.{cpp,h}"
+                             "inspector-modern/*.{cpp,h}",
+                             "inspector-modern/chrome/*.{cpp,h}",
+                             "inspector-modern/detail/*.{cpp,h}"
   s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {

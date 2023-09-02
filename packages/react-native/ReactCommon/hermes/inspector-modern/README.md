@@ -1,9 +1,3 @@
-# DEPRECATED!
-
-This is a **deprecated, frozen version of the Hermes inspector support code in React Native**. See `ReactCommon/hermes/inspector-modern` instead.
-
----
-
 hermes-inspector provides a bridge between the low-level debugging API exposed
 by Hermes and higher-level debugging protocols such as the Chrome DevTools
 protocol.
@@ -23,23 +17,23 @@ can get debug logs to show even when tests are passing by running the test
 executable directly:
 
 ```
-$ buck build //xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector:chrome-tests
-$ buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/chrome-tests
+$ buck build //xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern:chrome-tests
+$ buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/chrome-tests
 [...]
 ```
 
 You can use standard gtest filters to only execute a particular set of tests:
 
 ```
-$ buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/chrome-tests \
+$ buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/chrome-tests \
     --gtest_filter='ConnectionTests.testSetBreakpoint'
 ```
 
 You can debug the tests using lldb or gdb:
 
 ```
-$ lldb buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/chrome-tests
-$ gdb buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/chrome-tests
+$ lldb buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/chrome-tests
+$ gdb buck-out/gen/xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/chrome-tests
 ```
 
 # Formatting
@@ -48,7 +42,7 @@ Make sure the code is formatted using the hermes clang-format rules before
 committing:
 
 ```
-$ xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/tools/format
+$ xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/tools/format
 ```
 
 We follow the clang format rules used by the rest of the Hermes project.
@@ -59,7 +53,7 @@ To add support for a new Chrome DevTools protocol message, add the message you
 want to add to tools/message_types.txt, and re-run the message types generator:
 
 ```
-$ xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector/tools/run_msggen
+$ xplat/js/react-native-github/packages/react-native/ReactCommon/hermes/inspector-modern/tools/run_msggen
 ```
 
 This will generate C++ structs for the new message type in
