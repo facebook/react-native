@@ -13,7 +13,6 @@
 #include <type_traits>
 
 #include <yoga/Yoga.h>
-#include <yoga/Yoga-internal.h>
 
 #include <yoga/bits/NumericBitfield.h>
 #include <yoga/numeric/FloatOptional.h>
@@ -23,12 +22,16 @@ namespace facebook::yoga {
 
 class YOGA_EXPORT Style {
   template <typename Enum>
-  using Values = detail::Values<enums::count<Enum>()>;
+  using Values = std::array<CompactValue, enums::count<Enum>()>;
 
 public:
   using Dimensions = Values<YGDimension>;
   using Edges = Values<YGEdge>;
   using Gutters = Values<YGGutter>;
+
+  static constexpr float DefaultFlexGrow = 0.0f;
+  static constexpr float DefaultFlexShrink = 0.0f;
+  static constexpr float WebDefaultFlexShrink = 1.0f;
 
   template <typename T>
   struct BitfieldRef {
@@ -112,7 +115,7 @@ private:
   Edges padding_ = {};
   Edges border_ = {};
   Gutters gap_ = {};
-  Dimensions dimensions_{CompactValue::ofAuto()};
+  Dimensions dimensions_{CompactValue::ofAuto(), CompactValue::ofAuto()};
   Dimensions minDimensions_ = {};
   Dimensions maxDimensions_ = {};
   // Yoga specific properties, not compatible with flexbox specification

@@ -9,10 +9,10 @@
 
 #include <cstdint>
 #include <stdio.h>
+#include <vector>
+
 #include <yoga/config/Config.h>
 #include <yoga/node/LayoutResults.h>
-#include <yoga/Yoga-internal.h>
-
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
 

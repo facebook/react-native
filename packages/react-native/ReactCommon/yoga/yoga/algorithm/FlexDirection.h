@@ -43,4 +43,42 @@ inline YGFlexDirection resolveCrossDirection(
       : YGFlexDirectionColumn;
 }
 
+inline YGEdge leadingEdge(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGEdgeTop;
+    case YGFlexDirectionColumnReverse:
+      return YGEdgeBottom;
+    case YGFlexDirectionRow:
+      return YGEdgeLeft;
+    case YGFlexDirectionRowReverse:
+      return YGEdgeRight;
+  }
+
+  YGAssert(false, "Invalid YGFlexDirection");
+
+  // Avoid "not all control paths return a value" warning until next diff adds
+  // assert with [[noreturn]]
+  return YGEdgeTop;
+}
+
+inline YGEdge trailingEdge(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGEdgeBottom;
+    case YGFlexDirectionColumnReverse:
+      return YGEdgeTop;
+    case YGFlexDirectionRow:
+      return YGEdgeRight;
+    case YGFlexDirectionRowReverse:
+      return YGEdgeLeft;
+  }
+
+  YGAssert(false, "Invalid YGFlexDirection");
+
+  // Avoid "not all control paths return a value" warning until next diff adds
+  // assert with [[noreturn]]
+  return YGEdgeTop;
+}
+
 } // namespace facebook::yoga

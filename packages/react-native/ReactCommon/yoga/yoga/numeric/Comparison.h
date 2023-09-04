@@ -15,19 +15,24 @@
 
 namespace facebook::yoga {
 
+template <typename FloatT>
+inline bool isUndefined(FloatT value) {
+  return std::isnan(value);
+}
+
 inline float maxOrDefined(const float a, const float b) {
-  if (!std::isnan(a) && !std::isnan(b)) {
+  if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
     return fmaxf(a, b);
   }
-  return std::isnan(a) ? b : a;
+  return yoga::isUndefined(a) ? b : a;
 }
 
 inline float minOrDefined(const float a, const float b) {
-  if (!std::isnan(a) && !std::isnan(b)) {
+  if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
     return fminf(a, b);
   }
 
-  return std::isnan(a) ? b : a;
+  return yoga::isUndefined(a) ? b : a;
 }
 
 inline FloatOptional maxOrDefined(FloatOptional op1, FloatOptional op2) {
@@ -43,17 +48,17 @@ inline FloatOptional maxOrDefined(FloatOptional op1, FloatOptional op2) {
 // Custom equality functions using a hardcoded epsilon of 0.0001f, or returning
 // true if both floats are NaN.
 inline bool inexactEquals(const float a, const float b) {
-  if (!std::isnan(a) && !std::isnan(b)) {
+  if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
     return fabs(a - b) < 0.0001f;
   }
-  return std::isnan(a) && std::isnan(b);
+  return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
 inline bool inexactEquals(const double a, const double b) {
-  if (!std::isnan(a) && !std::isnan(b)) {
+  if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
     return fabs(a - b) < 0.0001;
   }
-  return std::isnan(a) && std::isnan(b);
+  return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
 inline bool inexactEquals(const YGValue& a, const YGValue& b) {
@@ -62,7 +67,7 @@ inline bool inexactEquals(const YGValue& a, const YGValue& b) {
   }
 
   if (a.unit == YGUnitUndefined ||
-      (std::isnan(a.value) && std::isnan(b.value))) {
+      (yoga::isUndefined(a.value) && yoga::isUndefined(b.value))) {
     return true;
   }
 
