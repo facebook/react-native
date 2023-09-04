@@ -60,7 +60,7 @@ class BlobManager {
    * Create blob from existing array of blobs.
    */
   static createFromParts(
-    parts: Array<Blob | string>,
+    parts: Array<ArrayBufferView | ArrayBuffer | Blob | string>,
     options?: BlobOptions,
   ): Blob {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
@@ -70,7 +70,7 @@ class BlobManager {
       if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
         return {
           data: fromByteArray(new Uint8Array(part)),
-          type: 'string'
+          type: 'string',
         };
       } else if (part instanceof Blob) {
         return {
