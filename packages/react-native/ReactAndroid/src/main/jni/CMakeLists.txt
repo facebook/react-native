@@ -134,8 +134,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/MessageTests.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/RemoteObjectsTableTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
@@ -178,14 +176,11 @@ add_executable(reactnative_unittest
 
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
   # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionDemuxTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/detail/tests/SerialExecutorTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/tests/InspectorTests.cpp
 
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionTests.cpp
   )
   target_compile_options(reactnative_unittest
     PRIVATE
