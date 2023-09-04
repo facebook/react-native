@@ -69,7 +69,8 @@ class BlobManager {
     const items = parts.map(part => {
       if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
         return {
-          data: fromByteArray(new Uint8Array(part)),
+          // $FlowFixMe[incompatible-cast]
+          data: fromByteArray(new Uint8Array((part: ArrayBuffer))),
           type: 'string',
         };
       } else if (part instanceof Blob) {
