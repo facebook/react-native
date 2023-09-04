@@ -11,8 +11,8 @@
 #include <jsi/jsilib.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
-#include <hermes/inspector/RuntimeAdapter.h>
-#include <hermes/inspector/chrome/Registration.h>
+#include <hermes/inspector-modern/RuntimeAdapter.h>
+#include <hermes/inspector-modern/chrome/Registration.h>
 #include <jsi/decorator.h>
 #endif
 
@@ -26,15 +26,16 @@ namespace facebook::react {
 // Wrapper that strongly retains the HermesRuntime for on device debugging.
 //
 // HermesInstanceRuntimeAdapter needs to strongly retain the HermesRuntime. Why:
-//   - facebook::hermes::inspector::chrome::Connection::Impl owns the Adapter
-//   - facebook::hermes::inspector::chrome::Connection::Impl also owns jsi::
-//   objects
+//   - facebook::hermes::inspector_modern::chrome::Connection::Impl owns the
+//   Adapter
+//   - facebook::hermes::inspector_modern::chrome::Connection::Impl also owns
+//   jsi:: objects
 //   - jsi:: objects need to be deleted before the Runtime.
 //
 // If Adapter doesn't share ownership over jsi::Runtime, the runtime can be
 // deleted before Connection::Impl cleans up all its jsi:: Objects. This will
 // lead to a runtime crash.
-class HermesInstanceRuntimeAdapter : public inspector::RuntimeAdapter {
+class HermesInstanceRuntimeAdapter : public inspector_modern::RuntimeAdapter {
  public:
   HermesInstanceRuntimeAdapter(std::shared_ptr<HermesRuntime> hermesRuntime)
       : hermesRuntime_(hermesRuntime) {}
@@ -54,17 +55,17 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
       : RuntimeDecorator<jsi::Runtime>(*runtime), runtime_(std::move(runtime)) {
     auto adapter = std::make_unique<HermesInstanceRuntimeAdapter>(runtime_);
 
-    debugToken_ = inspector::chrome::enableDebugging(
+    debugToken_ = inspector_modern::chrome::enableDebugging(
         std::move(adapter), "Hermes Bridgeless React Native");
   }
 
   ~DecoratedRuntime() {
-    inspector::chrome::disableDebugging(debugToken_);
+    inspector_modern::chrome::disableDebugging(debugToken_);
   }
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
-  inspector::chrome::DebugSessionToken debugToken_;
+  inspector_modern::chrome::DebugSessionToken debugToken_;
 };
 
 #endif

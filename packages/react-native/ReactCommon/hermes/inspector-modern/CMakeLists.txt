@@ -6,14 +6,14 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB hermesinspector_SRC CONFIGURE_DEPENDS *.cpp detail/*.cpp chrome/*.cpp)
+file(GLOB hermesinspectormodern_SRC CONFIGURE_DEPENDS *.cpp detail/*.cpp chrome/*.cpp)
 
-add_library(hermes_inspector
+add_library(hermes_inspector_modern
         STATIC
-        ${hermesinspector_SRC})
+        ${hermesinspectormodern_SRC})
 
 target_compile_options(
-        hermes_inspector
+        hermes_inspector_modern
         PRIVATE
         -DHERMES_INSPECTOR_FOLLY_KLUDGE=1
         -std=c++17
@@ -22,14 +22,14 @@ target_compile_options(
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(
-                hermes_inspector
+                hermes_inspector_modern
                 PRIVATE
                 -DHERMES_ENABLE_DEBUGGER=1
         )
 endif()
 
-target_include_directories(hermes_inspector PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(hermes_inspector
+target_include_directories(hermes_inspector_modern PUBLIC ${REACT_COMMON_DIR})
+target_link_libraries(hermes_inspector_modern
         jsinspector
         fb
         fbjni
