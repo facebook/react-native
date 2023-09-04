@@ -16,6 +16,7 @@ import type {
   PageDescription,
 } from './types';
 import type {EventReporter} from '../types/EventReporter';
+import type {Experiments} from '../types/Experiments';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import url from 'url';
@@ -52,10 +53,17 @@ export default class InspectorProxy {
 
   _eventReporter: ?EventReporter;
 
-  constructor(projectRoot: string, eventReporter: ?EventReporter) {
+  _experiments: Experiments;
+
+  constructor(
+    projectRoot: string,
+    eventReporter: ?EventReporter,
+    experiments: Experiments,
+  ) {
     this._projectRoot = projectRoot;
     this._devices = new Map();
     this._eventReporter = eventReporter;
+    this._experiments = experiments;
   }
 
   // Process HTTP request sent to server. We only respond to 2 HTTP requests:
