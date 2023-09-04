@@ -117,10 +117,10 @@ FloatOptional Node::getLeadingPosition(
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.position(), leading[axis], CompactValue::ofZero());
+            style_.position(), leadingEdge(axis), CompactValue::ofZero());
   return yoga::resolveValue(leadingPosition, axisSize);
 }
 
@@ -131,10 +131,10 @@ FloatOptional Node::getTrailingPosition(
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
-            trailing[axis],
+            trailingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.position(), trailing[axis], CompactValue::ofZero());
+            style_.position(), trailingEdge(axis), CompactValue::ofZero());
   return yoga::resolveValue(trailingPosition, axisSize);
 }
 
@@ -143,10 +143,10 @@ bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofUndefined())
       : computeEdgeValueForColumn(
-            style_.position(), leading[axis], CompactValue::ofUndefined());
+            style_.position(), leadingEdge(axis), CompactValue::ofUndefined());
   return !leadingPosition.isUndefined();
 }
 
@@ -155,10 +155,10 @@ bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
-            trailing[axis],
+            trailingEdge(axis),
             CompactValue::ofUndefined())
       : computeEdgeValueForColumn(
-            style_.position(), trailing[axis], CompactValue::ofUndefined());
+            style_.position(), trailingEdge(axis), CompactValue::ofUndefined());
   return !trailingPosition.isUndefined();
 }
 
@@ -167,9 +167,12 @@ FloatOptional Node::getLeadingMargin(
     const float widthSize) const {
   auto leadingMargin = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.margin(), YGEdgeStart, leading[axis], CompactValue::ofZero())
+            style_.margin(),
+            YGEdgeStart,
+            leadingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.margin(), leading[axis], CompactValue::ofZero());
+            style_.margin(), leadingEdge(axis), CompactValue::ofZero());
   return leadingMargin.isAuto() ? FloatOptional{0}
                                 : yoga::resolveValue(leadingMargin, widthSize);
 }
@@ -179,9 +182,12 @@ FloatOptional Node::getTrailingMargin(
     const float widthSize) const {
   auto trailingMargin = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.margin(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.margin(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.margin(), trailing[axis], CompactValue::ofZero());
+            style_.margin(), trailingEdge(axis), CompactValue::ofZero());
   return trailingMargin.isAuto()
       ? FloatOptional{0}
       : yoga::resolveValue(trailingMargin, widthSize);
@@ -390,25 +396,25 @@ void Node::setPosition(
 
   setLayoutPosition(
       (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
-      leading[mainAxis]);
+      leadingEdge(mainAxis));
   setLayoutPosition(
       (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
-      trailing[mainAxis]);
+      trailingEdge(mainAxis));
   setLayoutPosition(
       (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross)
           .unwrap(),
-      leading[crossAxis]);
+      leadingEdge(crossAxis));
   setLayoutPosition(
       (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross)
           .unwrap(),
-      trailing[crossAxis]);
+      trailingEdge(crossAxis));
 }
 
 YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
-    return style_.margin()[leading[axis]];
+    return style_.margin()[leadingEdge(axis)];
   }
 }
 
@@ -416,7 +422,7 @@ YGValue Node::marginTrailingValue(const YGFlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
-    return style_.margin()[trailing[axis]];
+    return style_.margin()[trailingEdge(axis)];
   }
 }
 
@@ -493,7 +499,7 @@ float Node::resolveFlexGrow() const {
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
     return style_.flex().unwrap();
   }
-  return kDefaultFlexGrow;
+  return Style::DefaultFlexGrow;
 }
 
 float Node::resolveFlexShrink() const {
@@ -507,7 +513,8 @@ float Node::resolveFlexShrink() const {
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return config_->useWebDefaults() ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return config_->useWebDefaults() ? Style::WebDefaultFlexShrink
+                                   : Style::DefaultFlexShrink;
 }
 
 bool Node::isNodeFlexible() {
@@ -519,18 +526,24 @@ bool Node::isNodeFlexible() {
 float Node::getLeadingBorder(const YGFlexDirection axis) const {
   YGValue leadingBorder = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.border(), YGEdgeStart, leading[axis], CompactValue::ofZero())
+            style_.border(),
+            YGEdgeStart,
+            leadingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.border(), leading[axis], CompactValue::ofZero());
+            style_.border(), leadingEdge(axis), CompactValue::ofZero());
   return fmaxf(leadingBorder.value, 0.0f);
 }
 
 float Node::getTrailingBorder(const YGFlexDirection axis) const {
   YGValue trailingBorder = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.border(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.border(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.border(), trailing[axis], CompactValue::ofZero());
+            style_.border(), trailingEdge(axis), CompactValue::ofZero());
   return fmaxf(trailingBorder.value, 0.0f);
 }
 
@@ -541,10 +554,10 @@ FloatOptional Node::getLeadingPadding(
       ? computeEdgeValueForRow(
             style_.padding(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.padding(), leading[axis], CompactValue::ofZero());
+            style_.padding(), leadingEdge(axis), CompactValue::ofZero());
   return yoga::maxOrDefined(
       yoga::resolveValue(leadingPadding, widthSize), FloatOptional(0.0f));
 }
@@ -554,9 +567,12 @@ FloatOptional Node::getTrailingPadding(
     const float widthSize) const {
   auto trailingPadding = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.padding(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.padding(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.padding(), trailing[axis], CompactValue::ofZero());
+            style_.padding(), trailingEdge(axis), CompactValue::ofZero());
   return yoga::maxOrDefined(
       yoga::resolveValue(trailingPadding, widthSize), FloatOptional(0.0f));
 }

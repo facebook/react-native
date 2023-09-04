@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cmath>
+
 #include <yoga/node/LayoutResults.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -23,7 +25,8 @@ bool LayoutResults::operator==(LayoutResults layout) const {
       cachedLayout == layout.cachedLayout &&
       computedFlexBasis == layout.computedFlexBasis;
 
-  for (uint32_t i = 0; i < YG_MAX_CACHED_RESULT_COUNT && isEqual; ++i) {
+  for (uint32_t i = 0; i < LayoutResults::MaxCachedMeasurements && isEqual;
+       ++i) {
     isEqual = isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
   }
 
