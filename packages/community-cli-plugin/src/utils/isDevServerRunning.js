@@ -23,6 +23,7 @@ import fetch from 'node-fetch';
  * - `unknown`: An error was encountered; attempt server creation anyway.
  */
 export default async function isDevServerRunning(
+  scheme: string,
   host: string,
   port: number,
   projectRoot: string,
@@ -34,7 +35,7 @@ export default async function isDevServerRunning(
       return 'not_running';
     }
 
-    const statusResponse = await fetch(`http://localhost:${port}/status`);
+    const statusResponse = await fetch(`${scheme}://${host}:${port}/status`);
     const body = await statusResponse.text();
 
     return body === 'packager-status:running' &&
