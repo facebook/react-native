@@ -3513,6 +3513,11 @@ acorn@^8.9.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.10.0.tgz#8be5b3907a67221a81ab23c7889c4c5526b62ec5"
   integrity sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==
 
+actual-request-url@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/actual-request-url/-/actual-request-url-1.0.4.tgz#54454514e3715a4c60a1e26e9a49423e376a7563"
+  integrity sha512-9AOnrTOkog3eM7l4Y702+BKTYL1Tvxcl4EBbKrhDTB87npkss+I1dirUox2OyZVVz95BnavGgSZanWWas43j7A==
+
 adbkit-apkreader@^3.1.2:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/adbkit-apkreader/-/adbkit-apkreader-3.2.0.tgz#8d0bb1f733969e959992095ed7f2a8d658ec97a5"

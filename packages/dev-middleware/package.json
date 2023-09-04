@@ -23,11 +23,14 @@
   ],
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
+    "@react-native/debugger-frontend": "^0.73.0",
+    "actual-request-url": "^1.0.4",
     "chrome-launcher": "^0.15.2",
     "chromium-edge-launcher": "^1.0.0",
     "connect": "^3.6.5",
     "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
+    "serve-static": "^1.13.1",
     "temp-dir": "^2.0.0"
   },
   "engines": {

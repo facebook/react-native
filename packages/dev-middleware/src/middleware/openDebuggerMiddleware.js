@@ -13,6 +13,7 @@ import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
+import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
 
 import url from 'url';
@@ -26,6 +27,7 @@ type Options = $ReadOnly<{
   browserLauncher: BrowserLauncher,
   logger?: Logger,
   eventReporter?: EventReporter,
+  experiments: Experiments,
 }>;
 
 /**
@@ -39,6 +41,7 @@ type Options = $ReadOnly<{
 export default function openDebuggerMiddleware({
   browserLauncher,
   eventReporter,
+  experiments,
   logger,
 }: Options): NextHandleFunction {
   return async (
@@ -50,7 +53,9 @@ export default function openDebuggerMiddleware({
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
-      const targets = await queryInspectorTargets(getDevServerUrl(req));
+      const targets = await queryInspectorTargets(
+        getDevServerUrl(req, 'local'),
+      );
       let target;
 
       if (typeof appId === 'string') {
@@ -80,7 +85,11 @@ export default function openDebuggerMiddleware({
         debuggerInstances.set(
           appId,
           await browserLauncher.launchDebuggerAppWindow(
-            getDevToolsFrontendUrl(target.webSocketDebuggerUrl),
+            getDevToolsFrontendUrl(
+              target.webSocketDebuggerUrl,
+              getDevServerUrl(req, 'public'),
+              experiments,
+            ),
           ),
         );
         res.end();
