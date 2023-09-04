@@ -8,6 +8,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+# Convert input paths to CMake format (with forward slashes)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
+file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
