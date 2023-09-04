@@ -50,19 +50,16 @@ export default function openDebuggerMiddleware({
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
-      if (typeof appId !== 'string') {
-        res.writeHead(400);
-        res.end();
-        eventReporter?.logEvent({
-          type: 'launch_debugger_frontend',
-          status: 'coded_error',
-          errorCode: 'MISSING_APP_ID',
-        });
-        return;
-      }
-
       const targets = await queryInspectorTargets(getDevServerUrl(req));
-      const target = targets.find(_target => _target.description === appId);
+      let target;
+
+      if (typeof appId === 'string') {
+        logger?.info('Launching JS debugger...');
+        target = targets.find(_target => _target.description === appId);
+      } else {
+        logger?.info('Launching JS debugger for first available target...');
+        target = targets[0];
+      }
 
       if (!target) {
         res.writeHead(404);
@@ -79,7 +76,6 @@ export default function openDebuggerMiddleware({
       }
 
       try {
-        logger?.info('Launching JS debugger...');
         await debuggerInstances.get(appId)?.kill();
         debuggerInstances.set(
           appId,
