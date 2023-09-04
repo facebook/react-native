@@ -814,7 +814,7 @@ export interface TextInputProps
    */
   placeholderTextColor?: ColorValue | undefined;
 
-  /** 
+  /**
    * If `true`, text is not editable. The default value is `false`.
    */
   readOnly?: boolean | undefined;
