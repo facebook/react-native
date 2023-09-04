@@ -58,7 +58,7 @@ class Blob {
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
    */
   constructor(
-    parts: Array<ArrayBufferView | ArrayBuffer | Blob | string> = [],
+    parts: Array<$ArrayBufferView | ArrayBuffer | Blob | string> = [],
     options?: BlobOptions,
   ) {
     const BlobManager = require('./BlobManager');

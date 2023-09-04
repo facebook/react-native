@@ -60,7 +60,7 @@ class BlobManager {
    * Create blob from existing array of blobs.
    */
   static createFromParts(
-    parts: Array<ArrayBufferView | ArrayBuffer | Blob | string>,
+    parts: Array<$ArrayBufferView | ArrayBuffer | Blob | string>,
     options?: BlobOptions,
   ): Blob {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
