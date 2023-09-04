@@ -44,7 +44,7 @@ describe('Blob', function () {
     blobA.data.size = 34540;
     blobB.data.size = 65452;
 
-    const buffer = new ArrayBuffer(4)
+    const buffer = new ArrayBuffer(4);
 
     const blob = new Blob([blobA, blobB, textA, textB, textC, buffer]);
 
@@ -54,7 +54,10 @@ describe('Blob', function () {
         global.Buffer.byteLength(textA, 'UTF-8') +
         global.Buffer.byteLength(textB, 'UTF-8') +
         global.Buffer.byteLength(textC, 'UTF-8') +
-        global.Buffer.byteLength(fromByteArray(new Uint8Array(buffer)), 'UTF-8'),
+        global.Buffer.byteLength(
+          fromByteArray(new Uint8Array(buffer)),
+          'UTF-8',
+        ),
     );
     expect(blob.type).toBe('');
   });
