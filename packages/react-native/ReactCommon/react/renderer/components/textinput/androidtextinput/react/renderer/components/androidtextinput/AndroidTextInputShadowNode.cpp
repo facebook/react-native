@@ -26,7 +26,7 @@ namespace facebook::react {
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
 void AndroidTextInputShadowNode::setContextContainer(
-    ContextContainer *contextContainer) {
+    ContextContainer* contextContainer) {
   ensureUnsealed();
   contextContainer_ = contextContainer;
 }
@@ -97,7 +97,7 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
     const {
-  const auto &state = getStateData();
+  const auto& state = getStateData();
 
   auto reactTreeAttributedString = getAttributedString();
 
@@ -118,7 +118,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto reactTreeAttributedString = getAttributedString();
-  const auto &state = getStateData();
+  const auto& state = getStateData();
 
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
@@ -157,8 +157,8 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    const LayoutContext & /*layoutContext*/,
-    const LayoutConstraints &layoutConstraints) const {
+    const LayoutContext& /*layoutContext*/,
+    const LayoutConstraints& layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
         ->measureCachedSpannableById(

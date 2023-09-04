@@ -20,7 +20,7 @@ namespace facebook::react {
 class ParagraphComponentDescriptor final
     : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
-  ParagraphComponentDescriptor(const ComponentDescriptorParameters &parameters)
+  ParagraphComponentDescriptor(const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(parameters) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
@@ -28,10 +28,10 @@ class ParagraphComponentDescriptor final
   }
 
  protected:
-  void adopt(const ShadowNode::Unshared &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto &paragraphShadowNode = static_cast<ParagraphShadowNode &>(*shadowNode);
+    auto& paragraphShadowNode = static_cast<ParagraphShadowNode&>(*shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.

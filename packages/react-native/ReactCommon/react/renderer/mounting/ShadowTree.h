@@ -23,7 +23,7 @@
 namespace facebook::react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    const RootShadowNode &oldRootShadowNode)>;
+    const RootShadowNode& oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -77,10 +77,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext,
-      const ShadowTreeDelegate &delegate,
-      const ContextContainer &contextContainer);
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext,
+      const ShadowTreeDelegate& delegate,
+      const ContextContainer& contextContainer);
 
   ~ShadowTree();
 
@@ -103,15 +103,15 @@ class ShadowTree final {
    * The `transaction` function can cancel commit returning `nullptr`.
    */
   CommitStatus tryCommit(
-      const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions) const;
+      const ShadowTreeCommitTransaction& transaction,
+      const CommitOptions& commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
-      const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions) const;
+      const ShadowTreeCommitTransaction& transaction,
+      const CommitOptions& commitOptions) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
@@ -139,10 +139,10 @@ class ShadowTree final {
   void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
   void emitLayoutEvents(
-      std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const;
+      std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const;
 
   const SurfaceId surfaceId_;
-  const ShadowTreeDelegate &delegate_;
+  const ShadowTreeDelegate& delegate_;
   mutable std::shared_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.

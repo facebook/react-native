@@ -56,7 +56,7 @@ class ShadowNode : public Sealable,
    * Returns `true` if nodes belong to the same family (they were cloned one
    * from each other or from the same source node).
    */
-  static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
+  static bool sameFamily(const ShadowNode& first, const ShadowNode& second);
 
   /*
    * A set of traits associated with a particular class.
@@ -72,7 +72,7 @@ class ShadowNode : public Sealable,
    * Creates a Shadow Node based on fields specified in a `fragment`.
    */
   ShadowNode(
-      const ShadowNodeFragment &fragment,
+      const ShadowNodeFragment& fragment,
       ShadowNodeFamily::Shared family,
       ShadowNodeTraits traits);
 
@@ -82,21 +82,21 @@ class ShadowNode : public Sealable,
    * Note: `tag`, `surfaceId`, and `eventEmitter` cannot be changed.
    */
   ShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment);
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
 
   /*
    * Not copyable.
    */
-  ShadowNode(const ShadowNode &shadowNode) noexcept = delete;
-  ShadowNode &operator=(const ShadowNode &other) noexcept = delete;
+  ShadowNode(const ShadowNode& shadowNode) noexcept = delete;
+  ShadowNode& operator=(const ShadowNode& other) noexcept = delete;
 
   virtual ~ShadowNode() override = default;
 
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  Unshared clone(const ShadowNodeFragment &fragment) const;
+  Unshared clone(const ShadowNodeFragment& fragment) const;
 
   /*
    * Clones the node (and partially the tree starting from the node) by
@@ -106,8 +106,8 @@ class ShadowNode : public Sealable,
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
   Unshared cloneTree(
-      const ShadowNodeFamily &shadowNodeFamily,
-      const std::function<Unshared(ShadowNode const &oldShadowNode)> &callback)
+      const ShadowNodeFamily& shadowNodeFamily,
+      const std::function<Unshared(ShadowNode const& oldShadowNode)>& callback)
       const;
 
 #pragma mark - Getters
@@ -120,17 +120,17 @@ class ShadowNode : public Sealable,
    */
   ShadowNodeTraits getTraits() const;
 
-  const Props::Shared &getProps() const;
-  const ListOfShared &getChildren() const;
-  const SharedEventEmitter &getEventEmitter() const;
-  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
+  const Props::Shared& getProps() const;
+  const ListOfShared& getChildren() const;
+  const SharedEventEmitter& getEventEmitter() const;
+  jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
 
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
    */
-  const ComponentDescriptor &getComponentDescriptor() const;
+  const ComponentDescriptor& getComponentDescriptor() const;
 
   /*
    * Returns the `ContextContainer` used by this ShadowNode.
@@ -140,7 +140,7 @@ class ShadowNode : public Sealable,
   /*
    * Returns a state associated with the particular node.
    */
-  const State::Shared &getState() const;
+  const State::Shared& getState() const;
 
   /*
    * Returns a momentary value of the most recently created or committed state
@@ -160,14 +160,14 @@ class ShadowNode : public Sealable,
 
   void sealRecursive() const;
 
-  const ShadowNodeFamily &getFamily() const;
+  const ShadowNodeFamily& getFamily() const;
 
 #pragma mark - Mutating Methods
 
-  virtual void appendChild(const Shared &child);
+  virtual void appendChild(const Shared& child);
   virtual void replaceChild(
-      const ShadowNode &oldChild,
-      const Shared &newChild,
+      const ShadowNode& oldChild,
+      const Shared& newChild,
       int32_t suggestedIndex = -1);
 
   /*
@@ -216,8 +216,8 @@ class ShadowNode : public Sealable,
   mutable std::atomic<bool> hasBeenMounted_{false};
 
   static Props::Shared propsForClonedShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const Props::Shared &props);
+      const ShadowNode& sourceShadowNode,
+      const Props::Shared& props);
 
  protected:
   /*

@@ -14,8 +14,8 @@
 namespace facebook::react {
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(
-    const ShadowViewMutation &lhs,
-    const ShadowViewMutation &rhs) noexcept {
+    const ShadowViewMutation& lhs,
+    const ShadowViewMutation& rhs) noexcept {
   // Make sure that removes on the same level are sorted - highest indices must
   // come first.
   return (lhs.type == ShadowViewMutation::Type::Remove &&
@@ -25,8 +25,8 @@ static inline bool shouldFirstComeBeforeSecondRemovesOnly(
 }
 
 static inline bool shouldFirstComeBeforeSecondMutation(
-    const ShadowViewMutation &lhs,
-    const ShadowViewMutation &rhs) noexcept {
+    const ShadowViewMutation& lhs,
+    const ShadowViewMutation& rhs) noexcept {
   if (lhs.type != rhs.type) {
     // Deletes always come last
     if (lhs.type == ShadowViewMutation::Type::Delete) {
@@ -73,7 +73,7 @@ static inline bool shouldFirstComeBeforeSecondMutation(
 
 std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
-    const LayoutAnimation &animation,
-    const AnimationConfig &mutationConfig);
+    const LayoutAnimation& animation,
+    const AnimationConfig& mutationConfig);
 
 } // namespace facebook::react

@@ -18,13 +18,13 @@ namespace facebook::react {
  * implementation (*without* using Differentiator).
  */
 StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
-    const ShadowNode &rootShadowNode);
+    const ShadowNode& rootShadowNode);
 
 /*
  * Builds a ShadowView tree from given root ShadowNode using Differentiator by
  * generating mutation instructions between empty and final trees.
  */
 StubViewTree buildStubViewTreeUsingDifferentiator(
-    const ShadowNode &rootShadowNode);
+    const ShadowNode& rootShadowNode);
 
 } // namespace facebook::react

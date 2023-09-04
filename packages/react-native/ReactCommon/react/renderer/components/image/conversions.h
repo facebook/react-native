@@ -18,9 +18,9 @@
 namespace facebook::react {
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ImageSource &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ImageSource& result) {
   if (value.hasType<std::string>()) {
     result = {
         /* .type = */ ImageSource::Type::Remote,
@@ -88,14 +88,14 @@ inline void fromRawValue(
   result.type = ImageSource::Type::Invalid;
 }
 
-inline std::string toString(const ImageSource &value) {
+inline std::string toString(const ImageSource& value) {
   return "{uri: " + value.uri + "}";
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    ImageResizeMode &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    ImageResizeMode& result) {
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     LOG(ERROR) << "Unsupported ImageResizeMode type";
@@ -123,7 +123,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const ImageResizeMode &value) {
+inline std::string toString(const ImageResizeMode& value) {
   switch (value) {
     case ImageResizeMode::Cover:
       return "cover";

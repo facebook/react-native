@@ -24,7 +24,7 @@ namespace facebook::react {
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
 template <
-    const char *concreteComponentName,
+    const char* concreteComponentName,
     typename ViewPropsT = ViewProps,
     typename ViewEventEmitterT = ViewEventEmitter,
     typename... Ts>
@@ -53,16 +53,16 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       Ts...>;
 
   ConcreteViewShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ShadowNodeFamily::Shared &family,
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
       ShadowNodeTraits traits)
       : BaseShadowNode(fragment, family, traits) {
     initialize();
   }
 
   ConcreteViewShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment)
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment)
       : BaseShadowNode(sourceShadowNode, fragment) {
     initialize();
   }
@@ -86,7 +86,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
 
  private:
   void initialize() noexcept {
-    auto &props = BaseShadowNode::getConcreteProps();
+    auto& props = BaseShadowNode::getConcreteProps();
 
     if (props.yogaStyle.display() == YGDisplayNone) {
       BaseShadowNode::traits_.set(ShadowNodeTraits::Trait::Hidden);

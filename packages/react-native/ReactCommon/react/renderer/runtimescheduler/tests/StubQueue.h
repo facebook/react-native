@@ -12,7 +12,7 @@
 
 class StubQueue {
  public:
-  void runOnQueue(std::function<void()> &&func) {
+  void runOnQueue(std::function<void()>&& func) {
     {
       std::lock_guard<std::mutex> lock(mutex_);
       callbackQueue_.push(func);

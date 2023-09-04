@@ -26,11 +26,11 @@ namespace facebook::react {
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 void PrintMutationInstruction(
     std::string message,
-    const ShadowViewMutation &mutation);
+    const ShadowViewMutation& mutation);
 void PrintMutationInstructionRelative(
     std::string message,
-    const ShadowViewMutation &mutation,
-    const ShadowViewMutation &relativeMutation);
+    const ShadowViewMutation& mutation,
+    const ShadowViewMutation& relativeMutation);
 #else
 #define PrintMutationInstruction(a, b)
 #define PrintMutationInstructionRelative(a, b, c)
@@ -41,18 +41,18 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared &contextContainer,
-      LayoutAnimationStatusDelegate *delegate);
+      ContextContainer::Shared& contextContainer,
+      LayoutAnimationStatusDelegate* delegate);
 
 #pragma mark - UIManagerAnimationDelegate methods
 
   void uiManagerDidConfigureNextLayoutAnimation(
-      jsi::Runtime &runtime,
-      const RawValue &config,
-      const jsi::Value &successCallbackValue,
-      const jsi::Value &failureCallbackValue) const override;
+      jsi::Runtime& runtime,
+      const RawValue& config,
+      const jsi::Value& successCallbackValue,
+      const jsi::Value& failureCallbackValue) const override;
 
-  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &
+  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry&
                                           componentDescriptorRegistry) override;
 
   void setReduceDeleteCreateMutation(bool reduceDeleteCreateMutation) override;
@@ -72,7 +72,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      const TransactionTelemetry &telemetry,
+      const TransactionTelemetry& telemetry,
       ShadowViewMutationList mutations) const override;
 
   // Exposed for testing.
@@ -85,7 +85,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   // also protected by the mutex! The only way to set this without a mutex is
   // via a constructor.
   void setLayoutAnimationStatusDelegate(
-      LayoutAnimationStatusDelegate *delegate) const;
+      LayoutAnimationStatusDelegate* delegate) const;
 
   void setClockNow(std::function<uint64_t()> now);
 
@@ -102,9 +102,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   mutable std::vector<LayoutAnimation> inflightAnimations_{};
 
-  bool hasComponentDescriptorForShadowView(const ShadowView &shadowView) const;
-  const ComponentDescriptor &getComponentDescriptorForShadowView(
-      const ShadowView &shadowView) const;
+  bool hasComponentDescriptorForShadowView(const ShadowView& shadowView) const;
+  const ComponentDescriptor& getComponentDescriptorForShadowView(
+      const ShadowView& shadowView) const;
 
   /**
    * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
@@ -117,14 +117,14 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   ShadowView createInterpolatedShadowView(
       Float progress,
-      const ShadowView &startingView,
-      const ShadowView &finalView) const;
+      const ShadowView& startingView,
+      const ShadowView& finalView) const;
 
-  void callCallback(const LayoutAnimationCallbackWrapper &callback) const;
+  void callCallback(const LayoutAnimationCallbackWrapper& callback) const;
 
   virtual void animationMutationsForFrame(
       SurfaceId surfaceId,
-      ShadowViewMutation::List &mutationsList,
+      ShadowViewMutation::List& mutationsList,
       uint64_t now) const = 0;
 
   /**
@@ -132,17 +132,17 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * Keyframe animation may have timed-out, or be canceled due to a conflict.
    */
   void queueFinalMutationsForCompletedKeyFrame(
-      const AnimationKeyFrame &keyframe,
-      ShadowViewMutation::List &mutationsList,
+      const AnimationKeyFrame& keyframe,
+      ShadowViewMutation::List& mutationsList,
       bool interrupted,
-      const std::string &logPrefix) const;
+      const std::string& logPrefix) const;
 
  private:
   RuntimeExecutor runtimeExecutor_;
   ContextContainer::Shared contextContainer_;
 
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
-  mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
+  mutable LayoutAnimationStatusDelegate* layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable butter::set<SurfaceId> surfaceIdsToStop_{};
   bool reduceDeleteCreateMutation_{false};
@@ -152,19 +152,19 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
-      ShadowViewMutation &mutation,
+      ShadowViewMutation& mutation,
       bool skipLastAnimation = false,
       bool lastAnimationOnly = false) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
-      const ShadowViewMutation &mutation,
+      const ShadowViewMutation& mutation,
       bool skipLastAnimation = false) const;
 
   void getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      const ShadowViewMutationList &mutations,
-      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
+      const ShadowViewMutationList& mutations,
+      std::vector<AnimationKeyFrame>& conflictingAnimations) const;
 
   /*
    * Removes animations from `inflightAnimations_` for stopped surfaces.
@@ -172,17 +172,17 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void deleteAnimationsForStoppedSurfaces() const;
 
   void simulateImagePropsMemoryAccess(
-      const ShadowViewMutationList &mutations) const;
+      const ShadowViewMutationList& mutations) const;
 
   /**
    * Interpolates the props values.
    */
   Props::Shared interpolateProps(
-      const ComponentDescriptor &componentDescriptor,
-      const PropsParserContext &context,
+      const ComponentDescriptor& componentDescriptor,
+      const PropsParserContext& context,
       Float animationProgress,
-      const Props::Shared &props,
-      const Props::Shared &newProps) const;
+      const Props::Shared& props,
+      const Props::Shared& newProps) const;
 };
 
 } // namespace facebook::react

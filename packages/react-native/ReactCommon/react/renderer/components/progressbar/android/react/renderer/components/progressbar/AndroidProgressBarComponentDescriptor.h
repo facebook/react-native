@@ -20,17 +20,17 @@ class AndroidProgressBarComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidProgressBarShadowNode> {
  public:
   AndroidProgressBarComponentDescriptor(
-      const ComponentDescriptorParameters &parameters)
+      const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor(parameters),
         measurementsManager_(
             std::make_shared<AndroidProgressBarMeasurementsManager>(
                 contextContainer_)) {}
 
-  void adopt(const ShadowNode::Unshared &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto &androidProgressBarShadowNode =
-        static_cast<AndroidProgressBarShadowNode &>(*shadowNode);
+    auto& androidProgressBarShadowNode =
+        static_cast<AndroidProgressBarShadowNode&>(*shadowNode);
 
     // `AndroidProgressBarShadowNode` uses
     // `AndroidProgressBarMeasurementsManager` to provide measurements to Yoga.

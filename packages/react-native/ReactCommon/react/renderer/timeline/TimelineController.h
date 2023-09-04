@@ -38,7 +38,7 @@ class TimelineController final : public UIManagerCommitHook {
    * destruction of all associated resources and stopping the introspection
    * process.
    */
-  void disable(TimelineHandler &&handler) const;
+  void disable(TimelineHandler&& handler) const;
 
   /*
    * TO BE DELETED.
@@ -50,13 +50,13 @@ class TimelineController final : public UIManagerCommitHook {
 #pragma mark - UIManagerCommitHook
 
   RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree &shadowTree,
-      const RootShadowNode::Shared &oldRootShadowNode,
-      const RootShadowNode::Unshared &newRootShadowNode) noexcept override;
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode) noexcept override;
 
-  void commitHookWasRegistered(const UIManager &uiManager) noexcept override;
+  void commitHookWasRegistered(const UIManager& uiManager) noexcept override;
 
-  void commitHookWasUnregistered(const UIManager &uiManager) noexcept override;
+  void commitHookWasUnregistered(const UIManager& uiManager) noexcept override;
 
  private:
   /*
@@ -69,7 +69,7 @@ class TimelineController final : public UIManagerCommitHook {
    */
   mutable butter::map<SurfaceId, std::unique_ptr<Timeline>> timelines_;
 
-  mutable const UIManager *uiManager_;
+  mutable const UIManager* uiManager_;
   mutable SurfaceId lastUpdatedSurface_;
 };
 

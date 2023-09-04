@@ -27,8 +27,8 @@ using Content = ParagraphShadowNode::Content;
 const char ParagraphComponentName[] = "Paragraph";
 
 ParagraphShadowNode::ParagraphShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)
+    const ShadowNode& sourceShadowNode,
+    const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   if (CoreFeatures::enableCleanParagraphYogaNode) {
     if (!fragment.children && !fragment.props) {
@@ -40,8 +40,8 @@ ParagraphShadowNode::ParagraphShadowNode(
   }
 }
 
-const Content &ParagraphShadowNode::getContent(
-    const LayoutContext &layoutContext) const {
+const Content& ParagraphShadowNode::getContent(
+    const LayoutContext& layoutContext) const {
   if (content_.has_value()) {
     return content_.value();
   }
@@ -66,8 +66,8 @@ const Content &ParagraphShadowNode::getContent(
 }
 
 Content ParagraphShadowNode::getContentWithMeasuredAttachments(
-    const LayoutContext &layoutContext,
-    const LayoutConstraints &layoutConstraints) const {
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
   auto content = getContent(layoutContext);
 
   if (content.attachments.empty()) {
@@ -79,11 +79,11 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
   // Having enforced minimum size for text fragments doesn't make much sense.
   localLayoutConstraints.minimumSize = Size{0, 0};
 
-  auto &fragments = content.attributedString.getFragments();
+  auto& fragments = content.attributedString.getFragments();
 
-  for (const auto &attachment : content.attachments) {
+  for (const auto& attachment : content.attachments) {
     auto laytableShadowNode =
-        traitCast<const LayoutableShadowNode *>(attachment.shadowNode);
+        traitCast<const LayoutableShadowNode*>(attachment.shadowNode);
 
     if (laytableShadowNode == nullptr) {
       continue;
@@ -114,10 +114,10 @@ void ParagraphShadowNode::setTextLayoutManager(
       std::move(textLayoutManager));
 }
 
-void ParagraphShadowNode::updateStateIfNeeded(const Content &content) {
+void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
   ensureUnsealed();
 
-  auto &state = getStateData();
+  auto& state = getStateData();
 
   react_native_assert(state.paragraphLayoutManager.getTextLayoutManager());
 
@@ -134,8 +134,8 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content &content) {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measureContent(
-    const LayoutContext &layoutContext,
-    const LayoutConstraints &layoutConstraints) const {
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
@@ -189,7 +189,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   //  Iterating on attachments, we clone shadow nodes and moving
   //  `paragraphShadowNode` that represents clones of `this` object.
-  auto paragraphShadowNode = static_cast<ParagraphShadowNode *>(this);
+  auto paragraphShadowNode = static_cast<ParagraphShadowNode*>(this);
   // `paragraphOwningShadowNode` is owning pointer to`paragraphShadowNode`
   // (besides the initial case when `paragraphShadowNode == this`), we need this
   // only to keep it in memory for a while.
@@ -199,9 +199,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       content.attachments.size() == measurement.attachments.size());
 
   for (size_t i = 0; i < content.attachments.size(); i++) {
-    auto &attachment = content.attachments.at(i);
+    auto& attachment = content.attachments.at(i);
 
-    if (traitCast<const LayoutableShadowNode *>(attachment.shadowNode) ==
+    if (traitCast<const LayoutableShadowNode*>(attachment.shadowNode) ==
         nullptr) {
       // Not a layoutable `ShadowNode`, no need to lay it out.
       continue;
@@ -211,15 +211,15 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
     paragraphOwningShadowNode = paragraphShadowNode->cloneTree(
         attachment.shadowNode->getFamily(),
-        [&](const ShadowNode &oldShadowNode) {
+        [&](const ShadowNode& oldShadowNode) {
           clonedShadowNode = oldShadowNode.clone({});
           return clonedShadowNode;
         });
     paragraphShadowNode =
-        static_cast<ParagraphShadowNode *>(paragraphOwningShadowNode.get());
+        static_cast<ParagraphShadowNode*>(paragraphOwningShadowNode.get());
 
-    auto &layoutableShadowNode =
-        traitCast<LayoutableShadowNode &>(*clonedShadowNode);
+    auto& layoutableShadowNode =
+        traitCast<LayoutableShadowNode&>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
     auto attachmentSize = roundToPixel<&ceil>(
@@ -245,8 +245,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   // reflect the changes that we made.
   if (paragraphShadowNode != this) {
     this->children_ =
-        static_cast<const ParagraphShadowNode *>(paragraphShadowNode)
-            ->children_;
+        static_cast<const ParagraphShadowNode*>(paragraphShadowNode)->children_;
   }
 }
 

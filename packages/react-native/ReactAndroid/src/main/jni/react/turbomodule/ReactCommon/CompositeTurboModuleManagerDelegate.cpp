@@ -26,8 +26,8 @@ void CompositeTurboModuleManagerDelegate::registerNatives() {
 
 std::shared_ptr<TurboModule>
 CompositeTurboModuleManagerDelegate::getTurboModule(
-    const std::string &moduleName,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::string& moduleName,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
   for (auto delegate : mDelegates_) {
     if (auto turboModule =
             delegate->cthis()->getTurboModule(moduleName, jsInvoker)) {
@@ -39,8 +39,8 @@ CompositeTurboModuleManagerDelegate::getTurboModule(
 
 std::shared_ptr<TurboModule>
 CompositeTurboModuleManagerDelegate::getTurboModule(
-    const std::string &moduleName,
-    const JavaTurboModule::InitParams &params) {
+    const std::string& moduleName,
+    const JavaTurboModule::InitParams& params) {
   for (auto delegate : mDelegates_) {
     if (auto turboModule =
             delegate->cthis()->getTurboModule(moduleName, params)) {

@@ -16,13 +16,13 @@ ComponentBuilder::ComponentBuilder(
     : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
 
 ShadowNode::Unshared ComponentBuilder::build(
-    const ElementFragment &elementFragment) const {
-  auto &componentDescriptor =
+    const ElementFragment& elementFragment) const {
+  auto& componentDescriptor =
       componentDescriptorRegistry_->at(elementFragment.componentHandle);
 
   auto children = ShadowNode::ListOfShared{};
   children.reserve(elementFragment.children.size());
-  for (const auto &childFragment : elementFragment.children) {
+  for (const auto& childFragment : elementFragment.children) {
     children.push_back(build(childFragment));
   }
 

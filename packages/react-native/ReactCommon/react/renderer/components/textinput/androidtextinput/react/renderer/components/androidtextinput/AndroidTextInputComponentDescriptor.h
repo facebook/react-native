@@ -26,7 +26,7 @@ class AndroidTextInputComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidTextInputShadowNode> {
  public:
   AndroidTextInputComponentDescriptor(
-      const ComponentDescriptorParameters &parameters)
+      const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(parameters) {
     // Every single `AndroidTextInputShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
@@ -34,8 +34,8 @@ class AndroidTextInputComponentDescriptor final
   }
 
   virtual State::Shared createInitialState(
-      const Props::Shared &props,
-      const ShadowNodeFamily::Shared &family) const override {
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family) const override {
     int surfaceId = family->getSurfaceId();
 
     yoga::Style::Edges theme;
@@ -44,7 +44,7 @@ class AndroidTextInputComponentDescriptor final
         surfaceIdToThemePaddingMap_.end()) {
       theme = surfaceIdToThemePaddingMap_[surfaceId];
     } else {
-      const jni::global_ref<jobject> &fabricUIManager =
+      const jni::global_ref<jobject>& fabricUIManager =
           contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
       auto env = jni::Environment::current();
@@ -55,7 +55,7 @@ class AndroidTextInputComponentDescriptor final
 
       if (getThemeData(
               fabricUIManager, surfaceId, defaultTextInputPaddingArray)) {
-        jfloat *defaultTextInputPadding =
+        jfloat* defaultTextInputPadding =
             env->GetFloatArrayElements(defaultTextInputPaddingArray, 0);
         theme[YGEdgeStart] = (YGValue){defaultTextInputPadding[0], YGUnitPoint};
         theme[YGEdgeEnd] = (YGValue){defaultTextInputPadding[1], YGUnitPoint};
@@ -83,23 +83,23 @@ class AndroidTextInputComponentDescriptor final
   }
 
  protected:
-  void adopt(const ShadowNode::Unshared &shadowNode) const override {
-    auto &textInputShadowNode =
-        static_cast<AndroidTextInputShadowNode &>(*shadowNode);
+  void adopt(const ShadowNode::Unshared& shadowNode) const override {
+    auto& textInputShadowNode =
+        static_cast<AndroidTextInputShadowNode&>(*shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     textInputShadowNode.setTextLayoutManager(textLayoutManager_);
 
     textInputShadowNode.setContextContainer(
-        const_cast<ContextContainer *>(getContextContainer().get()));
+        const_cast<ContextContainer*>(getContextContainer().get()));
 
     int surfaceId = textInputShadowNode.getSurfaceId();
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
         surfaceIdToThemePaddingMap_.end()) {
       yoga::Style::Edges theme = surfaceIdToThemePaddingMap_[surfaceId];
 
-      auto &textInputProps = textInputShadowNode.getConcreteProps();
+      auto& textInputProps = textInputShadowNode.getConcreteProps();
 
       // Override padding
       // Node is still unsealed during adoption, before layout is complete
@@ -152,8 +152,8 @@ class AndroidTextInputComponentDescriptor final
       // commit, state update, etc, will incur this cost.
       if (changedPadding) {
         // Set new props on node
-        const_cast<AndroidTextInputProps &>(textInputProps)
-            .yogaStyle.padding() = result;
+        const_cast<AndroidTextInputProps&>(textInputProps).yogaStyle.padding() =
+            result;
         // Communicate new props to Yoga part of the node
         textInputShadowNode.updateYogaProps();
       }

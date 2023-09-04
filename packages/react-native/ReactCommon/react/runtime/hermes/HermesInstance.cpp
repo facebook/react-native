@@ -41,7 +41,7 @@ class HermesInstanceRuntimeAdapter : public inspector_modern::RuntimeAdapter {
       : hermesRuntime_(hermesRuntime) {}
   virtual ~HermesInstanceRuntimeAdapter() = default;
 
-  HermesRuntime &getRuntime() override {
+  HermesRuntime& getRuntime() override {
     return *hermesRuntime_;
   }
 

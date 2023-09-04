@@ -17,7 +17,7 @@ namespace facebook::react {
 std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
 
-DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory *delegate)
+DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory* delegate)
     : delegate_(delegate) {}
 
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
@@ -33,19 +33,18 @@ DefaultComponentsRegistry::sharedProviderRegistry() {
 jni::local_ref<DefaultComponentsRegistry::jhybriddata>
 DefaultComponentsRegistry::initHybrid(
     jni::alias_ref<jclass>,
-    ComponentFactory *delegate) {
+    ComponentFactory* delegate) {
   auto instance = makeCxxInstance(delegate);
 
   auto buildRegistryFunction =
-      [](const EventDispatcher::Weak &eventDispatcher,
-         const ContextContainer::Shared &contextContainer)
+      [](const EventDispatcher::Weak& eventDispatcher,
+         const ContextContainer::Shared& contextContainer)
       -> ComponentDescriptorRegistry::Shared {
     auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
 
-    auto &mutableRegistry =
-        const_cast<ComponentDescriptorRegistry &>(*registry);
+    auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
     mutableRegistry.setFallbackComponentDescriptor(
         std::make_shared<UnimplementedNativeViewComponentDescriptor>(
             ComponentDescriptorParameters{

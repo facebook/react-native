@@ -96,7 +96,7 @@ static void testShadowNodeTreeLifeCycle(
               &messWithLayoutableOnlyFlag,
           });
 
-      std::vector<const LayoutableShadowNode *> affectedLayoutableNodes{};
+      std::vector<const LayoutableShadowNode*> affectedLayoutableNodes{};
       affectedLayoutableNodes.reserve(1024);
 
       // Laying out the tree.
@@ -114,12 +114,12 @@ static void testShadowNodeTreeLifeCycle(
       // view is not followed by a CREATE for the same view.
       {
         std::vector<int> deletedTags{};
-        for (const auto &mutation : mutations) {
+        for (const auto& mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Delete) {
             deletedTags.push_back(mutation.oldChildShadowView.tag);
           }
         }
-        for (const auto &mutation : mutations) {
+        for (const auto& mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Create) {
             if (std::find(
                     deletedTags.begin(),
@@ -248,7 +248,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       alterShadowTree(entropy, nextRootNode, &messWithNodeFlattenednessFlags);
       alterShadowTree(entropy, nextRootNode, &messWithChildren);
 
-      std::vector<const LayoutableShadowNode *> affectedLayoutableNodes{};
+      std::vector<const LayoutableShadowNode*> affectedLayoutableNodes{};
       affectedLayoutableNodes.reserve(1024);
 
       // Laying out the tree.
@@ -266,12 +266,12 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       // view is not followed by a CREATE for the same view.
       {
         std::vector<int> deletedTags{};
-        for (const auto &mutation : mutations) {
+        for (const auto& mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Delete) {
             deletedTags.push_back(mutation.oldChildShadowView.tag);
           }
         }
-        for (const auto &mutation : mutations) {
+        for (const auto& mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Create) {
             if (std::find(
                     deletedTags.begin(),

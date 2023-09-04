@@ -25,9 +25,9 @@ using namespace facebook::react;
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
   RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree & /*shadowTree*/,
-      const RootShadowNode::Shared & /*oldRootShadowNode*/,
-      const RootShadowNode::Unshared &newRootShadowNode) const override {
+      const ShadowTree& /*shadowTree*/,
+      const RootShadowNode::Shared& /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared& newRootShadowNode) const override {
     return newRootShadowNode;
   };
 
@@ -36,20 +36,20 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
       bool mountSynchronously) const override{};
 };
 
-inline const ShadowNode *findDescendantNode(
-    const ShadowNode &shadowNode,
-    const ShadowNodeFamily &family) {
-  const ShadowNode *result = nullptr;
-  shadowNode.cloneTree(family, [&](const ShadowNode &oldShadowNode) {
+inline const ShadowNode* findDescendantNode(
+    const ShadowNode& shadowNode,
+    const ShadowNodeFamily& family) {
+  const ShadowNode* result = nullptr;
+  shadowNode.cloneTree(family, [&](const ShadowNode& oldShadowNode) {
     result = &oldShadowNode;
     return oldShadowNode.clone({});
   });
   return result;
 }
 
-inline const ShadowNode *findDescendantNode(
-    const ShadowTree &shadowTree,
-    const ShadowNodeFamily &family) {
+inline const ShadowNode* findDescendantNode(
+    const ShadowTree& shadowTree,
+    const ShadowNodeFamily& family) {
   return findDescendantNode(
       *shadowTree.getCurrentRevision().rootShadowNode, family);
 }
@@ -96,8 +96,8 @@ TEST(StateReconciliationTest, testStateReconciliation) {
 
   auto rootShadowNodeState1 = shadowNode->ShadowNode::clone({});
 
-  auto &scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
-  auto &family = shadowNodeAB->getFamily();
+  auto& scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
+  auto& family = shadowNodeAB->getFamily();
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
@@ -108,7 +108,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       contextContainer};
 
   shadowTree.commit(
-      [&](const RootShadowNode & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
       {true});
@@ -122,7 +122,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       family, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState2 =
-      shadowNode->cloneTree(family, [&](const ShadowNode &oldShadowNode) {
+      shadowNode->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
              ShadowNodeFragment::childrenPlaceholder(),
@@ -133,7 +133,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
 
   shadowTree.commit(
-      [&](const RootShadowNode & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});
@@ -145,7 +145,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       family, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
-      family, [&](const ShadowNode &oldShadowNode) {
+      family, [&](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
              ShadowNodeFragment::childrenPlaceholder(),
@@ -156,7 +156,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
 
   shadowTree.commit(
-      [&](const RootShadowNode & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
       {true});
@@ -171,7 +171,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   // Here we commit the old tree but we expect that the state associated with
   // the node will stay the same (newer that the old tree has).
   shadowTree.commit(
-      [&](const RootShadowNode & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});

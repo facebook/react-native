@@ -23,14 +23,14 @@ class BaseViewEventEmitter : public TouchEventEmitter {
 
 #pragma mark - Accessibility
 
-  void onAccessibilityAction(const std::string &name) const;
+  void onAccessibilityAction(const std::string& name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
   void onAccessibilityEscape() const;
 
 #pragma mark - Layout
 
-  void onLayout(const LayoutMetrics &layoutMetrics) const;
+  void onLayout(const LayoutMetrics& layoutMetrics) const;
 
  private:
   /*

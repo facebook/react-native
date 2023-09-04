@@ -27,7 +27,7 @@ void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
 
-void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarker(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerImpl(markerId, tag);
 }
 
@@ -35,7 +35,7 @@ void logMarkerBridgeless(const ReactMarkerId markerId) {
   logTaggedMarkerBridgeless(markerId, nullptr);
 }
 
-void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerBridgelessImpl(markerId, tag);
 }
 
@@ -43,7 +43,7 @@ void logMarkerDone(const ReactMarkerId markerId, double markerTime) {
   StartupLogger::getInstance().logStartupEvent(markerId, markerTime);
 }
 
-StartupLogger &StartupLogger::getInstance() {
+StartupLogger& StartupLogger::getInstance() {
   static StartupLogger instance;
   return instance;
 }

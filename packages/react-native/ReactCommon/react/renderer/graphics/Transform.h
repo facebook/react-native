@@ -56,10 +56,10 @@ struct TransformOrigin {
   std::array<ValueUnit, 2> xy;
   float z = 0.0f;
 
-  bool operator==(const TransformOrigin &other) const {
+  bool operator==(const TransformOrigin& other) const {
     return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
   }
-  bool operator!=(const TransformOrigin &other) const {
+  bool operator!=(const TransformOrigin& other) const {
     return !(*this == other);
   }
   bool isSet() const {
@@ -81,7 +81,7 @@ struct Transform {
    * For debugging only. Prints out the matrix.
    */
 #if RN_DEBUG_STRING_CONVERTIBLE
-  static void print(const Transform &t, std::string prefix);
+  static void print(const Transform& t, std::string prefix);
 #endif
 
   /*
@@ -150,30 +150,30 @@ struct Transform {
    */
   static Transform Interpolate(
       Float animationProgress,
-      const Transform &lhs,
-      const Transform &rhs);
+      const Transform& lhs,
+      const Transform& rhs);
 
-  static bool isVerticalInversion(const Transform &transform);
-  static bool isHorizontalInversion(const Transform &transform);
+  static bool isVerticalInversion(const Transform& transform);
+  static bool isHorizontalInversion(const Transform& transform);
 
   /*
    * Equality operators.
    */
-  bool operator==(const Transform &rhs) const;
-  bool operator!=(const Transform &rhs) const;
+  bool operator==(const Transform& rhs) const;
+  bool operator!=(const Transform& rhs) const;
 
   /*
    * Matrix subscript.
    */
-  Float &at(int i, int j);
-  const Float &at(int i, int j) const;
+  Float& at(int i, int j);
+  const Float& at(int i, int j) const;
 
   /*
    * Concatenates (multiplies) transform matrices.
    */
-  Transform operator*(const Transform &rhs) const;
+  Transform operator*(const Transform& rhs) const;
 
-  Rect applyWithCenter(const Rect &rect, const Point &center) const;
+  Rect applyWithCenter(const Rect& rect, const Point& center) const;
 
   /**
    * Convert to folly::dynamic.
@@ -204,26 +204,26 @@ struct Transform {
 /*
  * Applies transformation to the given point.
  */
-Point operator*(const Point &point, const Transform &transform);
+Point operator*(const Point& point, const Transform& transform);
 
 /*
  * Applies transformation to the given size.
  */
-Size operator*(const Size &size, const Transform &transform);
+Size operator*(const Size& size, const Transform& transform);
 
 /*
  * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
-Rect operator*(const Rect &rect, const Transform &transform);
+Rect operator*(const Rect& rect, const Transform& transform);
 
 /*
  * Applies transformation to the given EdgeInsets.
  * ONLY SUPPORTS scale transformation.
  */
-EdgeInsets operator*(const EdgeInsets &edgeInsets, const Transform &transform);
+EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform);
 
-Vector operator*(const Transform &transform, const Vector &vector);
+Vector operator*(const Transform& transform, const Vector& vector);
 
 } // namespace facebook::react
 
@@ -231,7 +231,7 @@ namespace std {
 
 template <>
 struct hash<facebook::react::Transform> {
-  size_t operator()(const facebook::react::Transform &transform) const {
+  size_t operator()(const facebook::react::Transform& transform) const {
     return folly::hash::hash_combine(
         0,
         transform.matrix[0],

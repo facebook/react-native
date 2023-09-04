@@ -18,12 +18,12 @@ void MutationObserverManager::observe(
     MutationObserverId mutationObserverId,
     ShadowNode::Shared shadowNode,
     bool observeSubtree,
-    const UIManager &uiManager) {
+    const UIManager& uiManager) {
   SystraceSection s("MutationObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
 
-  auto &observers = observersBySurfaceId_[surfaceId];
+  auto& observers = observersBySurfaceId_[surfaceId];
 
   auto observerIt = observers.find(mutationObserverId);
   if (observerIt == observers.end()) {
@@ -38,7 +38,7 @@ void MutationObserverManager::observe(
 
 void MutationObserverManager::unobserve(
     MutationObserverId mutationObserverId,
-    const ShadowNode &shadowNode) {
+    const ShadowNode& shadowNode) {
   SystraceSection s("MutationObserverManager::unobserve");
 
   auto surfaceId = shadowNode.getSurfaceId();
@@ -48,14 +48,14 @@ void MutationObserverManager::unobserve(
     return;
   }
 
-  auto &observers = observersIt->second;
+  auto& observers = observersIt->second;
 
   auto observerIt = observers.find(mutationObserverId);
   if (observerIt == observers.end()) {
     return;
   }
 
-  auto &observer = observerIt->second;
+  auto& observer = observerIt->second;
 
   observer.unobserve(shadowNode);
 
@@ -69,8 +69,8 @@ void MutationObserverManager::unobserve(
 }
 
 void MutationObserverManager::connect(
-    UIManager &uiManager,
-    std::function<void(std::vector<const MutationRecord> &)> onMutations) {
+    UIManager& uiManager,
+    std::function<void(std::vector<const MutationRecord>&)> onMutations) {
   SystraceSection s("MutationObserverManager::connect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
@@ -84,7 +84,7 @@ void MutationObserverManager::connect(
   commitHookRegistered_ = true;
 }
 
-void MutationObserverManager::disconnect(UIManager &uiManager) {
+void MutationObserverManager::disconnect(UIManager& uiManager) {
   SystraceSection s("MutationObserverManager::disconnect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
@@ -99,22 +99,22 @@ void MutationObserverManager::disconnect(UIManager &uiManager) {
 }
 
 void MutationObserverManager::commitHookWasRegistered(
-    const UIManager &uiManager) noexcept {}
+    const UIManager& uiManager) noexcept {}
 void MutationObserverManager::commitHookWasUnregistered(
-    const UIManager &uiManager) noexcept {}
+    const UIManager& uiManager) noexcept {}
 
 RootShadowNode::Unshared MutationObserverManager::shadowTreeWillCommit(
-    const ShadowTree &shadowTree,
-    const RootShadowNode::Shared &oldRootShadowNode,
-    const RootShadowNode::Unshared &newRootShadowNode) noexcept {
+    const ShadowTree& shadowTree,
+    const RootShadowNode::Shared& oldRootShadowNode,
+    const RootShadowNode::Unshared& newRootShadowNode) noexcept {
   runMutationObservations(shadowTree, *oldRootShadowNode, *newRootShadowNode);
   return newRootShadowNode;
 }
 
 void MutationObserverManager::runMutationObservations(
-    const ShadowTree &shadowTree,
-    const RootShadowNode &oldRootShadowNode,
-    const RootShadowNode &newRootShadowNode) {
+    const ShadowTree& shadowTree,
+    const RootShadowNode& oldRootShadowNode,
+    const RootShadowNode& newRootShadowNode) {
   SystraceSection s("MutationObserverManager::runMutationObservations");
 
   auto surfaceId = shadowTree.getSurfaceId();
@@ -126,8 +126,8 @@ void MutationObserverManager::runMutationObservations(
 
   std::vector<const MutationRecord> mutationRecords;
 
-  auto &observers = observersIt->second;
-  for (const auto &[mutationObserverId, observer] : observers) {
+  auto& observers = observersIt->second;
+  for (const auto& [mutationObserverId, observer] : observers) {
     observer.recordMutations(
         oldRootShadowNode, newRootShadowNode, mutationRecords);
   }

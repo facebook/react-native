@@ -31,7 +31,7 @@ using CommitMode = ShadowTree::CommitMode;
  * of calling, the function returns `nullptr` (as an indication that no
  * additional work is required).
  */
-static ShadowNode::Unshared progressState(const ShadowNode &shadowNode) {
+static ShadowNode::Unshared progressState(const ShadowNode& shadowNode) {
   auto isStateChanged = false;
   auto areChildrenChanged = false;
 
@@ -46,7 +46,7 @@ static ShadowNode::Unshared progressState(const ShadowNode &shadowNode) {
   auto newChildren = ShadowNode::ListOfShared{};
   if (!shadowNode.getChildren().empty()) {
     auto index = size_t{0};
-    for (const auto &childNode : shadowNode.getChildren()) {
+    for (const auto& childNode : shadowNode.getChildren()) {
       auto newChildNode = progressState(*childNode);
       if (newChildNode) {
         if (!areChildrenChanged) {
@@ -79,8 +79,8 @@ static ShadowNode::Unshared progressState(const ShadowNode &shadowNode) {
  * of the three from the traversing.
  */
 static ShadowNode::Unshared progressState(
-    const ShadowNode &shadowNode,
-    const ShadowNode &baseShadowNode) {
+    const ShadowNode& shadowNode,
+    const ShadowNode& baseShadowNode) {
   // The intuition behind the complexity:
   // - A very few nodes have associated state, therefore it's mostly reading and
   //   it only writes when state objects were found obsolete;
@@ -100,8 +100,8 @@ static ShadowNode::Unshared progressState(
     }
   }
 
-  auto &children = shadowNode.getChildren();
-  auto &baseChildren = baseShadowNode.getChildren();
+  auto& children = shadowNode.getChildren();
+  auto& baseChildren = baseShadowNode.getChildren();
   auto newChildren = ShadowNode::ListOfShared{};
 
   auto childrenSize = children.size();
@@ -110,8 +110,8 @@ static ShadowNode::Unshared progressState(
 
   // Stage 1: Aligned part.
   for (index = 0; index < childrenSize && index < baseChildrenSize; index++) {
-    const auto &childNode = *children[index];
-    const auto &baseChildNode = *baseChildren[index];
+    const auto& childNode = *children[index];
+    const auto& baseChildNode = *baseChildren[index];
 
     if (&childNode == &baseChildNode) {
       // Nodes are identical, skipping.
@@ -161,8 +161,8 @@ static ShadowNode::Unshared progressState(
 }
 
 static void updateMountedFlag(
-    const ShadowNode::ListOfShared &oldChildren,
-    const ShadowNode::ListOfShared &newChildren) {
+    const ShadowNode::ListOfShared& oldChildren,
+    const ShadowNode::ListOfShared& newChildren) {
   // This is a simplified version of Diffing algorithm that only updates
   // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
   // "unmounted" to allow `ShadowNode` detect a situation where the node was
@@ -183,8 +183,8 @@ static void updateMountedFlag(
   // Stage 1: Mount and unmount "updated" children.
   for (index = 0; index < oldChildren.size() && index < newChildren.size();
        index++) {
-    const auto &oldChild = oldChildren[index];
-    const auto &newChild = newChildren[index];
+    const auto& oldChild = oldChildren[index];
+    const auto& newChild = newChildren[index];
 
     if (oldChild == newChild) {
       // Nodes are identical, skipping the subtree.
@@ -206,14 +206,14 @@ static void updateMountedFlag(
 
   // State 2: Mount new children.
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
-    const auto &newChild = newChildren[index];
+    const auto& newChild = newChildren[index];
     newChild->setMounted(true);
     updateMountedFlag({}, newChild->getChildren());
   }
 
   // State 3: Unmount old children.
   for (index = lastIndexAfterFirstStage; index < oldChildren.size(); index++) {
-    const auto &oldChild = oldChildren[index];
+    const auto& oldChild = oldChildren[index];
     oldChild->setMounted(false);
     updateMountedFlag(oldChild->getChildren(), {});
   }
@@ -221,10 +221,10 @@ static void updateMountedFlag(
 
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    const ShadowTreeDelegate &delegate,
-    const ContextContainer &contextContainer)
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext,
+    const ShadowTreeDelegate& delegate,
+    const ContextContainer& contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
   static auto globalRootComponentDescriptor =
       std::make_unique<const RootComponentDescriptor>(
@@ -294,8 +294,8 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
 }
 
 CommitStatus ShadowTree::commit(
-    const ShadowTreeCommitTransaction &transaction,
-    const CommitOptions &commitOptions) const {
+    const ShadowTreeCommitTransaction& transaction,
+    const CommitOptions& commitOptions) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
@@ -315,8 +315,8 @@ CommitStatus ShadowTree::commit(
 }
 
 CommitStatus ShadowTree::tryCommit(
-    const ShadowTreeCommitTransaction &transaction,
-    const CommitOptions &commitOptions) const {
+    const ShadowTreeCommitTransaction& transaction,
+    const CommitOptions& commitOptions) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   auto telemetry = TransactionTelemetry{};
@@ -335,7 +335,7 @@ CommitStatus ShadowTree::tryCommit(
     lastRevisionNumberWithNewState = lastRevisionNumberWithNewState_;
   }
 
-  const auto &oldRootShadowNode = oldRevision.rootShadowNode;
+  const auto& oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
   if (!newRootShadowNode ||
@@ -362,7 +362,7 @@ CommitStatus ShadowTree::tryCommit(
   }
 
   // Layout nodes.
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodes{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
@@ -441,7 +441,7 @@ void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
 
 void ShadowTree::commitEmptyTree() const {
   commit(
-      [](const RootShadowNode &oldRootShadowNode) -> RootShadowNode::Unshared {
+      [](const RootShadowNode& oldRootShadowNode) -> RootShadowNode::Unshared {
         return std::make_shared<RootShadowNode>(
             oldRootShadowNode,
             ShadowNodeFragment{
@@ -453,23 +453,23 @@ void ShadowTree::commitEmptyTree() const {
 }
 
 void ShadowTree::emitLayoutEvents(
-    std::vector<const LayoutableShadowNode *> &affectedLayoutableNodes) const {
+    std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const {
   SystraceSection s(
       "ShadowTree::emitLayoutEvents",
       "affectedLayoutableNodes",
       affectedLayoutableNodes.size());
 
-  for (const auto *layoutableNode : affectedLayoutableNodes) {
+  for (const auto* layoutableNode : affectedLayoutableNodes) {
     // Only instances of `ViewShadowNode` (and subclasses) are supported.
-    const auto &viewShadowNode =
-        static_cast<const ViewShadowNode &>(*layoutableNode);
-    const auto &viewEventEmitter = static_cast<const ViewEventEmitter &>(
-        *viewShadowNode.getEventEmitter());
+    const auto& viewShadowNode =
+        static_cast<const ViewShadowNode&>(*layoutableNode);
+    const auto& viewEventEmitter =
+        static_cast<const ViewEventEmitter&>(*viewShadowNode.getEventEmitter());
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    const auto &viewProps =
-        static_cast<const ViewProps &>(*viewShadowNode.getProps());
+    const auto& viewProps =
+        static_cast<const ViewProps&>(*viewShadowNode.getProps());
     if (!viewProps.onLayout) {
       continue;
     }

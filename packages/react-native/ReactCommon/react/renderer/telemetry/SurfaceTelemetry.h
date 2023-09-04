@@ -44,7 +44,7 @@ class SurfaceTelemetry final {
    * for the Surface.
    */
   void incorporate(
-      const TransactionTelemetry &telemetry,
+      const TransactionTelemetry& telemetry,
       int numberOfMutations);
 
  private:

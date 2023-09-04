@@ -22,7 +22,7 @@ class PlatformRunLoopObserver : public RunLoopObserver {
  public:
   PlatformRunLoopObserver(
       RunLoopObserver::Activity activities,
-      const RunLoopObserver::WeakOwner &owner,
+      const RunLoopObserver::WeakOwner& owner,
       CFRunLoopRef runLoop);
 
   ~PlatformRunLoopObserver();
@@ -45,7 +45,7 @@ class MainRunLoopObserver final : public PlatformRunLoopObserver {
  public:
   MainRunLoopObserver(
       RunLoopObserver::Activity activities,
-      const RunLoopObserver::WeakOwner &owner)
+      const RunLoopObserver::WeakOwner& owner)
       : PlatformRunLoopObserver(activities, owner, CFRunLoopGetMain()) {}
 };
 

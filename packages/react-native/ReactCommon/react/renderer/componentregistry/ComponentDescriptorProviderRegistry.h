@@ -31,7 +31,7 @@ class ComponentDescriptorProviderRegistry final {
    * `ComponentDescriptorRegistry`s accordingly.
    * The methods can be called on any thread.
    */
-  void add(const ComponentDescriptorProvider &provider) const;
+  void add(const ComponentDescriptorProvider& provider) const;
 
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component
@@ -50,7 +50,7 @@ class ComponentDescriptorProviderRegistry final {
    * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
-      const ComponentDescriptorParameters &parameters) const;
+      const ComponentDescriptorParameters& parameters) const;
 
  private:
   friend class ComponentDescriptorRegistry;

@@ -15,8 +15,8 @@
 namespace facebook::react {
 
 inline SharedColor parsePlatformColor(
-    const PropsParserContext &context,
-    const RawValue &value) {
+    const PropsParserContext& context,
+    const RawValue& value) {
   if (value.hasType<butter::map<std::string, RawValue>>()) {
     auto items = (butter::map<std::string, RawValue>)value;
     if (items.find("semantic") != items.end() &&

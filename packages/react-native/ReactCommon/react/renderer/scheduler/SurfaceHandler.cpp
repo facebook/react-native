@@ -16,17 +16,17 @@ namespace facebook::react {
 using Status = SurfaceHandler::Status;
 
 SurfaceHandler::SurfaceHandler(
-    const std::string &moduleName,
+    const std::string& moduleName,
     SurfaceId surfaceId) noexcept {
   parameters_.moduleName = moduleName;
   parameters_.surfaceId = surfaceId;
 }
 
-SurfaceHandler::SurfaceHandler(SurfaceHandler &&other) noexcept {
+SurfaceHandler::SurfaceHandler(SurfaceHandler&& other) noexcept {
   operator=(std::move(other));
 }
 
-SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
+SurfaceHandler& SurfaceHandler::operator=(SurfaceHandler&& other) noexcept {
   std::unique_lock lock1(linkMutex_, std::defer_lock);
   std::unique_lock lock2(parametersMutex_, std::defer_lock);
   std::unique_lock lock3(other.linkMutex_, std::defer_lock);
@@ -164,7 +164,7 @@ std::string SurfaceHandler::getModuleName() const noexcept {
   return parameters_.moduleName;
 }
 
-void SurfaceHandler::setProps(const folly::dynamic &props) const noexcept {
+void SurfaceHandler::setProps(const folly::dynamic& props) const noexcept {
   SystraceSection s("SurfaceHandler::setProps");
   auto parameters = Parameters{};
   {
@@ -205,8 +205,8 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
 #pragma mark - Layout
 
 Size SurfaceHandler::measure(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const noexcept {
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const noexcept {
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
@@ -229,8 +229,8 @@ Size SurfaceHandler::measure(
 }
 
 void SurfaceHandler::constraintLayout(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const noexcept {
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const noexcept {
   SystraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock lock(parametersMutex_);
@@ -257,7 +257,7 @@ void SurfaceHandler::constraintLayout(
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit(
-        [&](const RootShadowNode &oldRootShadowNode) {
+        [&](const RootShadowNode& oldRootShadowNode) {
           return oldRootShadowNode.clone(
               propsParserContext, layoutConstraints, layoutContext);
         },
@@ -302,7 +302,7 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
       // Committing the current revision back. It will be mounted only when
       // `DisplayMode` is changed back to `Normal`.
       link_.shadowTree->commit(
-          [&](const RootShadowNode & /*oldRootShadowNode*/) {
+          [&](const RootShadowNode& /*oldRootShadowNode*/) {
             return std::static_pointer_cast<RootShadowNode>(
                 revision.rootShadowNode->ShadowNode::clone({}));
           },
@@ -311,7 +311,7 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
   }
 }
 
-void SurfaceHandler::setUIManager(const UIManager *uiManager) const noexcept {
+void SurfaceHandler::setUIManager(const UIManager* uiManager) const noexcept {
   std::unique_lock lock(linkMutex_);
 
   react_native_assert(

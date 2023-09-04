@@ -36,7 +36,7 @@ class HermesExecutorRuntimeAdapter
 
   virtual ~HermesExecutorRuntimeAdapter() = default;
 
-  HermesRuntime &getRuntime() override {
+  HermesRuntime& getRuntime() override {
     return *runtime_;
   }
 
@@ -133,10 +133,10 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
   // manage the debugger registration.
   DecoratedRuntime(
       std::unique_ptr<Runtime> runtime,
-      HermesRuntime &hermesRuntime,
+      HermesRuntime& hermesRuntime,
       std::shared_ptr<MessageQueueThread> jsQueue,
       bool enableDebugger,
-      const std::string &debuggerName)
+      const std::string& debuggerName)
       : jsi::WithRuntimeDecorator<ReentrancyCheck>(*runtime, reentrancyCheck_),
         runtime_(std::move(runtime)) {
     enableDebugger_ = enableDebugger;
@@ -175,7 +175,7 @@ void HermesExecutorFactory::setEnableDebugger(bool enableDebugger) {
   enableDebugger_ = enableDebugger;
 }
 
-void HermesExecutorFactory::setDebuggerName(const std::string &debuggerName) {
+void HermesExecutorFactory::setDebuggerName(const std::string& debuggerName) {
   debuggerName_ = debuggerName;
 }
 
@@ -188,7 +188,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
     hermesRuntime = hermes::makeHermesRuntime(runtimeConfig_);
   }
 
-  HermesRuntime &hermesRuntimeRef = *hermesRuntime;
+  HermesRuntime& hermesRuntimeRef = *hermesRuntime;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,
@@ -228,7 +228,7 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<jsi::Runtime> runtime,
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    const JSIScopedTimeoutInvoker &timeoutInvoker,
+    const JSIScopedTimeoutInvoker& timeoutInvoker,
     RuntimeInstaller runtimeInstaller)
     : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {
   jsi::addNativeTracingHooks(*runtime);

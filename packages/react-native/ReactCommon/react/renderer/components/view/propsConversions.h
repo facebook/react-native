@@ -18,12 +18,12 @@ namespace facebook::react {
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
 static inline yoga::Style::Dimensions convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const char *widthName,
-    const char *heightName,
-    const yoga::Style::Dimensions &sourceValue,
-    const yoga::Style::Dimensions &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* widthName,
+    const char* heightName,
+    const yoga::Style::Dimensions& sourceValue,
+    const yoga::Style::Dimensions& defaultValue) {
   auto dimensions = defaultValue;
   dimensions[YGDimensionWidth] = convertRawProp(
       context,
@@ -41,12 +41,12 @@ static inline yoga::Style::Dimensions convertRawProp(
 }
 
 static inline yoga::Style::Edges convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const char *prefix,
-    const char *suffix,
-    const yoga::Style::Edges &sourceValue,
-    const yoga::Style::Edges &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const yoga::Style::Edges& sourceValue,
+    const yoga::Style::Edges& defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -124,10 +124,10 @@ static inline yoga::Style::Edges convertRawProp(
 }
 
 static inline yoga::Style::Edges convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const yoga::Style::Edges &sourceValue,
-    const yoga::Style::Edges &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style::Edges& sourceValue,
+    const yoga::Style::Edges& defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -169,9 +169,9 @@ static inline yoga::Style::Edges convertRawProp(
 }
 
 static inline yoga::Style convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const yoga::Style &sourceValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style& sourceValue) {
   yoga::Style yogaStyle{};
   yogaStyle.direction() = convertRawProp(
       context,
@@ -327,12 +327,12 @@ static inline yoga::Style convertRawProp(
 // This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const char *prefix,
-    const char *suffix,
-    const CascadedRectangleCorners<T> &sourceValue,
-    const CascadedRectangleCorners<T> &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleCorners<T>& sourceValue,
+    const CascadedRectangleCorners<T>& defaultValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
@@ -441,12 +441,12 @@ static inline CascadedRectangleCorners<T> convertRawProp(
 
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const char *prefix,
-    const char *suffix,
-    const CascadedRectangleEdges<T> &sourceValue,
-    const CascadedRectangleEdges<T> &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleEdges<T>& sourceValue,
+    const CascadedRectangleEdges<T>& defaultValue) {
   CascadedRectangleEdges<T> result;
 
   result.left = convertRawProp(
@@ -547,10 +547,10 @@ static inline CascadedRectangleEdges<T> convertRawProp(
 
 // This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const ViewEvents &sourceValue,
-    const ViewEvents &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const ViewEvents& sourceValue,
+    const ViewEvents& defaultValue) {
   ViewEvents result{};
   using Offset = ViewEvents::Offset;
 

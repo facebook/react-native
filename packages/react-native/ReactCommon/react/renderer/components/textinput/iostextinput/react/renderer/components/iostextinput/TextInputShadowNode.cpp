@@ -19,7 +19,7 @@ namespace facebook::react {
 extern const char TextInputComponentName[] = "TextInput";
 
 AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
-    const LayoutContext &layoutContext) const {
+    const LayoutContext& layoutContext) const {
   bool hasMeaningfulState =
       getState() && getState()->getRevision() != State::initialRevisionValue;
 
@@ -54,7 +54,7 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
 }
 
 AttributedString TextInputShadowNode::getAttributedString(
-    const LayoutContext &layoutContext) const {
+    const LayoutContext& layoutContext) const {
   auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
       layoutContext.fontSizeMultiplier);
   auto attributedString = AttributedString{};
@@ -76,11 +76,11 @@ void TextInputShadowNode::setTextLayoutManager(
 }
 
 void TextInputShadowNode::updateStateIfNeeded(
-    const LayoutContext &layoutContext) {
+    const LayoutContext& layoutContext) {
   ensureUnsealed();
 
   auto reactTreeAttributedString = getAttributedString(layoutContext);
-  const auto &state = getStateData();
+  const auto& state = getStateData();
 
   react_native_assert(textLayoutManager_);
   react_native_assert(
@@ -104,8 +104,8 @@ void TextInputShadowNode::updateStateIfNeeded(
 #pragma mark - LayoutableShadowNode
 
 Size TextInputShadowNode::measureContent(
-    const LayoutContext &layoutContext,
-    const LayoutConstraints &layoutConstraints) const {
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
   return textLayoutManager_
       ->measure(
           attributedStringBoxToMeasure(layoutContext),

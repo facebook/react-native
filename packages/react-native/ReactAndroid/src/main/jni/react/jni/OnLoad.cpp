@@ -69,7 +69,7 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<
 
 } // namespace
 
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
 #if WITH_GLOGINIT
     gloginit::initialize();

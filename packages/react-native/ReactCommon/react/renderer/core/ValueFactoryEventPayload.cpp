@@ -12,7 +12,7 @@ namespace facebook::react {
 ValueFactoryEventPayload::ValueFactoryEventPayload(ValueFactory factory)
     : valueFactory_(std::move(factory)) {}
 
-jsi::Value ValueFactoryEventPayload::asJSIValue(jsi::Runtime &runtime) const {
+jsi::Value ValueFactoryEventPayload::asJSIValue(jsi::Runtime& runtime) const {
   return valueFactory_(runtime);
 }
 

@@ -24,8 +24,8 @@
 namespace facebook::react {
 
 void UIManagerBinding::createAndInstallIfNeeded(
-    jsi::Runtime &runtime,
-    const std::shared_ptr<UIManager> &uiManager) {
+    jsi::Runtime& runtime,
+    const std::shared_ptr<UIManager>& uiManager) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -41,7 +41,7 @@ void UIManagerBinding::createAndInstallIfNeeded(
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
-    jsi::Runtime &runtime) {
+    jsi::Runtime& runtime) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -63,8 +63,8 @@ UIManagerBinding::~UIManagerBinding() {
 }
 
 jsi::Value UIManagerBinding::getInspectorDataForInstance(
-    jsi::Runtime &runtime,
-    const EventEmitter &eventEmitter) const {
+    jsi::Runtime& runtime,
+    const EventEmitter& eventEmitter) const {
   auto eventTarget = eventEmitter.eventTarget_;
   EventEmitter::DispatchMutex().lock();
 
@@ -90,21 +90,21 @@ jsi::Value UIManagerBinding::getInspectorDataForInstance(
 }
 
 void UIManagerBinding::dispatchEvent(
-    jsi::Runtime &runtime,
-    const EventTarget *eventTarget,
-    const std::string &type,
+    jsi::Runtime& runtime,
+    const EventTarget* eventTarget,
+    const std::string& type,
     ReactEventPriority priority,
-    const EventPayload &eventPayload) const {
+    const EventPayload& eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
-    auto pointerEvent = static_cast<const PointerEvent &>(eventPayload);
+    auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
     auto dispatchCallback = [this](
-                                jsi::Runtime &runtime,
-                                const EventTarget *eventTarget,
-                                const std::string &type,
+                                jsi::Runtime& runtime,
+                                const EventTarget* eventTarget,
+                                const std::string& type,
                                 ReactEventPriority priority,
-                                const EventPayload &eventPayload) {
+                                const EventPayload& eventPayload) {
       this->dispatchEventToJS(
           runtime, eventTarget, type, priority, eventPayload);
     };
@@ -122,11 +122,11 @@ void UIManagerBinding::dispatchEvent(
 }
 
 void UIManagerBinding::dispatchEventToJS(
-    jsi::Runtime &runtime,
-    const EventTarget *eventTarget,
-    const std::string &type,
+    jsi::Runtime& runtime,
+    const EventTarget* eventTarget,
+    const std::string& type,
     ReactEventPriority priority,
-    const EventPayload &eventPayload) const {
+    const EventPayload& eventPayload) const {
   auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
@@ -155,8 +155,8 @@ void UIManagerBinding::dispatchEventToJS(
     LOG(WARNING) << "instanceHandle is null, event will be dropped";
   }
 
-  auto &eventHandlerWrapper =
-      static_cast<const EventHandlerWrapper &>(*eventHandler_);
+  auto& eventHandlerWrapper =
+      static_cast<const EventHandlerWrapper&>(*eventHandler_);
 
   currentEventPriority_ = priority;
   eventHandlerWrapper.callback.call(
@@ -172,8 +172,8 @@ void UIManagerBinding::invalidate() const {
 }
 
 static void validateArgumentCount(
-    jsi::Runtime &runtime,
-    const std::string &methodName,
+    jsi::Runtime& runtime,
+    const std::string& methodName,
     size_t expected,
     size_t actual) {
   if (actual < expected) {
@@ -185,8 +185,8 @@ static void validateArgumentCount(
 }
 
 jsi::Value UIManagerBinding::get(
-    jsi::Runtime &runtime,
-    const jsi::PropNameID &name) {
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name) {
   auto methodName = name.utf8(runtime);
   SystraceSection s("UIManagerBinding::get", "name", methodName);
 
@@ -217,7 +217,7 @@ jsi::Value UIManagerBinding::get(
   //    Scheduler and JS VM. This could happen if, for instance, C++
   //    semantics cause these lambda to not be deallocated until
   //    a CPU tick (or more) after the JS VM is deallocated.
-  UIManager *uiManager = uiManager_.get();
+  UIManager* uiManager = uiManager_.get();
 
   // Semantic: Creates a new node with given pieces.
   if (methodName == "createNode") {
@@ -227,9 +227,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -259,9 +259,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -279,9 +279,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -301,9 +301,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -314,7 +314,7 @@ jsi::Value UIManagerBinding::get(
               arguments[3].getObject(runtime).getFunction(runtime);
           auto targetNode =
               uiManager->findNodeAtPoint(node, Point{locationX, locationY});
-          auto &eventTarget = targetNode->getEventEmitter()->eventTarget_;
+          auto& eventTarget = targetNode->getEventEmitter()->eventTarget_;
 
           EventEmitter::DispatchMutex().lock();
           eventTarget->retain(runtime);
@@ -335,9 +335,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -357,13 +357,13 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          const auto &rawProps = RawProps(runtime, arguments[1]);
+          const auto& rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -381,13 +381,13 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          const auto &rawProps = RawProps(runtime, arguments[1]);
+          const auto& rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -404,9 +404,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -422,9 +422,9 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         0,
-        [](jsi::Runtime &runtime,
-           const jsi::Value & /*thisValue*/,
-           const jsi::Value * /*arguments*/,
+        [](jsi::Runtime& runtime,
+           const jsi::Value& /*thisValue*/,
+           const jsi::Value* /*arguments*/,
            size_t /*count*/) -> jsi::Value {
           auto shadowNodeList = std::make_shared<ShadowNode::ListOfShared>(
               ShadowNode::ListOfShared({}));
@@ -439,9 +439,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -462,9 +462,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [weakUIManager, uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -530,9 +530,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [this, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -551,9 +551,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -578,9 +578,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -602,9 +602,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value &,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value&,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -624,9 +624,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -663,9 +663,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -682,7 +682,7 @@ jsi::Value UIManagerBinding::get(
           auto newestCloneOfShadowNode =
               uiManager->getNewestCloneOfShadowNode(*shadowNode);
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
               newestCloneOfShadowNode.get());
           Point originRelativeToParent = layoutableShadowNode != nullptr
               ? layoutableShadowNode->getLayoutMetrics().frame.origin
@@ -708,9 +708,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -746,9 +746,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -767,9 +767,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -789,9 +789,9 @@ jsi::Value UIManagerBinding::get(
         name,
         0,
         [this](
-            jsi::Runtime & /*runtime*/,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value * /*arguments*/,
+            jsi::Runtime& /*runtime*/,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* /*arguments*/,
             size_t /*count*/) -> jsi::Value {
           return {serialize(currentEventPriority_)};
         });
@@ -812,9 +812,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value &,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value&,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -854,9 +854,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -895,9 +895,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -929,9 +929,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -965,9 +965,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -997,9 +997,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -1034,9 +1034,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -1079,9 +1079,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -1106,7 +1106,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
               newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {
@@ -1114,7 +1114,7 @@ jsi::Value UIManagerBinding::get(
           }
 
           auto layoutableParentShadowNode =
-              traitCast<LayoutableShadowNode const *>(
+              traitCast<LayoutableShadowNode const*>(
                   newestParentOfShadowNode.get());
           // This should never happen
           if (layoutableParentShadowNode == nullptr) {
@@ -1163,9 +1163,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [uiManager, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
@@ -1187,7 +1187,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
               newestCloneOfShadowNode.get());
           // This should never happen
           if (layoutableShadowNode == nullptr) {
@@ -1217,9 +1217,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [this, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
           bool isCapturing = pointerEventsProcessor_.hasPointerCapture(
@@ -1236,9 +1236,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [this, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
           pointerEventsProcessor_.setPointerCapture(
@@ -1255,9 +1255,9 @@ jsi::Value UIManagerBinding::get(
         name,
         paramCount,
         [this, methodName, paramCount](
-            jsi::Runtime &runtime,
-            const jsi::Value & /*thisValue*/,
-            const jsi::Value *arguments,
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
           pointerEventsProcessor_.releasePointerCapture(
@@ -1270,7 +1270,7 @@ jsi::Value UIManagerBinding::get(
   return jsi::Value::undefined();
 }
 
-UIManager &UIManagerBinding::getUIManager() {
+UIManager& UIManagerBinding::getUIManager() {
   return *uiManager_;
 }
 

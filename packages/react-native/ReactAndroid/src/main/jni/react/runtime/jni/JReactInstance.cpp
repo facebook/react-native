@@ -70,9 +70,9 @@ JReactInstance::JReactInstance(
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
-  instance_->initializeRuntime(options, [this](jsi::Runtime &runtime) {
+  instance_->initializeRuntime(options, [this](jsi::Runtime& runtime) {
     react::Logger androidLogger =
-        static_cast<void (*)(const std::string &, unsigned int)>(
+        static_cast<void (*)(const std::string&, unsigned int)>(
             &reactAndroidLoggingHook);
     react::bindNativeLogger(runtime, androidLogger);
     if (jBindingsInstaller_ != nullptr) {
@@ -129,7 +129,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
 
 void JReactInstance::loadJSBundleFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
-    const std::string &assetURL) {
+    const std::string& assetURL) {
   const int kAssetsLength = 9; // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
@@ -139,8 +139,8 @@ void JReactInstance::loadJSBundleFromAssets(
 }
 
 void JReactInstance::loadJSBundleFromFile(
-    const std::string &fileName,
-    const std::string &sourceURL) {
+    const std::string& fileName,
+    const std::string& sourceURL) {
   std::unique_ptr<const JSBigFileString> script;
   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
       [&fileName, &script]() { script = JSBigFileString::fromPath(fileName); });
@@ -170,9 +170,9 @@ JReactInstance::createJSTimerExecutor(
 }
 
 void JReactInstance::callFunctionOnModule(
-    const std::string &moduleName,
-    const std::string &methodName,
-    NativeArray *args) {
+    const std::string& moduleName,
+    const std::string& methodName,
+    NativeArray* args) {
   instance_->callFunctionOnModule(moduleName, methodName, args->consume());
 }
 
@@ -193,7 +193,7 @@ JReactInstance::getRuntimeScheduler() noexcept {
 
 void JReactInstance::registerSegment(
     int segmentId,
-    const std::string &segmentPath) noexcept {
+    const std::string& segmentPath) noexcept {
   instance_->registerSegment((uint32_t)segmentId, segmentPath);
 }
 

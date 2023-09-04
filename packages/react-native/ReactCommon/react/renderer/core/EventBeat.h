@@ -42,9 +42,9 @@ class EventBeat {
   using SharedOwnerBox = std::shared_ptr<OwnerBox>;
 
   using Factory =
-      std::function<std::unique_ptr<EventBeat>(const SharedOwnerBox &ownerBox)>;
+      std::function<std::unique_ptr<EventBeat>(const SharedOwnerBox& ownerBox)>;
 
-  using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
+  using BeatCallback = std::function<void(jsi::Runtime& runtime)>;
 
   EventBeat(SharedOwnerBox ownerBox);
 
@@ -79,7 +79,7 @@ class EventBeat {
    * Should be used by subclasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
-  void beat(jsi::Runtime &runtime) const;
+  void beat(jsi::Runtime& runtime) const;
 
   BeatCallback beatCallback_;
   SharedOwnerBox ownerBox_;

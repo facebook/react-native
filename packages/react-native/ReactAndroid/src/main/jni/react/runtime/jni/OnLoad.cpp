@@ -11,7 +11,7 @@
 #include "JJSTimerExecutor.h"
 #include "JReactInstance.h"
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void * /*unused*/) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*unused*/) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::JReactMarker::setLogPerfMarkerIfNeeded();
     facebook::react::JReactInstance::registerNatives();

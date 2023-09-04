@@ -29,7 +29,7 @@ class ShadowTreeRegistry final {
    * The ownership of the instance is also transferred to the registry.
    * Can be called from any thread.
    */
-  void add(std::unique_ptr<ShadowTree> &&shadowTree) const;
+  void add(std::unique_ptr<ShadowTree>&& shadowTree) const;
 
   /*
    * Removes a `ShadowTree` instance with given `surfaceId` from the registry
@@ -50,7 +50,7 @@ class ShadowTreeRegistry final {
    */
   bool visit(
       SurfaceId surfaceId,
-      const std::function<void(const ShadowTree &shadowTree)> &callback) const;
+      const std::function<void(const ShadowTree& shadowTree)>& callback) const;
 
   /*
    * Enumerates all stored shadow trees.
@@ -58,8 +58,8 @@ class ShadowTreeRegistry final {
    * Can be called from any thread.
    */
   void enumerate(
-      const std::function<void(const ShadowTree &shadowTree, bool &stop)>
-          &callback) const;
+      const std::function<void(const ShadowTree& shadowTree, bool& stop)>&
+          callback) const;
 
  private:
   mutable std::shared_mutex mutex_;

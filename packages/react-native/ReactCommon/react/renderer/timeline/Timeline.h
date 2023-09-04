@@ -24,7 +24,7 @@ class Timeline final {
   friend class TimelineController;
 
  public:
-  Timeline(const ShadowTree &shadowTree);
+  Timeline(const ShadowTree& shadowTree);
 
  private:
 #pragma mark - Private methods to be used by `TimelineHandler`.
@@ -34,23 +34,23 @@ class Timeline final {
   bool isPaused() const noexcept;
   TimelineFrame::List getFrames() const noexcept;
   TimelineFrame getCurrentFrame() const noexcept;
-  void rewind(const TimelineFrame &frame) const noexcept;
+  void rewind(const TimelineFrame& frame) const noexcept;
   SurfaceId getSurfaceId() const noexcept;
 
 #pragma mark - Private methods to be used by `TimelineController`.
 
   RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree &shadowTree,
-      const RootShadowNode::Shared &oldRootShadowNode,
-      const RootShadowNode::Unshared &newRootShadowNode) const noexcept;
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode) const noexcept;
 
 #pragma mark - Private & Internal
 
-  void record(const RootShadowNode::Shared &rootShadowNode) const noexcept;
-  void rewind(const TimelineSnapshot &snapshot) const noexcept;
+  void record(const RootShadowNode::Shared& rootShadowNode) const noexcept;
+  void rewind(const TimelineSnapshot& snapshot) const noexcept;
 
   mutable std::recursive_mutex mutex_;
-  mutable const ShadowTree *shadowTree_{nullptr};
+  mutable const ShadowTree* shadowTree_{nullptr};
   mutable int currentSnapshotIndex_{0};
   mutable TimelineSnapshot::List snapshots_{};
   mutable bool paused_{false};

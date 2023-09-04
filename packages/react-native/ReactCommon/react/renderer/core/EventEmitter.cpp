@@ -30,14 +30,14 @@ static std::string normalizeEventType(std::string type) {
   return prefixedType;
 }
 
-std::mutex &EventEmitter::DispatchMutex() {
+std::mutex& EventEmitter::DispatchMutex() {
   static std::mutex mutex;
   return mutex;
 }
 
 ValueFactory EventEmitter::defaultPayloadFactory() {
   static auto payloadFactory =
-      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+      ValueFactory{[](jsi::Runtime& runtime) { return jsi::Object(runtime); }};
   return payloadFactory;
 }
 
@@ -49,12 +49,12 @@ EventEmitter::EventEmitter(
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const folly::dynamic &payload,
+    const folly::dynamic& payload,
     EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime &runtime) {
+      [payload](jsi::Runtime& runtime) {
         return valueFromDynamic(runtime, payload);
       },
       priority,
@@ -63,15 +63,15 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const folly::dynamic &payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime &runtime) {
+    const folly::dynamic& payload) const {
+  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
     return valueFromDynamic(runtime, payload);
   });
 }
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const ValueFactory &payloadFactory,
+    const ValueFactory& payloadFactory,
     EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
@@ -104,7 +104,7 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const ValueFactory &payloadFactory) const {
+    const ValueFactory& payloadFactory) const {
   dispatchUniqueEvent(
       std::move(type),
       std::make_shared<ValueFactoryEventPayload>(payloadFactory));
@@ -150,7 +150,7 @@ void EventEmitter::setEnabled(bool enabled) const {
   }
 }
 
-const SharedEventTarget &EventEmitter::getEventTarget() const {
+const SharedEventTarget& EventEmitter::getEventTarget() const {
   return eventTarget_;
 }
 

@@ -18,9 +18,9 @@ namespace facebook::react {
  */
 class RawPropsKey final {
  public:
-  const char *prefix{};
-  const char *name{};
-  const char *suffix{};
+  const char* prefix{};
+  const char* name{};
+  const char* suffix{};
 
   /*
    * Converts to `std::string`.
@@ -31,10 +31,10 @@ class RawPropsKey final {
    * Renders compound prop name to given buffer and put the resulting length
    * into `length`.
    */
-  void render(char *buffer, RawPropsPropNameLength *length) const noexcept;
+  void render(char* buffer, RawPropsPropNameLength* length) const noexcept;
 };
 
-bool operator==(const RawPropsKey &lhs, const RawPropsKey &rhs) noexcept;
-bool operator!=(const RawPropsKey &lhs, const RawPropsKey &rhs) noexcept;
+bool operator==(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept;
+bool operator!=(const RawPropsKey& lhs, const RawPropsKey& rhs) noexcept;
 
 } // namespace facebook::react

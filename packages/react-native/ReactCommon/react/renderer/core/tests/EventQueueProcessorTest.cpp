@@ -23,17 +23,17 @@ class EventQueueProcessorTest : public testing::Test {
     runtime_ = facebook::hermes::makeHermesRuntime();
 
     auto eventPipe = [this](
-                         jsi::Runtime & /*runtime*/,
-                         const EventTarget * /*eventTarget*/,
-                         const std::string &type,
+                         jsi::Runtime& /*runtime*/,
+                         const EventTarget* /*eventTarget*/,
+                         const std::string& type,
                          ReactEventPriority priority,
-                         const EventPayload & /*payload*/) {
+                         const EventPayload& /*payload*/) {
       eventTypes_.push_back(type);
       eventPriorities_.push_back(priority);
     };
 
-    auto dummyEventPipeConclusion = [](jsi::Runtime &runtime) {};
-    auto dummyStatePipe = [](const StateUpdate &stateUpdate) {};
+    auto dummyEventPipeConclusion = [](jsi::Runtime& runtime) {};
+    auto dummyStatePipe = [](const StateUpdate& stateUpdate) {};
 
     eventProcessor_ = std::make_unique<EventQueueProcessor>(
         eventPipe, dummyEventPipeConclusion, dummyStatePipe);

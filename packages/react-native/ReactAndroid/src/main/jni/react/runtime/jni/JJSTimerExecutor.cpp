@@ -17,9 +17,9 @@ void JJSTimerExecutor::setTimerManager(
   timerManager_ = timerManager;
 }
 
-void JJSTimerExecutor::callTimers(WritableNativeArray *timerIDs) {
+void JJSTimerExecutor::callTimers(WritableNativeArray* timerIDs) {
   if (auto timerManager = timerManager_.lock()) {
-    for (const auto &timerID : timerIDs->consume()) {
+    for (const auto& timerID : timerIDs->consume()) {
       timerManager->callTimer((uint32_t)timerID.asInt());
     }
   }

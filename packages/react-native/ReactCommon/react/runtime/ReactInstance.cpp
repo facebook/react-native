@@ -25,7 +25,7 @@
 namespace facebook::react {
 
 // Looping on \c drainMicrotasks until it completes or hits the retries bound.
-static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
+static void performMicrotaskCheckpoint(jsi::Runtime& runtime) {
   uint8_t retries = 0;
   // A heuristic number to guard inifinite or absurd numbers of retries.
   constexpr unsigned int kRetriesBound = 255;
@@ -37,7 +37,7 @@ static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
       if (runtime.drainMicrotasks()) {
         break;
       }
-    } catch (jsi::JSError &error) {
+    } catch (jsi::JSError& error) {
       handleJSError(runtime, error, true);
     }
     retries++;
@@ -66,8 +66,8 @@ ReactInstance::ReactInstance(
                                   jsMessageQueueThread_),
                           weakHasFatalJsError =
                               std::weak_ptr<bool>(hasFatalJsError_)](
-                             std::function<void(jsi::Runtime & runtime)>
-                                 &&callback) {
+                             std::function<void(jsi::Runtime & runtime)>&&
+                                 callback) {
     if (std::shared_ptr<bool> sharedHasFatalJsError =
             weakHasFatalJsError.lock()) {
       if (*sharedHasFatalJsError) {
@@ -92,7 +92,7 @@ ReactInstance::ReactInstance(
                   strongTimerManager->callReactNativeMicrotasks(*strongRuntime);
                 }
                 performMicrotaskCheckpoint(*strongRuntime);
-              } catch (jsi::JSError &originalError) {
+              } catch (jsi::JSError& originalError) {
                 handleJSError(*strongRuntime, originalError, true);
               }
             }
@@ -105,7 +105,7 @@ ReactInstance::ReactInstance(
 
   auto pipedRuntimeExecutor =
       [runtimeScheduler = runtimeScheduler_.get()](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
+          std::function<void(jsi::Runtime & runtime)>&& callback) {
         runtimeScheduler->scheduleWork(std::move(callback));
       };
 
@@ -115,7 +115,7 @@ ReactInstance::ReactInstance(
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
   return [runtimeScheduler = runtimeScheduler_.get()](
-             std::function<void(jsi::Runtime & runtime)> &&callback) {
+             std::function<void(jsi::Runtime & runtime)>&& callback) {
     runtimeScheduler->scheduleWork(std::move(callback));
   };
 }
@@ -127,7 +127,7 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   return [weakBufferedRuntimeExecutor_ =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
-             std::function<void(jsi::Runtime & runtime)> &&callback) {
+             std::function<void(jsi::Runtime & runtime)>&& callback) {
     if (auto strongBufferedRuntimeExecutor_ =
             weakBufferedRuntimeExecutor_.lock()) {
       strongBufferedRuntimeExecutor_->execute(std::move(callback));
@@ -152,9 +152,9 @@ ReactInstance::getRuntimeScheduler() noexcept {
  * })
  */
 static void defineReadOnlyGlobal(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::string propName,
-    jsi::Value &&value) {
+    jsi::Value&& value) {
   if (runtime.global().hasProperty(runtime, propName.c_str())) {
     throw jsi::JSError(
         runtime,
@@ -181,7 +181,7 @@ namespace {
 
 // Copied from JSIExecutor.cpp
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
-std::string simpleBasename(const std::string &path) {
+std::string simpleBasename(const std::string& path) {
   size_t pos = path.rfind("/");
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
@@ -197,7 +197,7 @@ std::string simpleBasename(const std::string &path) {
  */
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
-    const std::string &sourceURL) {
+    const std::string& sourceURL) {
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
@@ -207,7 +207,7 @@ void ReactInstance::loadScript(
        sourceURL,
        buffer = std::move(buffer),
        weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
-           bufferedRuntimeExecutor_)](jsi::Runtime &runtime) {
+           bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
         try {
           SystraceSection s("ReactInstance::loadScript");
           bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
@@ -228,7 +228,7 @@ void ReactInstance::loadScript(
                   weakBufferedRuntimeExecuter.lock()) {
             strongBufferedRuntimeExecuter->flush();
           }
-        } catch (jsi::JSError &error) {
+        } catch (jsi::JSError& error) {
           // Handle uncaught JS errors during loading JS bundle
           *hasFatalJsError_ = true;
           this->jsErrorHandler_.handleJsError(error, true);
@@ -241,10 +241,10 @@ void ReactInstance::loadScript(
  * `registerCallableModule`. Used to invoke a JS function from platform code.
  */
 void ReactInstance::callFunctionOnModule(
-    const std::string &moduleName,
-    const std::string &methodName,
-    const folly::dynamic &args) {
-  bufferedRuntimeExecutor_->execute([=](jsi::Runtime &runtime) {
+    const std::string& moduleName,
+    const std::string& methodName,
+    const folly::dynamic& args) {
+  bufferedRuntimeExecutor_->execute([=](jsi::Runtime& runtime) {
     SystraceSection s(
         "ReactInstance::callFunctionOnModule",
         "moduleName",
@@ -255,7 +255,7 @@ void ReactInstance::callFunctionOnModule(
       std::ostringstream knownModules;
       int i = 0;
       for (auto it = modules_.begin(); it != modules_.end(); it++, i++) {
-        const char *space = (i > 0 ? ", " : " ");
+        const char* space = (i > 0 ? ", " : " ");
         knownModules << space << it->first;
       }
       throw jsi::JSError(
@@ -277,20 +277,20 @@ void ReactInstance::callFunctionOnModule(
     }
 
     std::vector<jsi::Value> jsArgs;
-    for (auto &arg : args) {
+    for (auto& arg : args) {
       jsArgs.push_back(jsi::valueFromDynamic(runtime, arg));
     }
     method.asObject(runtime).asFunction(runtime).callWithThis(
-        runtime, module, (const jsi::Value *)jsArgs.data(), jsArgs.size());
+        runtime, module, (const jsi::Value*)jsArgs.data(), jsArgs.size());
   });
 }
 
 void ReactInstance::registerSegment(
     uint32_t segmentId,
-    const std::string &segmentPath) {
+    const std::string& segmentPath) {
   LOG(WARNING) << "Starting to run ReactInstance::registerSegment with segment "
                << segmentId;
-  runtimeScheduler_->scheduleWork([=](jsi::Runtime &runtime) {
+  runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
     SystraceSection s("ReactInstance::registerSegment");
     const auto tag = folly::to<std::string>(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
@@ -320,7 +320,7 @@ void ReactInstance::registerSegment(
 
 namespace {
 void defineReactInstanceFlags(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     ReactInstance::JSRuntimeFlags options) noexcept {
   defineReadOnlyGlobal(runtime, "RN$Bridgeless", jsi::Value(true));
 
@@ -342,7 +342,7 @@ void ReactInstance::initializeRuntime(
     JSRuntimeFlags options,
     BindingsInstallFunc bindingsInstallFunc) noexcept {
   runtimeScheduler_->scheduleWork([this, options, bindingsInstallFunc](
-                                      jsi::Runtime &runtime) {
+                                      jsi::Runtime& runtime) {
     SystraceSection s("ReactInstance::initializeRuntime");
 
     bindNativePerformanceNow(runtime);
@@ -360,9 +360,9 @@ void ReactInstance::initializeRuntime(
             jsi::PropNameID::forAscii(runtime, "registerCallableModule"),
             2,
             [this](
-                jsi::Runtime &runtime,
-                const jsi::Value & /*unused*/,
-                const jsi::Value *args,
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
                 size_t count) {
               if (count != 2) {
                 throw jsi::JSError(
@@ -404,7 +404,7 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
     TRIM_MEMORY_RUNNING_MODERATE = 5,
     TRIM_MEMORY_UI_HIDDEN = 20,
   };
-  const char *levelName;
+  const char* levelName;
   switch (pressureLevel) {
     case TRIM_MEMORY_BACKGROUND:
       levelName = "TRIM_MEMORY_BACKGROUND";
@@ -449,7 +449,7 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
       // collections.
       LOG(INFO) << "Memory warning (pressure level: " << levelName
                 << ") received by JS VM, running a GC";
-      runtimeScheduler_->scheduleWork([=](jsi::Runtime &runtime) {
+      runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
         SystraceSection s("ReactInstance::handleMemoryPressure");
         runtime.instrumentation().collectGarbage(levelName);
       });

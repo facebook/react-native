@@ -21,17 +21,17 @@ class StaticInitialized {
   constexpr StaticInitialized() : m_instance(nullptr) {}
 
   template <typename... Args>
-  void initialize(Args &&...arguments) {
+  void initialize(Args&&... arguments) {
     FBASSERT(!m_instance);
     m_instance = new T(std::forward<Args>(arguments)...);
   }
 
-  T *operator->() const {
+  T* operator->() const {
     return m_instance;
   }
 
  private:
-  T *m_instance;
+  T* m_instance;
 };
 
 } // namespace facebook

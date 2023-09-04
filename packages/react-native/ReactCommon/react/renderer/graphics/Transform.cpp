@@ -15,7 +15,7 @@
 namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-void Transform::print(const Transform &t, std::string prefix) {
+void Transform::print(const Transform& t, std::string prefix) {
   LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
              << t.matrix[2] << " " << t.matrix[3] << " ]";
   LOG(ERROR) << prefix << "[ " << t.matrix[4] << " " << t.matrix[5] << " "
@@ -191,8 +191,8 @@ TransformOperation Transform::DefaultTransformOperation(
 
 Transform Transform::Interpolate(
     Float animationProgress,
-    const Transform &lhs,
-    const Transform &rhs) {
+    const Transform& lhs,
+    const Transform& rhs) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
@@ -248,15 +248,15 @@ Transform Transform::Interpolate(
   return result;
 }
 
-bool Transform::isVerticalInversion(const Transform &transform) {
+bool Transform::isVerticalInversion(const Transform& transform) {
   return transform.at(1, 1) == -1;
 }
 
-bool Transform::isHorizontalInversion(const Transform &transform) {
+bool Transform::isHorizontalInversion(const Transform& transform) {
   return transform.at(0, 0) == -1;
 }
 
-bool Transform::operator==(const Transform &rhs) const {
+bool Transform::operator==(const Transform& rhs) const {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
       return false;
@@ -265,25 +265,25 @@ bool Transform::operator==(const Transform &rhs) const {
   return true;
 }
 
-bool Transform::operator!=(const Transform &rhs) const {
+bool Transform::operator!=(const Transform& rhs) const {
   return !(*this == rhs);
 }
 
-Transform Transform::operator*(const Transform &rhs) const {
+Transform Transform::operator*(const Transform& rhs) const {
   if (*this == Transform::Identity()) {
     return rhs;
   }
 
-  const auto &lhs = *this;
+  const auto& lhs = *this;
   auto result = Transform{};
-  for (const auto &op : this->operations) {
+  for (const auto& op : this->operations) {
     if (op.type == TransformOperationType::Identity &&
         !result.operations.empty()) {
       continue;
     }
     result.operations.push_back(op);
   }
-  for (const auto &op : rhs.operations) {
+  for (const auto& op : rhs.operations) {
     if (op.type == TransformOperationType::Identity &&
         !result.operations.empty()) {
       continue;
@@ -347,15 +347,15 @@ Transform Transform::operator*(const Transform &rhs) const {
   return result;
 }
 
-Float &Transform::at(int i, int j) {
+Float& Transform::at(int i, int j) {
   return matrix[(i * 4) + j];
 }
 
-const Float &Transform::at(int i, int j) const {
+const Float& Transform::at(int i, int j) const {
   return matrix[(i * 4) + j];
 }
 
-Point operator*(const Point &point, const Transform &transform) {
+Point operator*(const Point& point, const Transform& transform) {
   if (transform == Transform::Identity()) {
     return point;
   }
@@ -365,12 +365,12 @@ Point operator*(const Point &point, const Transform &transform) {
   return {result.x, result.y};
 }
 
-Rect operator*(const Rect &rect, const Transform &transform) {
+Rect operator*(const Rect& rect, const Transform& transform) {
   auto center = rect.getCenter();
   return transform.applyWithCenter(rect, center);
 }
 
-Rect Transform::applyWithCenter(const Rect &rect, const Point &center) const {
+Rect Transform::applyWithCenter(const Rect& rect, const Point& center) const {
   auto a = Point{rect.origin.x, rect.origin.y} - center;
   auto b = Point{rect.getMaxX(), rect.origin.y} - center;
   auto c = Point{rect.getMaxX(), rect.getMaxY()} - center;
@@ -390,7 +390,7 @@ Rect Transform::applyWithCenter(const Rect &rect, const Point &center) const {
       transformedA, transformedB, transformedC, transformedD);
 }
 
-EdgeInsets operator*(const EdgeInsets &edgeInsets, const Transform &transform) {
+EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform) {
   return EdgeInsets{
       edgeInsets.left * transform.matrix[0],
       edgeInsets.top * transform.matrix[5],
@@ -398,7 +398,7 @@ EdgeInsets operator*(const EdgeInsets &edgeInsets, const Transform &transform) {
       edgeInsets.bottom * transform.matrix[5]};
 }
 
-Vector operator*(const Transform &transform, const Vector &vector) {
+Vector operator*(const Transform& transform, const Vector& vector) {
   return {
       vector.x * transform.at(0, 0) + vector.y * transform.at(1, 0) +
           vector.z * transform.at(2, 0) + vector.w * transform.at(3, 0),
@@ -411,7 +411,7 @@ Vector operator*(const Transform &transform, const Vector &vector) {
   };
 }
 
-Size operator*(const Size &size, const Transform &transform) {
+Size operator*(const Size& size, const Transform& transform) {
   if (transform == Transform::Identity()) {
     return size;
   }

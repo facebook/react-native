@@ -46,14 +46,14 @@ constexpr MapBuffer::Key CORNER_START_END = 11;
 constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    const std::optional<Float> &value) {
+    const std::optional<Float>& value) {
   builder.putDouble(key, value.value_or(NAN));
 }
 
 inline std::optional<Float> optionalFromValue(
-    const std::optional<BorderCurve> &value) {
+    const std::optional<BorderCurve>& value) {
   if (!value) {
     return {};
   }
@@ -62,12 +62,12 @@ inline std::optional<Float> optionalFromValue(
 }
 
 inline std::optional<Float> optionalFromValue(
-    const std::optional<Float> &value) {
+    const std::optional<Float>& value) {
   return value;
 }
 
 inline std::optional<Float> optionalFromValue(
-    const std::optional<BorderStyle> &value) {
+    const std::optional<BorderStyle>& value) {
   if (!value) {
     return {};
   }
@@ -89,13 +89,13 @@ inline std::optional<Float> optionalFromValue(
 }
 
 inline void putOptionalColor(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    const std::optional<SharedColor> &color) {
+    const std::optional<SharedColor>& color) {
   builder.putInt(key, color.has_value() ? toAndroidRepr(color.value()) : -1);
 }
 
-inline MapBuffer convertBorderColors(const CascadedBorderColors &colors) {
+inline MapBuffer convertBorderColors(const CascadedBorderColors& colors) {
   MapBufferBuilder builder(7);
   putOptionalColor(builder, EDGE_TOP, colors.top);
   putOptionalColor(builder, EDGE_RIGHT, colors.right);
@@ -108,7 +108,7 @@ inline MapBuffer convertBorderColors(const CascadedBorderColors &colors) {
 }
 
 template <typename T>
-MapBuffer convertCascadedEdges(const CascadedRectangleEdges<T> &edges) {
+MapBuffer convertCascadedEdges(const CascadedRectangleEdges<T>& edges) {
   MapBufferBuilder builder(10);
   putOptionalFloat(builder, EDGE_TOP, optionalFromValue(edges.top));
   putOptionalFloat(builder, EDGE_RIGHT, optionalFromValue(edges.right));
@@ -125,7 +125,7 @@ MapBuffer convertCascadedEdges(const CascadedRectangleEdges<T> &edges) {
 }
 
 template <typename T>
-MapBuffer convertCascadedCorners(const CascadedRectangleCorners<T> &corners) {
+MapBuffer convertCascadedCorners(const CascadedRectangleCorners<T>& corners) {
   MapBufferBuilder builder(13);
   putOptionalFloat(
       builder, CORNER_TOP_LEFT, optionalFromValue(corners.topLeft));
@@ -153,7 +153,7 @@ MapBuffer convertCascadedCorners(const CascadedRectangleCorners<T> &corners) {
   return builder.build();
 }
 
-inline MapBuffer convertEdgeInsets(const EdgeInsets &insets) {
+inline MapBuffer convertEdgeInsets(const EdgeInsets& insets) {
   MapBufferBuilder builder(4);
   builder.putDouble(EDGE_TOP, insets.top);
   builder.putDouble(EDGE_RIGHT, insets.right);
@@ -171,12 +171,12 @@ constexpr MapBuffer::Key NATIVE_DRAWABLE_BORDERLESS = 3;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_RIPPLE_RADIUS = 4;
 
 inline MapBuffer convertNativeBackground(
-    const std::optional<NativeDrawable> &value) {
+    const std::optional<NativeDrawable>& value) {
   if (!value.has_value()) {
     return MapBufferBuilder::EMPTY();
   }
 
-  const auto &drawable = value.value();
+  const auto& drawable = value.value();
   MapBufferBuilder builder(4);
   switch (drawable.kind) {
     case NativeDrawable::Kind::ThemeAttr:
@@ -202,7 +202,7 @@ inline MapBuffer convertNativeBackground(
 
 #endif
 
-inline MapBuffer convertTransform(const Transform &transform) {
+inline MapBuffer convertTransform(const Transform& transform) {
   MapBufferBuilder builder(16);
   for (int32_t i = 0; i < transform.matrix.size(); i++) {
     builder.putDouble(i, transform.matrix[i]);

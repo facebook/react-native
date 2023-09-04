@@ -45,15 +45,15 @@ class RootShadowNode final
    * Returns `false` if the three is already laid out.
    */
   bool layoutIfNeeded(
-      std::vector<const LayoutableShadowNode *> *affectedNodes = {});
+      std::vector<const LayoutableShadowNode*>* affectedNodes = {});
 
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.
    */
   RootShadowNode::Unshared clone(
-      const PropsParserContext &propsParserContext,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
+      const PropsParserContext& propsParserContext,
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext) const;
 
   Transform getTransform() const override;
 };

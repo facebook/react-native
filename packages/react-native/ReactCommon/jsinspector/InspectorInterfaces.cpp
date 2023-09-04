@@ -26,8 +26,8 @@ namespace {
 class InspectorImpl : public IInspector {
  public:
   int addPage(
-      const std::string &title,
-      const std::string &vm,
+      const std::string& title,
+      const std::string& vm,
       ConnectFunc connectFunc) override;
   void removePage(int pageId) override;
 
@@ -44,8 +44,8 @@ class InspectorImpl : public IInspector {
 };
 
 int InspectorImpl::addPage(
-    const std::string &title,
-    const std::string &vm,
+    const std::string& title,
+    const std::string& vm,
     ConnectFunc connectFunc) {
   std::scoped_lock lock(mutex_);
 
@@ -67,7 +67,7 @@ std::vector<InspectorPage> InspectorImpl::getPages() const {
   std::scoped_lock lock(mutex_);
 
   std::vector<InspectorPage> inspectorPages;
-  for (auto &it : titles_) {
+  for (auto& it : titles_) {
     inspectorPages.push_back(InspectorPage{
         it.first, std::get<0>(it.second), std::get<1>(it.second)});
   }
@@ -94,7 +94,7 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
 
 } // namespace
 
-IInspector &getInspectorInstance() {
+IInspector& getInspectorInstance() {
   static InspectorImpl instance;
   return instance;
 }

@@ -20,7 +20,7 @@ class ImageResponseObserver {
   virtual ~ImageResponseObserver() noexcept = default;
 
   virtual void didReceiveProgress(float progress) const = 0;
-  virtual void didReceiveImage(const ImageResponse &imageResponse) const = 0;
+  virtual void didReceiveImage(const ImageResponse& imageResponse) const = 0;
   virtual void didReceiveFailure() const = 0;
 };
 

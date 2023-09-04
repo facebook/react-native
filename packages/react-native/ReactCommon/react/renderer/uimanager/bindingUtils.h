@@ -12,9 +12,9 @@
 namespace facebook::react {
 
 jsi::Value callMethodOfModule(
-    jsi::Runtime &runtime,
-    const std::string &moduleName,
-    const std::string &methodName,
+    jsi::Runtime& runtime,
+    const std::string& moduleName,
+    const std::string& methodName,
     std::initializer_list<jsi::Value> args);
 
 } // namespace facebook::react

@@ -23,7 +23,7 @@ class JPage : public jni::JavaClass<JPage> {
       "Lcom/facebook/react/bridge/Inspector$Page;";
 
   static jni::local_ref<JPage::javaobject>
-  create(int id, const std::string &title, const std::string &vm);
+  create(int id, const std::string& title, const std::string& vm);
 };
 
 class JRemoteConnection : public jni::JavaClass<JRemoteConnection> {
@@ -31,7 +31,7 @@ class JRemoteConnection : public jni::JavaClass<JRemoteConnection> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/Inspector$RemoteConnection;";
 
-  void onMessage(const std::string &message) const;
+  void onMessage(const std::string& message) const;
   void onDisconnect() const;
 };
 
@@ -69,9 +69,9 @@ class JInspector : public jni::HybridClass<JInspector> {
  private:
   friend HybridBase;
 
-  JInspector(IInspector *inspector) : inspector_(inspector) {}
+  JInspector(IInspector* inspector) : inspector_(inspector) {}
 
-  IInspector *inspector_;
+  IInspector* inspector_;
 };
 
 } // namespace facebook::react

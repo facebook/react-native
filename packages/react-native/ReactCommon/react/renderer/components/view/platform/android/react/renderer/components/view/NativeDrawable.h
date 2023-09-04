@@ -24,7 +24,7 @@ struct NativeDrawable {
     std::optional<Float> rippleRadius{};
     bool borderless{false};
 
-    bool operator==(const Ripple &rhs) const {
+    bool operator==(const Ripple& rhs) const {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
           std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
     }
@@ -34,7 +34,7 @@ struct NativeDrawable {
   Ripple ripple;
   Kind kind;
 
-  bool operator==(const NativeDrawable &rhs) const {
+  bool operator==(const NativeDrawable& rhs) const {
     if (this->kind != rhs.kind) {
       return false;
     }
@@ -47,7 +47,7 @@ struct NativeDrawable {
     }
   }
 
-  bool operator!=(const NativeDrawable &rhs) const {
+  bool operator!=(const NativeDrawable& rhs) const {
     return !(*this == rhs);
   }
 
@@ -55,9 +55,9 @@ struct NativeDrawable {
 };
 
 static inline void fromRawValue(
-    const PropsParserContext & /*context*/,
-    const RawValue &rawValue,
-    NativeDrawable &result) {
+    const PropsParserContext& /*context*/,
+    const RawValue& rawValue,
+    NativeDrawable& result) {
   auto map = (butter::map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");

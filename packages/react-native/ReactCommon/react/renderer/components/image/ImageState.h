@@ -23,7 +23,7 @@ namespace facebook::react {
 class ImageState final {
  public:
   ImageState(
-      const ImageSource &imageSource,
+      const ImageSource& imageSource,
       ImageRequest imageRequest,
       const Float blurRadius)
       : imageSource_(imageSource),
@@ -39,12 +39,12 @@ class ImageState final {
    * Exposes for reading stored `ImageRequest` object.
    * `ImageRequest` object cannot be copied or moved from `ImageLocalData`.
    */
-  const ImageRequest &getImageRequest() const;
+  const ImageRequest& getImageRequest() const;
 
   Float getBlurRadius() const;
 
 #ifdef ANDROID
-  ImageState(const ImageState &previousState, folly::dynamic data)
+  ImageState(const ImageState& previousState, folly::dynamic data)
       : blurRadius_{0} {};
 
   /*

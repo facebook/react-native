@@ -10,8 +10,8 @@
 
 namespace facebook::react {
 void LegacyViewManagerInteropViewEventEmitter::dispatchEvent(
-    const std::string &type,
-    const folly::dynamic &payload) const {
+    const std::string& type,
+    const folly::dynamic& payload) const {
   EventEmitter::dispatchEvent(type, payload);
 }
 

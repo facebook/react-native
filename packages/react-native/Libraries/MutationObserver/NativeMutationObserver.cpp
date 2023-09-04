@@ -22,7 +22,7 @@ NativeMutationObserverModuleProvider(
 
 namespace facebook::react {
 
-static UIManager &getUIManagerFromRuntime(jsi::Runtime &runtime) {
+static UIManager& getUIManagerFromRuntime(jsi::Runtime& runtime) {
   return UIManagerBinding::getBinding(runtime)->getUIManager();
 }
 
@@ -31,20 +31,20 @@ NativeMutationObserver::NativeMutationObserver(
     : NativeMutationObserverCxxSpec(std::move(jsInvoker)) {}
 
 void NativeMutationObserver::observe(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
   auto shadowNode =
       shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+  auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
       mutationObserverId, shadowNode, subtree, uiManager);
 }
 
 void NativeMutationObserver::unobserve(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     MutationObserverId mutationObserverId,
     jsi::Object targetShadowNode) {
   auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
@@ -52,10 +52,10 @@ void NativeMutationObserver::unobserve(
 }
 
 void NativeMutationObserver::connect(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     AsyncCallback<> notifyMutationObservers,
     jsi::Function getPublicInstanceFromInstanceHandle) {
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+  auto& uiManager = getUIManagerFromRuntime(runtime);
 
   // MutationObserver is not compatible with background executor.
   // When using background executor, we commit trees outside the JS thread.
@@ -73,7 +73,7 @@ void NativeMutationObserver::connect(
 
   // This should always be called from the JS thread, as it's unsafe to call
   // into JS otherwise (via `getPublicInstanceFromInstanceHandle`).
-  getPublicInstanceFromShadowNode_ = [&](const ShadowNode &shadowNode) {
+  getPublicInstanceFromShadowNode_ = [&](const ShadowNode& shadowNode) {
     auto instanceHandle = shadowNode.getInstanceHandle(runtime);
     if (!instanceHandle.isObject() ||
         !getPublicInstanceFromInstanceHandle_.isObject() ||
@@ -88,15 +88,15 @@ void NativeMutationObserver::connect(
 
   notifyMutationObservers_ = std::move(notifyMutationObservers);
 
-  auto onMutationsCallback = [&](std::vector<const MutationRecord> &records) {
+  auto onMutationsCallback = [&](std::vector<const MutationRecord>& records) {
     return onMutations(records);
   };
 
   mutationObserverManager_.connect(uiManager, std::move(onMutationsCallback));
 }
 
-void NativeMutationObserver::disconnect(jsi::Runtime &runtime) {
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+void NativeMutationObserver::disconnect(jsi::Runtime& runtime) {
+  auto& uiManager = getUIManagerFromRuntime(runtime);
   mutationObserverManager_.disconnect(uiManager);
   getPublicInstanceFromInstanceHandle_ = jsi::Value::undefined();
   getPublicInstanceFromShadowNode_ = nullptr;
@@ -104,7 +104,7 @@ void NativeMutationObserver::disconnect(jsi::Runtime &runtime) {
 }
 
 std::vector<NativeMutationRecord> NativeMutationObserver::takeRecords(
-    jsi::Runtime & /*runtime*/) {
+    jsi::Runtime& /*runtime*/) {
   notifiedMutationObservers_ = false;
 
   std::vector<NativeMutationRecord> records;
@@ -114,11 +114,11 @@ std::vector<NativeMutationRecord> NativeMutationObserver::takeRecords(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    const std::vector<ShadowNode::Shared> &shadowNodes) const {
+    const std::vector<ShadowNode::Shared>& shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 
-  for (const auto &shadowNode : shadowNodes) {
+  for (const auto& shadowNode : shadowNodes) {
     publicInstances.push_back(getPublicInstanceFromShadowNode_(*shadowNode));
   }
 
@@ -126,10 +126,10 @@ NativeMutationObserver::getPublicInstancesFromShadowNodes(
 }
 
 void NativeMutationObserver::onMutations(
-    std::vector<const MutationRecord> &records) {
+    std::vector<const MutationRecord>& records) {
   SystraceSection s("NativeMutationObserver::onMutations");
 
-  for (const auto &record : records) {
+  for (const auto& record : records) {
     pendingRecords_.emplace_back(NativeMutationRecord{
         record.mutationObserverId,
         // FIXME(T157129303) Instead of assuming we can call into JS from here,

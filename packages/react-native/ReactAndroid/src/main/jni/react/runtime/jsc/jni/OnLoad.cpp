@@ -40,7 +40,7 @@ class JSCInstance : public jni::HybridClass<JSCInstance, JJSEngineInstance> {
 
 } // namespace facebook::react
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
   return facebook::jni::initialize(
       vm, [] { facebook::react::JSCInstance::registerNatives(); });
 }

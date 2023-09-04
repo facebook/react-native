@@ -22,10 +22,10 @@ struct ValueUnit {
   ValueUnit() = default;
   ValueUnit(float v, UnitType u) : value(v), unit(u) {}
 
-  bool operator==(const ValueUnit &other) const {
+  bool operator==(const ValueUnit& other) const {
     return value == other.value && unit == other.unit;
   }
-  bool operator!=(const ValueUnit &other) const {
+  bool operator!=(const ValueUnit& other) const {
     return !(*this == other);
   }
 };

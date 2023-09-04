@@ -25,14 +25,14 @@ class RuntimeScheduler final {
   /*
    * Not copyable.
    */
-  RuntimeScheduler(const RuntimeScheduler &) = delete;
-  RuntimeScheduler &operator=(const RuntimeScheduler &) = delete;
+  RuntimeScheduler(const RuntimeScheduler&) = delete;
+  RuntimeScheduler& operator=(const RuntimeScheduler&) = delete;
 
   /*
    * Not movable.
    */
-  RuntimeScheduler(RuntimeScheduler &&) = delete;
-  RuntimeScheduler &operator=(RuntimeScheduler &&) = delete;
+  RuntimeScheduler(RuntimeScheduler&&) = delete;
+  RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
 
   void scheduleWork(RawCallback callback) const;
 
@@ -65,7 +65,7 @@ class RuntimeScheduler final {
    * Operates on JSI object.
    * Thread synchronization must be enforced externally.
    */
-  void cancelTask(Task &task) noexcept;
+  void cancelTask(Task& task) noexcept;
 
   /*
    * Return value indicates if host platform has a pending access to the
@@ -106,7 +106,7 @@ class RuntimeScheduler final {
    *
    * Thread synchronization must be enforced externally.
    */
-  void callExpiredTasks(jsi::Runtime &runtime);
+  void callExpiredTasks(jsi::Runtime& runtime);
 
  private:
   mutable std::priority_queue<
@@ -125,7 +125,7 @@ class RuntimeScheduler final {
 
   mutable std::atomic_bool isSynchronous_{false};
 
-  void startWorkLoop(jsi::Runtime &runtime) const;
+  void startWorkLoop(jsi::Runtime& runtime) const;
 
   /*
    * Schedules a work loop unless it has been already scheduled

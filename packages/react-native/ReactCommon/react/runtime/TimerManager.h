@@ -39,7 +39,7 @@ class TimerHandle : public jsi::HostObject {
  * Wraps a jsi::Function to make it copyable so we can pass it into a lambda.
  */
 struct TimerCallback {
-  TimerCallback(TimerCallback &&) = default;
+  TimerCallback(TimerCallback&&) = default;
 
   TimerCallback(
       jsi::Function callback,
@@ -49,7 +49,7 @@ struct TimerCallback {
         args_(std::move(args)),
         repeat(repeat) {}
 
-  void invoke(jsi::Runtime &runtime) {
+  void invoke(jsi::Runtime& runtime) {
     callback_.call(runtime, args_.data(), args_.size());
   }
 
@@ -65,35 +65,35 @@ class TimerManager {
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) noexcept;
 
-  void callReactNativeMicrotasks(jsi::Runtime &runtime);
+  void callReactNativeMicrotasks(jsi::Runtime& runtime);
 
   void callTimer(uint32_t);
 
-  void attachGlobals(jsi::Runtime &runtime);
+  void attachGlobals(jsi::Runtime& runtime);
 
  private:
   std::shared_ptr<TimerHandle> createReactNativeMicrotask(
-      jsi::Function &&callback,
-      std::vector<jsi::Value> &&args);
+      jsi::Function&& callback,
+      std::vector<jsi::Value>&& args);
 
   void deleteReactNativeMicrotask(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       std::shared_ptr<TimerHandle> handle);
 
   std::shared_ptr<TimerHandle> createTimer(
-      jsi::Function &&callback,
-      std::vector<jsi::Value> &&args,
+      jsi::Function&& callback,
+      std::vector<jsi::Value>&& args,
       double delay);
 
-  void deleteTimer(jsi::Runtime &runtime, std::shared_ptr<TimerHandle> handle);
+  void deleteTimer(jsi::Runtime& runtime, std::shared_ptr<TimerHandle> handle);
 
   std::shared_ptr<TimerHandle> createRecurringTimer(
-      jsi::Function &&callback,
-      std::vector<jsi::Value> &&args,
+      jsi::Function&& callback,
+      std::vector<jsi::Value>&& args,
       double delay);
 
   void deleteRecurringTimer(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       std::shared_ptr<TimerHandle> handle);
 
   RuntimeExecutor runtimeExecutor_;

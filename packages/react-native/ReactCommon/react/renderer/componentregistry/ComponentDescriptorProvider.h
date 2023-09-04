@@ -19,7 +19,7 @@ namespace facebook::react {
  * abstract type and ownership of the newly created object.
  */
 using ComponentDescriptorConstructor = ComponentDescriptor::Unique(
-    const ComponentDescriptorParameters &parameters);
+    const ComponentDescriptorParameters& parameters);
 
 /*
  * Represents a unified way to construct an instance of a particular stored
@@ -36,7 +36,7 @@ class ComponentDescriptorProvider final {
   ComponentHandle handle;
   ComponentName name;
   ComponentDescriptor::Flavor flavor;
-  ComponentDescriptorConstructor *constructor;
+  ComponentDescriptorConstructor* constructor;
 };
 
 /*
@@ -44,7 +44,7 @@ class ComponentDescriptorProvider final {
  */
 template <typename ComponentDescriptorT>
 ComponentDescriptor::Unique concreteComponentDescriptorConstructor(
-    const ComponentDescriptorParameters &parameters) {
+    const ComponentDescriptorParameters& parameters) {
   static_assert(
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,
       "ComponentDescriptorT must be a descendant of ComponentDescriptor");

@@ -12,8 +12,8 @@ namespace facebook::react {
 
 std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
-    const LayoutAnimation &animation,
-    const AnimationConfig &mutationConfig) {
+    const LayoutAnimation& animation,
+    const AnimationConfig& mutationConfig) {
   if (mutationConfig.animationType == AnimationType::None) {
     return {1, 1};
   }

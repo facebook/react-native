@@ -24,16 +24,16 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   BaseViewProps() = default;
   BaseViewProps(
-      const PropsParserContext &context,
-      const BaseViewProps &sourceProps,
-      const RawProps &rawProps,
+      const PropsParserContext& context,
+      const BaseViewProps& sourceProps,
+      const RawProps& rawProps,
       bool shouldSetRawProps = true);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 
@@ -75,8 +75,8 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
 #pragma mark - Convenience Methods
 
-  BorderMetrics resolveBorderMetrics(const LayoutMetrics &layoutMetrics) const;
-  Transform resolveTransform(const LayoutMetrics &layoutMetrics) const;
+  BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
+  Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;
 
 #if RN_DEBUG_STRING_CONVERTIBLE

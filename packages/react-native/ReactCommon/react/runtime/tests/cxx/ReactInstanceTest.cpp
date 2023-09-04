@@ -31,12 +31,12 @@ class MockTimerRegistry : public PlatformTimerRegistry {
 
 class MockMessageQueueThread : public MessageQueueThread {
  public:
-  void runOnQueue(std::function<void()> &&func) {
+  void runOnQueue(std::function<void()>&& func) {
     callbackQueue_.push(func);
   }
 
   // Unused
-  void runOnQueueSync(std::function<void()> &&) {}
+  void runOnQueueSync(std::function<void()>&&) {}
 
   // Unused
   void quitSynchronous() {}
@@ -52,7 +52,7 @@ class MockMessageQueueThread : public MessageQueueThread {
   void guardedTick() {
     try {
       tick();
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       // For easier debugging
       FAIL() << e.what();
     }
@@ -68,7 +68,7 @@ class MockMessageQueueThread : public MessageQueueThread {
 
 class ErrorUtils : public jsi::HostObject {
  public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &name) override {
+  jsi::Value get(jsi::Runtime& rt, const jsi::PropNameID& name) override {
     auto methodName = name.utf8(rt);
 
     if (methodName == "reportFatalError") {
@@ -77,9 +77,9 @@ class ErrorUtils : public jsi::HostObject {
           name,
           1,
           [this](
-              jsi::Runtime &runtime,
-              const jsi::Value &thisValue,
-              const jsi::Value *arguments,
+              jsi::Runtime& runtime,
+              const jsi::Value& thisValue,
+              const jsi::Value* arguments,
               size_t count) {
             if (count >= 1) {
               auto value = jsi::Value(runtime, std::move(arguments[0]));
@@ -93,7 +93,7 @@ class ErrorUtils : public jsi::HostObject {
     }
   }
 
-  void reportFatalError(jsi::JSError &&error) {
+  void reportFatalError(jsi::JSError&& error) {
     errors_.push_back(std::move(error));
   }
 
@@ -143,7 +143,7 @@ class ReactInstanceTest : public ::testing::Test {
   void initializeRuntimeWithScript(
       ReactInstance::JSRuntimeFlags jsRuntimeFlags,
       std::string script) {
-    instance_->initializeRuntime(jsRuntimeFlags, [](jsi::Runtime &runtime) {});
+    instance_->initializeRuntime(jsRuntimeFlags, [](jsi::Runtime& runtime) {});
     step();
 
     // Run the main bundle, so that native -> JS calls no longer get buffered.
@@ -152,7 +152,7 @@ class ReactInstanceTest : public ::testing::Test {
 
   void initializeRuntimeWithScript(std::string script) {
     instance_->initializeRuntime(
-        {.isProfiling = false}, [](jsi::Runtime &runtime) {});
+        {.isProfiling = false}, [](jsi::Runtime& runtime) {});
     step();
 
     // Run the main bundle, so that native -> JS calls no longer get buffered.
@@ -162,7 +162,7 @@ class ReactInstanceTest : public ::testing::Test {
   jsi::Value eval(std::string js) {
     RuntimeExecutor runtimeExecutor = instance_->getUnbufferedRuntimeExecutor();
     jsi::Value ret = jsi::Value::undefined();
-    runtimeExecutor([js, &ret](jsi::Runtime &runtime) {
+    runtimeExecutor([js, &ret](jsi::Runtime& runtime) {
       ret = runtime.evaluateJavaScript(
           std::make_unique<jsi::StringBuffer>(js), "");
     });
@@ -203,11 +203,11 @@ class ReactInstanceTest : public ::testing::Test {
     messageQueueThread_->guardedTick();
   }
 
-  jsi::Runtime *runtime_;
+  jsi::Runtime* runtime_;
   std::shared_ptr<MockMessageQueueThread> messageQueueThread_;
   std::unique_ptr<ReactInstance> instance_;
   std::shared_ptr<TimerManager> timerManager_;
-  MockTimerRegistry *mockRegistry_;
+  MockTimerRegistry* mockRegistry_;
   std::shared_ptr<ErrorUtils> errorHandler_;
 };
 

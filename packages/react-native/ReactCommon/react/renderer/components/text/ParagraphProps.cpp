@@ -18,9 +18,9 @@
 namespace facebook::react {
 
 ParagraphProps::ParagraphProps(
-    const PropsParserContext &context,
-    const ParagraphProps &sourceProps,
-    const RawProps &rawProps)
+    const PropsParserContext& context,
+    const ParagraphProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       paragraphAttributes(
@@ -56,10 +56,10 @@ ParagraphProps::ParagraphProps(
 };
 
 void ParagraphProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    const RawValue &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

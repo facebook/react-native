@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
+thread_local TransactionTelemetry* threadLocalTransactionTelemetry = nullptr;
 
 TransactionTelemetry::TransactionTelemetry()
     : TransactionTelemetry(telemetryTimePointNow) {}
@@ -22,7 +22,7 @@ TransactionTelemetry::TransactionTelemetry(
     std::function<TelemetryTimePoint()> now)
     : now_{std::move(now)} {}
 
-TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
+TransactionTelemetry* TransactionTelemetry::threadLocalTelemetry() {
   return threadLocalTransactionTelemetry;
 }
 

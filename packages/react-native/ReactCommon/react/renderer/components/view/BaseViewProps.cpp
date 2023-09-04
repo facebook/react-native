@@ -30,7 +30,7 @@ std::array<float, 3> getTranslateForTransformOrigin(
   std::array<float, 3> origin = {viewCenterX, viewCenterY, transformOrigin.z};
 
   for (size_t i = 0; i < transformOrigin.xy.size(); ++i) {
-    auto &currentOrigin = transformOrigin.xy[i];
+    auto& currentOrigin = transformOrigin.xy[i];
     if (currentOrigin.unit == UnitType::Point) {
       origin[i] = currentOrigin.value;
     } else if (currentOrigin.unit == UnitType::Percent) {
@@ -49,9 +49,9 @@ std::array<float, 3> getTranslateForTransformOrigin(
 } // namespace
 
 BaseViewProps::BaseViewProps(
-    const PropsParserContext &context,
-    const BaseViewProps &sourceProps,
-    const RawProps &rawProps,
+    const PropsParserContext& context,
+    const BaseViewProps& sourceProps,
+    const RawProps& rawProps,
     bool shouldSetRawProps)
     : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
       AccessibilityProps(context, sourceProps, rawProps),
@@ -253,10 +253,10 @@ BaseViewProps::BaseViewProps(
   }
 
 void BaseViewProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    const RawValue &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
@@ -317,7 +317,7 @@ void BaseViewProps::setProp(
 
 #pragma mark - Convenience Methods
 
-static BorderRadii ensureNoOverlap(const BorderRadii &radii, const Size &size) {
+static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // "Corner curves must not overlap: When the sum of any two adjacent border
   // radii exceeds the size of the border box, UAs must proportionally reduce
   // the used values of all border radii until none of them overlap."
@@ -354,7 +354,7 @@ static BorderRadii ensureNoOverlap(const BorderRadii &radii, const Size &size) {
 }
 
 BorderMetrics BaseViewProps::resolveBorderMetrics(
-    const LayoutMetrics &layoutMetrics) const {
+    const LayoutMetrics& layoutMetrics) const {
   auto isRTL =
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 
@@ -386,7 +386,7 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
 }
 
 Transform BaseViewProps::resolveTransform(
-    LayoutMetrics const &layoutMetrics) const {
+    LayoutMetrics const& layoutMetrics) const {
   float viewWidth = layoutMetrics.frame.size.width;
   float viewHeight = layoutMetrics.frame.size.height;
   if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {
@@ -412,7 +412,7 @@ bool BaseViewProps::getClipsContentToBounds() const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
-  const auto &defaultBaseViewProps = BaseViewProps();
+  const auto& defaultBaseViewProps = BaseViewProps();
 
   return AccessibilityProps::getDebugProps() +
       YogaStylableProps::getDebugProps() +

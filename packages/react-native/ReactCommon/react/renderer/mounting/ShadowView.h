@@ -24,19 +24,19 @@ namespace facebook::react {
  */
 struct ShadowView final {
   ShadowView() = default;
-  ShadowView(const ShadowView &shadowView) = default;
-  ShadowView(ShadowView &&shadowView) noexcept = default;
+  ShadowView(const ShadowView& shadowView) = default;
+  ShadowView(ShadowView&& shadowView) noexcept = default;
 
   /*
    * Constructs a `ShadowView` from given `ShadowNode`.
    */
-  explicit ShadowView(const ShadowNode &shadowNode);
+  explicit ShadowView(const ShadowNode& shadowNode);
 
-  ShadowView &operator=(const ShadowView &other) = default;
-  ShadowView &operator=(ShadowView &&other) = default;
+  ShadowView& operator=(const ShadowView& other) = default;
+  ShadowView& operator=(ShadowView&& other) = default;
 
-  bool operator==(const ShadowView &rhs) const;
-  bool operator!=(const ShadowView &rhs) const;
+  bool operator==(const ShadowView& rhs) const;
+  bool operator!=(const ShadowView& rhs) const;
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
@@ -51,9 +51,9 @@ struct ShadowView final {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(const ShadowView &object);
+std::string getDebugName(const ShadowView& object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    const ShadowView &object,
+    const ShadowView& object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -65,12 +65,12 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  */
 struct ShadowViewNodePair final {
   using NonOwningList = butter::
-      small_vector<ShadowViewNodePair *, kShadowNodeChildrenSmallVectorSize>;
+      small_vector<ShadowViewNodePair*, kShadowNodeChildrenSmallVectorSize>;
   using OwningList = butter::
       small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
-  const ShadowNode *shadowNode;
+  const ShadowNode* shadowNode;
   bool flattened{false};
   bool isConcreteView{true};
   Point contextOrigin{0, 0};
@@ -83,13 +83,13 @@ struct ShadowViewNodePair final {
    * rely on this more heavily to simplify the diffing algorithm
    * overall?
    */
-  mutable const ShadowViewNodePair *otherTreePair{nullptr};
+  mutable const ShadowViewNodePair* otherTreePair{nullptr};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
-  bool operator==(const ShadowViewNodePair &rhs) const;
-  bool operator!=(const ShadowViewNodePair &rhs) const;
+  bool operator==(const ShadowViewNodePair& rhs) const;
+  bool operator!=(const ShadowViewNodePair& rhs) const;
 
   bool inOtherTree() const {
     return this->otherTreePair != nullptr;
@@ -107,7 +107,7 @@ struct ShadowViewNodePairLegacy final {
       kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
-  const ShadowNode *shadowNode;
+  const ShadowNode* shadowNode;
   bool flattened{false};
   bool isConcreteView{true};
 
@@ -118,8 +118,8 @@ struct ShadowViewNodePairLegacy final {
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
-  bool operator==(const ShadowViewNodePairLegacy &rhs) const;
-  bool operator!=(const ShadowViewNodePairLegacy &rhs) const;
+  bool operator==(const ShadowViewNodePairLegacy& rhs) const;
+  bool operator!=(const ShadowViewNodePairLegacy& rhs) const;
 };
 
 } // namespace facebook::react
@@ -128,7 +128,7 @@ namespace std {
 
 template <>
 struct hash<facebook::react::ShadowView> {
-  size_t operator()(const facebook::react::ShadowView &shadowView) const {
+  size_t operator()(const facebook::react::ShadowView& shadowView) const {
     return folly::hash::hash_combine(
         0,
         shadowView.surfaceId,

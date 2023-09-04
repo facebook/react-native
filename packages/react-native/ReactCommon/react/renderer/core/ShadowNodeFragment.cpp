@@ -15,25 +15,25 @@ namespace facebook::react {
 #define NO_DESTROY
 #endif
 
-const Props::Shared &ShadowNodeFragment::propsPlaceholder() {
+const Props::Shared& ShadowNodeFragment::propsPlaceholder() {
   NO_DESTROY static Props::Shared instance;
   return instance;
 }
 
-const ShadowNode::SharedListOfShared &
+const ShadowNode::SharedListOfShared&
 ShadowNodeFragment::childrenPlaceholder() {
   NO_DESTROY static ShadowNode::SharedListOfShared instance;
   return instance;
 }
 
-const State::Shared &ShadowNodeFragment::statePlaceholder() {
+const State::Shared& ShadowNodeFragment::statePlaceholder() {
   NO_DESTROY static State::Shared instance;
   return instance;
 }
 
 using Value = ShadowNodeFragment::Value;
 
-Value::Value(const ShadowNodeFragment &fragment)
+Value::Value(const ShadowNodeFragment& fragment)
     : props(fragment.props),
       children(fragment.children),
       state(fragment.state) {}

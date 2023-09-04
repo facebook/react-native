@@ -15,7 +15,7 @@
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
-PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
+PerformanceEntryReporter& PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
   return instance;
 }
@@ -37,7 +37,7 @@ double PerformanceEntryReporter::getCurrentTimeStamp() const {
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  auto &buffer = getBuffer(entryType);
+  auto& buffer = getBuffer(entryType);
   buffer.isReporting = true;
   buffer.durationThreshold = DEFAULT_DURATION_THRESHOLD;
 }
@@ -45,7 +45,7 @@ void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
 void PerformanceEntryReporter::setAlwaysLogged(
     PerformanceEntryType entryType,
     bool isAlwaysLogged) {
-  auto &buffer = getBuffer(entryType);
+  auto& buffer = getBuffer(entryType);
   buffer.isAlwaysLogged = isAlwaysLogged;
 }
 
@@ -60,7 +60,7 @@ void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
 }
 
 void PerformanceEntryReporter::stopReporting() {
-  for (auto &buffer : buffers_) {
+  for (auto& buffer : buffers_) {
     buffer.isReporting = false;
   }
 }
@@ -69,7 +69,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::scoped_lock lock(entriesMutex_);
   GetPendingEntriesResult res = {
       std::vector<RawPerformanceEntry>(), droppedEntryCount_};
-  for (auto &buffer : buffers_) {
+  for (auto& buffer : buffers_) {
     buffer.entries.consume(res.entries);
   }
 
@@ -77,7 +77,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::stable_sort(
       res.entries.begin(),
       res.entries.end(),
-      [](const RawPerformanceEntry &lhs, const RawPerformanceEntry &rhs) {
+      [](const RawPerformanceEntry& lhs, const RawPerformanceEntry& rhs) {
         if (lhs.startTime != rhs.startTime) {
           return lhs.startTime < rhs.startTime;
         } else {
@@ -89,7 +89,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   return res;
 }
 
-void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
+void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
   if (entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
@@ -101,7 +101,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
 
   std::scoped_lock lock(entriesMutex_);
 
-  auto &buffer = buffers_[entry.entryType];
+  auto& buffer = buffers_[entry.entryType];
 
   if (entry.duration < buffer.durationThreshold) {
     // The entries duration is lower than the desired reporting threshold, skip
@@ -139,8 +139,8 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
 }
 
 void PerformanceEntryReporter::mark(
-    const std::string &name,
-    const std::optional<double> &startTime) {
+    const std::string& name,
+    const std::optional<double>& startTime) {
   logEntry(RawPerformanceEntry{
       name,
       static_cast<int>(PerformanceEntryType::MARK),
@@ -153,14 +153,14 @@ void PerformanceEntryReporter::mark(
 
 void PerformanceEntryReporter::clearEntries(
     PerformanceEntryType entryType,
-    const char *entryName) {
+    const char* entryName) {
   if (entryType == PerformanceEntryType::UNDEFINED) {
     // Clear all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       clearEntries(static_cast<PerformanceEntryType>(i), entryName);
     }
   } else {
-    auto &buffer = getBuffer(entryType);
+    auto& buffer = getBuffer(entryType);
     if (entryName != nullptr) {
       if (buffer.hasNameLookup) {
         RawPerformanceEntry entry{
@@ -173,7 +173,7 @@ void PerformanceEntryReporter::clearEntries(
             std::nullopt};
         buffer.nameLookup.erase(&entry);
       }
-      buffer.entries.clear([entryName](const RawPerformanceEntry &entry) {
+      buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
         return std::strcmp(entry.name.c_str(), entryName) == 0;
       });
     } else {
@@ -185,19 +185,19 @@ void PerformanceEntryReporter::clearEntries(
 
 void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    const char *entryName,
-    std::vector<RawPerformanceEntry> &res) const {
+    const char* entryName,
+    std::vector<RawPerformanceEntry>& res) const {
   if (entryType == PerformanceEntryType::UNDEFINED) {
     // Collect all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
-    const auto &entries = getBuffer(entryType).entries;
+    const auto& entries = getBuffer(entryType).entries;
     if (entryName == nullptr) {
       entries.getEntries(res);
     } else {
-      entries.getEntries(res, [entryName](const RawPerformanceEntry &entry) {
+      entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
         return std::strcmp(entry.name.c_str(), entryName) == 0;
       });
     }
@@ -206,19 +206,19 @@ void PerformanceEntryReporter::getEntries(
 
 std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    const char *entryName) const {
+    const char* entryName) const {
   std::vector<RawPerformanceEntry> res;
   getEntries(entryType, entryName, res);
   return res;
 }
 
 void PerformanceEntryReporter::measure(
-    const std::string &name,
+    const std::string& name,
     double startTime,
     double endTime,
-    const std::optional<double> &duration,
-    const std::optional<std::string> &startMark,
-    const std::optional<std::string> &endMark) {
+    const std::optional<double>& duration,
+    const std::optional<std::string>& startMark,
+    const std::optional<std::string>& endMark) {
   double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
   double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
 
@@ -241,7 +241,7 @@ void PerformanceEntryReporter::measure(
 }
 
 double PerformanceEntryReporter::getMarkTime(
-    const std::string &markName) const {
+    const std::string& markName) const {
   RawPerformanceEntry mark{
       markName,
       static_cast<int>(PerformanceEntryType::MARK),
@@ -251,7 +251,7 @@ double PerformanceEntryReporter::getMarkTime(
       std::nullopt,
       std::nullopt};
 
-  const auto &marksBuffer = getBuffer(PerformanceEntryType::MARK);
+  const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
   auto it = marksBuffer.nameLookup.find(&mark);
   if (it != marksBuffer.nameLookup.end()) {
     return (*it)->startTime;
@@ -285,15 +285,15 @@ void PerformanceEntryReporter::scheduleFlushBuffer() {
 
 struct StrKey {
   uint32_t key;
-  StrKey(const char *s) : key(folly::hash::fnv32_buf(s, std::strlen(s))) {}
+  StrKey(const char* s) : key(folly::hash::fnv32_buf(s, std::strlen(s))) {}
 
-  bool operator==(const StrKey &rhs) const {
+  bool operator==(const StrKey& rhs) const {
     return key == rhs.key;
   }
 };
 
 struct StrKeyHash {
-  constexpr size_t operator()(const StrKey &strKey) const {
+  constexpr size_t operator()(const StrKey& strKey) const {
     return static_cast<size_t>(strKey.key);
   }
 };
@@ -303,9 +303,9 @@ struct StrKeyHash {
 // Not all of these are currently supported by RN, but we map them anyway for
 // future-proofing.
 using SupportedEventTypeRegistry =
-    std::unordered_map<StrKey, const char *, StrKeyHash>;
+    std::unordered_map<StrKey, const char*, StrKeyHash>;
 
-static const SupportedEventTypeRegistry &getSupportedEvents() {
+static const SupportedEventTypeRegistry& getSupportedEvents() {
   static SupportedEventTypeRegistry SUPPORTED_EVENTS = {
       {"topAuxClick", "auxclick"},
       {"topClick", "click"},
@@ -347,17 +347,17 @@ static const SupportedEventTypeRegistry &getSupportedEvents() {
   return SUPPORTED_EVENTS;
 }
 
-EventTag PerformanceEntryReporter::onEventStart(const char *name) {
+EventTag PerformanceEntryReporter::onEventStart(const char* name) {
   if (!isReporting(PerformanceEntryType::EVENT)) {
     return 0;
   }
-  const auto &supportedEvents = getSupportedEvents();
+  const auto& supportedEvents = getSupportedEvents();
   auto it = supportedEvents.find(name);
   if (it == supportedEvents.end()) {
     return 0;
   }
 
-  const char *reportedName = it->second;
+  const char* reportedName = it->second;
 
   sCurrentEventTag_++;
   if (sCurrentEventTag_ == 0) {
@@ -399,8 +399,8 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
     if (it == eventsInFlight_.end()) {
       return;
     }
-    auto &entry = it->second;
-    auto &name = entry.name;
+    auto& entry = it->second;
+    auto& name = entry.name;
 
     // TODO: Define the way to assign interaction IDs to the event chains
     // (T141358175)

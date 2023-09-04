@@ -50,8 +50,8 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   }
 
   void callNativeModules(
-      [[maybe_unused]] JSExecutor &executor,
-      folly::dynamic &&calls,
+      [[maybe_unused]] JSExecutor& executor,
+      folly::dynamic&& calls,
       bool isEndOfBatch) override {
     CHECK(m_registry || calls.empty())
         << "native module calls cannot be completed with no native modules";
@@ -65,7 +65,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
     // An exception anywhere in here stops processing of the batch.  This
     // was the behavior of the Android bridge, and since exception handling
     // terminates the whole bridge, there's not much point in continuing.
-    for (auto &call : methodCalls) {
+    for (auto& call : methodCalls) {
       m_registry->callNativeMethod(
           call.moduleId, call.methodId, std::move(call.arguments), call.callId);
     }
@@ -83,10 +83,10 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   }
 
   MethodCallResult callSerializableNativeHook(
-      [[maybe_unused]] JSExecutor &executor,
+      [[maybe_unused]] JSExecutor& executor,
       unsigned int moduleId,
       unsigned int methodId,
-      folly::dynamic &&args) override {
+      folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(
         moduleId, methodId, std::move(args));
   }
@@ -105,7 +105,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
 };
 
 NativeToJsBridge::NativeToJsBridge(
-    JSExecutorFactory *jsExecutorFactory,
+    JSExecutorFactory* jsExecutorFactory,
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<InstanceCallback> callback)
@@ -123,7 +123,7 @@ NativeToJsBridge::~NativeToJsBridge() {
 
 void NativeToJsBridge::initializeRuntime() {
   runOnExecutorQueue(
-      [](JSExecutor *executor) mutable { executor->initializeRuntime(); });
+      [](JSExecutor* executor) mutable { executor->initializeRuntime(); });
 }
 
 void NativeToJsBridge::loadBundle(
@@ -135,7 +135,7 @@ void NativeToJsBridge::loadBundle(
        bundleRegistryWrap = folly::makeMoveWrapper(std::move(bundleRegistry)),
        startupScript = folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL =
-           std::move(startupScriptSourceURL)](JSExecutor *executor) mutable {
+           std::move(startupScriptSourceURL)](JSExecutor* executor) mutable {
         auto bundleRegistry = bundleRegistryWrap.move();
         if (bundleRegistry) {
           executor->setBundleRegistry(std::move(bundleRegistry));
@@ -167,9 +167,9 @@ void NativeToJsBridge::loadBundleSync(
 }
 
 void NativeToJsBridge::callFunction(
-    std::string &&module,
-    std::string &&method,
-    folly::dynamic &&arguments) {
+    std::string&& module,
+    std::string&& method,
+    folly::dynamic&& arguments) {
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
@@ -181,7 +181,7 @@ void NativeToJsBridge::callFunction(
                       module = std::move(module),
                       method = std::move(method),
                       arguments = std::move(arguments),
-                      systraceCookie](JSExecutor *executor) {
+                      systraceCookie](JSExecutor* executor) {
     if (m_applicationScriptHasFailure) {
       LOG(ERROR)
           << "Attempting to call JS function on a bad application bundle: "
@@ -208,7 +208,7 @@ void NativeToJsBridge::callFunction(
 
 void NativeToJsBridge::invokeCallback(
     double callbackId,
-    folly::dynamic &&arguments) {
+    folly::dynamic&& arguments) {
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
@@ -218,7 +218,7 @@ void NativeToJsBridge::invokeCallback(
 
   runOnExecutorQueue(
       [this, callbackId, arguments = std::move(arguments), systraceCookie](
-          JSExecutor *executor) {
+          JSExecutor* executor) {
         if (m_applicationScriptHasFailure) {
           LOG(ERROR)
               << "Attempting to call JS callback on a bad application bundle: "
@@ -239,8 +239,8 @@ void NativeToJsBridge::invokeCallback(
 
 void NativeToJsBridge::registerBundle(
     uint32_t bundleId,
-    const std::string &bundlePath) {
-  runOnExecutorQueue([bundleId, bundlePath](JSExecutor *executor) {
+    const std::string& bundlePath) {
+  runOnExecutorQueue([bundleId, bundlePath](JSExecutor* executor) {
     executor->registerBundle(bundleId, bundlePath);
   });
 }
@@ -250,12 +250,12 @@ void NativeToJsBridge::setGlobalVariable(
     std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName = std::move(propName),
                       jsonValue = folly::makeMoveWrapper(std::move(jsonValue))](
-                         JSExecutor *executor) mutable {
+                         JSExecutor* executor) mutable {
     executor->setGlobalVariable(propName, jsonValue.move());
   });
 }
 
-void *NativeToJsBridge::getJavaScriptContext() {
+void* NativeToJsBridge::getJavaScriptContext() {
   // TODO(cjhopman): this seems unsafe unless we require that it is only called
   // on the main js queue.
   return m_executor->getJavaScriptContext();
@@ -270,7 +270,7 @@ bool NativeToJsBridge::isBatchActive() {
 }
 
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
-  runOnExecutorQueue([=](JSExecutor *executor) {
+  runOnExecutorQueue([=](JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
 }
@@ -288,7 +288,7 @@ void NativeToJsBridge::destroy() {
 }
 
 void NativeToJsBridge::runOnExecutorQueue(
-    std::function<void(JSExecutor *)> task) {
+    std::function<void(JSExecutor*)> task) {
   if (*m_destroyed) {
     return;
   }
@@ -325,15 +325,15 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
           m_nativeInvoker(std::move(nativeInvoker)) {}
 
     void invokeAsync(
-        const std::string &methodName,
-        std::function<void()> &&func) override {
+        const std::string& methodName,
+        std::function<void()>&& func) override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
       m_nativeInvoker->invokeAsync(methodName, std::move(func));
     }
 
-    void invokeSync(const std::string &methodName, std::function<void()> &&func)
+    void invokeSync(const std::string& methodName, std::function<void()>&& func)
         override {
       m_nativeInvoker->invokeSync(methodName, std::move(func));
     }

@@ -27,33 +27,33 @@ class UIManagerBinding : public jsi::HostObject {
    * Thread synchronization must be enforced externally.
    */
   static void createAndInstallIfNeeded(
-      jsi::Runtime &runtime,
-      const std::shared_ptr<UIManager> &uiManager);
+      jsi::Runtime& runtime,
+      const std::shared_ptr<UIManager>& uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
    * Thread synchronization must be enforced externally.
    */
-  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime& runtime);
 
   UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
   ~UIManagerBinding() override;
 
   jsi::Value getInspectorDataForInstance(
-      jsi::Runtime &runtime,
-      const EventEmitter &eventEmitter) const;
+      jsi::Runtime& runtime,
+      const EventEmitter& eventEmitter) const;
 
   /*
    * Delivers raw event data to JavaScript.
    * Thread synchronization must be enforced externally.
    */
   void dispatchEvent(
-      jsi::Runtime &runtime,
-      const EventTarget *eventTarget,
-      const std::string &type,
+      jsi::Runtime& runtime,
+      const EventTarget* eventTarget,
+      const std::string& type,
       ReactEventPriority priority,
-      const EventPayload &payload) const;
+      const EventPayload& payload) const;
 
   /*
    * Invalidates the binding and underlying UIManager.
@@ -67,9 +67,9 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override;
+  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
 
-  UIManager &getUIManager();
+  UIManager& getUIManager();
 
  private:
   /*
@@ -77,11 +77,11 @@ class UIManagerBinding : public jsi::HostObject {
    * UIManagerBinding::dispatchEvent.
    */
   void dispatchEventToJS(
-      jsi::Runtime &runtime,
-      const EventTarget *eventTarget,
-      const std::string &type,
+      jsi::Runtime& runtime,
+      const EventTarget* eventTarget,
+      const std::string& type,
       ReactEventPriority priority,
-      const EventPayload &payload) const;
+      const EventPayload& payload) const;
 
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<const EventHandler> eventHandler_;

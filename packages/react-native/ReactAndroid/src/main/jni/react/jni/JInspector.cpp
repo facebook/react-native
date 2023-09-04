@@ -35,7 +35,7 @@ class RemoteConnection : public IRemoteConnection {
 } // namespace
 
 jni::local_ref<JPage::javaobject>
-JPage::create(int id, const std::string &title, const std::string &vm) {
+JPage::create(int id, const std::string& title, const std::string& vm) {
   static auto constructor = javaClassStatic()
                                 ->getConstructor<JPage::javaobject(
                                     jint,
@@ -45,7 +45,7 @@ JPage::create(int id, const std::string &title, const std::string &vm) {
       constructor, id, jni::make_jstring(title), jni::make_jstring(vm));
 }
 
-void JRemoteConnection::onMessage(const std::string &message) const {
+void JRemoteConnection::onMessage(const std::string& message) const {
   static auto method =
       javaClassStatic()->getMethod<void(jni::local_ref<jstring>)>("onMessage");
   method(self(), jni::make_jstring(message));

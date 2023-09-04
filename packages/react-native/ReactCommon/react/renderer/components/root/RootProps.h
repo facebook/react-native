@@ -20,14 +20,14 @@ class RootProps final : public ViewProps {
  public:
   RootProps() = default;
   RootProps(
-      const PropsParserContext &context,
-      const RootProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const RootProps& sourceProps,
+      const RawProps& rawProps);
   RootProps(
-      const PropsParserContext &context,
-      const RootProps &sourceProps,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext);
+      const PropsParserContext& context,
+      const RootProps& sourceProps,
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext);
 
 #pragma mark - Props
 

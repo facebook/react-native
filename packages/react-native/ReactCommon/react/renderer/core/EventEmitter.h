@@ -34,7 +34,7 @@ class EventEmitter {
  public:
   using Shared = std::shared_ptr<const EventEmitter>;
 
-  static std::mutex &DispatchMutex();
+  static std::mutex& DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();
 
@@ -56,7 +56,7 @@ class EventEmitter {
    */
   void setEnabled(bool enabled) const;
 
-  const SharedEventTarget &getEventTarget() const;
+  const SharedEventTarget& getEventTarget() const;
 
  protected:
 #ifdef ANDROID
@@ -71,14 +71,14 @@ class EventEmitter {
    */
   void dispatchEvent(
       std::string type,
-      const ValueFactory &payloadFactory =
+      const ValueFactory& payloadFactory =
           EventEmitter::defaultPayloadFactory(),
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       std::string type,
-      const folly::dynamic &payload,
+      const folly::dynamic& payload,
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
@@ -88,12 +88,12 @@ class EventEmitter {
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
-  void dispatchUniqueEvent(std::string type, const folly::dynamic &payload)
+  void dispatchUniqueEvent(std::string type, const folly::dynamic& payload)
       const;
 
   void dispatchUniqueEvent(
       std::string type,
-      const ValueFactory &payloadFactory =
+      const ValueFactory& payloadFactory =
           EventEmitter::defaultPayloadFactory()) const;
 
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;

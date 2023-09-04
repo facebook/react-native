@@ -19,9 +19,9 @@
 namespace facebook::react {
 
 YogaStylableProps::YogaStylableProps(
-    const PropsParserContext &context,
-    const YogaStylableProps &sourceProps,
-    const RawProps &rawProps,
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps,
     bool shouldSetRawProps)
     : Props(context, sourceProps, rawProps, shouldSetRawProps),
       yogaStyle(
@@ -35,8 +35,8 @@ YogaStylableProps::YogaStylableProps(
 
 template <typename T>
 static inline T const getFieldValue(
-    const PropsParserContext &context,
-    const RawValue &value,
+    const PropsParserContext& context,
+    const RawValue& value,
     T const defaultValue) {
   if (value.hasValue()) {
     T res;
@@ -99,10 +99,10 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeEnd, "end");
 
 void YogaStylableProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    const RawValue &value) {
+    const char* propName,
+    const RawValue& value) {
   static const auto ygDefaults = yoga::Style{};
   static const auto defaults = YogaStylableProps{};
 
@@ -237,9 +237,9 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 #endif
 
 void YogaStylableProps::convertRawPropAliases(
-    const PropsParserContext &context,
-    const YogaStylableProps &sourceProps,
-    const RawProps &rawProps) {
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps) {
   inset = convertRawProp(
       context,
       rawProps,

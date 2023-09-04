@@ -19,15 +19,15 @@ namespace facebook::react {
  */
 static inline void interpolateViewProps(
     Float animationProgress,
-    const Props::Shared &oldPropsShared,
-    const Props::Shared &newPropsShared,
-    Props::Shared &interpolatedPropsShared) {
-  const ViewProps *oldViewProps =
-      static_cast<const ViewProps *>(oldPropsShared.get());
-  const ViewProps *newViewProps =
-      static_cast<const ViewProps *>(newPropsShared.get());
-  ViewProps *interpolatedProps = const_cast<ViewProps *>(
-      static_cast<const ViewProps *>(interpolatedPropsShared.get()));
+    const Props::Shared& oldPropsShared,
+    const Props::Shared& newPropsShared,
+    Props::Shared& interpolatedPropsShared) {
+  const ViewProps* oldViewProps =
+      static_cast<const ViewProps*>(oldPropsShared.get());
+  const ViewProps* newViewProps =
+      static_cast<const ViewProps*>(newPropsShared.get());
+  ViewProps* interpolatedProps = const_cast<ViewProps*>(
+      static_cast<const ViewProps*>(interpolatedPropsShared.get()));
 
   interpolatedProps->opacity = oldViewProps->opacity +
       (newViewProps->opacity - oldViewProps->opacity) * animationProgress;

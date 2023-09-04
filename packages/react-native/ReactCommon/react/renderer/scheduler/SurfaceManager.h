@@ -26,28 +26,28 @@ namespace facebook::react {
  */
 class SurfaceManager final {
  public:
-  explicit SurfaceManager(const Scheduler &scheduler) noexcept;
+  explicit SurfaceManager(const Scheduler& scheduler) noexcept;
 
 #pragma mark - Surface Management
 
   void startSurface(
       SurfaceId surfaceId,
-      const std::string &moduleName,
-      const folly::dynamic &props,
-      const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {}) const noexcept;
+      const std::string& moduleName,
+      const folly::dynamic& props,
+      const LayoutConstraints& layoutConstraints = {},
+      const LayoutContext& layoutContext = {}) const noexcept;
 
   void stopSurface(SurfaceId surfaceId) const noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const noexcept;
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext) const noexcept;
 
   void constraintSurfaceLayout(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const noexcept;
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext) const noexcept;
 
   MountingCoordinator::Shared findMountingCoordinator(
       SurfaceId surfaceId) const noexcept;
@@ -55,10 +55,10 @@ class SurfaceManager final {
  private:
   void visit(
       SurfaceId surfaceId,
-      const std::function<void(SurfaceHandler const &surfaceHandler)> &callback)
+      const std::function<void(SurfaceHandler const& surfaceHandler)>& callback)
       const noexcept;
 
-  const Scheduler &scheduler_;
+  const Scheduler& scheduler_;
   mutable std::shared_mutex mutex_; // Protects `registry_`.
   mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
 };

@@ -71,12 +71,12 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static UnsharedConcreteProps Props(
-      const PropsParserContext &context,
-      const RawProps &rawProps,
-      const Props::Shared &baseProps = nullptr) {
+      const PropsParserContext& context,
+      const RawProps& rawProps,
+      const Props::Shared& baseProps = nullptr) {
     return std::make_shared<PropsT>(
         context,
-        baseProps ? static_cast<const PropsT &>(*baseProps) : PropsT(),
+        baseProps ? static_cast<const PropsT&>(*baseProps) : PropsT(),
         rawProps);
   }
 
@@ -87,9 +87,9 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static ConcreteStateData initialStateData(
-      const Props::Shared & /*props*/,
-      const ShadowNodeFamily::Shared & /*family*/,
-      const ComponentDescriptor & /*componentDescriptor*/) {
+      const Props::Shared& /*props*/,
+      const ShadowNodeFamily::Shared& /*family*/,
+      const ComponentDescriptor& /*componentDescriptor*/) {
     return {};
   }
 
@@ -97,18 +97,18 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Returns a concrete props object associated with the node.
    * Thread-safe after the node is sealed.
    */
-  const ConcreteProps &getConcreteProps() const {
+  const ConcreteProps& getConcreteProps() const {
     react_native_assert(
         BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
-    return static_cast<const ConcreteProps &>(*props_);
+    return static_cast<const ConcreteProps&>(*props_);
   }
 
   /*
    * Returns a concrete event emitter object associated with the node.
    * Thread-safe after the node is sealed.
    */
-  const ConcreteEventEmitter &getConcreteEventEmitter() const {
-    return static_cast<const ConcreteEventEmitter &>(
+  const ConcreteEventEmitter& getConcreteEventEmitter() const {
+    return static_cast<const ConcreteEventEmitter&>(
         *BaseShadowNodeT::getEventEmitter());
   }
 
@@ -116,16 +116,16 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Returns a concrete state data associated with the node.
    * Thread-safe after the node is sealed.
    */
-  const ConcreteStateData &getStateData() const {
+  const ConcreteStateData& getStateData() const {
     react_native_assert(state_ && "State must not be `nullptr`.");
-    return static_cast<const ConcreteState *>(state_.get())->getData();
+    return static_cast<const ConcreteState*>(state_.get())->getData();
   }
 
   /*
    * Creates and assigns a new state object containing given state data.
    * Can be called only before the node is sealed (usually during construction).
    */
-  void setStateData(ConcreteStateData &&data) {
+  void setStateData(ConcreteStateData&& data) {
     Sealable::ensureUnsealed();
     state_ = std::make_shared<const ConcreteState>(
         std::make_shared<const ConcreteStateData>(std::move(data)), *state_);

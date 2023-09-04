@@ -10,8 +10,8 @@
 namespace facebook::react {
 
 static ShadowNode::Shared getShadowNodeFromEventTarget(
-    jsi::Runtime &runtime,
-    const EventTarget &target) {
+    jsi::Runtime& runtime,
+    const EventTarget& target) {
   auto instanceHandle = target.getInstanceHandle(runtime);
   if (instanceHandle.isObject()) {
     auto handleObj = instanceHandle.asObject(runtime);
@@ -30,11 +30,11 @@ static ShadowNode::Shared getShadowNodeFromEventTarget(
 }
 
 static bool isViewListeningToEvents(
-    const ShadowNode &shadowNode,
+    const ShadowNode& shadowNode,
     std::initializer_list<ViewEvents::Offset> eventTypes) {
   if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::ViewKind)) {
     auto props = shadowNode.getProps();
-    auto viewProps = static_cast<const ViewProps &>(*props);
+    auto viewProps = static_cast<const ViewProps&>(*props);
 
     for (const ViewEvents::Offset eventType : eventTypes) {
       if (viewProps.events[eventType]) {
@@ -46,8 +46,8 @@ static bool isViewListeningToEvents(
 }
 
 static bool isAnyViewInPathToRootListeningToEvents(
-    const UIManager &uiManager,
-    const ShadowNode &shadowNode,
+    const UIManager& uiManager,
+    const ShadowNode& shadowNode,
     std::initializer_list<ViewEvents::Offset> eventTypes) {
   // Check the target view first
   if (isViewListeningToEvents(shadowNode, eventTypes)) {
@@ -58,7 +58,7 @@ static bool isAnyViewInPathToRootListeningToEvents(
   auto owningRootShadowNode = ShadowNode::Shared{};
   uiManager.getShadowTreeRegistry().visit(
       shadowNode.getSurfaceId(),
-      [&owningRootShadowNode](const ShadowTree &shadowTree) {
+      [&owningRootShadowNode](const ShadowTree& shadowTree) {
         owningRootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
 
@@ -66,12 +66,12 @@ static bool isAnyViewInPathToRootListeningToEvents(
     return false;
   }
 
-  auto &nodeFamily = shadowNode.getFamily();
+  auto& nodeFamily = shadowNode.getFamily();
   auto ancestors = nodeFamily.getAncestors(*owningRootShadowNode);
 
   // Check for listeners from the target's parent to the root
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    auto &currentNode = it->first.get();
+    auto& currentNode = it->first.get();
     if (isViewListeningToEvents(currentNode, eventTypes)) {
       return true;
     }
@@ -81,9 +81,9 @@ static bool isAnyViewInPathToRootListeningToEvents(
 }
 
 static PointerEventTarget retargetPointerEvent(
-    const PointerEvent &event,
-    const ShadowNode &nodeToTarget,
-    const UIManager &uiManager) {
+    const PointerEvent& event,
+    const ShadowNode& nodeToTarget,
+    const UIManager& uiManager) {
   PointerEvent retargetedEvent(event);
 
   // TODO: is dereferencing latestNodeToTarget without null checking safe?
@@ -113,7 +113,7 @@ static PointerEventTarget retargetPointerEvent(
 
 static ShadowNode::Shared getCaptureTargetOverride(
     PointerIdentifier pointerId,
-    CaptureTargetOverrideRegistry &registry) {
+    CaptureTargetOverrideRegistry& registry) {
   auto pendingPointerItr = registry.find(pointerId);
   if (pendingPointerItr == registry.end()) {
     return nullptr;
@@ -135,9 +135,9 @@ static ShadowNode::Shared getCaptureTargetOverride(
  * inspecing the listeners in the target's view path.
  */
 static bool shouldEmitPointerEvent(
-    const ShadowNode &targetNode,
-    const std::string &type,
-    const UIManager &uiManager) {
+    const ShadowNode& targetNode,
+    const std::string& type,
+    const UIManager& uiManager) {
   if (type == "topPointerDown") {
     return isAnyViewInPathToRootListeningToEvents(
         uiManager,
@@ -197,18 +197,18 @@ static bool shouldEmitPointerEvent(
 }
 
 void PointerEventsProcessor::interceptPointerEvent(
-    jsi::Runtime &runtime,
-    const EventTarget *target,
-    const std::string &type,
+    jsi::Runtime& runtime,
+    const EventTarget* target,
+    const std::string& type,
     ReactEventPriority priority,
-    const PointerEvent &event,
-    const DispatchEvent &eventDispatcher,
-    const UIManager &uiManager) {
+    const PointerEvent& event,
+    const DispatchEvent& eventDispatcher,
+    const UIManager& uiManager) {
   // Process all pending pointer capture assignments
   processPendingPointerCapture(event, runtime, eventDispatcher, uiManager);
 
   PointerEvent pointerEvent(event);
-  const EventTarget *eventTarget = target;
+  const EventTarget* eventTarget = target;
 
   // Retarget the event if it has a pointer capture override target
   auto overrideTarget = getCaptureTargetOverride(
@@ -255,7 +255,7 @@ void PointerEventsProcessor::interceptPointerEvent(
 
 void PointerEventsProcessor::setPointerCapture(
     PointerIdentifier pointerId,
-    const ShadowNode::Shared &shadowNode) {
+    const ShadowNode::Shared& shadowNode) {
   if (auto activePointer = getActivePointer(pointerId)) {
     // As per the spec this method should silently fail if the pointer in
     // question does not have any active buttons
@@ -272,7 +272,7 @@ void PointerEventsProcessor::setPointerCapture(
 
 void PointerEventsProcessor::releasePointerCapture(
     PointerIdentifier pointerId,
-    const ShadowNode *shadowNode) {
+    const ShadowNode* shadowNode) {
   if (getActivePointer(pointerId) != nullptr) {
     // We only clear the pointer's capture target override if release was called
     // on the shadowNode which has the capture override, otherwise the result
@@ -291,7 +291,7 @@ void PointerEventsProcessor::releasePointerCapture(
 
 bool PointerEventsProcessor::hasPointerCapture(
     PointerIdentifier pointerId,
-    const ShadowNode *shadowNode) {
+    const ShadowNode* shadowNode) {
   ShadowNode::Shared pendingTarget = getCaptureTargetOverride(
       pointerId, pendingPointerCaptureTargetOverrides_);
   if (pendingTarget != nullptr) {
@@ -300,20 +300,20 @@ bool PointerEventsProcessor::hasPointerCapture(
   return false;
 }
 
-ActivePointer *PointerEventsProcessor::getActivePointer(
+ActivePointer* PointerEventsProcessor::getActivePointer(
     PointerIdentifier pointerId) {
   auto it = activePointers_.find(pointerId);
   return (it == activePointers_.end()) ? nullptr : &it->second;
 }
 
-void PointerEventsProcessor::registerActivePointer(const PointerEvent &event) {
+void PointerEventsProcessor::registerActivePointer(const PointerEvent& event) {
   ActivePointer activePointer = {};
   activePointer.event = event;
 
   activePointers_[event.pointerId] = activePointer;
 }
 
-void PointerEventsProcessor::updateActivePointer(const PointerEvent &event) {
+void PointerEventsProcessor::updateActivePointer(const PointerEvent& event) {
   if (auto activePointer = getActivePointer(event.pointerId)) {
     activePointer->event = event;
   } else {
@@ -323,7 +323,7 @@ void PointerEventsProcessor::updateActivePointer(const PointerEvent &event) {
 }
 
 void PointerEventsProcessor::unregisterActivePointer(
-    const PointerEvent &event) {
+    const PointerEvent& event) {
   if (getActivePointer(event.pointerId) != nullptr) {
     activePointers_.erase(event.pointerId);
   } else {
@@ -333,10 +333,10 @@ void PointerEventsProcessor::unregisterActivePointer(
 }
 
 void PointerEventsProcessor::processPendingPointerCapture(
-    const PointerEvent &event,
-    jsi::Runtime &runtime,
-    const DispatchEvent &eventDispatcher,
-    const UIManager &uiManager) {
+    const PointerEvent& event,
+    jsi::Runtime& runtime,
+    const DispatchEvent& eventDispatcher,
+    const UIManager& uiManager) {
   auto pendingOverride = getCaptureTargetOverride(
       event.pointerId, pendingPointerCaptureTargetOverrides_);
   bool hasPendingOverride = pendingOverride != nullptr;

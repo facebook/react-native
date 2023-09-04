@@ -20,7 +20,7 @@ namespace facebook::react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters parameters,
-    const ComponentDescriptorProviderRegistry &providerRegistry,
+    const ComponentDescriptorProviderRegistry& providerRegistry,
     ContextContainer::Shared contextContainer)
     : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
@@ -49,7 +49,7 @@ void ComponentDescriptorRegistry::add(
 }
 
 void ComponentDescriptorRegistry::registerComponentDescriptor(
-    const SharedComponentDescriptor &componentDescriptor) const {
+    const SharedComponentDescriptor& componentDescriptor) const {
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
@@ -57,8 +57,8 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
   _registryByName[componentName] = componentDescriptor;
 }
 
-const ComponentDescriptor &ComponentDescriptorRegistry::at(
-    const std::string &componentName) const {
+const ComponentDescriptor& ComponentDescriptorRegistry::at(
+    const std::string& componentName) const {
   std::shared_lock lock(mutex_);
 
   auto unifiedComponentName = componentNameByReactViewName(componentName);
@@ -93,7 +93,7 @@ const ComponentDescriptor &ComponentDescriptorRegistry::at(
   return *it->second;
 }
 
-const ComponentDescriptor *ComponentDescriptorRegistry::
+const ComponentDescriptor* ComponentDescriptorRegistry::
     findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
         ComponentHandle componentHandle) const {
   std::shared_lock lock(mutex_);
@@ -106,7 +106,7 @@ const ComponentDescriptor *ComponentDescriptorRegistry::
   return iterator->second.get();
 }
 
-const ComponentDescriptor &ComponentDescriptorRegistry::at(
+const ComponentDescriptor& ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
   std::shared_lock lock(mutex_);
 
@@ -123,12 +123,12 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
 
 ShadowNode::Shared ComponentDescriptorRegistry::createNode(
     Tag tag,
-    const std::string &viewName,
+    const std::string& viewName,
     SurfaceId surfaceId,
-    const folly::dynamic &propsDynamic,
-    const InstanceHandle::Shared &instanceHandle) const {
+    const folly::dynamic& propsDynamic,
+    const InstanceHandle::Shared& instanceHandle) const {
   auto unifiedComponentName = componentNameByReactViewName(viewName);
-  const auto &componentDescriptor = this->at(unifiedComponentName);
+  const auto& componentDescriptor = this->at(unifiedComponentName);
 
   const auto fragment =
       ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
@@ -149,7 +149,7 @@ ShadowNode::Shared ComponentDescriptorRegistry::createNode(
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
-    const SharedComponentDescriptor &descriptor) {
+    const SharedComponentDescriptor& descriptor) {
   _fallbackComponentDescriptor = descriptor;
   registerComponentDescriptor(descriptor);
 }
