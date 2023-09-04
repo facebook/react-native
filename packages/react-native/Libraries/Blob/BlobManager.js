@@ -12,6 +12,7 @@ import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
+import {fromByteArray} from 'base64-js';
 
 const Blob = require('./Blob');
 const BlobRegistry = require('./BlobRegistry');
@@ -66,15 +67,12 @@ class BlobManager {
 
     const blobId = uuidv4();
     const items = parts.map(part => {
-      if (
-        part instanceof ArrayBuffer ||
-        (global.ArrayBufferView && part instanceof global.ArrayBufferView)
-      ) {
-        throw new Error(
-          "Creating blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported",
-        );
-      }
-      if (part instanceof Blob) {
+      if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
+        return {
+          data: fromByteArray(new Uint8Array(part)),
+          type: 'string'
+        };
+      } else if (part instanceof Blob) {
         return {
           data: part.data,
           type: 'blob',
