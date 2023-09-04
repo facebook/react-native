@@ -15,6 +15,8 @@
 #include <memory>
 #include "YogaJniException.h"
 
+#include <yoga/Yoga-internal.h>
+
 // TODO: Reconcile missing layoutContext functionality from callbacks in the C
 // API and use that
 #include <yoga/node/Node.h>

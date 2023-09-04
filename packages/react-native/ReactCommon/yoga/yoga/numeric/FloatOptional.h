@@ -9,7 +9,6 @@
 
 #include <cmath>
 #include <limits>
-#include <yoga/Yoga-internal.h>
 
 namespace facebook::yoga {
 

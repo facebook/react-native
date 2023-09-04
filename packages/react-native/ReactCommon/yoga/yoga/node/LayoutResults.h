@@ -7,13 +7,19 @@
 
 #pragma once
 
+#include <array>
+
 #include <yoga/bits/NumericBitfield.h>
 #include <yoga/numeric/FloatOptional.h>
-#include <yoga/Yoga-internal.h>
+#include <yoga/node/CachedMeasurement.h>
 
 namespace facebook::yoga {
 
 struct LayoutResults {
+  // This value was chosen based on empirical data:
+  // 98% of analyzed layouts require less than 8 entries.
+  static constexpr int32_t MaxCachedMeasurements = 8;
+
   std::array<float, 4> position = {};
   std::array<float, 2> dimensions = {{YGUndefined, YGUndefined}};
   std::array<float, 4> margin = {};
@@ -36,11 +42,10 @@ public:
   YGDirection lastOwnerDirection = YGDirectionInherit;
 
   uint32_t nextCachedMeasurementsIndex = 0;
-  std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>
-      cachedMeasurements = {};
+  std::array<CachedMeasurement, MaxCachedMeasurements> cachedMeasurements = {};
   std::array<float, 2> measuredDimensions = {{YGUndefined, YGUndefined}};
 
-  YGCachedMeasurement cachedLayout = YGCachedMeasurement();
+  CachedMeasurement cachedLayout{};
 
   YGDirection direction() const {
     return getEnumData<YGDirection>(flags, directionOffset);

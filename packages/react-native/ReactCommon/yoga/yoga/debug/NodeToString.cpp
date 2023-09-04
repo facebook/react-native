@@ -13,7 +13,6 @@
 
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
-#include <yoga/Yoga-internal.h>
 
 namespace facebook::yoga {
 

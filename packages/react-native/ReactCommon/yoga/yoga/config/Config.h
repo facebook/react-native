@@ -8,9 +8,7 @@
 #pragma once
 
 #include <yoga/Yoga.h>
-
 #include <yoga/bits/EnumBitset.h>
-#include <yoga/Yoga-internal.h>
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
 struct YGConfig {};

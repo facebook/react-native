@@ -8,7 +8,9 @@
 #pragma once
 
 #include <yoga/Yoga.h>
+
 #include <yoga/numeric/FloatOptional.h>
+#include <yoga/style/CompactValue.h>
 
 namespace facebook::yoga {
 
