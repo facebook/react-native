@@ -9,6 +9,8 @@
 
 #include <yoga/Yoga.h>
 
+#include <yoga/debug/AssertFatal.h>
+
 namespace facebook::yoga {
 
 inline bool isRow(const YGFlexDirection flexDirection) {
@@ -55,11 +57,7 @@ inline YGEdge leadingEdge(const YGFlexDirection flexDirection) {
       return YGEdgeRight;
   }
 
-  YGAssert(false, "Invalid YGFlexDirection");
-
-  // Avoid "not all control paths return a value" warning until next diff adds
-  // assert with [[noreturn]]
-  return YGEdgeTop;
+  fatalWithMessage("Invalid YGFlexDirection");
 }
 
 inline YGEdge trailingEdge(const YGFlexDirection flexDirection) {
@@ -74,11 +72,7 @@ inline YGEdge trailingEdge(const YGFlexDirection flexDirection) {
       return YGEdgeLeft;
   }
 
-  YGAssert(false, "Invalid YGFlexDirection");
-
-  // Avoid "not all control paths return a value" warning until next diff adds
-  // assert with [[noreturn]]
-  return YGEdgeTop;
+  fatalWithMessage("Invalid YGFlexDirection");
 }
 
 } // namespace facebook::yoga

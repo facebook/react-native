@@ -7,16 +7,9 @@
 
 #pragma once
 
-#include <assert.h>
-#include <math.h>
 #include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifndef __cplusplus
 #include <stdbool.h>
-#endif
+#include <stdint.h>
 
 #include <yoga/YGEnums.h>
 #include <yoga/YGMacros.h>
@@ -303,15 +296,6 @@ WIN_EXPORT float YGNodeLayoutGetBorder(YGNodeRef node, YGEdge edge);
 WIN_EXPORT float YGNodeLayoutGetPadding(YGNodeRef node, YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(YGConfigRef config, YGLogger logger);
-WIN_EXPORT void YGAssert(bool condition, const char* message);
-WIN_EXPORT void YGAssertWithNode(
-    YGNodeRef node,
-    bool condition,
-    const char* message);
-WIN_EXPORT void YGAssertWithConfig(
-    YGConfigRef config,
-    bool condition,
-    const char* message);
 // Set this to number of pixels in 1 point to round calculation results If you
 // want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(

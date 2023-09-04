@@ -10,13 +10,15 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/ResolveValue.h>
+#include <yoga/debug/AssertFatal.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 
 namespace facebook::yoga {
 
 Node::Node(yoga::Config* config) : config_{config} {
-  YGAssert(config != nullptr, "Attempting to construct Node with null config");
+  yoga::assertFatal(
+      config != nullptr, "Attempting to construct Node with null config");
 
   flags_.hasNewLayout = true;
   if (config->useWebDefaults()) {
@@ -234,7 +236,7 @@ void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
     // places in Litho
     setNodeType(YGNodeTypeDefault);
   } else {
-    YGAssertWithNode(
+    yoga::assertFatalWithNode(
         this,
         children_.size() == 0,
         "Cannot set measure function: Nodes with measure functions cannot have "
@@ -274,8 +276,9 @@ void Node::insertChild(Node* child, uint32_t index) {
 }
 
 void Node::setConfig(yoga::Config* config) {
-  YGAssert(config != nullptr, "Attempting to set a null config on a Node");
-  YGAssertWithConfig(
+  yoga::assertFatal(
+      config != nullptr, "Attempting to set a null config on a Node");
+  yoga::assertFatalWithConfig(
       config,
       config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a Node");
@@ -592,11 +595,11 @@ FloatOptional Node::getTrailingPaddingAndBorder(
 }
 
 void Node::reset() {
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       this,
       children_.size() == 0,
       "Cannot reset a node which still has children attached");
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       this, owner_ == nullptr, "Cannot reset a node still attached to a owner");
 
   *this = Node{getConfig()};

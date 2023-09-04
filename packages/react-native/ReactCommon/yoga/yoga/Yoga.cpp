@@ -11,7 +11,6 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
-#include <stdexcept>
 
 #include <yoga/Yoga.h>
 #include <yoga/Yoga-internal.h>
@@ -19,6 +18,7 @@
 #include <yoga/algorithm/CollectFlexItemsRowValues.h>
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/ResolveValue.h>
+#include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/event/event.h>
@@ -190,8 +190,9 @@ int32_t gConfigInstanceCount = 0;
 
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   auto* node = new yoga::Node{static_cast<yoga::Config*>(config)};
-  YGAssert(config != nullptr, "Tried to construct YGNode with null config");
-  YGAssertWithConfig(
+  yoga::assertFatal(
+      config != nullptr, "Tried to construct YGNode with null config");
+  yoga::assertFatalWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
   Event::publish<Event::NodeAllocation>(node, {config});
 
@@ -210,7 +211,7 @@ YOGA_EXPORT YGNodeRef YGNodeNew(void) {
 YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNodeRef) {
   auto oldNode = static_cast<yoga::Node*>(oldNodeRef);
   auto node = new yoga::Node(*oldNode);
-  YGAssertWithConfig(
+  yoga::assertFatalWithConfig(
       oldNode->getConfig(),
       node != nullptr,
       "Could not allocate memory for node");
@@ -312,12 +313,12 @@ YOGA_EXPORT void YGNodeInsertChild(
   auto owner = static_cast<yoga::Node*>(ownerRef);
   auto child = static_cast<yoga::Node*>(childRef);
 
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       owner,
       child->getOwner() == nullptr,
       "Child already has a owner, it must be removed first.");
 
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       owner,
       !owner->hasMeasureFunc(),
       "Cannot add child: Nodes with measure functions cannot have children.");
@@ -456,7 +457,7 @@ YOGA_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node) {
 YOGA_EXPORT void YGNodeMarkDirty(const YGNodeRef nodeRef) {
   auto node = static_cast<yoga::Node*>(nodeRef);
 
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       node,
       node->hasMeasureFunc(),
       "Only leaf nodes with custom measure functions "
@@ -943,7 +944,7 @@ YOGA_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
   YOGA_EXPORT type YGNodeLayoutGet##name(                               \
       const YGNodeRef nodeRef, const YGEdge edge) {                     \
     auto node = static_cast<yoga::Node*>(nodeRef);                      \
-    YGAssertWithNode(                                                   \
+    yoga::assertFatalWithNode(                                          \
         node,                                                           \
         edge <= YGEdgeEnd,                                              \
         "Cannot get layout properties of multi-edge shorthands");       \
@@ -1053,7 +1054,7 @@ static float YGBaseline(yoga::Node* node, void* layoutContext) {
 
     Event::publish<Event::NodeBaselineEnd>(node);
 
-    YGAssertWithNode(
+    yoga::assertFatalWithNode(
         node,
         !yoga::isUndefined(baseline),
         "Expect custom baseline function to not return NaN");
@@ -1669,7 +1670,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     LayoutData& layoutMarkerData,
     void* const layoutContext,
     const LayoutPassReason reason) {
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       node,
       node->hasMeasureFunc(),
       "Expected node to have custom measure function");
@@ -2731,14 +2732,14 @@ static void YGNodelayoutImpl(
     const uint32_t depth,
     const uint32_t generationCount,
     const LayoutPassReason reason) {
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       node,
       yoga::isUndefined(availableWidth)
           ? widthMeasureMode == YGMeasureModeUndefined
           : true,
       "availableWidth is indefinite so widthMeasureMode must be "
       "YGMeasureModeUndefined");
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       node,
       yoga::isUndefined(availableHeight)
           ? heightMeasureMode == YGMeasureModeUndefined
@@ -4089,7 +4090,7 @@ bool YGLayoutNodeInternal(
 YOGA_EXPORT void YGConfigSetPointScaleFactor(
     const YGConfigRef config,
     const float pixelsInPoint) {
-  YGAssertWithConfig(
+  yoga::assertFatalWithConfig(
       config,
       pixelsInPoint >= 0.0f,
       "Scale factor should not be less than zero");
@@ -4284,56 +4285,6 @@ YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
 #else
     static_cast<yoga::Config*>(config)->setLogger(&YGDefaultLog);
 #endif
-  }
-}
-
-static void fatalWithMessage(const char* message) {
-#if defined(__cpp_exceptions)
-  throw std::logic_error(message);
-#else
-  std::terminate();
-#endif
-}
-
-void YGAssert(const bool condition, const char* message) {
-  if (!condition) {
-    yoga::log(
-        static_cast<yoga::Node*>(nullptr),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
-    fatalWithMessage(message);
-  }
-}
-
-void YGAssertWithNode(
-    const YGNodeRef node,
-    const bool condition,
-    const char* message) {
-  if (!condition) {
-    yoga::log(
-        static_cast<yoga::Node*>(node),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
-    fatalWithMessage(message);
-  }
-}
-
-void YGAssertWithConfig(
-    const YGConfigRef config,
-    const bool condition,
-    const char* message) {
-  if (!condition) {
-    yoga::log(
-        static_cast<yoga::Config*>(config),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
-    fatalWithMessage(message);
   }
 }
 
