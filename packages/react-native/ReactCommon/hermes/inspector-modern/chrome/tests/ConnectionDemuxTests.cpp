@@ -15,16 +15,16 @@
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector-modern/chrome/ConnectionDemux.h>
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
 namespace hermes {
 namespace inspector_modern {
 namespace chrome {
 
-using ::facebook::react::IInspector;
-using ::facebook::react::InspectorPage;
-using ::facebook::react::IRemoteConnection;
+using ::facebook::react::jsinspector_modern::IInspector;
+using ::facebook::react::jsinspector_modern::InspectorPage;
+using ::facebook::react::jsinspector_modern::IRemoteConnection;
 
 namespace {
 
@@ -93,7 +93,8 @@ TEST(ConnectionDemuxTests, TestEnableDisable) {
       facebook::hermes::makeHermesRuntime());
   std::shared_ptr<HermesRuntime> runtime2(
       facebook::hermes::makeHermesRuntime());
-  auto inspector = facebook::react::makeTestInspectorInstance();
+  auto inspector =
+      facebook::react::jsinspector_modern::makeTestInspectorInstance();
 
   ConnectionDemux demux{*inspector};
 

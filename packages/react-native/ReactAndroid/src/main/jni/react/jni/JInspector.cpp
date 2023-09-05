@@ -15,7 +15,7 @@ namespace facebook::react {
 
 namespace {
 
-class RemoteConnection : public IRemoteConnection {
+class RemoteConnection : public jsinspector_modern::IRemoteConnection {
  public:
   RemoteConnection(jni::alias_ref<JRemoteConnection::javaobject> connection)
       : connection_(jni::make_global(connection)) {}
@@ -56,7 +56,8 @@ void JRemoteConnection::onDisconnect() const {
   method(self());
 }
 
-JLocalConnection::JLocalConnection(std::unique_ptr<ILocalConnection> connection)
+JLocalConnection::JLocalConnection(
+    std::unique_ptr<jsinspector_modern::ILocalConnection> connection)
     : connection_(std::move(connection)) {}
 
 void JLocalConnection::sendMessage(std::string message) {
@@ -76,13 +77,13 @@ void JLocalConnection::registerNatives() {
 
 jni::global_ref<JInspector::javaobject> JInspector::instance(
     jni::alias_ref<jclass>) {
-  static auto instance =
-      jni::make_global(newObjectCxxArgs(&getInspectorInstance()));
+  static auto instance = jni::make_global(
+      newObjectCxxArgs(&jsinspector_modern::getInspectorInstance()));
   return instance;
 }
 
 jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
-  std::vector<InspectorPage> pages = inspector_->getPages();
+  std::vector<jsinspector_modern::InspectorPage> pages = inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
     (*array)[i] = JPage::create(pages[i].id, pages[i].title, pages[i].vm);
