@@ -8,16 +8,16 @@
 #include "ConnectionDemux.h"
 #include "Connection.h"
 
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
 namespace hermes {
 namespace inspector_modern {
 namespace chrome {
 
-using ::facebook::react::IInspector;
-using ::facebook::react::ILocalConnection;
-using ::facebook::react::IRemoteConnection;
+using ::facebook::react::jsinspector_modern::IInspector;
+using ::facebook::react::jsinspector_modern::ILocalConnection;
+using ::facebook::react::jsinspector_modern::IRemoteConnection;
 
 namespace {
 
@@ -56,7 +56,8 @@ void LocalConnection::disconnect() {
 
 } // namespace
 
-ConnectionDemux::ConnectionDemux(facebook::react::IInspector &inspector)
+ConnectionDemux::ConnectionDemux(
+    facebook::react::jsinspector_modern::IInspector &inspector)
     : globalInspector_(inspector),
       inspectedContexts_(std::make_shared<std::unordered_set<std::string>>()) {}
 

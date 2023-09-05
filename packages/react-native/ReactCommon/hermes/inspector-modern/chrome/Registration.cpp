@@ -16,7 +16,8 @@ namespace chrome {
 namespace {
 
 ConnectionDemux &demux() {
-  static ConnectionDemux instance{facebook::react::getInspectorInstance()};
+  static ConnectionDemux instance{
+      facebook::react::jsinspector_modern::getInspectorInstance()};
   return instance;
 }
 

@@ -30,8 +30,8 @@ namespace hermes {
 namespace inspector_modern {
 namespace chrome {
 
-using ::facebook::react::ILocalConnection;
-using ::facebook::react::IRemoteConnection;
+using ::facebook::react::jsinspector_modern::ILocalConnection;
+using ::facebook::react::jsinspector_modern::IRemoteConnection;
 using ::folly::Unit;
 
 namespace debugger = ::facebook::hermes::debugger;
