@@ -21,7 +21,7 @@ folly_version = '2021.07.22.00'
 socket_rocket_version = '0.6.0'
 boost_compiler_flags = '-Wno-documentation'
 
-use_hermes = ENV['USE_HERMES'] == '1'
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_subspecs = {
@@ -95,7 +95,7 @@ Pod::Spec.new do |s|
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
-    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    if use_hermes
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
@@ -136,10 +136,10 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "glog"
 
-  if ENV['USE_HERMES'] == "0"
-    s.dependency 'React-jsc'
-  else
+  if use_hermes
     s.dependency 'React-hermes'
     s.dependency 'hermes-engine'
+  else
+    s.dependency 'React-jsc'
   end
 end
