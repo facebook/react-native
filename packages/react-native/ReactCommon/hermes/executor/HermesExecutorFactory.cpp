@@ -14,8 +14,8 @@
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
 
-#include <hermes/inspector-modern/RuntimeAdapter.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
+#include <hermes/inspector/RuntimeAdapter.h>
 
 #include "JSITracing.h"
 
