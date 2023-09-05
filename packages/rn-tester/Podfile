@@ -32,7 +32,9 @@ if USE_FRAMEWORKS
   use_frameworks! :linkage => linkage.to_sym
 end
 
-def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
+$shouldUseFlipper =  ENV['USE_FLIPPER'] ? ENV['USE_FLIPPER'] == '1' : !IN_CI && !USE_FRAMEWORKS
+
+def pods(target_name, options = {}, use_flipper: $shouldUseFlipper)
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
