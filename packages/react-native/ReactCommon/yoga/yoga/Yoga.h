@@ -108,15 +108,17 @@ WIN_EXPORT void YGNodePrint(YGNodeRef node, YGPrintOptions options);
 
 WIN_EXPORT bool YGFloatIsUndefined(float value);
 
+// TODO: This should not be part of the public API. Remove after removing
+// ComponentKit usage of it.
 WIN_EXPORT bool YGNodeCanUseCachedMeasurement(
     YGMeasureMode widthMode,
-    float width,
+    float availableWidth,
     YGMeasureMode heightMode,
-    float height,
+    float availableHeight,
     YGMeasureMode lastWidthMode,
-    float lastWidth,
+    float lastAvailableWidth,
     YGMeasureMode lastHeightMode,
-    float lastHeight,
+    float lastAvailableHeight,
     float lastComputedWidth,
     float lastComputedHeight,
     float marginRow,

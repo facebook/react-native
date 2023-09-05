@@ -222,10 +222,11 @@ YGSize Node::measure(
       : measure_.noContext(this, width, widthMode, height, heightMode);
 }
 
-float Node::baseline(float width, float height, void* layoutContext) {
+float Node::baseline(float width, float height, void* layoutContext) const {
   return flags_.baselineUsesContext
-      ? baseline_.withContext(this, width, height, layoutContext)
-      : baseline_.noContext(this, width, height);
+      ? baseline_.withContext(
+            const_cast<Node*>(this), width, height, layoutContext)
+      : baseline_.noContext(const_cast<Node*>(this), width, height);
 }
 
 // Setters
