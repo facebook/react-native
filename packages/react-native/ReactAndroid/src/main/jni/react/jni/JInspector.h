@@ -9,7 +9,7 @@
 
 #ifdef WITH_INSPECTOR
 
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 #include <fbjni/fbjni.h>
 
@@ -40,7 +40,8 @@ class JLocalConnection : public jni::HybridClass<JLocalConnection> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/Inspector$LocalConnection;";
 
-  JLocalConnection(std::unique_ptr<ILocalConnection> connection);
+  JLocalConnection(
+      std::unique_ptr<jsinspector_modern::ILocalConnection> connection);
 
   void sendMessage(std::string message);
   void disconnect();
@@ -48,7 +49,7 @@ class JLocalConnection : public jni::HybridClass<JLocalConnection> {
   static void registerNatives();
 
  private:
-  std::unique_ptr<ILocalConnection> connection_;
+  std::unique_ptr<jsinspector_modern::ILocalConnection> connection_;
 };
 
 class JInspector : public jni::HybridClass<JInspector> {
@@ -69,9 +70,10 @@ class JInspector : public jni::HybridClass<JInspector> {
  private:
   friend HybridBase;
 
-  JInspector(IInspector* inspector) : inspector_(inspector) {}
+  JInspector(jsinspector_modern::IInspector* inspector)
+      : inspector_(inspector) {}
 
-  IInspector* inspector_;
+  jsinspector_modern::IInspector* inspector_;
 };
 
 } // namespace facebook::react

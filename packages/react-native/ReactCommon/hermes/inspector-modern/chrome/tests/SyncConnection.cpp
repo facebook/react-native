@@ -13,7 +13,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <hermes/inspector-modern/RuntimeAdapter.h>
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
 namespace hermes {
@@ -21,7 +21,7 @@ namespace inspector_modern {
 namespace chrome {
 
 using namespace std::placeholders;
-using ::facebook::react::IRemoteConnection;
+using ::facebook::react::jsinspector_modern::IRemoteConnection;
 
 namespace {
 
