@@ -19,7 +19,7 @@ end
 Pod::Spec.new do |s|
   s.name                   = "React-jsitracing"
   s.version                = version
-  s.summary                = "The React Native Runtime."
+  s.summary                = "Internal library for JSI debugging."
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
