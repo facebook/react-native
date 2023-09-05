@@ -17,7 +17,7 @@
 #include <hermes/inspector-modern/RuntimeAdapter.h>
 #include <hermes/inspector-modern/chrome/Connection.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
 namespace hermes {
@@ -31,7 +31,8 @@ namespace chrome {
  */
 class ConnectionDemux {
  public:
-  explicit ConnectionDemux(facebook::react::IInspector &inspector);
+  explicit ConnectionDemux(
+      facebook::react::jsinspector_modern::IInspector &inspector);
   ~ConnectionDemux();
 
   ConnectionDemux(const ConnectionDemux &) = delete;
@@ -46,7 +47,7 @@ class ConnectionDemux {
   int addPage(std::shared_ptr<Connection> conn);
   void removePage(int pageId);
 
-  facebook::react::IInspector &globalInspector_;
+  facebook::react::jsinspector_modern::IInspector &globalInspector_;
 
   std::mutex mutex_;
   std::unordered_map<int, std::shared_ptr<Connection>> conns_;

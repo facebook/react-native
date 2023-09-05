@@ -16,7 +16,7 @@
 
 #include <hermes/hermes.h>
 #include <hermes/inspector-modern/RuntimeAdapter.h>
-#include <jsinspector/InspectorInterfaces.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
 namespace hermes {
@@ -45,7 +45,8 @@ class INSPECTOR_EXPORT Connection {
   /// the debugger sent via send(). Replies and notifications from the debugger
   /// are sent back to the client via IRemoteConnection::onMessage.
   bool connect(
-      std::unique_ptr<::facebook::react::IRemoteConnection> remoteConn);
+      std::unique_ptr<::facebook::react::jsinspector_modern::IRemoteConnection>
+          remoteConn);
 
   /// disconnect disconnects this connection from the runtime's debugger
   bool disconnect();
