@@ -16,7 +16,10 @@ namespace facebook::yoga {
 [[noreturn]] void fatalWithMessage(const char* message);
 
 void assertFatal(bool condition, const char* message);
-void assertFatalWithNode(YGNodeRef node, bool condition, const char* message);
+void assertFatalWithNode(
+    YGNodeConstRef node,
+    bool condition,
+    const char* message);
 void assertFatalWithConfig(
     YGConfigRef config,
     bool condition,

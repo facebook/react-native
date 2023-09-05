@@ -33,12 +33,13 @@ void assertFatal(const bool condition, const char* message) {
 }
 
 void assertFatalWithNode(
-    const YGNodeRef node,
+    const YGNodeConstRef node,
     const bool condition,
     const char* message) {
   if (!condition) {
     yoga::log(
-        static_cast<yoga::Node*>(node),
+        // TODO: Break log callbacks and make them const correct
+        static_cast<yoga::Node*>(const_cast<YGNodeRef>(node)),
         YGLogLevelFatal,
         nullptr,
         "%s\n",
@@ -48,7 +49,7 @@ void assertFatalWithNode(
 }
 
 void assertFatalWithConfig(
-    const YGConfigRef config,
+    YGConfigRef config,
     const bool condition,
     const char* message) {
   if (!condition) {

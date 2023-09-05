@@ -121,7 +121,7 @@ public:
     return baseline_.noContext != nullptr;
   }
 
-  float baseline(float width, float height, void* layoutContext);
+  float baseline(float width, float height, void* layoutContext) const;
 
   bool hasErrata(YGErrata errata) const { return config_->hasErrata(errata); }
 
@@ -169,7 +169,9 @@ public:
     }
   }
 
-  Node* getChild(uint32_t index) const { return children_.at(index); }
+  Node* getChild(size_t index) const { return children_.at(index); }
+
+  size_t getChildCount() const { return children_.size(); }
 
   Config* getConfig() const { return config_; }
 
