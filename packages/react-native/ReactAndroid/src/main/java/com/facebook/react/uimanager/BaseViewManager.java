@@ -481,8 +481,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(
-      @NonNull View view, ReadableArray transforms, @Nullable ReadableArray transformOrigin) {
+  protected void setTransformProperty(
+      @NonNull T view,
+      @Nullable ReadableArray transforms,
+      @Nullable ReadableArray transformOrigin) {
+    if (transforms == null) {
+      view.setTranslationX(PixelUtil.toPixelFromDIP(0));
+      view.setTranslationY(PixelUtil.toPixelFromDIP(0));
+      view.setRotation(0);
+      view.setRotationX(0);
+      view.setRotationY(0);
+      view.setScaleX(1);
+      view.setScaleY(1);
+      view.setCameraDistance(0);
+      return;
+    }
+
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(
         transforms,
@@ -554,17 +568,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     throw new IllegalStateException("Invalid float property value: " + value);
   }
 
-  private static void resetTransformProperty(@NonNull View view) {
-    view.setTranslationX(PixelUtil.toPixelFromDIP(0));
-    view.setTranslationY(PixelUtil.toPixelFromDIP(0));
-    view.setRotation(0);
-    view.setRotationX(0);
-    view.setRotationY(0);
-    view.setScaleX(1);
-    view.setScaleY(1);
-    view.setCameraDistance(0);
-  }
-
   private void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(
         view, view.isFocusable(), view.getImportantForAccessibility());
@@ -574,15 +577,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
+
     Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
     if (invalidateTransform != null && invalidateTransform) {
       ReadableArray transformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
       ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
-      if (transformMatrix != null) {
-        setTransformProperty(view, transformMatrix, transformOrigin);
-      } else {
-        resetTransformProperty(view);
-      }
+      setTransformProperty(view, transformMatrix, transformOrigin);
       view.setTag(R.id.invalidate_transform, false);
     }
   }
