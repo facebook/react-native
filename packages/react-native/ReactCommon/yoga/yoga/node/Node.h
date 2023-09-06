@@ -27,7 +27,7 @@ struct NodeFlags {
   bool hasNewLayout : 1;
   bool isReferenceBaseline : 1;
   bool isDirty : 1;
-  uint8_t nodeType : 1;
+  uint32_t nodeType : 1;
   bool measureUsesContext : 1;
   bool baselineUsesContext : 1;
   bool printUsesContext : 1;
@@ -181,8 +181,8 @@ public:
     return resolvedDimensions_;
   }
 
-  YGValue getResolvedDimension(int index) const {
-    return resolvedDimensions_[index];
+  YGValue getResolvedDimension(YGDimension dimension) const {
+    return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
   static CompactValue computeEdgeValueForColumn(
@@ -257,7 +257,7 @@ public:
   }
 
   void setNodeType(YGNodeType nodeType) {
-    flags_.nodeType = static_cast<uint8_t>(nodeType);
+    flags_.nodeType = static_cast<uint32_t>(nodeType) & 0x01;
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
@@ -303,14 +303,16 @@ public:
   void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
-  void setLayoutMeasuredDimension(float measuredDimension, int index);
+  void setLayoutMeasuredDimension(
+      float measuredDimension,
+      YGDimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float dimension, int index);
+  void setLayoutDimension(float dimensionValue, YGDimension dimension);
   void setLayoutDirection(YGDirection direction);
-  void setLayoutMargin(float margin, int index);
-  void setLayoutBorder(float border, int index);
-  void setLayoutPadding(float padding, int index);
-  void setLayoutPosition(float position, int index);
+  void setLayoutMargin(float margin, YGEdge edge);
+  void setLayoutBorder(float border, YGEdge edge);
+  void setLayoutPadding(float padding, YGEdge edge);
+  void setLayoutPosition(float position, YGEdge edge);
   void setPosition(
       const YGDirection direction,
       const float mainSize,
@@ -327,11 +329,11 @@ public:
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(Node* oldChild, Node* newChild);
-  void replaceChild(Node* child, uint32_t index);
-  void insertChild(Node* child, uint32_t index);
+  void replaceChild(Node* child, size_t index);
+  void insertChild(Node* child, size_t index);
   /// Removes the first occurrence of child
   bool removeChild(Node* child);
-  void removeChild(uint32_t index);
+  void removeChild(size_t index);
 
   void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropagate();

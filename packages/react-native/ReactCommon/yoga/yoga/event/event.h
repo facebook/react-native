@@ -38,7 +38,7 @@ enum struct LayoutPassReason : int {
 struct LayoutData {
   int layouts;
   int measures;
-  int maxMeasureCache;
+  uint32_t maxMeasureCache;
   int cachedLayouts;
   int cachedMeasures;
   int measureCallbacks;

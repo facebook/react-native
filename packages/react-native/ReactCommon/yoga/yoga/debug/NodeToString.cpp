@@ -33,7 +33,7 @@ static void appendFormattedString(std::string& str, const char* fmt, ...) {
   va_start(args, fmt);
   va_list argsCopy;
   va_copy(argsCopy, args);
-  std::vector<char> buf(1 + vsnprintf(NULL, 0, fmt, args));
+  std::vector<char> buf(1 + static_cast<size_t>(vsnprintf(NULL, 0, fmt, args)));
   va_end(args);
   vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
@@ -96,7 +96,7 @@ static void appendEdges(
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
-      appendNumberIfNotZero(base, str, edges[edge]);
+      appendNumberIfNotZero(base, str, edges[static_cast<size_t>(edge)]);
     }
   }
 }

@@ -36,7 +36,7 @@ public:
   template <typename T>
   struct BitfieldRef {
     Style& style;
-    size_t offset;
+    uint8_t offset;
     operator T() const { return getEnumData<T>(style.flags, offset); }
     BitfieldRef<T>& operator=(T x) {
       setEnumData<T>(style.flags, offset, x);
@@ -84,24 +84,24 @@ public:
   ~Style() = default;
 
 private:
-  static constexpr size_t directionOffset = 0;
-  static constexpr size_t flexdirectionOffset =
+  static constexpr uint8_t directionOffset = 0;
+  static constexpr uint8_t flexdirectionOffset =
       directionOffset + minimumBitCount<YGDirection>();
-  static constexpr size_t justifyContentOffset =
+  static constexpr uint8_t justifyContentOffset =
       flexdirectionOffset + minimumBitCount<YGFlexDirection>();
-  static constexpr size_t alignContentOffset =
+  static constexpr uint8_t alignContentOffset =
       justifyContentOffset + minimumBitCount<YGJustify>();
-  static constexpr size_t alignItemsOffset =
+  static constexpr uint8_t alignItemsOffset =
       alignContentOffset + minimumBitCount<YGAlign>();
-  static constexpr size_t alignSelfOffset =
+  static constexpr uint8_t alignSelfOffset =
       alignItemsOffset + minimumBitCount<YGAlign>();
-  static constexpr size_t positionTypeOffset =
+  static constexpr uint8_t positionTypeOffset =
       alignSelfOffset + minimumBitCount<YGAlign>();
-  static constexpr size_t flexWrapOffset =
+  static constexpr uint8_t flexWrapOffset =
       positionTypeOffset + minimumBitCount<YGPositionType>();
-  static constexpr size_t overflowOffset =
+  static constexpr uint8_t overflowOffset =
       flexWrapOffset + minimumBitCount<YGWrap>();
-  static constexpr size_t displayOffset =
+  static constexpr uint8_t displayOffset =
       overflowOffset + minimumBitCount<YGOverflow>();
 
   uint32_t flags = 0;
