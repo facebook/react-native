@@ -291,27 +291,8 @@ class JSCRuntime : public jsi::Runtime {
   } while (0)
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-// This takes care of watch and tvos (due to backwards compatibility in
-// Availability.h
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define _JSC_NO_ARRAY_BUFFERS
-#endif
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160400
 #define _JSC_HAS_INSPECTABLE
-#endif
-#endif
-#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
-// Only one of these should be set for a build.  If somehow that's not
-// true, this will be a compile-time error and it can be resolved when
-// we understand why.
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
-#define _JSC_NO_ARRAY_BUFFERS
 #endif
 #endif
 
@@ -361,18 +342,6 @@ JSStringRef getFunctionString() {
   static JSStringRef func = JSStringCreateWithUTF8CString("Function");
   return func;
 }
-
-#if !defined(_JSC_FAST_IS_ARRAY)
-JSStringRef getArrayString() {
-  static JSStringRef array = JSStringCreateWithUTF8CString("Array");
-  return array;
-}
-
-JSStringRef getIsArrayString() {
-  static JSStringRef isArray = JSStringCreateWithUTF8CString("isArray");
-  return isArray;
-}
-#endif
 } // namespace
 
 // std::string utility
@@ -988,55 +957,21 @@ void JSCRuntime::setPropertyValue(
 }
 
 bool JSCRuntime::isArray(const jsi::Object& obj) const {
-#if !defined(_JSC_FAST_IS_ARRAY)
-  JSObjectRef global = JSContextGetGlobalObject(ctx_);
-  JSStringRef arrayString = getArrayString();
-  JSValueRef exc = nullptr;
-  JSValueRef arrayCtorValue =
-      JSObjectGetProperty(ctx_, global, arrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef arrayCtor = JSValueToObject(ctx_, arrayCtorValue, &exc);
-  JSC_ASSERT(exc);
-  JSStringRef isArrayString = getIsArrayString();
-  JSValueRef isArrayValue =
-      JSObjectGetProperty(ctx_, arrayCtor, isArrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef isArray = JSValueToObject(ctx_, isArrayValue, &exc);
-  JSC_ASSERT(exc);
-  JSValueRef arg = objectRef(obj);
-  JSValueRef result =
-      JSObjectCallAsFunction(ctx_, isArray, nullptr, 1, &arg, &exc);
-  JSC_ASSERT(exc);
-  return JSValueToBoolean(ctx_, result);
-#else
   return JSValueIsArray(ctx_, objectRef(obj));
-#endif
 }
 
 bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
   return typedArrayType == kJSTypedArrayTypeArrayBuffer;
-#endif
 }
 
 uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   return static_cast<uint8_t*>(
       JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
-#endif
 }
 
 size_t JSCRuntime::size(const jsi::ArrayBuffer& obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
-#endif
 }
 
 bool JSCRuntime::isFunction(const jsi::Object& obj) const {
