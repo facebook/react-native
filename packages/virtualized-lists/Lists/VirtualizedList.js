@@ -26,12 +26,12 @@ import type {
 } from './VirtualizedListProps';
 
 import {
+  Platform,
   RefreshControl,
   ScrollView,
   View,
   StyleSheet,
   findNodeHandle,
-  Platform, // [macOS]
 } from 'react-native';
 import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
@@ -76,6 +76,10 @@ type State = {
   renderMask: CellRenderMask,
   cellsAroundViewport: {first: number, last: number},
   selectedRowIndex: number, // [macOS]
+  // Used to track items added at the start of the list for maintainVisibleContentPosition.
+  firstVisibleItemKey: ?string,
+  // When > 0 the scroll position available in JS is considered stale and should not be used.
+  pendingScrollUpdateCount: number,
 };
 
 /**
@@ -474,10 +478,25 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     const initialRenderRegion = VirtualizedList._initialRenderRegion(props);
 
+    const minIndexForVisible =
+      this.props.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
+
     this.state = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
       selectedRowIndex: this.props.initialSelectedIndex ?? -1, // [macOS]
+      firstVisibleItemKey:
+        this.props.getItemCount(this.props.data) > minIndexForVisible
+          ? VirtualizedList._getItemKey(this.props, minIndexForVisible)
+          : null,
+      // When we have a non-zero initialScrollIndex, we will receive a
+      // scroll event later so this will prevent the window from updating
+      // until we get a valid offset.
+      pendingScrollUpdateCount:
+        this.props.initialScrollIndex != null &&
+        this.props.initialScrollIndex > 0
+          ? 1
+          : 0,
     };
   }
 
@@ -527,6 +546,40 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this._hasWarned.flexWrap = true;
       }
     }
+  }
+
+  static _findItemIndexWithKey(
+    props: Props,
+    key: string,
+    hint: ?number,
+  ): ?number {
+    const itemCount = props.getItemCount(props.data);
+    if (hint != null && hint >= 0 && hint < itemCount) {
+      const curKey = VirtualizedList._getItemKey(props, hint);
+      if (curKey === key) {
+        return hint;
+      }
+    }
+    for (let ii = 0; ii < itemCount; ii++) {
+      const curKey = VirtualizedList._getItemKey(props, ii);
+      if (curKey === key) {
+        return ii;
+      }
+    }
+    return null;
+  }
+
+  static _getItemKey(
+    props: {
+      data: Props['data'],
+      getItem: Props['getItem'],
+      keyExtractor: Props['keyExtractor'],
+      ...
+    },
+    index: number,
+  ): string {
+    const item = props.getItem(props.data, index);
+    return VirtualizedList._keyExtractor(item, index, props);
   }
 
   static _createRenderMask(
@@ -612,6 +665,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _adjustCellsAroundViewport(
     props: Props,
     cellsAroundViewport: {first: number, last: number},
+    pendingScrollUpdateCount: number,
   ): {first: number, last: number} {
     const {data, getItemCount} = props;
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
@@ -643,21 +697,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         ),
       };
     } else {
-      // If we have a non-zero initialScrollIndex and run this before we've scrolled,
-      // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
-      // So let's wait until we've scrolled the view to the right place. And until then,
-      // we will trust the initialScrollIndex suggestion.
-
-      // Thus, we want to recalculate the windowed render limits if any of the following hold:
-      // - initialScrollIndex is undefined or is 0
-      // - initialScrollIndex > 0 AND scrolling is complete
-      // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
-      //   where the list is shorter than the visible area)
-      if (
-        props.initialScrollIndex &&
-        !this._scrollMetrics.offset &&
-        Math.abs(distanceFromEnd) >= Number.EPSILON
-      ) {
+      // If we have a pending scroll update, we should not adjust the render window as it
+      // might override the correct window.
+      if (pendingScrollUpdateCount > 0) {
         return cellsAroundViewport.last >= getItemCount(data)
           ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
           : cellsAroundViewport;
@@ -739,8 +781,48 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       return prevState;
     }
 
+    let maintainVisibleContentPositionAdjustment: ?number = null;
+    const prevFirstVisibleItemKey = prevState.firstVisibleItemKey;
+    const minIndexForVisible =
+      newProps.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
+    const newFirstVisibleItemKey =
+      newProps.getItemCount(newProps.data) > minIndexForVisible
+        ? VirtualizedList._getItemKey(newProps, minIndexForVisible)
+        : null;
+    if (
+      newProps.maintainVisibleContentPosition != null &&
+      prevFirstVisibleItemKey != null &&
+      newFirstVisibleItemKey != null
+    ) {
+      if (newFirstVisibleItemKey !== prevFirstVisibleItemKey) {
+        // Fast path if items were added at the start of the list.
+        const hint =
+          itemCount - prevState.renderMask.numCells() + minIndexForVisible;
+        const firstVisibleItemIndex = VirtualizedList._findItemIndexWithKey(
+          newProps,
+          prevFirstVisibleItemKey,
+          hint,
+        );
+        maintainVisibleContentPositionAdjustment =
+          firstVisibleItemIndex != null
+            ? firstVisibleItemIndex - minIndexForVisible
+            : null;
+      } else {
+        maintainVisibleContentPositionAdjustment = null;
+      }
+    }
+
     const constrainedCells = VirtualizedList._constrainToItemCount(
-      prevState.cellsAroundViewport,
+      maintainVisibleContentPositionAdjustment != null
+        ? {
+            first:
+              prevState.cellsAroundViewport.first +
+              maintainVisibleContentPositionAdjustment,
+            last:
+              prevState.cellsAroundViewport.last +
+              maintainVisibleContentPositionAdjustment,
+          }
+        : prevState.cellsAroundViewport,
       newProps,
     );
 
@@ -752,6 +834,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         -1, // Used to indicate no row is selected
         Math.min(prevState.selectedRowIndex, itemCount),
       ), // macOS]
+      firstVisibleItemKey: newFirstVisibleItemKey,
+      pendingScrollUpdateCount:
+        maintainVisibleContentPositionAdjustment != null
+          ? prevState.pendingScrollUpdateCount + 1
+          : prevState.pendingScrollUpdateCount,
     };
   }
 
@@ -783,7 +870,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = this._keyExtractor(item, ii, this.props);
+      const key = VirtualizedList._keyExtractor(item, ii, this.props);
 
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
@@ -863,15 +950,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
 
-  _keyExtractor(
+  static _keyExtractor(
     item: Item,
     index: number,
     props: {
       keyExtractor?: ?(item: Item, index: number) => string,
       ...
     },
-    // $FlowFixMe[missing-local-annot]
-  ) {
+  ): string {
     if (props.keyExtractor != null) {
       return props.keyExtractor(item, index);
     }
@@ -919,6 +1005,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           cellKey={this._getCellKey() + '-header'}
           key="$header">
           <View
+            // We expect that header component will be a single native view so make it
+            // not collapsable to avoid this view being flattened and make this assumption
+            // no longer true.
+            collapsable={false}
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
@@ -1076,6 +1166,17 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
+      isInvertedVirtualizedList: this.props.inverted,
+      maintainVisibleContentPosition:
+        this.props.maintainVisibleContentPosition != null
+          ? {
+              ...this.props.maintainVisibleContentPosition,
+              // Adjust index to account for ListHeaderComponent.
+              minIndexForVisible:
+                this.props.maintainVisibleContentPosition.minIndexForVisible +
+                (this.props.ListHeaderComponent ? 1 : 0),
+            }
+          : undefined,
     };
 
     this._hasMore = this.state.cellsAroundViewport.last < itemCount - 1;
@@ -1617,8 +1718,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onStartReachedThreshold,
       onEndReached,
       onEndReachedThreshold,
-      initialScrollIndex,
     } = this.props;
+    // If we have any pending scroll updates it means that the scroll metrics
+    // are out of date and we should not call any of the edge reached callbacks.
+    if (this.state.pendingScrollUpdateCount > 0) {
+      return;
+    }
+
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     let distanceFromStart = offset;
     let distanceFromEnd = contentLength - visibleLength - offset;
@@ -1670,14 +1776,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       isWithinStartThreshold &&
       this._scrollMetrics.contentLength !== this._sentStartForContentLength
     ) {
-      // On initial mount when using initialScrollIndex the offset will be 0 initially
-      // and will trigger an unexpected onStartReached. To avoid this we can use
-      // timestamp to differentiate between the initial scroll metrics and when we actually
-      // received the first scroll event.
-      if (!initialScrollIndex || this._scrollMetrics.timestamp !== 0) {
-        this._sentStartForContentLength = this._scrollMetrics.contentLength;
-        onStartReached({distanceFromStart});
-      }
+      this._sentStartForContentLength = this._scrollMetrics.contentLength;
+      onStartReached({distanceFromStart});
     }
 
     // If the user scrolls away from the start or end and back again,
@@ -1804,6 +1904,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       visibleLength,
       zoomScale,
     };
+    if (this.state.pendingScrollUpdateCount > 0) {
+      this.setState(state => ({
+        pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
+      }));
+    }
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     if (!this.props) {
       return;
@@ -1919,6 +2024,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
         state.cellsAroundViewport,
+        state.pendingScrollUpdateCount,
       );
       const renderMask = VirtualizedList._createRenderMask(
         props,
@@ -1949,7 +2055,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     return {
       index,
       item,
-      key: this._keyExtractor(item, index, props),
+      key: VirtualizedList._keyExtractor(item, index, props),
       isViewable,
     };
   };
@@ -2010,13 +2116,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     inLayout?: boolean,
     ...
   } => {
-    const {data, getItem, getItemCount, getItemLayout} = props;
+    const {data, getItemCount, getItemLayout} = props;
     invariant(
       index >= 0 && index < getItemCount(data),
       'Tried to get frame for out of range index ' + index,
     );
-    const item = getItem(data, index);
-    const frame = this._frames[this._keyExtractor(item, index, props)];
+    const frame = this._frames[VirtualizedList._getItemKey(props, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
@@ -2046,6 +2151,16 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const lastFocusedCellRenderer = this._cellRefs[this._lastFocusedCellKey];
     const focusedCellIndex = lastFocusedCellRenderer.props.index;
     const itemCount = props.getItemCount(props.data);
+
+    // The last cell we rendered may be at a new index. Bail if we don't know
+    // where it is.
+    if (
+      focusedCellIndex >= itemCount ||
+      VirtualizedList._getItemKey(props, focusedCellIndex) !==
+        this._lastFocusedCellKey
+    ) {
+      return [];
+    }
 
     let first = focusedCellIndex;
     let heightOfCellsBeforeFocused = 0;
@@ -2083,6 +2198,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     props: FrameMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
+    // If we have any pending scroll updates it means that the scroll metrics
+    // are out of date and we should not call any of the visibility callbacks.
+    if (this.state.pendingScrollUpdateCount > 0) {
+      return;
+    }
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
         props,
@@ -2098,9 +2218,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  verticallyInverted: {
-    transform: [{scaleY: -1}],
-  },
+  verticallyInverted:
+    Platform.OS === 'android'
+      ? {transform: [{scale: -1}]}
+      : {transform: [{scaleY: -1}]},
   horizontallyInverted: {
     transform: [{scaleX: -1}],
   },

@@ -22,8 +22,7 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
-    "react-native": "*",
-    "react-test-renderer": "18.2.0"
+    "react-native": "*"
   },
   "beachball": {
     "shouldPublish": true

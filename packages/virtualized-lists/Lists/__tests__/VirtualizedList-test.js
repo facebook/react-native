@@ -10,9 +10,9 @@
 
 'use strict';
 
-import VirtualizedList from '../VirtualizedList';
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
+import VirtualizedList from '../VirtualizedList';
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {
@@ -2164,10 +2164,70 @@ it('virtualizes away last focused index if item removed', () => {
   expect(component).toMatchSnapshot();
 });
 
-function generateItems(count) {
+it('handles maintainVisibleContentPosition', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        windowSize={1}
+        maintainVisibleContentPosition={{minIndexForVisible: 0}}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: items.length * ITEM_HEIGHT},
+    });
+
+    performAllBatches();
+  });
+
+  // Initial render.
+  expect(component).toMatchSnapshot();
+
+  // Add new items at the start of the list to trigger the maintainVisibleContentPosition adjustment.
+  const newItems = [...generateItems(10, items.length), ...items];
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={1}
+        windowSize={1}
+        maintainVisibleContentPosition={{minIndexForVisible: 0}}
+        {...baseItemProps(newItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  // Previously rendered cells should be rendered still.
+  expect(component).toMatchSnapshot();
+
+  // Simulate scroll adjustment from native maintainVisibleContentPosition.
+  ReactTestRenderer.act(() => {
+    simulateContentLayout(component, {
+      width: 10,
+      height: newItems.length * ITEM_HEIGHT,
+    });
+    simulateScroll(component, {x: 0, y: 10 * ITEM_HEIGHT});
+    performAllBatches();
+  });
+
+  // Previously rendered cells should be rendered still + starting to render new cells ahead.
+  expect(component).toMatchSnapshot();
+});
+
+function generateItems(count, startKey = 0) {
   return Array(count)
     .fill()
-    .map((_, i) => ({key: i}));
+    .map((_, i) => ({key: i + startKey}));
 }
 
 function generateItemsStickyEveryN(count, n) {
@@ -2225,7 +2285,7 @@ function simulateContentLayout(component, dimensions) {
 
 function simulateCellLayout(component, items, itemIndex, dimensions) {
   const instance = component.getInstance();
-  const cellKey = instance._keyExtractor(
+  const cellKey = VirtualizedList._keyExtractor(
     items[itemIndex],
     itemIndex,
     instance.props,
