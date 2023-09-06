@@ -24,7 +24,7 @@ def min_ios_version_supported
 end
 
 def min_supported_versions
-    return  { :ios => min_ios_version_supported }
+  return  { :ios => min_ios_version_supported }.symbolize_keys
 end
 
 class CodegenUtilsTests < Test::Unit::TestCase
