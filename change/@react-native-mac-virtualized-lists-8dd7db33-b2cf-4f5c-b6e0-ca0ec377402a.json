@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Bring in 0.72-stable changes to virtualized-lists",
-  "packageName": "@react-native-mac/virtualized-lists",
-  "email": "adgleitm@microsoft.com",
-  "dependentChangeType": "patch"
-}
