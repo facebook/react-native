@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 
 #include <yoga/algorithm/FlexDirection.h>
@@ -264,7 +265,7 @@ YOGA_EXPORT void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
   setMeasureFunc(m);
 }
 
-void Node::replaceChild(Node* child, uint32_t index) {
+void Node::replaceChild(Node* child, size_t index) {
   children_[index] = child;
 }
 
@@ -272,8 +273,8 @@ void Node::replaceChild(Node* oldChild, Node* newChild) {
   std::replace(children_.begin(), children_.end(), oldChild, newChild);
 }
 
-void Node::insertChild(Node* child, uint32_t index) {
-  children_.insert(children_.begin() + index, child);
+void Node::insertChild(Node* child, size_t index) {
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index), child);
 }
 
 void Node::setConfig(yoga::Config* config) {
@@ -311,24 +312,30 @@ bool Node::removeChild(Node* child) {
   return false;
 }
 
-void Node::removeChild(uint32_t index) {
-  children_.erase(children_.begin() + index);
+void Node::removeChild(size_t index) {
+  children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
 }
 
 void Node::setLayoutDirection(YGDirection direction) {
   layout_.setDirection(direction);
 }
 
-void Node::setLayoutMargin(float margin, int index) {
-  layout_.margin[index] = margin;
+void Node::setLayoutMargin(float margin, YGEdge edge) {
+  assertFatal(
+      edge < layout_.margin.size(), "Edge must be top/left/bottom/right");
+  layout_.margin[edge] = margin;
 }
 
-void Node::setLayoutBorder(float border, int index) {
-  layout_.border[index] = border;
+void Node::setLayoutBorder(float border, YGEdge edge) {
+  assertFatal(
+      edge < layout_.border.size(), "Edge must be top/left/bottom/right");
+  layout_.border[edge] = border;
 }
 
-void Node::setLayoutPadding(float padding, int index) {
-  layout_.padding[index] = padding;
+void Node::setLayoutPadding(float padding, YGEdge edge) {
+  assertFatal(
+      edge < layout_.padding.size(), "Edge must be top/left/bottom/right");
+  layout_.padding[edge] = padding;
 }
 
 void Node::setLayoutLastOwnerDirection(YGDirection direction) {
@@ -339,8 +346,10 @@ void Node::setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
-void Node::setLayoutPosition(float position, int index) {
-  layout_.position[index] = position;
+void Node::setLayoutPosition(float position, YGEdge edge) {
+  assertFatal(
+      edge < layout_.position.size(), "Edge must be top/left/bottom/right");
+  layout_.position[edge] = position;
 }
 
 void Node::setLayoutComputedFlexBasisGeneration(
@@ -348,16 +357,19 @@ void Node::setLayoutComputedFlexBasisGeneration(
   layout_.computedFlexBasisGeneration = computedFlexBasisGeneration;
 }
 
-void Node::setLayoutMeasuredDimension(float measuredDimension, int index) {
-  layout_.measuredDimensions[index] = measuredDimension;
+void Node::setLayoutMeasuredDimension(
+    float measuredDimension,
+    YGDimension dimension) {
+  layout_.measuredDimensions[static_cast<size_t>(dimension)] =
+      measuredDimension;
 }
 
 void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float dimension, int index) {
-  layout_.dimensions[index] = dimension;
+void Node::setLayoutDimension(float dimensionValue, YGDimension dimension) {
+  layout_.dimensions[static_cast<size_t>(dimension)] = dimensionValue;
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or

@@ -15,6 +15,14 @@
 
 namespace facebook::yoga {
 
+#pragma pack(push)
+#pragma pack(1)
+struct LayoutResultFlags {
+  uint32_t direction : 2;
+  bool hadOverflow : 1;
+};
+#pragma pack(pop)
+
 struct LayoutResults {
   // This value was chosen based on empirical data:
   // 98% of analyzed layouts require less than 8 entries.
@@ -27,10 +35,7 @@ struct LayoutResults {
   std::array<float, 4> padding = {};
 
 private:
-  static constexpr size_t directionOffset = 0;
-  static constexpr size_t hadOverflowOffset =
-      directionOffset + minimumBitCount<YGDirection>();
-  uint8_t flags = 0;
+  LayoutResultFlags flags_{};
 
 public:
   uint32_t computedFlexBasisGeneration = 0;
@@ -48,17 +53,15 @@ public:
   CachedMeasurement cachedLayout{};
 
   YGDirection direction() const {
-    return getEnumData<YGDirection>(flags, directionOffset);
+    return static_cast<YGDirection>(flags_.direction);
   }
 
   void setDirection(YGDirection direction) {
-    setEnumData<YGDirection>(flags, directionOffset, direction);
+    flags_.direction = static_cast<uint32_t>(direction) & 0x03;
   }
 
-  bool hadOverflow() const { return getBooleanData(flags, hadOverflowOffset); }
-  void setHadOverflow(bool hadOverflow) {
-    setBooleanData(flags, hadOverflowOffset, hadOverflow);
-  }
+  bool hadOverflow() const { return flags_.hadOverflow; }
+  void setHadOverflow(bool hadOverflow) { flags_.hadOverflow = hadOverflow; }
 
   bool operator==(LayoutResults layout) const;
   bool operator!=(LayoutResults layout) const { return !(*this == layout); }

@@ -14,7 +14,7 @@
 #include "jni.h"
 
 class PtrJNodeMapVanilla {
-  std::map<YGNodeConstRef, size_t> ptrsToIdxs_{};
+  std::map<YGNodeConstRef, jsize> ptrsToIdxs_{};
   jobjectArray javaNodes_{};
 
 public:
@@ -25,13 +25,13 @@ public:
     using namespace facebook::yoga::vanillajni;
 
     JNIEnv* env = getCurrentEnv();
-    size_t nativePointersSize = env->GetArrayLength(javaNativePointers);
-    std::vector<jlong> nativePointers(nativePointersSize);
+    jsize nativePointersSize = env->GetArrayLength(javaNativePointers);
+    std::vector<jlong> nativePointers(static_cast<size_t>(nativePointersSize));
     env->GetLongArrayRegion(
         javaNativePointers, 0, nativePointersSize, nativePointers.data());
 
-    for (size_t i = 0; i < nativePointersSize; ++i) {
-      ptrsToIdxs_[(YGNodeConstRef) nativePointers[i]] = i;
+    for (jsize i = 0; i < nativePointersSize; ++i) {
+      ptrsToIdxs_[(YGNodeConstRef) nativePointers[static_cast<size_t>(i)]] = i;
     }
   }
 

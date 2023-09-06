@@ -823,8 +823,8 @@ static void zeroOutLayoutRecursively(
     yoga::Node* const node,
     void* layoutContext) {
   node->getLayout() = {};
-  node->setLayoutDimension(0, 0);
-  node->setLayoutDimension(0, 1);
+  node->setLayoutDimension(0, YGDimensionWidth);
+  node->setLayoutDimension(0, YGDimensionHeight);
   node->setHasNewLayout(true);
 
   node->iterChildrenAfterCloningIfNeeded(
@@ -1488,19 +1488,19 @@ static void YGJustifyMainAxis(
           betweenMainDim +=
               yoga::maxOrDefined(
                   collectedFlexItemsValues.remainingFreeSpace, 0) /
-              (collectedFlexItemsValues.itemsOnLine - 1);
+              static_cast<float>(collectedFlexItemsValues.itemsOnLine - 1);
         }
         break;
       case YGJustifySpaceEvenly:
         // Space is distributed evenly across all elements
         leadingMainDim = collectedFlexItemsValues.remainingFreeSpace /
-            (collectedFlexItemsValues.itemsOnLine + 1);
+            static_cast<float>(collectedFlexItemsValues.itemsOnLine + 1);
         betweenMainDim += leadingMainDim;
         break;
       case YGJustifySpaceAround:
         // Space on the edges is half of the space between elements
         leadingMainDim = 0.5f * collectedFlexItemsValues.remainingFreeSpace /
-            collectedFlexItemsValues.itemsOnLine;
+            static_cast<float>(collectedFlexItemsValues.itemsOnLine);
         betweenMainDim += leadingMainDim * 2;
         break;
       case YGJustifyFlexStart:
@@ -1550,7 +1550,7 @@ static void YGJustifyMainAxis(
         if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
           collectedFlexItemsValues.mainDim +=
               collectedFlexItemsValues.remainingFreeSpace /
-              numberOfAutoMarginsOnCurrentLine;
+              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
         }
 
         if (performLayout) {
@@ -1563,7 +1563,7 @@ static void YGJustifyMainAxis(
         if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
           collectedFlexItemsValues.mainDim +=
               collectedFlexItemsValues.remainingFreeSpace /
-              numberOfAutoMarginsOnCurrentLine;
+              static_cast<float>(numberOfAutoMarginsOnCurrentLine);
         }
         bool canSkipFlex =
             !performLayout && measureModeCrossDim == YGMeasureModeExactly;
@@ -1890,7 +1890,7 @@ static void calculateLayoutImpl(
   if (childCount > 1) {
     totalMainDim +=
         node->getGapForAxis(mainAxis, availableInnerCrossDim).unwrap() *
-        (childCount - 1);
+        static_cast<float>(childCount - 1);
   }
 
   const bool mainAxisOverflows =
@@ -2261,14 +2261,17 @@ static void calculateLayoutImpl(
           break;
         case YGAlignStretch:
           if (availableInnerCrossDim > totalLineCrossDim) {
-            crossDimLead = remainingAlignContentDim / lineCount;
+            crossDimLead =
+                remainingAlignContentDim / static_cast<float>(lineCount);
           }
           break;
         case YGAlignSpaceAround:
           if (availableInnerCrossDim > totalLineCrossDim) {
-            currentLead += remainingAlignContentDim / (2 * lineCount);
+            currentLead +=
+                remainingAlignContentDim / (2 * static_cast<float>(lineCount));
             if (lineCount > 1) {
-              crossDimLead = remainingAlignContentDim / lineCount;
+              crossDimLead =
+                  remainingAlignContentDim / static_cast<float>(lineCount);
             }
           } else {
             currentLead += remainingAlignContentDim / 2;
@@ -2276,7 +2279,8 @@ static void calculateLayoutImpl(
           break;
         case YGAlignSpaceBetween:
           if (availableInnerCrossDim > totalLineCrossDim && lineCount > 1) {
-            crossDimLead = remainingAlignContentDim / (lineCount - 1);
+            crossDimLead =
+                remainingAlignContentDim / static_cast<float>(lineCount - 1);
           }
           break;
         case YGAlignAuto:
@@ -2843,11 +2847,11 @@ bool calculateLayoutInternal(
     layout->lastOwnerDirection = ownerDirection;
 
     if (cachedResults == nullptr) {
-      if (layout->nextCachedMeasurementsIndex + 1 >
-          (uint32_t) layoutMarkerData.maxMeasureCache) {
-        layoutMarkerData.maxMeasureCache =
-            layout->nextCachedMeasurementsIndex + 1;
-      }
+
+      layoutMarkerData.maxMeasureCache = std::max(
+          layoutMarkerData.maxMeasureCache,
+          layout->nextCachedMeasurementsIndex + 1u);
+
       if (layout->nextCachedMeasurementsIndex ==
           LayoutResults::MaxCachedMeasurements) {
         if (gPrintChanges) {
