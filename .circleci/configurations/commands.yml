@@ -506,3 +506,53 @@ commands:
                 when: << parameters.when >>
                 path: << parameters.path >>
                 destination: << parameters.destination >>
+
+  prepare_ios_tests:
+    description: This command runs a set of commands to prepare iOS for running unit tests
+    steps:
+      - brew_install:
+          package: xcbeautify
+      - run:
+          name: Run Ruby Tests
+          command: |
+            cd packages/react-native/scripts
+            sh run_ruby_tests.sh
+      - run:
+          name: Boot iPhone Simulator
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: "Brew: Tap wix/brew"
+          command: brew tap wix/brew
+      - brew_install:
+          package: applesimutils watchman
+      - run:
+          name: Configure Watchman
+          command: echo "{}" > .watchmanconfig
+
+  run_ios_tests:
+    description: This command run iOS tests and collects results
+    steps:
+      - run:
+          name: "Run Tests: iOS Unit and Integration Tests"
+          command: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
+      - run:
+          name: Zip Derived data folder
+          when: always
+          command: |
+            echo "zipping tests results"
+            cd /Users/distiller/Library/Developer/Xcode
+            XCRESULT_PATH=$(find . -name '*.xcresult')
+            tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+      - store_artifacts_if_needed:
+          path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+      - report_bundle_size:
+          platform: ios
+      - store_test_results:
+          path: ./reports/junit

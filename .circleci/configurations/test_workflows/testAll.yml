@@ -169,14 +169,11 @@
               - architecture: "OldArch"
                 jsengine: "JSC"
                 use_frameworks: "StaticLibraries"
-      - test_ios:
-          name: "Test iOS with Ruby 3.2.0"
+      - test_ios_rntester:
           run_unit_tests: true
-          requires:
-            - build_hermes_macos
-          ruby_version: "3.2.0"
-      - test_ios:
-          run_unit_tests: true
+          architecture: "OldArch"
+          use_frameworks: "StaticLibraries"
+          ruby_version: "2.6.10"
           requires:
             - build_hermes_macos
           matrix:
