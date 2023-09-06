@@ -796,6 +796,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   getItemLayout={[Function]}
   invertStickyHeaders={true}
   inverted={true}
+  isInvertedVirtualizedList={true}
   keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
@@ -831,6 +832,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   <RCTRefreshControl />
   <View>
     <View
+      collapsable={false}
       onLayout={[Function]}
       style={
         Object {
@@ -1056,6 +1058,7 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
 >
   <View>
     <View
+      collapsable={false}
       onLayout={[Function]}
     >
       <header />
