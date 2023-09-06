@@ -92,7 +92,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"scrollbar" : @(UIAccessibilityTraitNone),
       @"scrollview" : @(UIAccessibilityTraitNone),
       @"search" : @(UIAccessibilityTraitSearchField),
-      @"searchbox" : @(UIAccessibilityTraitNone),
+      @"searchbox" : @(UIAccessibilityTraitSearchField),
       @"selected" : @(UIAccessibilityTraitSelected),
       @"separator" : @(UIAccessibilityTraitNone),
       @"slider" : @(UIAccessibilityTraitNone),
