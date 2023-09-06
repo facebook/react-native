@@ -371,6 +371,11 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
+  // `zIndex`
+  if (oldViewProps.zIndex != newViewProps.zIndex) {
+    self.layer.zPosition = newViewProps.zIndex.value_or(0);
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
