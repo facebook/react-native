@@ -26,6 +26,7 @@ class ReactPropForShadowNodeSpecTest {
   fun testMethodWithWrongNumberOfParams() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
+                  @Suppress("UNUSED_PARAMETER")
                   @ReactProp(name = "prop")
                   fun setterWithIncorrectNumberOfArgs(value: Boolean, anotherValue: Int) {}
                 }
@@ -47,7 +48,9 @@ class ReactPropForShadowNodeSpecTest {
   fun testUnsupportedValueType() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
-                  @ReactProp(name = "prop") fun setterWithMap(value: Map<*, *>) {}
+                  @Suppress("UNUSED_PARAMETER")
+                  @ReactProp(name = "prop")
+                  fun setterWithMap(value: Map<*, *>) {}
                 }
                 .javaClass)
         .nativeProps
@@ -57,6 +60,7 @@ class ReactPropForShadowNodeSpecTest {
   fun testGroupInvalidNumberOfParams() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
+                  @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["prop1", "prop2"])
                   fun setterWithTooManyParams(index: Int, value: Float, boolean: Boolean) {}
                 }
@@ -68,6 +72,7 @@ class ReactPropForShadowNodeSpecTest {
   fun testGroupTooFewParams() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
+                  @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["props1", "prop2"])
                   fun setterWithTooFewParams(index: Int) {}
                 }
@@ -79,6 +84,7 @@ class ReactPropForShadowNodeSpecTest {
   fun testGroupNoIndexParam() {
     BaseViewManager(
             object : ReactShadowNodeImpl() {
+                  @Suppress("UNUSED_PARAMETER")
                   @ReactPropGroup(names = ["prop1", "prop2"])
                   fun setterWithNoIndexParam(value: Float, boolean: Boolean) {}
                 }
