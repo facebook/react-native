@@ -79,9 +79,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     // setScaleX
     // setScaleY
     // setCameraDistance
-    setTransform(view, null);
+    setTransformProperty(view, null, null);
 
-    // RenderNode params not covered by setTransform above
+    // RenderNode params not covered by setTransformProperty above
     view.resetPivot();
     view.setTop(0);
     view.setBottom(0);
@@ -94,6 +94,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.transform_origin, null);
     view.setTag(R.id.invalidate_transform, null);
     view.removeOnLayoutChangeListener(this);
+
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       view.setOutlineAmbientShadowColor(Color.BLACK);
