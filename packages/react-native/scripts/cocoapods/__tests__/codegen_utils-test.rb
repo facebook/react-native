@@ -24,7 +24,7 @@ def min_ios_version_supported
 end
 
 def min_supported_versions
-  return  { :ios => min_ios_version_supported }.symbolize_keys
+  return  { :ios => min_ios_version_supported }
 end
 
 class CodegenUtilsTests < Test::Unit::TestCase
@@ -539,7 +539,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '13.4',
+            :ios => '13.4',
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {
