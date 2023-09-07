@@ -35,11 +35,16 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-# This function returns the min iOS version supported by React Native
-# By using this function, you won't have to manually change your Podfile
-# when we change the minimum version supported by the framework.
+
 def min_ios_version_supported
   return '13.4'
+end
+
+# This function returns the min supported OS versions supported by React Native
+# By using this function, you won't have to manually change your Podfile
+# when we change the minimum version supported by the framework.
+def min_supported_versions
+  return  { :ios => min_ios_version_supported }
 end
 
 # This function prepares the project for React Native, before processing

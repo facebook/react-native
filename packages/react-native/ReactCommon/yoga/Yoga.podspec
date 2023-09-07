@@ -43,7 +43,7 @@ Pod::Spec.new do |spec|
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => min_ios_version_supported }
+  spec.platforms = min_supported_versions
 
   # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
