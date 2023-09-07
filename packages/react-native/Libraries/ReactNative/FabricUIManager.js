@@ -92,6 +92,14 @@ export interface Spec {
     node: Node,
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
   +getInnerSize: (node: Node) => ?[/* width: */ number, /* height: */ number];
+  +getBorderSize: (
+    node: Node,
+  ) => ?[
+    /* topWidth: */ number,
+    /* rightWidth: */ number,
+    /* bottomWidth: */ number,
+    /* leftWidth: */ number,
+  ];
   +getTagName: (node: Node) => string;
 
   /**
@@ -134,6 +142,7 @@ const CACHED_PROPERTIES = [
   'getOffset',
   'getScrollPosition',
   'getInnerSize',
+  'getBorderSize',
   'getTagName',
   'hasPointerCapture',
   'setPointerCapture',

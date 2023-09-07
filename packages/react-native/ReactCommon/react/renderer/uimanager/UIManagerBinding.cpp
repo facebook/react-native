@@ -1261,6 +1261,60 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getBorderSize") {
+    // This is a method to access the border size of a shadow node, to implement
+    // these methods:
+    // * `Element.prototype.clientLeft`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/clientLeft.
+    // * `Element.prototype.clientTop`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/clientTop.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present, it is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // or it has an inline display, it returns undefined.
+    // Otherwise, it returns its border size.
+
+    // getBorderSize(shadowNode: ShadowNode):
+    //   ?[
+    //     /* topWidth: */ number,
+    //     /* rightWidth: */ number,
+    //     /* bottomWidth: */ number,
+    //     /* leftWidth: */ number,
+    //   ]
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none"), this returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+
+          if (layoutMetrics == EmptyLayoutMetrics ||
+              layoutMetrics.displayType == DisplayType::Inline) {
+            return jsi::Value::undefined();
+          }
+
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, std::round(layoutMetrics.borderWidth.top)},
+              jsi::Value{runtime, std::round(layoutMetrics.borderWidth.right)},
+              jsi::Value{runtime, std::round(layoutMetrics.borderWidth.bottom)},
+              jsi::Value{runtime, std::round(layoutMetrics.borderWidth.left)});
+        });
+  }
+
   if (methodName == "getTagName") {
     // This is a method to access the normalized tag name of a shadow node, to
     // implement `Element.prototype.tagName` (see
