@@ -87,7 +87,7 @@ const shortCommit = currentCommit.slice(0, 9);
 
 // [macOS] Function to get our version from package.json instead of the CircleCI build tag.
 function getPkgJsonVersion() {
-  const pkgJsonPath = path.resolve(__dirname, '../package.json');
+  const pkgJsonPath = path.resolve(RN_PACKAGE_DIR, 'package.json');
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
   const pkgJsonVersion = pkgJson.version;
   return pkgJsonVersion;
