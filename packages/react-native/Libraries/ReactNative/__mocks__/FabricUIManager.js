@@ -552,6 +552,48 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     },
   ),
 
+  getBorderSize: jest.fn(
+    (
+      node: Node,
+    ): ?[
+      /* topWidth: */ number,
+      /* rightWidth: */ number,
+      /* bottomWidth: */ number,
+      /* leftWidth: */ number,
+    ] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const borderSizeForTests: ?{
+        topWidth?: number,
+        rightWidth?: number,
+        bottomWidth?: number,
+        leftWidth?: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__borderSizeForTests;
+
+      if (borderSizeForTests == null) {
+        return null;
+      }
+
+      const {
+        topWidth = 0,
+        rightWidth = 0,
+        bottomWidth = 0,
+        leftWidth = 0,
+      } = borderSizeForTests;
+      return [topWidth, rightWidth, bottomWidth, leftWidth];
+    },
+  ),
+
   getTagName: jest.fn((node: Node): string => {
     ensureHostNode(node);
     return 'RN:' + fromNode(node).viewName;

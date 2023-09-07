@@ -46,11 +46,29 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[3];
+      }
+    }
+
+    return 0;
   }
 
   get clientTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get clientWidth(): number {
