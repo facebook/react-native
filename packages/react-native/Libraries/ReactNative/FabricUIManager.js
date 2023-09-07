@@ -91,6 +91,7 @@ export interface Spec {
   +getScrollPosition: (
     node: Node,
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
+  +getTagName: (node: Node) => string;
 
   /**
    * Support methods for the Pointer Capture APIs.
@@ -131,6 +132,10 @@ const CACHED_PROPERTIES = [
   'getBoundingClientRect',
   'getOffset',
   'getScrollPosition',
+  'getTagName',
+  'hasPointerCapture',
+  'setPointerCapture',
+  'releasePointerCapture',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND
