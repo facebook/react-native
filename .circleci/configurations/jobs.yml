@@ -175,6 +175,7 @@ jobs:
                 command: scripts/circleci/check_appium_server_status.sh
             - run:
                 name: Run E2E tests
+                no_output_timeout: 30m
                 command: |
                   cd packages/rn-tester-e2e
                   (yarn test-e2e ios 2>&1 | tee /tmp/test_log) || true
@@ -238,6 +239,7 @@ jobs:
             fi
       - run:
           name: Run E2E tests
+          no_output_timeout: 30m
           command: |
             cd packages/rn-tester-e2e
             (yarn test-e2e android 2>&1 | tee /tmp/test_log) || true
