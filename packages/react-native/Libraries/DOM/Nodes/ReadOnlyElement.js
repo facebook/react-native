@@ -33,7 +33,16 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientHeight(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get clientLeft(): number {
@@ -45,7 +54,16 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientWidth(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get firstElementChild(): ReadOnlyElement | null {

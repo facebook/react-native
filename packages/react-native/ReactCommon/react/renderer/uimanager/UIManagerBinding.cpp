@@ -1051,7 +1051,7 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "getOffset") {
-    // This is a method to access offset information for React Native nodes, to
+    // This is a method to access the offset information for a shadow node, to
     // implement these methods:
     // * `HTMLElement.prototype.offsetParent`: see
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent.
@@ -1099,9 +1099,10 @@ jsi::Value UIManagerBinding::get(
           }
 
           // If the node is not displayed (itself or any of its ancestors has
-          // "display: none", it returns an empty layout metrics object.
+          // "display: none"), this returns an empty layout metrics object.
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNode, nullptr, {/* .includeTransform = */ true});
+
           if (layoutMetrics == EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
@@ -1140,7 +1141,7 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "getScrollPosition") {
-    // This is a method to access scroll information for React Native nodes, to
+    // This is a method to access scroll information for a shadow node, to
     // implement these methods:
     // * `Element.prototype.scrollLeft`: see
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft.
@@ -1180,9 +1181,10 @@ jsi::Value UIManagerBinding::get(
           }
 
           // If the node is not displayed (itself or any of its ancestors has
-          // "display: none", it returns an empty layout metrics object.
+          // "display: none"), this returns an empty layout metrics object.
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNode, nullptr, {/* .includeTransform = */ true});
+
           if (layoutMetrics == EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
@@ -1204,6 +1206,58 @@ jsi::Value UIManagerBinding::get(
               jsi::Value{
                   runtime,
                   scrollPosition.y == 0 ? 0 : (double)-scrollPosition.y});
+        });
+  }
+
+  if (methodName == "getInnerSize") {
+    // This is a method to access the inner size of a shadow node, to implement
+    // these methods:
+    // * `Element.prototype.clientWidth`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth.
+    // * `Element.prototype.clientHeight`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/clientHeight.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present, it is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // or it has an inline display, it returns undefined.
+    // Otherwise, it returns its inner size.
+
+    // getInnerSize(shadowNode: ShadowNode):
+    //   ?[
+    //     /* width: */ number,
+    //     /* height: */ number,
+    //   ]
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none"), this returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+
+          if (layoutMetrics == EmptyLayoutMetrics ||
+              layoutMetrics.displayType == DisplayType::Inline) {
+            return jsi::Value::undefined();
+          }
+
+          auto paddingFrame = layoutMetrics.getPaddingFrame();
+
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, std::round(paddingFrame.size.width)},
+              jsi::Value{runtime, std::round(paddingFrame.size.height)});
         });
   }
 
