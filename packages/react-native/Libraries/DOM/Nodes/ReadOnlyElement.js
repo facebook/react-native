@@ -137,7 +137,13 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get tagName(): string {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).getTagName(node);
+    }
+
+    return '';
   }
 
   get textContent(): string | null {

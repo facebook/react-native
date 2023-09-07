@@ -497,6 +497,11 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     },
   ),
 
+  getTagName: jest.fn((node: Node): string => {
+    ensureHostNode(node);
+    return 'RN:' + fromNode(node).viewName;
+  }),
+
   __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
     return fromNode(node).instanceHandle;
   },

@@ -1207,6 +1207,43 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getTagName") {
+    // This is a method to access the normalized tag name of a shadow node, to
+    // implement `Element.prototype.tagName` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName).
+
+    // getTagName(shadowNode: ShadowNode): string
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          std::string canonicalComponentName = shadowNode->getComponentName();
+
+          // FIXME(T162807327): Remove Android-specific prefixes and unify
+          // shadow node implementations
+          if (canonicalComponentName == "AndroidTextInput") {
+            canonicalComponentName = "TextInput";
+          } else if (canonicalComponentName == "AndroidSwitch") {
+            canonicalComponentName = "Switch";
+          }
+
+          // Prefix with RN:
+          canonicalComponentName.insert(0, "RN:");
+
+          return jsi::String::createFromUtf8(runtime, canonicalComponentName);
+        });
+  }
+
   /**
    * Pointer Capture APIs
    */
