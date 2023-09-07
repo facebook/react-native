@@ -53,6 +53,16 @@ struct LayoutMetrics {
             frame.size.height - contentInsets.top - contentInsets.bottom}};
   }
 
+  // Origin: the outer border of the node.
+  // Size: includes content and padding (but no borders).
+  Rect getPaddingFrame() const {
+    return Rect{
+        Point{borderWidth.left, borderWidth.top},
+        Size{
+            frame.size.width - borderWidth.left - borderWidth.right,
+            frame.size.height - borderWidth.top - borderWidth.bottom}};
+  }
+
   bool operator==(const LayoutMetrics& rhs) const {
     return std::tie(
                this->frame,
