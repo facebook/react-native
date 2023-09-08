@@ -69,5 +69,17 @@ The Publish flow does the following:
       3. Call `prepare-package-for-release` to bump versions, tag the commit, and push to git
       4. Call `publish-npm` to publish to NPM the version that was just tagged. 
 4. Generate the correct NPM `dist-tag` and publish to NPM
-5. Commit all changed files and push back to Github 
+5. Commit all changed files and push back to Github
 
+### Publishing New Versions
+
+Each minor version publishes out of its own branch (e.g., 0.71-stable for react-native-macos 0.71.x). In order to ensure initial releases are properly versioned, we have a special prerelease name called `ready`. This will tell our `get-next-semver-version` script that we're ready to release the next version.
+
+We do this so that our first release will have a proper patch version of 0, as shown by this snippet from an interactive Node.js console:
+
+```js
+> semver.inc('0.72.0', 'patch')
+'0.72.1' // Not ideal
+> semver.inc('0.72.0-ready', 'patch')
+'0.72.0' // Better!
+```

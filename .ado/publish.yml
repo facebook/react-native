@@ -9,8 +9,6 @@ trigger:
     include:
       - main
       - '*-stable'
-    exclude:
-      - 0.72-stable
   paths:
     exclude:
       - package.json

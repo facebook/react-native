@@ -10,16 +10,14 @@ function getNextVersion(patchVersionPrefix) {
 
     const prerelease = semver.prerelease(releaseVersion);
 
-    if (!prerelease) {
+    if (!prerelease || prerelease[0] === 'ready') {
       if (patchVersionPrefix) {
         releaseVersion = semver.inc(releaseVersion, 'prerelease', patchVersionPrefix);
       }
       else {
-      releaseVersion = semver.inc(releaseVersion, 'patch');
+        releaseVersion = semver.inc(releaseVersion, 'patch');
       }
-    }
-
-    if (prerelease) {
+    } else {
       releaseVersion = semver.inc(releaseVersion, 'prerelease');
       if (patchVersionPrefix) {
         releaseVersion = releaseVersion.replace(`-${prerelease[0]}.`, `-${prerelease[0]}-${patchVersionPrefix}.`);

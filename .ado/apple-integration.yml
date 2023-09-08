@@ -40,6 +40,7 @@ jobs:
           echo "##vso[task.setvariable variable=rncli_android_version]$(cat package.json | jq '.dependencies."@react-native-community/cli-platform-android"')"
           echo "##vso[task.setvariable variable=rncli_ios_version]$(cat package.json | jq '.dependencies."@react-native-community/cli-platform-ios"')"
         displayName: 'Determine react-native-macos version'
+        workingDirectory: packages/react-native
       - bash: |
           npm pack ./packages/react-native
         displayName: 'Pack react-native-macos'
