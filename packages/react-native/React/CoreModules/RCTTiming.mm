@@ -128,7 +128,7 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   RCTUnsafeExecuteOnMainQueueSync(^{
-    _inBackground = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
+    self->_inBackground = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
   });
 
   for (NSString *name in @[
