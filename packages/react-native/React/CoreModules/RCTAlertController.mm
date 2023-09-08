@@ -46,10 +46,10 @@
   UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
   if (style == UIUserInterfaceStyleUnspecified) {
     UIUserInterfaceStyle style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-    ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-    : UIUserInterfaceStyleUnspecified;
+        ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
+        : UIUserInterfaceStyleUnspecified;
   }
-  
+
   self.overrideUserInterfaceStyle = style;
 
   [self.alertWindow makeKeyAndVisible];
