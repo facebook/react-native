@@ -89,6 +89,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   void layout(LayoutContext layoutContext) override;
 
+  Rect getContentBounds() const;
+
  protected:
   /*
    * Yoga config associated (only) with this particular node.
