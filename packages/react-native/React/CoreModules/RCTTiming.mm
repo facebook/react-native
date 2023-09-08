@@ -127,7 +127,9 @@ RCT_EXPORT_MODULE()
 {
   _paused = YES;
   _timers = [NSMutableDictionary new];
-  _inBackground = NO;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    _inBackground = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
+  });
 
   for (NSString *name in @[
          UIApplicationWillResignActiveNotification,
