@@ -524,6 +524,34 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     },
   ),
 
+  getScrollSize: jest.fn(
+    (node: Node): ?[/* scrollLeft: */ number, /* scrollTop: */ number] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const scrollForTests: ?{
+        scrollWidth: number,
+        scrollHeight: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__scrollForTests;
+
+      if (scrollForTests == null) {
+        return null;
+      }
+
+      const {scrollWidth, scrollHeight} = scrollForTests;
+      return [scrollWidth, scrollHeight];
+    },
+  ),
+
   getInnerSize: jest.fn(
     (node: Node): ?[/* width: */ number, /* height: */ number] => {
       ensureHostNode(node);

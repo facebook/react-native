@@ -221,4 +221,39 @@ inline static void getTextContentInShadowNode(
     getTextContentInShadowNode(*childNode.get(), result);
   }
 }
+
+inline static Rect getScrollableContentBounds(
+    Rect contentBounds,
+    LayoutMetrics layoutMetrics) {
+  auto paddingFrame = layoutMetrics.getPaddingFrame();
+
+  auto paddingBottom =
+      layoutMetrics.contentInsets.bottom - layoutMetrics.borderWidth.bottom;
+  auto paddingLeft =
+      layoutMetrics.contentInsets.left - layoutMetrics.borderWidth.left;
+  auto paddingRight =
+      layoutMetrics.contentInsets.right - layoutMetrics.borderWidth.right;
+
+  auto minY = paddingFrame.getMinY();
+  auto maxY =
+      std::max(paddingFrame.getMaxY(), contentBounds.getMaxY() + paddingBottom);
+
+  auto minX = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
+      ? std::min(paddingFrame.getMinX(), contentBounds.getMinX() - paddingLeft)
+      : paddingFrame.getMinX();
+  auto maxX = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
+      ? paddingFrame.getMaxX()
+      : std::max(
+            paddingFrame.getMaxX(), contentBounds.getMaxX() + paddingRight);
+
+  return Rect{Point{minX, minY}, Size{maxX - minX, maxY - minY}};
+}
+
+inline static Size getScrollSize(
+    LayoutMetrics layoutMetrics,
+    Rect contentBounds) {
+  auto scrollableContentBounds =
+      getScrollableContentBounds(contentBounds, layoutMetrics);
+  return scrollableContentBounds.size;
+}
 } // namespace facebook::react

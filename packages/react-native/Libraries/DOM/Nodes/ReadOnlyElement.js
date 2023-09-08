@@ -135,7 +135,16 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollHeight(): number {
-    throw new Error('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollLeft(): number {
@@ -169,7 +178,16 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollWidth(): number {
-    throw new Error('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get tagName(): string {
