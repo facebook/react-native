@@ -666,16 +666,16 @@ void YogaLayoutableShadowNode::layoutTree(
 }
 
 static EdgeInsets calculateOverflowInset(
-    Rect containerFrame,
-    Rect contentFrame) {
-  auto size = containerFrame.size;
+    Rect contentFrame,
+    Rect contentBounds) {
+  auto size = contentFrame.size;
   auto overflowInset = EdgeInsets{};
-  overflowInset.left = std::min(contentFrame.getMinX(), Float{0.0});
-  overflowInset.top = std::min(contentFrame.getMinY(), Float{0.0});
+  overflowInset.left = std::min(contentBounds.getMinX(), Float{0.0});
+  overflowInset.top = std::min(contentBounds.getMinY(), Float{0.0});
   overflowInset.right =
-      -std::max(contentFrame.getMaxX() - size.width, Float{0.0});
+      -std::max(contentBounds.getMaxX() - size.width, Float{0.0});
   overflowInset.bottom =
-      -std::max(contentFrame.getMaxY() - size.height, Float{0.0});
+      -std::max(contentBounds.getMaxY() - size.height, Float{0.0});
   return overflowInset;
 }
 
@@ -683,7 +683,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   react_native_assert(!yogaNode_.isDirty());
 
-  auto contentFrame = Rect{};
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto& childNode = shadowNodeFromContext(childYogaNode);
 
@@ -725,35 +724,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         childNode.layout(layoutContext);
       }
     }
-
-    auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
-    if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
-      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
-      auto hitSlop = viewChildNode != nullptr
-          ? viewChildNode->getConcreteProps().hitSlop
-          : EdgeInsets{};
-
-      // The contentFrame should always union with existing child node layout +
-      // overflowInset. The transform may in a deferred animation and not
-      // applied yet.
-      contentFrame.unionInPlace(insetBy(
-          layoutMetricsWithOverflowInset.frame,
-          layoutMetricsWithOverflowInset.overflowInset));
-      contentFrame.unionInPlace(
-          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
-
-      auto childTransform = childNode.getTransform();
-      if (childTransform != Transform::Identity()) {
-        // The child node's transform matrix will affect the parent node's
-        // contentFrame. We need to union with child node's after transform
-        // layout here.
-        contentFrame.unionInPlace(insetBy(
-            layoutMetricsWithOverflowInset.frame * childTransform,
-            layoutMetricsWithOverflowInset.overflowInset * childTransform));
-        contentFrame.unionInPlace(outsetBy(
-            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
-      }
-    }
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
@@ -765,11 +735,54 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     // cosmetic and will be handled by pixel density conversion logic later when
     // render the view. The actual overflowInset value is not changed as if the
     // transform is not happening here.
+    auto contentBounds = getContentBounds();
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, contentBounds);
   } else {
     layoutMetrics_.overflowInset = {};
   }
+}
+
+Rect YogaLayoutableShadowNode::getContentBounds() const {
+  auto contentBounds = Rect{};
+
+  for (auto childYogaNode : yogaNode_.getChildren()) {
+    auto& childNode = shadowNodeFromContext(childYogaNode);
+
+    // Verifying that the Yoga node belongs to the ShadowNode.
+    react_native_assert(&childNode.yogaNode_ == childYogaNode);
+
+    auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
+    if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
+      auto hitSlop = viewChildNode != nullptr
+          ? viewChildNode->getConcreteProps().hitSlop
+          : EdgeInsets{};
+
+      // The contentBounds should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
+      contentBounds.unionInPlace(insetBy(
+          layoutMetricsWithOverflowInset.frame,
+          layoutMetricsWithOverflowInset.overflowInset));
+      contentBounds.unionInPlace(
+          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentBounds. We need to union with child node's after transform
+        // layout here.
+        contentBounds.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+        contentBounds.unionInPlace(outsetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
+      }
+    }
+  }
+
+  return contentBounds;
 }
 
 #pragma mark - Yoga Connectors
