@@ -211,20 +211,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   getBoundingClientRect(): DOMRect {
-    const shadowNode = getShadowNode(this);
-
-    if (shadowNode != null) {
-      const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
-        shadowNode,
-      );
-
-      if (rect) {
-        return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
-      }
-    }
-
-    // Empty rect if any of the above failed
-    return new DOMRect(0, 0, 0, 0);
+    return getBoundingClientRect(this, {includeTransform: true});
   }
 
   /**
@@ -261,4 +248,30 @@ function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
   return getChildNodes(node).filter(
     childNode => childNode instanceof ReadOnlyElement,
   );
+}
+
+/**
+ * The public API for `getBoundingClientRect` always includes transform,
+ * so we use this internal version to get the data without transform to
+ * implement methods like `offsetWidth` and `offsetHeight`.
+ */
+export function getBoundingClientRect(
+  node: ReadOnlyElement,
+  {includeTransform}: {includeTransform: boolean},
+): DOMRect {
+  const shadowNode = getShadowNode(node);
+
+  if (shadowNode != null) {
+    const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
+      shadowNode,
+      includeTransform,
+    );
+
+    if (rect) {
+      return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
+    }
+  }
+
+  // Empty rect if any of the above failed
+  return new DOMRect(0, 0, 0, 0);
 }

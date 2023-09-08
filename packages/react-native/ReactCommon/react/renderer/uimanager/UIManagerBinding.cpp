@@ -841,14 +841,20 @@ jsi::Value UIManagerBinding::get(
     // This is similar to `measureInWindow`, except it's explicitly synchronous
     // (returns the result instead of passing it to a callback).
 
-    // getBoundingClientRect(shadowNode: ShadowNode):
+    // It allows indicating whether to include transforms so it can also be used
+    // to implement methods like
+    // [`offsetWidth`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetWidth)
+    // and
+    // [`offsetHeight`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight).
+
+    // getBoundingClientRect(shadowNode: ShadowNode, includeTransform: boolean):
     //   [
     //     /* x: */ number,
     //     /* y: */ number,
     //     /* width: */ number,
     //     /* height: */ number
     //   ]
-    auto paramCount = 1;
+    auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
@@ -860,10 +866,12 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
+          bool includeTransform = arguments[1].getBool();
+
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true,
+              {/* .includeTransform = */ includeTransform,
                /* .includeViewportOffset = */ true});
 
           if (layoutMetrics == EmptyLayoutMetrics) {
@@ -1101,7 +1109,7 @@ jsi::Value UIManagerBinding::get(
           // If the node is not displayed (itself or any of its ancestors has
           // "display: none"), this returns an empty layout metrics object.
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ true});
+              *shadowNode, nullptr, {/* .includeTransform = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics) {
             return jsi::Value::undefined();
@@ -1313,7 +1321,7 @@ jsi::Value UIManagerBinding::get(
           // If the node is not displayed (itself or any of its ancestors has
           // "display: none"), this returns an empty layout metrics object.
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ true});
+              *shadowNode, nullptr, {/* .includeTransform = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics ||
               layoutMetrics.displayType == DisplayType::Inline) {
@@ -1367,7 +1375,7 @@ jsi::Value UIManagerBinding::get(
           // If the node is not displayed (itself or any of its ancestors has
           // "display: none"), this returns an empty layout metrics object.
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ true});
+              *shadowNode, nullptr, {/* .includeTransform = */ false});
 
           if (layoutMetrics == EmptyLayoutMetrics ||
               layoutMetrics.displayType == DisplayType::Inline) {
