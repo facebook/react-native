@@ -295,6 +295,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
   getBoundingClientRect: jest.fn(
     (
       node: Node,
+      includeTransform: boolean,
     ): ?[
       /* x:*/ number,
       /* y:*/ number,

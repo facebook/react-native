@@ -75,6 +75,7 @@ export interface Spec {
   +getTextContent: (node: Node) => string;
   +getBoundingClientRect: (
     node: Node,
+    includeTransform: boolean,
   ) => ?[
     /* x: */ number,
     /* y: */ number,
