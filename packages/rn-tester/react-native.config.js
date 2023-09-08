@@ -23,6 +23,7 @@ module.exports = {
       projectConfig: android.projectConfig,
       dependencyConfig: android.dependencyConfig,
     },
+    // [macOS
     macos: {
       linkConfig: () => {
         return {
@@ -57,6 +58,7 @@ module.exports = {
       dependencyConfig: () => null,
       npmPackageName: 'react-native-macos',
     },
+    // macOS]
   },
   reactNativePath: '../react-native',
   project: {
