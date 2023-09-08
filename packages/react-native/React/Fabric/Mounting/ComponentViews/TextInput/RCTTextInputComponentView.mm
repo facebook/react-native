@@ -55,6 +55,15 @@ using namespace facebook::react;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * A flag that when set to true, `[self _updateState]` will exit prematurely.
+   *
+   * This prevents `[self _updateState]` from being called twice when the `value` prop is used to update the text
+   * in the `SinglelineTextInputView`.
+   * This double execution was causing issues on the double-spacing behavior or text-replacement.
+   */
+  BOOL _stateUpdated;
 }
 
 #pragma mark - UIView overrides
@@ -71,6 +80,7 @@ using namespace facebook::react;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _stateUpdated = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -220,6 +230,11 @@ using namespace facebook::react;
     return;
   }
 
+  if (_stateUpdated) {
+    return;
+  }
+  _stateUpdated = YES;
+
   auto data = _state->getData();
 
   if (!oldState) {
@@ -259,6 +274,7 @@ using namespace facebook::react;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  _stateUpdated = NO;
   [_backedTextInputView resignFirstResponder];
 }
 
@@ -375,6 +391,8 @@ using namespace facebook::react;
 
 - (void)textInputDidChange
 {
+  _stateUpdated = NO;
+
   if (_comingFromJS) {
     return;
   }
