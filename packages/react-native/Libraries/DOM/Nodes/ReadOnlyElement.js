@@ -227,10 +227,6 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     return new DOMRect(0, 0, 0, 0);
   }
 
-  getClientRects(): DOMRectList {
-    throw new TypeError('Unimplemented');
-  }
-
   /**
    * Pointer Capture APIs
    */
