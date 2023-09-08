@@ -91,6 +91,9 @@ export interface Spec {
   +getScrollPosition: (
     node: Node,
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
+  +getScrollSize: (
+    node: Node,
+  ) => ?[/* scrollWidth: */ number, /* scrollHeight: */ number];
   +getInnerSize: (node: Node) => ?[/* width: */ number, /* height: */ number];
   +getBorderSize: (
     node: Node,
@@ -141,6 +144,7 @@ const CACHED_PROPERTIES = [
   'getBoundingClientRect',
   'getOffset',
   'getScrollPosition',
+  'getScrollSize',
   'getInnerSize',
   'getBorderSize',
   'getTagName',
