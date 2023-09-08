@@ -16,6 +16,7 @@
 #include "YogaJniException.h"
 
 #include <yoga/Yoga-internal.h>
+#include <yoga/bits/BitCast.h>
 
 // TODO: Reconcile missing layoutContext functionality from callbacks in the C
 // API and use that
@@ -677,11 +678,10 @@ static YGSize YGJNIMeasureFunc(
     uint32_t wBits = 0xFFFFFFFF & (measureResult >> 32);
     uint32_t hBits = 0xFFFFFFFF & measureResult;
 
-    // TODO: this is unsafe under strict aliasing and should use bit_cast
-    const float* measuredWidth = reinterpret_cast<float*>(&wBits);
-    const float* measuredHeight = reinterpret_cast<float*>(&hBits);
+    const float measuredWidth = yoga::bit_cast<float>(wBits);
+    const float measuredHeight = yoga::bit_cast<float>(hBits);
 
-    return YGSize{*measuredWidth, *measuredHeight};
+    return YGSize{measuredWidth, measuredHeight};
   } else {
     return YGSize{
         widthMode == YGMeasureModeUndefined ? 0 : width,
