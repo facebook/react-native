@@ -1209,6 +1209,74 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getScrollSize") {
+    // This is a method to access the scroll information of a shadow node, to
+    // implement these methods:
+    // * `Element.prototype.scrollWidth`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollWidth.
+    // * `Element.prototype.scrollHeight`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present or is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // it returns undefined. Otherwise, it returns the scroll size.
+
+    // getScrollSize(shadowNode: ShadowNode):
+    //   ?[
+    //     /* scrollWidth: */ number,
+    //     /* scrollHeight: */ number,
+    //   ]
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+          // The node is no longer part of an active shadow tree, or it is the
+          // root node
+          if (newestCloneOfShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none"), this returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ false});
+
+          if (layoutMetrics == EmptyLayoutMetrics ||
+              layoutMetrics.displayType == DisplayType::Inline) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableShadowNode =
+              traitCast<YogaLayoutableShadowNode const*>(
+                  newestCloneOfShadowNode.get());
+          // This should never happen
+          if (layoutableShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          Size scrollSize = getScrollSize(
+              layoutMetrics, layoutableShadowNode->getContentBounds());
+
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, std::round(scrollSize.width)},
+              jsi::Value{runtime, std::round(scrollSize.height)});
+        });
+  }
+
   if (methodName == "getInnerSize") {
     // This is a method to access the inner size of a shadow node, to implement
     // these methods:
