@@ -192,7 +192,7 @@ public class MountItemDispatcher {
       return false;
     }
 
-    mItemDispatchListener.willMountItems();
+    mItemDispatchListener.willMountItems(mountItemsToDispatch);
 
     // As an optimization, execute all ViewCommands first
     // This should be:
@@ -301,7 +301,7 @@ public class MountItemDispatcher {
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
 
-    mItemDispatchListener.didMountItems();
+    mItemDispatchListener.didMountItems(mountItemsToDispatch);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
@@ -419,9 +419,9 @@ public class MountItemDispatcher {
   }
 
   public interface ItemDispatchListener {
-    void willMountItems();
+    void willMountItems(List<MountItem> mountItems);
 
-    void didMountItems();
+    void didMountItems(List<MountItem> mountItems);
 
     void didDispatchMountItems();
   }

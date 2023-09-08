@@ -71,6 +71,9 @@ public abstract class BaseViewManagerAdapter<T extends View>
       @NonNull T view, @Nullable String importantForAccessibility) {}
 
   @Override
+  public void setRole(@NonNull T view, @Nullable String role) {}
+
+  @Override
   public void setNativeId(@NonNull T view, String nativeId) {}
 
   @Override

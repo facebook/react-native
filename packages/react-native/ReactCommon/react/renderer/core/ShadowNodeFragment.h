@@ -25,18 +25,18 @@ namespace facebook::react {
  * fragment content to store or pass the data asynchronously.
  */
 struct ShadowNodeFragment {
-  Props::Shared const &props = propsPlaceholder();
-  ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
-  State::Shared const &state = statePlaceholder();
+  const Props::Shared& props = propsPlaceholder();
+  const ShadowNode::SharedListOfShared& children = childrenPlaceholder();
+  const State::Shared& state = statePlaceholder();
 
   /*
    * Placeholders.
    * Use as default arguments as an indication that the field does not need to
    * be changed.
    */
-  static Props::Shared const &propsPlaceholder();
-  static ShadowNode::SharedListOfShared const &childrenPlaceholder();
-  static State::Shared const &statePlaceholder();
+  static const Props::Shared& propsPlaceholder();
+  static const ShadowNode::SharedListOfShared& childrenPlaceholder();
+  static const State::Shared& statePlaceholder();
 
   /*
    * `ShadowNodeFragment` is not owning data-structure, it only stores raw
@@ -48,7 +48,7 @@ struct ShadowNodeFragment {
     /*
      * Creates an object with given `ShadowNodeFragment`.
      */
-    Value(ShadowNodeFragment const &fragment);
+    Value(const ShadowNodeFragment& fragment);
 
     /*
      * Creates a `ShadowNodeFragment` from the object.

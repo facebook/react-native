@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/image"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"
@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
+  s.framework              = ["Accelerate", "UIKit"]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version

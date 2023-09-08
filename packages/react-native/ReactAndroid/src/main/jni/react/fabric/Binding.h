@@ -37,12 +37,12 @@ class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/BindingImpl;";
 
   static void registerNatives();
 
-  const std::shared_ptr<Scheduler> &getScheduler();
+  std::shared_ptr<Scheduler> getScheduler();
 
  private:
   void setConstraints(
@@ -65,19 +65,19 @@ class Binding : public jni::HybridClass<Binding>,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
-      EventBeatManager *eventBeatManager,
-      ComponentFactory *componentsRegistry,
+      EventBeatManager* eventBeatManager,
+      ComponentFactory* componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps);
+      NativeMap* initialProps);
 
   void startSurfaceWithConstraints(
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps,
+      NativeMap* initialProps,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
@@ -91,36 +91,35 @@ class Binding : public jni::HybridClass<Binding>,
 
   void stopSurface(jint surfaceId);
 
-  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+  void registerSurface(SurfaceHandlerBinding* surfaceHandler);
 
-  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
+  void unregisterSurface(SurfaceHandlerBinding* surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared &mountingCoordinator) override;
+      const MountingCoordinator::Shared& mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowNode &shadowNode) override;
+      const ShadowNode& shadowNode) override;
 
   void schedulerDidDispatchCommand(
-      const ShadowView &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args) override;
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args) override;
 
   void schedulerDidSendAccessibilityEvent(
-      const ShadowView &shadowView,
-      std::string const &eventType) override;
+      const ShadowView& shadowView,
+      const std::string& eventType) override;
 
   void schedulerDidSetIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView& shadowView,
       bool isJSResponder,
       bool blockNativeResponder) override;
-
-  void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
 
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
+  void reportMount(SurfaceId surfaceId);
 
   void uninstallFabricUIManager();
 
@@ -129,8 +128,8 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  const std::shared_ptr<FabricMountingManager> &verifyMountingManager(
-      const char *locationHint);
+  std::shared_ptr<FabricMountingManager> getMountingManager(
+      const char* locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;

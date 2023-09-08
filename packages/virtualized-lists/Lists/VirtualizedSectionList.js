@@ -138,11 +138,11 @@ class VirtualizedSectionList<
     if (this._listRef == null) {
       return;
     }
+    const listRef = this._listRef;
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      const frame = this._listRef.__getFrameMetricsApprox(
-        index - params.itemIndex,
-        this._listRef.props,
-      );
+      const frame = listRef
+        .__getListMetrics()
+        .getCellMetricsApprox(index - params.itemIndex, listRef.props);
       viewOffset += frame.length;
     }
     const toIndexParams = {

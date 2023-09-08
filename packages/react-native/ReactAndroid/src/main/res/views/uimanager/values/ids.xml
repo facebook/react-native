@@ -44,4 +44,16 @@
 
   <!-- tag is used store bitset of pointer events observed -->
   <item type="id" name="pointer_events"/>
+
+  <!-- tag is used store raw transform style on the view -->
+  <item type="id" name="transform"/>
+
+  <!-- tag is used store raw transform origin style on the view -->
+  <item type="id" name="transform_origin"/>
+
+  <!-- tag is used to store role tag-->
+  <item type="id" name="role"/>
+
+  <!-- tag is used to invalidate transform style in view manager -->
+  <item type="id" name="invalidate_transform"/>
 </resources>

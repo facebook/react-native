@@ -16,97 +16,163 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
-const {throwIfEventHasNoName} = require('../../error-utils');
+import type {EventArgumentReturnType} from '../../parsers-commons';
+
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
+} = require('../../error-utils');
+const {
+  getEventArgument,
+  buildPropertiesForEvent,
+  handleEventHandler,
+  emitBuildEventSchema,
+} = require('../../parsers-commons');
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitFloatProp,
+  emitMixedProp,
+  emitStringProp,
+  emitInt32Prop,
+  emitObjectProp,
+  emitUnionProp,
+} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  name,
+  name: string,
   optional: boolean,
   typeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type =
-    typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
-      : typeAnnotation.type;
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'StringTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'Int32TypeAnnotation',
-        },
-      };
+      return emitInt32Prop(name, optional);
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case '$ReadOnly':
       return getPropertyType(
         name,
         optional,
         typeAnnotation.typeParameters.params[0],
+        parser,
       );
     case 'ObjectTypeAnnotation':
+      return emitObjectProp(
+        name,
+        optional,
+        parser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
+    case 'UnionTypeAnnotation':
+      return emitUnionProp(name, optional, parser, typeAnnotation);
+    case 'UnsafeMixed':
+      return emitMixedProp(name, optional);
+    case 'ArrayTypeAnnotation':
+    case '$ReadOnlyArray':
       return {
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(buildPropertiesForEvent),
-        },
+        typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
+      };
+    default:
+      throw new Error(`Unable to determine event type for "${name}": ${type}`);
+  }
+}
+
+function extractArrayElementType(
+  typeAnnotation: $FlowFixMe,
+  name: string,
+  parser: Parser,
+): EventTypeAnnotation {
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
+
+  switch (type) {
+    case 'BooleanTypeAnnotation':
+      return {type: 'BooleanTypeAnnotation'};
+    case 'StringTypeAnnotation':
+      return {type: 'StringTypeAnnotation'};
+    case 'Int32':
+      return {type: 'Int32TypeAnnotation'};
+    case 'Float':
+      return {type: 'FloatTypeAnnotation'};
+    case 'NumberTypeAnnotation':
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
       return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.value),
-        },
+        type: 'StringEnumTypeAnnotation',
+        options: typeAnnotation.types.map(option =>
+          parser.getLiteralValue(option),
+        ),
       };
     case 'UnsafeMixed':
+      return {type: 'MixedTypeAnnotation'};
+    case 'ObjectTypeAnnotation':
       return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'MixedTypeAnnotation',
-        },
+        type: 'ObjectTypeAnnotation',
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
+      };
+    case 'ArrayTypeAnnotation':
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: extractArrayElementType(
+          typeAnnotation.elementType,
+          name,
+          parser,
+        ),
+      };
+    case '$ReadOnlyArray':
+      const genericParams = typeAnnotation.typeParameters.params;
+      if (genericParams.length !== 1) {
+        throw new Error(
+          `Events only supports arrays with 1 Generic type. Found ${
+            genericParams.length
+          } types:\n${prettify(genericParams)}`,
+        );
+      }
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: extractArrayElementType(genericParams[0], name, parser),
       };
     default:
-      (type: empty);
-      throw new Error(`Unable to determine event type for "${name}": ${type}`);
+      throw new Error(
+        `Unrecognized ${type} for Array ${name} in events.\n${prettify(
+          typeAnnotation,
+        )}`,
+      );
   }
+}
+
+function prettify(jsonObject: $FlowFixMe): string {
+  return JSON.stringify(jsonObject, null, 2);
+}
+
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'GenericTypeAnnotation'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
 }
 
 function findEventArgumentsAndType(
@@ -115,13 +181,9 @@ function findEventArgumentsAndType(
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-): {
-  argumentProps: $FlowFixMe,
-  bubblingType: ?('direct' | 'bubble'),
-  paperTopLevelNameDeprecated: ?$FlowFixMe,
-} {
+): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.id.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
@@ -129,27 +191,12 @@ function findEventArgumentsAndType(
       bubblingType,
     };
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
-    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
-    const paperTopLevelNameDeprecated =
-      typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].value
-        : null;
-    if (
-      typeAnnotation.typeParameters.params[0].type ===
-      'NullLiteralTypeAnnotation'
-    ) {
-      return {
-        argumentProps: [],
-        bubblingType: eventType,
-        paperTopLevelNameDeprecated,
-      };
-    }
-    return findEventArgumentsAndType(
+    return handleEventHandler(
+      name,
+      typeAnnotation,
       parser,
-      typeAnnotation.typeParameters.params[0],
       types,
-      eventType,
-      paperTopLevelNameDeprecated,
+      findEventArgumentsAndType,
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
@@ -168,29 +215,6 @@ function findEventArgumentsAndType(
   }
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
-  const name = property.key.name;
-  const optional =
-    property.value.type === 'NullableTypeAnnotation' || property.optional;
-  let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
-
-  return getPropertyType(name, optional, typeAnnotation);
-}
-
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function getEventArgument(argumentProps, name: $FlowFixMe) {
-  return {
-    type: 'ObjectTypeAnnotation',
-    properties: argumentProps.map(buildPropertiesForEvent),
-  };
-}
-
 function buildEventSchema(
   types: TypeMap,
   property: EventTypeAST,
@@ -207,8 +231,8 @@ function buildEventSchema(
 
   if (
     typeAnnotation.type !== 'GenericTypeAnnotation' ||
-    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
-      typeAnnotation.id.name !== 'DirectEventHandler')
+    (parser.getTypeAnnotationName(typeAnnotation) !== 'BubblingEventHandler' &&
+      parser.getTypeAnnotationName(typeAnnotation) !== 'DirectEventHandler')
   ) {
     return null;
   }
@@ -216,38 +240,25 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (bubblingType && argumentProps) {
-    if (paperTopLevelNameDeprecated != null) {
-      return {
-        name,
-        optional,
-        bubblingType,
-        paperTopLevelNameDeprecated,
-        typeAnnotation: {
-          type: 'EventTypeAnnotation',
-          argument: getEventArgument(argumentProps, name),
-        },
-      };
-    }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
-    return {
-      name,
-      optional,
-      bubblingType,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, name),
-      },
-    };
-  }
+  const argument = getEventArgument(
+    nonNullableArgumentProps,
+    parser,
+    getPropertyType,
+  );
 
-  if (argumentProps === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  if (bubblingType === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
+  return emitBuildEventSchema(
+    paperTopLevelNameDeprecated,
+    name,
+    optional,
+    nonNullableBubblingType,
+    argument,
+  );
 }
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
@@ -272,4 +283,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };

@@ -12,39 +12,40 @@
 #include <butter/set.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
-#include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
+class MountingTransaction;
 class ReactNativeConfig;
 struct ShadowView;
 
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      std::shared_ptr<const ReactNativeConfig> &config,
-      jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
+      std::shared_ptr<const ReactNativeConfig>& config,
+      jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
+  FabricMountingManager(const FabricMountingManager&) = delete;
 
   void onSurfaceStart(SurfaceId surfaceId);
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void preallocateShadowView(SurfaceId surfaceId, ShadowView const &shadowView);
+  void preallocateShadowView(SurfaceId surfaceId, const ShadowView& shadowView);
 
-  void executeMount(const MountingCoordinator::Shared &mountingCoordinator);
+  void executeMount(const MountingTransaction& transaction);
 
   void dispatchCommand(
-      ShadowView const &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args);
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args);
 
   void sendAccessibilityEvent(
-      const ShadowView &shadowView,
-      std::string const &eventType);
+      const ShadowView& shadowView,
+      const std::string& eventType);
 
   void setIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView& shadowView,
       bool isJSResponder,
       bool blockNativeResponder);
 
@@ -60,11 +61,11 @@ class FabricMountingManager final {
   butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  bool const reduceDeleteCreateMutation_{false};
+  const bool reduceDeleteCreateMutation_{false};
 
   jni::local_ref<jobject> getProps(
-      ShadowView const &oldShadowView,
-      ShadowView const &newShadowView);
+      const ShadowView& oldShadowView,
+      const ShadowView& newShadowView);
 };
 
 } // namespace facebook::react

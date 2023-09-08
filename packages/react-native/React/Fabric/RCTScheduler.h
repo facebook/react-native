@@ -30,16 +30,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
 
-- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
-                        commandName:(std::string const &)commandName
-                               args:(folly::dynamic const &)args;
+- (void)schedulerDidDispatchCommand:(const facebook::react::ShadowView &)shadowView
+                        commandName:(const std::string &)commandName
+                               args:(const folly::dynamic &)args;
 
-- (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
-                                 eventType:(std::string const &)eventType;
+- (void)schedulerDidSendAccessibilityEvent:(const facebook::react::ShadowView &)shadowView
+                                 eventType:(const std::string &)eventType;
 
 - (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
                 blockNativeResponder:(BOOL)blockNativeResponder
-                       forShadowView:(facebook::react::ShadowView const &)shadowView;
+                       forShadowView:(const facebook::react::ShadowView &)shadowView;
 
 @end
 
@@ -49,17 +49,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTScheduler : NSObject
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
-@property (readonly) std::shared_ptr<facebook::react::UIManager> const uiManager;
+@property (readonly) const std::shared_ptr<facebook::react::UIManager> uiManager;
 
 - (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox;
 
-- (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler;
-- (void)unregisterSurface:(facebook::react::SurfaceHandler const &)surfaceHandler;
+- (void)registerSurface:(const facebook::react::SurfaceHandler &)surfaceHandler;
+- (void)unregisterSurface:(const facebook::react::SurfaceHandler &)surfaceHandler;
 
-- (facebook::react::ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:
+- (const facebook::react::ComponentDescriptor *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:
     (facebook::react::ComponentHandle)handle;
 
-- (void)setupAnimationDriver:(facebook::react::SurfaceHandler const &)surfaceHandler;
+- (void)setupAnimationDriver:(const facebook::react::SurfaceHandler &)surfaceHandler;
 
 - (void)onAnimationStarted;
 
@@ -67,9 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)animationTick;
 
-- (void)addEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId;
 
-- (void)removeEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
+- (void)addEventListener:(const std::shared_ptr<facebook::react::EventListener> &)listener;
+
+- (void)removeEventListener:(const std::shared_ptr<facebook::react::EventListener> &)listener;
 
 @end
 

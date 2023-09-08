@@ -16,6 +16,7 @@ import android.view.ViewParent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -52,6 +53,7 @@ import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -91,7 +93,8 @@ public class SurfaceMountingManager {
   private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
-  private Set<Integer> mTagSetForStoppedSurface;
+  private Set<Integer> mTagSetForStoppedSurfaceLegacy;
+  private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
 
@@ -103,7 +106,6 @@ public class SurfaceMountingManager {
       @NonNull MountItemExecutor mountItemExecutor,
       @NonNull ThemedReactContext reactContext) {
     mSurfaceId = surfaceId;
-
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
@@ -167,7 +169,10 @@ public class SurfaceMountingManager {
     // If Surface stopped, check if tag *was* associated with this Surface, even though it's been
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
-    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
+    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.containsKey(tag)) {
+      return true;
+    }
+    if (mTagSetForStoppedSurfaceLegacy != null && mTagSetForStoppedSurfaceLegacy.contains(tag)) {
       return true;
     }
     if (mTagToViewState == null) {
@@ -196,42 +201,39 @@ public class SurfaceMountingManager {
             true));
 
     Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            // The CPU has ticked since `addRootView` was called, so the surface could technically
-            // have already stopped here.
-            if (isStopped()) {
-              return;
-            }
-
-            if (rootView.getId() == mSurfaceId) {
-              ReactSoftExceptionLogger.logSoftException(
-                  TAG,
-                  new IllegalViewOperationException(
-                      "Race condition in addRootView detected. Trying to set an id of ["
-                          + mSurfaceId
-                          + "] on the RootView, but that id has already been set. "));
-            } else if (rootView.getId() != View.NO_ID) {
-              FLog.e(
-                  TAG,
-                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
-                  rootView.getId(),
-                  mSurfaceId);
-              throw new IllegalViewOperationException(
-                  "Trying to add a root view with an explicit id already set. React Native uses "
-                      + "the id field to track react tags and will overwrite this field. If that is fine, "
-                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-            }
-            rootView.setId(mSurfaceId);
-
-            if (rootView instanceof ReactRoot) {
-              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
-            }
-            mRootViewAttached = true;
-
-            executeViewAttachMountItems();
+        () -> {
+          // The CPU has ticked since `addRootView` was called, so the surface could technically
+          // have already stopped here.
+          if (isStopped()) {
+            return;
           }
+
+          if (rootView.getId() == mSurfaceId) {
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                    "Race condition in addRootView detected. Trying to set an id of ["
+                        + mSurfaceId
+                        + "] on the RootView, but that id has already been set. "));
+          } else if (rootView.getId() != View.NO_ID) {
+            FLog.e(
+                TAG,
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                rootView.getId(),
+                mSurfaceId);
+            throw new IllegalViewOperationException(
+                "Trying to add a root view with an explicit id already set. React Native uses "
+                    + "the id field to track react tags and will overwrite this field. If that is fine, "
+                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+          }
+          rootView.setId(mSurfaceId);
+
+          if (rootView instanceof ReactRoot) {
+            ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+          }
+          mRootViewAttached = true;
+
+          executeViewAttachMountItems();
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -291,27 +293,38 @@ public class SurfaceMountingManager {
     }
 
     Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            // We must call `onDropViewInstance` on all remaining Views
+        () -> {
+          if (ReactFeatureFlags.fixStoppedSurfaceTagSetLeak) {
+            mTagSetForStoppedSurface = new SparseArrayCompat<>();
+            for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
+              // Using this as a placeholder value in the map. We're using SparseArrayCompat
+              // since it can efficiently represent the list of pending tags
+              mTagSetForStoppedSurface.put(entry.getKey(), this);
+
+              // We must call `onDropViewInstance` on all remaining Views
+              onViewStateDeleted(entry.getValue());
+            }
+          } else {
             for (ViewState viewState : mTagToViewState.values()) {
+              // We must call `onDropViewInstance` on all remaining Views
               onViewStateDeleted(viewState);
             }
-
-            // Evict all views from cache and memory
-            mTagSetForStoppedSurface = mTagToViewState.keySet();
-            mTagToViewState = null;
-            mJSResponderHandler = null;
-            mRootViewManager = null;
-            mMountItemExecutor = null;
-            mOnViewAttachItems.clear();
-
-            if (ReactFeatureFlags.enableViewRecycling) {
-              mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-            }
-            FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
+            mTagSetForStoppedSurfaceLegacy = mTagToViewState.keySet();
           }
+
+          // Evict all views from cache and memory
+          // TODO: clear instead of nulling out to simplify null-safety in this class
+          mTagToViewState = null;
+          mJSResponderHandler = null;
+          mRootViewManager = null;
+          mMountItemExecutor = null;
+          mThemedReactContext = null;
+          mOnViewAttachItems.clear();
+
+          if (ReactFeatureFlags.enableViewRecycling) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
+          FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -1105,18 +1118,23 @@ public class SurfaceMountingManager {
       previousEventEmitterWrapper.destroy();
     }
 
-    if (viewState.mPendingEventQueue != null) {
+    Queue<ViewEvent> pendingEventQueue = viewState.mPendingEventQueue;
+    if (pendingEventQueue != null) {
       // Invoke pending event queued to the view state
-      for (ViewEvent viewEvent : viewState.mPendingEventQueue) {
-        if (viewEvent.canCoalesceEvent()) {
-          eventEmitter.dispatchUnique(
-              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
-        } else {
-          eventEmitter.dispatch(
-              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
-        }
+      for (ViewEvent viewEvent : pendingEventQueue) {
+        dispatchEvent(eventEmitter, viewEvent);
       }
       viewState.mPendingEventQueue = null;
+    }
+  }
+
+  private void dispatchEvent(EventEmitterWrapper eventEmitter, ViewEvent viewEvent) {
+    if (viewEvent.canCoalesceEvent()) {
+      eventEmitter.dispatchUnique(
+          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
+    } else {
+      eventEmitter.dispatch(
+          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
     }
   }
 
@@ -1301,9 +1319,18 @@ public class SurfaceMountingManager {
       // Cannot queue event without view state. Do nothing here.
       return;
     }
-    Assertions.assertCondition(
-        viewState.mEventEmitter == null,
-        "Only queue pending events when event emitter is null for the given view state");
+    EventEmitterWrapper eventEmitter = viewState.mEventEmitter;
+    if (eventEmitter != null) {
+      // TODO T152630743: Verify threading for mEventEmitter
+      FLog.i(
+          TAG,
+          "Queue pending events when event emitter is null for the given view state, this should be dispatched instead - surfaceId: "
+              + mSurfaceId
+              + " reactTag: "
+              + reactTag);
+      dispatchEvent(eventEmitter, viewEvent);
+      return;
+    }
 
     if (viewState.mPendingEventQueue == null) {
       viewState.mPendingEventQueue = new LinkedList<>();
@@ -1342,6 +1369,7 @@ public class SurfaceMountingManager {
       mViewManager = viewManager;
     }
 
+    @NonNull
     @Override
     public String toString() {
       boolean isLayoutOnly = mViewManager == null;

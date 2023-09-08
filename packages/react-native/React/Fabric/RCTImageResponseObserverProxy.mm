@@ -19,7 +19,7 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponse
 {
 }
 
-void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
+void RCTImageResponseObserverProxy::didReceiveImage(const ImageResponse &imageResponse) const
 {
   UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
   id metadata = unwrapManagedObject(imageResponse.getMetadata());

@@ -1,11 +1,18 @@
 {
-  "version": "0.73.0",
   "name": "@react-native/babel-plugin-codegen",
+  "version": "0.73.0",
   "description": "Babel plugin to generate native module and view manager code for React Native.",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/babel-plugin-codegen"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/babel-plugin-codegen#readme",
+  "keywords": ["babel", "plugin", "codegen", "react-native", "native-modules", "view-manager"],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
   },
   "files": [
     "index.js"
@@ -15,6 +22,5 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
-  },
-  "license": "MIT"
+  }
 }

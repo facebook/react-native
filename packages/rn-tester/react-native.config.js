@@ -9,25 +9,23 @@
 
 'use strict';
 
-const ios = require('@react-native-community/cli-platform-ios');
-const android = require('@react-native-community/cli-platform-android');
+// Inside the React Native monorepo, we need to explicitly extend the base
+// CLI config as the adjacent package will not be conventionally discovered.
+const config = require('../react-native/react-native.config.js');
 
 module.exports = {
-  commands: [...ios.commands, ...android.commands],
-  platforms: {
-    ios: {
-      projectConfig: ios.projectConfig,
-      dependencyConfig: ios.dependencyConfig,
-    },
-    android: {
-      projectConfig: android.projectConfig,
-      dependencyConfig: android.dependencyConfig,
-    },
-  },
+  ...config,
   reactNativePath: '../react-native',
   project: {
     ios: {
       sourceDir: '.',
+      unstable_reactLegacyComponentNames: [
+        'RNTMyLegacyNativeView',
+        'RNTMyNativeView',
+      ],
+    },
+    android: {
+      sourceDir: '../../',
     },
   },
 };

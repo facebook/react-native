@@ -9,7 +9,7 @@
    as the min SDK to lint the file.-->
   <uses-sdk
       android:minSdkVersion="21"
-      android:targetSdkVersion="33"
+      android:targetSdkVersion="34"
       />
 
 </manifest>

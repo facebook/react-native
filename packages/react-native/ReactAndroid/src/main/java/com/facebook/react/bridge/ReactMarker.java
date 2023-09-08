@@ -8,9 +8,12 @@
 package com.facebook.react.bridge;
 
 import android.os.SystemClock;
+import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -19,6 +22,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @DoNotStrip
 public class ReactMarker {
+
+  private static Queue<ReactMarkerRecord> sNativeReactMarkerQueue = new ConcurrentLinkedQueue<>();
+
+  private static class ReactMarkerRecord {
+    private final String mMarkerName;
+    private final long mMarkerTime;
+
+    public ReactMarkerRecord(String markerName, long markerTime) {
+      mMarkerName = markerName;
+      mMarkerTime = markerTime;
+    }
+
+    public String getMarkerName() {
+      return mMarkerName;
+    }
+
+    public long getMarkerTime() {
+      return mMarkerTime;
+    }
+  }
 
   public interface MarkerListener {
     void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey);
@@ -41,9 +64,6 @@ public class ReactMarker {
   // order. For Fabric-specific events.
   private static final List<FabricMarkerListener> sFabricMarkerListeners =
       new CopyOnWriteArrayList<>();
-
-  // The android app start time that to be set by the corresponding app
-  private static long sAppStartTime;
 
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
@@ -135,20 +155,54 @@ public class ReactMarker {
   }
 
   @DoNotStrip
+  public static void logMarker(ReactMarkerConstants name, long time) {
+    logMarker(name, null, 0, time);
+  }
+
+  @DoNotStrip
+  @AnyThread
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
+    logMarker(name, tag, instanceKey, null);
+  }
+
+  @DoNotStrip
+  @AnyThread
+  public static void logMarker(
+      ReactMarkerConstants name, @Nullable String tag, int instanceKey, @Nullable Long time) {
     logFabricMarker(name, tag, instanceKey);
     for (MarkerListener listener : sListeners) {
       listener.logMarker(name, tag, instanceKey);
     }
+
+    notifyNativeMarker(name, time);
   }
 
   @DoNotStrip
-  public static void setAppStartTime(long appStartTime) {
-    sAppStartTime = appStartTime;
+  private static void notifyNativeMarker(ReactMarkerConstants name, @Nullable Long time) {
+    if (!name.hasMatchingNameMarker()) {
+      return;
+    }
+
+    @Nullable Long now = time;
+    if (now == null) {
+      now = SystemClock.uptimeMillis();
+    }
+
+    if (ReactBridge.isInitialized()) {
+      // First send the current marker
+      nativeLogMarker(name.name(), now);
+
+      // Then send all cached native ReactMarkers
+      ReactMarkerRecord record;
+      while ((record = sNativeReactMarkerQueue.poll()) != null) {
+        nativeLogMarker(record.getMarkerName(), record.getMarkerTime());
+      }
+    } else {
+      // The native JNI method is not loaded at this point.
+      sNativeReactMarkerQueue.add(new ReactMarkerRecord(name.name(), now));
+    }
   }
 
   @DoNotStrip
-  public static double getAppStartTime() {
-    return (double) sAppStartTime;
-  }
+  private static native void nativeLogMarker(String markerName, long markerTime);
 }

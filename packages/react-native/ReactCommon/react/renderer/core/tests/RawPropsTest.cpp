@@ -22,9 +22,9 @@ class PropsSingleFloat : public Props {
  public:
   PropsSingleFloat() = default;
   PropsSingleFloat(
-      const PropsParserContext &context,
-      const PropsSingleFloat &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const PropsSingleFloat& sourceProps,
+      const RawProps& rawProps)
       : floatValue(convertRawProp(
             context,
             rawProps,
@@ -40,9 +40,9 @@ class PropsSingleDouble : public Props {
  public:
   PropsSingleDouble() = default;
   PropsSingleDouble(
-      const PropsParserContext &context,
-      const PropsSingleDouble &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const PropsSingleDouble& sourceProps,
+      const RawProps& rawProps)
       : doubleValue(convertRawProp(
             context,
             rawProps,
@@ -58,9 +58,9 @@ class PropsSingleInt : public Props {
  public:
   PropsSingleInt() = default;
   PropsSingleInt(
-      const PropsParserContext &context,
-      const PropsSingleInt &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const PropsSingleInt& sourceProps,
+      const RawProps& rawProps)
       : intValue(convertRawProp(
             context,
             rawProps,
@@ -76,9 +76,9 @@ class PropsPrimitiveTypes : public Props {
  public:
   PropsPrimitiveTypes() = default;
   PropsPrimitiveTypes(
-      const PropsParserContext &context,
-      const PropsPrimitiveTypes &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const PropsPrimitiveTypes& sourceProps,
+      const RawProps& rawProps)
       : intValue(convertRawProp(
             context,
             rawProps,
@@ -122,9 +122,9 @@ class PropsMultiLookup : public Props {
  public:
   PropsMultiLookup() = default;
   PropsMultiLookup(
-      const PropsParserContext &context,
-      const PropsMultiLookup &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const PropsMultiLookup& sourceProps,
+      const RawProps& rawProps)
       : floatValue(convertRawProp(
             context,
             rawProps,
@@ -151,7 +151,7 @@ TEST(RawPropsTest, handleProps) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
   raw.parse(parser, parserContext);
@@ -168,7 +168,7 @@ TEST(RawPropsTest, handleRawPropsSingleString) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
   raw.parse(parser, parserContext);
@@ -182,7 +182,7 @@ TEST(RawPropsTest, handleRawPropsSingleFloat) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw =
+  const auto& raw =
       RawProps(folly::dynamic::object("floatValue", (float)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleFloat>();
@@ -197,7 +197,7 @@ TEST(RawPropsTest, handleRawPropsSingleDouble) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw =
+  const auto& raw =
       RawProps(folly::dynamic::object("doubleValue", (double)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleDouble>();
@@ -212,7 +212,7 @@ TEST(RawPropsTest, handleRawPropsSingleInt) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
+  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
   raw.parse(parser, parserContext);
@@ -226,7 +226,7 @@ TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
+  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
   raw.parse(parser, parserContext);
@@ -240,7 +240,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(
+  const auto& raw = RawProps(
       folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
           "floatValue",
           (float)66.67)("stringValue", "helloworld")("boolValue", true));
@@ -262,7 +262,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(
+  const auto& raw = RawProps(
       folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
           "floatValue",
           (float)66.67)("stringValue", "helloworld")("boolValue", true));
@@ -292,7 +292,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(
+  const auto& raw = RawProps(
       folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
           "floatValue",
           (float)66.67)("stringValue", "helloworld")("boolValue", true));
@@ -322,7 +322,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
+  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -342,7 +342,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
+  const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -360,7 +360,7 @@ TEST(RawPropsTest, handlePropsMultiLookup) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto &raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
+  const auto& raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
   auto parser = RawPropsParser();
   parser.prepare<PropsMultiLookup>();
   raw.parse(parser, parserContext);

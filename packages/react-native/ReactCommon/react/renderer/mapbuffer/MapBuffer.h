@@ -108,13 +108,13 @@ class MapBuffer {
 
   explicit MapBuffer(std::vector<uint8_t> data);
 
-  MapBuffer(MapBuffer const &buffer) = delete;
+  MapBuffer(const MapBuffer& buffer) = delete;
 
-  MapBuffer &operator=(const MapBuffer &other) = delete;
+  MapBuffer& operator=(const MapBuffer& other) = delete;
 
-  MapBuffer(MapBuffer &&buffer) = default;
+  MapBuffer(MapBuffer&& buffer) = default;
 
-  MapBuffer &operator=(MapBuffer &&other) = default;
+  MapBuffer& operator=(MapBuffer&& other) = default;
 
   int32_t getInt(MapBuffer::Key key) const;
 
@@ -131,7 +131,7 @@ class MapBuffer {
 
   size_t size() const;
 
-  uint8_t const *data() const;
+  const uint8_t* data() const;
 
   uint16_t count() const;
 

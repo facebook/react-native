@@ -13,10 +13,14 @@
 'use strict';
 
 const metroBabelRegister = require('metro-babel-register');
+const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
 
-const {transformSync: babelTransformSync} = require('@babel/core');
+const {
+  transformSync: babelTransformSync,
+  transformFromAstSync: babelTransformFromAstSync,
+} = require('@babel/core');
 const generate = require('@babel/generator').default;
 
 // Files matching this pattern will be transformed with the Node JS Babel
@@ -29,17 +33,8 @@ const nodeFiles = /[\\/]metro(?:-[^/]*)[\\/]/;
 const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 
 // Register Babel to allow the transformer itself to be loaded from source.
-if (process.env.FBSOURCE_ENV) {
-  // Internal: Use `@fb-scripts/babel-register` to re-use internal
-  // registration, rather than potentially clobbering it and conflicting with
-  // other Jest projects running in the same process.
-  // This package should *NOT* be a dependency of `@react-native/monorepo`.
-  // $FlowIgnore[cannot-resolve-module]
-  require('@fb-scripts/babel-register');
-} else {
-  metroBabelRegister([nodeFiles]);
-}
-const transformer = require('metro-react-native-babel-transformer');
+require('../scripts/build/babel-register').registerForMonorepo();
+const transformer = require('@react-native/metro-babel-transformer');
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
@@ -53,7 +48,7 @@ module.exports = {
       });
     }
 
-    const {ast} = transformer.transform({
+    let {ast} = transformer.transform({
       filename: file,
       options: {
         ast: true, // needed for open source (?) https://github.com/facebook/react-native/commit/f8d6b97140cffe8d18b2558f94570c8d1b410d5c#r28647044
@@ -61,7 +56,9 @@ module.exports = {
         enableBabelRuntime: false,
         experimentalImportSupport: false,
         globalPrefix: '',
+        hermesParser: true,
         hot: false,
+        // $FlowFixMe[incompatible-call] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
         inlineRequires: true,
         minify: false,
         platform: '',
@@ -72,6 +69,17 @@ module.exports = {
       },
       src,
     });
+
+    const babelTransformResult = babelTransformFromAstSync(ast, src, {
+      ast: true,
+      retainLines: true,
+      plugins: [
+        // TODO(moti): Replace with require('metro-transform-plugins').inlineRequiresPlugin when available in OSS
+        require('babel-preset-fbjs/plugins/inline-requires'),
+      ],
+      sourceType: 'module',
+    });
+    ast = nullthrows(babelTransformResult.ast);
 
     return generate(
       ast,
@@ -89,9 +97,10 @@ module.exports = {
     );
   },
 
-  getCacheKey: (createCacheKeyFunction([
+  // $FlowFixMe[signature-verification-failure]
+  getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro-react-native-babel-transformer'),
+    require.resolve('@react-native/metro-babel-transformer'),
     require.resolve('@babel/core/package.json'),
-  ]) /*: any */),
+  ]),
 };

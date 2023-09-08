@@ -14,6 +14,7 @@
 #import "RCTBorderCurve.h"
 #import "RCTBorderDrawing.h"
 #import "RCTI18nUtil.h"
+#import "RCTLocalizedString.h"
 #import "RCTLog.h"
 #import "RCTViewUtils.h"
 #import "UIView+React.h"
@@ -21,7 +22,7 @@
 RCT_MOCK_DEF(RCTView, RCTContentInsets);
 #define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
 
-UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+const UIAccessibilityTraits SwitchAccessibilityTrait = 0x20000000000001;
 
 @implementation UIView (RCTViewUnmounting)
 
@@ -282,41 +283,44 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   static NSDictionary<NSString *, NSString *> *rolesAndStatesDescription = nil;
 
   dispatch_once(&onceToken, ^{
-    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"AccessibilityResources" ofType:@"bundle"];
-    NSBundle *bundle = [NSBundle bundleWithPath:bundlePath];
-
-    if (bundle) {
-      NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
-      rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
-    }
-    if (rolesAndStatesDescription == nil) {
-      // Falling back to hardcoded English list.
-      NSLog(@"Cannot load localized accessibility strings.");
-      rolesAndStatesDescription = @{
-        @"alert" : @"alert",
-        @"checkbox" : @"checkbox",
-        @"combobox" : @"combo box",
-        @"menu" : @"menu",
-        @"menubar" : @"menu bar",
-        @"menuitem" : @"menu item",
-        @"progressbar" : @"progress bar",
-        @"radio" : @"radio button",
-        @"radiogroup" : @"radio group",
-        @"scrollbar" : @"scroll bar",
-        @"spinbutton" : @"spin button",
-        @"switch" : @"switch",
-        @"tab" : @"tab",
-        @"tablist" : @"tab list",
-        @"timer" : @"timer",
-        @"toolbar" : @"tool bar",
-        @"checked" : @"checked",
-        @"unchecked" : @"not checked",
-        @"busy" : @"busy",
-        @"expanded" : @"expanded",
-        @"collapsed" : @"collapsed",
-        @"mixed" : @"mixed",
-      };
-    }
+    rolesAndStatesDescription = @{
+      @"alert" : RCTLocalizedString("alert", "important, and usually time-sensitive, information"),
+      @"busy" : RCTLocalizedString("busy", "an element currently being updated or modified"),
+      @"checkbox" : RCTLocalizedString("checkbox", "checkable interactive control"),
+      @"combobox" : RCTLocalizedString(
+          "combo box",
+          "input that controls another element that can pop up to help the user set the value of that input"),
+      @"menu" : RCTLocalizedString("menu", "offers a list of choices to the user"),
+      @"menubar" : RCTLocalizedString(
+          "menu bar", "presentation of menu that usually remains visible and is usually presented horizontally"),
+      @"menuitem" : RCTLocalizedString("menu item", "an option in a set of choices contained by a menu or menubar"),
+      @"progressbar" :
+          RCTLocalizedString("progress bar", "displays the progress status for tasks that take a long time"),
+      @"radio" : RCTLocalizedString(
+          "radio button",
+          "a checkable input that when associated with other radio buttons, only one of which can be checked at a time"),
+      @"radiogroup" : RCTLocalizedString("radio group", "a group of radio buttons"),
+      @"scrollbar" : RCTLocalizedString("scroll bar", "controls the scrolling of content within a viewing area"),
+      @"spinbutton" : RCTLocalizedString(
+          "spin button", "defines a type of range that expects the user to select a value from among discrete choices"),
+      @"switch" : RCTLocalizedString("switch", "represents the states 'on' and 'off'"),
+      @"tab" : RCTLocalizedString("tab", "an interactive element inside a tablist"),
+      @"tablist" : RCTLocalizedString("tab list", "container for a set of tabs"),
+      @"timer" : RCTLocalizedString(
+          "timer",
+          "a numerical counter listing the amount of elapsed time from a starting point or the remaining time until an end point"),
+      @"toolbar" : RCTLocalizedString(
+          "tool bar",
+          "a collection of commonly used function buttons or controls represented in a compact visual form"),
+      @"checked" : RCTLocalizedString("checked", "a checkbox, radio button, or other widget which is checked"),
+      @"unchecked" : RCTLocalizedString("unchecked", "a checkbox, radio button, or other widget which is unchecked"),
+      @"expanded" :
+          RCTLocalizedString("expanded", "a menu, dialog, accordian panel, or other widget which is expanded"),
+      @"collapsed" :
+          RCTLocalizedString("collapsed", "a menu, dialog, accordian panel, or other widget which is collapsed"),
+      @"mixed" :
+          RCTLocalizedString("mixed", "a checkbox, radio button, or other widget which is both checked and unchecked"),
+    };
   });
 
   // Handle Switch.
@@ -332,7 +336,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleDescription = self.accessibilityRole ? rolesAndStatesDescription[self.accessibilityRole] : nil;
+
+  // TODO: This logic makes VoiceOver describe some AccessibilityRole which do not have a backing UIAccessibilityTrait.
+  // It does not run on Fabric.
+  NSString *role = self.role ?: self.accessibilityRole;
+  NSString *roleDescription = role ? rolesAndStatesDescription[role] : nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }

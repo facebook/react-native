@@ -36,8 +36,8 @@
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
-static CGFloat const RCTPerfMonitorBarHeight = 50;
-static CGFloat const RCTPerfMonitorExpandHeight = 250;
+static const CGFloat RCTPerfMonitorBarHeight = 50;
+static const CGFloat RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
 
@@ -183,7 +183,9 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
+    CGSize statusBarSize = RCTSharedApplication().statusBarFrame.size;
+    CGFloat statusBarHeight = statusBarSize.height;
+    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];

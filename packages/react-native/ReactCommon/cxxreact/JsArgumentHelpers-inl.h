@@ -14,13 +14,13 @@ namespace xplat {
 namespace detail {
 
 template <typename R, typename M, typename... T>
-R jsArg1(const folly::dynamic &arg, M asFoo, const T &...desc) {
+R jsArg1(const folly::dynamic& arg, M asFoo, const T&... desc) {
   try {
     return (arg.*asFoo)();
-  } catch (const folly::TypeError &ex) {
+  } catch (const folly::TypeError& ex) {
     throw JsArgumentException(folly::to<std::string>(
         "Error converting javascript arg ", desc..., " to C++: ", ex.what()));
-  } catch (const std::range_error &ex) {
+  } catch (const std::range_error& ex) {
     throw JsArgumentException(folly::to<std::string>(
         "Could not convert argument ",
         desc...,
@@ -33,26 +33,26 @@ R jsArg1(const folly::dynamic &arg, M asFoo, const T &...desc) {
 
 template <typename R, typename... T>
 R jsArg(
-    const folly::dynamic &arg,
+    const folly::dynamic& arg,
     R (folly::dynamic::*asFoo)() const,
-    const T &...desc) {
+    const T&... desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 
 template <typename R, typename... T>
 R jsArg(
-    const folly::dynamic &arg,
-    R (folly::dynamic::*asFoo)() const &,
-    const T &...desc) {
+    const folly::dynamic& arg,
+    R (folly::dynamic::*asFoo)() const&,
+    const T&... desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 
 template <typename T>
 // NOLINTNEXTLINE (T62192316)
-typename detail::is_dynamic<T>::type &jsArgAsDynamic(T &&args, size_t n) {
+typename detail::is_dynamic<T>::type& jsArgAsDynamic(T&& args, size_t n) {
   try {
     return args[n];
-  } catch (const std::out_of_range &ex) {
+  } catch (const std::out_of_range& ex) {
     // Use 1-base counting for argument description.
     throw JsArgumentException(folly::to<std::string>(
         "JavaScript provided ",
@@ -66,16 +66,16 @@ typename detail::is_dynamic<T>::type &jsArgAsDynamic(T &&args, size_t n) {
 
 template <typename R>
 R jsArgN(
-    const folly::dynamic &args,
+    const folly::dynamic& args,
     size_t n,
     R (folly::dynamic::*asFoo)() const) {
   return jsArg(jsArgAsDynamic(args, n), asFoo, n);
 }
 template <typename R>
 R jsArgN(
-    const folly::dynamic &args,
+    const folly::dynamic& args,
     size_t n,
-    R (folly::dynamic::*asFoo)() const &) {
+    R (folly::dynamic::*asFoo)() const&) {
   return jsArg(jsArgAsDynamic(args, n), asFoo, n);
 }
 
@@ -84,12 +84,12 @@ namespace detail {
 // This is a helper for jsArgAsArray and jsArgAsObject.
 
 template <typename T>
-typename detail::is_dynamic<T>::type &jsArgAsType(
-    T &&args,
+typename detail::is_dynamic<T>::type& jsArgAsType(
+    T&& args,
     size_t n,
-    const char *required,
+    const char* required,
     bool (folly::dynamic::*isFoo)() const) {
-  T &ret = jsArgAsDynamic(args, n);
+  T& ret = jsArgAsDynamic(args, n);
   if ((ret.*isFoo)()) {
     return ret;
   }
@@ -107,12 +107,12 @@ typename detail::is_dynamic<T>::type &jsArgAsType(
 } // end namespace detail
 
 template <typename T>
-typename detail::is_dynamic<T>::type &jsArgAsArray(T &&args, size_t n) {
+typename detail::is_dynamic<T>::type& jsArgAsArray(T&& args, size_t n) {
   return detail::jsArgAsType(args, n, "Array", &folly::dynamic::isArray);
 }
 
 template <typename T>
-typename detail::is_dynamic<T>::type &jsArgAsObject(T &&args, size_t n) {
+typename detail::is_dynamic<T>::type& jsArgAsObject(T&& args, size_t n) {
   return detail::jsArgAsType(args, n, "Object", &folly::dynamic::isObject);
 }
 

@@ -6,8 +6,9 @@
  */
 
 plugins {
-    id("com.android.application")
     id("com.facebook.react")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 /**
@@ -89,12 +90,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -116,20 +117,12 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-    }
-    signingConfigs {
-        release {
-            storeFile file(MYAPP_RELEASE_STORE_FILE)
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
-        }
     }
     externalNativeBuild {
         cmake {
@@ -145,15 +138,10 @@ android {
         }
     }
     buildTypes {
-        debug {
-            debuggable true
-            signingConfig signingConfigs.release
-        }
         release {
-            debuggable false
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.debug
         }
     }
     sourceSets.main {
@@ -169,19 +157,14 @@ android {
 dependencies {
     // Build React Native from source
     implementation project(':packages:react-native:ReactAndroid')
+    implementation project(':packages:react-native:ReactAndroid:flipper-integration')
 
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-
     jscImplementation jscFlavor
 
-    androidTestImplementation 'junit:junit:4.12'
+    testImplementation(libs.junit)
 }
 
 android {
@@ -197,9 +180,11 @@ android {
 }
 
 afterEvaluate {
-    // As we're consuming Hermes from source, we want to make sure
-    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermes")
+    if (project.findProperty("react.internal.useHermesNightly") == null || project.findProperty("react.internal.useHermesNightly").toString() == "false") {
+        // As we're consuming Hermes from source, we want to make sure
+        // `hermesc` is built before we actually invoke the `emit*HermesResource` task
+        createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+    }
 
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.
@@ -210,4 +195,8 @@ afterEvaluate {
         mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
         mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
     }
+
+    // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
+    // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
+    generateCodegenSchemaFromJavaScript.dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

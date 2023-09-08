@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: uk_UA -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">Меню розробника React Native «(%1$s)»</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">Поточний показ «%1$s»</string>
 </resources>

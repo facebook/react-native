@@ -8,8 +8,9 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,8 +29,11 @@ import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -45,8 +49,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -79,8 +83,7 @@ import java.util.Objects;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends AppCompatEditText
-    implements FabricViewStateManager.HasFabricViewStateManager {
+public class ReactEditText extends AppCompatEditText {
   private final InputMethodManager mInputMethodManager;
   private final String TAG = ReactEditText.class.getSimpleName();
   public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -117,10 +120,11 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private @Nullable String mPlaceholder = null;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private StateWrapper mStateWrapper = null;
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -180,6 +184,35 @@ public class ReactEditText extends AppCompatEditText
           }
         };
     ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
+    ActionMode.Callback customActionModeCallback =
+        new ActionMode.Callback() {
+          /*
+           * Editor onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * and paste as plain text items to the context menu.
+           */
+          @Override
+          public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.removeItem(android.R.id.pasteAsPlainText);
+            return true;
+          }
+
+          @Override
+          public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+          }
+
+          @Override
+          public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+          }
+
+          @Override
+          public void onDestroyActionMode(ActionMode mode) {}
+        };
+    setCustomSelectionActionModeCallback(customActionModeCallback);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setCustomInsertionActionModeCallback(customActionModeCallback);
+    }
   }
 
   @Override
@@ -266,6 +299,37 @@ public class ReactEditText extends AppCompatEditText
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
     return inputConnection;
+  }
+
+  /*
+   * Called when a context menu option for the text view is selected.
+   * React Native replaces copy (as rich text) with copy as plain text.
+   */
+  @Override
+  public boolean onTextContextMenuItem(int id) {
+    if (id == android.R.id.paste) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        id = android.R.id.pasteAsPlainText;
+      } else {
+        ClipboardManager clipboard =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData previousClipData = clipboard.getPrimaryClip();
+        if (previousClipData != null) {
+          for (int i = 0; i < previousClipData.getItemCount(); i++) {
+            final CharSequence text = previousClipData.getItemAt(i).coerceToText(getContext());
+            final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
+            if (paste != null) {
+              ClipData clipData = ClipData.newPlainText(null, text);
+              clipboard.setPrimaryClip(clipData);
+            }
+          }
+          boolean actionPerformed = super.onTextContextMenuItem(id);
+          clipboard.setPrimaryClip(previousClipData);
+          return actionPerformed;
+        }
+      }
+    }
+    return super.onTextContextMenuItem(id);
   }
 
   @Override
@@ -495,6 +559,13 @@ public class ReactEditText extends AppCompatEditText
 
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
+  }
+
+  public void setPlaceholder(@Nullable String placeholder) {
+    if (!Objects.equals(placeholder, mPlaceholder)) {
+      mPlaceholder = placeholder;
+      setHint(placeholder);
+    }
   }
 
   public void setFontFamily(String fontFamily) {
@@ -853,9 +924,7 @@ public class ReactEditText extends AppCompatEditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (mFabricViewStateManager != null
-        && !mFabricViewStateManager.hasStateWrapper()
-        && !reactContext.isBridgeless()) {
+    if (mStateWrapper == null && !reactContext.isBridgeless()) {
 
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
@@ -1084,9 +1153,13 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  @Override
-  public FabricViewStateManager getFabricViewStateManager() {
-    return mFabricViewStateManager;
+  @Nullable
+  public StateWrapper getStateWrapper() {
+    return mStateWrapper;
+  }
+
+  public void setStateWrapper(StateWrapper stateWrapper) {
+    mStateWrapper = stateWrapper;
   }
 
   /**
@@ -1097,7 +1170,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable() {
     // Noops in non-Fabric
-    if (mFabricViewStateManager == null || !mFabricViewStateManager.hasStateWrapper()) {
+    if (mStateWrapper == null) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here

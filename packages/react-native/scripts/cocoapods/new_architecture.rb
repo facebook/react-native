@@ -16,7 +16,8 @@ class NewArchitectureHelper
         language_standard = nil
 
         installer.pods_project.targets.each do |target|
-            if target.name == 'React-Core'
+            # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
+            if target.name.include? 'React-Core'
                 language_standard = target.resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true).values[0]
             end
         end
@@ -61,9 +62,20 @@ class NewArchitectureHelper
 
         # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            if pod_name == 'React-Core'
+            # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
+            if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                end
+            end
+
+            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
+            # This helps with backward compatibility.
+            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
+                target_installation_result.native_target.build_configurations.each do |config|
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
                 end
             end
 
@@ -87,15 +99,21 @@ class NewArchitectureHelper
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
-        header_search_paths = ["\"$(PODS_ROOT)/boost\""]
+        header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
+            header_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\""
         end
         header_search_paths_string = header_search_paths.join(" ")
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
@@ -107,6 +125,7 @@ class NewArchitectureHelper
 
         spec.dependency "React-Core"
         spec.dependency "RCT-Folly", '2021.07.22.00'
+        spec.dependency "glog"
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
@@ -118,6 +137,19 @@ class NewArchitectureHelper
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
             spec.dependency "React-NativeModulesApple"
+            spec.dependency "Yoga"
+            spec.dependency "React-Fabric"
+            spec.dependency "React-graphics"
+            spec.dependency "React-utils"
+            spec.dependency "React-debug"
+            spec.dependency "React-ImageManager"
+            spec.dependency "React-rendererdebug"
+
+            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+                spec.dependency "hermes-engine"
+            else
+                spec.dependency "React-jsi"
+            end
         end
 
         spec.pod_target_xcconfig = current_config

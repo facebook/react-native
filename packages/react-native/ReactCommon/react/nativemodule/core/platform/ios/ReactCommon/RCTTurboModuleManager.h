@@ -9,13 +9,13 @@
 
 #import <memory>
 
+#import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import "RCTTurboModule.h"
-
-RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBindingMode bindingMode);
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
@@ -38,6 +38,18 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
                                                       jsInvoker:
                                                           (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
+/**
+ * Return a pre-initialized list of leagcy native modules.
+ * These modules shouldn't be TurboModule-compatible (i.e: they should not conform to RCTTurboModule).
+ *
+ * This method is only used by the TurboModule interop layer.
+ *
+ * It must match the signature of RCTBridgeDelegate extraModulesForBridge:
+ * - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
+ */
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+    __attribute((deprecated("Please make all native modules returned from this method TurboModule-compatible.")));
+
 @end
 
 @interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
@@ -46,7 +58,12 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
+- (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 
 - (void)invalidate;
 

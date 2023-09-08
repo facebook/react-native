@@ -64,7 +64,7 @@ function getStringByValue(value: any): string {
   }
   if (typeof value === 'string' && value.length > 500) {
     return String(value)
-      .substr(0, 500)
+      .slice(0, 500)
       .concat('\n***TRUNCATED TO 500 CHARACTERS***');
   }
   return value;

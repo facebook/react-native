@@ -49,7 +49,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -328,21 +327,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         if (!args.isNull(1)) {
           String text = args.getString(1);
-          reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetTextFromJS(getReactTextUpdate(text, mostRecentEventCount));
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
   }
 
-  private ReactTextUpdate getReactTextUpdate(
-      String text, int mostRecentEventCount, int start, int end) {
+  private ReactTextUpdate getReactTextUpdate(String text, int mostRecentEventCount) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0);
   }
 
   @Override
@@ -373,9 +370,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       // Ensure that selection is handled correctly on text update
       boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
-      int selectionStart = update.getSelectionStart();
-      int selectionEnd = update.getSelectionEnd();
-      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+      int selectionStart = UNSET;
+      int selectionEnd = UNSET;
+      if (isCurrentSelectionEmpty) {
         // if selection is not set by state, shift current selection to ensure constant gap to
         // text end
         int textLength = view.getText() == null ? 0 : view.getText().length();
@@ -507,7 +504,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, String placeholder) {
-    view.setHint(placeholder);
+    view.setPlaceholder(placeholder);
   }
 
   @ReactProp(name = "placeholderTextColor", customType = "Color")
@@ -1055,23 +1052,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
-      if (stateManager.hasStateWrapper()) {
-        // Fabric: communicate to C++ layer that text has changed
-        // We need to call `incrementAndGetEventCounter` here explicitly because this
-        // update may race with other updates.
-        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
-        // on the native side, triggering a measure.
-        stateManager.setState(
-            new FabricViewStateManager.StateUpdateCallback() {
-              @Override
-              public WritableMap getStateUpdate() {
-                WritableMap map = new WritableNativeMap();
-                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                map.putInt("opaqueCacheId", mEditText.getId());
-                return map;
-              }
-            });
+      StateWrapper stateWrapper = mEditText.getStateWrapper();
+
+      if (stateWrapper != null) {
+        WritableMap newStateData = new WritableNativeMap();
+        newStateData.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+        newStateData.putInt("opaqueCacheId", mEditText.getId());
+        stateWrapper.updateState(newStateData);
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1319,8 +1306,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    FabricViewStateManager stateManager = view.getFabricViewStateManager();
-    if (!stateManager.hasStateWrapper()) {
+    StateWrapper stateManager = view.getStateWrapper();
+    if (stateManager == null) {
       // HACK: In Fabric, we assume all components start off with zero padding, which is
       // not true for TextInput components. We expose the theme's default padding via
       // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
@@ -1328,7 +1315,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setPadding(0, 0, 0, 0);
     }
 
-    stateManager.setStateWrapper(stateWrapper);
+    view.setStateWrapper(stateWrapper);
 
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {

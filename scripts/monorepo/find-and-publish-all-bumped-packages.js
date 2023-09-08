@@ -12,6 +12,7 @@ const {spawnSync} = require('child_process');
 
 const {PUBLISH_PACKAGES_TAG} = require('./constants');
 const forEachPackage = require('./for-each-package');
+const {publishPackage} = require('../npm-utils');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
@@ -101,19 +102,12 @@ const findAndPublishAllBumpedPackages = () => {
         );
       }
 
-      const npmOTPFlag = NPM_CONFIG_OTP ? `--otp ${NPM_CONFIG_OTP}` : '';
-
-      const {status, stderr} = spawnSync('npm', ['publish', `${npmOTPFlag}`], {
-        cwd: packageAbsolutePath,
-        shell: true,
-        stdio: 'pipe',
-        encoding: 'utf-8',
-      });
-      if (status !== 0) {
+      const result = publishPackage(packageAbsolutePath, {otp: NPM_CONFIG_OTP});
+      if (result.code !== 0) {
         console.log(
-          `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. npm publish exited with code ${status}:`,
+          `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. npm publish exited with code ${result.code}:`,
         );
-        console.log(stderr);
+        console.log(result.stderr);
 
         process.exit(1);
       } else {

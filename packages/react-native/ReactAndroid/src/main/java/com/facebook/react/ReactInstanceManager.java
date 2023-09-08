@@ -185,7 +185,7 @@ public class ReactInstanceManager {
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
-  private boolean mUseFallbackBundle = false;
+  private boolean mUseFallbackBundle = true;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -555,6 +555,7 @@ public class ReactInstanceManager {
    * @deprecated Use {@link #onHostPause(Activity)} instead.
    */
   @ThreadConfined(UI)
+  @Deprecated
   public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
 
@@ -669,6 +670,7 @@ public class ReactInstanceManager {
    * @deprecated use {@link #onHostDestroy(Activity)} instead
    */
   @ThreadConfined(UI)
+  @Deprecated
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
 
@@ -1306,11 +1308,7 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedReactRoots) {
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        if (ReactFeatureFlags.unmountApplicationOnInstanceDetach) {
-          detachRootViewFromInstance(reactRoot, reactContext);
-        } else {
-          clearReactRoot(reactRoot);
-        }
+        detachRootViewFromInstance(reactRoot, reactContext);
       }
     }
 
@@ -1356,6 +1354,15 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
+    if (ReactFeatureFlags.unstable_useRuntimeSchedulerAlways) {
+      // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
+      // the `nativeRuntimeScheduler` object is registered on JS.
+      // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
+      // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
+      // architecture so it will always be there.
+      catalystInstance.getRuntimeScheduler();
+    }
+
     if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
@@ -1368,7 +1375,7 @@ public class ReactInstanceManager {
               catalystInstance.getRuntimeExecutor(),
               tmmDelegate,
               catalystInstance.getJSCallInvokerHolder(),
-              catalystInstance.getNativeCallInvokerHolder());
+              catalystInstance.getNativeMethodCallInvokerHolder());
 
       catalystInstance.setTurboModuleManager(turboModuleManager);
 

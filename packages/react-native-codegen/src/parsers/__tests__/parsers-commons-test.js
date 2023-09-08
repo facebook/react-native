@@ -25,6 +25,8 @@ import {
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
+  getTypeResolutionStatus,
+  handleGenericTypeAnnotation,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -58,7 +60,6 @@ const flowParser = new FlowParser();
 
 const {flowTranslateTypeAnnotation} = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
-const {resolveTypeAnnotation} = require('../flow/utils');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -409,7 +410,7 @@ describe('buildSchemaFromConfigType', () => {
     (_ast, _parser) => componentSchemaMock,
   );
   const buildModuleSchemaMock = jest.fn(
-    (_0, _1, _2, _3, _4, _5) => moduleSchemaMock,
+    (_0, _1, _2, _3, _4) => moduleSchemaMock,
   );
 
   const buildSchemaFromConfigTypeHelper = (
@@ -424,7 +425,6 @@ describe('buildSchemaFromConfigType', () => {
       buildComponentSchemaMock,
       buildModuleSchemaMock,
       parser,
-      resolveTypeAnnotation,
       flowTranslateTypeAnnotation,
     );
 
@@ -507,7 +507,6 @@ describe('buildSchemaFromConfigType', () => {
             astMock,
             expect.any(Function),
             parser,
-            resolveTypeAnnotation,
             flowTranslateTypeAnnotation,
           );
 
@@ -679,7 +678,6 @@ describe('buildSchema', () => {
         buildModuleSchema,
         Visitor,
         parser,
-        resolveTypeAnnotation,
         flowTranslateTypeAnnotation,
       );
 
@@ -713,7 +711,6 @@ describe('buildSchema', () => {
         buildModuleSchema,
         Visitor,
         flowParser,
-        resolveTypeAnnotation,
         flowTranslateTypeAnnotation,
       );
 
@@ -768,7 +765,6 @@ describe('buildSchema', () => {
         buildModuleSchema,
         Visitor,
         flowParser,
-        resolveTypeAnnotation,
         flowTranslateTypeAnnotation,
       );
 
@@ -1064,7 +1060,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).toThrow(expected);
@@ -1079,7 +1074,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).not.toThrow();
@@ -1116,7 +1110,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).toThrow(expected);
@@ -1131,7 +1124,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).not.toThrow();
@@ -1171,7 +1163,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).toThrow(expected);
@@ -1186,7 +1177,6 @@ describe('buildModuleSchema', () => {
           ast,
           tryParse,
           flowParser,
-          resolveTypeAnnotation,
           flowTranslateTypeAnnotation,
         ),
       ).not.toThrow();
@@ -1229,7 +1219,6 @@ describe('buildModuleSchema', () => {
       ast,
       tryParse,
       flowParser,
-      resolveTypeAnnotation,
       flowTranslateTypeAnnotation,
     );
 
@@ -1555,5 +1544,122 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
       ];
       expect(propertyNames(properties)).toEqual([]);
     });
+  });
+});
+
+describe('getTypeResolutionStatus', () => {
+  it('returns type resolution status for a type declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    expect(
+      getTypeResolutionStatus('alias', typeAnnotation, flowParser),
+    ).toEqual({
+      successful: true,
+      type: 'alias',
+      name: 'TypeAnnotationName',
+    });
+  });
+
+  it('returns type resolution status for an enum declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    expect(getTypeResolutionStatus('enum', typeAnnotation, flowParser)).toEqual(
+      {
+        successful: true,
+        type: 'enum',
+        name: 'TypeAnnotationName',
+      },
+    );
+  });
+});
+
+describe('handleGenericTypeAnnotation', () => {
+  it('returns when TypeAnnotation is a type declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'TypeAlias',
+      right: {
+        type: 'TypeAnnotation',
+      },
+    };
+    expect(
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toEqual({
+      typeAnnotation: {
+        type: 'TypeAnnotation',
+      },
+      typeResolutionStatus: {
+        successful: true,
+        type: 'alias',
+        name: 'TypeAnnotationName',
+      },
+    });
+  });
+
+  it('returns when TypeAnnotation is an enum declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'EnumDeclaration',
+      body: {
+        type: 'TypeAnnotation',
+      },
+    };
+    expect(
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toEqual({
+      typeAnnotation: {
+        type: 'TypeAnnotation',
+      },
+      typeResolutionStatus: {
+        successful: true,
+        type: 'enum',
+        name: 'TypeAnnotationName',
+      },
+    });
+  });
+
+  it('throws when the non GenericTypeAnnotation is unsupported', () => {
+    const typeAnnotation = {
+      type: 'UnsupportedTypeAnnotation',
+      id: {
+        name: 'UnsupportedType',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'UnsupportedTypeAnnotation',
+    };
+    expect(() =>
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toThrow(
+      new Error(
+        parser.genericTypeAnnotationErrorMessage(resolvedTypeAnnotation),
+      ),
+    );
   });
 });

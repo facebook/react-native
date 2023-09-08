@@ -320,6 +320,32 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
     Float scale;
     };
 
+  enum class OnArrayEventTypeString_enum_event_prop {
+    YES,
+    NO
+  };
+
+  static char const *toString(const OnArrayEventTypeString_enum_event_prop value) {
+    switch (value) {
+      case OnArrayEventTypeString_enum_event_prop::YES: return \\"YES\\";
+      case OnArrayEventTypeString_enum_event_prop::NO: return \\"NO\\";
+    }
+  }
+
+  struct OnArrayEventTypeArray_object_event_prop {
+      double lat;
+    double lon;
+    std::vector<std::string> names;
+    };
+
+  struct OnArrayEventType {
+      std::vector<bool> bool_array_event_prop;
+    std::vector<OnArrayEventTypeString_enum_event_prop> string_enum_event_prop;
+    std::vector<std::vector<std::string>> array_array_event_prop;
+    std::vector<OnArrayEventTypeArray_object_event_prop> array_object_event_prop;
+    std::vector<folly::dynamic> array_mixed_event_prop;
+    };
+
   struct OnEventDirect {
       bool value;
     };
@@ -344,6 +370,8 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
       folly::dynamic value;
     };
   void onChange(OnChange value) const;
+
+  void onArrayEventType(OnArrayEventType value) const;
 
   void onEventDirect(OnEventDirect value) const;
 

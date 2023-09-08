@@ -25,14 +25,14 @@ Task::Task(
       callback(std::move(callback)),
       expirationTime(expirationTime) {}
 
-jsi::Value Task::execute(jsi::Runtime &runtime, bool didUserCallbackTimeout) {
+jsi::Value Task::execute(jsi::Runtime& runtime, bool didUserCallbackTimeout) {
   auto result = jsi::Value::undefined();
   // Canceled task doesn't have a callback.
   if (!callback) {
     return result;
   }
 
-  auto &cbVal = callback.value();
+  auto& cbVal = callback.value();
 
   if (cbVal.index() == 0) {
     // Callback in JavaScript is expecting a single bool parameter.

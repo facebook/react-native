@@ -17,7 +17,7 @@ class BlobCollector : public jni::HybridClass<BlobCollector>,
  public:
   BlobCollector(
       jni::global_ref<jobject> blobManager,
-      const std::string &blobId);
+      const std::string& blobId);
   ~BlobCollector();
 
   static constexpr auto kJavaDescriptor =
