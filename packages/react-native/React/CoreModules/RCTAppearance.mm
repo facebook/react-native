@@ -37,15 +37,11 @@ NSString *RCTCurrentOverrideAppearancePreference()
 }
 
 UITraitCollection* getKeyWindowTraitCollection() {
-  if ([NSThread isMainThread]) {
-    return [UIApplication sharedApplication].delegate.window.traitCollection;
-  } else {
-    __block UITraitCollection* traitCollection = nil;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      traitCollection = [UIApplication sharedApplication].delegate.window.traitCollection;
-    });
-    return traitCollection;
-  }
+  __block UITraitCollection* traitCollection = nil;
+  RCTExecuteOnMainQueue(^{
+    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+  });
+  return traitCollection;
 }
 
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
