@@ -128,8 +128,8 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!self->_inBackground && [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+  RCTExecuteOnMainQueue(^{
+    if (!self->_inBackground && [RCTSharedApplication() applicationState] == UIApplicationStateBackground) {
       [self appDidMoveToBackground];
     }
   });
