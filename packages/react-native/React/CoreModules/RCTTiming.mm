@@ -127,8 +127,11 @@ RCT_EXPORT_MODULE()
 {
   _paused = YES;
   _timers = [NSMutableDictionary new];
+  _inBackground = NO;
   dispatch_async(dispatch_get_main_queue(), ^{
-    self->_inBackground = ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground);
+    if (!self->_inBackground && [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      [self appDidMoveToBackground];
+    }
   });
 
   for (NSString *name in @[
