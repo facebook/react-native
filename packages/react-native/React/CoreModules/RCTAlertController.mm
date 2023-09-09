@@ -45,7 +45,7 @@
 {
   UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
   if (style == UIUserInterfaceStyleUnspecified) {
-    UIUserInterfaceStyle style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
+    style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
         ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
         : UIUserInterfaceStyleUnspecified;
   }
