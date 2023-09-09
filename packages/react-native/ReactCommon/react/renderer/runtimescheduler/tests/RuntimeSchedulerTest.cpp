@@ -481,7 +481,7 @@ TEST_F(RuntimeSchedulerTest, basicSameThreadExecution) {
     EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -517,7 +517,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
         });
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -556,7 +556,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
         });
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -593,7 +593,7 @@ TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
         });
   });
 
-  auto hasTask = stubQueue_->waitForTasks(2, 1ms);
+  auto hasTask = stubQueue_->waitForTasks(2);
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunWork);
