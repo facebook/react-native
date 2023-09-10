@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "**/*.{cpp,h,mm}"
   s.compiler_flags         = folly_compiler_flags
@@ -48,7 +48,7 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_utils"
-    s.header_mappings_dir  = File.absolute_path("../..")
+    s.header_mappings_dir  = "../.."
   end
 
   s.dependency "RCT-Folly", folly_version

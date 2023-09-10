@@ -31,6 +31,10 @@ struct LayoutMetrics {
   DisplayType displayType{DisplayType::Flex};
   // See `LayoutDirection` for all possible options.
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
+  // Whether React Native treated cardinal directions as flow-relative
+  // directions due to being laid out in RTL with `doLeftAndRightSwapInRTL`
+  // enabled.
+  bool wasLeftAndRightSwapped{false};
   // Pixel density. Number of device pixels per density-independent pixel.
   Float pointScaleFactor{1.0};
   // How much the children of the node actually overflow in each direction.
@@ -49,7 +53,17 @@ struct LayoutMetrics {
             frame.size.height - contentInsets.top - contentInsets.bottom}};
   }
 
-  bool operator==(const LayoutMetrics &rhs) const {
+  // Origin: the outer border of the node.
+  // Size: includes content and padding (but no borders).
+  Rect getPaddingFrame() const {
+    return Rect{
+        Point{borderWidth.left, borderWidth.top},
+        Size{
+            frame.size.width - borderWidth.left - borderWidth.right,
+            frame.size.height - borderWidth.top - borderWidth.bottom}};
+  }
+
+  bool operator==(const LayoutMetrics& rhs) const {
     return std::tie(
                this->frame,
                this->contentInsets,
@@ -68,7 +82,7 @@ struct LayoutMetrics {
                rhs.overflowInset);
   }
 
-  bool operator!=(const LayoutMetrics &rhs) const {
+  bool operator!=(const LayoutMetrics& rhs) const {
     return !(*this == rhs);
   }
 };
@@ -78,14 +92,14 @@ struct LayoutMetrics {
  * `LayoutMetrics` type.
  * The value is comparable by equality with any other `LayoutMetrics` value.
  */
-static LayoutMetrics const EmptyLayoutMetrics = {
+static const LayoutMetrics EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const &object);
+std::string getDebugName(const LayoutMetrics& object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    LayoutMetrics const &object,
+    const LayoutMetrics& object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -96,7 +110,7 @@ namespace std {
 
 template <>
 struct hash<facebook::react::LayoutMetrics> {
-  size_t operator()(const facebook::react::LayoutMetrics &layoutMetrics) const {
+  size_t operator()(const facebook::react::LayoutMetrics& layoutMetrics) const {
     return folly::hash::hash_combine(
         0,
         layoutMetrics.frame,

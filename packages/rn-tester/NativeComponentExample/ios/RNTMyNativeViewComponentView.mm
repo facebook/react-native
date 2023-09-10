@@ -64,10 +64,10 @@ using namespace facebook::react;
                          alpha:1.0];
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(props);
+  const auto &oldViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(_props);
+  const auto &newViewProps = *std::static_pointer_cast<const RNTMyNativeViewProps>(props);
 
   if (oldViewProps.values != newViewProps.values) {
     if (_eventEmitter) {
@@ -100,7 +100,7 @@ using namespace facebook::react;
           newStringVector,
           newLatLonVector,
           newIntVectorVector};
-      std::static_pointer_cast<RNTMyNativeViewEventEmitter const>(_eventEmitter)->onIntArrayChanged(value);
+      std::static_pointer_cast<const RNTMyNativeViewEventEmitter>(_eventEmitter)->onIntArrayChanged(value);
     }
   }
 

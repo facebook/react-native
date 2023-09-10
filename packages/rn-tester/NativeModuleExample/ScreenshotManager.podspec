@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.description     = "ScreenshotManager"
   s.homepage        = "https://github.com/facebook/react-native.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => min_ios_version_supported }
+  s.platforms       = min_supported_versions
   s.compiler_flags  = '-Wno-nullability-completeness'
   s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }

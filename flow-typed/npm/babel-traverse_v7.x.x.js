@@ -11,7 +11,7 @@
 
 // The sections between BEGIN GENERATED and END GENERATED are generated
 // by the updateBabelTraverseTypes.js script. You can update the sections with
-// node ./xplat/js/tools/metro/scripts/updateBabelTraverseTypes.js path/to/this/file
+// node <metro>/scripts/updateBabelTraverseTypes.js path/to/this/file
 
 'use strict';
 
@@ -793,6 +793,7 @@ declare module '@babel/traverse' {
     // This section is automatically generated. Don't edit by hand.
     // See the comment at the top of the file on how to update the definitions.
     // BEGIN GENERATED NODE PATH METHODS
+    isAccessor(opts?: Opts): boolean;
     isAnyTypeAnnotation(opts?: Opts): boolean;
     isArgumentPlaceholder(opts?: Opts): boolean;
     isArrayExpression(opts?: Opts): boolean;
@@ -818,6 +819,7 @@ declare module '@babel/traverse' {
     isCallExpression(opts?: Opts): boolean;
     isCatchClause(opts?: Opts): boolean;
     isClass(opts?: Opts): boolean;
+    isClassAccessorProperty(opts?: Opts): boolean;
     isClassBody(opts?: Opts): boolean;
     isClassDeclaration(opts?: Opts): boolean;
     isClassExpression(opts?: Opts): boolean;
@@ -934,6 +936,7 @@ declare module '@babel/traverse' {
     isMemberExpression(opts?: Opts): boolean;
     isMetaProperty(opts?: Opts): boolean;
     isMethod(opts?: Opts): boolean;
+    isMiscellaneous(opts?: Opts): boolean;
     isMixedTypeAnnotation(opts?: Opts): boolean;
     isModuleDeclaration(opts?: Opts): boolean;
     isModuleExpression(opts?: Opts): boolean;
@@ -991,6 +994,7 @@ declare module '@babel/traverse' {
     isSequenceExpression(opts?: Opts): boolean;
     isSpreadElement(opts?: Opts): boolean;
     isSpreadProperty(opts?: Opts): boolean;
+    isStandardized(opts?: Opts): boolean;
     isStatement(opts?: Opts): boolean;
     isStaticBlock(opts?: Opts): boolean;
     isStringLiteral(opts?: Opts): boolean;
@@ -1024,6 +1028,7 @@ declare module '@babel/traverse' {
     isTSIndexSignature(opts?: Opts): boolean;
     isTSIndexedAccessType(opts?: Opts): boolean;
     isTSInferType(opts?: Opts): boolean;
+    isTSInstantiationExpression(opts?: Opts): boolean;
     isTSInterfaceBody(opts?: Opts): boolean;
     isTSInterfaceDeclaration(opts?: Opts): boolean;
     isTSIntersectionType(opts?: Opts): boolean;
@@ -1046,6 +1051,7 @@ declare module '@babel/traverse' {
     isTSPropertySignature(opts?: Opts): boolean;
     isTSQualifiedName(opts?: Opts): boolean;
     isTSRestType(opts?: Opts): boolean;
+    isTSSatisfiesExpression(opts?: Opts): boolean;
     isTSStringKeyword(opts?: Opts): boolean;
     isTSSymbolKeyword(opts?: Opts): boolean;
     isTSThisType(opts?: Opts): boolean;
@@ -1074,6 +1080,7 @@ declare module '@babel/traverse' {
     isThisExpression(opts?: Opts): boolean;
     isThisTypeAnnotation(opts?: Opts): boolean;
     isThrowStatement(opts?: Opts): boolean;
+    isTopicReference(opts?: Opts): boolean;
     isTryStatement(opts?: Opts): boolean;
     isTupleExpression(opts?: Opts): boolean;
     isTupleTypeAnnotation(opts?: Opts): boolean;
@@ -1083,6 +1090,7 @@ declare module '@babel/traverse' {
     isTypeParameter(opts?: Opts): boolean;
     isTypeParameterDeclaration(opts?: Opts): boolean;
     isTypeParameterInstantiation(opts?: Opts): boolean;
+    isTypeScript(opts?: Opts): boolean;
     isTypeofTypeAnnotation(opts?: Opts): boolean;
     isUnaryExpression(opts?: Opts): boolean;
     isUnaryLike(opts?: Opts): boolean;
@@ -1100,6 +1108,7 @@ declare module '@babel/traverse' {
     isWhileStatement(opts?: Opts): boolean;
     isWithStatement(opts?: Opts): boolean;
     isYieldExpression(opts?: Opts): boolean;
+    assertAccessor(opts?: Opts): void;
     assertAnyTypeAnnotation(opts?: Opts): void;
     assertArgumentPlaceholder(opts?: Opts): void;
     assertArrayExpression(opts?: Opts): void;
@@ -1125,6 +1134,7 @@ declare module '@babel/traverse' {
     assertCallExpression(opts?: Opts): void;
     assertCatchClause(opts?: Opts): void;
     assertClass(opts?: Opts): void;
+    assertClassAccessorProperty(opts?: Opts): void;
     assertClassBody(opts?: Opts): void;
     assertClassDeclaration(opts?: Opts): void;
     assertClassExpression(opts?: Opts): void;
@@ -1241,6 +1251,7 @@ declare module '@babel/traverse' {
     assertMemberExpression(opts?: Opts): void;
     assertMetaProperty(opts?: Opts): void;
     assertMethod(opts?: Opts): void;
+    assertMiscellaneous(opts?: Opts): void;
     assertMixedTypeAnnotation(opts?: Opts): void;
     assertModuleDeclaration(opts?: Opts): void;
     assertModuleExpression(opts?: Opts): void;
@@ -1298,6 +1309,7 @@ declare module '@babel/traverse' {
     assertSequenceExpression(opts?: Opts): void;
     assertSpreadElement(opts?: Opts): void;
     assertSpreadProperty(opts?: Opts): void;
+    assertStandardized(opts?: Opts): void;
     assertStatement(opts?: Opts): void;
     assertStaticBlock(opts?: Opts): void;
     assertStringLiteral(opts?: Opts): void;
@@ -1331,6 +1343,7 @@ declare module '@babel/traverse' {
     assertTSIndexSignature(opts?: Opts): void;
     assertTSIndexedAccessType(opts?: Opts): void;
     assertTSInferType(opts?: Opts): void;
+    assertTSInstantiationExpression(opts?: Opts): void;
     assertTSInterfaceBody(opts?: Opts): void;
     assertTSInterfaceDeclaration(opts?: Opts): void;
     assertTSIntersectionType(opts?: Opts): void;
@@ -1353,6 +1366,7 @@ declare module '@babel/traverse' {
     assertTSPropertySignature(opts?: Opts): void;
     assertTSQualifiedName(opts?: Opts): void;
     assertTSRestType(opts?: Opts): void;
+    assertTSSatisfiesExpression(opts?: Opts): void;
     assertTSStringKeyword(opts?: Opts): void;
     assertTSSymbolKeyword(opts?: Opts): void;
     assertTSThisType(opts?: Opts): void;
@@ -1381,6 +1395,7 @@ declare module '@babel/traverse' {
     assertThisExpression(opts?: Opts): void;
     assertThisTypeAnnotation(opts?: Opts): void;
     assertThrowStatement(opts?: Opts): void;
+    assertTopicReference(opts?: Opts): void;
     assertTryStatement(opts?: Opts): void;
     assertTupleExpression(opts?: Opts): void;
     assertTupleTypeAnnotation(opts?: Opts): void;
@@ -1390,6 +1405,7 @@ declare module '@babel/traverse' {
     assertTypeParameter(opts?: Opts): void;
     assertTypeParameterDeclaration(opts?: Opts): void;
     assertTypeParameterInstantiation(opts?: Opts): void;
+    assertTypeScript(opts?: Opts): void;
     assertTypeofTypeAnnotation(opts?: Opts): void;
     assertUnaryExpression(opts?: Opts): void;
     assertUnaryLike(opts?: Opts): void;
@@ -1431,6 +1447,7 @@ declare module '@babel/traverse' {
     // This section is automatically generated. Don't edit by hand.
     // See the comment at the top of the file on how to update the definitions.
     // BEGIN GENERATED VISITOR METHODS
+    Accessor?: VisitNode<BabelNodeAccessor, TState>,
     AnyTypeAnnotation?: VisitNode<BabelNodeAnyTypeAnnotation, TState>,
     ArgumentPlaceholder?: VisitNode<BabelNodeArgumentPlaceholder, TState>,
     ArrayExpression?: VisitNode<BabelNodeArrayExpression, TState>,
@@ -1462,6 +1479,7 @@ declare module '@babel/traverse' {
     CallExpression?: VisitNode<BabelNodeCallExpression, TState>,
     CatchClause?: VisitNode<BabelNodeCatchClause, TState>,
     Class?: VisitNode<BabelNodeClass, TState>,
+    ClassAccessorProperty?: VisitNode<BabelNodeClassAccessorProperty, TState>,
     ClassBody?: VisitNode<BabelNodeClassBody, TState>,
     ClassDeclaration?: VisitNode<BabelNodeClassDeclaration, TState>,
     ClassExpression?: VisitNode<BabelNodeClassExpression, TState>,
@@ -1598,6 +1616,7 @@ declare module '@babel/traverse' {
     MemberExpression?: VisitNode<BabelNodeMemberExpression, TState>,
     MetaProperty?: VisitNode<BabelNodeMetaProperty, TState>,
     Method?: VisitNode<BabelNodeMethod, TState>,
+    Miscellaneous?: VisitNode<BabelNodeMiscellaneous, TState>,
     MixedTypeAnnotation?: VisitNode<BabelNodeMixedTypeAnnotation, TState>,
     ModuleDeclaration?: VisitNode<BabelNodeModuleDeclaration, TState>,
     ModuleExpression?: VisitNode<BabelNodeModuleExpression, TState>,
@@ -1682,6 +1701,7 @@ declare module '@babel/traverse' {
     SequenceExpression?: VisitNode<BabelNodeSequenceExpression, TState>,
     SpreadElement?: VisitNode<BabelNodeSpreadElement, TState>,
     SpreadProperty?: VisitNode<BabelNode, TState>,
+    Standardized?: VisitNode<BabelNodeStandardized, TState>,
     Statement?: VisitNode<BabelNodeStatement, TState>,
     StaticBlock?: VisitNode<BabelNodeStaticBlock, TState>,
     StringLiteral?: VisitNode<BabelNodeStringLiteral, TState>,
@@ -1733,6 +1753,10 @@ declare module '@babel/traverse' {
     TSIndexSignature?: VisitNode<BabelNodeTSIndexSignature, TState>,
     TSIndexedAccessType?: VisitNode<BabelNodeTSIndexedAccessType, TState>,
     TSInferType?: VisitNode<BabelNodeTSInferType, TState>,
+    TSInstantiationExpression?: VisitNode<
+      BabelNodeTSInstantiationExpression,
+      TState,
+    >,
     TSInterfaceBody?: VisitNode<BabelNodeTSInterfaceBody, TState>,
     TSInterfaceDeclaration?: VisitNode<BabelNodeTSInterfaceDeclaration, TState>,
     TSIntersectionType?: VisitNode<BabelNodeTSIntersectionType, TState>,
@@ -1758,6 +1782,7 @@ declare module '@babel/traverse' {
     TSPropertySignature?: VisitNode<BabelNodeTSPropertySignature, TState>,
     TSQualifiedName?: VisitNode<BabelNodeTSQualifiedName, TState>,
     TSRestType?: VisitNode<BabelNodeTSRestType, TState>,
+    TSSatisfiesExpression?: VisitNode<BabelNodeTSSatisfiesExpression, TState>,
     TSStringKeyword?: VisitNode<BabelNodeTSStringKeyword, TState>,
     TSSymbolKeyword?: VisitNode<BabelNodeTSSymbolKeyword, TState>,
     TSThisType?: VisitNode<BabelNodeTSThisType, TState>,
@@ -1795,6 +1820,7 @@ declare module '@babel/traverse' {
     ThisExpression?: VisitNode<BabelNodeThisExpression, TState>,
     ThisTypeAnnotation?: VisitNode<BabelNodeThisTypeAnnotation, TState>,
     ThrowStatement?: VisitNode<BabelNodeThrowStatement, TState>,
+    TopicReference?: VisitNode<BabelNodeTopicReference, TState>,
     TryStatement?: VisitNode<BabelNodeTryStatement, TState>,
     TupleExpression?: VisitNode<BabelNodeTupleExpression, TState>,
     TupleTypeAnnotation?: VisitNode<BabelNodeTupleTypeAnnotation, TState>,
@@ -1810,6 +1836,7 @@ declare module '@babel/traverse' {
       BabelNodeTypeParameterInstantiation,
       TState,
     >,
+    TypeScript?: VisitNode<BabelNodeTypeScript, TState>,
     TypeofTypeAnnotation?: VisitNode<BabelNodeTypeofTypeAnnotation, TState>,
     UnaryExpression?: VisitNode<BabelNodeUnaryExpression, TState>,
     UnaryLike?: VisitNode<BabelNodeUnaryLike, TState>,

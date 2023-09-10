@@ -8,6 +8,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+# Convert input paths to CMake format (with forward slashes)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
+file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
@@ -61,9 +66,9 @@ add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
 add_react_common_subdir(butter)
 add_react_common_subdir(callinvoker)
-add_react_common_subdir(jsinspector)
+add_react_common_subdir(jsinspector-modern)
 add_react_common_subdir(hermes/executor)
-add_react_common_subdir(hermes/inspector)
+add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
@@ -99,9 +104,9 @@ add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
 add_react_common_subdir(jserrorhandler)
-add_react_common_subdir(react/bridgeless)
-add_react_common_subdir(react/bridgeless/hermes)
-add_react_common_subdir(react/bridgeless/nativeviewconfig)
+add_react_common_subdir(react/runtime)
+add_react_common_subdir(react/runtime/hermes)
+add_react_common_subdir(react/runtime/nativeviewconfig)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
@@ -119,9 +124,9 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
-add_react_android_subdir(src/main/jni/react/bridgeless/jni)
-add_react_android_subdir(src/main/jni/react/bridgeless/hermes/jni)
-add_react_android_subdir(src/main/jni/react/bridgeless/jsc/jni)
+add_react_android_subdir(src/main/jni/react/runtime/jni)
+add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
+add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
 
 # GTest dependencies
 add_executable(reactnative_unittest
@@ -129,8 +134,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/MessageTests.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/RemoteObjectsTableTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
@@ -172,15 +175,12 @@ add_executable(reactnative_unittest
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
 
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
-  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionDemuxTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/detail/tests/SerialExecutorTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/tests/InspectorTests.cpp
+  # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionDemuxTests.cpp
 
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionTests.cpp
   )
   target_compile_options(reactnative_unittest
     PRIVATE
@@ -198,7 +198,7 @@ add_executable(reactnative_unittest
   glog_init
   gtest_main
   hermes-engine::libhermes
-  hermes_inspector
+  hermes_inspector_modern
   jsi
   react_codegen_rncore
   react_debug

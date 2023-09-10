@@ -121,8 +121,8 @@ function detectArrayType<T>(
   // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
-      typeAnnotation.typeName.name === 'Array')
+    (parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -378,7 +378,7 @@ function getTypeAnnotation<T>(
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
     typeAnnotation.type === 'TSTypeAliasDeclaration'
-      ? typeAnnotation.typeName.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   const common = getCommonTypeAnnotation(
@@ -414,7 +414,6 @@ function getTypeAnnotation<T>(
         `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
       );
     default:
-      (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }

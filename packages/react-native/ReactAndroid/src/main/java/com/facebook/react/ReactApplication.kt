@@ -8,7 +8,7 @@
 package com.facebook.react
 
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.interfaces.ReactHostInterface
+import com.facebook.react.interfaces.ReactHost
 
 @OptIn(UnstableReactNativeAPI::class)
 /** Interface that represents an instance of a React Native application */
@@ -20,6 +20,6 @@ interface ReactApplication {
    * Get the default [ReactHostInterface] for this app. This method will be used by the new
    * architecture of react native
    */
-  val reactHostInterface: ReactHostInterface?
+  val reactHostInterface: ReactHost?
     get() = null
 }

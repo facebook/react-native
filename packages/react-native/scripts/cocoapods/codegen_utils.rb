@@ -93,6 +93,7 @@ class CodegenUtils
             "\"$(PODS_ROOT)/DoubleConversion\"",
             "\"$(PODS_TARGET_SRCROOT)\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
@@ -116,9 +117,7 @@ class CodegenUtils
           'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
           'source' => { :git => '' },
           'header_mappings_dir' => './',
-          'platforms' => {
-            'ios' => min_ios_version_supported,
-          },
+          'platforms' => min_supported_versions,
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),

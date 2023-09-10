@@ -35,6 +35,7 @@ import java.util.Set;
  * and also dispatch the appropriate event to JS
  */
 public class JSPointerDispatcher {
+  private static final int UNSELECTED_VIEW_TAG = -1;
   private static final int UNSET_POINTER_ID = -1;
   private static final float ONMOVE_EPSILON = 0.1f;
   private static final String TAG = "POINTER EVENTS";
@@ -69,48 +70,24 @@ public class JSPointerDispatcher {
     }
 
     MotionEvent motionInRoot = convertMotionToRootFrame(childView, motionEvent);
+    motionInRoot.setAction(MotionEvent.ACTION_CANCEL);
+    handleMotionEvent(motionInRoot, eventDispatcher, false);
 
-    dispatchCancelEventForTarget(childView, motionInRoot, eventDispatcher);
     mChildHandlingNativeGesture = childView.getId();
-
-    // clear "previous" state since interaction was canceled
-    resetPreviousStateForMotionEvent(motionEvent);
   }
 
   private MotionEvent convertMotionToRootFrame(View childView, MotionEvent childMotion) {
     MotionEvent motionInRoot = MotionEvent.obtain(childMotion);
-    final int cX = (int) childMotion.getX();
-    final int cY = (int) childMotion.getY();
-    Rect childCoords = new Rect(cX, cY, cX + 1, cY + 1);
-    // note: should be safe since we're only looking at descendants of the root
-    mRootViewGroup.offsetDescendantRectToMyCoords(childView, childCoords);
-    motionInRoot.setLocation(childCoords.left, childCoords.top);
+
+    int[] location = new int[2];
+    mRootViewGroup.getLocationOnScreen(location);
+    float screenX = childMotion.getRawX();
+    float screenY = childMotion.getRawY();
+    float clientX = screenX - location[0];
+    float clientY = screenY - location[1];
+    motionInRoot.setLocation(clientX, clientY);
 
     return motionInRoot;
-  }
-
-  private void updatePreviousStateFromEvent(MotionEvent event, PointerEventState eventState) {
-    // Caching the event state so we have a new "last"
-    // note: we need to make copies here as the eventState may be accessed later and we don't want
-    // mutations of these instance vars to affect it
-    mLastHitPathByPointerId = new HashMap<>(eventState.getHitPathByPointerId());
-    mLastEventCoordinatesByPointerId = new HashMap<>(eventState.getEventCoordinatesByPointerId());
-    mLastButtonState = event.getButtonState();
-
-    // Clean up any stale pointerIds
-    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
-    mHoveringPointerIds.retainAll(allPointerIds);
-  }
-
-  private void resetPreviousStateForMotionEvent(MotionEvent event) {
-    int activePointerId = event.getPointerId(event.getActionIndex());
-    if (mLastHitPathByPointerId != null) {
-      mLastHitPathByPointerId.remove(activePointerId);
-    }
-    if (mLastEventCoordinatesByPointerId != null) {
-      mLastEventCoordinatesByPointerId.remove(activePointerId);
-    }
-    mLastButtonState = 0;
   }
 
   public void onChildEndedNativeGesture() {
@@ -391,6 +368,7 @@ public class JSPointerDispatcher {
         break;
       case MotionEvent.ACTION_CANCEL:
         dispatchCancelEventForTarget(activeTargetView, eventState, motionEvent, eventDispatcher);
+        handleHitStateDivergence(UNSELECTED_VIEW_TAG, eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_HOVER_ENTER:
         // Ignore these events as enters will be calculated from HOVER_MOVE
@@ -410,7 +388,15 @@ public class JSPointerDispatcher {
         return;
     }
 
-    updatePreviousStateFromEvent(motionEvent, eventState);
+    // Update "previous" pointer coordinates and button state
+    Map<Integer, float[]> nextEventCoordinatesByPointerId =
+        new HashMap<>(eventState.getEventCoordinatesByPointerId());
+    mLastEventCoordinatesByPointerId = nextEventCoordinatesByPointerId;
+    mLastButtonState = motionEvent.getButtonState();
+
+    // Clean up any stale pointerIds
+    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
+    mHoveringPointerIds.retainAll(allPointerIds);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
@@ -485,7 +471,10 @@ public class JSPointerDispatcher {
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher) {
     int activePointerId = eventState.getActivePointerId();
-    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
+    List<ViewTarget> activeHitPath =
+        targetTag != UNSELECTED_VIEW_TAG
+            ? eventState.getHitPathByPointerId().get(activePointerId)
+            : new ArrayList<ViewTarget>();
     List<ViewTarget> lastHitPath =
         mLastHitPathByPointerId != null && mLastHitPathByPointerId.containsKey(activePointerId)
             ? mLastHitPathByPointerId.get(activePointerId)
@@ -580,6 +569,14 @@ public class JSPointerDispatcher {
             eventDispatcher);
       }
     }
+
+    Map<Integer, List<TouchTargetHelper.ViewTarget>> nextHitPathByPointerId =
+        new HashMap<>(eventState.getHitPathByPointerId());
+
+    if (targetTag == UNSELECTED_VIEW_TAG) {
+      nextHitPathByPointerId.remove(activePointerId);
+    }
+    mLastHitPathByPointerId = nextHitPathByPointerId;
   }
 
   private void onMove(
@@ -601,18 +598,6 @@ public class JSPointerDispatcher {
               motionEvent,
               getCoalescingKey()));
     }
-  }
-
-  private void dispatchCancelEventForTarget(
-      View targetView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    Assertions.assertCondition(
-        mChildHandlingNativeGesture == -1,
-        "Expected to not have already sent a cancel for this gesture");
-
-    int activeIndex = motionEvent.getActionIndex();
-    int activePointerId = motionEvent.getPointerId(activeIndex);
-    PointerEventState eventState = createEventState(activePointerId, motionEvent);
-    dispatchCancelEventForTarget(targetView, eventState, motionEvent, eventDispatcher);
   }
 
   private void dispatchCancelEventForTarget(
@@ -650,26 +635,7 @@ public class JSPointerDispatcher {
                     motionEvent));
       }
 
-      // Need to fire pointer out + pointer leave here as well:
-      // https://w3c.github.io/pointerevents/#dfn-suppress-a-pointer-event-stream
-      List<ViewTarget> outViewTargets =
-          filterByShouldDispatch(activeHitPath, EVENT.OUT, EVENT.OUT_CAPTURE, false);
-      List<ViewTarget> leaveViewTargets =
-          filterByShouldDispatch(activeHitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
-
-      // dispatch from target -> root
-      dispatchEventForViewTargets(
-          PointerEventHelper.POINTER_OUT, eventState, motionEvent, outViewTargets, eventDispatcher);
-      dispatchEventForViewTargets(
-          PointerEventHelper.POINTER_LEAVE,
-          eventState,
-          motionEvent,
-          leaveViewTargets,
-          eventDispatcher);
-
       incrementCoalescingKey();
-      mHoveringPointerIds.remove(mPrimaryPointerId);
-      mHoveringPointerIds.remove(activePointerId);
       mPrimaryPointerId = UNSET_POINTER_ID;
     }
   }

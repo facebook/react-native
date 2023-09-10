@@ -11,14 +11,14 @@
 
 using namespace facebook::react;
 
-bool ReactNativeConfigHolder::getBool(const std::string &param) const {
+bool ReactNativeConfigHolder::getBool(const std::string& param) const {
   static const auto method = facebook::jni::findClassStatic(
                                  "com/facebook/react/fabric/ReactNativeConfig")
                                  ->getMethod<jboolean(jstring)>("getBool");
   return method(reactNativeConfig_, facebook::jni::make_jstring(param).get());
 }
 
-std::string ReactNativeConfigHolder::getString(const std::string &param) const {
+std::string ReactNativeConfigHolder::getString(const std::string& param) const {
   static const auto method = facebook::jni::findClassStatic(
                                  "com/facebook/react/fabric/ReactNativeConfig")
                                  ->getMethod<jstring(jstring)>("getString");
@@ -26,14 +26,14 @@ std::string ReactNativeConfigHolder::getString(const std::string &param) const {
       ->toString();
 }
 
-int64_t ReactNativeConfigHolder::getInt64(const std::string &param) const {
+int64_t ReactNativeConfigHolder::getInt64(const std::string& param) const {
   static const auto method = facebook::jni::findClassStatic(
                                  "com/facebook/react/fabric/ReactNativeConfig")
                                  ->getMethod<jlong(jstring)>("getInt64");
   return method(reactNativeConfig_, facebook::jni::make_jstring(param).get());
 }
 
-double ReactNativeConfigHolder::getDouble(const std::string &param) const {
+double ReactNativeConfigHolder::getDouble(const std::string& param) const {
   static const auto method = facebook::jni::findClassStatic(
                                  "com/facebook/react/fabric/ReactNativeConfig")
                                  ->getMethod<jdouble(jstring)>("getDouble");

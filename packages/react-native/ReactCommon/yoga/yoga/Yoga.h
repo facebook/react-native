@@ -7,16 +7,9 @@
 
 #pragma once
 
-#include <assert.h>
-#include <math.h>
 #include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifndef __cplusplus
 #include <stdbool.h>
-#endif
+#include <stdint.h>
 
 #include <yoga/YGEnums.h>
 #include <yoga/YGMacros.h>
@@ -79,7 +72,7 @@ WIN_EXPORT void YGNodeRemoveAllChildren(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetOwner(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
-WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeRef node);
+WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeConstRef node);
 WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef owner,
     const YGNodeRef* children,
@@ -115,15 +108,17 @@ WIN_EXPORT void YGNodePrint(YGNodeRef node, YGPrintOptions options);
 
 WIN_EXPORT bool YGFloatIsUndefined(float value);
 
+// TODO: This should not be part of the public API. Remove after removing
+// ComponentKit usage of it.
 WIN_EXPORT bool YGNodeCanUseCachedMeasurement(
     YGMeasureMode widthMode,
-    float width,
+    float availableWidth,
     YGMeasureMode heightMode,
-    float height,
+    float availableHeight,
     YGMeasureMode lastWidthMode,
-    float lastWidth,
+    float lastAvailableWidth,
     YGMeasureMode lastHeightMode,
-    float lastHeight,
+    float lastAvailableHeight,
     float lastComputedWidth,
     float lastComputedHeight,
     float marginRow,
@@ -303,15 +298,6 @@ WIN_EXPORT float YGNodeLayoutGetBorder(YGNodeRef node, YGEdge edge);
 WIN_EXPORT float YGNodeLayoutGetPadding(YGNodeRef node, YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(YGConfigRef config, YGLogger logger);
-WIN_EXPORT void YGAssert(bool condition, const char* message);
-WIN_EXPORT void YGAssertWithNode(
-    YGNodeRef node,
-    bool condition,
-    const char* message);
-WIN_EXPORT void YGAssertWithConfig(
-    YGConfigRef config,
-    bool condition,
-    const char* message);
 // Set this to number of pixels in 1 point to round calculation results If you
 // want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(
@@ -343,7 +329,6 @@ void YGConfigSetUseLegacyStretchBehaviour(
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
 WIN_EXPORT void YGConfigFree(YGConfigRef config);
-WIN_EXPORT void YGConfigCopy(YGConfigRef dest, YGConfigRef src);
 WIN_EXPORT int32_t YGConfigGetInstanceCount(void);
 
 WIN_EXPORT void YGConfigSetExperimentalFeatureEnabled(

@@ -18,7 +18,8 @@ void registerNatives(
 
   assertNoPendingJniExceptionIf(env, !clazz);
 
-  auto result = env->RegisterNatives(clazz, methods, numMethods);
+  auto result =
+      env->RegisterNatives(clazz, methods, static_cast<int32_t>(numMethods));
 
   assertNoPendingJniExceptionIf(env, result != JNI_OK);
 }

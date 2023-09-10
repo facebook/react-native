@@ -15,6 +15,7 @@ require_relative './cocoapods/codegen_utils.rb'
 require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
+require_relative './cocoapods/runtime.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -34,11 +35,16 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-# This function returns the min iOS version supported by React Native
-# By using this function, you won't have to manually change your Podfile
-# when we change the minimum version supported by the framework.
+
 def min_ios_version_supported
   return '13.4'
+end
+
+# This function returns the min supported OS versions supported by React Native
+# By using this function, you won't have to manually change your Podfile
+# when we change the minimum version supported by the framework.
+def min_supported_versions
+  return  { :ios => min_ios_version_supported }
 end
 
 # This function prepares the project for React Native, before processing
@@ -119,18 +125,22 @@ def use_react_native! (
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
+  pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
+  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
 
   if hermes_enabled
-    setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
+    setup_hermes!(:react_native_path => prefix)
   else
     setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
-  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
+  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
@@ -139,7 +149,7 @@ def use_react_native! (
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec", :modular_headers => true
+  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
@@ -158,12 +168,19 @@ def use_react_native! (
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
-  if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
-    setup_fabric!(:react_native_path => prefix, new_arch_enabled: new_arch_enabled)
-  else
+  # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
+  # If the New Arch is turned off, we will use the Old Renderer, though.
+  # RNTester always installed Fabric, this change is required to make the template work.
+  setup_fabric!(:react_native_path => prefix)
+  checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
+
+  if !fabric_enabled
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
     build_codegen!(prefix, relative_installation_root)
+  end
+
+  if new_arch_enabled
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
   # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
@@ -235,14 +252,16 @@ def react_native_post_install(
   end
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
+  hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
 
-  if ReactNativePodsUtils.has_pod(installer, "React-hermes")
+  if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
     ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
+  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)

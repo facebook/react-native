@@ -151,6 +151,12 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     view.setBorderStyle(borderStyle);
   }
 
+  // This is unused by the view manager, and not wired to be sent to Java, but
+  // must be present for the prop to show up in the view config.
+  @ReactProp(name = "experimental_layoutConformance")
+  public void setexperimental_layoutConformance(
+      ReactViewGroup view, @Nullable String layoutConformance) {}
+
   @ReactProp(name = "hitSlop")
   public void setHitSlop(final ReactViewGroup view, Dynamic hitSlop) {
     switch (hitSlop.getType()) {
@@ -308,8 +314,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  public void setTransform(@NonNull ReactViewGroup view, @Nullable ReadableArray matrix) {
-    super.setTransform(view, matrix);
+  protected void setTransformProperty(
+      @NonNull ReactViewGroup view,
+      @Nullable ReadableArray transforms,
+      @Nullable ReadableArray transformOrigin) {
+    super.setTransformProperty(view, transforms, transformOrigin);
     view.setBackfaceVisibilityDependantOpacity();
   }
 

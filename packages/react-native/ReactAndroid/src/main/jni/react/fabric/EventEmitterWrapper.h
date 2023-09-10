@@ -17,7 +17,7 @@ class Instance;
 
 class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/events/EventEmitterWrapper;";
 
   static void registerNatives();
@@ -27,10 +27,10 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
 
   SharedEventEmitter eventEmitter;
 
-  void dispatchEvent(std::string eventName, NativeMap *params, int category);
+  void dispatchEvent(std::string eventName, NativeMap* params, int category);
   void dispatchUniqueEvent(
       std::string eventName,
-      NativeMap *params,
+      NativeMap* params,
       int customCoalesceKey);
 };
 

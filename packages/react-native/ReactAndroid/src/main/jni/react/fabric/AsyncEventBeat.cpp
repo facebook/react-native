@@ -14,8 +14,8 @@
 namespace facebook::react {
 
 AsyncEventBeat::AsyncEventBeat(
-    EventBeat::SharedOwnerBox const &ownerBox,
-    EventBeatManager *eventBeatManager,
+    const EventBeat::SharedOwnerBox& ownerBox,
+    EventBeatManager* eventBeatManager,
     RuntimeExecutor runtimeExecutor,
     jni::global_ref<jobject> javaUIManager)
     : EventBeat(ownerBox),
@@ -37,7 +37,7 @@ void AsyncEventBeat::tick() const {
   isRequested_ = false;
   isBeatCallbackScheduled_ = true;
 
-  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime &runtime) {
+  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
     isBeatCallbackScheduled_ = false;
     auto owner = ownerBox->owner.lock();
     if (!owner) {

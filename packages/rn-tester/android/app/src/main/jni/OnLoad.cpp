@@ -22,7 +22,7 @@ namespace react {
 extern const char RNTMyNativeViewName[] = "RNTMyLegacyNativeView";
 
 void registerComponents(
-    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
+    std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
   registry->add(concreteComponentDescriptorProvider<
                 RNTMyNativeViewComponentDescriptor>());
   registry->add(concreteComponentDescriptorProvider<
@@ -31,8 +31,8 @@ void registerComponents(
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
-    const std::string &name,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::string& name,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
   if (name == NativeCxxModuleExample::kModuleName) {
     return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   }
@@ -40,8 +40,8 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
-    const std::string &name,
-    const JavaTurboModule::InitParams &params) {
+    const std::string& name,
+    const JavaTurboModule::InitParams& params) {
   auto module = AppSpecs_ModuleProvider(name, params);
   if (module != nullptr) {
     return module;
@@ -56,7 +56,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
 } // namespace react
 } // namespace facebook
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::DefaultTurboModuleManagerDelegate::cxxModuleProvider =
         &facebook::react::cxxModuleProvider;

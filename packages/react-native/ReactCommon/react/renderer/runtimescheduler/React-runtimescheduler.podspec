@@ -21,6 +21,7 @@ folly_version = '2021.07.22.00'
 
 header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_ROOT)/boost\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -35,7 +36,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "**/*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags
@@ -47,7 +48,7 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_runtimescheduler"
-    s.header_mappings_dir  = File.absolute_path("../../..")
+    s.header_mappings_dir  = "../../.."
   end
 
   s.dependency "React-jsi"
@@ -60,8 +61,6 @@ Pod::Spec.new do |s|
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsi"
   end
 
 end

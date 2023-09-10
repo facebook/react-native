@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
     s.homepage               = "https://reactnative.dev/"
     s.license                = package["license"]
     s.author                 = "Meta Platforms, Inc. and its affiliates"
-    s.platforms              = { :ios => min_ios_version_supported }
+    s.platforms              = min_supported_versions
     s.source                 = source
     s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
     s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                 "GCC_WARN_PEDANTIC" => "YES" }
     if ENV['USE_FRAMEWORKS']
-        s.header_mappings_dir     = File.absolute_path('./')
+        s.header_mappings_dir     = './'
     end
 
     s.source_files = "ReactCommon/**/*.{mm,cpp,h}"

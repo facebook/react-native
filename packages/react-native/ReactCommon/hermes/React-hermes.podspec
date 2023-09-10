@@ -28,12 +28,12 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package['license']
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :osx => "10.14", :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "executor/*.{cpp,h}",
-                             "inspector/*.{cpp,h}",
-                             "inspector/chrome/*.{cpp,h}",
-                             "inspector/detail/*.{cpp,h}"
+                             "inspector-modern/*.{cpp,h}",
+                             "inspector-modern/chrome/*.{cpp,h}",
+                             "inspector-modern/detail/*.{cpp,h}"
   s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {

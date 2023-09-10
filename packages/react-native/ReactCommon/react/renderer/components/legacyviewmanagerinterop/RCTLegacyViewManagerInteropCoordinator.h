@@ -29,7 +29,7 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (void)removeObserveForTag:(NSInteger)tag;
 
-- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
+- (void)setProps:(const folly::dynamic &)props forView:(UIView *)view;
 
 - (NSString *)componentViewName;
 

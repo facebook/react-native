@@ -136,7 +136,7 @@ TurboModuleManager::createTurboModuleProvider() {
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
-             const std::string &name) -> std::shared_ptr<TurboModule> {
+             const std::string& name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
@@ -148,7 +148,7 @@ TurboModuleManager::createTurboModuleProvider() {
       return nullptr;
     }
 
-    const char *moduleName = name.c_str();
+    const char* moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
@@ -170,7 +170,7 @@ TurboModuleManager::createTurboModuleProvider() {
     static auto getTurboLegacyCxxModule =
         javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-                const std::string &)>("getTurboLegacyCxxModule");
+                const std::string&)>("getTurboLegacyCxxModule");
     auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
@@ -186,7 +186,7 @@ TurboModuleManager::createTurboModuleProvider() {
 
     static auto getTurboJavaModule =
         javaPart->getClass()
-            ->getMethod<jni::alias_ref<JTurboModule>(const std::string &)>(
+            ->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>(
                 "getTurboJavaModule");
     auto moduleInstance = getTurboJavaModule(javaPart.get(), name);
 
@@ -216,7 +216,7 @@ TurboModuleManager::createLegacyModuleProvider() {
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
-             const std::string &name) -> std::shared_ptr<TurboModule> {
+             const std::string& name) -> std::shared_ptr<TurboModule> {
     auto legacyModuleCache = legacyModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
@@ -228,7 +228,7 @@ TurboModuleManager::createLegacyModuleProvider() {
       return nullptr;
     }
 
-    const char *moduleName = name.c_str();
+    const char* moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
@@ -244,7 +244,7 @@ TurboModuleManager::createLegacyModuleProvider() {
     static auto getLegacyCxxModule =
         javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-                const std::string &)>("getLegacyCxxModule");
+                const std::string&)>("getLegacyCxxModule");
     auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
@@ -260,7 +260,7 @@ TurboModuleManager::createLegacyModuleProvider() {
 
     static auto getLegacyJavaModule =
         javaPart->getClass()
-            ->getMethod<jni::alias_ref<JNativeModule>(const std::string &)>(
+            ->getMethod<jni::alias_ref<JNativeModule>(const std::string&)>(
                 "getLegacyJavaModule");
     auto moduleInstance = getLegacyJavaModule(javaPart.get(), name);
 
@@ -307,7 +307,7 @@ void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
 
   bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
-  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime &runtime) {
+  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime& runtime) {
     if (isInteropLayerDisabled) {
       TurboModuleBinding::install(runtime, createTurboModuleProvider());
       return;
