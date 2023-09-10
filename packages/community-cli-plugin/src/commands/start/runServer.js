@@ -117,6 +117,10 @@ async function runServer(
     port,
     projectRoot,
     logger,
+    unstable_experiments: {
+      // NOTE: Only affects the /open-debugger endpoint
+      enableCustomDebuggerFrontend: true,
+    },
   });
 
   let reportEvent: (event: TerminalReportableEvent) => void;
