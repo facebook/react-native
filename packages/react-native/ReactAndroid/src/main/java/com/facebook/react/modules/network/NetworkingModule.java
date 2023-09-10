@@ -343,8 +343,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     // client and set the timeout explicitly on the clone.  This is cheap as everything else is
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
-    if (timeout != mClient.connectTimeoutMillis()) {
-      clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+    if (timeout != mClient.callTimeoutMillis()) {
+      clientBuilder.callTimeout(timeout, TimeUnit.MILLISECONDS);
     }
     OkHttpClient client = clientBuilder.build();
 
