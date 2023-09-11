@@ -73,6 +73,18 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes'
     end
 
+    spec.subspec 'inspector' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/*.h'
+      ss.header_dir = 'hermes/inspector'
+    end
+
+    spec.subspec 'inspector_chrome' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+      ss.header_dir = 'hermes/inspector/chrome'
+    end
+
     spec.subspec 'Public' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'public/hermes/Public/*.h'
