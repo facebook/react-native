@@ -128,6 +128,11 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
+  RCTExecuteOnMainQueue(^{
+    if (!self->_inBackground && [RCTSharedApplication() applicationState] == UIApplicationStateBackground) {
+      [self appDidMoveToBackground];
+    }
+  });
 
   for (NSString *name in @[
          UIApplicationWillResignActiveNotification,
