@@ -125,8 +125,8 @@ void roundLayoutResultsToPixelGrid(
               absoluteNodeTop, pointScaleFactor, false, textRounding),
       YGDimensionHeight);
 
-  const uint32_t childCount = YGNodeGetChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
     roundLayoutResultsToPixelGrid(
         node->getChild(i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }
