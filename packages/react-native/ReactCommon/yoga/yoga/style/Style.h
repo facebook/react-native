@@ -20,7 +20,7 @@
 
 namespace facebook::yoga {
 
-class YOGA_EXPORT Style {
+class YG_EXPORT Style {
   template <typename Enum>
   using Values = std::array<CompactValue, enums::count<Enum>()>;
 
@@ -224,8 +224,8 @@ public:
   Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() { return {*this}; }
 };
 
-YOGA_EXPORT bool operator==(const Style& lhs, const Style& rhs);
-YOGA_EXPORT inline bool operator!=(const Style& lhs, const Style& rhs) {
+YG_EXPORT bool operator==(const Style& lhs, const Style& rhs);
+YG_EXPORT inline bool operator!=(const Style& lhs, const Style& rhs) {
   return !(lhs == rhs);
 }
 } // namespace facebook::yoga
