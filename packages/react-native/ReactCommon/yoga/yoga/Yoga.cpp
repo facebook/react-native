@@ -99,93 +99,95 @@ YOGA_EXPORT bool YGFloatIsUndefined(const float value) {
   return yoga::isUndefined(value);
 }
 
-YOGA_EXPORT void* YGNodeGetContext(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getContext();
+YOGA_EXPORT void* YGNodeGetContext(YGNodeConstRef node) {
+  return resolveRef(node)->getContext();
 }
 
 YOGA_EXPORT void YGNodeSetContext(YGNodeRef node, void* context) {
-  return static_cast<yoga::Node*>(node)->setContext(context);
+  return resolveRef(node)->setContext(context);
 }
 
 YOGA_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getConfig();
+  return resolveRef(node)->getConfig();
 }
 
 YOGA_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config) {
-  static_cast<yoga::Node*>(node)->setConfig(static_cast<yoga::Config*>(config));
+  resolveRef(node)->setConfig(resolveRef(config));
 }
 
-YOGA_EXPORT bool YGNodeHasMeasureFunc(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->hasMeasureFunc();
+YOGA_EXPORT bool YGNodeHasMeasureFunc(YGNodeConstRef node) {
+  return resolveRef(node)->hasMeasureFunc();
 }
 
 YOGA_EXPORT void YGNodeSetMeasureFunc(
     YGNodeRef node,
     YGMeasureFunc measureFunc) {
-  static_cast<yoga::Node*>(node)->setMeasureFunc(measureFunc);
+  resolveRef(node)->setMeasureFunc(measureFunc);
 }
 
-YOGA_EXPORT bool YGNodeHasBaselineFunc(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->hasBaselineFunc();
+YOGA_EXPORT bool YGNodeHasBaselineFunc(YGNodeConstRef node) {
+  return resolveRef(node)->hasBaselineFunc();
 }
 
 YOGA_EXPORT void YGNodeSetBaselineFunc(
     YGNodeRef node,
     YGBaselineFunc baselineFunc) {
-  static_cast<yoga::Node*>(node)->setBaselineFunc(baselineFunc);
+  resolveRef(node)->setBaselineFunc(baselineFunc);
 }
 
-YOGA_EXPORT YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getDirtied();
+YOGA_EXPORT YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeConstRef node) {
+  return resolveRef(node)->getDirtied();
 }
 
 YOGA_EXPORT void YGNodeSetDirtiedFunc(
     YGNodeRef node,
     YGDirtiedFunc dirtiedFunc) {
-  static_cast<yoga::Node*>(node)->setDirtiedFunc(dirtiedFunc);
+  resolveRef(node)->setDirtiedFunc(dirtiedFunc);
 }
 
 YOGA_EXPORT void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
-  static_cast<yoga::Node*>(node)->setPrintFunc(printFunc);
+  resolveRef(node)->setPrintFunc(printFunc);
 }
 
-YOGA_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getHasNewLayout();
+YOGA_EXPORT bool YGNodeGetHasNewLayout(YGNodeConstRef node) {
+  return resolveRef(node)->getHasNewLayout();
 }
 
 YOGA_EXPORT void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
-  static_cast<yoga::Config*>(config)->setShouldPrintTree(enabled);
+  resolveRef(config)->setShouldPrintTree(enabled);
 }
 
 YOGA_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
-  static_cast<yoga::Node*>(node)->setHasNewLayout(hasNewLayout);
+  resolveRef(node)->setHasNewLayout(hasNewLayout);
 }
 
-YOGA_EXPORT YGNodeType YGNodeGetNodeType(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getNodeType();
+YOGA_EXPORT YGNodeType YGNodeGetNodeType(YGNodeConstRef node) {
+  return resolveRef(node)->getNodeType();
 }
 
 YOGA_EXPORT void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType) {
-  return static_cast<yoga::Node*>(node)->setNodeType(nodeType);
+  return resolveRef(node)->setNodeType(nodeType);
 }
 
-YOGA_EXPORT bool YGNodeIsDirty(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->isDirty();
+YOGA_EXPORT bool YGNodeIsDirty(YGNodeConstRef node) {
+  return resolveRef(node)->isDirty();
 }
 
 YOGA_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(
     const YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->markDirtyAndPropagateDownwards();
+  return resolveRef(node)->markDirtyAndPropagateDownwards();
 }
 
 int32_t gConfigInstanceCount = 0;
 
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
-  auto* node = new yoga::Node{static_cast<yoga::Config*>(config)};
+  auto* node = new yoga::Node{resolveRef(config)};
   yoga::assertFatal(
       config != nullptr, "Tried to construct YGNode with null config");
   yoga::assertFatalWithConfig(
-      config, node != nullptr, "Could not allocate memory for node");
+      resolveRef(config),
+      node != nullptr,
+      "Could not allocate memory for node");
   Event::publish<Event::NodeAllocation>(node, {config});
 
   return node;
@@ -201,8 +203,8 @@ YOGA_EXPORT YGNodeRef YGNodeNew(void) {
 }
 
 YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNodeRef) {
-  auto oldNode = static_cast<yoga::Node*>(oldNodeRef);
-  auto node = new yoga::Node(*oldNode);
+  auto oldNode = resolveRef(oldNodeRef);
+  const auto node = new yoga::Node(*oldNode);
   yoga::assertFatalWithConfig(
       oldNode->getConfig(),
       node != nullptr,
@@ -213,7 +215,7 @@ YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNodeRef) {
 }
 
 YOGA_EXPORT void YGNodeFree(const YGNodeRef nodeRef) {
-  auto node = static_cast<yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
 
   if (auto owner = node->getOwner()) {
     owner->removeChild(node);
@@ -232,13 +234,13 @@ YOGA_EXPORT void YGNodeFree(const YGNodeRef nodeRef) {
 
 YOGA_EXPORT void YGNodeDeallocate(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {YGNodeGetConfig(node)});
-  delete static_cast<yoga::Node*>(node);
+  delete resolveRef(node);
 }
 
 YOGA_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     const YGNodeRef rootRef,
     YGNodeCleanupFunc cleanup) {
-  const auto root = static_cast<yoga::Node*>(rootRef);
+  const auto root = resolveRef(rootRef);
 
   uint32_t skipped = 0;
   while (YGNodeGetChildCount(root) > skipped) {
@@ -262,7 +264,7 @@ YOGA_EXPORT void YGNodeFreeRecursive(const YGNodeRef root) {
 }
 
 YOGA_EXPORT void YGNodeReset(YGNodeRef node) {
-  static_cast<yoga::Node*>(node)->reset();
+  resolveRef(node)->reset();
 }
 
 YOGA_EXPORT int32_t YGConfigGetInstanceCount(void) {
@@ -280,30 +282,30 @@ YOGA_EXPORT YGConfigRef YGConfigNew(void) {
 }
 
 YOGA_EXPORT void YGConfigFree(const YGConfigRef config) {
-  delete static_cast<yoga::Config*>(config);
+  delete resolveRef(config);
   gConfigInstanceCount--;
 }
 
 YOGA_EXPORT void YGNodeSetIsReferenceBaseline(
     YGNodeRef nodeRef,
     bool isReferenceBaseline) {
-  auto node = static_cast<yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
   if (node->isReferenceBaseline() != isReferenceBaseline) {
     node->setIsReferenceBaseline(isReferenceBaseline);
     node->markDirtyAndPropagate();
   }
 }
 
-YOGA_EXPORT bool YGNodeIsReferenceBaseline(YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->isReferenceBaseline();
+YOGA_EXPORT bool YGNodeIsReferenceBaseline(YGNodeConstRef node) {
+  return resolveRef(node)->isReferenceBaseline();
 }
 
 YOGA_EXPORT void YGNodeInsertChild(
     const YGNodeRef ownerRef,
     const YGNodeRef childRef,
     const uint32_t index) {
-  auto owner = static_cast<yoga::Node*>(ownerRef);
-  auto child = static_cast<yoga::Node*>(childRef);
+  auto owner = resolveRef(ownerRef);
+  auto child = resolveRef(childRef);
 
   yoga::assertFatalWithNode(
       owner,
@@ -324,8 +326,8 @@ YOGA_EXPORT void YGNodeSwapChild(
     const YGNodeRef ownerRef,
     const YGNodeRef childRef,
     const uint32_t index) {
-  auto owner = static_cast<yoga::Node*>(ownerRef);
-  auto child = static_cast<yoga::Node*>(childRef);
+  auto owner = resolveRef(ownerRef);
+  auto child = resolveRef(childRef);
 
   owner->replaceChild(child, index);
   child->setOwner(owner);
@@ -334,8 +336,8 @@ YOGA_EXPORT void YGNodeSwapChild(
 YOGA_EXPORT void YGNodeRemoveChild(
     const YGNodeRef ownerRef,
     const YGNodeRef excludedChildRef) {
-  auto owner = static_cast<yoga::Node*>(ownerRef);
-  auto excludedChild = static_cast<yoga::Node*>(excludedChildRef);
+  auto owner = resolveRef(ownerRef);
+  auto excludedChild = resolveRef(excludedChildRef);
 
   if (YGNodeGetChildCount(owner) == 0) {
     // This is an empty set. Nothing to remove.
@@ -356,7 +358,7 @@ YOGA_EXPORT void YGNodeRemoveChild(
 }
 
 YOGA_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
-  auto owner = static_cast<yoga::Node*>(ownerRef);
+  auto owner = resolveRef(ownerRef);
 
   const uint32_t childCount = YGNodeGetChildCount(owner);
   if (childCount == 0) {
@@ -386,7 +388,7 @@ YOGA_EXPORT void YGNodeSetChildren(
     const YGNodeRef ownerRef,
     const YGNodeRef* childrenRefs,
     const uint32_t count) {
-  auto owner = static_cast<yoga::Node*>(ownerRef);
+  auto owner = resolveRef(ownerRef);
   auto children = reinterpret_cast<yoga::Node* const*>(childrenRefs);
 
   if (!owner) {
@@ -425,7 +427,7 @@ YOGA_EXPORT void YGNodeSetChildren(
 
 YOGA_EXPORT YGNodeRef
 YGNodeGetChild(const YGNodeRef nodeRef, const uint32_t index) {
-  auto node = static_cast<yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
 
   if (index < node->getChildren().size()) {
     return node->getChild(index);
@@ -434,20 +436,19 @@ YGNodeGetChild(const YGNodeRef nodeRef, const uint32_t index) {
 }
 
 YOGA_EXPORT uint32_t YGNodeGetChildCount(const YGNodeConstRef node) {
-  return static_cast<uint32_t>(
-      static_cast<const yoga::Node*>(node)->getChildren().size());
+  return static_cast<uint32_t>(resolveRef(node)->getChildren().size());
 }
 
 YOGA_EXPORT YGNodeRef YGNodeGetOwner(const YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getOwner();
+  return resolveRef(node)->getOwner();
 }
 
 YOGA_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node) {
-  return static_cast<yoga::Node*>(node)->getOwner();
+  return resolveRef(node)->getOwner();
 }
 
 YOGA_EXPORT void YGNodeMarkDirty(const YGNodeRef nodeRef) {
-  auto node = static_cast<yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
 
   yoga::assertFatalWithNode(
       node,
@@ -460,9 +461,9 @@ YOGA_EXPORT void YGNodeMarkDirty(const YGNodeRef nodeRef) {
 
 YOGA_EXPORT void YGNodeCopyStyle(
     const YGNodeRef dstNodeRef,
-    const YGNodeRef srcNodeRef) {
-  auto dstNode = static_cast<yoga::Node*>(dstNodeRef);
-  auto srcNode = static_cast<yoga::Node*>(srcNodeRef);
+    const YGNodeConstRef srcNodeRef) {
+  auto dstNode = resolveRef(dstNodeRef);
+  auto srcNode = resolveRef(srcNodeRef);
 
   if (!(dstNode->getStyle() == srcNode->getStyle())) {
     dstNode->setStyle(srcNode->getStyle());
@@ -471,14 +472,14 @@ YOGA_EXPORT void YGNodeCopyStyle(
 }
 
 YOGA_EXPORT float YGNodeStyleGetFlexGrow(const YGNodeConstRef nodeRef) {
-  auto node = static_cast<const yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
   return node->getStyle().flexGrow().isUndefined()
       ? Style::DefaultFlexGrow
       : node->getStyle().flexGrow().unwrap();
 }
 
 YOGA_EXPORT float YGNodeStyleGetFlexShrink(const YGNodeConstRef nodeRef) {
-  auto node = static_cast<const yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
   return node->getStyle().flexShrink().isUndefined()
       ? (node->getConfig()->useWebDefaults() ? Style::WebDefaultFlexShrink
                                              : Style::DefaultFlexShrink)
@@ -502,7 +503,7 @@ void updateStyle(
 template <typename Ref, typename T>
 void updateStyle(YGNodeRef node, Ref (Style::*prop)(), T value) {
   updateStyle(
-      static_cast<yoga::Node*>(node),
+      resolveRef(node),
       value,
       [prop](Style& s, T x) { return (s.*prop)() != x; },
       [prop](Style& s, T x) { (s.*prop)() = x; });
@@ -515,7 +516,7 @@ void updateIndexedStyleProp(
     Idx idx,
     CompactValue value) {
   updateStyle(
-      static_cast<yoga::Node*>(node),
+      resolveRef(node),
       value,
       [idx, prop](Style& s, CompactValue x) { return (s.*prop)()[idx] != x; },
       [idx, prop](Style& s, CompactValue x) { (s.*prop)()[idx] = x; });
@@ -536,7 +537,7 @@ YOGA_EXPORT void YGNodeStyleSetDirection(
   updateStyle<MSVC_HINT(direction)>(node, &Style::direction, value);
 }
 YOGA_EXPORT YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().direction();
+  return resolveRef(node)->getStyle().direction();
 }
 
 YOGA_EXPORT void YGNodeStyleSetFlexDirection(
@@ -547,7 +548,7 @@ YOGA_EXPORT void YGNodeStyleSetFlexDirection(
 }
 YOGA_EXPORT YGFlexDirection
 YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().flexDirection();
+  return resolveRef(node)->getStyle().flexDirection();
 }
 
 YOGA_EXPORT void YGNodeStyleSetJustifyContent(
@@ -557,7 +558,7 @@ YOGA_EXPORT void YGNodeStyleSetJustifyContent(
       node, &Style::justifyContent, justifyContent);
 }
 YOGA_EXPORT YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().justifyContent();
+  return resolveRef(node)->getStyle().justifyContent();
 }
 
 YOGA_EXPORT void YGNodeStyleSetAlignContent(
@@ -567,7 +568,7 @@ YOGA_EXPORT void YGNodeStyleSetAlignContent(
       node, &Style::alignContent, alignContent);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignContent(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().alignContent();
+  return resolveRef(node)->getStyle().alignContent();
 }
 
 YOGA_EXPORT void YGNodeStyleSetAlignItems(
@@ -576,7 +577,7 @@ YOGA_EXPORT void YGNodeStyleSetAlignItems(
   updateStyle<MSVC_HINT(alignItems)>(node, &Style::alignItems, alignItems);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignItems(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().alignItems();
+  return resolveRef(node)->getStyle().alignItems();
 }
 
 YOGA_EXPORT void YGNodeStyleSetAlignSelf(
@@ -585,7 +586,7 @@ YOGA_EXPORT void YGNodeStyleSetAlignSelf(
   updateStyle<MSVC_HINT(alignSelf)>(node, &Style::alignSelf, alignSelf);
 }
 YOGA_EXPORT YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().alignSelf();
+  return resolveRef(node)->getStyle().alignSelf();
 }
 
 YOGA_EXPORT void YGNodeStyleSetPositionType(
@@ -596,7 +597,7 @@ YOGA_EXPORT void YGNodeStyleSetPositionType(
 }
 YOGA_EXPORT YGPositionType
 YGNodeStyleGetPositionType(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().positionType();
+  return resolveRef(node)->getStyle().positionType();
 }
 
 YOGA_EXPORT void YGNodeStyleSetFlexWrap(
@@ -605,7 +606,7 @@ YOGA_EXPORT void YGNodeStyleSetFlexWrap(
   updateStyle<MSVC_HINT(flexWrap)>(node, &Style::flexWrap, flexWrap);
 }
 YOGA_EXPORT YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().flexWrap();
+  return resolveRef(node)->getStyle().flexWrap();
 }
 
 YOGA_EXPORT void YGNodeStyleSetOverflow(
@@ -614,7 +615,7 @@ YOGA_EXPORT void YGNodeStyleSetOverflow(
   updateStyle<MSVC_HINT(overflow)>(node, &Style::overflow, overflow);
 }
 YOGA_EXPORT YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().overflow();
+  return resolveRef(node)->getStyle().overflow();
 }
 
 YOGA_EXPORT void YGNodeStyleSetDisplay(
@@ -623,7 +624,7 @@ YOGA_EXPORT void YGNodeStyleSetDisplay(
   updateStyle<MSVC_HINT(display)>(node, &Style::display, display);
 }
 YOGA_EXPORT YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)->getStyle().display();
+  return resolveRef(node)->getStyle().display();
 }
 
 // TODO(T26792433): Change the API to accept FloatOptional.
@@ -633,7 +634,7 @@ YOGA_EXPORT void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 
 // TODO(T26792433): Change the API to accept FloatOptional.
 YOGA_EXPORT float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
-  auto node = static_cast<const yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
   return node->getStyle().flex().isUndefined()
       ? YGUndefined
       : node->getStyle().flex().unwrap();
@@ -656,8 +657,7 @@ YOGA_EXPORT void YGNodeStyleSetFlexShrink(
 }
 
 YOGA_EXPORT YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
-  YGValue flexBasis =
-      static_cast<const yoga::Node*>(node)->getStyle().flexBasis();
+  YGValue flexBasis = resolveRef(node)->getStyle().flexBasis();
   if (flexBasis.unit == YGUnitUndefined || flexBasis.unit == YGUnitAuto) {
     // TODO(T26792433): Get rid off the use of YGUndefined at client side
     flexBasis.value = YGUndefined;
@@ -701,7 +701,7 @@ YOGA_EXPORT void YGNodeStyleSetPositionPercent(
       node, &Style::position, edge, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge) {
-  return static_cast<const yoga::Node*>(node)->getStyle().position()[edge];
+  return resolveRef(node)->getStyle().position()[edge];
 }
 
 YOGA_EXPORT void YGNodeStyleSetMargin(
@@ -723,7 +723,7 @@ YOGA_EXPORT void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge) {
       node, &Style::margin, edge, CompactValue::ofAuto());
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMargin(YGNodeConstRef node, YGEdge edge) {
-  return static_cast<const yoga::Node*>(node)->getStyle().margin()[edge];
+  return resolveRef(node)->getStyle().margin()[edge];
 }
 
 YOGA_EXPORT void YGNodeStyleSetPadding(
@@ -743,7 +743,7 @@ YOGA_EXPORT void YGNodeStyleSetPaddingPercent(
       node, &Style::padding, edge, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge) {
-  return static_cast<const yoga::Node*>(node)->getStyle().padding()[edge];
+  return resolveRef(node)->getStyle().padding()[edge];
 }
 
 // TODO(T26792433): Change the API to accept FloatOptional.
@@ -758,7 +758,7 @@ YOGA_EXPORT void YGNodeStyleSetBorder(
 YOGA_EXPORT float YGNodeStyleGetBorder(
     const YGNodeConstRef node,
     const YGEdge edge) {
-  auto border = static_cast<const yoga::Node*>(node)->getStyle().border()[edge];
+  auto border = resolveRef(node)->getStyle().border()[edge];
   if (border.isUndefined() || border.isAuto()) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
     // return FloatOptional.
@@ -779,8 +779,7 @@ YOGA_EXPORT void YGNodeStyleSetGap(
 YOGA_EXPORT float YGNodeStyleGetGap(
     const YGNodeConstRef node,
     const YGGutter gutter) {
-  auto gapLength =
-      static_cast<const yoga::Node*>(node)->getStyle().gap()[gutter];
+  auto gapLength = resolveRef(node)->getStyle().gap()[gutter];
   if (gapLength.isUndefined() || gapLength.isAuto()) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
     // return FloatOptional.
@@ -794,8 +793,7 @@ YOGA_EXPORT float YGNodeStyleGetGap(
 
 // TODO(T26792433): Change the API to accept FloatOptional.
 YOGA_EXPORT float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {
-  const FloatOptional op =
-      static_cast<const yoga::Node*>(node)->getStyle().aspectRatio();
+  const FloatOptional op = resolveRef(node)->getStyle().aspectRatio();
   return op.isUndefined() ? YGUndefined : op.unwrap();
 }
 
@@ -822,9 +820,7 @@ YOGA_EXPORT void YGNodeStyleSetWidthAuto(YGNodeRef node) {
       node, &Style::dimensions, YGDimensionWidth, CompactValue::ofAuto());
 }
 YOGA_EXPORT YGValue YGNodeStyleGetWidth(YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .dimensions()[YGDimensionWidth];
+  return resolveRef(node)->getStyle().dimensions()[YGDimensionWidth];
 }
 
 YOGA_EXPORT void YGNodeStyleSetHeight(YGNodeRef node, float points) {
@@ -842,9 +838,7 @@ YOGA_EXPORT void YGNodeStyleSetHeightAuto(YGNodeRef node) {
       node, &Style::dimensions, YGDimensionHeight, CompactValue::ofAuto());
 }
 YOGA_EXPORT YGValue YGNodeStyleGetHeight(YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .dimensions()[YGDimensionHeight];
+  return resolveRef(node)->getStyle().dimensions()[YGDimensionHeight];
 }
 
 YOGA_EXPORT void YGNodeStyleSetMinWidth(
@@ -862,9 +856,7 @@ YOGA_EXPORT void YGNodeStyleSetMinWidthPercent(
       node, &Style::minDimensions, YGDimensionWidth, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMinWidth(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .minDimensions()[YGDimensionWidth];
+  return resolveRef(node)->getStyle().minDimensions()[YGDimensionWidth];
 }
 
 YOGA_EXPORT void YGNodeStyleSetMinHeight(
@@ -882,9 +874,7 @@ YOGA_EXPORT void YGNodeStyleSetMinHeightPercent(
       node, &Style::minDimensions, YGDimensionHeight, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMinHeight(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .minDimensions()[YGDimensionHeight];
+  return resolveRef(node)->getStyle().minDimensions()[YGDimensionHeight];
 }
 
 YOGA_EXPORT void YGNodeStyleSetMaxWidth(
@@ -902,9 +892,7 @@ YOGA_EXPORT void YGNodeStyleSetMaxWidthPercent(
       node, &Style::maxDimensions, YGDimensionWidth, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMaxWidth(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .maxDimensions()[YGDimensionWidth];
+  return resolveRef(node)->getStyle().maxDimensions()[YGDimensionWidth];
 }
 
 YOGA_EXPORT void YGNodeStyleSetMaxHeight(
@@ -922,20 +910,18 @@ YOGA_EXPORT void YGNodeStyleSetMaxHeightPercent(
       node, &Style::maxDimensions, YGDimensionHeight, value);
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
-  return static_cast<const yoga::Node*>(node)
-      ->getStyle()
-      .maxDimensions()[YGDimensionHeight];
+  return resolveRef(node)->getStyle().maxDimensions()[YGDimensionHeight];
 }
 
-#define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName)       \
-  YOGA_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node) {     \
-    return static_cast<yoga::Node*>(node)->getLayout().instanceName; \
+#define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName)        \
+  YOGA_EXPORT type YGNodeLayoutGet##name(const YGNodeConstRef node) { \
+    return resolveRef(node)->getLayout().instanceName;                \
   }
 
 #define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName) \
   YOGA_EXPORT type YGNodeLayoutGet##name(                               \
-      const YGNodeRef nodeRef, const YGEdge edge) {                     \
-    auto node = static_cast<yoga::Node*>(nodeRef);                      \
+      const YGNodeConstRef nodeRef, const YGEdge edge) {                \
+    const auto node = resolveRef(nodeRef);                              \
     yoga::assertFatalWithNode(                                          \
         node,                                                           \
         edge <= YGEdgeEnd,                                              \
@@ -975,9 +961,9 @@ YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding)
 
 #ifdef DEBUG
 YOGA_EXPORT void YGNodePrint(
-    const YGNodeRef nodeRef,
+    const YGNodeConstRef nodeRef,
     const YGPrintOptions options) {
-  const auto node = static_cast<yoga::Node*>(nodeRef);
+  const auto node = resolveRef(nodeRef);
   std::string str;
   yoga::nodeToString(str, node, options, 0);
   yoga::log(node, YGLogLevelDebug, nullptr, str.c_str());
@@ -986,12 +972,12 @@ YOGA_EXPORT void YGNodePrint(
 
 YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
   if (logger != nullptr) {
-    static_cast<yoga::Config*>(config)->setLogger(logger);
+    resolveRef(config)->setLogger(logger);
   } else {
 #ifdef ANDROID
-    static_cast<yoga::Config*>(config)->setLogger(&YGAndroidLog);
+    resolveRef(config)->setLogger(&YGAndroidLog);
 #else
-    static_cast<yoga::Config*>(config)->setLogger(&YGDefaultLog);
+    resolveRef(config)->setLogger(&YGDefaultLog);
 #endif
   }
 }
@@ -1000,21 +986,21 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
     const YGConfigRef config,
     const float pixelsInPoint) {
   yoga::assertFatalWithConfig(
-      config,
+      resolveRef(config),
       pixelsInPoint >= 0.0f,
       "Scale factor should not be less than zero");
 
   // We store points for Pixel as we will use it for rounding
   if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    static_cast<yoga::Config*>(config)->setPointScaleFactor(0.0f);
+    resolveRef(config)->setPointScaleFactor(0.0f);
   } else {
-    static_cast<yoga::Config*>(config)->setPointScaleFactor(pixelsInPoint);
+    resolveRef(config)->setPointScaleFactor(pixelsInPoint);
   }
 }
 
-YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getPointScaleFactor();
+YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigConstRef config) {
+  return resolveRef(config)->getPointScaleFactor();
 }
 
 YOGA_EXPORT float YGRoundValueToPixelGrid(
@@ -1030,63 +1016,60 @@ YOGA_EXPORT void YGConfigSetExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature,
     const bool enabled) {
-  static_cast<yoga::Config*>(config)->setExperimentalFeatureEnabled(
-      feature, enabled);
+  resolveRef(config)->setExperimentalFeatureEnabled(feature, enabled);
 }
 
 YOGA_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
-    const YGConfigRef config,
+    const YGConfigConstRef config,
     const YGExperimentalFeature feature) {
-  return static_cast<yoga::Config*>(config)->isExperimentalFeatureEnabled(
-      feature);
+  return resolveRef(config)->isExperimentalFeatureEnabled(feature);
 }
 
 YOGA_EXPORT void YGConfigSetUseWebDefaults(
     const YGConfigRef config,
     const bool enabled) {
-  static_cast<yoga::Config*>(config)->setUseWebDefaults(enabled);
+  resolveRef(config)->setUseWebDefaults(enabled);
 }
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
-    const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->hasErrata(
-      YGErrataStretchFlexBasis);
+    const YGConfigConstRef config) {
+  return resolveRef(config)->hasErrata(YGErrataStretchFlexBasis);
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
   if (useLegacyStretchBehaviour) {
-    static_cast<yoga::Config*>(config)->addErrata(YGErrataStretchFlexBasis);
+    resolveRef(config)->addErrata(YGErrataStretchFlexBasis);
   } else {
-    static_cast<yoga::Config*>(config)->removeErrata(YGErrataStretchFlexBasis);
+    resolveRef(config)->removeErrata(YGErrataStretchFlexBasis);
   }
 }
 
-bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->useWebDefaults();
+bool YGConfigGetUseWebDefaults(const YGConfigConstRef config) {
+  return resolveRef(config)->useWebDefaults();
 }
 
 YOGA_EXPORT void YGConfigSetContext(const YGConfigRef config, void* context) {
-  static_cast<yoga::Config*>(config)->setContext(context);
+  resolveRef(config)->setContext(context);
 }
 
-YOGA_EXPORT void* YGConfigGetContext(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getContext();
+YOGA_EXPORT void* YGConfigGetContext(const YGConfigConstRef config) {
+  return resolveRef(config)->getContext();
 }
 
 YOGA_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata) {
-  static_cast<yoga::Config*>(config)->setErrata(errata);
+  resolveRef(config)->setErrata(errata);
 }
 
-YOGA_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getErrata();
+YOGA_EXPORT YGErrata YGConfigGetErrata(YGConfigConstRef config) {
+  return resolveRef(config)->getErrata();
 }
 
 YOGA_EXPORT void YGConfigSetCloneNodeFunc(
     const YGConfigRef config,
     const YGCloneNodeFunc callback) {
-  static_cast<yoga::Config*>(config)->setCloneNodeCallback(callback);
+  resolveRef(config)->setCloneNodeCallback(callback);
 }
 
 // TODO: This should not be part of the public API. Remove after removing
@@ -1118,7 +1101,7 @@ YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
       lastComputedHeight,
       marginRow,
       marginColumn,
-      static_cast<yoga::Config*>(config));
+      resolveRef(config));
 }
 
 YOGA_EXPORT void YGNodeCalculateLayout(
@@ -1131,15 +1114,11 @@ YOGA_EXPORT void YGNodeCalculateLayout(
 }
 
 YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
-    const YGNodeRef nodeRef,
+    const YGNodeRef node,
     const float ownerWidth,
     const float ownerHeight,
     const YGDirection ownerDirection,
     void* layoutContext) {
   yoga::calculateLayout(
-      static_cast<Node*>(nodeRef),
-      ownerWidth,
-      ownerHeight,
-      ownerDirection,
-      layoutContext);
+      resolveRef(node), ownerWidth, ownerHeight, ownerDirection, layoutContext);
 }
