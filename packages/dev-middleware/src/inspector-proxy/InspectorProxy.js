@@ -22,6 +22,7 @@ import type {IncomingMessage, ServerResponse} from 'http';
 import url from 'url';
 import WS from 'ws';
 import Device from './Device';
+import getDevServerUrl from '../utils/getDevServerUrl';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -45,11 +46,6 @@ export default class InspectorProxy {
 
   // Internal counter for device IDs -- just gets incremented for each new device.
   _deviceCounter: number = 0;
-
-  // We store server's address with port (like '127.0.0.1:8081') to be able to build URLs
-  // (devtoolsFrontendUrl and webSocketDebuggerUrl) for page descriptions. These URLs are used
-  // by debugger to know where to connect.
-  _serverBaseUrl: string = '';
 
   _eventReporter: ?EventReporter;
 
@@ -79,6 +75,7 @@ export default class InspectorProxy {
       request.url === PAGES_LIST_JSON_URL ||
       request.url === PAGES_LIST_JSON_URL_2
     ) {
+      const wsPublicBaseUrl = getDevServerUrl(request, 'public', 'ws');
       // Build list of pages from all devices.
       let result: Array<PageDescription> = [];
       Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
@@ -86,7 +83,12 @@ export default class InspectorProxy {
           device
             .getPagesList()
             .map((page: Page) =>
-              this._buildPageDescription(deviceId, device, page),
+              this._buildPageDescription(
+                deviceId,
+                device,
+                page,
+                wsPublicBaseUrl,
+              ),
             ),
         );
       });
@@ -102,11 +104,9 @@ export default class InspectorProxy {
     }
   }
 
-  createWebSocketListeners(devServerBaseUrl: string): {
+  createWebSocketListeners(): {
     [path: string]: WS.Server,
   } {
-    this._serverBaseUrl = devServerBaseUrl;
-
     return {
       [WS_DEVICE_URL]: this._createDeviceConnectionWSServer(),
       [WS_DEBUGGER_URL]: this._createDebuggerConnectionWSServer(),
@@ -119,16 +119,22 @@ export default class InspectorProxy {
     deviceId: string,
     device: Device,
     page: Page,
+    wsServerBaseUrl: string,
   ): PageDescription {
-    const debuggerUrl = `${this._serverBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
-    const webSocketDebuggerUrl = 'ws://' + debuggerUrl;
+    const webSocketDebuggerUrl = `${wsServerBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
 
+    const isSecure = webSocketDebuggerUrl.startsWith('wss://');
+    const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
+      /^wss?:\/\//,
+      '',
+    );
+    const scheme = isSecure ? 'wss' : 'ws';
     // For now, `/json/list` returns the legacy built-in `devtools://` URL, to
     // preserve existing handling by Flipper. This may return a placeholder in
     // future -- please use the `/open-debugger` endpoint.
     const devtoolsFrontendUrl =
-      'devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=' +
-      encodeURIComponent(webSocketDebuggerUrl);
+      `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${scheme}=` +
+      encodeURIComponent(webSocketUrlWithoutProtocol);
 
     return {
       id: `${deviceId}-${page.id}`,

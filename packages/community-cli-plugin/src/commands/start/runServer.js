@@ -113,8 +113,6 @@ async function runServer(
     watchFolders,
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host,
-    port,
     projectRoot,
     logger,
     unstable_experiments: {

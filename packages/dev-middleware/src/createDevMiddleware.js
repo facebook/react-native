@@ -25,8 +25,6 @@ import InspectorProxy from './inspector-proxy/InspectorProxy';
 import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 
 type Options = $ReadOnly<{
-  host: string,
-  port: number,
   projectRoot: string,
   logger?: Logger,
   unstable_browserLauncher?: BrowserLauncher,
@@ -40,8 +38,6 @@ type DevMiddlewareAPI = $ReadOnly<{
 }>;
 
 export default function createDevMiddleware({
-  host,
-  port,
   projectRoot,
   logger,
   unstable_browserLauncher = DefaultBrowserLauncher,
@@ -76,9 +72,7 @@ export default function createDevMiddleware({
 
   return {
     middleware,
-    websocketEndpoints: inspectorProxy.createWebSocketListeners(
-      `${host}:${port}`,
-    ),
+    websocketEndpoints: inspectorProxy.createWebSocketListeners(),
   };
 }
 

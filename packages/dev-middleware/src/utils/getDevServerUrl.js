@@ -27,19 +27,31 @@ export default function getDevServerUrl(
    * 'local' for for a URL accessible from the machine running the dev server.
    */
   kind: 'public' | 'local',
+
+  /**
+   * If 'ws', returns a WebSocket URL corresponding to the current server,
+   * with the appropriate scheme (ws or wss) for HTTP / HTTPS connections.
+   */
+  protocolType: 'http' | 'ws' = 'http',
 ): string {
   if (kind === 'public') {
     const host = getHost(req);
     if (host != null) {
-      const scheme = getProto(req);
+      let scheme = getProto(req);
+      if (protocolType === 'ws') {
+        scheme = httpSchemeToWsScheme(scheme);
+      }
       return `${scheme}://${host}`;
     }
     // If we can't determine a public URL, fall back to a local URL, which *might* still work.
   }
-  const scheme =
+  let scheme =
     req.socket instanceof TLSSocket && req.socket.encrypted === true
       ? 'https'
       : 'http';
+  if (protocolType === 'ws') {
+    scheme = httpSchemeToWsScheme(scheme);
+  }
   const {localAddress, localPort} = req.socket;
   const address =
     localAddress && net.isIPv6(localAddress)
@@ -47,4 +59,15 @@ export default function getDevServerUrl(
       : localAddress;
 
   return `${scheme}://${address}:${localPort}`;
+}
+
+function httpSchemeToWsScheme(scheme: string) {
+  switch (scheme) {
+    case 'https':
+      return 'wss';
+    case 'http':
+      return 'ws';
+    default:
+      throw new Error(`Expected http or https but received ${scheme}`);
+  }
 }
