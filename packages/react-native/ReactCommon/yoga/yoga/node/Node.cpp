@@ -484,7 +484,14 @@ YOGA_EXPORT void Node::clearChildren() {
 // Other Methods
 
 void Node::cloneChildrenIfNeeded(void* cloneContext) {
-  iterChildrenAfterCloningIfNeeded([](Node*, void*) {}, cloneContext);
+  int i = 0;
+  for (Node*& child : children_) {
+    if (child->getOwner() != this) {
+      child = resolveRef(config_->cloneNode(child, this, i, cloneContext));
+      child->setOwner(this);
+    }
+    i += 1;
+  }
 }
 
 void Node::markDirtyAndPropagate() {
