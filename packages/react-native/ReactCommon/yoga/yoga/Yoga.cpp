@@ -1017,21 +1017,6 @@ YOGA_EXPORT void YGConfigSetUseWebDefaults(
   resolveRef(config)->setUseWebDefaults(enabled);
 }
 
-YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
-    const YGConfigConstRef config) {
-  return resolveRef(config)->hasErrata(YGErrataStretchFlexBasis);
-}
-
-YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
-    const YGConfigRef config,
-    const bool useLegacyStretchBehaviour) {
-  if (useLegacyStretchBehaviour) {
-    resolveRef(config)->addErrata(YGErrataStretchFlexBasis);
-  } else {
-    resolveRef(config)->removeErrata(YGErrataStretchFlexBasis);
-  }
-}
-
 bool YGConfigGetUseWebDefaults(const YGConfigConstRef config) {
   return resolveRef(config)->useWebDefaults();
 }

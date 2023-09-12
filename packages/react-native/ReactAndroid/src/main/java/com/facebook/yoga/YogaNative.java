@@ -24,7 +24,6 @@ public class YogaNative {
   static native void jni_YGConfigSetUseWebDefaultsJNI(long nativePointer, boolean useWebDefaults);
   static native void jni_YGConfigSetPrintTreeFlagJNI(long nativePointer, boolean enable);
   static native void jni_YGConfigSetPointScaleFactorJNI(long nativePointer, float pixelsInPoint);
-  static native void jni_YGConfigSetUseLegacyStretchBehaviourJNI(long nativePointer, boolean useLegacyStretchBehaviour);
   static native void jni_YGConfigSetErrataJNI(long nativePointer, int errata);
   static native int jni_YGConfigGetErrataJNI(long nativePointer);
   static native void jni_YGConfigSetLoggerJNI(long nativePointer, YogaLogger logger);
