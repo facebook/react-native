@@ -190,9 +190,7 @@ void YogaLayoutableShadowNode::appendYogaChild(
   ensureYogaChildrenLookFine();
 
   yogaLayoutableChildren_.push_back(childNode);
-  yogaNode_.insertChild(
-      &childNode->yogaNode_,
-      static_cast<uint32_t>(yogaNode_.getChildren().size()));
+  yogaNode_.insertChild(&childNode->yogaNode_, yogaNode_.getChildren().size());
 
   ensureYogaChildrenLookFine();
 }
@@ -219,7 +217,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     auto clonedChildNode = childNode.clone({});
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, static_cast<int>(index));
+    replaceChild(childNode, clonedChildNode, static_cast<int32_t>(index));
   }
 
   ensureYogaChildrenLookFine();
@@ -513,7 +511,7 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
-    int32_t layoutableChildIndex) {
+    size_t layoutableChildIndex) {
   ensureUnsealed();
 
   const auto& childNode = *yogaLayoutableChildren_[layoutableChildIndex];
@@ -525,7 +523,8 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
 
-  replaceChild(childNode, clonedChildNode, layoutableChildIndex);
+  replaceChild(
+      childNode, clonedChildNode, static_cast<int32_t>(layoutableChildIndex));
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
 
@@ -790,7 +789,7 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     YGNodeConstRef /*oldYogaNode*/,
     YGNodeConstRef parentYogaNode,
-    int childIndex) {
+    size_t childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
   auto& parentNode = shadowNodeFromContext(parentYogaNode);

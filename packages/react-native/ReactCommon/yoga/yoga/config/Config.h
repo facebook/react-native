@@ -34,7 +34,7 @@ using LogWithContextFn = int (*)(
 using CloneWithContextFn = YGNodeRef (*)(
     YGNodeConstRef node,
     YGNodeConstRef owner,
-    int childIndex,
+    size_t childIndex,
     void* cloneContext);
 
 #pragma pack(push)
@@ -92,7 +92,7 @@ public:
   YGNodeRef cloneNode(
       YGNodeConstRef node,
       YGNodeConstRef owner,
-      int childIndex,
+      size_t childIndex,
       void* cloneContext) const;
 
 private:
