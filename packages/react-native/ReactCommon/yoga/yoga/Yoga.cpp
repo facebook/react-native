@@ -172,8 +172,6 @@ YOGA_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(
   return resolveRef(node)->markDirtyAndPropagateDownwards();
 }
 
-int32_t gConfigInstanceCount = 0;
-
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   auto* node = new yoga::Node{resolveRef(config)};
   yoga::assertFatal(
@@ -261,23 +259,17 @@ YOGA_EXPORT void YGNodeReset(YGNodeRef node) {
   resolveRef(node)->reset();
 }
 
-YOGA_EXPORT int32_t YGConfigGetInstanceCount(void) {
-  return gConfigInstanceCount;
-}
-
 YOGA_EXPORT YGConfigRef YGConfigNew(void) {
 #ifdef ANDROID
   const YGConfigRef config = new yoga::Config(YGAndroidLog);
 #else
   const YGConfigRef config = new yoga::Config(YGDefaultLog);
 #endif
-  gConfigInstanceCount++;
   return config;
 }
 
 YOGA_EXPORT void YGConfigFree(const YGConfigRef config) {
   delete resolveRef(config);
-  gConfigInstanceCount--;
 }
 
 YOGA_EXPORT void YGNodeSetIsReferenceBaseline(
