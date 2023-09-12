@@ -75,4 +75,19 @@ inline YGEdge trailingEdge(const YGFlexDirection flexDirection) {
   fatalWithMessage("Invalid YGFlexDirection");
 }
 
+inline YGDimension dimension(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGDimensionHeight;
+    case YGFlexDirectionColumnReverse:
+      return YGDimensionHeight;
+    case YGFlexDirectionRow:
+      return YGDimensionWidth;
+    case YGFlexDirectionRowReverse:
+      return YGDimensionWidth;
+  }
+
+  fatalWithMessage("Invalid YGFlexDirection");
+}
+
 } // namespace facebook::yoga
