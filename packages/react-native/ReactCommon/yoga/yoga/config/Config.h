@@ -16,6 +16,7 @@ struct YGConfig {};
 namespace facebook::yoga {
 
 class Config;
+class Node;
 
 // Whether moving a node from config "a" to config "b" should dirty previously
 // calculated layout results.
@@ -78,7 +79,12 @@ public:
   void setLogger(YGLogger logger);
   void setLogger(LogWithContextFn logger);
   void setLogger(std::nullptr_t);
-  void log(YGNodeRef, YGLogLevel, void*, const char*, va_list);
+  void log(
+      const yoga::Node* node,
+      YGLogLevel logLevel,
+      void* logContext,
+      const char* format,
+      va_list args) const;
 
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
   void setCloneNodeCallback(CloneWithContextFn cloneNode);
@@ -105,5 +111,13 @@ private:
   float pointScaleFactor_ = 1.0f;
   void* context_ = nullptr;
 };
+
+inline Config* resolveRef(const YGConfigRef ref) {
+  return static_cast<Config*>(ref);
+}
+
+inline const Config* resolveRef(const YGConfigConstRef ref) {
+  return static_cast<const Config*>(ref);
+}
 
 } // namespace facebook::yoga
