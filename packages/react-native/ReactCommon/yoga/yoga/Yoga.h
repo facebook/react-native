@@ -29,28 +29,30 @@ typedef struct YGNode* YGNodeRef;
 typedef const struct YGNode* YGNodeConstRef;
 
 typedef YGSize (*YGMeasureFunc)(
-    YGNodeRef node,
+    YGNodeConstRef node,
     float width,
     YGMeasureMode widthMode,
     float height,
     YGMeasureMode heightMode);
-typedef float (*YGBaselineFunc)(YGNodeRef node, float width, float height);
-typedef void (*YGDirtiedFunc)(YGNodeRef node);
-typedef void (*YGPrintFunc)(YGNodeRef node);
-typedef void (*YGNodeCleanupFunc)(YGNodeRef node);
+typedef float (*YGBaselineFunc)(YGNodeConstRef node, float width, float height);
+typedef void (*YGDirtiedFunc)(YGNodeConstRef node);
+typedef void (*YGPrintFunc)(YGNodeConstRef node);
+typedef void (*YGNodeCleanupFunc)(YGNodeConstRef node);
 typedef int (*YGLogger)(
-    YGConfigRef config,
-    YGNodeRef node,
+    YGConfigConstRef config,
+    YGNodeConstRef node,
     YGLogLevel level,
     const char* format,
     va_list args);
-typedef YGNodeRef (
-    *YGCloneNodeFunc)(YGNodeRef oldNode, YGNodeRef owner, int childIndex);
+typedef YGNodeRef (*YGCloneNodeFunc)(
+    YGNodeConstRef oldNode,
+    YGNodeConstRef owner,
+    int childIndex);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(YGConfigRef config);
-WIN_EXPORT YGNodeRef YGNodeClone(YGNodeRef node);
+WIN_EXPORT YGNodeRef YGNodeClone(YGNodeConstRef node);
 WIN_EXPORT void YGNodeFree(YGNodeRef node);
 WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     YGNodeRef node,

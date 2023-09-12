@@ -107,23 +107,10 @@ void Config::log(
     void* logContext,
     const char* format,
     va_list args) const {
-  // TODO: Break log callback signatures to make them const correct
-
   if (flags_.loggerUsesContext) {
-    logger_.withContext(
-        const_cast<yoga::Config*>(this),
-        const_cast<yoga::Node*>(node),
-        logLevel,
-        logContext,
-        format,
-        args);
+    logger_.withContext(this, node, logLevel, logContext, format, args);
   } else {
-    logger_.noContext(
-        const_cast<yoga::Config*>(this),
-        const_cast<yoga::Node*>(node),
-        logLevel,
-        format,
-        args);
+    logger_.noContext(this, node, logLevel, format, args);
   }
 }
 
@@ -142,8 +129,8 @@ void Config::setCloneNodeCallback(std::nullptr_t) {
 }
 
 YGNodeRef Config::cloneNode(
-    YGNodeRef node,
-    YGNodeRef owner,
+    YGNodeConstRef node,
+    YGNodeConstRef owner,
     int childIndex,
     void* cloneContext) const {
   YGNodeRef clone = nullptr;
