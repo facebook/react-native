@@ -12,21 +12,28 @@ namespace facebook::yoga {
 namespace {
 
 void vlog(
-    yoga::Config* config,
-    yoga::Node* node,
+    const yoga::Config* config,
+    const yoga::Node* node,
     YGLogLevel level,
     void* context,
     const char* format,
     va_list args) {
-  yoga::Config* logConfig = config != nullptr
-      ? config
-      : static_cast<yoga::Config*>(YGConfigGetDefault());
-  logConfig->log(node, level, context, format, args);
+  const yoga::Config* logConfig =
+      config != nullptr ? config : resolveRef(YGConfigGetDefault());
+
+  logConfig->log(const_cast<yoga::Node*>(node), level, context, format, args);
 }
 } // namespace
 
+void log(YGLogLevel level, void* context, const char* format, ...) noexcept {
+  va_list args;
+  va_start(args, format);
+  vlog(nullptr, nullptr, level, context, format, args);
+  va_end(args);
+}
+
 void log(
-    yoga::Node* node,
+    const yoga::Node* node,
     YGLogLevel level,
     void* context,
     const char* format,
@@ -44,7 +51,7 @@ void log(
 }
 
 void log(
-    yoga::Config* config,
+    const yoga::Config* config,
     YGLogLevel level,
     void* context,
     const char* format,
