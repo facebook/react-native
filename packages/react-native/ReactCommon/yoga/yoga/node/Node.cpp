@@ -260,7 +260,7 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
   setMeasureFunc(m);
 }
 
-YOGA_EXPORT void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
+void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
   flags_.measureUsesContext = true;
   decltype(Node::measure_) m;
   m.withContext = measureFunc;
@@ -478,7 +478,7 @@ YGDirection Node::resolveDirection(const YGDirection ownerDirection) {
   }
 }
 
-YOGA_EXPORT void Node::clearChildren() {
+void Node::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
 }
