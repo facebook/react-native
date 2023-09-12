@@ -71,7 +71,7 @@ private:
   size_t lineIndex_ = 0;
   Node* owner_ = nullptr;
   std::vector<Node*> children_ = {};
-  Config* config_;
+  const Config* config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -95,10 +95,8 @@ private:
   Node& operator=(Node&&) = default;
 
 public:
-  Node() : Node{static_cast<Config*>(YGConfigGetDefault())} {
-    flags_.hasNewLayout = true;
-  }
-  explicit Node(Config* config);
+  Node();
+  explicit Node(const Config* config);
   ~Node() = default; // cleanup of owner/children relationships in YGNodeFree
 
   Node(Node&&);
@@ -165,7 +163,7 @@ public:
 
   size_t getChildCount() const { return children_.size(); }
 
-  Config* getConfig() const { return config_; }
+  const Config* getConfig() const { return config_; }
 
   bool isDirty() const { return flags_.isDirty; }
 

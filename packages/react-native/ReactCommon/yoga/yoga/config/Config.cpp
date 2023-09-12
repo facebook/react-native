@@ -6,15 +6,18 @@
  */
 
 #include <yoga/config/Config.h>
+#include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
-bool configUpdateInvalidatesLayout(Config* a, Config* b) {
-  return a->getErrata() != b->getErrata() ||
-      a->getEnabledExperiments() != b->getEnabledExperiments() ||
-      a->getPointScaleFactor() != b->getPointScaleFactor() ||
-      a->useWebDefaults() != b->useWebDefaults();
+bool configUpdateInvalidatesLayout(
+    const Config& oldConfig,
+    const Config& newConfig) {
+  return oldConfig.getErrata() != newConfig.getErrata() ||
+      oldConfig.getEnabledExperiments() != newConfig.getEnabledExperiments() ||
+      oldConfig.getPointScaleFactor() != newConfig.getPointScaleFactor() ||
+      oldConfig.useWebDefaults() != newConfig.useWebDefaults();
 }
 
 Config::Config(YGLogger logger) : cloneNodeCallback_{nullptr} {
@@ -143,6 +146,11 @@ YGNodeRef Config::cloneNode(
     clone = YGNodeClone(node);
   }
   return clone;
+}
+
+/*static*/ const Config& Config::getDefault() {
+  static Config config{getDefaultLogger()};
+  return config;
 }
 
 } // namespace facebook::yoga
