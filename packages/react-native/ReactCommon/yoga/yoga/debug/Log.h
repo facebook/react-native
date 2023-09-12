@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <yoga/Yoga.h>
+
 #include <yoga/YGEnums.h>
 #include <yoga/node/Node.h>
 #include <yoga/config/Config.h>
@@ -28,5 +30,7 @@ void log(
     void*,
     const char* format,
     ...) noexcept;
+
+YGLogger getDefaultLogger();
 
 } // namespace facebook::yoga
