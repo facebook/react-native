@@ -20,75 +20,6 @@
 using namespace facebook;
 using namespace facebook::yoga;
 
-#ifdef ANDROID
-static int YGAndroidLog(
-    const YGConfigConstRef config,
-    const YGNodeConstRef node,
-    YGLogLevel level,
-    const char* format,
-    va_list args);
-#else
-static int YGDefaultLog(
-    const YGConfigConstRef config,
-    const YGNodeConstRef node,
-    YGLogLevel level,
-    const char* format,
-    va_list args);
-#endif
-
-#ifdef ANDROID
-#include <android/log.h>
-static int YGAndroidLog(
-    const YGConfigConstRef /*config*/,
-    const YGNodeConstRef /*node*/,
-    YGLogLevel level,
-    const char* format,
-    va_list args) {
-  int androidLevel = YGLogLevelDebug;
-  switch (level) {
-    case YGLogLevelFatal:
-      androidLevel = ANDROID_LOG_FATAL;
-      break;
-    case YGLogLevelError:
-      androidLevel = ANDROID_LOG_ERROR;
-      break;
-    case YGLogLevelWarn:
-      androidLevel = ANDROID_LOG_WARN;
-      break;
-    case YGLogLevelInfo:
-      androidLevel = ANDROID_LOG_INFO;
-      break;
-    case YGLogLevelDebug:
-      androidLevel = ANDROID_LOG_DEBUG;
-      break;
-    case YGLogLevelVerbose:
-      androidLevel = ANDROID_LOG_VERBOSE;
-      break;
-  }
-  const int result = __android_log_vprint(androidLevel, "yoga", format, args);
-  return result;
-}
-#else
-static int YGDefaultLog(
-    const YGConfigConstRef /*config*/,
-    const YGNodeConstRef /*node*/,
-    YGLogLevel level,
-    const char* format,
-    va_list args) {
-  switch (level) {
-    case YGLogLevelError:
-    case YGLogLevelFatal:
-      return vfprintf(stderr, format, args);
-    case YGLogLevelWarn:
-    case YGLogLevelInfo:
-    case YGLogLevelDebug:
-    case YGLogLevelVerbose:
-    default:
-      return vprintf(format, args);
-  }
-}
-#endif
-
 YOGA_EXPORT bool YGFloatIsUndefined(const float value) {
   return yoga::isUndefined(value);
 }
@@ -260,12 +191,7 @@ YOGA_EXPORT void YGNodeReset(YGNodeRef node) {
 }
 
 YOGA_EXPORT YGConfigRef YGConfigNew(void) {
-#ifdef ANDROID
-  const YGConfigRef config = new yoga::Config(YGAndroidLog);
-#else
-  const YGConfigRef config = new yoga::Config(YGDefaultLog);
-#endif
-  return config;
+  return new yoga::Config(getDefaultLogger());
 }
 
 YOGA_EXPORT void YGConfigFree(const YGConfigRef config) {
@@ -960,11 +886,7 @@ YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
   if (logger != nullptr) {
     resolveRef(config)->setLogger(logger);
   } else {
-#ifdef ANDROID
-    resolveRef(config)->setLogger(&YGAndroidLog);
-#else
-    resolveRef(config)->setLogger(&YGDefaultLog);
-#endif
+    resolveRef(config)->setLogger(getDefaultLogger());
   }
 }
 
