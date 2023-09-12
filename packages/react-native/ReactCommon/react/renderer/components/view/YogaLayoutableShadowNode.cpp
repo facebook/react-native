@@ -26,8 +26,8 @@
 namespace facebook::react {
 
 static int FabricDefaultYogaLog(
-    const YGConfigRef /*unused*/,
-    const YGNodeRef /*unused*/,
+    const YGConfigConstRef /*unused*/,
+    const YGNodeConstRef /*unused*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -787,9 +787,9 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 
 #pragma mark - Yoga Connectors
 
-YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
-    YGNode* /*oldYogaNode*/,
-    YGNode* parentYogaNode,
+YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
+    YGNodeConstRef /*oldYogaNode*/,
+    YGNodeConstRef parentYogaNode,
     int childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
@@ -798,7 +798,7 @@ YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
-    YGNode* yogaNode,
+    YGNodeConstRef yogaNode,
     float width,
     YGMeasureMode widthMode,
     float height,
@@ -845,7 +845,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
-    YGNodeRef yogaNode) {
+    YGNodeConstRef yogaNode) {
   return traitCast<YogaLayoutableShadowNode&>(
       *static_cast<ShadowNode*>(YGNodeGetContext(yogaNode)));
 }
