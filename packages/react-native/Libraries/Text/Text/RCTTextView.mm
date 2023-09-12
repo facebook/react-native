@@ -112,11 +112,35 @@
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  NSRange truncatedRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphRange.location];
+
+  NSMutableDictionary<NSValue *, UIColor *> *backgroundColorAttributes = [NSMutableDictionary dictionary];
+
+  [_textStorage enumerateAttribute:NSBackgroundColorAttributeName
+                           inRange:characterRange
+                           options:0
+                        usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                          // Remove background color if glyphs is truncated
+                          if (truncatedRange.location != NSNotFound && range.location >= truncatedRange.location) {
+                            [_textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
+                            NSValue *rangeValue = [NSValue valueWithRange:range];
+                            backgroundColorAttributes[rangeValue] = value;
+                          }
+                        }];
+
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
+  // Re-Added removed background color if glyphs is truncated after we draw background glyphs
+  [backgroundColorAttributes
+      enumerateKeysAndObjectsUsingBlock:^(NSValue *_Nonnull key, UIColor *_Nonnull obj, BOOL *_Nonnull stop) {
+        NSRange range = key.rangeValue;
+        [_textStorage addAttribute:NSBackgroundColorAttributeName value:obj range:range];
+      }];
+
   __block UIBezierPath *highlightPath = nil;
-  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+
   [_textStorage
       enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                  inRange:characterRange
