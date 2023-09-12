@@ -15,8 +15,6 @@ function myDevServerImpl(args) {
   ...
 
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host: args.host,
-    port: metroConfig.server.port,
     projectRoot: metroConfig.projectRoot,
     logger,
   });

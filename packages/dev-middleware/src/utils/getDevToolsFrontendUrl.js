@@ -28,13 +28,20 @@ export default function getDevToolsFrontendUrl(
   devServerUrl: string,
   experiments: Experiments,
 ): string {
-  const ws = webSocketDebuggerUrl.replace(/^ws:\/\//, '');
+  const isSecure = webSocketDebuggerUrl.startsWith('wss://');
+  const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
+    /^wss?:\/\//,
+    '',
+  );
+  const scheme = isSecure ? 'wss' : 'ws';
   if (experiments.enableCustomDebuggerFrontend) {
     const urlBase = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
-    return `${urlBase}?ws=${encodeURIComponent(
-      ws,
+    return `${urlBase}?${scheme}=${encodeURIComponent(
+      webSocketUrlWithoutProtocol,
     )}&sources.hide_add_folder=true`;
   }
   const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${DEVTOOLS_FRONTEND_REV}/devtools_app.html`;
-  return `${urlBase}?panel=console&ws=${encodeURIComponent(ws)}`;
+  return `${urlBase}?panel=console&${scheme}=${encodeURIComponent(
+    webSocketUrlWithoutProtocol,
+  )}`;
 }
