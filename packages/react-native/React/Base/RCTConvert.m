@@ -538,8 +538,13 @@ RCT_ENUM_CONVERTER(
     (@{
       @"default" : @(UIBarStyleDefault),
       @"black" : @(UIBarStyleBlack),
+#if TARGET_OS_VISION
+      @"blackOpaque" : @(UIBarStyleBlack),
+      @"blackTranslucent" : @(UIBarStyleBlack),
+#else
       @"blackOpaque" : @(UIBarStyleBlackOpaque),
       @"blackTranslucent" : @(UIBarStyleBlackTranslucent),
+#endif
     }),
     UIBarStyleDefault,
     integerValue)

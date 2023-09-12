@@ -28,6 +28,7 @@ using namespace facebook::react;
 
 static const CGFloat kClippingLeeway = 44.0;
 
+#if !TARGET_OS_VISION
 static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(const ScrollViewProps &props)
 {
   switch (props.keyboardDismissMode) {
@@ -39,6 +40,7 @@ static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(const S
       return UIScrollViewKeyboardDismissModeInteractive;
   }
 }
+#endif
 
 static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const ScrollViewProps &props)
 {
@@ -294,9 +296,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
   MAP_SCROLL_VIEW_PROP(snapToInterval);
 
+#if !TARGET_OS_VISION
   if (oldScrollViewProps.keyboardDismissMode != newScrollViewProps.keyboardDismissMode) {
     scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
   }
+#endif
 
   [super updateProps:props oldProps:oldProps];
 }

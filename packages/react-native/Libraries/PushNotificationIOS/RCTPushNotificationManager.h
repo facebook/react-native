@@ -40,9 +40,10 @@ typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
  */
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
               fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
-
+#if !TARGET_OS_VISION
 /** DEPRECATED. Use didReceiveNotification instead. */
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification RCT_DEPRECATED;
+#endif
 /** DEPRECATED. Use didReceiveNotification instead. */
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification RCT_DEPRECATED;
 

@@ -54,6 +54,7 @@ static void UpdateActiveTouchWithUITouch(
     UIView *rootComponentView,
     CGPoint rootViewOriginOffset)
 {
+#if !TARGET_OS_VISION
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
   CGPoint screenPoint = [rootComponentView convertPoint:pagePoint
@@ -69,6 +70,7 @@ static void UpdateActiveTouchWithUITouch(
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
+#endif
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)

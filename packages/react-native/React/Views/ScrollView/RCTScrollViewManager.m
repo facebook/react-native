@@ -12,8 +12,11 @@
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
 
+#if !TARGET_OS_VISION
+
 @implementation RCTConvert (UIScrollView)
 
+#if !TARGET_OS_VISION
 RCT_ENUM_CONVERTER(
     UIScrollViewKeyboardDismissMode,
     (@{
@@ -25,6 +28,7 @@ RCT_ENUM_CONVERTER(
     }),
     UIScrollViewKeyboardDismissModeNone,
     integerValue)
+#endif
 
 RCT_ENUM_CONVERTER(
     UIScrollViewIndicatorStyle,
@@ -49,6 +53,7 @@ RCT_ENUM_CONVERTER(
 
 @end
 
+
 @implementation RCTScrollViewManager
 
 RCT_EXPORT_MODULE()
@@ -70,7 +75,7 @@ RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(decelerationRate, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(directionalLockEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle)
-RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
+RCT_EXPORT_NOT_VISIONOS_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
 RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)

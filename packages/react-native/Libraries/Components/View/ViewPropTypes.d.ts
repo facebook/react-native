@@ -16,6 +16,8 @@ import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';
 import {Touchable} from '../Touchable/Touchable';
 import {AccessibilityProps} from './ViewAccessibility';
 
+export type HoverEffect = 'lift' | 'highlight';
+
 export type TVParallaxProperties = {
   /**
    * If true, parallax effects are enabled.  Defaults to true.
@@ -122,6 +124,10 @@ export interface ViewPropsIOS extends TVViewPropsIOS {
    * Test and measure when using this property.
    */
   shouldRasterizeIOS?: boolean | undefined;
+  /**
+   * Hover style to apply to the view. Only supported on visionOS.
+   */
+  visionos_hoverEffect?: HoverEffect | undefined;
 }
 
 export interface ViewPropsAndroid {

@@ -24,7 +24,7 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "13.4" }
+  spec.platforms   = { :osx => "10.13", :ios => "13.4", :visionos => "1.0" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
@@ -35,6 +35,7 @@ Pod::Spec.new do |spec|
                   }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
+  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/visionos/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
   if HermesEngineSourceType::isPrebuilt(source_type) then
@@ -44,6 +45,7 @@ Pod::Spec.new do |spec|
       ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
+      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
     end
 

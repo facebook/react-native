@@ -63,6 +63,10 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   PointerEventsMode pointerEvents{};
   EdgeInsets hitSlop{};
   bool onLayout{};
+    
+#if TARGET_OS_VISION
+  std::string visionos_hoverEffect{};
+#endif
 
   ViewEvents events{};
 

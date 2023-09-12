@@ -194,6 +194,7 @@ RCT_REMAP_VIEW_PROPERTY(onAccessibilityEscape, reactAccessibilityElement.onAcces
 RCT_REMAP_VIEW_PROPERTY(testID, reactAccessibilityElement.accessibilityIdentifier, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
+RCT_REMAP_VISIONOS_VIEW_PROPERTY(visionos_hoverEffect, hoverEffect, NSString)
 RCT_REMAP_VIEW_PROPERTY(backfaceVisibility, layer.doubleSided, css_backface_visibility_t)
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)

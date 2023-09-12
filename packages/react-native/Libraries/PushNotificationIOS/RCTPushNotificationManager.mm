@@ -96,6 +96,7 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTPushNotificationManager
 
+#if !TARGET_OS_VISION
 /** DEPRECATED. UILocalNotification was deprecated in iOS 10. Please don't add new callsites. */
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -115,6 +116,7 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   formattedLocalNotification[@"remote"] = @NO;
   return formattedLocalNotification;
 }
+#endif
 
 /** For delivered notifications */
 static NSDictionary<NSString *, id> *RCTFormatUNNotification(UNNotification *notification)
@@ -261,6 +263,7 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
+#if !TARGET_OS_VISION
 // Deprecated
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
@@ -268,6 +271,7 @@ RCT_EXPORT_MODULE()
                                                       object:self
                                                     userInfo:RCTFormatLocalNotification(notification)];
 }
+#endif
 
 // Deprecated
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
@@ -529,6 +533,9 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
+#if TARGET_OS_VISION
+  return;
+#endif
   // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
   // Set this property in the implementation of
   // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.

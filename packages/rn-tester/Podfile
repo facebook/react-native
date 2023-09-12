@@ -1,7 +1,7 @@
 require_relative '../react-native/scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, min_ios_version_supported
+platform :visionos, min_visionos_version_supported
 
 cmake_path = `command -v cmake`
 
@@ -39,7 +39,8 @@ def pods(target_name, options = {})
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
-  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
+  # TODO: Make hermes work
+  hermes_enabled = false # !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
   use_react_native!(
@@ -69,7 +70,8 @@ end
 target 'RNTesterUnitTests' do
   pods('RNTesterUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
-  pod 'OCMock', '~> 3.9.1'
+  # TODO: Uncomment this once OCMock is released https://cocoapods.org/pods/OCMock
+  # pod 'OCMock', '~> 3.9.2'
 end
 
 target 'RNTesterIntegrationTests' do

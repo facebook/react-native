@@ -281,6 +281,7 @@ static PointerEvent CreatePointerEventFromActivePointer(
     UIView *rootComponentView)
 {
   PointerEvent event = {};
+#if !TARGET_OS_VISION
   event.pointerId = activePointer.identifier;
   event.pointerType = PointerTypeCStringFromUITouchType(activePointer.touchType);
 
@@ -329,7 +330,7 @@ static PointerEvent CreatePointerEventFromActivePointer(
   event.tangentialPressure = 0.0;
   event.twist = 0;
   event.isPrimary = activePointer.isPrimary;
-
+#endif
   return event;
 }
 
@@ -369,6 +370,7 @@ static void UpdateActivePointerWithUITouch(
     UIEvent *uiEvent,
     UIView *rootComponentView)
 {
+#if !TARGET_OS_VISION
   CGPoint location = [uiTouch locationInView:rootComponentView];
   UIView *hitTestedView = [rootComponentView hitTest:location withEvent:nil];
   activePointer.componentView = FindClosestFabricManagedTouchableView(hitTestedView);
@@ -394,6 +396,7 @@ static void UpdateActivePointerWithUITouch(
   activePointer.button = ButtonMaskDiffToButton(activePointer.buttonMask, nextButtonMask);
   activePointer.buttonMask = nextButtonMask;
   activePointer.modifierFlags = uiEvent.modifierFlags;
+#endif
 }
 
 /**
@@ -740,6 +743,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
        pointerId:(int)pointerId
      pointerType:(std::string)pointerType API_AVAILABLE(ios(13.0))
 {
+#if !TARGET_OS_VISION
   UIView *listenerView = recognizer.view;
   CGPoint clientLocation = [recognizer locationInView:listenerView];
   CGPoint screenLocation = [listenerView convertPoint:clientLocation
@@ -766,6 +770,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         eventEmitter->onPointerMove(event);
     }
   }
+#endif
 }
 
 @end

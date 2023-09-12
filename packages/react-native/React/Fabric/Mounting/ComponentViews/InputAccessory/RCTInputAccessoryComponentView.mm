@@ -66,7 +66,9 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   if (self.window && !_textInput) {
     if (self.nativeId) {
       _textInput = RCTFindTextInputWithNativeId(self.window, self.nativeId);
+#if !TARGET_OS_VISION
       _textInput.inputAccessoryView = _contentView;
+#endif
     } else {
       _textInput = RCTFindTextInputWithNativeId(_contentView, nil);
     }
@@ -82,10 +84,12 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   return true;
 }
 
+#if !TARGET_OS_VISION
 - (UIView *)inputAccessoryView
 {
   return _contentView;
 }
+#endif
 
 #pragma mark - RCTComponentViewProtocol
 

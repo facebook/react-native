@@ -29,6 +29,9 @@
 
   if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
+#if !TARGET_OS_VISION
+    self.automaticallyAdjustsScrollViewInsets = NO;
+#endif
   }
   return self;
 }

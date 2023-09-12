@@ -40,6 +40,10 @@ module Helpers
         def self.min_ios_version_supported
             return '13.4'
         end
+        
+        def self.min_visionos_version_supported
+            return '1.0'
+        end
 
         def self.folly_config
             return {

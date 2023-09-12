@@ -120,6 +120,13 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+#if TARGET_OS_VISION
+/**
+ *  The hover style to apply to a view, including an effect and a shape to use for displaying that effect.
+ */
+@property (nonatomic, copy) NSString *hoverEffect;
+#endif
+
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */

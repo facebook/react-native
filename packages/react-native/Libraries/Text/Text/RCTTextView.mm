@@ -247,6 +247,7 @@
       [_editMenuInteraction presentEditMenuWithConfiguration:config];
     }
   } else {
+#if !TARGET_OS_VISION
     UIMenuController *menuController = [UIMenuController sharedMenuController];
 
     if (menuController.isMenuVisible) {
@@ -254,6 +255,7 @@
     }
 
     [menuController showMenuFromView:self rect:self.bounds];
+#endif
   }
 }
 

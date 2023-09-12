@@ -71,13 +71,13 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object to return in callbacks
-RCT_EXTERN NSDictionary<NSString *, id>
-    *RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *
+RCTMakeError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData);
 RCT_EXTERN NSDictionary<NSString *, id> *
 RCTMakeAndLogError(NSString *message, id __nullable toStringify, NSDictionary<NSString *, id> *__nullable extraData);
 RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
-RCT_EXTERN NSDictionary<NSString *, id>
-    *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error);
+RCT_EXTERN NSDictionary<NSString *, id> *
+RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *__nullable error);
 
 // The default error code to use as the `code` property for callback error objects
 RCT_EXTERN NSString *const RCTErrorUnspecified;
@@ -94,6 +94,11 @@ RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 // Returns the current main window, useful if you need to access the root view
 // or view controller
 RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
+
+#if TARGET_OS_VISION
+// Returns the current active UIWindow based on UIWindowScene
+RCT_EXTERN UIWindow *__nullable RCTForegroundWindow(void);
+#endif
 
 // Returns the presented view controller, useful if you need
 // e.g. to present a modal view controller or alert over it

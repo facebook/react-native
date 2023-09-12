@@ -666,6 +666,31 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   };
 }
 
+
+#if TARGET_OS_VISION
+- (void)setHoverEffect:(NSString *)hoverEffect {
+    _hoverEffect = hoverEffect;
+    
+    if (hoverEffect == nil) {
+        self.hoverStyle = nil;
+        return;
+    }
+    
+    UIShape *shape = [UIShape rectShapeWithCornerRadius:_borderRadius];
+    id<UIHoverEffect> effect;
+    
+    if ([hoverEffect isEqualToString:@"lift"]) {
+        effect = [UIHoverLiftEffect effect];
+    } else if ([hoverEffect isEqualToString:@"highlight"]) {
+        effect = [UIHoverHighlightEffect effect];
+    }
+    
+    if (hoverEffect != nil) {
+        self.hoverStyle = [UIHoverStyle styleWithEffect:effect shape:shape];
+    }
+}
+#endif
+
 - (RCTCornerRadii)cornerRadii
 {
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
