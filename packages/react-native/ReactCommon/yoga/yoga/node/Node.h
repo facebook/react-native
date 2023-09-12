@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <vector>
 
+#include <yoga/Yoga.h>
+
 #include <yoga/config/Config.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
@@ -139,7 +141,7 @@ public:
 
   uint32_t getLineIndex() const { return lineIndex_; }
 
-  bool isReferenceBaseline() { return flags_.isReferenceBaseline; }
+  bool isReferenceBaseline() const { return flags_.isReferenceBaseline; }
 
   // returns the Node that owns this Node. An owner is used to identify
   // the YogaTree that a Node belongs to. This method will return the parent
@@ -151,23 +153,6 @@ public:
   Node* getParent() const { return getOwner(); }
 
   const std::vector<Node*>& getChildren() const { return children_; }
-
-  // Applies a callback to all children, after cloning them if they are not
-  // owned.
-  template <typename T>
-  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
-    int i = 0;
-    for (Node*& child : children_) {
-      if (child->getOwner() != this) {
-        child = static_cast<Node*>(
-            config_->cloneNode(child, this, i, cloneContext));
-        child->setOwner(this);
-      }
-      i += 1;
-
-      callback(child, cloneContext);
-    }
-  }
 
   Node* getChild(size_t index) const { return children_.at(index); }
 
@@ -342,5 +327,13 @@ public:
   bool isNodeFlexible();
   void reset();
 };
+
+inline Node* resolveRef(const YGNodeRef ref) {
+  return static_cast<Node*>(ref);
+}
+
+inline const Node* resolveRef(const YGNodeConstRef ref) {
+  return static_cast<const Node*>(ref);
+}
 
 } // namespace facebook::yoga
