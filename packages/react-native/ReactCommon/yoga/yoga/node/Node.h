@@ -36,7 +36,7 @@ struct NodeFlags {
 };
 #pragma pack(pop)
 
-class YOGA_EXPORT Node : public ::YGNode {
+class YG_EXPORT Node : public ::YGNode {
 public:
   // Internal variants of callbacks, currently used only by JNI bindings.
   // TODO: Reconcile this with the public API
