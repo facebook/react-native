@@ -18,9 +18,11 @@ namespace facebook::yoga {
 class Config;
 class Node;
 
-// Whether moving a node from config "a" to config "b" should dirty previously
+// Whether moving a node from an old to new config should dirty previously
 // calculated layout results.
-bool configUpdateInvalidatesLayout(Config* a, Config* b);
+bool configUpdateInvalidatesLayout(
+    const Config& oldConfig,
+    const Config& newConfig);
 
 // Internal variants of log functions, currently used only by JNI bindings.
 // TODO: Reconcile this with the public API
@@ -94,6 +96,8 @@ public:
       YGNodeConstRef owner,
       size_t childIndex,
       void* cloneContext) const;
+
+  static const Config& getDefault();
 
 private:
   union {

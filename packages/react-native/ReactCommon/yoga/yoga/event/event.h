@@ -95,12 +95,12 @@ private:
 
 template <>
 struct Event::TypedData<Event::NodeAllocation> {
-  YGConfigRef config;
+  YGConfigConstRef config;
 };
 
 template <>
 struct Event::TypedData<Event::NodeDeallocation> {
-  YGConfigRef config;
+  YGConfigConstRef config;
 };
 
 template <>

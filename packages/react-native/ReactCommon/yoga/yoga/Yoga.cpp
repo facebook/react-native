@@ -32,7 +32,7 @@ YOGA_EXPORT void YGNodeSetContext(YGNodeRef node, void* context) {
   return resolveRef(node)->setContext(context);
 }
 
-YOGA_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node) {
+YOGA_EXPORT YGConfigConstRef YGNodeGetConfig(YGNodeRef node) {
   return resolveRef(node)->getConfig();
 }
 
@@ -103,22 +103,18 @@ YOGA_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(
   return resolveRef(node)->markDirtyAndPropagateDownwards();
 }
 
-YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
+YOGA_EXPORT WIN_EXPORT YGNodeRef
+YGNodeNewWithConfig(const YGConfigConstRef config) {
   auto* node = new yoga::Node{resolveRef(config)};
   yoga::assertFatal(
       config != nullptr, "Tried to construct YGNode with null config");
-  yoga::assertFatalWithConfig(
-      resolveRef(config),
-      node != nullptr,
-      "Could not allocate memory for node");
   Event::publish<Event::NodeAllocation>(node, {config});
 
   return node;
 }
 
-YOGA_EXPORT YGConfigRef YGConfigGetDefault() {
-  static YGConfigRef defaultConfig = YGConfigNew();
-  return defaultConfig;
+YOGA_EXPORT YGConfigConstRef YGConfigGetDefault() {
+  return &yoga::Config::getDefault();
 }
 
 YOGA_EXPORT YGNodeRef YGNodeNew(void) {
