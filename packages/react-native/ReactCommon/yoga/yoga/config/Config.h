@@ -25,15 +25,15 @@ bool configUpdateInvalidatesLayout(Config* a, Config* b);
 // Internal variants of log functions, currently used only by JNI bindings.
 // TODO: Reconcile this with the public API
 using LogWithContextFn = int (*)(
-    YGConfigRef config,
-    YGNodeRef node,
+    YGConfigConstRef config,
+    YGNodeConstRef node,
     YGLogLevel level,
     void* context,
     const char* format,
     va_list args);
 using CloneWithContextFn = YGNodeRef (*)(
-    YGNodeRef node,
-    YGNodeRef owner,
+    YGNodeConstRef node,
+    YGNodeConstRef owner,
     int childIndex,
     void* cloneContext);
 
@@ -90,8 +90,8 @@ public:
   void setCloneNodeCallback(CloneWithContextFn cloneNode);
   void setCloneNodeCallback(std::nullptr_t);
   YGNodeRef cloneNode(
-      YGNodeRef node,
-      YGNodeRef owner,
+      YGNodeConstRef node,
+      YGNodeConstRef owner,
       int childIndex,
       void* cloneContext) const;
 
