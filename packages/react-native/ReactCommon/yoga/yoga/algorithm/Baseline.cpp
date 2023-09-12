@@ -34,8 +34,8 @@ float calculateBaseline(const yoga::Node* node, void* layoutContext) {
   }
 
   yoga::Node* baselineChild = nullptr;
-  const uint32_t childCount = YGNodeGetChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
     auto child = node->getChild(i);
     if (child->getLineIndex() > 0) {
       break;
