@@ -153,7 +153,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   /**
    * Replcaes a child with a mutable clone of itself, returning the clone.
    */
-  YogaLayoutableShadowNode& cloneChildInPlace(int32_t layoutableChildIndex);
+  YogaLayoutableShadowNode& cloneChildInPlace(size_t layoutableChildIndex);
 
   static yoga::Config& initializeYogaConfig(
       yoga::Config& config,
@@ -161,7 +161,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   static YGNodeRef yogaNodeCloneCallbackConnector(
       YGNodeConstRef oldYogaNode,
       YGNodeConstRef parentYogaNode,
-      int childIndex);
+      size_t childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(
       YGNodeConstRef yogaNode,
       float width,

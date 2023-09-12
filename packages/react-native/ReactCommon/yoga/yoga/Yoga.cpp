@@ -216,8 +216,8 @@ YOGA_EXPORT void YGNodeFree(const YGNodeRef nodeRef) {
     node->setOwner(nullptr);
   }
 
-  const uint32_t childCount = YGNodeGetChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
     auto child = node->getChild(i);
     child->setOwner(nullptr);
   }
@@ -236,8 +236,8 @@ YOGA_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     YGNodeCleanupFunc cleanup) {
   const auto root = resolveRef(rootRef);
 
-  uint32_t skipped = 0;
-  while (YGNodeGetChildCount(root) > skipped) {
+  size_t skipped = 0;
+  while (root->getChildCount() > skipped) {
     const auto child = root->getChild(skipped);
     if (child->getOwner() != root) {
       // Don't free shared nodes that we don't own.
@@ -297,7 +297,7 @@ YOGA_EXPORT bool YGNodeIsReferenceBaseline(YGNodeConstRef node) {
 YOGA_EXPORT void YGNodeInsertChild(
     const YGNodeRef ownerRef,
     const YGNodeRef childRef,
-    const uint32_t index) {
+    const size_t index) {
   auto owner = resolveRef(ownerRef);
   auto child = resolveRef(childRef);
 
@@ -319,7 +319,7 @@ YOGA_EXPORT void YGNodeInsertChild(
 YOGA_EXPORT void YGNodeSwapChild(
     const YGNodeRef ownerRef,
     const YGNodeRef childRef,
-    const uint32_t index) {
+    const size_t index) {
   auto owner = resolveRef(ownerRef);
   auto child = resolveRef(childRef);
 
@@ -333,7 +333,7 @@ YOGA_EXPORT void YGNodeRemoveChild(
   auto owner = resolveRef(ownerRef);
   auto excludedChild = resolveRef(excludedChildRef);
 
-  if (YGNodeGetChildCount(owner) == 0) {
+  if (owner->getChildCount() == 0) {
     // This is an empty set. Nothing to remove.
     return;
   }
@@ -354,7 +354,7 @@ YOGA_EXPORT void YGNodeRemoveChild(
 YOGA_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
   auto owner = resolveRef(ownerRef);
 
-  const uint32_t childCount = YGNodeGetChildCount(owner);
+  const size_t childCount = owner->getChildCount();
   if (childCount == 0) {
     // This is an empty set already. Nothing to do.
     return;
@@ -363,7 +363,7 @@ YOGA_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
   if (firstChild->getOwner() == owner) {
     // If the first child has this node as its owner, we assume that this child
     // set is unique.
-    for (uint32_t i = 0; i < childCount; i++) {
+    for (size_t i = 0; i < childCount; i++) {
       yoga::Node* oldChild = owner->getChild(i);
       oldChild->setLayout({}); // layout is no longer valid
       oldChild->setOwner(nullptr);
@@ -381,7 +381,7 @@ YOGA_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef ownerRef) {
 YOGA_EXPORT void YGNodeSetChildren(
     const YGNodeRef ownerRef,
     const YGNodeRef* childrenRefs,
-    const uint32_t count) {
+    const size_t count) {
   auto owner = resolveRef(ownerRef);
   auto children = reinterpret_cast<yoga::Node* const*>(childrenRefs);
 
@@ -391,7 +391,7 @@ YOGA_EXPORT void YGNodeSetChildren(
 
   const std::vector<yoga::Node*> childrenVector = {children, children + count};
   if (childrenVector.size() == 0) {
-    if (YGNodeGetChildCount(owner) > 0) {
+    if (owner->getChildCount() > 0) {
       for (auto* child : owner->getChildren()) {
         child->setLayout({});
         child->setOwner(nullptr);
@@ -400,7 +400,7 @@ YOGA_EXPORT void YGNodeSetChildren(
       owner->markDirtyAndPropagate();
     }
   } else {
-    if (YGNodeGetChildCount(owner) > 0) {
+    if (owner->getChildCount() > 0) {
       for (auto* oldChild : owner->getChildren()) {
         // Our new children may have nodes in common with the old children. We
         // don't reset these common nodes.
@@ -420,7 +420,7 @@ YOGA_EXPORT void YGNodeSetChildren(
 }
 
 YOGA_EXPORT YGNodeRef
-YGNodeGetChild(const YGNodeRef nodeRef, const uint32_t index) {
+YGNodeGetChild(const YGNodeRef nodeRef, const size_t index) {
   const auto node = resolveRef(nodeRef);
 
   if (index < node->getChildren().size()) {
@@ -429,8 +429,8 @@ YGNodeGetChild(const YGNodeRef nodeRef, const uint32_t index) {
   return nullptr;
 }
 
-YOGA_EXPORT uint32_t YGNodeGetChildCount(const YGNodeConstRef node) {
-  return static_cast<uint32_t>(resolveRef(node)->getChildren().size());
+YOGA_EXPORT size_t YGNodeGetChildCount(const YGNodeConstRef node) {
+  return resolveRef(node)->getChildren().size();
 }
 
 YOGA_EXPORT YGNodeRef YGNodeGetOwner(const YGNodeRef node) {
