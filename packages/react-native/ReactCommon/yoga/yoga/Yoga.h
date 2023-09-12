@@ -9,6 +9,7 @@
 
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <yoga/YGEnums.h>
@@ -47,7 +48,7 @@ typedef int (*YGLogger)(
 typedef YGNodeRef (*YGCloneNodeFunc)(
     YGNodeConstRef oldNode,
     YGNodeConstRef owner,
-    int childIndex);
+    size_t childIndex);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
@@ -63,23 +64,20 @@ WIN_EXPORT void YGNodeReset(YGNodeRef node);
 WIN_EXPORT void YGNodeInsertChild(
     YGNodeRef node,
     YGNodeRef child,
-    uint32_t index);
+    size_t index);
 
-WIN_EXPORT void YGNodeSwapChild(
-    YGNodeRef node,
-    YGNodeRef child,
-    uint32_t index);
+WIN_EXPORT void YGNodeSwapChild(YGNodeRef node, YGNodeRef child, size_t index);
 
 WIN_EXPORT void YGNodeRemoveChild(YGNodeRef node, YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(YGNodeRef node);
-WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, uint32_t index);
+WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, size_t index);
 WIN_EXPORT YGNodeRef YGNodeGetOwner(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
-WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeConstRef node);
+WIN_EXPORT size_t YGNodeGetChildCount(YGNodeConstRef node);
 WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef owner,
     const YGNodeRef* children,
-    uint32_t count);
+    size_t count);
 
 WIN_EXPORT void YGNodeSetIsReferenceBaseline(
     YGNodeRef node,
