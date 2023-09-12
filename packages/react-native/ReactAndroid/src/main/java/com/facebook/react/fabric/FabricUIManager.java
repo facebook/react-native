@@ -838,7 +838,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_START, null, commitNumber, layoutStartTime);
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_LAYOUT_END,
+          ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_LAYOUT_AFFECTED_NODES,
           null,
           commitNumber,
           layoutEndTime,

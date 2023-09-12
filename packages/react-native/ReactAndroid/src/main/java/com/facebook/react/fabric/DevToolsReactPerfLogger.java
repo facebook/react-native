@@ -188,7 +188,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     }
 
     public int getAffectedLayoutNodesCount() {
-      return getCounter(FABRIC_LAYOUT_END);
+      return getCounter(FABRIC_LAYOUT_AFFECTED_NODES);
     }
 
     public long getBatchExecutionStart() {
@@ -292,6 +292,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
         || name == FABRIC_BATCH_EXECUTION_START
         || name == FABRIC_BATCH_EXECUTION_END
         || name == FABRIC_UPDATE_UI_MAIN_THREAD_START
-        || name == FABRIC_UPDATE_UI_MAIN_THREAD_END;
+        || name == FABRIC_UPDATE_UI_MAIN_THREAD_END
+        || name == FABRIC_LAYOUT_AFFECTED_NODES;
   }
 }
