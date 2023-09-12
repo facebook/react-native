@@ -38,10 +38,17 @@ struct NodeFlags {
 
 class YOGA_EXPORT Node : public ::YGNode {
 public:
-  using MeasureWithContextFn =
-      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
-  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
-  using PrintWithContextFn = void (*)(YGNode*, void*);
+  // Internal variants of callbacks, currently used only by JNI bindings.
+  // TODO: Reconcile this with the public API
+  using MeasureWithContextFn = YGSize (*)(
+      YGNodeConstRef,
+      float,
+      YGMeasureMode,
+      float,
+      YGMeasureMode,
+      void*);
+  using BaselineWithContextFn = float (*)(YGNodeConstRef, float, float, void*);
+  using PrintWithContextFn = void (*)(YGNodeConstRef, void*);
 
 private:
   void* context_ = nullptr;

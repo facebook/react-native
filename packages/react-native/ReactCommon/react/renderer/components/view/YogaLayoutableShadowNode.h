@@ -159,16 +159,17 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       yoga::Config& config,
       YGConfigRef previousConfig = nullptr);
   static YGNodeRef yogaNodeCloneCallbackConnector(
-      YGNodeRef oldYogaNode,
-      YGNodeRef parentYogaNode,
+      YGNodeConstRef oldYogaNode,
+      YGNodeConstRef parentYogaNode,
       int childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(
-      YGNodeRef yogaNode,
+      YGNodeConstRef yogaNode,
       float width,
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
-  static YogaLayoutableShadowNode& shadowNodeFromContext(YGNodeRef yogaNode);
+  static YogaLayoutableShadowNode& shadowNodeFromContext(
+      YGNodeConstRef yogaNode);
 
 #pragma mark - RTL Legacy Autoflip
 
