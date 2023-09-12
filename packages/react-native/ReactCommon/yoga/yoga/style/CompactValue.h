@@ -41,7 +41,7 @@ namespace facebook::yoga {
 //            0x40000000         0x7f7fffff
 // - Zero is supported, negative zero is not
 // - values outside of the representable range are clamped
-class YOGA_EXPORT CompactValue {
+class YG_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
 public:

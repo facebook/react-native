@@ -50,7 +50,7 @@ struct ConfigFlags {
 };
 #pragma pack(pop)
 
-class YOGA_EXPORT Config : public ::YGConfig {
+class YG_EXPORT Config : public ::YGConfig {
 public:
   Config(YGLogger logger);
 
