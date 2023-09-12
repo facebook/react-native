@@ -52,7 +52,7 @@ typedef YGNodeRef (*YGCloneNodeFunc)(
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
-WIN_EXPORT YGNodeRef YGNodeNewWithConfig(YGConfigRef config);
+WIN_EXPORT YGNodeRef YGNodeNewWithConfig(YGConfigConstRef config);
 WIN_EXPORT YGNodeRef YGNodeClone(YGNodeConstRef node);
 WIN_EXPORT void YGNodeFree(YGNodeRef node);
 WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
@@ -131,7 +131,7 @@ WIN_EXPORT void YGNodeCopyStyle(YGNodeRef dstNode, YGNodeConstRef srcNode);
 WIN_EXPORT void* YGNodeGetContext(YGNodeConstRef node);
 WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
 
-WIN_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node);
+WIN_EXPORT YGConfigConstRef YGNodeGetConfig(YGNodeRef node);
 WIN_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config);
 
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
@@ -327,7 +327,7 @@ WIN_EXPORT void YGConfigSetCloneNodeFunc(
     YGConfigRef config,
     YGCloneNodeFunc callback);
 
-WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
+WIN_EXPORT YGConfigConstRef YGConfigGetDefault(void);
 
 WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 WIN_EXPORT void* YGConfigGetContext(YGConfigConstRef config);

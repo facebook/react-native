@@ -123,9 +123,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
 
-  YGConfigRef previousConfig = YGNodeGetConfig(
+  YGConfigConstRef previousConfig =
       &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-           .yogaNode_);
+           .yogaConfig_;
 
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
@@ -851,7 +851,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
 
 yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     yoga::Config& config,
-    const YGConfigRef previousConfig) {
+    YGConfigConstRef previousConfig) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   if (previousConfig != nullptr) {
