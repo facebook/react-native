@@ -22,15 +22,15 @@ using namespace facebook::yoga;
 
 #ifdef ANDROID
 static int YGAndroidLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigConstRef config,
+    const YGNodeConstRef node,
     YGLogLevel level,
     const char* format,
     va_list args);
 #else
 static int YGDefaultLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigConstRef config,
+    const YGNodeConstRef node,
     YGLogLevel level,
     const char* format,
     va_list args);
@@ -39,8 +39,8 @@ static int YGDefaultLog(
 #ifdef ANDROID
 #include <android/log.h>
 static int YGAndroidLog(
-    const YGConfigRef /*config*/,
-    const YGNodeRef /*node*/,
+    const YGConfigConstRef /*config*/,
+    const YGNodeConstRef /*node*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -69,16 +69,12 @@ static int YGAndroidLog(
   return result;
 }
 #else
-#define YG_UNUSED(x) (void) (x);
-
 static int YGDefaultLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigConstRef /*config*/,
+    const YGNodeConstRef /*node*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
-  YG_UNUSED(config);
-  YG_UNUSED(node);
   switch (level) {
     case YGLogLevelError:
     case YGLogLevelFatal:
@@ -91,8 +87,6 @@ static int YGDefaultLog(
       return vprintf(format, args);
   }
 }
-
-#undef YG_UNUSED
 #endif
 
 YOGA_EXPORT bool YGFloatIsUndefined(const float value) {
@@ -202,7 +196,7 @@ YOGA_EXPORT YGNodeRef YGNodeNew(void) {
   return YGNodeNewWithConfig(YGConfigGetDefault());
 }
 
-YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNodeRef) {
+YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeConstRef oldNodeRef) {
   auto oldNode = resolveRef(oldNodeRef);
   const auto node = new yoga::Node(*oldNode);
   yoga::assertFatalWithConfig(
