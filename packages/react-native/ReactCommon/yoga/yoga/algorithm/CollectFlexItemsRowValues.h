@@ -39,11 +39,11 @@ namespace facebook::yoga {
 //   and/or grow.
 
 struct CollectFlexItemsRowValues {
-  uint32_t itemsOnLine;
+  size_t itemsOnLine;
   float sizeConsumedOnCurrentLine;
   float totalFlexGrowFactors;
   float totalFlexShrinkScaledFactors;
-  uint32_t endOfLineIndex;
+  size_t endOfLineIndex;
   std::vector<yoga::Node*> relativeChildren;
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin

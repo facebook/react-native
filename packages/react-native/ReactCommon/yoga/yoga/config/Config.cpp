@@ -131,7 +131,7 @@ void Config::setCloneNodeCallback(std::nullptr_t) {
 YGNodeRef Config::cloneNode(
     YGNodeConstRef node,
     YGNodeConstRef owner,
-    int childIndex,
+    size_t childIndex,
     void* cloneContext) const {
   YGNodeRef clone = nullptr;
   if (cloneNodeCallback_.noContext != nullptr) {

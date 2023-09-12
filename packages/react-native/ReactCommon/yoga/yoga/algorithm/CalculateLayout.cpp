@@ -965,8 +965,8 @@ static CollectFlexItemsRowValues calculateCollectFlexItemsRowValues(
     const float mainAxisownerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
-    const uint32_t startOfLineIndex,
-    const uint32_t lineCount) {
+    const size_t startOfLineIndex,
+    const size_t lineCount) {
   CollectFlexItemsRowValues flexAlgoRowMeasurement = {};
   flexAlgoRowMeasurement.relativeChildren.reserve(node->getChildren().size());
 
@@ -977,7 +977,7 @@ static CollectFlexItemsRowValues calculateCollectFlexItemsRowValues(
   const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
 
   // Add items to the current line until it's full or we run out of items.
-  uint32_t endOfLineIndex = startOfLineIndex;
+  size_t endOfLineIndex = startOfLineIndex;
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
     if (child->getStyle().display() == YGDisplayNone ||
@@ -1408,7 +1408,7 @@ static void resolveFlexibleLength(
 static void YGJustifyMainAxis(
     yoga::Node* const node,
     CollectFlexItemsRowValues& collectedFlexItemsValues,
-    const uint32_t startOfLineIndex,
+    const size_t startOfLineIndex,
     const YGFlexDirection mainAxis,
     const YGFlexDirection crossAxis,
     const YGMeasureMode measureModeMainDim,
@@ -1456,8 +1456,7 @@ static void YGJustifyMainAxis(
   }
 
   int numberOfAutoMarginsOnCurrentLine = 0;
-  for (uint32_t i = startOfLineIndex;
-       i < collectedFlexItemsValues.endOfLineIndex;
+  for (size_t i = startOfLineIndex; i < collectedFlexItemsValues.endOfLineIndex;
        i++) {
     auto child = node->getChild(i);
     if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
@@ -1517,8 +1516,7 @@ static void YGJustifyMainAxis(
   float maxAscentForCurrentLine = 0;
   float maxDescentForCurrentLine = 0;
   bool isNodeBaselineLayout = isBaselineLayout(node);
-  for (uint32_t i = startOfLineIndex;
-       i < collectedFlexItemsValues.endOfLineIndex;
+  for (size_t i = startOfLineIndex; i < collectedFlexItemsValues.endOfLineIndex;
        i++) {
     const auto child = node->getChild(i);
     const Style& childStyle = child->getStyle();
@@ -1906,11 +1904,11 @@ static void calculateLayoutImpl(
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
   // Indexes of children that represent the first and last items in the line.
-  uint32_t startOfLineIndex = 0;
-  uint32_t endOfLineIndex = 0;
+  size_t startOfLineIndex = 0;
+  size_t endOfLineIndex = 0;
 
   // Number of lines.
-  uint32_t lineCount = 0;
+  size_t lineCount = 0;
 
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
@@ -2093,7 +2091,7 @@ static void calculateLayoutImpl(
     // STEP 7: CROSS-AXIS ALIGNMENT
     // We can skip child alignment if we're just measuring the container.
     if (performLayout) {
-      for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
+      for (size_t i = startOfLineIndex; i < endOfLineIndex; i++) {
         const auto child = node->getChild(i);
         if (child->getStyle().display() == YGDisplayNone) {
           continue;
@@ -2291,10 +2289,10 @@ static void calculateLayoutImpl(
           break;
       }
     }
-    uint32_t endIndex = 0;
-    for (uint32_t i = 0; i < lineCount; i++) {
-      const uint32_t startIndex = endIndex;
-      uint32_t ii;
+    size_t endIndex = 0;
+    for (size_t i = 0; i < lineCount; i++) {
+      const size_t startIndex = endIndex;
+      size_t ii;
 
       // compute the line's height and find the endIndex
       float lineHeight = 0;
@@ -2537,7 +2535,7 @@ static void calculateLayoutImpl(
   // As we only wrapped in normal direction yet, we need to reverse the
   // positions on wrap-reverse.
   if (performLayout && node->getStyle().flexWrap() == YGWrapWrapReverse) {
-    for (uint32_t i = 0; i < childCount; i++) {
+    for (size_t i = 0; i < childCount; i++) {
       const auto child = node->getChild(i);
       if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
         child->setLayoutPosition(
@@ -2586,7 +2584,7 @@ static void calculateLayoutImpl(
 
     // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
-      for (uint32_t i = 0; i < childCount; i++) {
+      for (size_t i = 0; i < childCount; i++) {
         const auto child = node->getChild(i);
         if (child->getStyle().display() == YGDisplayNone) {
           continue;
@@ -2710,7 +2708,7 @@ bool calculateLayoutInternal(
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
-      for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
+      for (size_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
         if (canUseCachedMeasurement(
                 widthMeasureMode,
                 availableWidth,
