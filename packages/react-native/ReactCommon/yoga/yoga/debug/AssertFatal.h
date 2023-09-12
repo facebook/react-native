@@ -17,11 +17,11 @@ namespace facebook::yoga {
 
 void assertFatal(bool condition, const char* message);
 void assertFatalWithNode(
-    YGNodeConstRef node,
+    const yoga::Node* node,
     bool condition,
     const char* message);
 void assertFatalWithConfig(
-    YGConfigRef config,
+    const yoga::Config* config,
     bool condition,
     const char* message);
 

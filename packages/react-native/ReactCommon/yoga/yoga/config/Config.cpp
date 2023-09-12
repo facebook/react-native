@@ -6,6 +6,7 @@
  */
 
 #include <yoga/config/Config.h>
+#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
@@ -101,15 +102,28 @@ void Config::setLogger(std::nullptr_t) {
 }
 
 void Config::log(
-    YGNodeRef node,
+    const yoga::Node* node,
     YGLogLevel logLevel,
     void* logContext,
     const char* format,
-    va_list args) {
+    va_list args) const {
+  // TODO: Break log callback signatures to make them const correct
+
   if (flags_.loggerUsesContext) {
-    logger_.withContext(this, node, logLevel, logContext, format, args);
+    logger_.withContext(
+        const_cast<yoga::Config*>(this),
+        const_cast<yoga::Node*>(node),
+        logLevel,
+        logContext,
+        format,
+        args);
   } else {
-    logger_.noContext(this, node, logLevel, format, args);
+    logger_.noContext(
+        const_cast<yoga::Config*>(this),
+        const_cast<yoga::Node*>(node),
+        logLevel,
+        format,
+        args);
   }
 }
 
