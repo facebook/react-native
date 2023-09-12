@@ -27,7 +27,7 @@ using namespace facebook::yoga;
 using namespace facebook::yoga::vanillajni;
 
 static inline ScopedLocalRef<jobject> YGNodeJobject(
-    YGNodeRef node,
+    YGNodeConstRef node,
     void* layoutContext) {
   return reinterpret_cast<PtrJNodeMapVanilla*>(layoutContext)->ref(node);
 }
@@ -138,8 +138,8 @@ static jlong jni_YGNodeNewWithConfigJNI(
 }
 
 static int YGJNILogFunc(
-    const YGConfigRef config,
-    const YGNodeRef /*node*/,
+    const YGConfigConstRef config,
+    const YGNodeConstRef /*node*/,
     YGLogLevel level,
     void* /*layoutContext*/,
     const char* format,
@@ -639,7 +639,7 @@ static void jni_YGNodeStyleSetBorderJNI(
       yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(border));
 }
 
-static void YGTransferLayoutDirection(YGNodeRef node, jobject javaNode) {
+static void YGTransferLayoutDirection(YGNodeConstRef node, jobject javaNode) {
   // Don't change this field name without changing the name of the field in
   // Database.java
   JNIEnv* env = getCurrentEnv();
@@ -655,7 +655,7 @@ static void YGTransferLayoutDirection(YGNodeRef node, jobject javaNode) {
 }
 
 static YGSize YGJNIMeasureFunc(
-    YGNodeRef node,
+    YGNodeConstRef node,
     float width,
     YGMeasureMode widthMode,
     float height,
@@ -700,7 +700,7 @@ static void jni_YGNodeSetHasMeasureFuncJNI(
 }
 
 static float YGJNIBaselineFunc(
-    YGNodeRef node,
+    YGNodeConstRef node,
     float width,
     float height,
     void* layoutContext) {
