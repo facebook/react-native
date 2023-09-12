@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
