@@ -17,7 +17,9 @@
 
 namespace facebook::yoga {
 
-Node::Node(yoga::Config* config) : config_{config} {
+Node::Node() : Node{&Config::getDefault()} {}
+
+Node::Node(const yoga::Config* config) : config_{config} {
   yoga::assertFatal(
       config != nullptr, "Attempting to construct Node with null config");
 
@@ -285,7 +287,7 @@ void Node::setConfig(yoga::Config* config) {
       config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a Node");
 
-  if (yoga::configUpdateInvalidatesLayout(config_, config)) {
+  if (yoga::configUpdateInvalidatesLayout(*config_, *config)) {
     markDirtyAndPropagate();
   }
 

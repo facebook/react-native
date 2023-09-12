@@ -22,10 +22,11 @@ void vlog(
     void* context,
     const char* format,
     va_list args) {
-  const yoga::Config* logConfig =
-      config != nullptr ? config : resolveRef(YGConfigGetDefault());
-
-  logConfig->log(const_cast<yoga::Node*>(node), level, context, format, args);
+  if (config == nullptr) {
+    getDefaultLogger()(nullptr, node, level, format, args);
+  } else {
+    config->log(node, level, context, format, args);
+  }
 }
 } // namespace
 
