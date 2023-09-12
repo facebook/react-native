@@ -371,9 +371,6 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.unsetAsThreadLocal();
   telemetry.didLayout(affectedLayoutableNodes.size());
 
-  // Seal the shadow node so it can no longer be mutated
-  newRootShadowNode->sealRecursive();
-
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
@@ -408,6 +405,9 @@ CommitStatus ShadowTree::tryCommit(
 
     telemetry.didCommit();
     telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
+
+    // Seal the shadow node so it can no longer be mutated
+    newRootShadowNode->sealRecursive();
 
     newRevision = ShadowTreeRevision{
         std::move(newRootShadowNode), newRevisionNumber, telemetry};
