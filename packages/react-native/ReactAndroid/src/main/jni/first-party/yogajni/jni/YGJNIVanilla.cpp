@@ -93,18 +93,6 @@ static void jni_YGConfigSetPointScaleFactorJNI(
   YGConfigSetPointScaleFactor(config, pixelsInPoint);
 }
 
-static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
-    JNIEnv* /*env*/,
-    jobject /*obj*/,
-    jlong nativePointer,
-    jboolean useLegacyStretchBehaviour) {
-  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-  YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
-#pragma clang diagnostic pop
-}
-
 static void jni_YGConfigSetErrataJNI(
     JNIEnv* /*env*/,
     jobject /*obj*/,
@@ -790,9 +778,6 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetPointScaleFactorJNI",
      "(JF)V",
      (void*) jni_YGConfigSetPointScaleFactorJNI},
-    {"jni_YGConfigSetUseLegacyStretchBehaviourJNI",
-     "(JZ)V",
-     (void*) jni_YGConfigSetUseLegacyStretchBehaviourJNI},
     {"jni_YGConfigSetErrataJNI", "(JI)V", (void*) jni_YGConfigSetErrataJNI},
     {"jni_YGConfigGetErrataJNI", "(J)I", (void*) jni_YGConfigGetErrataJNI},
     {"jni_YGConfigSetLoggerJNI",
