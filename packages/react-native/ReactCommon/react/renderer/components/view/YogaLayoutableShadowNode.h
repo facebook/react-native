@@ -157,7 +157,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   static yoga::Config& initializeYogaConfig(
       yoga::Config& config,
-      YGConfigRef previousConfig = nullptr);
+      YGConfigConstRef previousConfig = nullptr);
   static YGNodeRef yogaNodeCloneCallbackConnector(
       YGNodeConstRef oldYogaNode,
       YGNodeConstRef parentYogaNode,
