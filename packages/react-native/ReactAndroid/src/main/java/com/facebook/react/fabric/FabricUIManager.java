@@ -909,30 +909,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
-    receiveEvent(View.NO_ID, reactTag, eventName, params);
+    receiveEvent(View.NO_ID, reactTag, eventName, false, params, EventCategoryDef.UNSPECIFIED);
   }
 
   @Override
   public void receiveEvent(
       int surfaceId, int reactTag, String eventName, @Nullable WritableMap params) {
-    receiveEvent(surfaceId, reactTag, eventName, false, 0, params);
-  }
-
-  public void receiveEvent(
-      int surfaceId,
-      int reactTag,
-      String eventName,
-      boolean canCoalesceEvent,
-      int customCoalesceKey,
-      @Nullable WritableMap params) {
-    receiveEvent(
-        surfaceId,
-        reactTag,
-        eventName,
-        canCoalesceEvent,
-        customCoalesceKey,
-        params,
-        EventCategoryDef.UNSPECIFIED);
+    receiveEvent(surfaceId, reactTag, eventName, false, params, EventCategoryDef.UNSPECIFIED);
   }
 
   /**
@@ -955,7 +938,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       String eventName,
       boolean canCoalesceEvent,
-      int customCoalesceKey,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
@@ -975,8 +957,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(
-            reactTag,
-            new ViewEvent(eventName, params, eventCategory, canCoalesceEvent, customCoalesceKey));
+            reactTag, new ViewEvent(eventName, params, eventCategory, canCoalesceEvent));
       } else {
         // This can happen if the view has disappeared from the screen (because of async events)
         FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
@@ -985,7 +966,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     if (canCoalesceEvent) {
-      eventEmitter.dispatchUnique(eventName, params, customCoalesceKey);
+      eventEmitter.dispatchUnique(eventName, params);
     } else {
       eventEmitter.dispatch(eventName, params, eventCategory);
     }

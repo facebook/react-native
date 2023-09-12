@@ -1130,8 +1130,7 @@ public class SurfaceMountingManager {
 
   private void dispatchEvent(EventEmitterWrapper eventEmitter, ViewEvent viewEvent) {
     if (viewEvent.canCoalesceEvent()) {
-      eventEmitter.dispatchUnique(
-          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
+      eventEmitter.dispatchUnique(viewEvent.getEventName(), viewEvent.getParams());
     } else {
       eventEmitter.dispatch(
           viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
@@ -1391,7 +1390,6 @@ public class SurfaceMountingManager {
   public static class ViewEvent {
     private final String mEventName;
     private final boolean mCanCoalesceEvent;
-    private final int mCustomCoalesceKey;
     private final @EventCategoryDef int mEventCategory;
     private @Nullable WritableMap mParams;
 
@@ -1399,13 +1397,11 @@ public class SurfaceMountingManager {
         String eventName,
         @Nullable WritableMap params,
         @EventCategoryDef int eventCategory,
-        boolean canCoalesceEvent,
-        int customCoalesceKey) {
+        boolean canCoalesceEvent) {
       mEventName = eventName;
       mParams = params;
       mEventCategory = eventCategory;
       mCanCoalesceEvent = canCoalesceEvent;
-      mCustomCoalesceKey = customCoalesceKey;
     }
 
     public String getEventName() {
@@ -1414,10 +1410,6 @@ public class SurfaceMountingManager {
 
     public boolean canCoalesceEvent() {
       return mCanCoalesceEvent;
-    }
-
-    public int getCustomCoalesceKey() {
-      return mCustomCoalesceKey;
     }
 
     public @EventCategoryDef int getEventCategory() {
