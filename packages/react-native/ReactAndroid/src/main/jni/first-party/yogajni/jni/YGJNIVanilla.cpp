@@ -362,7 +362,7 @@ static void YGTransferLayoutOutputsRecursive(
 
   YGNodeSetHasNewLayout(root, false);
 
-  for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
+  for (size_t i = 0; i < YGNodeGetChildCount(root); i++) {
     YGTransferLayoutOutputsRecursive(
         env, thiz, YGNodeGetChild(root, i), layoutContext);
   }

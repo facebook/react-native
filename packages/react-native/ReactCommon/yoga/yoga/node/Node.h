@@ -68,7 +68,7 @@ private:
   YGDirtiedFunc dirtied_ = nullptr;
   Style style_ = {};
   LayoutResults layout_ = {};
-  uint32_t lineIndex_ = 0;
+  size_t lineIndex_ = 0;
   Node* owner_ = nullptr;
   std::vector<Node*> children_ = {};
   Config* config_;
@@ -146,7 +146,7 @@ public:
 
   const LayoutResults& getLayout() const { return layout_; }
 
-  uint32_t getLineIndex() const { return lineIndex_; }
+  size_t getLineIndex() const { return lineIndex_; }
 
   bool isReferenceBaseline() const { return flags_.isReferenceBaseline; }
 
@@ -276,7 +276,7 @@ public:
 
   void setLayout(const LayoutResults& layout) { layout_ = layout; }
 
-  void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
+  void setLineIndex(size_t lineIndex) { lineIndex_ = lineIndex; }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
     flags_.isReferenceBaseline = isReferenceBaseline;

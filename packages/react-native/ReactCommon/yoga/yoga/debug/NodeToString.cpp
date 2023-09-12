@@ -227,9 +227,9 @@ void nodeToString(
   }
   appendFormattedString(str, ">");
 
-  const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
+  const size_t childCount = node->getChildCount();
   if (options & YGPrintOptionsChildren && childCount > 0) {
-    for (uint32_t i = 0; i < childCount; i++) {
+    for (size_t i = 0; i < childCount; i++) {
       appendFormattedString(str, "\n");
       nodeToString(str, node->getChild(i), options, level + 1);
     }
