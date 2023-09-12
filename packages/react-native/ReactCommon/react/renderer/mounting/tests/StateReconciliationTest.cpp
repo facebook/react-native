@@ -36,23 +36,31 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
       bool mountSynchronously) const override{};
 };
 
-inline const ShadowNode* findDescendantNode(
+namespace {
+const ShadowNode* findDescendantNode(
     const ShadowNode& shadowNode,
     const ShadowNodeFamily& family) {
-  const ShadowNode* result = nullptr;
-  shadowNode.cloneTree(family, [&](const ShadowNode& oldShadowNode) {
-    result = &oldShadowNode;
-    return oldShadowNode.clone({});
-  });
-  return result;
+  if (&shadowNode.getFamily() == &family) {
+    return &shadowNode;
+  }
+
+  for (auto childNode : shadowNode.getChildren()) {
+    auto descendant = findDescendantNode(*childNode, family);
+    if (descendant != nullptr) {
+      return descendant;
+    }
+  }
+
+  return nullptr;
 }
 
-inline const ShadowNode* findDescendantNode(
+const ShadowNode* findDescendantNode(
     const ShadowTree& shadowTree,
     const ShadowNodeFamily& family) {
   return findDescendantNode(
       *shadowTree.getCurrentRevision().rootShadowNode, family);
 }
+} // namespace
 
 TEST(StateReconciliationTest, testStateReconciliation) {
   auto builder = simpleComponentBuilder();
