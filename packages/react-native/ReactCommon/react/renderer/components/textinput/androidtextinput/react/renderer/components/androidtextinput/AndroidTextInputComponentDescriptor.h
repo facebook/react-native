@@ -83,9 +83,9 @@ class AndroidTextInputComponentDescriptor final
   }
 
  protected:
-  void adopt(const ShadowNode::Unshared& shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     auto& textInputShadowNode =
-        static_cast<AndroidTextInputShadowNode&>(*shadowNode);
+        static_cast<AndroidTextInputShadowNode&>(shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.

@@ -137,10 +137,27 @@ class ComponentDescriptor {
       const InstanceHandle::Shared& instanceHandle) const = 0;
 
  protected:
+  friend ShadowNode;
+
   EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
   Flavor flavor_;
+
+  /*
+   * Called immediately after `ShadowNode` is created, cloned or state is
+   * progressed using clonesless state progression (not fully shipped yet).
+   *
+   * Override this method to pass information from custom `ComponentDescriptor`
+   * to new instance of `ShadowNode`.
+   *
+   * Example usages:
+   *   - Inject image manager to `ImageShadowNode` in
+   * `ImageComponentDescriptor`.
+   *   - Set `ShadowNode`'s size from state in
+   * `ModalHostViewComponentDescriptor`.
+   */
+  virtual void adopt(ShadowNode& shadowNode) const = 0;
 };
 
 /*

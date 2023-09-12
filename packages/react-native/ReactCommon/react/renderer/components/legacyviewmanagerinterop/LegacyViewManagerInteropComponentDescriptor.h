@@ -27,7 +27,7 @@ class LegacyViewManagerInteropComponentDescriptor final
   ComponentName getComponentName() const override;
 
  protected:
-  void adopt(const ShadowNode::Unshared& shadowNode) const override;
+  void adopt(ShadowNode& shadowNode) const override;
 
  private:
   const std::shared_ptr<void> _coordinator;
