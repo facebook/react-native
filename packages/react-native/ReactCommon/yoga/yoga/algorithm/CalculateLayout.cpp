@@ -827,8 +827,10 @@ static void zeroOutLayoutRecursively(
   node->setLayoutDimension(0, YGDimensionHeight);
   node->setHasNewLayout(true);
 
-  node->iterChildrenAfterCloningIfNeeded(
-      zeroOutLayoutRecursively, layoutContext);
+  node->cloneChildrenIfNeeded(layoutContext);
+  for (const auto child : node->getChildren()) {
+    zeroOutLayoutRecursively(child, layoutContext);
+  }
 }
 
 static float calculateAvailableInnerDimension(
