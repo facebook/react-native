@@ -25,6 +25,60 @@ namespace facebook::react {
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
 
+// --- Clone-less progress state algorithm ---
+// Note: Ideally, we don't have to const_cast but our use of constness in
+// C++ is overly restrictive. We do const_cast here but the only place where
+// we change ShadowNode is by calling `ShadowNode::progressStateIfNecessary`
+// where checks are in place to avoid manipulating a sealed ShadowNode.
+
+static void progressStateIfNecessary(ShadowNode& newShadowNode) {
+  newShadowNode.progressStateIfNecessary();
+
+  for (const auto& childNode : newShadowNode.getChildren()) {
+    progressStateIfNecessary(const_cast<ShadowNode&>(*childNode));
+  }
+}
+
+static void progressStateIfNecessary(
+    ShadowNode& newShadowNode,
+    const ShadowNode& baseShadowNode) {
+  newShadowNode.progressStateIfNecessary();
+
+  auto& newChildren = newShadowNode.getChildren();
+  auto& baseChildren = baseShadowNode.getChildren();
+
+  auto newChildrenSize = newChildren.size();
+  auto baseChildrenSize = baseChildren.size();
+  auto index = size_t{0};
+
+  for (index = 0; index < newChildrenSize && index < baseChildrenSize;
+       ++index) {
+    const auto& newChildNode = *newChildren[index];
+    const auto& baseChildNode = *baseChildren[index];
+
+    if (&newChildNode == &baseChildNode) {
+      // Nodes are identical. They are shared between `newShadowNode` and
+      // `baseShadowNode` and it is safe to skipping.
+      continue;
+    }
+
+    if (!ShadowNode::sameFamily(newChildNode, baseChildNode)) {
+      // The nodes are not of the same family. Tree hierarchy has changed
+      // and we have to fall back to full sub-tree traversal from this point on.
+      break;
+    }
+
+    progressStateIfNecessary(
+        const_cast<ShadowNode&>(newChildNode), baseChildNode);
+  }
+
+  for (; index < newChildrenSize; ++index) {
+    const auto& newChildNode = *newChildren[index];
+    progressStateIfNecessary(const_cast<ShadowNode&>(newChildNode));
+  }
+}
+// --- End of Clone-less progress state algorithm ---
+
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
  * objects. If all `State` objects in the tree are not obsolete for the moment
@@ -344,11 +398,15 @@ CommitStatus ShadowTree::tryCommit(
   }
 
   if (commitOptions.enableStateReconciliation) {
-    auto updatedNewRootShadowNode =
-        progressState(*newRootShadowNode, *oldRootShadowNode);
-    if (updatedNewRootShadowNode) {
-      newRootShadowNode =
-          std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
+    if (CoreFeatures::enableClonelessStateProgression) {
+      progressStateIfNecessary(*newRootShadowNode, *oldRootShadowNode);
+    } else {
+      auto updatedNewRootShadowNode =
+          progressState(*newRootShadowNode, *oldRootShadowNode);
+      if (updatedNewRootShadowNode) {
+        newRootShadowNode =
+            std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
+      }
     }
   }
 
