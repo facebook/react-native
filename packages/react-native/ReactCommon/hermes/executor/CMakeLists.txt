@@ -19,7 +19,7 @@ target_link_libraries(hermes_executor_common
         jsireact
         hermes-engine::libhermes
         jsi
-        hermes_inspector
+        hermes_inspector_modern
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)

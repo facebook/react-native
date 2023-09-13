@@ -173,25 +173,31 @@ interface MatrixTransform {
   matrix: AnimatableNumericValue[];
 }
 
+type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
+  ? {[P in K]: T[K]} & {[P in Exclude<keyof T, K>]?: never}
+  : never;
+
 export interface TransformsStyle {
   transform?:
-    | (
-        | PerpectiveTransform
-        | RotateTransform
-        | RotateXTransform
-        | RotateYTransform
-        | RotateZTransform
-        | ScaleTransform
-        | ScaleXTransform
-        | ScaleYTransform
-        | TranslateXTransform
-        | TranslateYTransform
-        | SkewXTransform
-        | SkewYTransform
-        | MatrixTransform
-      )[]
+    | MaximumOneOf<
+        PerpectiveTransform &
+          RotateTransform &
+          RotateXTransform &
+          RotateYTransform &
+          RotateZTransform &
+          ScaleTransform &
+          ScaleXTransform &
+          ScaleYTransform &
+          TranslateXTransform &
+          TranslateYTransform &
+          SkewXTransform &
+          SkewYTransform &
+          MatrixTransform
+      >[]
     | string
     | undefined;
+  transformOrigin?: Array<string | number> | string | undefined;
+
   /**
    * @deprecated Use matrix in transform prop instead.
    */
@@ -335,7 +341,7 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
   textShadowOffset?: {width: number; height: number} | undefined;
   textShadowRadius?: number | undefined;
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase' | undefined;
-  testID?: string | undefined;
+  userSelect?: 'auto' | 'none' | 'text' | 'contain' | 'all' | undefined;
 }
 
 /**

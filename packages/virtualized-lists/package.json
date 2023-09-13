@@ -12,7 +12,7 @@
   "keywords": ["lists", "virtualized-lists", "section-lists", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "dependencies": {
     "invariant": "^2.2.4",
@@ -22,7 +22,6 @@
     "react-test-renderer": "18.2.0"
   },
   "peerDependencies": {
-    "react-native": "*",
-    "react-test-renderer": "18.2.0"
+    "react-native": "*"
   }
 }

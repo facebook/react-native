@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
+
 class NewArchitectureHelper
     @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
 
@@ -72,6 +74,7 @@ class NewArchitectureHelper
             # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
             # This helps with backward compatibility.
             if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
                     prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
@@ -105,12 +108,15 @@ class NewArchitectureHelper
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
+            header_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\""
         end
         header_search_paths_string = header_search_paths.join(" ")
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
@@ -137,8 +143,10 @@ class NewArchitectureHelper
             spec.dependency "Yoga"
             spec.dependency "React-Fabric"
             spec.dependency "React-graphics"
-            spec.dependency "React-debug"
             spec.dependency "React-utils"
+            spec.dependency "React-debug"
+            spec.dependency "React-ImageManager"
+            spec.dependency "React-rendererdebug"
 
             if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
                 spec.dependency "hermes-engine"
@@ -152,5 +160,41 @@ class NewArchitectureHelper
 
     def self.folly_compiler_flags
         return @@folly_compiler_flags
+    end
+
+    def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
+        package_json_file = File.join(react_native_path, "package.json")
+        if !file_manager.exist?(package_json_file)
+            raise "Couldn't find the React Native package.json file at #{package_json_file}"
+        end
+        package = json_parser.parse(file_manager.read(package_json_file))
+        return package["version"]
+    end
+
+    def self.compute_new_arch_enabled(new_arch_enabled, react_native_version)
+        # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
+        # where
+        # - major is a number
+        # - minor is a number
+        # - patch is a number
+        # - prerelease is a string (can include numbers)
+        # - k is a number
+        version_regex = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
+
+        if match_data = react_native_version.match(version_regex)
+
+            major = match_data[1].to_i
+
+            # We want to enforce the new architecture for 1.0.0 and greater,
+            # but not for 1000 as version 1000 is currently main.
+            if major > 0 && major < 1000
+                return "1"
+            end
+        end
+        return new_arch_enabled ? "1" : "0"
+    end
+
+    def self.new_arch_enabled
+        return ENV["RCT_NEW_ARCH_ENABLED"] == "1"
     end
 end

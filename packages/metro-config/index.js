@@ -8,26 +8,30 @@
  * @noformat
  */
 
-/*:: import type {MetroConfig} from 'metro-config'; */
+/*:: import type {ConfigT} from 'metro-config'; */
 
-const {mergeConfig} = require('metro-config');
+const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
-    '/Libraries/Renderer/implementations/.+\\.js$',
     '/Libraries/BatchedBridge/MessageQueue\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
+    '/Libraries/Core/.+\\.js$',
     '/Libraries/LogBox/.+\\.js$',
-    '/Libraries/Core/Timers/.+\\.js$',
-    '/Libraries/WebSocket/.+\\.js$',
+    '/Libraries/Network/.+\\.js$',
+    '/Libraries/Pressability/.+\\.js$',
+    '/Libraries/Renderer/implementations/.+\\.js$',
+    '/Libraries/Utilities/.+\\.js$',
     '/Libraries/vendor/.+\\.js$',
-    '/node_modules/react-devtools-core/.+\\.js$',
-    '/node_modules/react-refresh/.+\\.js$',
-    '/node_modules/scheduler/.+\\.js$',
+    '/Libraries/WebSocket/.+\\.js$',
+    '/Libraries/YellowBox/.+\\.js$',
+    '/metro-runtime/.+\\.js$',
+    '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/event-target-shim/.+\\.js$',
     '/node_modules/invariant/.+\\.js$',
+    '/node_modules/react-devtools-core/.+\\.js$',
     '/node_modules/react-native/index.js$',
-    '/metro-runtime/.+\\.js$',
+    '/node_modules/react-refresh/.+\\.js$',
+    '/node_modules/scheduler/.+\\.js$',
     '^\\[native code\\]$',
   ].join('|'),
 );
@@ -37,14 +41,18 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  */
 function getDefaultConfig(
   projectRoot /*: string */
-) /*: MetroConfig */ {
-  return {
+) /*: ConfigT */ {
+  const config = {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
       unstable_conditionNames: ['require', 'import', 'react-native'],
     },
     serializer: {
+      // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('react-native/Libraries/Core/InitializeCore'),
+      ],
       getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {
@@ -65,7 +73,7 @@ function getDefaultConfig(
         'metro-runtime/src/modules/asyncRequire',
       ),
       babelTransformerPath: require.resolve(
-        'metro-react-native-babel-transformer',
+        '@react-native/metro-babel-transformer',
       ),
       getTransformOptions: async () => ({
         transform: {
@@ -76,6 +84,14 @@ function getDefaultConfig(
     },
     watchFolders: [],
   };
+
+  // Set global hook so that the CLI can detect when this config has been loaded
+  global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
+
+  return mergeConfig(
+    getBaseConfig.getDefaultValues(projectRoot),
+    config,
+  );
 }
 
 module.exports = {getDefaultConfig, mergeConfig};

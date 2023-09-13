@@ -8,15 +8,15 @@
 #include "Props.h"
 
 #include <folly/dynamic.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 Props::Props(
-    const PropsParserContext &context,
-    const Props &sourceProps,
-    const RawProps &rawProps,
+    const PropsParserContext& context,
+    const Props& sourceProps,
+    const RawProps& rawProps,
     const bool shouldSetRawProps)
     : nativeId(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.nativeId
@@ -36,10 +36,10 @@ Props::Props(
 }
 
 void Props::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char * /*propName*/,
-    RawValue const &value) {
+    const char* /*propName*/,
+    const RawValue& value) {
   switch (hash) {
     case CONSTEXPR_RAW_PROPS_KEY_HASH("nativeID"):
       fromRawValue(context, value, nativeId, {});
@@ -52,8 +52,8 @@ void Props::setProp(
 constexpr MapBuffer::Key PROPS_NATIVE_ID = 1;
 
 void Props::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
-    MapBufferBuilder &builder) const {
+    const Props* oldPropsPtr,
+    MapBufferBuilder& builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
     Props defaultProps{};
@@ -61,8 +61,8 @@ void Props::propsDiffMapBuffer(
     return;
   }
 
-  Props const &oldProps = *oldPropsPtr;
-  Props const &newProps = *this;
+  const Props& oldProps = *oldPropsPtr;
+  const Props& newProps = *this;
 
   if (oldProps.nativeId != newProps.nativeId) {
     builder.putString(PROPS_NATIVE_ID, nativeId);

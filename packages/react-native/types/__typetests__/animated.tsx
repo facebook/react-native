@@ -237,6 +237,8 @@ function TestAnimatedAPI() {
         }}
       />
       ;
+      {/* @ts-expect-error the transform object must contain only one key-value pair */}
+      <Animated.View style={{transform: [{scale: 1, translateX: 20}]}} />;
     </View>
   );
 }

@@ -8,18 +8,18 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 static TextAttributes convertRawProp(
-    PropsParserContext const &context,
-    RawProps const &rawProps,
-    TextAttributes const &sourceTextAttributes,
-    TextAttributes const &defaultTextAttributes) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const TextAttributes& sourceTextAttributes,
+    const TextAttributes& defaultTextAttributes) {
   auto textAttributes = TextAttributes{};
 
   // Color (not accessed by ViewProps)
@@ -208,9 +208,9 @@ static TextAttributes convertRawProp(
 }
 
 BaseTextProps::BaseTextProps(
-    const PropsParserContext &context,
-    const BaseTextProps &sourceProps,
-    const RawProps &rawProps)
+    const PropsParserContext& context,
+    const BaseTextProps& sourceProps,
+    const RawProps& rawProps)
     : textAttributes(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.textAttributes
@@ -221,10 +221,10 @@ BaseTextProps::BaseTextProps(
                     TextAttributes{})){};
 
 void BaseTextProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char * /*propName*/,
-    RawValue const &value) {
+    const char* /*propName*/,
+    const RawValue& value) {
   static auto defaults = TextAttributes{};
 
   switch (hash) {

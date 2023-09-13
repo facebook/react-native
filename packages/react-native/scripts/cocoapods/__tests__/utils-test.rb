@@ -14,6 +14,7 @@ require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
+require_relative "./test_utils/XcodeprojMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -28,6 +29,7 @@ class UtilsTests < Test::Unit::TestCase
         Pod::Config.reset()
         SysctlChecker.reset()
         Environment.reset()
+        Xcodeproj::Plist.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
@@ -218,7 +220,7 @@ class UtilsTests < Test::Unit::TestCase
     # ============================ #
     # Test - Exclude Architectures #
     # ============================ #
-    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_excludeNothing
+    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withNoValue_leaveUnset
         # Arrange
         user_project_mock = prepare_empty_user_project_mock()
         pods_projects_mock = PodsProjectMock.new()
@@ -231,13 +233,36 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "")
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], nil)
         end
-        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(user_project_mock.save_invocation_count, 0)
         assert_equal(pods_projects_mock.save_invocation_count, 0)
     end
 
-    def test_excludeArchitectures_whenHermesEngineIsIncluded_excludeI386
+    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_withExistingValue_preserveExistingValue
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new()
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 0)
+        assert_equal(pods_projects_mock.save_invocation_count, 0)
+    end
+
+    def test_excludeArchitectures_whenHermesEngineIsIncluded_withNoValue_onlyExcludeI386
         # Arrange
         user_project_mock = prepare_empty_user_project_mock()
         pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
@@ -251,6 +276,29 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "i386")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
+    def test_excludeArchitectures_whenHermesEngineIsIncluded_withExistingValue_appendI386
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64 i386")
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
@@ -324,7 +372,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -434,7 +482,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -492,7 +540,7 @@ class UtilsTests < Test::Unit::TestCase
             }),
         ], nil)
 
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -530,6 +578,32 @@ class UtilsTests < Test::Unit::TestCase
     end
 
     # ==================================== #
+    # Test - Set USE_HERMES Build Setting #
+    # ==================================== #
+
+    def test_setUseHermesBuildSetting_addTheUserSetting
+        # Arrange
+        react_native_path = "react_native/node_modules"
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.set_use_hermes_build_setting(installer, false)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["USE_HERMES"], false)
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+        assert_equal(Pod::UI.collected_messages, ["Setting USE_HERMES build settings"])
+    end
+
+    # ==================================== #
     # Test - Set Node_Modules User Setting #
     # ==================================== #
 
@@ -558,24 +632,28 @@ class UtilsTests < Test::Unit::TestCase
     # =================================== #
     # Test - Prepare React Native Project #
     # =================================== #
-    def test_createXcodeEnvIfMissing_whenItIsPresent_doNothing
+    def test_createXcodeEnvIfMissing_whenTheyArePresent_doNothing
         # Arrange
         FileMock.mocked_existing_files("/.xcode.env")
+        FileMock.mocked_existing_files("/.xcode.env.local")
         # Act
         ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
         assert_equal($collected_commands, [])
     end
 
-    def test_createXcodeEnvIfMissing_whenItIsNotPresent_createsIt
+    def test_createXcodeEnvIfMissing_whenTheyAreNotPresent_createsThem
         # Arrange
 
         # Act
         ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
-        assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
+        assert_equal($collected_commands[0], "echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env")
+
+        assert_true($collected_commands[1].start_with? "echo 'export NODE_BINARY=")
+        assert_true($collected_commands[1].end_with? "' > /.xcode.env.local")
     end
 
     # ============================ #
@@ -644,7 +722,7 @@ class UtilsTests < Test::Unit::TestCase
             DependencyMock.new("React-ImageManager"),
         ])
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -664,7 +742,7 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
             assert_equal(expected_search_path, received_search_path)
         end
 
@@ -672,7 +750,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -688,7 +766,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -750,7 +828,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -772,6 +850,59 @@ class UtilsTests < Test::Unit::TestCase
             assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited)")
         end
     end
+
+    # ============================== #
+    # Test - Apply ATS configuration #
+    # ============================== #
+
+    def test_applyATSConfig_plistNil
+        # Arrange
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
+
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
+    end
+
+    def test_applyATSConfig_plistNonNil
+        # Arrange
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+        Xcodeproj::Plist.write_to_path({}, "/test/Info.plist")
+        Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
+
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
+
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
+    end
+
 end
 
 # ===== #
@@ -779,9 +910,16 @@ end
 # ===== #
 
 def prepare_empty_user_project_mock
-    return UserProjectMock.new("a/path", [
+    return UserProjectMock.new("/a/path", [
         BuildConfigurationMock.new("Debug"),
         BuildConfigurationMock.new("Release"),
+    ])
+end
+
+def prepare_user_project_mock_with_plists
+    return UserProjectMock.new(:files => [
+        PBXFileRefMock.new("Info.plist"),
+        PBXFileRefMock.new("Extension-Info.plist"),
     ])
 end
 

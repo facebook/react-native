@@ -8,6 +8,7 @@ set -x
 
 release_version="$1"; shift
 hermesc_path="$1"; shift
+jsi_path="$1"; shift
 
 enable_debugger="false"
 if [[ "$CONFIGURATION" == "Debug" ]]; then
@@ -47,6 +48,7 @@ echo "Configure Apple framework"
   -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
   -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
+  -DJSI_DIR="$jsi_path" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
   -DCMAKE_BUILD_TYPE="$cmake_build_type"
 

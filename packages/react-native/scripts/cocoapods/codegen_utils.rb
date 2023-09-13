@@ -93,6 +93,7 @@ class CodegenUtils
             "\"$(PODS_ROOT)/DoubleConversion\"",
             "\"$(PODS_TARGET_SRCROOT)\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
@@ -101,7 +102,8 @@ class CodegenUtils
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"",
           ])
         end
 
@@ -115,9 +117,7 @@ class CodegenUtils
           'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
           'source' => { :git => '' },
           'header_mappings_dir' => './',
-          'platforms' => {
-            'ios' => min_ios_version_supported,
-          },
+          'platforms' => min_supported_versions,
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
@@ -132,7 +132,7 @@ class CodegenUtils
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
-            "React-NativeModulesApple": [], 
+            "React-NativeModulesApple": [],
             "glog": [],
             "DoubleConversion": [],
           }
@@ -141,6 +141,7 @@ class CodegenUtils
         if fabric_enabled
           spec[:'dependencies'].merge!({
             'React-graphics': [],
+            'React-rendererdebug': [],
             'React-Fabric': [],
             'React-debug': [],
             'React-utils': [],
@@ -316,7 +317,7 @@ class CodegenUtils
         :config_key => config_key
       )
       react_codegen_spec = codegen_utils.get_react_codegen_spec(
-        file_manager.join(react_native_path, "package.json"),
+        file_manager.join(relative_installation_root, react_native_path, "package.json"),
         :folly_version => folly_version,
         :fabric_enabled => fabric_enabled,
         :hermes_enabled => hermes_enabled,

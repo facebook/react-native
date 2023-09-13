@@ -84,8 +84,16 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 
   @try { // NSURL has a history of crashing with bad input, so let's be safe
+    NSURL *URL = nil;
 
-    NSURL *URL = [NSURL URLWithString:path];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
+    if (@available(iOS 17.0, *)) {
+      NSString *decodedPercentPath = [path stringByRemovingPercentEncoding];
+      URL = [NSURL URLWithString:decodedPercentPath encodingInvalidCharacters:YES];
+    }
+#endif
+
+    URL = URL ?: [NSURL URLWithString:path];
     if (URL.scheme) { // Was a well-formed absolute URL
       return URL;
     }

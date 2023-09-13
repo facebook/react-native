@@ -106,7 +106,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
 
 #pragma mark - Operators
 
-bool TextAttributes::operator==(const TextAttributes &rhs) const {
+bool TextAttributes::operator==(const TextAttributes& rhs) const {
   return std::tie(
              foregroundColor,
              backgroundColor,
@@ -159,7 +159,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
       floatEquality(textShadowRadius, rhs.textShadowRadius);
 }
 
-bool TextAttributes::operator!=(const TextAttributes &rhs) const {
+bool TextAttributes::operator!=(const TextAttributes& rhs) const {
   return !(*this == rhs);
 }
 

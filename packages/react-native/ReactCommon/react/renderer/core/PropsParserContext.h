@@ -19,16 +19,16 @@ namespace facebook::react {
 // be parsed without any context.
 struct PropsParserContext {
   PropsParserContext(
-      SurfaceId const surfaceId,
-      ContextContainer const &contextContainer)
+      const SurfaceId surfaceId,
+      const ContextContainer& contextContainer)
       : surfaceId(surfaceId), contextContainer(contextContainer) {}
 
   // Non-copyable
-  PropsParserContext(const PropsParserContext &) = delete;
-  PropsParserContext &operator=(const PropsParserContext &) = delete;
+  PropsParserContext(const PropsParserContext&) = delete;
+  PropsParserContext& operator=(const PropsParserContext&) = delete;
 
-  SurfaceId const surfaceId;
-  ContextContainer const &contextContainer;
+  const SurfaceId surfaceId;
+  const ContextContainer& contextContainer;
 
   // Temporary feature flags
   bool treatAutoAsYGValueUndefined() const;

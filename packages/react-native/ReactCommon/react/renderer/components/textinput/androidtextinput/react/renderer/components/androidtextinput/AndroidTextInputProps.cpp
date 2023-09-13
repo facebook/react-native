@@ -7,18 +7,18 @@
 
 #include "AndroidTextInputProps.h"
 #include <react/renderer/components/image/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 static bool hasValue(
-    const RawProps &rawProps,
+    const RawProps& rawProps,
     bool defaultValue,
-    const char *name,
-    const char *prefix,
-    const char *suffix) {
+    const char* name,
+    const char* prefix,
+    const char* suffix) {
   auto rawValue = rawProps.at(name, prefix, suffix);
 
   // No change to prop - use default
@@ -257,10 +257,10 @@ AndroidTextInputProps::AndroidTextInputProps(
 }
 
 void AndroidTextInputProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

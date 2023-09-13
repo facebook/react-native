@@ -57,10 +57,10 @@ class RN_EXPORT Instance {
       bool loadSynchronously);
   void loadRAMBundleFromString(
       std::unique_ptr<const JSBigString> script,
-      const std::string &sourceURL);
+      const std::string& sourceURL);
   void loadRAMBundleFromFile(
-      const std::string &sourcePath,
-      const std::string &sourceURL,
+      const std::string& sourcePath,
+      const std::string& sourceURL,
       bool loadSynchronously);
   void loadRAMBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
@@ -71,20 +71,20 @@ class RN_EXPORT Instance {
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
-  void *getJavaScriptContext();
+  void* getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
   void callJSFunction(
-      std::string &&module,
-      std::string &&method,
-      folly::dynamic &&params);
-  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+      std::string&& module,
+      std::string&& method,
+      folly::dynamic&& params);
+  void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
 
   // This method is experimental, and may be modified or removed.
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
-  const ModuleRegistry &getModuleRegistry() const;
-  ModuleRegistry &getModuleRegistry();
+  const ModuleRegistry& getModuleRegistry() const;
+  ModuleRegistry& getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
 
@@ -133,7 +133,7 @@ class RN_EXPORT Instance {
   RuntimeExecutor getRuntimeExecutor();
 
  private:
-  void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
+  void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
   void loadBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
       std::unique_ptr<const JSBigString> startupScript,
@@ -158,13 +158,13 @@ class RN_EXPORT Instance {
     bool m_shouldBuffer = true;
     std::list<std::function<void()>> m_workBuffer;
 
-    void scheduleAsync(std::function<void()> &&work);
+    void scheduleAsync(std::function<void()>&& work);
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()> &&work) override;
-    void invokeSync(std::function<void()> &&work) override;
+    void invokeAsync(std::function<void()>&& work) override;
+    void invokeSync(std::function<void()>&& work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =

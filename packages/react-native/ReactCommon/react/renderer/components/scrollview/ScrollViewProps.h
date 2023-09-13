@@ -20,15 +20,15 @@ class ScrollViewProps final : public ViewProps {
  public:
   ScrollViewProps() = default;
   ScrollViewProps(
-      const PropsParserContext &context,
-      ScrollViewProps const &sourceProps,
-      RawProps const &rawProps);
+      const PropsParserContext& context,
+      const ScrollViewProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 
@@ -68,6 +68,7 @@ class ScrollViewProps final : public ViewProps {
   ContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior{
       ContentInsetAdjustmentBehavior::Never};
   bool scrollToOverflowEnabled{false};
+  bool isInvertedVirtualizedList{false};
 
 #pragma mark - DebugStringConvertible
 

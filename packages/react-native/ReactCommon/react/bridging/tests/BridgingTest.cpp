@@ -131,7 +131,7 @@ TEST_F(BridgingTest, objectTest) {
 
 TEST_F(BridgingTest, hostObjectTest) {
   struct TestHostObject : public jsi::HostObject {
-    jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &name) override {
+    jsi::Value get(jsi::Runtime& rt, const jsi::PropNameID& name) override {
       if (name.utf8(rt) == "test") {
         return jsi::Value(1);
       }
@@ -436,74 +436,74 @@ TEST_F(BridgingTest, supportTest) {
   // trivially converted to JSI values.
   EXPECT_TRUE((bridging::supportsFromJs<bool>));
   EXPECT_TRUE((bridging::supportsFromJs<bool, bool>));
-  EXPECT_TRUE((bridging::supportsFromJs<bool, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<bool, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<int>));
   EXPECT_TRUE((bridging::supportsFromJs<int, int>));
-  EXPECT_TRUE((bridging::supportsFromJs<int, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<int, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<double>));
   EXPECT_TRUE((bridging::supportsFromJs<double, double>));
-  EXPECT_TRUE((bridging::supportsFromJs<double, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<double, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array&>));
   EXPECT_TRUE(
       (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object>));
   EXPECT_TRUE(
-      (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object &>));
+      (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object&>));
 
   // Ensure incompatible conversions will fail.
   EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String&>));
 
   // Ensure copying and down casting JSI values is also supported.
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object&>));
 
   // Ensure incorrect casts will fail.
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function>));
-  EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function &>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function&>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array>));
-  EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array &>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array&>));
 
   // Ensure we can convert some basic types to JSI values.
   EXPECT_TRUE((bridging::supportsToJs<bool>));
@@ -522,7 +522,7 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<void (*)(), jsi::Function>));
 
   // Ensure invalid conversions to JSI values are not supported.
-  EXPECT_FALSE((bridging::supportsToJs<void *>));
+  EXPECT_FALSE((bridging::supportsToJs<void*>));
   EXPECT_FALSE((bridging::supportsToJs<bool, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<int, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<double, jsi::Object>));

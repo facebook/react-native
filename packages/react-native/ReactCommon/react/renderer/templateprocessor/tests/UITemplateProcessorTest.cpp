@@ -26,8 +26,8 @@ using namespace facebook::react;
 namespace facebook::react {
 
 static ComponentRegistryFactory getComponentRegistryFactory() {
-  return [](const EventDispatcher::Weak &eventDispatcher,
-            const ContextContainer::Shared &contextContainer) {
+  return [](const EventDispatcher::Weak& eventDispatcher,
+            const ContextContainer::Shared& contextContainer) {
     ComponentDescriptorProviderRegistry providerRegistry{};
     providerRegistry.add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
@@ -48,7 +48,7 @@ NativeModuleRegistry buildNativeModuleRegistry() {
   NativeModuleRegistry nMR;
   nMR.registerModule(
       "MobileConfig",
-      [&](const std::string & /*unused*/, const folly::dynamic & /*unused*/) {
+      [&](const std::string& /*unused*/, const folly::dynamic& /*unused*/) {
         return mockSimpleTestValue_;
       });
   return nMR;
@@ -57,19 +57,19 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 class MockReactNativeConfig : public ReactNativeConfig {
  public:
   MockReactNativeConfig() = default;
-  bool getBool(const std::string & /*param*/) const override {
+  bool getBool(const std::string& /*param*/) const override {
     return mockSimpleTestValue_;
   }
 
-  std::string getString(const std::string & /*param*/) const override {
+  std::string getString(const std::string& /*param*/) const override {
     return "";
   }
 
-  int64_t getInt64(const std::string & /*param*/) const override {
+  int64_t getInt64(const std::string& /*param*/) const override {
     return 0;
   }
 
-  double getDouble(const std::string & /*param*/) const override {
+  double getDouble(const std::string& /*param*/) const override {
     return 0.0;
   }
 };
@@ -81,7 +81,7 @@ std::shared_ptr<const ReactNativeConfig> mockReactNativeConfig_ =
 
 TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   auto componentDescriptorRegistry =
       getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
@@ -116,7 +116,7 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
 
 TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto surfaceId = 11;
-  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto eventDispatcher = std::shared_ptr<const EventDispatcher>();
   auto componentDescriptorRegistry =
       getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();

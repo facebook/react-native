@@ -121,21 +121,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return self;
 }
 
-- (BOOL)hasBridge
-{
-  return _bridge != nil;
-}
-
-- (RCTModuleRegistry *)moduleRegistry
-{
-  return _bridge.moduleRegistry;
-}
-
-- (id<RCTEventDispatcherProtocol>)eventDispatcher
-{
-  return [self.moduleRegistry moduleForName:"EventDispatcher"];
-}
-
 #pragma mark - passThroughTouches
 
 - (BOOL)passThroughTouches

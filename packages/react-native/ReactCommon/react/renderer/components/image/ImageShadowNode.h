@@ -39,14 +39,14 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   /*
    * Associates a shared `ImageManager` with the node.
    */
-  void setImageManager(const SharedImageManager &imageManager);
+  void setImageManager(const SharedImageManager& imageManager);
 
   static ImageState initialStateData(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const & /*family*/,
-      ComponentDescriptor const &componentDescriptor) {
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& /*family*/,
+      const ComponentDescriptor& componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource, {imageSource, nullptr}, 0};
+    return {imageSource, {imageSource, nullptr, {}}, 0};
   }
 
 #pragma mark - LayoutableShadowNode

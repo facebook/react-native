@@ -8,10 +8,13 @@ require_relative "../new_architecture.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
+require_relative "./test_utils/FileMock.rb"
 
 class NewArchitectureTests < Test::Unit::TestCase
     def teardown
         Pod::UI.reset()
+        FileMock.reset()
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
     end
 
     # ============================= #
@@ -129,7 +132,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
         assert_equal(
@@ -148,8 +151,10 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "Yoga" },
                 { :dependency_name => "React-Fabric" },
                 { :dependency_name => "React-graphics" },
-                { :dependency_name => "React-debug" },
                 { :dependency_name => "React-utils" },
+                { :dependency_name => "React-debug" },
+                { :dependency_name => "React-ImageManager" },
+                { :dependency_name => "React-rendererdebug" },
                 { :dependency_name => "hermes-engine" }
         ])
     end
@@ -168,7 +173,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(
             spec.dependencies,
@@ -179,6 +184,141 @@ class NewArchitectureTests < Test::Unit::TestCase
             ]
         )
     end
+
+    # =============================== #
+    # Test - Compute New Arch Enabled #
+    # =============================== #
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagTrue_returnTrue
+        version = '1000.0.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagFalse_returnFalse
+        version = '1000.0.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagTrue_returnTrue
+        version = '0.73.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagFalse_returnFalse
+        version = '0.73.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOn100AndFlagTrue_returnTrue
+        version = '1.0.0-prealpha.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha-0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
+        version = '3.2.1'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    # =================================== #
+    # Test - Extract React Native Version #
+    # =================================== #
+    def test_extractReactNativeVersion_whenFileDoesNotExists_raiseError()
+        react_native_path = './node_modules/react-native/'
+
+        exception = assert_raise(RuntimeError) do
+            NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+        end
+
+        assert_equal("Couldn't find the React Native package.json file at ./node_modules/react-native/package.json", exception.message)
+    end
+
+    def test_extractReactNativeVersion_whenFileExists_returnTheRightVersion()
+        react_native_path = "./node_modules/react-native/"
+        full_path = File.join(react_native_path, "package.json")
+        json = "{\"version\": \"1.0.0-prealpha.0\"}"
+        FileMock.mocked_existing_files([full_path])
+        FileMock.files_to_read({
+            full_path => json
+        })
+
+        version = NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+
+        assert_equal("1.0.0-prealpha.0", version)
+    end
+
+    # =============================== #
+    # Test - New Architecture Enabled #
+    # =============================== #
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo1_returnTrue
+        ENV["RCT_NEW_ARCH_ENABLED"] = "1"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_true(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo0_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = "0"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsNotSet_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
+
 end
 
 # ================ #

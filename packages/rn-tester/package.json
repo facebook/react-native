@@ -10,11 +10,11 @@
     "directory": "packages/rn-tester"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "start": "react-native start",
-    "android": "react-native run-android --mode HermesDebug --appId 'com.facebook.react.uiapp' --main-activity 'com.facebook.react.uiapp.RNTesterActivity'",
+    "android": "react-native run-android --mode HermesDebug",
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",

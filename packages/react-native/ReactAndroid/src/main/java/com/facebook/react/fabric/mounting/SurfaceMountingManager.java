@@ -16,6 +16,7 @@ import android.view.ViewParent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -52,6 +53,7 @@ import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -91,7 +93,8 @@ public class SurfaceMountingManager {
   private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
-  private Set<Integer> mTagSetForStoppedSurface;
+  private Set<Integer> mTagSetForStoppedSurfaceLegacy;
+  private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
 
@@ -166,7 +169,10 @@ public class SurfaceMountingManager {
     // If Surface stopped, check if tag *was* associated with this Surface, even though it's been
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
-    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
+    if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.containsKey(tag)) {
+      return true;
+    }
+    if (mTagSetForStoppedSurfaceLegacy != null && mTagSetForStoppedSurfaceLegacy.contains(tag)) {
       return true;
     }
     if (mTagToViewState == null) {
@@ -287,27 +293,38 @@ public class SurfaceMountingManager {
     }
 
     Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            // We must call `onDropViewInstance` on all remaining Views
+        () -> {
+          if (ReactFeatureFlags.fixStoppedSurfaceTagSetLeak) {
+            mTagSetForStoppedSurface = new SparseArrayCompat<>();
+            for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
+              // Using this as a placeholder value in the map. We're using SparseArrayCompat
+              // since it can efficiently represent the list of pending tags
+              mTagSetForStoppedSurface.put(entry.getKey(), this);
+
+              // We must call `onDropViewInstance` on all remaining Views
+              onViewStateDeleted(entry.getValue());
+            }
+          } else {
             for (ViewState viewState : mTagToViewState.values()) {
+              // We must call `onDropViewInstance` on all remaining Views
               onViewStateDeleted(viewState);
             }
-
-            // Evict all views from cache and memory
-            mTagSetForStoppedSurface = mTagToViewState.keySet();
-            mTagToViewState = null;
-            mJSResponderHandler = null;
-            mRootViewManager = null;
-            mMountItemExecutor = null;
-            mOnViewAttachItems.clear();
-
-            if (ReactFeatureFlags.enableViewRecycling) {
-              mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-            }
-            FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
+            mTagSetForStoppedSurfaceLegacy = mTagToViewState.keySet();
           }
+
+          // Evict all views from cache and memory
+          // TODO: clear instead of nulling out to simplify null-safety in this class
+          mTagToViewState = null;
+          mJSResponderHandler = null;
+          mRootViewManager = null;
+          mMountItemExecutor = null;
+          mThemedReactContext = null;
+          mOnViewAttachItems.clear();
+
+          if (ReactFeatureFlags.enableViewRecycling) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
+          FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -1113,8 +1130,7 @@ public class SurfaceMountingManager {
 
   private void dispatchEvent(EventEmitterWrapper eventEmitter, ViewEvent viewEvent) {
     if (viewEvent.canCoalesceEvent()) {
-      eventEmitter.dispatchUnique(
-          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
+      eventEmitter.dispatchUnique(viewEvent.getEventName(), viewEvent.getParams());
     } else {
       eventEmitter.dispatch(
           viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
@@ -1374,7 +1390,6 @@ public class SurfaceMountingManager {
   public static class ViewEvent {
     private final String mEventName;
     private final boolean mCanCoalesceEvent;
-    private final int mCustomCoalesceKey;
     private final @EventCategoryDef int mEventCategory;
     private @Nullable WritableMap mParams;
 
@@ -1382,13 +1397,11 @@ public class SurfaceMountingManager {
         String eventName,
         @Nullable WritableMap params,
         @EventCategoryDef int eventCategory,
-        boolean canCoalesceEvent,
-        int customCoalesceKey) {
+        boolean canCoalesceEvent) {
       mEventName = eventName;
       mParams = params;
       mEventCategory = eventCategory;
       mCanCoalesceEvent = canCoalesceEvent;
-      mCustomCoalesceKey = customCoalesceKey;
     }
 
     public String getEventName() {
@@ -1397,10 +1410,6 @@ public class SurfaceMountingManager {
 
     public boolean canCoalesceEvent() {
       return mCanCoalesceEvent;
-    }
-
-    public int getCustomCoalesceKey() {
-      return mCustomCoalesceKey;
     }
 
     public @EventCategoryDef int getEventCategory() {

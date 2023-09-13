@@ -8,14 +8,15 @@
 #pragma once
 
 //
-// Enable REACT_NATIVE_DEBUG if NDEBUG is not defined.
-// Due to BUCK defaults in open-source, NDEBUG is always defined for all android
-// builds.
-// If you build in OSS with CMake, you will have -DNDEBUG set only for release
-// builds, therefore REACT_NATIVE_DEBUG will not be set. Here we introduce
-// REACT_NATIVE_DEBUG that we use internally instead of NDEBUG that we can
-// control and use as a more reliable xplat flag. For any build that doesn't
-// have NDEBUG defined, we enable REACT_NATIVE_DEBUG for convenience.
-#ifndef NDEBUG
-#define REACT_NATIVE_DEBUG 1
+// Preprocessor flags which control whether code meant for debugging the
+// internals of React Native is included in the build. E.g. debug assertions.
+//
+// This flag is normally derived from NDEBUG, but may be set explicitly by
+// defining `REACT_NATIVE_DEBUG` or `REACT_NATIVE_PRODUCTION`.
+#if !(defined(REACT_NATIVE_DEBUG) || defined(REACT_NATIVE_PRODUCTION))
+#ifdef NDEBUG
+#define REACT_NATIVE_PRODUCTION
+#else
+#define REACT_NATIVE_DEBUG
+#endif
 #endif

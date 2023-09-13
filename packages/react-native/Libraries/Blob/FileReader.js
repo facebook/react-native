@@ -12,8 +12,7 @@ import type Blob from './Blob';
 
 import NativeFileReaderModule from './NativeFileReaderModule';
 import {toByteArray} from 'base64-js';
-
-const EventTarget = require('event-target-shim');
+import EventTarget from 'event-target-shim';
 
 type ReadyState =
   | 0 // EMPTY

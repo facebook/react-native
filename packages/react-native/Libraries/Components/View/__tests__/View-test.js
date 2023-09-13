@@ -160,6 +160,7 @@ describe('View compat with web', () => {
         aria-setsize={5}
         aria-sort="ascending"
         importantForAccessibility="no-hide-descendants"
+        role="main"
       />
     `);
   });

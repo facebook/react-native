@@ -29,11 +29,12 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                            "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'
@@ -53,7 +54,8 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-utils"
-  # s.dependency "React-runtimescheduler"
+  s.dependency "React-runtimescheduler"
+  s.dependency "React-rendererdebug"
   s.dependency "React-cxxreact"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
@@ -86,11 +88,6 @@ Pod::Spec.new do |s|
     ss.header_dir           = "butter"
   end
 
-  s.subspec "config" do |ss|
-    ss.source_files         = "react/config/*.{m,mm,cpp,h}"
-    ss.header_dir           = "react/config"
-  end
-
   s.subspec "core" do |ss|
     header_search_path = [
       "\"$(PODS_ROOT)/boost\"",
@@ -105,8 +102,10 @@ Pod::Spec.new do |s|
         "\"$(PODS_ROOT)/DoubleConversion\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
+        "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
-        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\""
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
       ]
     end
 
@@ -226,18 +225,10 @@ Pod::Spec.new do |s|
       sss.dependency             "Yoga"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/view/tests"
+      sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android"
       sss.header_dir           = "react/renderer/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
-  end
-
-  s.subspec "debug_renderer" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/debug/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/debug/tests"
-    ss.header_dir           = "react/renderer/debug"
   end
 
   s.subspec "imagemanager" do |ss|
@@ -245,14 +236,6 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/imagemanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/imagemanager"
-  end
-
-  s.subspec "mapbuffer" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/mapbuffer/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/mapbuffer/tests"
-    ss.header_dir           = "react/renderer/mapbuffer"
   end
 
   s.subspec "mounting" do |ss|
@@ -313,15 +296,6 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
-    ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
-  end
-
-  s.subspec "runtimescheduler" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
-    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
-    ss.header_dir           = "react/renderer/runtimescheduler"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
 end

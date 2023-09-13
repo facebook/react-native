@@ -35,13 +35,8 @@ abstract class GenerateCodegenSchemaTask : Exec() {
       project.fileTree(jsRootDir) {
         it.include("**/*.js")
         it.include("**/*.ts")
-        // Those are known build paths where the source map or other
-        // .js files could be stored/generated. We want to make sure we don't pick them up
-        // for execution avoidance.
-        it.exclude("**/build/ASSETS/**/*")
-        it.exclude("**/build/RES/**/*")
-        it.exclude("**/build/generated/**/*")
-        it.exclude("**/build/intermediates/**/*")
+        // We want to exclude the build directory, to don't pick them up for execution avoidance.
+        it.exclude("**/build/**/*")
       }
 
   @get:OutputFile

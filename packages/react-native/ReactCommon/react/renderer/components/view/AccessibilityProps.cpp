@@ -9,16 +9,16 @@
 
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/propsConversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 AccessibilityProps::AccessibilityProps(
-    const PropsParserContext &context,
-    AccessibilityProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext& context,
+    const AccessibilityProps& sourceProps,
+    const RawProps& rawProps)
     : accessible(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.accessible
                                                  : convertRawProp(
@@ -187,11 +187,11 @@ AccessibilityProps::AccessibilityProps(
   // to work around here, and (2) would require very careful work to address
   // this case and not regress the more common cases.
   if (!CoreFeatures::enablePropIteratorSetter) {
-    auto *accessibilityRoleValue =
+    auto* accessibilityRoleValue =
         rawProps.at("accessibilityRole", nullptr, nullptr);
-    auto *roleValue = rawProps.at("role", nullptr, nullptr);
+    auto* roleValue = rawProps.at("role", nullptr, nullptr);
 
-    auto *precedentRoleValue =
+    auto* precedentRoleValue =
         roleValue != nullptr ? roleValue : accessibilityRoleValue;
 
     if (accessibilityRoleValue == nullptr ||
@@ -216,10 +216,10 @@ AccessibilityProps::AccessibilityProps(
 }
 
 void AccessibilityProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char * /*propName*/,
-    RawValue const &value) {
+    const char* /*propName*/,
+    const RawValue& value) {
   static auto defaults = AccessibilityProps{};
 
   switch (hash) {
@@ -260,7 +260,7 @@ void AccessibilityProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
-  auto const &defaultProps = AccessibilityProps();
+  const auto& defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testId", testId, defaultProps.testId),
   };

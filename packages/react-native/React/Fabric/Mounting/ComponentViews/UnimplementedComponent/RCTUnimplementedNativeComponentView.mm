@@ -45,10 +45,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<UnimplementedNativeViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldViewProps = *std::static_pointer_cast<const UnimplementedNativeViewProps>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<const UnimplementedNativeViewProps>(props);
+  const auto &oldViewProps = static_cast<const UnimplementedNativeViewProps &>(*_props);
+  const auto &newViewProps = static_cast<const UnimplementedNativeViewProps &>(*props);
 
   if (oldViewProps.name != newViewProps.name) {
     _label.text = [NSString stringWithFormat:@"'%s' is not Fabric compatible yet.", newViewProps.name.c_str()];

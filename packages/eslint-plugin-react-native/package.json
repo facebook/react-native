@@ -12,7 +12,7 @@
   "keywords": ["eslint", "rules", "eslint-config", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "main": "index.js"
 }

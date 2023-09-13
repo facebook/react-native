@@ -21,7 +21,7 @@ folly_version = '2021.07.22.00'
 socket_rocket_version = '0.6.0'
 boost_compiler_flags = '-Wno-documentation'
 
-use_hermes = ENV['USE_HERMES'] == '1'
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_subspecs = {
@@ -67,7 +67,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
@@ -91,11 +91,11 @@ Pod::Spec.new do |s|
       "React/Fabric/**/*",
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
-      "React/Inspector/**/*"
+      "React/Inspector/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
-    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    if use_hermes
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
@@ -126,19 +126,20 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-cxxreact", version
-  s.dependency "React-perflogger", version
-  s.dependency "React-jsi", version
-  s.dependency "React-jsiexecutor", version
+  s.dependency "React-cxxreact"
+  s.dependency "React-perflogger"
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "SocketRocket", socket_rocket_version
+  s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
   s.dependency "glog"
 
-  if ENV['USE_HERMES'] == "0"
-    s.dependency 'React-jsc'
-  else
+  if use_hermes
     s.dependency 'React-hermes'
     s.dependency 'hermes-engine'
+  else
+    s.dependency 'React-jsc'
   end
 end

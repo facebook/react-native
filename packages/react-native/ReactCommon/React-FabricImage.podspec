@@ -36,9 +36,11 @@ if ENV['USE_FRAMEWORKS']
     "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
     "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
     "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\"",
+    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
-    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\""
   ]
 end
 
@@ -49,7 +51,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files         = "react/renderer/components/image/**/*.{m,mm,cpp,h}"
   s.exclude_files        = "react/renderer/components/image/tests"
@@ -77,6 +79,8 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "React-ImageManager"
   s.dependency "React-Fabric"
+  s.dependency "React-utils"
+  s.dependency "React-rendererdebug"
   s.dependency "Yoga"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"

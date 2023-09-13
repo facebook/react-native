@@ -13,19 +13,22 @@ namespace facebook::react {
 
 ImageRequest::ImageRequest(
     ImageSource imageSource,
-    std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
+    std::shared_ptr<const ImageTelemetry> telemetry,
+    SharedFunction<> cancelationFunction)
+    : imageSource_(std::move(imageSource)),
+      telemetry_(std::move(telemetry)),
+      cancelRequest_(std::move(cancelationFunction)) {
   // Not implemented.
 }
 
-const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator& ImageRequest::getObserverCoordinator()
     const {
   // Not implemented
   abort();
 }
 
-const std::shared_ptr<const ImageResponseObserverCoordinator>
-    &ImageRequest::getSharedObserverCoordinator() const {
+const std::shared_ptr<const ImageResponseObserverCoordinator>&
+ImageRequest::getSharedObserverCoordinator() const {
   // Not implemented
   abort();
 }

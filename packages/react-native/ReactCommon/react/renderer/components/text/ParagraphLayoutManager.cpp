@@ -7,13 +7,13 @@
 
 #include "ParagraphLayoutManager.h"
 #include <folly/Hash.h>
-#include <react/renderer/core/CoreFeatures.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 TextMeasurement ParagraphLayoutManager::measure(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   if (CoreFeatures::cacheLastTextMeasurement) {
     bool shouldMeasure = shoudMeasureString(
@@ -39,23 +39,25 @@ TextMeasurement ParagraphLayoutManager::measure(
 }
 
 bool ParagraphLayoutManager::shoudMeasureString(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
-  size_t newHash = folly::hash::hash_combine(
-      0,
-      textAttributedStringHashLayoutWise(attributedString),
-      paragraphAttributes);
+  size_t newParagraphInputHash =
+      folly::hash::hash_combine(0, attributedString, paragraphAttributes);
 
-  if (newHash != paragraphInputHash_) {
+  if (newParagraphInputHash != paragraphInputHash_) {
     // AttributedString or ParagraphAttributes have changed.
     // Must create new host text storage and trigger measure.
     hostTextStorage_ = textLayoutManager_->getHostTextStorage(
         attributedString, paragraphAttributes, layoutConstraints);
-    paragraphInputHash_ = newHash;
+    paragraphInputHash_ = newParagraphInputHash;
+
     return true; // Must measure again.
   }
 
+  // Detect the case when available width for Paragraph meaningfully changes.
+  // This is to prevent unnecessary re-creation of NSTextStorage on iOS.
+  // On Android, this is no-op.
   bool hasMaximumSizeChanged =
       layoutConstraints.maximumSize.width != lastAvailableWidth_;
   Float threshold = 0.01f;
@@ -72,19 +74,19 @@ bool ParagraphLayoutManager::shoudMeasureString(
 }
 
 LinesMeasurements ParagraphLayoutManager::measureLines(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     Size size) const {
   return textLayoutManager_->measureLines(
       attributedString, paragraphAttributes, size);
 }
 
 void ParagraphLayoutManager::setTextLayoutManager(
-    std::shared_ptr<TextLayoutManager const> textLayoutManager) const {
+    std::shared_ptr<const TextLayoutManager> textLayoutManager) const {
   textLayoutManager_ = std::move(textLayoutManager);
 }
 
-std::shared_ptr<TextLayoutManager const>
+std::shared_ptr<const TextLayoutManager>
 ParagraphLayoutManager::getTextLayoutManager() const {
   return textLayoutManager_;
 }

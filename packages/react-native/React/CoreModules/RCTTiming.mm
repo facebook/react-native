@@ -128,6 +128,11 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
+  RCTExecuteOnMainQueue(^{
+    if (!self->_inBackground && [RCTSharedApplication() applicationState] == UIApplicationStateBackground) {
+      [self appDidMoveToBackground];
+    }
+  });
 
   for (NSString *name in @[
          UIApplicationWillResignActiveNotification,
@@ -256,9 +261,9 @@ RCT_EXPORT_MODULE()
   }
 
   if (_sendIdleEvents) {
-    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    NSTimeInterval frameElapsed = currentTimestamp - update.timestamp;
+    NSTimeInterval frameElapsed = (CACurrentMediaTime() - update.timestamp);
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
+      NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
       if (_bridge) {
         [_bridge enqueueJSCall:@"JSTimers" method:@"callIdleCallbacks" args:@[ absoluteFrameStartMS ] completion:NULL];

@@ -28,7 +28,7 @@ class AsynchronousEventBeat : public EventBeat,
 #pragma mark - RunLoopObserver::Delegate
 
   void activityDidChange(
-      RunLoopObserver::Delegate const *delegate,
+      const RunLoopObserver::Delegate* delegate,
       RunLoopObserver::Activity activity) const noexcept override;
 
  private:

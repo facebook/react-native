@@ -44,8 +44,8 @@ inline SharedDebugStringConvertible debugStringConvertibleItem(
 }
 
 inline SharedDebugStringConvertibleList operator+(
-    const SharedDebugStringConvertibleList &lhs,
-    const SharedDebugStringConvertibleList &rhs) {
+    const SharedDebugStringConvertibleList& lhs,
+    const SharedDebugStringConvertibleList& rhs) {
   auto result = SharedDebugStringConvertibleList{};
   std::move(lhs.begin(), lhs.end(), std::back_inserter(result));
   std::move(rhs.begin(), rhs.end(), std::back_inserter(result));

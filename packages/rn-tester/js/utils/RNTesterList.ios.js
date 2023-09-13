@@ -87,7 +87,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'ScrollViewIndicatorInsetsExample',
-    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsIOSExample'),
   },
   {
     key: 'ScrollViewKeyboardInsetsExample',
@@ -132,7 +132,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'ViewExample',
-    module: require('../examples/View/ViewExample'),
+    module: require('../examples/View/ViewExample').default,
     category: 'Basic',
   },
   {
@@ -140,9 +140,14 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
+  {
+    key: 'PerformanceComparisonExample',
+    category: 'Basic',
+    module: require('../examples/Performance/PerformanceComparisonExample'),
+  },
 ];
 
-const APIs: Array<RNTesterModuleInfo> = [
+const APIs: Array<RNTesterModuleInfo> = ([
   {
     key: 'AccessibilityExample',
     module: require('../examples/Accessibility/AccessibilityExample'),
@@ -180,7 +185,7 @@ const APIs: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'BorderExample',
-    module: require('../examples/Border/BorderExample'),
+    module: require('../examples/Border/BorderExample').default,
   },
   {
     key: 'BoxShadowExample',
@@ -198,6 +203,14 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
+  // Only show the link for the example if the API is available.
+  typeof IntersectionObserver === 'function'
+    ? {
+        key: 'IntersectionObserver',
+        category: 'UI',
+        module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
+      }
+    : null,
   {
     key: 'InvalidPropsExample',
     module: require('../examples/InvalidProps/InvalidPropsExample'),
@@ -218,6 +231,13 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'LinkingExample',
     module: require('../examples/Linking/LinkingExample'),
   },
+  typeof MutationObserver === 'function'
+    ? {
+        key: 'MutationObserver',
+        category: 'UI',
+        module: require('../examples/MutationObserver/MutationObserverIndex'),
+      }
+    : null,
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
@@ -267,6 +287,10 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/TurboModule/TurboModuleExample'),
   },
   {
+    key: 'LegacyModuleExample',
+    module: require('../examples/TurboModule/LegacyModuleExample'),
+  },
+  {
     key: 'TurboCxxModuleExample',
     module: require('../examples/TurboModule/TurboCxxModuleExample'),
   },
@@ -287,7 +311,7 @@ const APIs: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/Performance/PerformanceApiExample'),
   },
-];
+]: Array<?RNTesterModuleInfo>).filter(Boolean);
 
 if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
   APIs.push({

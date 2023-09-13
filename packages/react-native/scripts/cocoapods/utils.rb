@@ -16,6 +16,9 @@ class ReactNativePodsUtils
         end
     end
 
+    # deprecated. These checks are duplicated in the react_native_pods function
+    # and we don't really need them. Removing this function will make it easy to
+    # move forward.
     def self.get_default_flags
         flags = {
             :fabric_enabled => false,
@@ -59,14 +62,37 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        projects = self.extract_projects(installer)
+        is_using_hermes = self.has_pod(installer, 'hermes-engine')
 
-        # Hermes does not support `i386` architecture
-        excluded_archs_default = self.has_pod(installer, 'hermes-engine') ? "i386" : ""
+        if is_using_hermes
+            key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
+
+            projects = self.extract_projects(installer)
+
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    current_setting = config.build_settings[key] || ""
+
+                    excluded_archs_includes_I386 = current_setting.include?("i386")
+
+                    if !excluded_archs_includes_I386
+                        # Hermes does not support `i386` architecture
+                        config.build_settings[key] = "#{current_setting} i386".strip
+                    end
+                end
+
+                project.save()
+            end
+        end
+    end
+
+    def self.set_use_hermes_build_setting(installer, hermes_enabled)
+        Pod::UI.puts("Setting USE_HERMES build settings")
+        projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+                config.build_settings["USE_HERMES"] = hermes_enabled
             end
 
             project.save()
@@ -171,7 +197,7 @@ class ReactNativePodsUtils
         end
 
         if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
-            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple Silicon)
             # since the libraries there are only built for x86_64 and i386.
             lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
             lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
@@ -186,11 +212,15 @@ class ReactNativePodsUtils
     def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
         file_path = file_manager.join(relative_path, '.xcode.env')
-        if file_manager.exist?(file_path)
-            return
+
+        if !file_manager.exist?(file_path)
+            system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
         end
 
-        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+        if !file_manager.exist?("#{file_path}.local")
+            node_binary = `command -v node`
+            system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
+        end
     end
 
     # It examines the target_definition property and sets the appropriate value for
@@ -228,6 +258,7 @@ class ReactNativePodsUtils
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
 
@@ -384,6 +415,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
@@ -394,6 +426,42 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
         ])
+    end
+
+    def self.get_plist_paths_from(user_project)
+        info_plists = user_project
+          .files
+          .select { |p|
+            p.name&.end_with?('Info.plist')
+          }
+        return info_plists
+      end
+
+    def self.update_ats_in_plist(plistPaths, parent)
+        plistPaths.each do |plistPath|
+            fullPlistPath = File.join(parent, plistPath.path)
+            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
+            ats_configs = {
+                "NSAllowsArbitraryLoads" => false,
+                "NSAllowsLocalNetworking" => true,
+            }
+            if plist.nil?
+                plist = {
+                    "NSAppTransportSecurity" => ats_configs
+                }
+            else
+                plist["NSAppTransportSecurity"] = ats_configs
+            end
+            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
+        end
+    end
+
+    def self.apply_ats_config(installer)
+        user_project = installer.aggregate_targets
+                    .map{ |t| t.user_project }
+                    .first
+        plistPaths = self.get_plist_paths_from(user_project)
+        self.update_ats_in_plist(plistPaths, user_project.path.parent)
     end
 
     def self.react_native_pods

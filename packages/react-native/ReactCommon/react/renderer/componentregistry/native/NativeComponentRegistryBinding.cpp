@@ -17,8 +17,8 @@ namespace facebook::react {
  * Public API to install the Native Component Registry bindings.
  */
 void bindHasComponentProvider(
-    jsi::Runtime &runtime,
-    HasComponentProviderFunctionType &&provider) {
+    jsi::Runtime& runtime,
+    HasComponentProviderFunctionType&& provider) {
   runtime.global().setProperty(
       runtime,
       "__nativeComponentRegistry__hasComponent",

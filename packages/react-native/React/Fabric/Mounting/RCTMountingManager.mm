@@ -17,11 +17,11 @@
 #import <React/RCTUtils.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -43,18 +43,14 @@ static SurfaceId RCTSurfaceIdForView(UIView *view)
 }
 
 static void RCTPerformMountInstructions(
-    ShadowViewMutationList const &mutations,
+    const ShadowViewMutationList &mutations,
     RCTComponentViewRegistry *registry,
     RCTMountingTransactionObserverCoordinator &observerCoordinator,
     SurfaceId surfaceId)
 {
   SystraceSection s("RCTPerformMountInstructions");
 
-  if (!CoreFeatures::disableTransactionCommit) {
-    [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-  }
-  for (auto const &mutation : mutations) {
+  for (const auto &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         auto &newChildShadowView = mutation.newChildShadowView;
@@ -152,9 +148,6 @@ static void RCTPerformMountInstructions(
       }
     }
   }
-  if (!CoreFeatures::disableTransactionCommit) {
-    [CATransaction commit];
-  }
 }
 
 @implementation RCTMountingManager {
@@ -248,7 +241,7 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)initiateTransaction:(MountingCoordinator const &)mountingCoordinator
+- (void)initiateTransaction:(const MountingCoordinator &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
   RCTAssertMainQueue();
@@ -266,7 +259,7 @@ static void RCTPerformMountInstructions(
   } while (_followUpTransactionRequired);
 }
 
-- (void)performTransaction:(MountingCoordinator const &)mountingCoordinator
+- (void)performTransaction:(const MountingCoordinator &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
@@ -274,15 +267,15 @@ static void RCTPerformMountInstructions(
   auto surfaceId = mountingCoordinator.getSurfaceId();
 
   mountingCoordinator.getTelemetryController().pullTransaction(
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
         _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction, surfaceTelemetry);
       },
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         RCTPerformMountInstructions(
             transaction.getMutations(), _componentViewRegistry, _observerCoordinator, surfaceId);
       },
-      [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
+      [&](const MountingTransaction &transaction, const SurfaceTelemetry &surfaceTelemetry) {
         _observerCoordinator.notifyObserversMountingTransactionDidMount(transaction, surfaceTelemetry);
         [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
       });
@@ -290,7 +283,7 @@ static void RCTPerformMountInstructions(
 
 - (void)setIsJSResponder:(BOOL)isJSResponder
     blockNativeResponder:(BOOL)blockNativeResponder
-           forShadowView:(facebook::react::ShadowView const &)shadowView
+           forShadowView:(const facebook::react::ShadowView &)shadowView
 {
   ReactTag reactTag = shadowView.tag;
   RCTExecuteOnMainQueue(^{
@@ -316,12 +309,16 @@ static void RCTPerformMountInstructions(
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 
-  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+  const auto &newViewProps = static_cast<const ViewProps &>(*newProps);
 
-  if (props[@"transform"] &&
-      !CATransform3DEqualToTransform(
-          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
-    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  if (props[@"transform"]) {
+    auto layoutMetrics = LayoutMetrics();
+    layoutMetrics.frame.size.width = componentView.layer.bounds.size.width;
+    layoutMetrics.frame.size.height = componentView.layer.bounds.size.height;
+    CATransform3D newTransform = RCTCATransform3DFromTransformMatrix(newViewProps.resolveTransform(layoutMetrics));
+    if (!CATransform3DEqualToTransform(newTransform, componentView.layer.transform)) {
+      componentView.layer.transform = newTransform;
+    }
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
     componentView.layer.opacity = newViewProps.opacity;
