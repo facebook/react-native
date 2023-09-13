@@ -2487,7 +2487,7 @@ bool calculateLayoutInternal(
             layout->cachedLayout.computedHeight,
             marginAxisRow,
             marginAxisColumn,
-            config)) {
+            node->getConfig())) {
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
@@ -2505,7 +2505,7 @@ bool calculateLayoutInternal(
                 layout->cachedMeasurements[i].computedHeight,
                 marginAxisRow,
                 marginAxisColumn,
-                config)) {
+                node->getConfig())) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
@@ -2756,8 +2756,7 @@ void calculateLayout(
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
     node->setPosition(
         node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
-    roundLayoutResultsToPixelGrid(
-        node, node->getConfig()->getPointScaleFactor(), 0.0f, 0.0f);
+    roundLayoutResultsToPixelGrid(node, 0.0f, 0.0f);
 
 #ifdef DEBUG
     if (node->getConfig()->shouldPrintTree()) {

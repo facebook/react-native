@@ -23,7 +23,6 @@ float roundValueToPixelGrid(
 // Round the layout results of a node and its subtree to the pixel grid.
 void roundLayoutResultsToPixelGrid(
     yoga::Node* const node,
-    const double pointScaleFactor,
     const double absoluteLeft,
     const double absoluteTop);
 
