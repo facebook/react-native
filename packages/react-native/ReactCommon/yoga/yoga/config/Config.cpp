@@ -91,56 +91,28 @@ void* Config::getContext() const {
 }
 
 void Config::setLogger(YGLogger logger) {
-  logger_.noContext = logger;
-  flags_.loggerUsesContext = false;
-}
-
-void Config::setLogger(LogWithContextFn logger) {
-  logger_.withContext = logger;
-  flags_.loggerUsesContext = true;
-}
-
-void Config::setLogger(std::nullptr_t) {
-  setLogger(YGLogger{nullptr});
+  logger_ = logger;
 }
 
 void Config::log(
     const yoga::Node* node,
     YGLogLevel logLevel,
-    void* logContext,
     const char* format,
     va_list args) const {
-  if (flags_.loggerUsesContext) {
-    logger_.withContext(this, node, logLevel, logContext, format, args);
-  } else {
-    logger_.noContext(this, node, logLevel, format, args);
-  }
+  logger_(this, node, logLevel, format, args);
 }
 
 void Config::setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
-  cloneNodeCallback_.noContext = cloneNode;
-  flags_.cloneNodeUsesContext = false;
-}
-
-void Config::setCloneNodeCallback(CloneWithContextFn cloneNode) {
-  cloneNodeCallback_.withContext = cloneNode;
-  flags_.cloneNodeUsesContext = true;
-}
-
-void Config::setCloneNodeCallback(std::nullptr_t) {
-  setCloneNodeCallback(YGCloneNodeFunc{nullptr});
+  cloneNodeCallback_ = cloneNode;
 }
 
 YGNodeRef Config::cloneNode(
     YGNodeConstRef node,
     YGNodeConstRef owner,
-    size_t childIndex,
-    void* cloneContext) const {
+    size_t childIndex) const {
   YGNodeRef clone = nullptr;
-  if (cloneNodeCallback_.noContext != nullptr) {
-    clone = flags_.cloneNodeUsesContext
-        ? cloneNodeCallback_.withContext(node, owner, childIndex, cloneContext)
-        : cloneNodeCallback_.noContext(node, owner, childIndex);
+  if (cloneNodeCallback_ != nullptr) {
+    clone = cloneNodeCallback_(node, owner, childIndex);
   }
   if (clone == nullptr) {
     clone = YGNodeClone(node);

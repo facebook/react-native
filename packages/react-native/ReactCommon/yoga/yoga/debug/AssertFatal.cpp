@@ -22,7 +22,7 @@ namespace facebook::yoga {
 
 void assertFatal(const bool condition, const char* message) {
   if (!condition) {
-    yoga::log(YGLogLevelFatal, nullptr, "%s\n", message);
+    yoga::log(YGLogLevelFatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }
@@ -32,7 +32,7 @@ void assertFatalWithNode(
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(node, YGLogLevelFatal, nullptr, "%s\n", message);
+    yoga::log(node, YGLogLevelFatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }
@@ -42,7 +42,7 @@ void assertFatalWithConfig(
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(config, YGLogLevelFatal, nullptr, "%s\n", message);
+    yoga::log(config, YGLogLevelFatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }

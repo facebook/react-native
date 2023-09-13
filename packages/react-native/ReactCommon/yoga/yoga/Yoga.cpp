@@ -57,7 +57,7 @@ void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc) {
 }
 
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeConstRef node) {
-  return resolveRef(node)->getDirtied();
+  return resolveRef(node)->getDirtiedFunc();
 }
 
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc) {
@@ -805,7 +805,7 @@ void YGNodePrint(const YGNodeConstRef nodeRef, const YGPrintOptions options) {
   const auto node = resolveRef(nodeRef);
   std::string str;
   yoga::nodeToString(str, node, options, 0);
-  yoga::log(node, YGLogLevelDebug, nullptr, str.c_str());
+  yoga::log(node, YGLogLevelDebug, str.c_str());
 }
 #endif
 
@@ -927,16 +927,6 @@ void YGNodeCalculateLayout(
     const float ownerWidth,
     const float ownerHeight,
     const YGDirection ownerDirection) {
-  YGNodeCalculateLayoutWithContext(
-      node, ownerWidth, ownerHeight, ownerDirection, nullptr);
-}
-
-void YGNodeCalculateLayoutWithContext(
-    const YGNodeRef node,
-    const float ownerWidth,
-    const float ownerHeight,
-    const YGDirection ownerDirection,
-    void* layoutContext) {
   yoga::calculateLayout(
-      resolveRef(node), ownerWidth, ownerHeight, ownerDirection, layoutContext);
+      resolveRef(node), ownerWidth, ownerHeight, ownerDirection);
 }

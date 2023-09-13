@@ -32,10 +32,10 @@ Node::Node(const yoga::Config* config) : config_{config} {
 Node::Node(Node&& node) {
   context_ = node.context_;
   flags_ = node.flags_;
-  measure_ = node.measure_;
-  baseline_ = node.baseline_;
-  print_ = node.print_;
-  dirtied_ = node.dirtied_;
+  measureFunc_ = node.measureFunc_;
+  baselineFunc_ = node.baselineFunc_;
+  printFunc_ = node.printFunc_;
+  dirtiedFunc_ = node.dirtiedFunc_;
   style_ = node.style_;
   layout_ = node.layout_;
   lineIndex_ = node.lineIndex_;
@@ -48,13 +48,9 @@ Node::Node(Node&& node) {
   }
 }
 
-void Node::print(void* printContext) {
-  if (print_.noContext != nullptr) {
-    if (flags_.printUsesContext) {
-      print_.withContext(this, printContext);
-    } else {
-      print_.noContext(this);
-    }
+void Node::print() {
+  if (printFunc_ != nullptr) {
+    printFunc_(this);
   }
 }
 
@@ -217,25 +213,18 @@ YGSize Node::measure(
     float width,
     YGMeasureMode widthMode,
     float height,
-    YGMeasureMode heightMode,
-    void* layoutContext) {
-  return flags_.measureUsesContext
-      ? measure_.withContext(
-            this, width, widthMode, height, heightMode, layoutContext)
-      : measure_.noContext(this, width, widthMode, height, heightMode);
+    YGMeasureMode heightMode) {
+  return measureFunc_(this, width, widthMode, height, heightMode);
 }
 
-float Node::baseline(float width, float height, void* layoutContext) const {
-  return flags_.baselineUsesContext
-      ? baseline_.withContext(
-            const_cast<Node*>(this), width, height, layoutContext)
-      : baseline_.noContext(const_cast<Node*>(this), width, height);
+float Node::baseline(float width, float height) const {
+  return baselineFunc_(this, width, height);
 }
 
 // Setters
 
-void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
-  if (measureFunc.noContext == nullptr) {
+void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
+  if (measureFunc == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     setNodeType(YGNodeTypeDefault);
@@ -250,21 +239,7 @@ void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
     setNodeType(YGNodeTypeText);
   }
 
-  measure_ = measureFunc;
-}
-
-void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
-  flags_.measureUsesContext = false;
-  decltype(Node::measure_) m;
-  m.noContext = measureFunc;
-  setMeasureFunc(m);
-}
-
-void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  flags_.measureUsesContext = true;
-  decltype(Node::measure_) m;
-  m.withContext = measureFunc;
-  setMeasureFunc(m);
+  measureFunc_ = measureFunc;
 }
 
 void Node::replaceChild(Node* child, size_t index) {
@@ -299,8 +274,8 @@ void Node::setDirty(bool isDirty) {
     return;
   }
   flags_.isDirty = isDirty;
-  if (isDirty && dirtied_) {
-    dirtied_(this);
+  if (isDirty && dirtiedFunc_) {
+    dirtiedFunc_(this);
   }
 }
 
@@ -485,11 +460,11 @@ void Node::clearChildren() {
 
 // Other Methods
 
-void Node::cloneChildrenIfNeeded(void* cloneContext) {
+void Node::cloneChildrenIfNeeded() {
   size_t i = 0;
   for (Node*& child : children_) {
     if (child->getOwner() != this) {
-      child = resolveRef(config_->cloneNode(child, this, i, cloneContext));
+      child = resolveRef(config_->cloneNode(child, this, i));
       child->setOwner(this);
     }
     i += 1;

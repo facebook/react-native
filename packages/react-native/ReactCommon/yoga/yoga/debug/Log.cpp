@@ -19,51 +19,43 @@ void vlog(
     const yoga::Config* config,
     const yoga::Node* node,
     YGLogLevel level,
-    void* context,
     const char* format,
     va_list args) {
   if (config == nullptr) {
     getDefaultLogger()(nullptr, node, level, format, args);
   } else {
-    config->log(node, level, context, format, args);
+    config->log(node, level, format, args);
   }
 }
 } // namespace
 
-void log(YGLogLevel level, void* context, const char* format, ...) noexcept {
+void log(YGLogLevel level, const char* format, ...) noexcept {
   va_list args;
   va_start(args, format);
-  vlog(nullptr, nullptr, level, context, format, args);
+  vlog(nullptr, nullptr, level, format, args);
   va_end(args);
 }
 
 void log(
     const yoga::Node* node,
     YGLogLevel level,
-    void* context,
     const char* format,
     ...) noexcept {
   va_list args;
   va_start(args, format);
   vlog(
-      node == nullptr ? nullptr : node->getConfig(),
-      node,
-      level,
-      context,
-      format,
-      args);
+      node == nullptr ? nullptr : node->getConfig(), node, level, format, args);
   va_end(args);
 }
 
 void log(
     const yoga::Config* config,
     YGLogLevel level,
-    void* context,
     const char* format,
     ...) noexcept {
   va_list args;
   va_start(args, format);
-  vlog(config, nullptr, level, context, format, args);
+  vlog(config, nullptr, level, format, args);
   va_end(args);
 }
 

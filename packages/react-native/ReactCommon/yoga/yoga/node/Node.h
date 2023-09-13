@@ -30,42 +30,17 @@ struct NodeFlags {
   bool isReferenceBaseline : 1;
   bool isDirty : 1;
   uint32_t nodeType : 1;
-  bool measureUsesContext : 1;
-  bool baselineUsesContext : 1;
-  bool printUsesContext : 1;
 };
 #pragma pack(pop)
 
 class YG_EXPORT Node : public ::YGNode {
-public:
-  // Internal variants of callbacks, currently used only by JNI bindings.
-  // TODO: Reconcile this with the public API
-  using MeasureWithContextFn = YGSize (*)(
-      YGNodeConstRef,
-      float,
-      YGMeasureMode,
-      float,
-      YGMeasureMode,
-      void*);
-  using BaselineWithContextFn = float (*)(YGNodeConstRef, float, float, void*);
-  using PrintWithContextFn = void (*)(YGNodeConstRef, void*);
-
 private:
   void* context_ = nullptr;
   NodeFlags flags_ = {};
-  union {
-    YGMeasureFunc noContext;
-    MeasureWithContextFn withContext;
-  } measure_ = {nullptr};
-  union {
-    YGBaselineFunc noContext;
-    BaselineWithContextFn withContext;
-  } baseline_ = {nullptr};
-  union {
-    YGPrintFunc noContext;
-    PrintWithContextFn withContext;
-  } print_ = {nullptr};
-  YGDirtiedFunc dirtied_ = nullptr;
+  YGMeasureFunc measureFunc_ = {nullptr};
+  YGBaselineFunc baselineFunc_ = {nullptr};
+  YGPrintFunc printFunc_ = {nullptr};
+  YGDirtiedFunc dirtiedFunc_ = nullptr;
   Style style_ = {};
   LayoutResults layout_ = {};
   size_t lineIndex_ = 0;
@@ -78,9 +53,6 @@ private:
   FloatOptional relativePosition(
       const YGFlexDirection axis,
       const float axisSize) const;
-
-  void setMeasureFunc(decltype(measure_));
-  void setBaselineFunc(decltype(baseline_));
 
   void useWebDefaults() {
     style_.flexDirection() = YGFlexDirectionRow;
@@ -112,7 +84,7 @@ public:
   // Getters
   void* getContext() const { return context_; }
 
-  void print(void*);
+  void print();
 
   bool getHasNewLayout() const { return flags_.hasNewLayout; }
 
@@ -120,19 +92,17 @@ public:
     return static_cast<YGNodeType>(flags_.nodeType);
   }
 
-  bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
+  bool hasMeasureFunc() const noexcept { return measureFunc_ != nullptr; }
 
-  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
+  YGSize measure(float, YGMeasureMode, float, YGMeasureMode);
 
-  bool hasBaselineFunc() const noexcept {
-    return baseline_.noContext != nullptr;
-  }
+  bool hasBaselineFunc() const noexcept { return baselineFunc_ != nullptr; }
 
-  float baseline(float width, float height, void* layoutContext) const;
+  float baseline(float width, float height) const;
 
   bool hasErrata(YGErrata errata) const { return config_->hasErrata(errata); }
 
-  YGDirtiedFunc getDirtied() const { return dirtied_; }
+  YGDirtiedFunc getDirtiedFunc() const { return dirtiedFunc_; }
 
   // For Performance reasons passing as reference.
   Style& getStyle() { return style_; }
@@ -232,15 +202,7 @@ public:
 
   void setContext(void* context) { context_ = context; }
 
-  void setPrintFunc(YGPrintFunc printFunc) {
-    print_.noContext = printFunc;
-    flags_.printUsesContext = false;
-  }
-  void setPrintFunc(PrintWithContextFn printFunc) {
-    print_.withContext = printFunc;
-    flags_.printUsesContext = true;
-  }
-  void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
+  void setPrintFunc(YGPrintFunc printFunc) { printFunc_ = printFunc; }
 
   void setHasNewLayout(bool hasNewLayout) {
     flags_.hasNewLayout = hasNewLayout;
@@ -251,24 +213,12 @@ public:
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
-  void setMeasureFunc(MeasureWithContextFn);
-  void setMeasureFunc(std::nullptr_t) {
-    return setMeasureFunc(YGMeasureFunc{nullptr});
-  }
 
   void setBaselineFunc(YGBaselineFunc baseLineFunc) {
-    flags_.baselineUsesContext = false;
-    baseline_.noContext = baseLineFunc;
-  }
-  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
-    flags_.baselineUsesContext = true;
-    baseline_.withContext = baseLineFunc;
-  }
-  void setBaselineFunc(std::nullptr_t) {
-    return setBaselineFunc(YGBaselineFunc{nullptr});
+    baselineFunc_ = baseLineFunc;
   }
 
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtiedFunc_ = dirtiedFunc; }
 
   void setStyle(const Style& style) { style_ = style; }
 
@@ -325,7 +275,7 @@ public:
   bool removeChild(Node* child);
   void removeChild(size_t index);
 
-  void cloneChildrenIfNeeded(void*);
+  void cloneChildrenIfNeeded();
   void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
