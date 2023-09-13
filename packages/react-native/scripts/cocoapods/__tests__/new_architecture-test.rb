@@ -14,6 +14,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     def teardown
         Pod::UI.reset()
         FileMock.reset()
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
     end
 
     # ============================= #
@@ -184,87 +185,87 @@ class NewArchitectureTests < Test::Unit::TestCase
         )
     end
 
-    # ========================== #
-    # Test - Is New Arch Enabled #
-    # ========================== #
+    # =============================== #
+    # Test - Compute New Arch Enabled #
+    # =============================== #
 
-    def test_isNewArchEnabled_whenOnMainAndFlagTrue_returnTrue
+    def test_computeNewArchEnabled_whenOnMainAndFlagTrue_returnTrue
         version = '1000.0.0'
         new_arch_enabled = true
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOnMainAndFlagFalse_returnFalse
+    def test_computeNewArchEnabled_whenOnMainAndFlagFalse_returnFalse
         version = '1000.0.0'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("0", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOnStableAndFlagTrue_returnTrue
+    def test_computeNewArchEnabled_whenOnStableAndFlagTrue_returnTrue
         version = '0.73.0'
         new_arch_enabled = true
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOnStableAndFlagFalse_returnFalse
+    def test_computeNewArchEnabled_whenOnStableAndFlagFalse_returnFalse
         version = '0.73.0'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("0", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOn100AndFlagTrue_returnTrue
+    def test_computeNewArchEnabled_whenOn100AndFlagTrue_returnTrue
         version = '1.0.0-prealpha.0'
         new_arch_enabled = true
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalse_returnTrue
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalse_returnTrue
         version = '1.0.0-prealpha.0'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
         version = '1.0.0-prealpha-0'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
+    def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
         version = '1.0.0-prealpha0'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
 
-    def test_isNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
+    def test_computeNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
         version = '3.2.1'
         new_arch_enabled = false
 
-        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
         assert_equal("1", isEnabled)
     end
@@ -295,6 +296,28 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal("1.0.0-prealpha.0", version)
     end
+
+    # =============================== #
+    # Test - New Architecture Enabled #
+    # =============================== #
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo1_returnTrue
+        ENV["RCT_NEW_ARCH_ENABLED"] = "1"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_true(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo0_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = "0"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsNotSet_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
 
 end
 

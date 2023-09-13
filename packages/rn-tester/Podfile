@@ -44,11 +44,6 @@ def pods(target_name, options = {}, use_flipper: $shouldUseFlipper)
   hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    # Custom fabric component is only supported when using codegen discovery.
-    pod 'MyNativeView', :path => "NativeComponentExample"
-  end
-
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
@@ -68,7 +63,9 @@ def pods(target_name, options = {}, use_flipper: $shouldUseFlipper)
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
+
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'MyNativeView', :path => "NativeComponentExample"
     pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
   end
 end
