@@ -158,4 +158,27 @@ class NewArchitectureHelper
     def self.folly_compiler_flags
         return @@folly_compiler_flags
     end
+
+    def self.is_new_arch_enabled(new_arch_enabled, react_native_version)
+        # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
+        # where
+        # - major is a number
+        # - minor is a number
+        # - patch is a number
+        # - prerelease is a string (can include numbers)
+        # - k is a number
+        version_regex = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
+
+        if match_data = react_native_version.match(version_regex)
+
+            major = match_data[1].to_i
+
+            # We want to enforce the new architecture for 1.0.0 and greater,
+            # but not for 1000 as version 1000 is currently main.
+            if major > 0 && major < 1000
+                return "1"
+            end
+        end
+        return new_arch_enabled ? "1" : "0"
+    end
 end
