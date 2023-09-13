@@ -6,7 +6,7 @@ React Native macOS has 3 types of builds it can publish, similar to React Native
 2. **Nightlies / Canaries** : Published off our main branch on every commit
 3. **Stable Releases** : Published off `*-stable` branches, with a new patch release for every commit
 
-We use Azure Pipelines for our publish pipeline. The pipeline is defined in `.ado/publish.yml`, and is set to run on pushes to `main` and `*-stable` branches. The pipeline steps differ between stable branches, with the latest as of time of writing (`0.71-stable`) attempting to re-use some of the scripts used by the upstream repo in their CircleCI pipelines. 
+We use Azure Pipelines for our publish pipeline. The pipeline is defined in `.ado/publish.yml`, and is set to run on pushes to `main` and `*-stable` branches. The pipeline steps differ between stable branches, with the latest as of time of writing (`0.72-stable`) attempting to re-use some of the scripts used by the upstream repo in their CircleCI pipelines. 
 
 ## Relevant Scripts from React Native Core
 
@@ -73,7 +73,7 @@ The Publish flow does the following:
 
 ### Publishing New Versions
 
-Each minor version publishes out of its own branch (e.g., 0.71-stable for react-native-macos 0.71.x). In order to ensure initial releases are properly versioned, we have a special prerelease name called `ready`. This will tell our `get-next-semver-version` script that we're ready to release the next version.
+Each minor version publishes out of its own branch (e.g., 0.72-stable for react-native-macos 0.72.x). In order to ensure initial releases are properly versioned, we have a special prerelease name called `ready`. This will tell our `get-next-semver-version` script that we're ready to release the next version.
 
 We do this so that our first release will have a proper patch version of 0, as shown by this snippet from an interactive Node.js console:
 
