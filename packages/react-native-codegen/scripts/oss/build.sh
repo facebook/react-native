@@ -46,7 +46,7 @@ else
   if [ "$OSTYPE" = "msys" ] || [ "$OSTYPE" = "cygwin" ]; then
     tar cf - --exclude='*.lock' "$CODEGEN_DIR" | (cd "$TMP_DIR" && tar xvf - );
   else
-    cp -R "$CODEGEN_DIR/." "$TMP_DIR";
+    cp -R -X "$CODEGEN_DIR/." "$TMP_DIR";
   fi
 
   pushd "$TMP_DIR" >/dev/null
@@ -56,6 +56,7 @@ else
 
   popd >/dev/null
 
-  mv "$TMP_DIR/lib" "$TMP_DIR/node_modules" "$CODEGEN_DIR"
+  cp -R -X "$TMP_DIR/lib" "$CODEGEN_DIR"
+  cp -R -X "$TMP_DIR/node_modules" "$CODEGEN_DIR"
   rm -rf "$TMP_DIR"
 fi
