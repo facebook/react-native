@@ -40,8 +40,6 @@ function(add_react_common_subdir relative_path)
   add_subdirectory(${REACT_COMMON_DIR}/${relative_path} ReactCommon/${relative_path})
 endfunction()
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
@@ -56,6 +54,8 @@ add_react_third_party_ndk_subdir(libevent)
 add_react_third_party_ndk_subdir(folly)
 add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # Common targets
 add_react_common_subdir(yoga)
