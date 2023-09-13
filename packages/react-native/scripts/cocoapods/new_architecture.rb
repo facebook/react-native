@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'json'
+
 class NewArchitectureHelper
     @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
 
@@ -157,6 +159,15 @@ class NewArchitectureHelper
 
     def self.folly_compiler_flags
         return @@folly_compiler_flags
+    end
+
+    def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
+        package_json_file = File.join(react_native_path, "package.json")
+        if !file_manager.exist?(package_json_file)
+            raise "Couldn't find the React Native package.json file at #{package_json_file}"
+        end
+        package = json_parser.parse(file_manager.read(package_json_file))
+        return package["version"]
     end
 
     def self.is_new_arch_enabled(new_arch_enabled, react_native_version)
