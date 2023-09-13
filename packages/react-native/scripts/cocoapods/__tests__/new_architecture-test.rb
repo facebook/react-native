@@ -181,6 +181,91 @@ class NewArchitectureTests < Test::Unit::TestCase
             ]
         )
     end
+
+    # ========================== #
+    # Test - Is New Arch Enabled #
+    # ========================== #
+
+    def test_isNewArchEnabled_whenOnMainAndFlagTrue_returnTrue
+        version = '1000.0.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOnMainAndFlagFalse_returnFalse
+        version = '1000.0.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOnStableAndFlagTrue_returnTrue
+        version = '0.73.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOnStableAndFlagFalse_returnFalse
+        version = '0.73.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOn100AndFlagTrue_returnTrue
+        version = '1.0.0-prealpha.0'
+        new_arch_enabled = true
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha.0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha-0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
+        version = '1.0.0-prealpha0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_isNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
+        version = '3.2.1'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.is_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
 end
 
 # ================ #
