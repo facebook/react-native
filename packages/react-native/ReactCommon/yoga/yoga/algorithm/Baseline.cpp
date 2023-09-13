@@ -62,4 +62,23 @@ float calculateBaseline(const yoga::Node* node, void* layoutContext) {
   return baseline + baselineChild->getLayout().position[YGEdgeTop];
 }
 
+bool isBaselineLayout(const yoga::Node* node) {
+  if (isColumn(node->getStyle().flexDirection())) {
+    return false;
+  }
+  if (node->getStyle().alignItems() == YGAlignBaseline) {
+    return true;
+  }
+  const auto childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
+    auto child = node->getChild(i);
+    if (child->getStyle().positionType() != YGPositionTypeAbsolute &&
+        child->getStyle().alignSelf() == YGAlignBaseline) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 } // namespace facebook::yoga
