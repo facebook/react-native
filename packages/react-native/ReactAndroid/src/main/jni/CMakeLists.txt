@@ -40,6 +40,8 @@ function(add_react_common_subdir relative_path)
   add_subdirectory(${REACT_COMMON_DIR}/${relative_path} ReactCommon/${relative_path})
 endfunction()
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
