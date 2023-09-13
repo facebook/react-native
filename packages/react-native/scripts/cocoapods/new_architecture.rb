@@ -74,6 +74,7 @@ class NewArchitectureHelper
             # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
             # This helps with backward compatibility.
             if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
                     prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
@@ -170,7 +171,7 @@ class NewArchitectureHelper
         return package["version"]
     end
 
-    def self.is_new_arch_enabled(new_arch_enabled, react_native_version)
+    def self.compute_new_arch_enabled(new_arch_enabled, react_native_version)
         # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
         # where
         # - major is a number
@@ -191,5 +192,9 @@ class NewArchitectureHelper
             end
         end
         return new_arch_enabled ? "1" : "0"
+    end
+
+    def self.new_arch_enabled
+        return ENV["RCT_NEW_ARCH_ENABLED"] == "1"
     end
 end
