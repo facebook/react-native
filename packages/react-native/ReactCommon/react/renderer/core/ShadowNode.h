@@ -177,6 +177,15 @@ class ShadowNode : public Sealable,
    */
   void setMounted(bool mounted) const;
 
+  /*
+   * Applies the most recent state to the ShadowNode if following conditions are
+   * met:
+   * - ShadowNode has a state.
+   * - ShadowNode has not been mounted before.
+   * - ShadowNode's current state is obsolete.
+   */
+  void progressStateIfNecessary();
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

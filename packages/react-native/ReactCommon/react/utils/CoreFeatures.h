@@ -67,6 +67,9 @@ class CoreFeatures {
 
   // Default state updates and events to async batched priority.
   static bool enableDefaultAsyncBatchedPriority;
+
+  // When enabled, Fabric will avoid cloning notes to perform state progression.
+  static bool enableClonelessStateProgression;
 };
 
 } // namespace facebook::react
