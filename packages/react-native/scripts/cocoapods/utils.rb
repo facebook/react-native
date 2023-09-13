@@ -16,6 +16,9 @@ class ReactNativePodsUtils
         end
     end
 
+    # deprecated. These checks are duplicated in the react_native_pods function
+    # and we don't really need them. Removing this function will make it easy to
+    # move forward.
     def self.get_default_flags
         flags = {
             :fabric_enabled => false,

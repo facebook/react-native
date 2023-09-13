@@ -217,7 +217,10 @@ def install_modules_dependencies(spec, new_arch_enabled: ENV['RCT_NEW_ARCH_ENABL
 end
 
 # It returns the default flags.
+# deprecated.
 def get_default_flags()
+  warn 'get_default_flags is deprecated. Please remove the keys from the `use_react_native!` function'
+  warn 'if you are using the default already and pass the value you need in case you don\'t want the default'
   return ReactNativePodsUtils.get_default_flags()
 end
 
