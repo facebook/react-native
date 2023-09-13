@@ -50,25 +50,6 @@ bool calculateLayoutInternal(
     const uint32_t depth,
     const uint32_t generationCount);
 
-static bool isBaselineLayout(const yoga::Node* node) {
-  if (isColumn(node->getStyle().flexDirection())) {
-    return false;
-  }
-  if (node->getStyle().alignItems() == YGAlignBaseline) {
-    return true;
-  }
-  const auto childCount = node->getChildCount();
-  for (size_t i = 0; i < childCount; i++) {
-    auto child = node->getChild(i);
-    if (child->getStyle().positionType() != YGPositionTypeAbsolute &&
-        child->getStyle().alignSelf() == YGAlignBaseline) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 static inline float dimensionWithMargin(
     const yoga::Node* const node,
     const YGFlexDirection axis,
