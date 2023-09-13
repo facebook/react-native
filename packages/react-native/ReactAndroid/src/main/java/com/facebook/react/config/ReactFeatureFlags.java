@@ -163,4 +163,7 @@ public class ReactFeatureFlags {
 
   /** Default state updates and events to async batched priority. */
   public static boolean enableDefaultAsyncBatchedPriority = false;
+
+  /** Utilize shared Event C++ pipeline with fabric's renderer */
+  public static boolean enableFabricSharedEventPipeline = false;
 }
