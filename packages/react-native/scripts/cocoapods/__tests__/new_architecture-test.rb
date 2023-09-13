@@ -8,10 +8,12 @@ require_relative "../new_architecture.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
+require_relative "./test_utils/FileMock.rb"
 
 class NewArchitectureTests < Test::Unit::TestCase
     def teardown
         Pod::UI.reset()
+        FileMock.reset()
     end
 
     # ============================= #
@@ -266,6 +268,34 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal("1", isEnabled)
     end
+
+    # =================================== #
+    # Test - Extract React Native Version #
+    # =================================== #
+    def test_extractReactNativeVersion_whenFileDoesNotExists_raiseError()
+        react_native_path = './node_modules/react-native/'
+
+        exception = assert_raise(RuntimeError) do
+            NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+        end
+
+        assert_equal("Couldn't find the React Native package.json file at ./node_modules/react-native/package.json", exception.message)
+    end
+
+    def test_extractReactNativeVersion_whenFileExists_returnTheRightVersion()
+        react_native_path = "./node_modules/react-native/"
+        full_path = File.join(react_native_path, "package.json")
+        json = "{\"version\": \"1.0.0-prealpha.0\"}"
+        FileMock.mocked_existing_files([full_path])
+        FileMock.files_to_read({
+            full_path => json
+        })
+
+        version = NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+
+        assert_equal("1.0.0-prealpha.0", version)
+    end
+
 end
 
 # ================ #
