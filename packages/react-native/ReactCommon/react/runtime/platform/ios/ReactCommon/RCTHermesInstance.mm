@@ -20,10 +20,12 @@ RCTHermesInstance::RCTHermesInstance(
 {
 }
 
-std::unique_ptr<jsi::Runtime> RCTHermesInstance::createJSRuntime() noexcept
+std::unique_ptr<jsi::Runtime> RCTHermesInstance::createJSRuntime(
+    std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept
 {
   return _hermesInstance->createJSRuntime(
-      _reactNativeConfig, _crashManagerProvider ? _crashManagerProvider() : nullptr);
+      _reactNativeConfig, _crashManagerProvider ? _crashManagerProvider() : nullptr, msgQueueThread);
 }
+
 } // namespace react
 } // namespace facebook
