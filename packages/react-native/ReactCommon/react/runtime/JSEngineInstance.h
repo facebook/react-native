@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <cxxreact/MessageQueueThread.h>
 #include <jsi/jsi.h>
 
 namespace facebook::react {
@@ -17,7 +18,8 @@ namespace facebook::react {
  */
 class JSEngineInstance {
  public:
-  virtual std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept = 0;
+  virtual std::unique_ptr<jsi::Runtime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept = 0;
 
   virtual ~JSEngineInstance() = default;
 };
