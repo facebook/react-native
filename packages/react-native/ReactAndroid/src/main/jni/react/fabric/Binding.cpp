@@ -98,7 +98,7 @@ void Binding::driveCxxAnimations() {
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
-  const auto& scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
     return;
