@@ -15,19 +15,17 @@
 
 namespace facebook::yoga {
 
-void log(YGLogLevel level, void*, const char* format, ...) noexcept;
+void log(YGLogLevel level, const char* format, ...) noexcept;
 
 void log(
     const yoga::Node* node,
     YGLogLevel level,
-    void*,
     const char* message,
     ...) noexcept;
 
 void log(
     const yoga::Config* config,
     YGLogLevel level,
-    void*,
     const char* format,
     ...) noexcept;
 

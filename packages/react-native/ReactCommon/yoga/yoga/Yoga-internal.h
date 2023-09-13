@@ -15,13 +15,6 @@
 
 YG_EXTERN_C_BEGIN
 
-YG_EXPORT void YGNodeCalculateLayoutWithContext(
-    YGNodeRef node,
-    float availableWidth,
-    float availableHeight,
-    YGDirection ownerDirection,
-    void* layoutContext);
-
 // Deallocates a Yoga Node. Unlike YGNodeFree, does not remove the node from
 // its parent or children.
 YG_EXPORT void YGNodeDeallocate(YGNodeRef node);

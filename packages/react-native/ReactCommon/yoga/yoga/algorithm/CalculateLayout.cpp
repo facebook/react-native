@@ -46,7 +46,6 @@ bool calculateLayoutInternal(
     const LayoutPassReason reason,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount);
 
@@ -134,7 +133,6 @@ static void computeFlexBasisForChild(
     const YGDirection direction,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
   const YGFlexDirection mainAxis =
@@ -309,7 +307,6 @@ static void computeFlexBasisForChild(
         LayoutPassReason::kMeasureChild,
         config,
         layoutMarkerData,
-        layoutContext,
         depth,
         generationCount);
 
@@ -329,7 +326,6 @@ static void layoutAbsoluteChild(
     const YGDirection direction,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
   const YGFlexDirection mainAxis =
@@ -437,7 +433,6 @@ static void layoutAbsoluteChild(
         LayoutPassReason::kAbsMeasureChild,
         config,
         layoutMarkerData,
-        layoutContext,
         depth,
         generationCount);
     childWidth = child->getLayout().measuredDimensions[YGDimensionWidth] +
@@ -459,7 +454,6 @@ static void layoutAbsoluteChild(
       LayoutPassReason::kAbsLayout,
       config,
       layoutMarkerData,
-      layoutContext,
       depth,
       generationCount);
 
@@ -564,7 +558,6 @@ static void measureNodeWithMeasureFunc(
     const float ownerWidth,
     const float ownerHeight,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const LayoutPassReason reason) {
   yoga::assertFatalWithNode(
       node,
@@ -613,11 +606,7 @@ static void measureNodeWithMeasureFunc(
 
     // Measure the text under the current constraints.
     const YGSize measuredSize = node->measure(
-        innerWidth,
-        widthMeasureMode,
-        innerHeight,
-        heightMeasureMode,
-        layoutContext);
+        innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
 
     layoutMarkerData.measureCallbacks += 1;
     layoutMarkerData.measureCallbackReasonsCount[static_cast<size_t>(reason)] +=
@@ -625,8 +614,7 @@ static void measureNodeWithMeasureFunc(
 
     Event::publish<Event::MeasureCallbackEnd>(
         node,
-        {layoutContext,
-         innerWidth,
+        {innerWidth,
          widthMeasureMode,
          innerHeight,
          heightMeasureMode,
@@ -739,17 +727,15 @@ static bool measureNodeWithFixedSize(
   return false;
 }
 
-static void zeroOutLayoutRecursively(
-    yoga::Node* const node,
-    void* layoutContext) {
+static void zeroOutLayoutRecursively(yoga::Node* const node) {
   node->getLayout() = {};
   node->setLayoutDimension(0, YGDimensionWidth);
   node->setLayoutDimension(0, YGDimensionHeight);
   node->setHasNewLayout(true);
 
-  node->cloneChildrenIfNeeded(layoutContext);
+  node->cloneChildrenIfNeeded();
   for (const auto child : node->getChildren()) {
-    zeroOutLayoutRecursively(child, layoutContext);
+    zeroOutLayoutRecursively(child);
   }
 }
 
@@ -795,7 +781,6 @@ static float computeFlexBasisForChildren(
     const yoga::Config* const config,
     bool performLayout,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
@@ -826,7 +811,7 @@ static float computeFlexBasisForChildren(
   for (auto child : children) {
     child->resolveDimension();
     if (child->getStyle().display() == YGDisplayNone) {
-      zeroOutLayoutRecursively(child, layoutContext);
+      zeroOutLayoutRecursively(child);
       child->setHasNewLayout(true);
       child->setDirty(false);
       continue;
@@ -861,7 +846,6 @@ static float computeFlexBasisForChildren(
           direction,
           config,
           layoutMarkerData,
-          layoutContext,
           depth,
           generationCount);
     }
@@ -894,7 +878,6 @@ static float distributeFreeSpaceSecondPass(
     const bool performLayout,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
   float childFlexBasis = 0;
@@ -1059,7 +1042,6 @@ static float distributeFreeSpaceSecondPass(
                      : LayoutPassReason::kFlexMeasure,
         config,
         layoutMarkerData,
-        layoutContext,
         depth,
         generationCount);
     node->setLayoutHadOverflow(
@@ -1192,7 +1174,6 @@ static void resolveFlexibleLength(
     const bool performLayout,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
   const float originalFreeSpace = flexLine.layout.remainingFreeSpace;
@@ -1220,7 +1201,6 @@ static void resolveFlexibleLength(
       performLayout,
       config,
       layoutMarkerData,
-      layoutContext,
       depth,
       generationCount);
 
@@ -1240,8 +1220,7 @@ static void YGJustifyMainAxis(
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
     const float availableInnerWidth,
-    const bool performLayout,
-    void* const layoutContext) {
+    const bool performLayout) {
   const auto& style = node->getStyle();
   const float leadingPaddingAndBorderMain =
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth).unwrap();
@@ -1400,7 +1379,7 @@ static void YGJustifyMainAxis(
           if (isNodeBaselineLayout) {
             // If the child is baseline aligned then the cross dimension is
             // calculated by adding maxAscent and maxDescent from the baseline.
-            const float ascent = calculateBaseline(child, layoutContext) +
+            const float ascent = calculateBaseline(child) +
                 child
                     ->getLeadingMargin(
                         YGFlexDirectionColumn, availableInnerWidth)
@@ -1519,7 +1498,6 @@ static void calculateLayoutImpl(
     const bool performLayout,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount,
     const LayoutPassReason reason) {
@@ -1597,7 +1575,6 @@ static void calculateLayoutImpl(
         ownerWidth,
         ownerHeight,
         layoutMarkerData,
-        layoutContext,
         reason);
     return;
   }
@@ -1631,7 +1608,7 @@ static void calculateLayoutImpl(
 
   // At this point we know we're going to perform work. Ensure that each child
   // has a mutable copy.
-  node->cloneChildrenIfNeeded(layoutContext);
+  node->cloneChildrenIfNeeded();
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
 
@@ -1699,7 +1676,6 @@ static void calculateLayoutImpl(
       config,
       performLayout,
       layoutMarkerData,
-      layoutContext,
       depth,
       generationCount);
 
@@ -1838,7 +1814,6 @@ static void calculateLayoutImpl(
           performLayout,
           config,
           layoutMarkerData,
-          layoutContext,
           depth,
           generationCount);
     }
@@ -1867,8 +1842,7 @@ static void calculateLayoutImpl(
         availableInnerMainDim,
         availableInnerCrossDim,
         availableInnerWidth,
-        performLayout,
-        layoutContext);
+        performLayout);
 
     float containerCrossAxis = availableInnerCrossDim;
     if (measureModeCrossDim == YGMeasureModeUndefined ||
@@ -2015,7 +1989,6 @@ static void calculateLayoutImpl(
                   LayoutPassReason::kStretch,
                   config,
                   layoutMarkerData,
-                  layoutContext,
                   depth,
                   generationCount);
             }
@@ -2127,7 +2100,7 @@ static void calculateLayoutImpl(
                         .unwrap());
           }
           if (resolveChildAlignment(node, child) == YGAlignBaseline) {
-            const float ascent = calculateBaseline(child, layoutContext) +
+            const float ascent = calculateBaseline(child) +
                 child
                     ->getLeadingMargin(
                         YGFlexDirectionColumn, availableInnerWidth)
@@ -2233,7 +2206,6 @@ static void calculateLayoutImpl(
                         LayoutPassReason::kMultilineStretch,
                         config,
                         layoutMarkerData,
-                        layoutContext,
                         depth,
                         generationCount);
                   }
@@ -2243,7 +2215,7 @@ static void calculateLayoutImpl(
               case YGAlignBaseline: {
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine -
-                        calculateBaseline(child, layoutContext) +
+                        calculateBaseline(child) +
                         child
                             ->getLeadingPosition(
                                 YGFlexDirectionColumn, availableInnerCrossDim)
@@ -2384,7 +2356,6 @@ static void calculateLayoutImpl(
           direction,
           config,
           layoutMarkerData,
-          layoutContext,
           depth,
           generationCount);
     }
@@ -2465,7 +2436,6 @@ bool calculateLayoutInternal(
     const LayoutPassReason reason,
     const yoga::Config* const config,
     LayoutData& layoutMarkerData,
-    void* const layoutContext,
     uint32_t depth,
     const uint32_t generationCount) {
   LayoutResults* layout = &node->getLayout();
@@ -2577,15 +2547,13 @@ bool calculateLayoutInternal(
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "%s%d.{[skipped] ",
           spacerWithLength(depth),
           depth);
-      node->print(layoutContext);
+      node->print();
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2600,16 +2568,14 @@ bool calculateLayoutInternal(
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "%s%d.{%s",
           spacerWithLength(depth),
           depth,
           needToVisitNode ? "*" : "");
-      node->print(layoutContext);
+      node->print();
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "wm: %s, hm: %s, aw: %f ah: %f %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2630,7 +2596,6 @@ bool calculateLayoutInternal(
         performLayout,
         config,
         layoutMarkerData,
-        layoutContext,
         depth,
         generationCount,
         reason);
@@ -2639,16 +2604,14 @@ bool calculateLayoutInternal(
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "%s%d.}%s",
           spacerWithLength(depth),
           depth,
           needToVisitNode ? "*" : "");
-      node->print(layoutContext);
+      node->print();
       yoga::log(
           node,
           YGLogLevelVerbose,
-          nullptr,
           "wm: %s, hm: %s, d: (%f, %f) %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2668,8 +2631,7 @@ bool calculateLayoutInternal(
       if (layout->nextCachedMeasurementsIndex ==
           LayoutResults::MaxCachedMeasurements) {
         if (gPrintChanges) {
-          yoga::log(
-              node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
+          yoga::log(node, YGLogLevelVerbose, "Out of cache entries!\n");
         }
         layout->nextCachedMeasurementsIndex = 0;
       }
@@ -2719,7 +2681,7 @@ bool calculateLayoutInternal(
     layoutType = cachedResults != nullptr ? LayoutType::kCachedMeasure
                                           : LayoutType::kMeasure;
   }
-  Event::publish<Event::NodeLayout>(node, {layoutType, layoutContext});
+  Event::publish<Event::NodeLayout>(node, {layoutType});
 
   return (needToVisitNode || cachedResults == nullptr);
 }
@@ -2728,9 +2690,8 @@ void calculateLayout(
     yoga::Node* const node,
     const float ownerWidth,
     const float ownerHeight,
-    const YGDirection ownerDirection,
-    void* layoutContext) {
-  Event::publish<Event::LayoutPassStart>(node, {layoutContext});
+    const YGDirection ownerDirection) {
+  Event::publish<Event::LayoutPassStart>(node);
   LayoutData markerData = {};
 
   // Increment the generation count. This will force the recursive routine to
@@ -2791,7 +2752,6 @@ void calculateLayout(
           LayoutPassReason::kInitial,
           node->getConfig(),
           markerData,
-          layoutContext,
           0, // tree root
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
     node->setPosition(
@@ -2808,7 +2768,7 @@ void calculateLayout(
 #endif
   }
 
-  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &markerData});
+  Event::publish<Event::LayoutPassEnd>(node, {&markerData});
 }
 
 } // namespace facebook::yoga

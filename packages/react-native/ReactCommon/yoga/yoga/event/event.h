@@ -104,19 +104,12 @@ struct Event::TypedData<Event::NodeDeallocation> {
 };
 
 template <>
-struct Event::TypedData<Event::LayoutPassStart> {
-  void* layoutContext;
-};
-
-template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
-  void* layoutContext;
   LayoutData* layoutData;
 };
 
 template <>
 struct Event::TypedData<Event::MeasureCallbackEnd> {
-  void* layoutContext;
   float width;
   YGMeasureMode widthMeasureMode;
   float height;
@@ -129,7 +122,6 @@ struct Event::TypedData<Event::MeasureCallbackEnd> {
 template <>
 struct Event::TypedData<Event::NodeLayout> {
   LayoutType layoutType;
-  void* layoutContext;
 };
 
 } // namespace facebook::yoga

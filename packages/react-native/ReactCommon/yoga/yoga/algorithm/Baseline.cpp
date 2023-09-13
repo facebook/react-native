@@ -14,15 +14,14 @@
 
 namespace facebook::yoga {
 
-float calculateBaseline(const yoga::Node* node, void* layoutContext) {
+float calculateBaseline(const yoga::Node* node) {
   if (node->hasBaselineFunc()) {
 
     Event::publish<Event::NodeBaselineStart>(node);
 
     const float baseline = node->baseline(
         node->getLayout().measuredDimensions[YGDimensionWidth],
-        node->getLayout().measuredDimensions[YGDimensionHeight],
-        layoutContext);
+        node->getLayout().measuredDimensions[YGDimensionHeight]);
 
     Event::publish<Event::NodeBaselineEnd>(node);
 
@@ -58,7 +57,7 @@ float calculateBaseline(const yoga::Node* node, void* layoutContext) {
     return node->getLayout().measuredDimensions[YGDimensionHeight];
   }
 
-  const float baseline = calculateBaseline(baselineChild, layoutContext);
+  const float baseline = calculateBaseline(baselineChild);
   return baseline + baselineChild->getLayout().position[YGEdgeTop];
 }
 

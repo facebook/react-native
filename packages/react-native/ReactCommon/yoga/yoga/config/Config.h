@@ -24,29 +24,12 @@ bool configUpdateInvalidatesLayout(
     const Config& oldConfig,
     const Config& newConfig);
 
-// Internal variants of log functions, currently used only by JNI bindings.
-// TODO: Reconcile this with the public API
-using LogWithContextFn = int (*)(
-    YGConfigConstRef config,
-    YGNodeConstRef node,
-    YGLogLevel level,
-    void* context,
-    const char* format,
-    va_list args);
-using CloneWithContextFn = YGNodeRef (*)(
-    YGNodeConstRef node,
-    YGNodeConstRef owner,
-    size_t childIndex,
-    void* cloneContext);
-
 #pragma pack(push)
 #pragma pack(1)
 // Packed structure of <32-bit options to miminize size per node.
 struct ConfigFlags {
   bool useWebDefaults : 1;
   bool printTree : 1;
-  bool cloneNodeUsesContext : 1;
-  bool loggerUsesContext : 1;
 };
 #pragma pack(pop)
 
@@ -79,35 +62,23 @@ public:
   void* getContext() const;
 
   void setLogger(YGLogger logger);
-  void setLogger(LogWithContextFn logger);
-  void setLogger(std::nullptr_t);
   void log(
       const yoga::Node* node,
       YGLogLevel logLevel,
-      void* logContext,
       const char* format,
       va_list args) const;
 
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
-  void setCloneNodeCallback(CloneWithContextFn cloneNode);
-  void setCloneNodeCallback(std::nullptr_t);
   YGNodeRef cloneNode(
       YGNodeConstRef node,
       YGNodeConstRef owner,
-      size_t childIndex,
-      void* cloneContext) const;
+      size_t childIndex) const;
 
   static const Config& getDefault();
 
 private:
-  union {
-    CloneWithContextFn withContext;
-    YGCloneNodeFunc noContext;
-  } cloneNodeCallback_;
-  union {
-    LogWithContextFn withContext;
-    YGLogger noContext;
-  } logger_;
+  YGCloneNodeFunc cloneNodeCallback_;
+  YGLogger logger_;
 
   ConfigFlags flags_{};
   EnumBitset<YGExperimentalFeature> experimentalFeatures_{};
