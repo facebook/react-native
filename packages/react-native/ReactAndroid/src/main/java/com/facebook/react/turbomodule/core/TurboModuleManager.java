@@ -122,12 +122,16 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mEagerInitModuleNames;
   }
 
+  // used from TurboModuleManager.cpp
+  @SuppressWarnings("unused")
   @DoNotStrip
   private static List<TurboModuleInteropUtils.MethodDescriptor> getMethodDescriptorsFromModule(
       NativeModule module) {
     return TurboModuleInteropUtils.getMethodDescriptorsFromModule(module);
   }
 
+  // used from TurboModuleManager.cpp
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private NativeModule getLegacyJavaModule(String moduleName) {
@@ -150,6 +154,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         : null;
   }
 
+  // used from TurboModuleManager.cpp
   @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
@@ -173,6 +178,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         : null;
   }
 
+  // used from TurboModuleManager.cpp
   @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
@@ -195,6 +201,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         : null;
   }
 
+  // used from TurboModuleManager.cpp
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private TurboModule getTurboJavaModule(String moduleName) {
