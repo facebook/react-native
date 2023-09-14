@@ -36,6 +36,33 @@ NSString *RCTCurrentOverrideAppearancePreference()
   return sColorSchemeOverride;
 }
 
+<<<<<<< HEAD
+||||||| parent of 5715b1498ee (Make requesting the trait collection synchronous)
+static UITraitCollection *getKeyWindowTraitCollection()
+{
+  __block UITraitCollection *traitCollection = nil;
+  RCTExecuteOnMainQueue(^{
+    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+  });
+  return traitCollection;
+}
+
+=======
+static UITraitCollection *getKeyWindowTraitCollection()
+{
+  __block UITraitCollection *traitCollection = nil;
+  if (RCTIsMainQueue()) {
+    return RCTSharedApplication().delegate.window.traitCollection;
+  } else {
+    __block UITraitCollection* traitCollection = nil;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    });
+    return traitCollection;
+  }
+}
+
+>>>>>>> 5715b1498ee (Make requesting the trait collection synchronous)
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
   static NSDictionary *appearances;
@@ -59,9 +86,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 
   traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
   return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
-
-  // Default to light on older OS version - same behavior as Android.
-  return RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>
