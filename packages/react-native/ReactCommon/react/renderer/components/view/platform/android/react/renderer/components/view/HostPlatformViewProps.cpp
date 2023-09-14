@@ -20,9 +20,8 @@ namespace facebook::react {
 HostPlatformViewProps::HostPlatformViewProps(
     const PropsParserContext& context,
     const HostPlatformViewProps& sourceProps,
-    const RawProps& rawProps,
-    bool shouldSetRawProps)
-    : BaseViewProps(context, sourceProps, rawProps, shouldSetRawProps),
+    const RawProps& rawProps)
+    : BaseViewProps(context, sourceProps, rawProps),
       elevation(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
                                                  : convertRawProp(

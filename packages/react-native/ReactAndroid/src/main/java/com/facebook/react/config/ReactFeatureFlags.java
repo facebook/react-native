@@ -80,9 +80,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
-  /* Enables or disables MapBuffer use in Props infrastructure. */
-  public static boolean useMapBufferProps = false;
-
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
 

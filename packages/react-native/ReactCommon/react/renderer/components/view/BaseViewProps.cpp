@@ -51,9 +51,8 @@ std::array<float, 3> getTranslateForTransformOrigin(
 BaseViewProps::BaseViewProps(
     const PropsParserContext& context,
     const BaseViewProps& sourceProps,
-    const RawProps& rawProps,
-    bool shouldSetRawProps)
-    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
+    const RawProps& rawProps)
+    : YogaStylableProps(context, sourceProps, rawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.opacity
