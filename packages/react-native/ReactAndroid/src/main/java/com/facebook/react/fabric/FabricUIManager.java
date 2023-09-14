@@ -48,7 +48,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerJSI;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -101,7 +101,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class FabricUIManager implements UIManager, LifecycleEventListener {
+public class FabricUIManager implements UIManagerJSI, LifecycleEventListener {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a

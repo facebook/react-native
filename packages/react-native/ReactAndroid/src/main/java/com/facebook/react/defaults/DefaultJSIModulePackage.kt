@@ -14,7 +14,7 @@ import com.facebook.react.bridge.JSIModuleSpec
 import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.UIManager
+import com.facebook.react.bridge.UIManagerJSI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricJSIModuleProvider
 import com.facebook.react.fabric.ReactNativeConfig
@@ -32,16 +32,16 @@ class DefaultJSIModulePackage(private val reactNativeHost: ReactNativeHost) : JS
   override fun getJSIModules(
       reactApplicationContext: ReactApplicationContext,
       jsContext: JavaScriptContextHolder
-  ): List<JSIModuleSpec<UIManager>> =
-      listOf<JSIModuleSpec<UIManager>>(JSIModuleForFabric(reactApplicationContext, reactNativeHost))
+  ): List<JSIModuleSpec<UIManagerJSI>> =
+      listOf<JSIModuleSpec<UIManagerJSI>>(JSIModuleForFabric(reactApplicationContext, reactNativeHost))
 
   private inner class JSIModuleForFabric(
       private val reactApplicationContext: ReactApplicationContext,
       private val reactNativeHost: ReactNativeHost
-  ) : JSIModuleSpec<UIManager> {
+  ) : JSIModuleSpec<UIManagerJSI> {
     override fun getJSIModuleType(): JSIModuleType = JSIModuleType.UIManager
 
-    override fun getJSIModuleProvider(): JSIModuleProvider<UIManager> {
+    override fun getJSIModuleProvider(): JSIModuleProvider<UIManagerJSI> {
       val componentFactory = ComponentFactory()
 
       DefaultComponentsRegistry.register(componentFactory)

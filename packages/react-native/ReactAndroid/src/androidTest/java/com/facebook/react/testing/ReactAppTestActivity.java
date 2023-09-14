@@ -29,6 +29,7 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerJSI;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -262,7 +263,7 @@ public class ReactAppTestActivity extends FragmentActivity
                       public JSIModuleProvider getJSIModuleProvider() {
                         return new JSIModuleProvider() {
                           @Override
-                          public UIManager get() {
+                          public UIManagerJSI get() {
                             ViewManagerRegistry viewManagerRegistry =
                                 new ViewManagerRegistry(
                                     mReactInstanceManager.getOrCreateViewManagers(

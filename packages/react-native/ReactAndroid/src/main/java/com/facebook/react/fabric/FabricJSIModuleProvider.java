@@ -10,12 +10,12 @@ package com.facebook.react.fabric;
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerJSI;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.systrace.Systrace;
 
-public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
+public class FabricJSIModuleProvider implements JSIModuleProvider<UIManagerJSI> {
 
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final ComponentFactory mComponentFactory;
@@ -34,7 +34,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   }
 
   @Override
-  public UIManager get() {
+  public UIManagerJSI get() {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.get");
     final EventBeatManager eventBeatManager = new EventBeatManager();
     final FabricUIManager uiManager = createUIManager(eventBeatManager);

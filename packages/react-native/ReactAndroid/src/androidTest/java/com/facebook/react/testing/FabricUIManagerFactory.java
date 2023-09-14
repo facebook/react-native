@@ -8,12 +8,12 @@
 package com.facebook.react.testing;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerJSI;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 
 /** Factory used to create FabricUIManager in Testing infrastructure. */
 public interface FabricUIManagerFactory {
 
-  UIManager getFabricUIManager(
+  UIManagerJSI getFabricUIManager(
       ReactApplicationContext reactApplicationContext, ViewManagerRegistry viewManagerRegistry);
 }
