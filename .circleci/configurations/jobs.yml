@@ -206,8 +206,8 @@ jobs:
       - run:
           name: Install appium drivers
           command: |
-            appium driver install uiautomator2
-            appium driver install xcuitest
+            appium driver install uiautomator2@2.29.1
+            appium driver install xcuitest@4.32.10
       - run:
           name: Start Appium server
           command: appium --base-path /wd/hub
