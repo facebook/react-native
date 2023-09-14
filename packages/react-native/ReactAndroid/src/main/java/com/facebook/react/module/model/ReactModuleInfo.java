@@ -16,7 +16,6 @@ public class ReactModuleInfo {
   private final String mName;
   private final boolean mCanOverrideExistingModule;
   private final boolean mNeedsEagerInit;
-  private final boolean mHasConstants;
   private final boolean mIsCxxModule;
   private final String mClassName;
   private final boolean mIsTurboModule;
@@ -33,7 +32,6 @@ public class ReactModuleInfo {
     mClassName = className;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mNeedsEagerInit = needsEagerInit;
-    mHasConstants = hasConstants;
     mIsCxxModule = isCxxModule;
     mIsTurboModule = isTurboModule;
   }
@@ -54,8 +52,10 @@ public class ReactModuleInfo {
     return mNeedsEagerInit;
   }
 
+  /** @deprecated this is hardcoded to return true, regardless if the module has constants or not */
+  @Deprecated
   public boolean hasConstants() {
-    return mHasConstants;
+    return true;
   }
 
   public boolean isCxxModule() {
