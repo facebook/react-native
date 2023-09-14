@@ -8,6 +8,7 @@
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 
 /**
@@ -16,7 +17,8 @@ import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
  * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
 public class CallInvokerHolderImpl implements CallInvokerHolder {
-  private final HybridData mHybridData;
+
+  @DoNotStrip private final HybridData mHybridData;
 
   static {
     NativeModuleSoLoader.maybeLoadSoLibrary();
