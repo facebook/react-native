@@ -19,11 +19,7 @@ ViewShadowNodeProps::ViewShadowNodeProps(
     const PropsParserContext& context,
     const ViewShadowNodeProps& sourceProps,
     const RawProps& rawProps)
-    : ViewProps(
-          context,
-          sourceProps,
-          rawProps,
-          !CoreFeatures::enableMapBuffer){};
+    : ViewProps(context, sourceProps, rawProps){};
 
 ViewShadowNode::ViewShadowNode(
     const ShadowNodeFragment& fragment,

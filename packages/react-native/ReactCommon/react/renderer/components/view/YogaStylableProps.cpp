@@ -21,9 +21,8 @@ namespace facebook::react {
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext& context,
     const YogaStylableProps& sourceProps,
-    const RawProps& rawProps,
-    bool shouldSetRawProps)
-    : Props(context, sourceProps, rawProps, shouldSetRawProps),
+    const RawProps& rawProps)
+    : Props(context, sourceProps, rawProps),
       yogaStyle(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.yogaStyle

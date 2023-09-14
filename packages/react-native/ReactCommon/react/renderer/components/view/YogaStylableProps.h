@@ -23,8 +23,7 @@ class YogaStylableProps : public Props {
   YogaStylableProps(
       const PropsParserContext& context,
       const YogaStylableProps& sourceProps,
-      const RawProps& rawProps,
-      bool shouldSetRawProps = true);
+      const RawProps& rawProps);
 
   void setProp(
       const PropsParserContext& context,

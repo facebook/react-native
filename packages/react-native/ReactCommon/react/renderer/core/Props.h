@@ -33,8 +33,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps,
-      bool shouldSetRawProps = true);
+      const RawProps& rawProps);
   virtual ~Props() = default;
 
   /**

@@ -230,20 +230,7 @@ static inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> FabricMountingManager::getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
-  if (CoreFeatures::enableMapBuffer &&
-      newShadowView.traits.check(
-          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
-    react_native_assert(
-        newShadowView.props->rawProps.empty() &&
-        "Raw props must be empty when views are using mapbuffer");
-
-    // MapBufferBuilder must be constructed and live in this scope,
-    MapBufferBuilder builder;
-    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
-    return JReadableMapBuffer::createWithContents(builder.build());
-  } else {
-    return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
-  }
+  return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
 void FabricMountingManager::executeMount(
