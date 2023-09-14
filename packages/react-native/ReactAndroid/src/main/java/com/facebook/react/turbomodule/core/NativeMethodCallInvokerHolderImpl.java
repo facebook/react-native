@@ -8,6 +8,7 @@
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 
 /**
@@ -18,7 +19,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  */
 public class NativeMethodCallInvokerHolderImpl implements NativeMethodCallInvokerHolder {
 
-  private final HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
   static {
     NativeModuleSoLoader.maybeLoadSoLibrary();
