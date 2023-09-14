@@ -284,16 +284,18 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       for (Class<? extends NativeModule> moduleClass : moduleList) {
         ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
 
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
+        if (reactModule != null) {
+          reactModuleInfoMap.put(
+              reactModule.name(),
+              new ReactModuleInfo(
+                  reactModule.name(),
+                  moduleClass.getName(),
+                  reactModule.canOverrideExistingModule(),
+                  reactModule.needsEagerInit(),
+                  reactModule.hasConstants(),
+                  reactModule.isCxxModule(),
+                  TurboModule.class.isAssignableFrom(moduleClass)));
+        }
       }
 
       return () -> reactModuleInfoMap;
