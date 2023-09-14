@@ -115,10 +115,6 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   public @Nullable NativeMap getConstants() {
-    if (!mModuleHolder.getHasConstants()) {
-      return null;
-    }
-
     final String moduleName = getName();
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
         .arg("moduleName", moduleName)
