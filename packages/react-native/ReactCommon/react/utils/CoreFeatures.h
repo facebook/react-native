@@ -64,6 +64,9 @@ class CoreFeatures {
 
   // When enabled, Fabric will avoid cloning notes to perform state progression.
   static bool enableClonelessStateProgression;
+
+  // When enabled, rawProps in Props will not include Yoga specific props.
+  static bool excludeYogaFromRawProps;
 };
 
 } // namespace facebook::react

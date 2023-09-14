@@ -22,5 +22,6 @@ bool CoreFeatures::disableScrollEventThrottleRequirement = false;
 bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
 bool CoreFeatures::enableDefaultAsyncBatchedPriority = false;
 bool CoreFeatures::enableClonelessStateProgression = false;
+bool CoreFeatures::excludeYogaFromRawProps = false;
 
 } // namespace facebook::react
