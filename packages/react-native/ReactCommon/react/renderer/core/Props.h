@@ -61,6 +61,13 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       const Props* oldProps,
       MapBufferBuilder& builder) const;
 #endif
+
+ protected:
+  /** Initialize member variables of Props instance */
+  void initialize(
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react
