@@ -156,4 +156,7 @@ public class ReactFeatureFlags {
 
   /** Utilize shared Event C++ pipeline with fabric's renderer */
   public static boolean enableFabricSharedEventPipeline = false;
+
+  /** When enabled, Fabric will avoid cloning notes to perform state progression. */
+  public static boolean enableClonelessStateProgression = false;
 }
