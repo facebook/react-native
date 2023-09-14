@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -30,6 +31,7 @@ import java.util.List;
  *
  * <p>TODO(6788500, 6788507): Implement support for adding custom views, events and resources
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ReactPackage {
 
   /**
