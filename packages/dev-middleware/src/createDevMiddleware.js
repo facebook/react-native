@@ -56,10 +56,11 @@ export default function createDevMiddleware({
     .use(
       '/open-debugger',
       openDebuggerMiddleware({
-        logger,
         browserLauncher: unstable_browserLauncher,
         eventReporter: unstable_eventReporter,
         experiments,
+        inspectorProxy,
+        logger,
       }),
     )
     .use(
