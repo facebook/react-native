@@ -51,7 +51,10 @@ export default function openDebuggerMiddleware({
     res: ServerResponse,
     next: (err?: Error) => void,
   ) => {
-    if (req.method === 'POST') {
+    if (
+      req.method === 'POST' ||
+      (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
+    ) {
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
@@ -66,11 +69,20 @@ export default function openDebuggerMiddleware({
         );
       let target;
 
+      const launchType: 'launch' | 'redirect' =
+        req.method === 'POST' ? 'launch' : 'redirect';
+
       if (typeof appId === 'string') {
-        logger?.info('Launching JS debugger...');
+        logger?.info(
+          (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
+            ' JS debugger...',
+        );
         target = targets.find(_target => _target.description === appId);
       } else {
-        logger?.info('Launching JS debugger for first available target...');
+        logger?.info(
+          (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
+            ' JS debugger for first available target...',
+        );
         target = targets[0];
       }
 
@@ -82,6 +94,7 @@ export default function openDebuggerMiddleware({
         );
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'coded_error',
           errorCode: 'NO_APPS_FOUND',
         });
@@ -89,20 +102,38 @@ export default function openDebuggerMiddleware({
       }
 
       try {
-        await debuggerInstances.get(appId)?.kill();
-        debuggerInstances.set(
-          appId,
-          await browserLauncher.launchDebuggerAppWindow(
-            getDevToolsFrontendUrl(
-              target.webSocketDebuggerUrl,
-              getDevServerUrl(req, 'public'),
-              experiments,
-            ),
-          ),
-        );
-        res.end();
+        switch (launchType) {
+          case 'launch':
+            await debuggerInstances.get(appId)?.kill();
+            debuggerInstances.set(
+              appId,
+              await browserLauncher.launchDebuggerAppWindow(
+                getDevToolsFrontendUrl(
+                  target.webSocketDebuggerUrl,
+                  getDevServerUrl(req, 'public'),
+                  experiments,
+                ),
+              ),
+            );
+            res.end();
+            break;
+          case 'redirect':
+            res.writeHead(302, {
+              Location: getDevToolsFrontendUrl(
+                target.webSocketDebuggerUrl,
+                // Use a relative URL.
+                '',
+                experiments,
+              ),
+            });
+            res.end();
+            break;
+          default:
+            (launchType: empty);
+        }
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'success',
           appId,
         });
@@ -115,6 +146,7 @@ export default function openDebuggerMiddleware({
         res.end();
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'error',
           error: e,
         });
