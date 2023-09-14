@@ -61,7 +61,6 @@ import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
-import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -964,7 +963,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(
-            reactTag, new ViewEvent(eventName, params, eventCategory, canCoalesceEvent));
+            surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory);
       } else {
         // This can happen if the view has disappeared from the screen (because of async events)
         FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
