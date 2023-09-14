@@ -438,6 +438,8 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
   CoreFeatures::enableClonelessStateProgression =
       getFeatureFlagValue("enableClonelessStateProgression");
+  CoreFeatures::excludeYogaFromRawProps =
+      getFeatureFlagValue("excludeYogaFromRawProps");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
