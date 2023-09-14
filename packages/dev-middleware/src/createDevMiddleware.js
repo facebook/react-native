@@ -80,5 +80,6 @@ export default function createDevMiddleware({
 function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableCustomDebuggerFrontend: config.enableCustomDebuggerFrontend ?? false,
+    enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
   };
 }
