@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Main interface for providing additional capabilities to the catalyst framework by couple of
@@ -44,4 +45,16 @@ public interface ReactPackage {
   /** @return a list of view managers that should be registered with {@link UIManagerModule} */
   @NonNull
   List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext);
+
+  /**
+   * Given a module name, it returns an instance of {@link NativeModule} for the name
+   *
+   * @param name name of the Native Module
+   * @param reactContext {@link ReactApplicationContext} context for this
+   */
+  @Nullable
+  default NativeModule getModule(
+      @NonNull String name, @NonNull ReactApplicationContext reactContext) {
+    return null;
+  }
 }
