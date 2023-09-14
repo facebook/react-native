@@ -99,10 +99,6 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
-  CxxNativeModule::setShouldWarnOnUse(true);
-}
-
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -140,9 +136,6 @@ void CatalystInstanceImpl::registerNatives() {
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
-      makeNativeMethod(
-          "warnOnLegacyNativeModuleSystemUse",
-          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 }
 

@@ -62,10 +62,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
 
-  // When called from CatalystInstanceImpl.java, warnings will be logged when
-  // CxxNativeModules are used. Java NativeModule usages log error in Java.
-  void warnOnLegacyNativeModuleSystemUse();
-
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
           JavaModuleWrapper::javaobject>::javaobject> javaModules,
