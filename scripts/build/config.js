@@ -42,6 +42,10 @@ export type BuildConfig = $ReadOnly<{
  */
 const buildConfig /*: BuildConfig */ = {
   packages: {
+    assets: {
+      target: 'node',
+      emitTypeScriptDefs: true,
+    },
     'community-cli-plugin': {
       target: 'node',
     },
