@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <stdio.h>
+#include <cstdint>
 #include <vector>
 
 #include <yoga/Yoga.h>
@@ -34,7 +34,7 @@ struct NodeFlags {
 #pragma pack(pop)
 
 class YG_EXPORT Node : public ::YGNode {
-private:
+ private:
   void* context_ = nullptr;
   NodeFlags flags_ = {};
   YGMeasureFunc measureFunc_ = {nullptr};
@@ -66,7 +66,7 @@ private:
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
   Node& operator=(Node&&) = default;
 
-public:
+ public:
   Node();
   explicit Node(const Config* config);
   ~Node() = default; // cleanup of owner/children relationships in YGNodeFree
@@ -82,60 +82,98 @@ public:
   Node& operator=(const Node&) = delete;
 
   // Getters
-  void* getContext() const { return context_; }
+  void* getContext() const {
+    return context_;
+  }
 
   void print();
 
-  bool getHasNewLayout() const { return flags_.hasNewLayout; }
+  bool getHasNewLayout() const {
+    return flags_.hasNewLayout;
+  }
 
   YGNodeType getNodeType() const {
     return static_cast<YGNodeType>(flags_.nodeType);
   }
 
-  bool hasMeasureFunc() const noexcept { return measureFunc_ != nullptr; }
+  bool hasMeasureFunc() const noexcept {
+    return measureFunc_ != nullptr;
+  }
 
   YGSize measure(float, YGMeasureMode, float, YGMeasureMode);
 
-  bool hasBaselineFunc() const noexcept { return baselineFunc_ != nullptr; }
+  bool hasBaselineFunc() const noexcept {
+    return baselineFunc_ != nullptr;
+  }
 
   float baseline(float width, float height) const;
 
-  bool hasErrata(YGErrata errata) const { return config_->hasErrata(errata); }
+  bool hasErrata(YGErrata errata) const {
+    return config_->hasErrata(errata);
+  }
 
-  YGDirtiedFunc getDirtiedFunc() const { return dirtiedFunc_; }
+  YGDirtiedFunc getDirtiedFunc() const {
+    return dirtiedFunc_;
+  }
 
   // For Performance reasons passing as reference.
-  Style& getStyle() { return style_; }
+  Style& getStyle() {
+    return style_;
+  }
 
-  const Style& getStyle() const { return style_; }
+  const Style& getStyle() const {
+    return style_;
+  }
 
   // For Performance reasons passing as reference.
-  LayoutResults& getLayout() { return layout_; }
+  LayoutResults& getLayout() {
+    return layout_;
+  }
 
-  const LayoutResults& getLayout() const { return layout_; }
+  const LayoutResults& getLayout() const {
+    return layout_;
+  }
 
-  size_t getLineIndex() const { return lineIndex_; }
+  size_t getLineIndex() const {
+    return lineIndex_;
+  }
 
-  bool isReferenceBaseline() const { return flags_.isReferenceBaseline; }
+  bool isReferenceBaseline() const {
+    return flags_.isReferenceBaseline;
+  }
 
   // returns the Node that owns this Node. An owner is used to identify
   // the YogaTree that a Node belongs to. This method will return the parent
   // of the Node when a Node only belongs to one YogaTree or nullptr when
   // the Node is shared between two or more YogaTrees.
-  Node* getOwner() const { return owner_; }
+  Node* getOwner() const {
+    return owner_;
+  }
 
   // Deprecated, use getOwner() instead.
-  Node* getParent() const { return getOwner(); }
+  Node* getParent() const {
+    return getOwner();
+  }
 
-  const std::vector<Node*>& getChildren() const { return children_; }
+  const std::vector<Node*>& getChildren() const {
+    return children_;
+  }
 
-  Node* getChild(size_t index) const { return children_.at(index); }
+  Node* getChild(size_t index) const {
+    return children_.at(index);
+  }
 
-  size_t getChildCount() const { return children_.size(); }
+  size_t getChildCount() const {
+    return children_.size();
+  }
 
-  const Config* getConfig() const { return config_; }
+  const Config* getConfig() const {
+    return config_;
+  }
 
-  bool isDirty() const { return flags_.isDirty; }
+  bool isDirty() const {
+    return flags_.isDirty;
+  }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
@@ -200,9 +238,13 @@ public:
       const;
   // Setters
 
-  void setContext(void* context) { context_ = context; }
+  void setContext(void* context) {
+    context_ = context;
+  }
 
-  void setPrintFunc(YGPrintFunc printFunc) { printFunc_ = printFunc; }
+  void setPrintFunc(YGPrintFunc printFunc) {
+    printFunc_ = printFunc;
+  }
 
   void setHasNewLayout(bool hasNewLayout) {
     flags_.hasNewLayout = hasNewLayout;
@@ -218,21 +260,33 @@ public:
     baselineFunc_ = baseLineFunc;
   }
 
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtiedFunc_ = dirtiedFunc; }
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+    dirtiedFunc_ = dirtiedFunc;
+  }
 
-  void setStyle(const Style& style) { style_ = style; }
+  void setStyle(const Style& style) {
+    style_ = style;
+  }
 
-  void setLayout(const LayoutResults& layout) { layout_ = layout; }
+  void setLayout(const LayoutResults& layout) {
+    layout_ = layout;
+  }
 
-  void setLineIndex(size_t lineIndex) { lineIndex_ = lineIndex; }
+  void setLineIndex(size_t lineIndex) {
+    lineIndex_ = lineIndex;
+  }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
     flags_.isReferenceBaseline = isReferenceBaseline;
   }
 
-  void setOwner(Node* owner) { owner_ = owner; }
+  void setOwner(Node* owner) {
+    owner_ = owner;
+  }
 
-  void setChildren(const std::vector<Node*>& children) { children_ = children; }
+  void setChildren(const std::vector<Node*>& children) {
+    children_ = children;
+  }
 
   // TODO: rvalue override for setChildren
 

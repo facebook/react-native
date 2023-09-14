@@ -8,8 +8,8 @@
 #pragma once
 
 #include <yoga/Yoga.h>
-#include <yoga/node/Node.h>
 #include <yoga/config/Config.h>
+#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 

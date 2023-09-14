@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <bitset>
 #include <yoga/YGEnums.h>
+#include <bitset>
 
 namespace facebook::yoga {
 

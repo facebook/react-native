@@ -8,8 +8,8 @@
 #pragma once
 
 #include <bitset>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 
 #include <yoga/YGEnums.h>
 

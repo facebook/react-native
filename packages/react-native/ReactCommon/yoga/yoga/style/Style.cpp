@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/style/Style.h>
 #include <yoga/numeric/Comparison.h>
+#include <yoga/style/Style.h>
 
 namespace facebook::yoga {
 

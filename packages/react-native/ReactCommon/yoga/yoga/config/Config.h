@@ -34,7 +34,7 @@ struct ConfigFlags {
 #pragma pack(pop)
 
 class YG_EXPORT Config : public ::YGConfig {
-public:
+ public:
   Config(YGLogger logger);
 
   void setUseWebDefaults(bool useWebDefaults);
@@ -69,14 +69,12 @@ public:
       va_list args) const;
 
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
-  YGNodeRef cloneNode(
-      YGNodeConstRef node,
-      YGNodeConstRef owner,
-      size_t childIndex) const;
+  YGNodeRef
+  cloneNode(YGNodeConstRef node, YGNodeConstRef owner, size_t childIndex) const;
 
   static const Config& getDefault();
 
-private:
+ private:
   YGCloneNodeFunc cloneNodeCallback_;
   YGLogger logger_;
 

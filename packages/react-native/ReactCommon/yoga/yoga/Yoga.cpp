@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/Yoga.h>
 #include <yoga/Yoga-internal.h>
+#include <yoga/Yoga.h>
 
 #include <yoga/algorithm/Cache.h>
 #include <yoga/algorithm/CalculateLayout.h>

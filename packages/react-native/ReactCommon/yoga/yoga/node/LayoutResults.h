@@ -10,8 +10,8 @@
 #include <array>
 
 #include <yoga/bits/NumericBitfield.h>
-#include <yoga/numeric/FloatOptional.h>
 #include <yoga/node/CachedMeasurement.h>
+#include <yoga/numeric/FloatOptional.h>
 
 namespace facebook::yoga {
 
@@ -34,10 +34,10 @@ struct LayoutResults {
   std::array<float, 4> border = {};
   std::array<float, 4> padding = {};
 
-private:
+ private:
   LayoutResultFlags flags_{};
 
-public:
+ public:
   uint32_t computedFlexBasisGeneration = 0;
   FloatOptional computedFlexBasis = {};
 
@@ -60,11 +60,17 @@ public:
     flags_.direction = static_cast<uint32_t>(direction) & 0x03;
   }
 
-  bool hadOverflow() const { return flags_.hadOverflow; }
-  void setHadOverflow(bool hadOverflow) { flags_.hadOverflow = hadOverflow; }
+  bool hadOverflow() const {
+    return flags_.hadOverflow;
+  }
+  void setHadOverflow(bool hadOverflow) {
+    flags_.hadOverflow = hadOverflow;
+  }
 
   bool operator==(LayoutResults layout) const;
-  bool operator!=(LayoutResults layout) const { return !(*this == layout); }
+  bool operator!=(LayoutResults layout) const {
+    return !(*this == layout);
+  }
 };
 
 } // namespace facebook::yoga
