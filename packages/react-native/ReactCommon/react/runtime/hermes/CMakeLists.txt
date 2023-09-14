@@ -23,3 +23,11 @@ target_link_libraries(bridgelesshermes
         jsi
         hermes_executor_common
 )
+
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+        target_compile_options(
+                bridgelesshermes
+                PRIVATE
+                -DHERMES_ENABLE_DEBUGGER=1
+        )
+endif()

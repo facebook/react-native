@@ -11,8 +11,8 @@
 #include <jsi/jsilib.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
-#include <hermes/inspector-modern/RuntimeAdapter.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
+#include <hermes/inspector/RuntimeAdapter.h>
 #include <jsi/decorator.h>
 #endif
 
