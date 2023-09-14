@@ -16,7 +16,6 @@ namespace facebook::yoga {
 
 float calculateBaseline(const yoga::Node* node) {
   if (node->hasBaselineFunc()) {
-
     Event::publish<Event::NodeBaselineStart>(node);
 
     const float baseline = node->baseline(

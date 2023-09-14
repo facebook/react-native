@@ -14,7 +14,7 @@ namespace facebook::yoga::vanillajni {
 
 // TODO: This should not be exported or used outside of the JNI bindings
 class YG_EXPORT LayoutContext {
-public:
+ public:
   // Sets a context on the current thread for the duration of the Provider's
   // lifetime. This context should be set during the layout process to allow
   // layout callbacks to access context-data specific to the layout pass.

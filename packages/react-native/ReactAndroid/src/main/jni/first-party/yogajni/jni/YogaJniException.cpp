@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "YogaJniException.h"
 #include <stdexcept>
 #include <string>
-#include "YogaJniException.h"
 #include "common.h"
 
 namespace facebook::yoga::vanillajni {

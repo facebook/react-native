@@ -13,17 +13,21 @@
 namespace facebook::yoga {
 
 struct FloatOptional {
-private:
+ private:
   float value_ = std::numeric_limits<float>::quiet_NaN();
 
-public:
+ public:
   explicit constexpr FloatOptional(float value) : value_(value) {}
   constexpr FloatOptional() = default;
 
   // returns the wrapped value, or a value x with YGIsUndefined(x) == true
-  constexpr float unwrap() const { return value_; }
+  constexpr float unwrap() const {
+    return value_;
+  }
 
-  bool isUndefined() const { return std::isnan(value_); }
+  bool isUndefined() const {
+    return std::isnan(value_);
+  }
 };
 
 // operators take FloatOptional by value, as it is a 32bit value

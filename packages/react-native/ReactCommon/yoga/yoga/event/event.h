@@ -9,10 +9,10 @@
 
 #include <yoga/Yoga.h>
 
+#include <stdint.h>
+#include <array>
 #include <functional>
 #include <vector>
-#include <array>
-#include <stdint.h>
 
 namespace facebook::yoga {
 
@@ -70,7 +70,7 @@ struct YG_EXPORT Event {
   class Data {
     const void* data_;
 
-  public:
+   public:
     template <Type E>
     Data(const TypedData<E>& data) : data_{&data} {}
 
@@ -89,7 +89,7 @@ struct YG_EXPORT Event {
     publish(node, E, Data{eventData});
   }
 
-private:
+ private:
   static void publish(YGNodeConstRef, Type, const Data&);
 };
 

@@ -75,7 +75,7 @@ inline bool inexactEquals(const YGValue& a, const YGValue& b) {
 }
 
 inline bool inexactEquals(CompactValue a, CompactValue b) {
-  return inexactEquals((YGValue) a, (YGValue) b);
+  return inexactEquals((YGValue)a, (YGValue)b);
 }
 
 template <std::size_t Size, typename ElementT>

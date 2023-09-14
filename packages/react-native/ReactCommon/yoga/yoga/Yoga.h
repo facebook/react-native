@@ -71,10 +71,8 @@ YG_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, size_t index);
 YG_EXPORT YGNodeRef YGNodeGetOwner(YGNodeRef node);
 YG_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
 YG_EXPORT size_t YGNodeGetChildCount(YGNodeConstRef node);
-YG_EXPORT void YGNodeSetChildren(
-    YGNodeRef owner,
-    const YGNodeRef* children,
-    size_t count);
+YG_EXPORT void
+YGNodeSetChildren(YGNodeRef owner, const YGNodeRef* children, size_t count);
 
 YG_EXPORT void YGNodeSetIsReferenceBaseline(
     YGNodeRef node,
@@ -197,41 +195,29 @@ YG_EXPORT void YGNodeStyleSetFlexBasisPercent(YGNodeRef node, float flexBasis);
 YG_EXPORT void YGNodeStyleSetFlexBasisAuto(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetFlexBasis(YGNodeConstRef node);
 
-YG_EXPORT void YGNodeStyleSetPosition(
-    YGNodeRef node,
-    YGEdge edge,
-    float position);
-YG_EXPORT void YGNodeStyleSetPositionPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float position);
+YG_EXPORT void
+YGNodeStyleSetPosition(YGNodeRef node, YGEdge edge, float position);
+YG_EXPORT void
+YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float position);
 YG_EXPORT YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge);
 
 YG_EXPORT void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float margin);
-YG_EXPORT void YGNodeStyleSetMarginPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float margin);
+YG_EXPORT void
+YGNodeStyleSetMarginPercent(YGNodeRef node, YGEdge edge, float margin);
 YG_EXPORT void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge);
 YG_EXPORT YGValue YGNodeStyleGetMargin(YGNodeConstRef node, YGEdge edge);
 
-YG_EXPORT void YGNodeStyleSetPadding(
-    YGNodeRef node,
-    YGEdge edge,
-    float padding);
-YG_EXPORT void YGNodeStyleSetPaddingPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float padding);
+YG_EXPORT void
+YGNodeStyleSetPadding(YGNodeRef node, YGEdge edge, float padding);
+YG_EXPORT void
+YGNodeStyleSetPaddingPercent(YGNodeRef node, YGEdge edge, float padding);
 YG_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge);
 
 YG_EXPORT void YGNodeStyleSetBorder(YGNodeRef node, YGEdge edge, float border);
 YG_EXPORT float YGNodeStyleGetBorder(YGNodeConstRef node, YGEdge edge);
 
-YG_EXPORT void YGNodeStyleSetGap(
-    YGNodeRef node,
-    YGGutter gutter,
-    float gapLength);
+YG_EXPORT void
+YGNodeStyleSetGap(YGNodeRef node, YGGutter gutter, float gapLength);
 YG_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
 
 YG_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);

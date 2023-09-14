@@ -2603,7 +2603,6 @@ bool calculateLayoutInternal(
     layout->lastOwnerDirection = ownerDirection;
 
     if (cachedResults == nullptr) {
-
       layoutMarkerData.maxMeasureCache = std::max(
           layoutMarkerData.maxMeasureCache,
           layout->nextCachedMeasurementsIndex + 1u);
@@ -2741,7 +2740,7 @@ void calculateLayout(
     if (node->getConfig()->shouldPrintTree()) {
       YGNodePrint(
           node,
-          (YGPrintOptions) (YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle));
+          (YGPrintOptions)(YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle));
     }
 #endif
   }

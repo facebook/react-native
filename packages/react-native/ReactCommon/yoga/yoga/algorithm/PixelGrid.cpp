@@ -59,7 +59,7 @@ float roundValueToPixelGrid(
   }
   return (std::isnan(scaledValue) || std::isnan(pointScaleFactor))
       ? YGUndefined
-      : (float) (scaledValue / pointScaleFactor);
+      : (float)(scaledValue / pointScaleFactor);
 }
 
 void roundLayoutResultsToPixelGrid(
