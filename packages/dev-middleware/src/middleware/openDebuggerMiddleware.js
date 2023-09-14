@@ -11,6 +11,7 @@
 
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
+import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
@@ -19,7 +20,6 @@ import type {Logger} from '../types/Logger';
 import url from 'url';
 import getDevServerUrl from '../utils/getDevServerUrl';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
-import queryInspectorTargets from '../utils/queryInspectorTargets';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
@@ -28,6 +28,7 @@ type Options = $ReadOnly<{
   logger?: Logger,
   eventReporter?: EventReporter,
   experiments: Experiments,
+  inspectorProxy: InspectorProxyQueries,
 }>;
 
 /**
@@ -42,6 +43,7 @@ export default function openDebuggerMiddleware({
   browserLauncher,
   eventReporter,
   experiments,
+  inspectorProxy,
   logger,
 }: Options): NextHandleFunction {
   return async (
@@ -53,9 +55,15 @@ export default function openDebuggerMiddleware({
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
-      const targets = await queryInspectorTargets(
-        getDevServerUrl(req, 'local'),
-      );
+      const targets = inspectorProxy
+        .getPageDescriptions({
+          wsPublicBaseUrl: getDevServerUrl(req, 'public', 'ws'),
+        })
+        .filter(
+          // Only use targets with better reloading support
+          app =>
+            app.title === 'React Native Experimental (Improved Chrome Reloads)',
+        );
       let target;
 
       if (typeof appId === 'string') {
