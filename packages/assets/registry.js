@@ -10,4 +10,4 @@
 
 'use strict';
 
-module.exports = require('./dist/registry');
+module.exports = require('./src/registry');

@@ -10,4 +10,4 @@
 
 'use strict';
 
-module.exports = require('./dist/path-support');
+module.exports = require('./src/path-support');
