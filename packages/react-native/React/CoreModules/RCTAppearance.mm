@@ -51,15 +51,10 @@ static UITraitCollection *getKeyWindowTraitCollection()
 static UITraitCollection *getKeyWindowTraitCollection()
 {
   __block UITraitCollection *traitCollection = nil;
-  if (RCTIsMainQueue()) {
-    return RCTSharedApplication().delegate.window.traitCollection;
-  } else {
-    __block UITraitCollection* traitCollection = nil;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      traitCollection = RCTSharedApplication().delegate.window.traitCollection;
-    });
-    return traitCollection;
-  }
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+  });
+  return traitCollection;
 }
 
 >>>>>>> 5715b1498ee (Make requesting the trait collection synchronous)
