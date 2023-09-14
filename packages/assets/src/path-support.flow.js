@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow strict
  */
 
-import type {PackagerAsset} from './registry.js';
+import type {PackagerAsset} from './registry.flow.js';
 
 const androidScaleSuffix = {
   '0.75': 'ldpi',

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -13,7 +13,7 @@
 export type * from './path-support.flow';
 */
 
-if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
+if (process.env.BUILD_EXCLUDE_BABEL_REGISTER != null) {
   require('../../../scripts/build/babel-register').registerForMonorepo();
 }
 

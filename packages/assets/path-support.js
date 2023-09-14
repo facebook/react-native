@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format strict
  * @flow
- * @format
  */
 
 'use strict';
 
-module.exports = require('./src/registry');
+module.exports = require('./src/path-support');
