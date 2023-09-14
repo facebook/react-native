@@ -34,10 +34,18 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 
 const INTERNAL_ERROR_CODE = 1011;
 
+export interface InspectorProxyQueries {
+  getPageDescriptions(
+    options: $ReadOnly<{
+      wsPublicBaseUrl: string,
+    }>,
+  ): Array<PageDescription>;
+}
+
 /**
  * Main Inspector Proxy class that connects JavaScript VM inside Android/iOS apps and JS debugger.
  */
-export default class InspectorProxy {
+export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
   _projectRoot: string;
 
@@ -62,6 +70,25 @@ export default class InspectorProxy {
     this._experiments = experiments;
   }
 
+  getPageDescriptions({
+    wsPublicBaseUrl,
+  }: $ReadOnly<{
+    wsPublicBaseUrl: string,
+  }>): Array<PageDescription> {
+    // Build list of pages from all devices.
+    let result: Array<PageDescription> = [];
+    Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
+      result = result.concat(
+        device
+          .getPagesList()
+          .map((page: Page) =>
+            this._buildPageDescription(deviceId, device, page, wsPublicBaseUrl),
+          ),
+      );
+    });
+    return result;
+  }
+
   // Process HTTP request sent to server. We only respond to 2 HTTP requests:
   // 1. /json/version returns Chrome debugger protocol version that we use
   // 2. /json and /json/list returns list of page descriptions (list of inspectable apps).
@@ -76,24 +103,13 @@ export default class InspectorProxy {
       request.url === PAGES_LIST_JSON_URL_2
     ) {
       const wsPublicBaseUrl = getDevServerUrl(request, 'public', 'ws');
-      // Build list of pages from all devices.
-      let result: Array<PageDescription> = [];
-      Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
-        result = result.concat(
-          device
-            .getPagesList()
-            .map((page: Page) =>
-              this._buildPageDescription(
-                deviceId,
-                device,
-                page,
-                wsPublicBaseUrl,
-              ),
-            ),
-        );
-      });
 
-      this._sendJsonResponse(response, result);
+      this._sendJsonResponse(
+        response,
+        this.getPageDescriptions({
+          wsPublicBaseUrl,
+        }),
+      );
     } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
