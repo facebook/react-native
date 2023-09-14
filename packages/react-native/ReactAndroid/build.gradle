@@ -392,6 +392,11 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGtest)
 }
 
+task prepareKotlinBuildScriptModel {
+    // This task is run when Gradle Sync is running.
+    // We create it here so we can let it depend on preBuild inside the android{}
+}
+
 // As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
 // This is not the case for users of React Native, as we ship a compiled version of the codegen.
 final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
@@ -609,6 +614,10 @@ android {
             preparePrefab
     )
     generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
+    prepareKotlinBuildScriptModel.dependsOn(
+            preBuild,
+            ":packages:react-native:ReactAndroid:hermes-engine:preBuild",
+    )
 
     sourceSets.main {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
