@@ -44,7 +44,6 @@ bool calculateLayoutInternal(
     const float ownerHeight,
     const bool performLayout,
     const LayoutPassReason reason,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount);
@@ -131,7 +130,6 @@ static void computeFlexBasisForChild(
     const float ownerHeight,
     const YGMeasureMode heightMode,
     const YGDirection direction,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -305,7 +303,6 @@ static void computeFlexBasisForChild(
         ownerHeight,
         false,
         LayoutPassReason::kMeasureChild,
-        config,
         layoutMarkerData,
         depth,
         generationCount);
@@ -324,7 +321,6 @@ static void layoutAbsoluteChild(
     const YGMeasureMode widthMode,
     const float height,
     const YGDirection direction,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -431,7 +427,6 @@ static void layoutAbsoluteChild(
         childHeight,
         false,
         LayoutPassReason::kAbsMeasureChild,
-        config,
         layoutMarkerData,
         depth,
         generationCount);
@@ -452,7 +447,6 @@ static void layoutAbsoluteChild(
       childHeight,
       true,
       LayoutPassReason::kAbsLayout,
-      config,
       layoutMarkerData,
       depth,
       generationCount);
@@ -778,7 +772,6 @@ static float computeFlexBasisForChildren(
     YGMeasureMode heightMeasureMode,
     YGDirection direction,
     YGFlexDirection mainAxis,
-    const yoga::Config* const config,
     bool performLayout,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
@@ -844,7 +837,6 @@ static float computeFlexBasisForChildren(
           availableInnerHeight,
           heightMeasureMode,
           direction,
-          config,
           layoutMarkerData,
           depth,
           generationCount);
@@ -876,7 +868,6 @@ static float distributeFreeSpaceSecondPass(
     const bool mainAxisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -1040,7 +1031,6 @@ static float distributeFreeSpaceSecondPass(
         isLayoutPass,
         isLayoutPass ? LayoutPassReason::kFlexLayout
                      : LayoutPassReason::kFlexMeasure,
-        config,
         layoutMarkerData,
         depth,
         generationCount);
@@ -1172,7 +1162,6 @@ static void resolveFlexibleLength(
     const bool mainAxisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -1199,7 +1188,6 @@ static void resolveFlexibleLength(
       mainAxisOverflows,
       measureModeCrossDim,
       performLayout,
-      config,
       layoutMarkerData,
       depth,
       generationCount);
@@ -1496,7 +1484,6 @@ static void calculateLayoutImpl(
     const float ownerWidth,
     const float ownerHeight,
     const bool performLayout,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount,
@@ -1673,7 +1660,6 @@ static void calculateLayoutImpl(
       heightMeasureMode,
       direction,
       mainAxis,
-      config,
       performLayout,
       layoutMarkerData,
       depth,
@@ -1812,7 +1798,6 @@ static void calculateLayoutImpl(
           mainAxisOverflows,
           measureModeCrossDim,
           performLayout,
-          config,
           layoutMarkerData,
           depth,
           generationCount);
@@ -1987,7 +1972,6 @@ static void calculateLayoutImpl(
                   availableInnerHeight,
                   true,
                   LayoutPassReason::kStretch,
-                  config,
                   layoutMarkerData,
                   depth,
                   generationCount);
@@ -2204,7 +2188,6 @@ static void calculateLayoutImpl(
                         availableInnerHeight,
                         true,
                         LayoutPassReason::kMultilineStretch,
-                        config,
                         layoutMarkerData,
                         depth,
                         generationCount);
@@ -2340,7 +2323,7 @@ static void calculateLayoutImpl(
         continue;
       }
       const bool absolutePercentageAgainstPaddingEdge =
-          config->isExperimentalFeatureEnabled(
+          node->getConfig()->isExperimentalFeatureEnabled(
               YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge);
 
       layoutAbsoluteChild(
@@ -2354,7 +2337,6 @@ static void calculateLayoutImpl(
               ? node->getLayout().measuredDimensions[YGDimensionHeight]
               : availableInnerHeight,
           direction,
-          config,
           layoutMarkerData,
           depth,
           generationCount);
@@ -2434,7 +2416,6 @@ bool calculateLayoutInternal(
     const float ownerHeight,
     const bool performLayout,
     const LayoutPassReason reason,
-    const yoga::Config* const config,
     LayoutData& layoutMarkerData,
     uint32_t depth,
     const uint32_t generationCount) {
@@ -2594,7 +2575,6 @@ bool calculateLayoutInternal(
         ownerWidth,
         ownerHeight,
         performLayout,
-        config,
         layoutMarkerData,
         depth,
         generationCount,
@@ -2750,7 +2730,6 @@ void calculateLayout(
           ownerHeight,
           true,
           LayoutPassReason::kInitial,
-          node->getConfig(),
           markerData,
           0, // tree root
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
