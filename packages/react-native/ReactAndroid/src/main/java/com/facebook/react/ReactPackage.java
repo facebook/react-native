@@ -12,6 +12,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
@@ -56,6 +57,7 @@ public interface ReactPackage {
    * @param reactContext {@link ReactApplicationContext} context for this
    */
   @Nullable
+  @UnstableReactNativeAPI
   default NativeModule getModule(
       @NonNull String name, @NonNull ReactApplicationContext reactContext) {
     return null;
