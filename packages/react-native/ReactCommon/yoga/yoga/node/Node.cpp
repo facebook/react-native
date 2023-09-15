@@ -227,7 +227,7 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
   if (measureFunc == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeDefault);
+    setNodeType(NodeType::Default);
   } else {
     yoga::assertFatalWithNode(
         this,
@@ -236,7 +236,7 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
         "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeText);
+    setNodeType(NodeType::Text);
   }
 
   measureFunc_ = measureFunc;
