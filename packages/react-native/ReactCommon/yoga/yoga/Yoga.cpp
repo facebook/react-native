@@ -905,13 +905,13 @@ bool YGNodeCanUseCachedMeasurement(
     float marginColumn,
     YGConfigRef config) {
   return yoga::canUseCachedMeasurement(
-      widthMode,
+      scopedEnum(widthMode),
       availableWidth,
-      heightMode,
+      scopedEnum(heightMode),
       availableHeight,
-      lastWidthMode,
+      scopedEnum(lastWidthMode),
       lastAvailableWidth,
-      lastHeightMode,
+      scopedEnum(lastHeightMode),
       lastAvailableHeight,
       lastComputedWidth,
       lastComputedHeight,

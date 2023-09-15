@@ -15,6 +15,7 @@
 
 #include <yoga/config/Config.h>
 #include <yoga/enums/Errata.h>
+#include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
@@ -102,7 +103,7 @@ class YG_EXPORT Node : public ::YGNode {
     return measureFunc_ != nullptr;
   }
 
-  YGSize measure(float, YGMeasureMode, float, YGMeasureMode);
+  YGSize measure(float, MeasureMode, float, MeasureMode);
 
   bool hasBaselineFunc() const noexcept {
     return baselineFunc_ != nullptr;
