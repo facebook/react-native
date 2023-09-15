@@ -18,18 +18,18 @@ namespace {
 void vlog(
     const yoga::Config* config,
     const yoga::Node* node,
-    YGLogLevel level,
+    LogLevel level,
     const char* format,
     va_list args) {
   if (config == nullptr) {
-    getDefaultLogger()(nullptr, node, level, format, args);
+    getDefaultLogger()(nullptr, node, unscopedEnum(level), format, args);
   } else {
     config->log(node, level, format, args);
   }
 }
 } // namespace
 
-void log(YGLogLevel level, const char* format, ...) noexcept {
+void log(LogLevel level, const char* format, ...) noexcept {
   va_list args;
   va_start(args, format);
   vlog(nullptr, nullptr, level, format, args);
@@ -38,7 +38,7 @@ void log(YGLogLevel level, const char* format, ...) noexcept {
 
 void log(
     const yoga::Node* node,
-    YGLogLevel level,
+    LogLevel level,
     const char* format,
     ...) noexcept {
   va_list args;
@@ -50,7 +50,7 @@ void log(
 
 void log(
     const yoga::Config* config,
-    YGLogLevel level,
+    LogLevel level,
     const char* format,
     ...) noexcept {
   va_list args;
