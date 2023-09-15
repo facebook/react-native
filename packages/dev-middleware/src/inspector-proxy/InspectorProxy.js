@@ -22,7 +22,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 import url from 'url';
 import WS from 'ws';
 import Device from './Device';
-import getDevServerUrl from '../utils/getDevServerUrl';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -35,11 +34,7 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 const INTERNAL_ERROR_CODE = 1011;
 
 export interface InspectorProxyQueries {
-  getPageDescriptions(
-    options: $ReadOnly<{
-      wsPublicBaseUrl: string,
-    }>,
-  ): Array<PageDescription>;
+  getPageDescriptions(): Array<PageDescription>;
 }
 
 /**
@@ -48,6 +43,9 @@ export interface InspectorProxyQueries {
 export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
   _projectRoot: string;
+
+  /** The base URL to the dev server from the developer machine. */
+  _serverBaseUrl: string;
 
   // Maps device ID to Device instance.
   _devices: Map<string, Device>;
@@ -61,20 +59,18 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   constructor(
     projectRoot: string,
+    serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
   ) {
     this._projectRoot = projectRoot;
+    this._serverBaseUrl = serverBaseUrl;
     this._devices = new Map();
     this._eventReporter = eventReporter;
     this._experiments = experiments;
   }
 
-  getPageDescriptions({
-    wsPublicBaseUrl,
-  }: $ReadOnly<{
-    wsPublicBaseUrl: string,
-  }>): Array<PageDescription> {
+  getPageDescriptions(): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
     Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
@@ -82,7 +78,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         device
           .getPagesList()
           .map((page: Page) =>
-            this._buildPageDescription(deviceId, device, page, wsPublicBaseUrl),
+            this._buildPageDescription(deviceId, device, page),
           ),
       );
     });
@@ -102,14 +98,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       request.url === PAGES_LIST_JSON_URL ||
       request.url === PAGES_LIST_JSON_URL_2
     ) {
-      const wsPublicBaseUrl = getDevServerUrl(request, 'public', 'ws');
-
-      this._sendJsonResponse(
-        response,
-        this.getPageDescriptions({
-          wsPublicBaseUrl,
-        }),
-      );
+      this._sendJsonResponse(response, this.getPageDescriptions());
     } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
@@ -135,21 +124,18 @@ export default class InspectorProxy implements InspectorProxyQueries {
     deviceId: string,
     device: Device,
     page: Page,
-    wsServerBaseUrl: string,
   ): PageDescription {
-    const webSocketDebuggerUrl = `${wsServerBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
+    const {host, protocol} = new URL(this._serverBaseUrl);
+    const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
 
-    const isSecure = webSocketDebuggerUrl.startsWith('wss://');
-    const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
-      /^wss?:\/\//,
-      '',
-    );
-    const scheme = isSecure ? 'wss' : 'ws';
+    const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
+    const webSocketDebuggerUrl = `${webSocketScheme}://${webSocketUrlWithoutProtocol}`;
+
     // For now, `/json/list` returns the legacy built-in `devtools://` URL, to
     // preserve existing handling by Flipper. This may return a placeholder in
     // future -- please use the `/open-debugger` endpoint.
     const devtoolsFrontendUrl =
-      `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${scheme}=` +
+      `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${webSocketScheme}=` +
       encodeURIComponent(webSocketUrlWithoutProtocol);
 
     return {

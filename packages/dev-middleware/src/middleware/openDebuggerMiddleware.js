@@ -18,14 +18,14 @@ import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
 
 import url from 'url';
-import getDevServerUrl from '../utils/getDevServerUrl';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
-  browserLauncher: BrowserLauncher,
+  serverBaseUrl: string,
   logger?: Logger,
+  browserLauncher: BrowserLauncher,
   eventReporter?: EventReporter,
   experiments: Experiments,
   inspectorProxy: InspectorProxyQueries,
@@ -40,11 +40,12 @@ type Options = $ReadOnly<{
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
 export default function openDebuggerMiddleware({
+  serverBaseUrl,
+  logger,
   browserLauncher,
   eventReporter,
   experiments,
   inspectorProxy,
-  logger,
 }: Options): NextHandleFunction {
   return async (
     req: IncomingMessage,
@@ -58,15 +59,11 @@ export default function openDebuggerMiddleware({
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
-      const targets = inspectorProxy
-        .getPageDescriptions({
-          wsPublicBaseUrl: getDevServerUrl(req, 'public', 'ws'),
-        })
-        .filter(
-          // Only use targets with better reloading support
-          app =>
-            app.title === 'React Native Experimental (Improved Chrome Reloads)',
-        );
+      const targets = inspectorProxy.getPageDescriptions().filter(
+        // Only use targets with better reloading support
+        app =>
+          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+      );
       let target;
 
       const launchType: 'launch' | 'redirect' =
@@ -110,7 +107,7 @@ export default function openDebuggerMiddleware({
               await browserLauncher.launchDebuggerAppWindow(
                 getDevToolsFrontendUrl(
                   target.webSocketDebuggerUrl,
-                  getDevServerUrl(req, 'public'),
+                  serverBaseUrl,
                   experiments,
                 ),
               ),

@@ -114,6 +114,7 @@ async function runServer(
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
     projectRoot,
+    serverBaseUrl: devServerUrl,
     logger,
     unstable_experiments: {
       // NOTE: Only affects the /open-debugger endpoint
