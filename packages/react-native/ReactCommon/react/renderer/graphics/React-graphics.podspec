@@ -51,7 +51,8 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
                              "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-                             "DEFINES_MODULE" => "YES" }
+                             "DEFINES_MODULE" => "YES",
+                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version

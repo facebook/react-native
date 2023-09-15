@@ -31,4 +31,5 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "**/*.{cpp,h}"
   s.header_dir             = "reactperflogger"
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 end
