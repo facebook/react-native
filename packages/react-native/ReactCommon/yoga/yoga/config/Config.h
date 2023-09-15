@@ -10,6 +10,7 @@
 #include <bitset>
 
 #include <yoga/Yoga.h>
+#include <yoga/enums/Errata.h>
 #include <yoga/enums/ExperimentalFeature.h>
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
@@ -51,11 +52,11 @@ class YG_EXPORT Config : public ::YGConfig {
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) const;
   ExperimentalFeatureSet getEnabledExperiments() const;
 
-  void setErrata(YGErrata errata);
-  void addErrata(YGErrata errata);
-  void removeErrata(YGErrata errata);
-  YGErrata getErrata() const;
-  bool hasErrata(YGErrata errata) const;
+  void setErrata(Errata errata);
+  void addErrata(Errata errata);
+  void removeErrata(Errata errata);
+  Errata getErrata() const;
+  bool hasErrata(Errata errata) const;
 
   void setPointScaleFactor(float pointScaleFactor);
   float getPointScaleFactor() const;
@@ -82,7 +83,7 @@ class YG_EXPORT Config : public ::YGConfig {
 
   ConfigFlags flags_{};
   ExperimentalFeatureSet experimentalFeatures_{};
-  YGErrata errata_ = YGErrataNone;
+  Errata errata_ = Errata::None;
   float pointScaleFactor_ = 1.0f;
   void* context_ = nullptr;
 };

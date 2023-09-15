@@ -54,24 +54,24 @@ ExperimentalFeatureSet Config::getEnabledExperiments() const {
   return experimentalFeatures_;
 }
 
-void Config::setErrata(YGErrata errata) {
+void Config::setErrata(Errata errata) {
   errata_ = errata;
 }
 
-void Config::addErrata(YGErrata errata) {
+void Config::addErrata(Errata errata) {
   errata_ |= errata;
 }
 
-void Config::removeErrata(YGErrata errata) {
+void Config::removeErrata(Errata errata) {
   errata_ &= (~errata);
 }
 
-YGErrata Config::getErrata() const {
+Errata Config::getErrata() const {
   return errata_;
 }
 
-bool Config::hasErrata(YGErrata errata) const {
-  return (errata_ & errata) != YGErrataNone;
+bool Config::hasErrata(Errata errata) const {
+  return (errata_ & errata) != Errata::None;
 }
 
 void Config::setPointScaleFactor(float pointScaleFactor) {
