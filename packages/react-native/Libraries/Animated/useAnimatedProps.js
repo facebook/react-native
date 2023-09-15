@@ -137,6 +137,14 @@ function reduceAnimatedProps<TProps>(
 function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
+  const hasMountedRef = useRef<boolean>(false);
+  const hasInitiallyAttached = useRef<boolean>(false);
+
+  // Attach animated node instantly, avoiding issues with native animations
+  if (!hasMountedRef.current) {
+    hasMountedRef.current = true;
+    node.__attach();
+  }
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
@@ -153,13 +161,18 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   }, []);
 
   useLayoutEffect(() => {
-    node.__attach();
-    if (prevNodeRef.current != null) {
-      const prevNode = prevNodeRef.current;
-      // TODO: Stop restoring default values (unless `reset` is called).
-      prevNode.__restoreDefaultValues();
-      prevNode.__detach();
-      prevNodeRef.current = null;
+    // This helps us avoid attaching the animated node twice before first render.
+    if (!hasInitiallyAttached.current && hasMountedRef.current) {
+      hasInitiallyAttached.current = true;
+    } else {
+      node.__attach();
+      if (prevNodeRef.current != null) {
+        const prevNode = prevNodeRef.current;
+        // TODO: Stop restoring default values (unless `reset` is called).
+        prevNode.__restoreDefaultValues();
+        prevNode.__detach();
+        prevNodeRef.current = null;
+      }
     }
     return () => {
       if (isUnmountingRef.current) {
