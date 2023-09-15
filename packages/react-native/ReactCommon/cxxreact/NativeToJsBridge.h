@@ -127,7 +127,7 @@ class NativeToJsBridge {
   bool m_applicationScriptHasFailure = false;
 
 #ifdef WITH_FBSYSTRACE
-  std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT(0);
+  std::atomic<uint_least32_t> m_systraceCookie{0};
 #endif
 };
 

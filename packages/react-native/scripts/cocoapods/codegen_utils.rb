@@ -69,18 +69,19 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: '2022.05.16.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
-        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
         boost_compiler_flags = '-Wno-documentation'
 
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
           "\"$(PODS_ROOT)/DoubleConversion\"",
+          "\"$(PODS_ROOT)/fmt/include\"",
           "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
@@ -91,6 +92,7 @@ class CodegenUtils
         if use_frameworks
           header_search_paths.concat([
             "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/fmt/include\"",
             "\"$(PODS_TARGET_SRCROOT)\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
@@ -114,7 +116,7 @@ class CodegenUtils
           'homepage' => 'https://facebook.com/',
           'license' => 'Unlicense',
           'authors' => 'Facebook',
-          'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++17",
+          'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness -std=c++20",
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => min_supported_versions,
@@ -288,7 +290,7 @@ class CodegenUtils
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
-      folly_version: '2021.07.22.00',
+      folly_version: '2022.05.16.00',
       codegen_utils: CodegenUtils.new(),
       file_manager: File
       )

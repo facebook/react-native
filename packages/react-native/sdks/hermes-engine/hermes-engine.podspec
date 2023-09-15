@@ -30,7 +30,7 @@ Pod::Spec.new do |spec|
   spec.source_files        = ''
 
   spec.pod_target_xcconfig = {
-                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }
 

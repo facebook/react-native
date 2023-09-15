@@ -6,13 +6,13 @@
 require 'json'
 
 class NewArchitectureHelper
-    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
+    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1"
 
     @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
 
     @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
-    @@cplusplus_version = "c++17"
+    @@cplusplus_version = "c++20"
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
@@ -105,6 +105,7 @@ class NewArchitectureHelper
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
@@ -127,7 +128,7 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2021.07.22.00'
+        spec.dependency "RCT-Folly", '2022.05.16.00'
         spec.dependency "glog"
 
         if new_arch_enabled
