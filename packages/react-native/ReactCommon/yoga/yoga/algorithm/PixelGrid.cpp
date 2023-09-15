@@ -83,7 +83,7 @@ void roundLayoutResultsToPixelGrid(
   if (pointScaleFactor != 0.0f) {
     // If a node has a custom measure function we never want to round down its
     // size as this could lead to unwanted text truncation.
-    const bool textRounding = node->getNodeType() == YGNodeTypeText;
+    const bool textRounding = node->getNodeType() == NodeType::Text;
 
     node->setLayoutPosition(
         roundValueToPixelGrid(nodeLeft, pointScaleFactor, false, textRounding),
