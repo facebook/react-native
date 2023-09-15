@@ -36,28 +36,6 @@ NSString *RCTCurrentOverrideAppearancePreference()
   return sColorSchemeOverride;
 }
 
-<<<<<<< HEAD
-||||||| parent of 5715b1498ee (Make requesting the trait collection synchronous)
-static UITraitCollection *getKeyWindowTraitCollection()
-{
-  __block UITraitCollection *traitCollection = nil;
-  RCTExecuteOnMainQueue(^{
-    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
-  });
-  return traitCollection;
-}
-
-=======
-static UITraitCollection *getKeyWindowTraitCollection()
-{
-  __block UITraitCollection *traitCollection = nil;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
-  });
-  return traitCollection;
-}
-
->>>>>>> 5715b1498ee (Make requesting the trait collection synchronous)
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
   static NSDictionary *appearances;
@@ -79,7 +57,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
   return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 
@@ -88,6 +65,19 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 
 @implementation RCTAppearance {
   NSString *_currentColorScheme;
+}
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appearanceChanged:)
+                                                 name:RCTUserInterfaceStyleDidChangeNotification
+                                               object:nil];
+  }
+  return self;
 }
 
 RCT_EXPORT_MODULE(Appearance)
@@ -119,9 +109,6 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  if (_currentColorScheme == nil) {
-    _currentColorScheme = RCTColorSchemePreference(nil);
-  }
   return _currentColorScheme;
 }
 
@@ -148,10 +135,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(appearanceChanged:)
-                                               name:RCTUserInterfaceStyleDidChangeNotification
-                                             object:nil];
+  
 }
 
 - (void)stopObserving
