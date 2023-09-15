@@ -21,6 +21,8 @@ enum class PrintOptions : uint32_t {
   Children = YGPrintOptionsChildren,
 };
 
+YG_DEFINE_ENUM_FLAG_OPERATORS(PrintOptions)
+
 template <>
 constexpr inline int32_t ordinalCount<PrintOptions>() {
   return 3;
