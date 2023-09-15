@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <bitset>
+
 #include <yoga/Yoga.h>
-#include <yoga/bits/EnumBitset.h>
+#include <yoga/enums/ExperimentalFeature.h>
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
 struct YGConfig {};
@@ -17,6 +19,8 @@ namespace facebook::yoga {
 
 class Config;
 class Node;
+
+using ExperimentalFeatureSet = std::bitset<ordinalCount<ExperimentalFeature>()>;
 
 // Whether moving a node from an old to new config should dirty previously
 // calculated layout results.
@@ -43,11 +47,9 @@ class YG_EXPORT Config : public ::YGConfig {
   void setShouldPrintTree(bool printTree);
   bool shouldPrintTree() const;
 
-  void setExperimentalFeatureEnabled(
-      YGExperimentalFeature feature,
-      bool enabled);
-  bool isExperimentalFeatureEnabled(YGExperimentalFeature feature) const;
-  EnumBitset<YGExperimentalFeature> getEnabledExperiments() const;
+  void setExperimentalFeatureEnabled(ExperimentalFeature feature, bool enabled);
+  bool isExperimentalFeatureEnabled(ExperimentalFeature feature) const;
+  ExperimentalFeatureSet getEnabledExperiments() const;
 
   void setErrata(YGErrata errata);
   void addErrata(YGErrata errata);
@@ -79,7 +81,7 @@ class YG_EXPORT Config : public ::YGConfig {
   YGLogger logger_;
 
   ConfigFlags flags_{};
-  EnumBitset<YGExperimentalFeature> experimentalFeatures_{};
+  ExperimentalFeatureSet experimentalFeatures_{};
   YGErrata errata_ = YGErrataNone;
   float pointScaleFactor_ = 1.0f;
   void* context_ = nullptr;
