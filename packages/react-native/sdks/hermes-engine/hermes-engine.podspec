@@ -30,7 +30,7 @@ Pod::Spec.new do |spec|
   spec.source_files        = ''
 
   spec.pod_target_xcconfig = {
-                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }
 
@@ -71,6 +71,18 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
       ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'inspector' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/*.h'
+      ss.header_dir = 'hermes/inspector'
+    end
+
+    spec.subspec 'inspector_chrome' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+      ss.header_dir = 'hermes/inspector/chrome'
     end
 
     spec.subspec 'Public' do |ss|

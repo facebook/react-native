@@ -26,7 +26,7 @@ struct CallableModule {
 
 class ReactInstance final {
  public:
-  using BindingsInstallFunc = std::function<void(jsi::Runtime &runtime)>;
+  using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
 
   ReactInstance(
       std::unique_ptr<jsi::Runtime> runtime,
@@ -51,14 +51,14 @@ class ReactInstance final {
 
   void loadScript(
       std::unique_ptr<const JSBigString> script,
-      const std::string &sourceURL);
+      const std::string& sourceURL);
 
-  void registerSegment(uint32_t segmentId, const std::string &segmentPath);
+  void registerSegment(uint32_t segmentId, const std::string& segmentPath);
 
   void callFunctionOnModule(
-      const std::string &moduleName,
-      const std::string &methodName,
-      const folly::dynamic &args);
+      const std::string& moduleName,
+      const std::string& methodName,
+      const folly::dynamic& args);
 
   void handleMemoryPressureJs(int pressureLevel);
 

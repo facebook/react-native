@@ -26,15 +26,15 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
  public:
   TextInputProps() = default;
   TextInputProps(
-      const PropsParserContext &context,
-      const TextInputProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const TextInputProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 

@@ -31,10 +31,9 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
   Props() = default;
   Props(
-      const PropsParserContext &context,
-      const Props &sourceProps,
-      const RawProps &rawProps,
-      bool shouldSetRawProps = true);
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
   virtual ~Props() = default;
 
   /**
@@ -48,10 +47,10 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
    * ViewProps uses "propX", Props may also use "propX".
    */
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
   std::string nativeId;
 
@@ -59,9 +58,16 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   folly::dynamic rawProps = folly::dynamic::object();
 
   virtual void propsDiffMapBuffer(
-      const Props *oldProps,
-      MapBufferBuilder &builder) const;
+      const Props* oldProps,
+      MapBufferBuilder& builder) const;
 #endif
+
+ protected:
+  /** Initialize member variables of Props instance */
+  void initialize(
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react

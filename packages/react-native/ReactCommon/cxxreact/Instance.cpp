@@ -110,7 +110,7 @@ void Instance::loadScriptFromString(
 
 void Instance::loadRAMBundleFromString(
     std::unique_ptr<const JSBigString> script,
-    const std::string &sourceURL) {
+    const std::string& sourceURL) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
   auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
@@ -118,8 +118,8 @@ void Instance::loadRAMBundleFromString(
 }
 
 void Instance::loadRAMBundleFromFile(
-    const std::string &sourcePath,
-    const std::string &sourceURL,
+    const std::string& sourcePath,
+    const std::string& sourceURL,
     bool loadSynchronously) {
   auto bundle = std::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
   auto startupScript = bundle->getStartupCode();
@@ -157,7 +157,7 @@ void Instance::setGlobalVariable(
       std::move(propName), std::move(jsonValue));
 }
 
-void *Instance::getJavaScriptContext() {
+void* Instance::getJavaScriptContext() {
   return nativeToJsBridge_ ? nativeToJsBridge_->getJavaScriptContext()
                            : nullptr;
 }
@@ -171,15 +171,15 @@ bool Instance::isBatchActive() {
 }
 
 void Instance::callJSFunction(
-    std::string &&module,
-    std::string &&method,
-    folly::dynamic &&params) {
+    std::string&& module,
+    std::string&& method,
+    folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->callFunction(
       std::move(module), std::move(method), std::move(params));
 }
 
-void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
+void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
@@ -187,15 +187,15 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
 
 void Instance::registerBundle(
     uint32_t bundleId,
-    const std::string &bundlePath) {
+    const std::string& bundlePath) {
   nativeToJsBridge_->registerBundle(bundleId, bundlePath);
 }
 
-const ModuleRegistry &Instance::getModuleRegistry() const {
+const ModuleRegistry& Instance::getModuleRegistry() const {
   return *moduleRegistry_;
 }
 
-ModuleRegistry &Instance::getModuleRegistry() {
+ModuleRegistry& Instance::getModuleRegistry() {
   return *moduleRegistry_;
 }
 
@@ -220,18 +220,18 @@ RuntimeExecutor Instance::getRuntimeExecutor() {
 
   std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
   return [weakNativeToJsBridge](
-             std::function<void(jsi::Runtime & runtime)> &&callback) {
+             std::function<void(jsi::Runtime & runtime)>&& callback) {
     if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
       strongNativeToJsBridge->runOnExecutorQueue(
-          [callback = std::move(callback)](JSExecutor *executor) {
+          [callback = std::move(callback)](JSExecutor* executor) {
             // Assumes the underlying executor is a JSIExecutor
-            jsi::Runtime *runtime =
-                (jsi::Runtime *)executor->getJavaScriptContext();
+            jsi::Runtime* runtime =
+                (jsi::Runtime*)executor->getJavaScriptContext();
             try {
               react_native_assert(runtime != nullptr);
               callback(*runtime);
               executor->flush();
-            } catch (jsi::JSError &originalError) {
+            } catch (jsi::JSError& originalError) {
               handleJSError(*runtime, originalError, true);
             }
           });
@@ -258,13 +258,13 @@ void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
   }
 }
 
-void Instance::JSCallInvoker::invokeSync(std::function<void()> &&work) {
+void Instance::JSCallInvoker::invokeSync(std::function<void()>&& work) {
   // TODO: Replace JS Callinvoker with RuntimeExecutor.
   throw std::runtime_error(
       "Synchronous native -> JS calls are currently not supported.");
 }
 
-void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
+void Instance::JSCallInvoker::invokeAsync(std::function<void()>&& work) {
   std::scoped_lock guard(m_mutex);
 
   /**
@@ -289,10 +289,10 @@ void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
   scheduleAsync(std::move(work));
 }
 
-void Instance::JSCallInvoker::scheduleAsync(std::function<void()> &&work) {
+void Instance::JSCallInvoker::scheduleAsync(std::function<void()>&& work) {
   if (auto strongNativeToJsBridge = m_nativeToJsBridge.lock()) {
     strongNativeToJsBridge->runOnExecutorQueue(
-        [work = std::move(work)](JSExecutor *executor) {
+        [work = std::move(work)](JSExecutor* executor) {
           work();
           executor->flush();
         });

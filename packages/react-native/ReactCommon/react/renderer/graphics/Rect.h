@@ -24,11 +24,11 @@ struct Rect {
   Point origin{0, 0};
   Size size{0, 0};
 
-  bool operator==(const Rect &rhs) const noexcept {
+  bool operator==(const Rect& rhs) const noexcept {
     return std::tie(this->origin, this->size) == std::tie(rhs.origin, rhs.size);
   }
 
-  bool operator!=(const Rect &rhs) const noexcept {
+  bool operator!=(const Rect& rhs) const noexcept {
     return !(*this == rhs);
   }
 
@@ -54,7 +54,7 @@ struct Rect {
     return {getMidX(), getMidY()};
   }
 
-  void unionInPlace(const Rect &rect) noexcept {
+  void unionInPlace(const Rect& rect) noexcept {
     auto x1 = std::min(getMinX(), rect.getMinX());
     auto y1 = std::min(getMinY(), rect.getMinY());
     auto x2 = std::max(getMaxX(), rect.getMaxX());
@@ -69,7 +69,7 @@ struct Rect {
         point.y <= (origin.y + size.height);
   }
 
-  static Rect intersect(const Rect &rect1, const Rect &rect2) {
+  static Rect intersect(const Rect& rect1, const Rect& rect2) {
     Float x1 = std::max(rect1.origin.x, rect2.origin.x);
     Float y1 = std::max(rect1.origin.y, rect2.origin.y);
     Float x2 = std::min(
@@ -88,10 +88,10 @@ struct Rect {
   }
 
   static Rect boundingRect(
-      const Point &a,
-      const Point &b,
-      const Point &c,
-      const Point &d) noexcept {
+      const Point& a,
+      const Point& b,
+      const Point& c,
+      const Point& d) noexcept {
     auto leftTopPoint = a;
     auto rightBottomPoint = a;
 
@@ -124,7 +124,7 @@ namespace std {
 
 template <>
 struct hash<facebook::react::Rect> {
-  size_t operator()(const facebook::react::Rect &rect) const noexcept {
+  size_t operator()(const facebook::react::Rect& rect) const noexcept {
     return folly::hash::hash_combine(0, rect.origin, rect.size);
   }
 };

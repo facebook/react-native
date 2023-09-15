@@ -17,7 +17,7 @@ namespace facebook::react {
 
 Size AndroidProgressBarMeasurementsManager::measure(
     SurfaceId surfaceId,
-    const AndroidProgressBarProps &props,
+    const AndroidProgressBarProps& props,
     LayoutConstraints layoutConstraints) const {
   {
     std::scoped_lock lock(mutex_);
@@ -26,7 +26,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
     }
   }
 
-  const jni::global_ref<jobject> &fabricUIManager =
+  const jni::global_ref<jobject>& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure = facebook::jni::findClassStatic(

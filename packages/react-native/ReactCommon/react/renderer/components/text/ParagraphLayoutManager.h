@@ -24,13 +24,13 @@ namespace facebook::react {
 class ParagraphLayoutManager {
  public:
   TextMeasurement measure(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLines(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       Size size) const;
 
   void setTextLayoutManager(
@@ -85,8 +85,8 @@ class ParagraphLayoutManager {
    * needed.
    */
   bool shoudMeasureString(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 };
 } // namespace facebook::react

@@ -25,32 +25,32 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared &contextContainer);
+  TextLayoutManager(const ContextContainer::Shared& contextContainer);
 
   /*
    * Not copyable.
    */
-  TextLayoutManager(const TextLayoutManager &) = delete;
-  TextLayoutManager &operator=(const TextLayoutManager &) = delete;
+  TextLayoutManager(const TextLayoutManager&) = delete;
+  TextLayoutManager& operator=(const TextLayoutManager&) = delete;
 
   /*
    * Not movable.
    */
-  TextLayoutManager(TextLayoutManager &&) = delete;
-  TextLayoutManager &operator=(TextLayoutManager &&) = delete;
+  TextLayoutManager(TextLayoutManager&&) = delete;
+  TextLayoutManager& operator=(TextLayoutManager&&) = delete;
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      const AttributedStringBox &attributedStringBox,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedStringBox& attributedStringBox,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints,
       std::shared_ptr<void> /* hostTextStorage */) const;
 
   std::shared_ptr<void> getHostTextStorage(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /**
@@ -59,7 +59,7 @@ class TextLayoutManager {
    */
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
-      const ParagraphAttributes &paragraphAttributes,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /*
@@ -67,33 +67,33 @@ class TextLayoutManager {
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       Size size) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
-  void *getNativeTextLayoutManager() const;
+  void* getNativeTextLayoutManager() const;
 
  private:
   TextMeasurement doMeasure(
       AttributedString attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   TextMeasurement doMeasureMapBuffer(
       AttributedString attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLinesMapBuffer(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       Size size) const;
 
-  void *self_{};
+  void* self_{};
   ContextContainer::Shared contextContainer_;
   TextMeasureCache measureCache_;
 };

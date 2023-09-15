@@ -12,7 +12,7 @@
 namespace facebook::react {
 
 void SurfaceTelemetry::incorporate(
-    const TransactionTelemetry &telemetry,
+    const TransactionTelemetry& telemetry,
     int numberOfMutations) {
   layoutTime_ += telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime();
   textMeasureTime_ += telemetry.getTextMeasureTime();

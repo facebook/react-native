@@ -63,7 +63,7 @@ type Registry<TEventToArgsMap: {...}> = $ObjMap<
 export default class EventEmitter<TEventToArgsMap: {...}>
   implements IEventEmitter<TEventToArgsMap>
 {
-  _registry: Registry<TEventToArgsMap> = {};
+  #registry: Registry<TEventToArgsMap> = {};
 
   /**
    * Registers a listener that is called when the supplied event is emitted.
@@ -83,7 +83,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
       TEventToArgsMap,
       TEvent,
       TEventToArgsMap[TEvent],
-    >(this._registry, eventType);
+    >(this.#registry, eventType);
     const registration: Registration<TEventToArgsMap[TEvent]> = {
       context,
       listener,
@@ -107,7 +107,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     ...args: TEventToArgsMap[TEvent]
   ): void {
     const registrations: ?Set<Registration<TEventToArgsMap[TEvent]>> =
-      this._registry[eventType];
+      this.#registry[eventType];
     if (registrations != null) {
       for (const registration of [...registrations]) {
         registration.listener.apply(registration.context, args);
@@ -122,9 +122,9 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     eventType?: ?TEvent,
   ): void {
     if (eventType == null) {
-      this._registry = {};
+      this.#registry = {};
     } else {
-      delete this._registry[eventType];
+      delete this.#registry[eventType];
     }
   }
 
@@ -132,7 +132,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
    * Returns the number of registered listeners for the supplied event.
    */
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number {
-    const registrations: ?Set<Registration<mixed>> = this._registry[eventType];
+    const registrations: ?Set<Registration<mixed>> = this.#registry[eventType];
     return registrations == null ? 0 : registrations.size;
   }
 }

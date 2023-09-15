@@ -57,16 +57,16 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   void loadJSBundleFromAssets(
       jni::alias_ref<JAssetManager::javaobject> assetManager,
-      const std::string &assetURL);
+      const std::string& assetURL);
 
   void loadJSBundleFromFile(
-      const std::string &fileName,
-      const std::string &sourceURL);
+      const std::string& fileName,
+      const std::string& sourceURL);
 
   void callFunctionOnModule(
-      const std::string &moduleName,
-      const std::string &methodName,
-      NativeArray *args);
+      const std::string& moduleName,
+      const std::string& methodName,
+      NativeArray* args);
 
   jni::alias_ref<JRuntimeExecutor::javaobject>
   getUnbufferedRuntimeExecutor() noexcept;
@@ -74,7 +74,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
   getBufferedRuntimeExecutor() noexcept;
   jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler() noexcept;
 
-  void registerSegment(int segmentId, const std::string &segmentPath) noexcept;
+  void registerSegment(int segmentId, const std::string& segmentPath) noexcept;
 
   void handleMemoryPressureJs(jint level);
 

@@ -25,7 +25,7 @@ struct RectangleCorners {
   T bottomLeft{};
   T bottomRight{};
 
-  bool operator==(const RectangleCorners<T> &rhs) const noexcept {
+  bool operator==(const RectangleCorners<T>& rhs) const noexcept {
     return std::tie(
                this->topLeft,
                this->topRight,
@@ -34,7 +34,7 @@ struct RectangleCorners {
         std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
   }
 
-  bool operator!=(const RectangleCorners<T> &rhs) const noexcept {
+  bool operator!=(const RectangleCorners<T>& rhs) const noexcept {
     return !(*this == rhs);
   }
 
@@ -56,7 +56,7 @@ namespace std {
 template <typename T>
 struct hash<facebook::react::RectangleCorners<T>> {
   size_t operator()(
-      const facebook::react::RectangleCorners<T> &corners) const noexcept {
+      const facebook::react::RectangleCorners<T>& corners) const noexcept {
     return folly::hash::hash_combine(
         0,
         corners.topLeft,

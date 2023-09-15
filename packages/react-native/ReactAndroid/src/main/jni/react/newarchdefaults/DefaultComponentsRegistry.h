@@ -27,7 +27,7 @@ class DefaultComponentsRegistry
       std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
       registerComponentDescriptorsFromEntryPoint;
 
-  DefaultComponentsRegistry(ComponentFactory *delegate);
+  DefaultComponentsRegistry(ComponentFactory* delegate);
 
  private:
   friend HybridBase;
@@ -35,11 +35,11 @@ class DefaultComponentsRegistry
   static std::shared_ptr<const ComponentDescriptorProviderRegistry>
   sharedProviderRegistry();
 
-  const ComponentFactory *delegate_;
+  const ComponentFactory* delegate_;
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
-      ComponentFactory *delegate);
+      ComponentFactory* delegate);
 };
 
 } // namespace facebook::react

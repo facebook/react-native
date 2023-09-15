@@ -45,7 +45,7 @@ void UIConstantsProviderManager::registerNatives() {
 }
 
 void UIConstantsProviderManager::installJSIBindings() {
-  runtimeExecutor_([thizz = this](jsi::Runtime &runtime) {
+  runtimeExecutor_([thizz = this](jsi::Runtime& runtime) {
     auto uiConstantsProvider = [thizz, &runtime]() -> jsi::Value {
       static auto getConstants =
           jni::findClassStatic(

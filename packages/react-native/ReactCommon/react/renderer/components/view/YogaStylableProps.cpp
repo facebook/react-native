@@ -13,30 +13,147 @@
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
+#include <unordered_set>
 
 #include "conversions.h"
 
 namespace facebook::react {
 
+namespace {
+inline RawProps filterYogaProps(const RawProps& rawProps) {
+  const static std::unordered_set<std::string> yogaStylePropNames = {
+      {"direction",
+       "flexDirection",
+       "justifyContent",
+       "alignContent",
+       "alignItems",
+       "alignSelf",
+       "position",
+       "flexWrap",
+       "display",
+       "flex",
+       "flexGrow",
+       "flexShrink",
+       "flexBasis",
+       "margin",
+       "padding",
+       "rowGap",
+       "columnGap",
+       "gap",
+       // TODO: T163711275 also filter out width/height when SVG no longer read
+       // them from RawProps
+       "minWidth",
+       "maxWidth",
+       "minHeight",
+       "maxHeight",
+       "aspectRatio",
+
+       // edges
+       "left",
+       "right",
+       "top",
+       "bottom",
+       "start",
+       "end",
+
+       // variants of inset
+       "inset",
+       "insetStart",
+       "insetEnd",
+       "insetInline",
+       "insetInlineStart",
+       "insetInlineEnd",
+       "insetBlock",
+       "insetBlockEnd",
+       "insetBlockStart",
+       "insetVertical",
+       "insetHorizontal",
+       "insetTop",
+       "insetBottom",
+       "insetLeft",
+       "insetRight",
+
+       // variants of margin
+       "marginStart",
+       "marginEnd",
+       "marginInline",
+       "marginInlineStart",
+       "marginInlineEnd",
+       "marginBlock",
+       "marginBlockStart",
+       "marginBlockEnd",
+       "marginVertical",
+       "marginHorizontal",
+       "marginTop",
+       "marginBottom",
+       "marginLeft",
+       "marginRight",
+
+       // variants of padding
+       "paddingStart",
+       "paddingEnd",
+       "paddingInline",
+       "paddingInlineStart",
+       "paddingInlineEnd",
+       "paddingBlock",
+       "paddingBlockStart",
+       "paddingBlockEnd",
+       "paddingVertical",
+       "paddingHorizontal",
+       "paddingTop",
+       "paddingBottom",
+       "paddingLeft",
+       "paddingRight"}};
+
+  auto filteredRawProps = (folly::dynamic)rawProps;
+
+  auto it = filteredRawProps.items().begin();
+  while (it != filteredRawProps.items().end()) {
+    auto key = it->first.asString();
+    if (yogaStylePropNames.find(key) != yogaStylePropNames.end()) {
+      it = filteredRawProps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return RawProps(filteredRawProps);
+}
+} // namespace
+
 YogaStylableProps::YogaStylableProps(
-    const PropsParserContext &context,
-    const YogaStylableProps &sourceProps,
-    const RawProps &rawProps,
-    bool shouldSetRawProps)
-    : Props(context, sourceProps, rawProps, shouldSetRawProps),
-      yogaStyle(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.yogaStyle
-              : convertRawProp(context, rawProps, sourceProps.yogaStyle)) {
-  if (!CoreFeatures::enablePropIteratorSetter) {
-    convertRawPropAliases(context, sourceProps, rawProps);
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps)
+    : Props() {
+  if (CoreFeatures::excludeYogaFromRawProps) {
+    const auto filteredRawProps = filterYogaProps(rawProps);
+    initialize(context, sourceProps, filteredRawProps);
+
+    yogaStyle = CoreFeatures::enablePropIteratorSetter
+        ? sourceProps.yogaStyle
+        : convertRawProp(context, filteredRawProps, sourceProps.yogaStyle);
+
+    if (!CoreFeatures::enablePropIteratorSetter) {
+      convertRawPropAliases(context, sourceProps, filteredRawProps);
+    }
+  } else {
+    initialize(context, sourceProps, rawProps);
+
+    yogaStyle = CoreFeatures::enablePropIteratorSetter
+        ? sourceProps.yogaStyle
+        : convertRawProp(context, rawProps, sourceProps.yogaStyle);
+
+    if (!CoreFeatures::enablePropIteratorSetter) {
+      convertRawPropAliases(context, sourceProps, rawProps);
+    }
   }
 };
 
 template <typename T>
 static inline T const getFieldValue(
-    const PropsParserContext &context,
-    const RawValue &value,
+    const PropsParserContext& context,
+    const RawValue& value,
     T const defaultValue) {
   if (value.hasValue()) {
     T res;
@@ -99,10 +216,10 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeEnd, "end");
 
 void YogaStylableProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    const RawValue &value) {
+    const char* propName,
+    const RawValue& value) {
   static const auto ygDefaults = yoga::Style{};
   static const auto defaults = YogaStylableProps{};
 
@@ -237,9 +354,9 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 #endif
 
 void YogaStylableProps::convertRawPropAliases(
-    const PropsParserContext &context,
-    const YogaStylableProps &sourceProps,
-    const RawProps &rawProps) {
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps) {
   inset = convertRawProp(
       context,
       rawProps,

@@ -12,7 +12,7 @@ namespace facebook::react {
 
 SurfaceHandlerBinding::SurfaceHandlerBinding(
     SurfaceId surfaceId,
-    const std::string &moduleName)
+    const std::string& moduleName)
     : surfaceHandler_(moduleName, surfaceId) {}
 
 void SurfaceHandlerBinding::setDisplayMode(jint mode) {
@@ -83,11 +83,11 @@ void SurfaceHandlerBinding::setLayoutConstraints(
   surfaceHandler_.constraintLayout(constraints, context);
 }
 
-void SurfaceHandlerBinding::setProps(NativeMap *props) {
+void SurfaceHandlerBinding::setProps(NativeMap* props) {
   surfaceHandler_.setProps(props->consume());
 }
 
-const SurfaceHandler &SurfaceHandlerBinding::getSurfaceHandler() {
+const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
   return surfaceHandler_;
 }
 

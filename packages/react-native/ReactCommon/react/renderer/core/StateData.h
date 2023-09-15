@@ -26,7 +26,7 @@ struct StateData final {
 
 #ifdef ANDROID
   StateData() = default;
-  StateData(const StateData &previousState, folly::dynamic data) {}
+  StateData(const StateData& previousState, folly::dynamic data) {}
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
 #endif

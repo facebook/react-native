@@ -24,7 +24,7 @@ class LegacyViewManagerInteropViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void dispatchEvent(const std::string &type, const folly::dynamic &payload)
+  void dispatchEvent(const std::string& type, const folly::dynamic& payload)
       const;
 };
 

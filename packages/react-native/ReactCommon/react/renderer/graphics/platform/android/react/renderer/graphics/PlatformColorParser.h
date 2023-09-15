@@ -15,12 +15,12 @@
 namespace facebook::react {
 
 inline SharedColor parsePlatformColor(
-    const PropsParserContext &context,
-    const RawValue &value) {
+    const PropsParserContext& context,
+    const RawValue& value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
 
   if (value.hasType<butter::map<std::string, std::vector<std::string>>>()) {
-    const auto &fabricUIManager =
+    const auto& fabricUIManager =
         context.contextContainer.at<jni::global_ref<jobject>>(
             "FabricUIManager");
     static auto getColorFromJava =
@@ -28,7 +28,7 @@ inline SharedColor parsePlatformColor(
             ->getMethod<jint(jint, jni::JArrayClass<jni::JString>)>("getColor");
 
     auto map = (butter::map<std::string, std::vector<std::string>>)value;
-    auto &resourcePaths = map["resource_paths"];
+    auto& resourcePaths = map["resource_paths"];
 
     auto javaResourcePaths =
         jni::JArrayClass<jni::JString>::newArray(resourcePaths.size());

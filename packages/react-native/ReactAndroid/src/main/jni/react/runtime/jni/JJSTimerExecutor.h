@@ -26,7 +26,7 @@ class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
 
   void setTimerManager(std::weak_ptr<TimerManager> timerManager);
 
-  void callTimers(WritableNativeArray *timerIDs);
+  void callTimers(WritableNativeArray* timerIDs);
 
  private:
   friend HybridBase;

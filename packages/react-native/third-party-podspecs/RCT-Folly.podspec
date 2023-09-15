@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-folly_release_version = '2021.07.22.00'
+folly_release_version = '2022.05.16.00'
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
@@ -21,7 +21,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
   spec.dependency 'fmt' , '~> 6.2.1'
-  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -faligned-new'
+  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -faligned-new'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
@@ -57,7 +57,7 @@ Pod::Spec.new do |spec|
                       'folly/memory/detail/*.h',
                       'folly/net/*.h',
                       'folly/net/detail/*.h',
-                      'folly/portability/*.h'
+                      'folly/portability/*.h',
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -71,11 +71,11 @@ Pod::Spec.new do |spec|
                         'folly/memory/detail/*.h',
                         'folly/net/*.h',
                         'folly/net/detail/*.h',
-                        'folly/portability/*.h'
+                        'folly/portability/*.h',
   spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\" \"$(PODS_ROOT)/fmt/include\"",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/libevent/include/\"",
                                # In dynamic framework (use_frameworks!) mode, ignore the unused and undefined boost symbols when generating the library.
                                "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\""
                              }
@@ -96,13 +96,11 @@ Pod::Spec.new do |spec|
                           'folly/synchronization/ParkingLot.cpp',
                           'folly/portability/Malloc.cpp',
                           'folly/concurrency/CacheLocality.h',
-                          'folly/synchronization/ParkingLot.h',
-                          'folly/synchronization/SanitizeThread.h',
+                          'folly/synchronization/*.h',
                           'folly/system/ThreadId.h'
 
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
-                            'folly/synchronization/ParkingLot.h',
-                            'folly/synchronization/SanitizeThread.h',
+                            'folly/synchronization/*.h',
                             'folly/system/ThreadId.h'
   end
 
@@ -127,9 +125,9 @@ Pod::Spec.new do |spec|
                            'folly/tracing/AsyncStack.{h,cpp}',
                            'folly/tracing/AsyncStack-inl.h',
                            'folly/{Executor,ExceptionString,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
-                           'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
+                           'folly/detail/{AsyncTrace,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
-                           'folly/memory/MallctlHelper.{h,cpp}',
+                           'folly/memory/{MallctlHelper,SanitizeAddress}.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
                            'folly/portability/SysMembarrier.cpp',
                            'folly/chrono/Hardware.{h,cpp}',
@@ -138,7 +136,7 @@ Pod::Spec.new do |spec|
                            'folly/experimental/coro/Coroutine.{h,cpp}',
                            'folly/fibers/Baton-inl.h',
                            'folly/experimental/**/*.h',
-                           'folly/system/Pid.{h,cpp}'
+                           'folly/system/{AtFork,Pid}.{h,cpp}'
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
@@ -152,5 +150,5 @@ Pod::Spec.new do |spec|
 
   # Folly has issues when compiled with iOS 10 set as deployment target
   # See https://github.com/facebook/folly/issues/1470 for details
-  spec.platforms = { :ios => min_ios_version_supported }
+  spec.platforms = min_supported_versions
 end

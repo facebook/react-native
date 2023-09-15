@@ -30,10 +30,10 @@ class ComponentBuilder final {
   /*
    * Copyable and movable.
    */
-  ComponentBuilder(const ComponentBuilder &componentBuilder) = default;
-  ComponentBuilder(ComponentBuilder &&componentBuilder) noexcept = default;
-  ComponentBuilder &operator=(const ComponentBuilder &other) = default;
-  ComponentBuilder &operator=(ComponentBuilder &&other) = default;
+  ComponentBuilder(const ComponentBuilder& componentBuilder) = default;
+  ComponentBuilder(ComponentBuilder&& componentBuilder) noexcept = default;
+  ComponentBuilder& operator=(const ComponentBuilder& other) = default;
+  ComponentBuilder& operator=(ComponentBuilder&& other) = default;
 
   /*
    * Builds a `ShadowNode` tree with given `Element` tree using stored
@@ -48,7 +48,7 @@ class ComponentBuilder final {
   /*
    * Internal, type-erased version of `build`.
    */
-  ShadowNode::Unshared build(const ElementFragment &elementFragment) const;
+  ShadowNode::Unshared build(const ElementFragment& elementFragment) const;
 
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };

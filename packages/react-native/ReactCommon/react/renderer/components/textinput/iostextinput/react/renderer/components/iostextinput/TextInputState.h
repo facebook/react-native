@@ -57,8 +57,8 @@ class TextInputState final {
 
 #ifdef ANDROID
   TextInputState(
-      const TextInputState &previousState,
-      const folly::dynamic &data);
+      const TextInputState& previousState,
+      const folly::dynamic& data);
 
   folly::dynamic getDynamic() const;
 

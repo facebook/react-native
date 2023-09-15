@@ -13,8 +13,8 @@ namespace facebook::react {
 #pragma mark - Accessibility
 
 void BaseViewEventEmitter::onAccessibilityAction(
-    const std::string &name) const {
-  dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
+    const std::string& name) const {
+  dispatchEvent("accessibilityAction", [name](jsi::Runtime& runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "actionName", name);
     return payload;
@@ -35,7 +35,7 @@ void BaseViewEventEmitter::onAccessibilityEscape() const {
 
 #pragma mark - Layout
 
-void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
+void BaseViewEventEmitter::onLayout(const LayoutMetrics& layoutMetrics) const {
   // A copy of a shared pointer (`layoutEventState_`) establishes shared
   // ownership that will be captured by lambda.
   auto layoutEventState = layoutEventState_;
@@ -82,7 +82,7 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
 
   dispatchEvent(
       "layout",
-      [layoutEventState](jsi::Runtime &runtime) {
+      [layoutEventState](jsi::Runtime& runtime) {
         auto frame = Rect{};
 
         {

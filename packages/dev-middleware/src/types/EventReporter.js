@@ -34,10 +34,11 @@ type DebuggerSessionIDs = {
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
+      launchType: 'launch' | 'redirect',
       ...
         | SuccessResult<{appId: string}>
         | ErrorResult<mixed>
-        | CodedErrorResult<'MISSING_APP_ID' | 'NO_APPS_FOUND'>,
+        | CodedErrorResult<'NO_APPS_FOUND'>,
     }
   | {
       type: 'connect_debugger_frontend',

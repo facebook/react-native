@@ -4,10 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
+
+import type {Experiments} from '../types/Experiments';
 
 /**
  * The Chrome DevTools frontend revision to use. This should be set to the
@@ -23,9 +25,23 @@ const DEVTOOLS_FRONTEND_REV = 'd9568d04d7dd79269c5a655d7ada69650c5a8336'; // Chr
  */
 export default function getDevToolsFrontendUrl(
   webSocketDebuggerUrl: string,
+  devServerUrl: string,
+  experiments: Experiments,
 ): string {
+  const isSecure = webSocketDebuggerUrl.startsWith('wss://');
+  const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
+    /^wss?:\/\//,
+    '',
+  );
+  const scheme = isSecure ? 'wss' : 'ws';
+  if (experiments.enableCustomDebuggerFrontend) {
+    const urlBase = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
+    return `${urlBase}?${scheme}=${encodeURIComponent(
+      webSocketUrlWithoutProtocol,
+    )}&sources.hide_add_folder=true`;
+  }
   const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${DEVTOOLS_FRONTEND_REV}/devtools_app.html`;
-  const ws = webSocketDebuggerUrl.replace(/^ws:\/\//, '');
-
-  return `${urlBase}?panel=console&ws=${encodeURIComponent(ws)}`;
+  return `${urlBase}?panel=console&${scheme}=${encodeURIComponent(
+    webSocketUrlWithoutProtocol,
+  )}`;
 }

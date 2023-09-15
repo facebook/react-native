@@ -22,15 +22,15 @@ void JReactMarker::setLogPerfMarkerIfNeeded() {
   });
 }
 
-void JReactMarker::logMarker(const std::string &marker) {
+void JReactMarker::logMarker(const std::string& marker) {
   static auto cls = javaClassStatic();
   static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
   meth(cls, marker);
 }
 
 void JReactMarker::logMarker(
-    const std::string &marker,
-    const std::string &tag) {
+    const std::string& marker,
+    const std::string& tag) {
   static auto cls = javaClassStatic();
   static auto meth =
       cls->getStaticMethod<void(std::string, std::string)>("logMarker");
@@ -38,8 +38,8 @@ void JReactMarker::logMarker(
 }
 
 void JReactMarker::logMarker(
-    const std::string &marker,
-    const std::string &tag,
+    const std::string& marker,
+    const std::string& tag,
     const int instanceKey) {
   static auto cls = javaClassStatic();
   static auto meth =
@@ -49,21 +49,21 @@ void JReactMarker::logMarker(
 
 void JReactMarker::logPerfMarker(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag) {
+    const char* tag) {
   const int bridgeInstanceKey = 0;
   logPerfMarkerWithInstanceKey(markerId, tag, bridgeInstanceKey);
 }
 
 void JReactMarker::logPerfMarkerBridgeless(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag) {
+    const char* tag) {
   const int bridgelessInstanceKey = 1;
   logPerfMarkerWithInstanceKey(markerId, tag, bridgelessInstanceKey);
 }
 
 void JReactMarker::logPerfMarkerWithInstanceKey(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag,
+    const char* tag,
     const int instanceKey) {
   switch (markerId) {
     case ReactMarker::APP_STARTUP_START:

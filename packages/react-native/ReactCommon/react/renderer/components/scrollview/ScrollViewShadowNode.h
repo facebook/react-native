@@ -30,9 +30,9 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   static ScrollViewState initialStateData(
-      const Props::Shared &props,
-      const ShadowNodeFamily::Shared &family,
-      const ComponentDescriptor &componentDescriptor);
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family,
+      const ComponentDescriptor& componentDescriptor);
 
 #pragma mark - LayoutableShadowNode
 

@@ -84,7 +84,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.15.0",
-    "flow-bin": "^0.215.1",
+    "flow-bin": "^0.216.1",
     "glob": "^7.1.1",
     "hermes-eslint": "0.15.0",
     "inquirer": "^7.1.0",

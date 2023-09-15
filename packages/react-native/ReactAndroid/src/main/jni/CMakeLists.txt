@@ -8,6 +8,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+# Convert input paths to CMake format (with forward slashes)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
+file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
@@ -17,7 +22,7 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++17)
+add_compile_options(-Wall -Werror -std=c++20)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -61,9 +66,9 @@ add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
 add_react_common_subdir(butter)
 add_react_common_subdir(callinvoker)
-add_react_common_subdir(jsinspector)
+add_react_common_subdir(jsinspector-modern)
 add_react_common_subdir(hermes/executor)
-add_react_common_subdir(hermes/inspector)
+add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
@@ -129,8 +134,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/MessageTests.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/RemoteObjectsTableTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
@@ -172,15 +175,12 @@ add_executable(reactnative_unittest
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
 
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
-  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionDemuxTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/detail/tests/SerialExecutorTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/tests/InspectorTests.cpp
+  # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionDemuxTests.cpp
 
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionTests.cpp
   )
   target_compile_options(reactnative_unittest
     PRIVATE
@@ -188,7 +188,7 @@ add_executable(reactnative_unittest
     -Werror
     -fexceptions
     -frtti
-    -std=c++17
+    -std=c++20
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest
@@ -198,7 +198,7 @@ add_executable(reactnative_unittest
   glog_init
   gtest_main
   hermes-engine::libhermes
-  hermes_inspector
+  hermes_inspector_modern
   jsi
   react_codegen_rncore
   react_debug

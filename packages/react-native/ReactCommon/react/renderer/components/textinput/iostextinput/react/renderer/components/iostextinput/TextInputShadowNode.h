@@ -51,21 +51,21 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      const LayoutContext &layoutContext,
-      const LayoutConstraints &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
   /*
    * Creates a `State` object if needed.
    */
-  void updateStateIfNeeded(const LayoutContext &layoutContext);
+  void updateStateIfNeeded(const LayoutContext& layoutContext);
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
   AttributedString getAttributedString(
-      const LayoutContext &layoutContext) const;
+      const LayoutContext& layoutContext) const;
 
   /*
    * Returns an `AttributedStringBox` which represents text content that should
@@ -73,7 +73,7 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
    * placeholder value or some character that represents the size of the font.
    */
   AttributedStringBox attributedStringBoxToMeasure(
-      const LayoutContext &layoutContext) const;
+      const LayoutContext& layoutContext) const;
 
   std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };

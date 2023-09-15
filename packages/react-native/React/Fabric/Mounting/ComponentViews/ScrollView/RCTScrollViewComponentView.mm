@@ -134,7 +134,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     [self.scrollViewDelegateSplitter addDelegate:self];
 
-    _scrollEventThrottle = INFINITY;
+    if (CoreFeatures::disableScrollEventThrottleRequirement) {
+      _scrollEventThrottle = 0;
+    } else {
+      _scrollEventThrottle = INFINITY;
+    }
   }
 
   return self;
@@ -447,8 +451,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   NSTimeInterval now = CACurrentMediaTime();
-  if (CoreFeatures::disableScrollEventThrottleRequirement || (_lastScrollEventDispatchTime == 0) ||
-      (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
       static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);

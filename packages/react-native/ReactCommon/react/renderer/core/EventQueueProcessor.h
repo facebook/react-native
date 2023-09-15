@@ -24,8 +24,8 @@ class EventQueueProcessor {
       EventPipeConclusion eventPipeConclusion,
       StatePipe statePipe);
 
-  void flushEvents(jsi::Runtime &runtime, std::vector<RawEvent> &&events) const;
-  void flushStateUpdates(std::vector<StateUpdate> &&states) const;
+  void flushEvents(jsi::Runtime& runtime, std::vector<RawEvent>&& events) const;
+  void flushStateUpdates(std::vector<StateUpdate>&& states) const;
 
  private:
   const EventPipe eventPipe_;

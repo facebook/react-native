@@ -9,6 +9,8 @@
 
 #include <yoga/Yoga.h>
 
+#include <yoga/debug/AssertFatal.h>
+
 namespace facebook::yoga {
 
 inline bool isRow(const YGFlexDirection flexDirection) {
@@ -41,6 +43,51 @@ inline YGFlexDirection resolveCrossDirection(
   return isColumn(flexDirection)
       ? resolveDirection(YGFlexDirectionRow, direction)
       : YGFlexDirectionColumn;
+}
+
+inline YGEdge leadingEdge(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGEdgeTop;
+    case YGFlexDirectionColumnReverse:
+      return YGEdgeBottom;
+    case YGFlexDirectionRow:
+      return YGEdgeLeft;
+    case YGFlexDirectionRowReverse:
+      return YGEdgeRight;
+  }
+
+  fatalWithMessage("Invalid YGFlexDirection");
+}
+
+inline YGEdge trailingEdge(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGEdgeBottom;
+    case YGFlexDirectionColumnReverse:
+      return YGEdgeTop;
+    case YGFlexDirectionRow:
+      return YGEdgeRight;
+    case YGFlexDirectionRowReverse:
+      return YGEdgeLeft;
+  }
+
+  fatalWithMessage("Invalid YGFlexDirection");
+}
+
+inline YGDimension dimension(const YGFlexDirection flexDirection) {
+  switch (flexDirection) {
+    case YGFlexDirectionColumn:
+      return YGDimensionHeight;
+    case YGFlexDirectionColumnReverse:
+      return YGDimensionHeight;
+    case YGFlexDirectionRow:
+      return YGDimensionWidth;
+    case YGFlexDirectionRowReverse:
+      return YGDimensionWidth;
+  }
+
+  fatalWithMessage("Invalid YGFlexDirection");
 }
 
 } // namespace facebook::yoga

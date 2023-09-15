@@ -14,7 +14,7 @@
 namespace facebook::react {
 
 void ImageResponseObserverCoordinator::addObserver(
-    const ImageResponseObserver &observer) const {
+    const ImageResponseObserver& observer) const {
   mutex_.lock();
   switch (status_) {
     case ImageResponse::Status::Loading: {
@@ -38,7 +38,7 @@ void ImageResponseObserverCoordinator::addObserver(
 }
 
 void ImageResponseObserverCoordinator::removeObserver(
-    const ImageResponseObserver &observer) const {
+    const ImageResponseObserver& observer) const {
   std::scoped_lock lock(mutex_);
 
   // We remove only one element to maintain a balance between add/remove calls.
@@ -61,7 +61,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseProgress(
 }
 
 void ImageResponseObserverCoordinator::nativeImageResponseComplete(
-    const ImageResponse &imageResponse) const {
+    const ImageResponse& imageResponse) const {
   mutex_.lock();
   imageData_ = imageResponse.getImage();
   imageMetadata_ = imageResponse.getMetadata();

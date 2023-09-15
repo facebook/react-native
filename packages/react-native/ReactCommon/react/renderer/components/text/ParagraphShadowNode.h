@@ -35,8 +35,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   ParagraphShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment);
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
 
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
@@ -65,8 +65,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
 
   void layout(LayoutContext layoutContext) override;
   Size measureContent(
-      const LayoutContext &layoutContext,
-      const LayoutConstraints &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
 
   /*
    * Internal representation of the nested content of the node in a format
@@ -83,20 +83,20 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */
-  const Content &getContent(const LayoutContext &layoutContext) const;
+  const Content& getContent(const LayoutContext& layoutContext) const;
 
   /*
    * Builds and returns a `Content` object with given `layoutConstraints`.
    */
   Content getContentWithMeasuredAttachments(
-      const LayoutContext &layoutContext,
-      const LayoutConstraints &layoutConstraints) const;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const;
 
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded(const Content &content);
+  void updateStateIfNeeded(const Content& content);
 
   /*
    * Cached content of the subtree started from the node.

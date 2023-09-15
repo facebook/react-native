@@ -11,12 +11,12 @@ namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(const TouchEvent & /*touchEvent*/) {
+std::string getDebugName(const TouchEvent& /*touchEvent*/) {
   return "TouchEvent";
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    const TouchEvent &touchEvent,
+    const TouchEvent& touchEvent,
     DebugStringConvertibleOptions options) {
   return {
       {"touches", getDebugDescription(touchEvent.touches, options)},

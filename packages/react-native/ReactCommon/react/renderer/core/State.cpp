@@ -16,12 +16,12 @@
 
 namespace facebook::react {
 
-State::State(StateData::Shared data, const State &state)
-    : family_(state.family_),
+State::State(StateData::Shared data, const State& previousState)
+    : family_(previousState.family_),
       data_(std::move(data)),
-      revision_(state.revision_ + 1){};
+      revision_(previousState.revision_ + 1){};
 
-State::State(StateData::Shared data, const ShadowNodeFamily::Shared &family)
+State::State(StateData::Shared data, const ShadowNodeFamily::Shared& family)
     : family_(family),
       data_(std::move(data)),
       revision_{State::initialRevisionValue} {};

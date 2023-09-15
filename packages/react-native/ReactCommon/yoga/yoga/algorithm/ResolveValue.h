@@ -8,7 +8,9 @@
 #pragma once
 
 #include <yoga/Yoga.h>
+
 #include <yoga/numeric/FloatOptional.h>
+#include <yoga/style/CompactValue.h>
 
 namespace facebook::yoga {
 
@@ -24,7 +26,7 @@ inline FloatOptional resolveValue(const YGValue value, const float ownerSize) {
 }
 
 inline FloatOptional resolveValue(CompactValue value, float ownerSize) {
-  return resolveValue((YGValue) value, ownerSize);
+  return resolveValue((YGValue)value, ownerSize);
 }
 
 } // namespace facebook::yoga

@@ -22,7 +22,7 @@ AsynchronousEventBeat::AsynchronousEventBeat(
 }
 
 void AsynchronousEventBeat::activityDidChange(
-    const RunLoopObserver::Delegate *delegate,
+    const RunLoopObserver::Delegate* delegate,
     RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   induce();
@@ -42,7 +42,7 @@ void AsynchronousEventBeat::induce() const {
 
   isBeatCallbackScheduled_ = true;
 
-  runtimeExecutor_([this, weakOwner](jsi::Runtime &runtime) {
+  runtimeExecutor_([this, weakOwner](jsi::Runtime& runtime) {
     isBeatCallbackScheduled_ = false;
 
     auto owner = weakOwner.lock();

@@ -16,7 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
@@ -34,6 +34,7 @@ header_search_paths = [
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
@@ -49,8 +50,8 @@ header_search_paths = [
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-BridgelessApple/React_BridgelessApple.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-BridgelessCore/React_BridgelessCore.framework/Headers",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RuntimeApple/React_RuntimeApple.framework/Headers",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RuntimeCore/React_RuntimeCore.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers/",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers/",
@@ -66,7 +67,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files            = "**/*.{c,h,m,mm,S,cpp}"
 
@@ -75,7 +76,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CPLUSPLUSFLAGS" => other_cflags,
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "DEFINES_MODULE" => "YES"
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
@@ -96,10 +97,10 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTFabric"
 
   if is_new_arch_enabled
-    s.dependency "React-BridgelessCore"
-    s.dependency "React-BridgelessApple"
+    s.dependency "React-RuntimeCore"
+    s.dependency "React-RuntimeApple"
     if use_hermes
-      s.dependency "React-BridgelessHermes"
+      s.dependency "React-RuntimeHermes"
     end
   end
 

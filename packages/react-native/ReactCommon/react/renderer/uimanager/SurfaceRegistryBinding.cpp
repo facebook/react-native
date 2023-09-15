@@ -16,9 +16,9 @@ namespace facebook::react {
 namespace {
 
 void throwIfBridgeless(
-    jsi::Runtime &runtime,
-    jsi::Object &global,
-    const char *methodName) {
+    jsi::Runtime& runtime,
+    jsi::Object& global,
+    const char* methodName) {
   auto isBridgeless = global.getProperty(runtime, "RN$Bridgeless");
   if (isBridgeless.isBool() && isBridgeless.asBool()) {
     throw std::runtime_error(
@@ -30,10 +30,10 @@ void throwIfBridgeless(
 } // namespace
 
 void SurfaceRegistryBinding::startSurface(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     SurfaceId surfaceId,
-    const std::string &moduleName,
-    const folly::dynamic &initialProps,
+    const std::string& moduleName,
+    const folly::dynamic& initialProps,
     DisplayMode displayMode) {
   SystraceSection s("SurfaceRegistryBinding::startSurface");
   jsi::Object parameters(runtime);
@@ -65,10 +65,10 @@ void SurfaceRegistryBinding::startSurface(
 }
 
 void SurfaceRegistryBinding::setSurfaceProps(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     SurfaceId surfaceId,
-    const std::string &moduleName,
-    const folly::dynamic &initialProps,
+    const std::string& moduleName,
+    const folly::dynamic& initialProps,
     DisplayMode displayMode) {
   SystraceSection s("UIManagerBinding::setSurfaceProps");
   jsi::Object parameters(runtime);
@@ -100,7 +100,7 @@ void SurfaceRegistryBinding::setSurfaceProps(
 }
 
 void SurfaceRegistryBinding::stopSurface(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     SurfaceId surfaceId) {
   auto global = runtime.global();
   auto stopFunction = global.getProperty(runtime, "RN$stopSurface");

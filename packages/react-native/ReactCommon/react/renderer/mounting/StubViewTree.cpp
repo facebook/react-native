@@ -18,18 +18,18 @@
 
 namespace facebook::react {
 
-StubViewTree::StubViewTree(const ShadowView &shadowView) {
+StubViewTree::StubViewTree(const ShadowView& shadowView) {
   auto view = std::make_shared<StubView>();
   view->update(shadowView);
   rootTag_ = shadowView.tag;
   registry_[shadowView.tag] = view;
 }
 
-const StubView &StubViewTree::getRootStubView() const {
+const StubView& StubViewTree::getRootStubView() const {
   return *registry_.at(rootTag_);
 }
 
-const StubView &StubViewTree::getStubView(Tag tag) const {
+const StubView& StubViewTree::getStubView(Tag tag) const {
   return *registry_.at(tag);
 }
 
@@ -37,9 +37,9 @@ size_t StubViewTree::size() const {
   return registry_.size();
 }
 
-void StubViewTree::mutate(const ShadowViewMutationList &mutations) {
+void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
   STUB_VIEW_LOG({ LOG(ERROR) << "StubView: Mutating Begin"; });
-  for (const auto &mutation : mutations) {
+  for (const auto& mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         react_native_assert(mutation.parentShadowView == ShadowView{});
@@ -182,7 +182,7 @@ void StubViewTree::mutate(const ShadowViewMutationList &mutations) {
           STUB_VIEW_LOG({
             std::string strChildList = "";
             int i = 0;
-            for (auto const &child : parentStubView->children) {
+            for (auto const& child : parentStubView->children) {
               strChildList.append(std::to_string(i));
               strChildList.append(":");
               strChildList.append(std::to_string(child->tag));
@@ -262,16 +262,16 @@ void StubViewTree::mutate(const ShadowViewMutationList &mutations) {
   google::FlushLogFiles(google::GLOG_INFO);
 }
 
-std::ostream &StubViewTree::dumpTags(std::ostream &stream) {
-  for (const auto &pair : registry_) {
-    auto &stubView = *registry_.at(pair.first);
+std::ostream& StubViewTree::dumpTags(std::ostream& stream) {
+  for (const auto& pair : registry_) {
+    auto& stubView = *registry_.at(pair.first);
     stream << "[" << stubView.tag << "]##"
            << std::hash<ShadowView>{}((ShadowView)stubView) << " ";
   }
   return stream;
 }
 
-bool operator==(const StubViewTree &lhs, const StubViewTree &rhs) {
+bool operator==(const StubViewTree& lhs, const StubViewTree& rhs) {
   if (lhs.registry_.size() != rhs.registry_.size()) {
     STUB_VIEW_LOG({
       LOG(ERROR) << "Registry sizes are different. Sizes: LHS: "
@@ -287,9 +287,9 @@ bool operator==(const StubViewTree &lhs, const StubViewTree &rhs) {
     return false;
   }
 
-  for (const auto &pair : lhs.registry_) {
-    auto &lhsStubView = *lhs.registry_.at(pair.first);
-    auto &rhsStubView = *rhs.registry_.at(pair.first);
+  for (const auto& pair : lhs.registry_) {
+    auto& lhsStubView = *lhs.registry_.at(pair.first);
+    auto& rhsStubView = *rhs.registry_.at(pair.first);
 
     if (lhsStubView != rhsStubView) {
       STUB_VIEW_LOG({
@@ -306,7 +306,7 @@ bool operator==(const StubViewTree &lhs, const StubViewTree &rhs) {
   return true;
 }
 
-bool operator!=(const StubViewTree &lhs, const StubViewTree &rhs) {
+bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs) {
   return !(lhs == rhs);
 }
 

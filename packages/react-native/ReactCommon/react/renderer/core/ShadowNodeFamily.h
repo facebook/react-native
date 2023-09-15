@@ -37,7 +37,7 @@ class State;
 struct ShadowNodeFamilyFragment {
   const Tag tag;
   const SurfaceId surfaceId;
-  const InstanceHandle::Shared &instanceHandle;
+  const InstanceHandle::Shared& instanceHandle;
 };
 
 /*
@@ -56,16 +56,16 @@ class ShadowNodeFamily final {
       64>;
 
   ShadowNodeFamily(
-      const ShadowNodeFamilyFragment &fragment,
+      const ShadowNodeFamilyFragment& fragment,
       EventDispatcher::Weak eventDispatcher,
-      const ComponentDescriptor &componentDescriptor);
+      const ComponentDescriptor& componentDescriptor);
 
   /*
    * Sets the parent.
    * This is not technically thread-safe, but practically it mutates the object
    * only once (and the model enforces that this first call is not concurrent).
    */
-  void setParent(const ShadowNodeFamily::Shared &parent) const;
+  void setParent(const ShadowNodeFamily::Shared& parent) const;
 
   /*
    * Returns a handle (or name) associated with the component.
@@ -76,7 +76,7 @@ class ShadowNodeFamily final {
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
    */
-  const ComponentDescriptor &getComponentDescriptor() const;
+  const ComponentDescriptor& getComponentDescriptor() const;
 
   /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
@@ -87,7 +87,7 @@ class ShadowNodeFamily final {
    * Can be called from any thread.
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
-  AncestorList getAncestors(const ShadowNode &ancestorShadowNode) const;
+  AncestorList getAncestors(const ShadowNode& ancestorShadowNode) const;
 
   SurfaceId getSurfaceId() const;
 
@@ -97,12 +97,12 @@ class ShadowNodeFamily final {
    * Sets and gets the most recent state.
    */
   std::shared_ptr<const State> getMostRecentState() const;
-  void setMostRecentState(const std::shared_ptr<State const> &state) const;
+  void setMostRecentState(const std::shared_ptr<State const>& state) const;
 
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
+  void dispatchRawState(StateUpdate&& stateUpdate, EventPriority priority)
       const;
 
   /*
@@ -122,7 +122,7 @@ class ShadowNodeFamily final {
    * To be used by `State` only.
    */
   std::shared_ptr<const State> getMostRecentStateIfObsolete(
-      const State &state) const;
+      const State& state) const;
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<const State> mostRecentState_;
@@ -152,7 +152,7 @@ class ShadowNodeFamily final {
    * Reference to a concrete `ComponentDescriptor` that manages nodes of this
    * type.
    */
-  const ComponentDescriptor &componentDescriptor_;
+  const ComponentDescriptor& componentDescriptor_;
 
   /*
    * ComponentHandle and ComponentName must be stored (cached) inside the object

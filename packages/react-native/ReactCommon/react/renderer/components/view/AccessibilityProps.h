@@ -19,18 +19,18 @@ class AccessibilityProps {
  public:
   AccessibilityProps() = default;
   AccessibilityProps(
-      const PropsParserContext &context,
-      const AccessibilityProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const AccessibilityProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
 #ifdef ANDROID
-  void propsDiffMapBuffer(const Props *oldProps, MapBufferBuilder &builder)
+  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
       const;
 #endif
 

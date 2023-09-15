@@ -75,6 +75,7 @@ export interface Spec {
   +getTextContent: (node: Node) => string;
   +getBoundingClientRect: (
     node: Node,
+    includeTransform: boolean,
   ) => ?[
     /* x: */ number,
     /* y: */ number,
@@ -91,6 +92,19 @@ export interface Spec {
   +getScrollPosition: (
     node: Node,
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
+  +getScrollSize: (
+    node: Node,
+  ) => ?[/* scrollWidth: */ number, /* scrollHeight: */ number];
+  +getInnerSize: (node: Node) => ?[/* width: */ number, /* height: */ number];
+  +getBorderSize: (
+    node: Node,
+  ) => ?[
+    /* topWidth: */ number,
+    /* rightWidth: */ number,
+    /* bottomWidth: */ number,
+    /* leftWidth: */ number,
+  ];
+  +getTagName: (node: Node) => string;
 
   /**
    * Support methods for the Pointer Capture APIs.
@@ -131,6 +145,13 @@ const CACHED_PROPERTIES = [
   'getBoundingClientRect',
   'getOffset',
   'getScrollPosition',
+  'getScrollSize',
+  'getInnerSize',
+  'getBorderSize',
+  'getTagName',
+  'hasPointerCapture',
+  'setPointerCapture',
+  'releasePointerCapture',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND

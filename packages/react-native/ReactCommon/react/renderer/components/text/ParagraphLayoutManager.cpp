@@ -12,8 +12,8 @@
 namespace facebook::react {
 
 TextMeasurement ParagraphLayoutManager::measure(
-    const AttributedString &attributedString,
-    const ParagraphAttributes &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   if (CoreFeatures::cacheLastTextMeasurement) {
     bool shouldMeasure = shoudMeasureString(
@@ -39,8 +39,8 @@ TextMeasurement ParagraphLayoutManager::measure(
 }
 
 bool ParagraphLayoutManager::shoudMeasureString(
-    const AttributedString &attributedString,
-    const ParagraphAttributes &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   size_t newParagraphInputHash =
       folly::hash::hash_combine(0, attributedString, paragraphAttributes);
@@ -74,8 +74,8 @@ bool ParagraphLayoutManager::shoudMeasureString(
 }
 
 LinesMeasurements ParagraphLayoutManager::measureLines(
-    const AttributedString &attributedString,
-    const ParagraphAttributes &paragraphAttributes,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
     Size size) const {
   return textLayoutManager_->measureLines(
       attributedString, paragraphAttributes, size);

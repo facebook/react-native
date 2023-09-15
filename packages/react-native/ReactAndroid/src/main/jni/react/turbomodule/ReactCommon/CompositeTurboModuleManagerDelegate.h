@@ -28,12 +28,12 @@ class CompositeTurboModuleManagerDelegate
   static void registerNatives();
 
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string &moduleName,
-      const std::shared_ptr<CallInvoker> &jsInvoker) override;
+      const std::string& moduleName,
+      const std::shared_ptr<CallInvoker>& jsInvoker) override;
 
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string &moduleName,
-      const JavaTurboModule::InitParams &params) override;
+      const std::string& moduleName,
+      const JavaTurboModule::InitParams& params) override;
 
  private:
   friend HybridBase;

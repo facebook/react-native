@@ -20,7 +20,7 @@ void jniEnableCppLogging(
       perfLogger->cthis()->get());
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
     // TODO: dvacca ramanpreet unify this with the way
     // "ComponentDescriptorFactory" is defined in Fabric

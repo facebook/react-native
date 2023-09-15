@@ -27,15 +27,15 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
  public:
   ParagraphProps() = default;
   ParagraphProps(
-      const PropsParserContext &context,
-      const ParagraphProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const ParagraphProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 

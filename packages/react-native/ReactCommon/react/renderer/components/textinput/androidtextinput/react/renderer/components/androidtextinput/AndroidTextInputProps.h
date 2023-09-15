@@ -32,9 +32,9 @@ struct AndroidTextInputTextShadowOffsetStruct {
 };
 
 static inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AndroidTextInputTextShadowOffsetStruct &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    AndroidTextInputTextShadowOffsetStruct& result) {
   auto map = (butter::map<std::string, RawValue>)value;
 
   auto width = map.find("width");
@@ -48,13 +48,13 @@ static inline void fromRawValue(
 }
 
 static inline std::string toString(
-    const AndroidTextInputTextShadowOffsetStruct &value) {
+    const AndroidTextInputTextShadowOffsetStruct& value) {
   return "[Object AndroidTextInputTextShadowOffsetStruct]";
 }
 
 #ifdef ANDROID
 inline folly::dynamic toDynamic(
-    const AndroidTextInputTextShadowOffsetStruct &value) {
+    const AndroidTextInputTextShadowOffsetStruct& value) {
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["width"] = value.width;
   dynamicValue["height"] = value.height;
@@ -66,15 +66,15 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
  public:
   AndroidTextInputProps() = default;
   AndroidTextInputProps(
-      const PropsParserContext &context,
-      const AndroidTextInputProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const AndroidTextInputProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      const RawValue &value);
+      const char* propName,
+      const RawValue& value);
 
   folly::dynamic getDynamic() const;
 

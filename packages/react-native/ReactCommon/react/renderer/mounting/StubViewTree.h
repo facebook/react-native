@@ -18,16 +18,16 @@ namespace facebook::react {
 class StubViewTree {
  public:
   StubViewTree() = default;
-  StubViewTree(const ShadowView &shadowView);
+  StubViewTree(const ShadowView& shadowView);
 
-  void mutate(const ShadowViewMutationList &mutations);
+  void mutate(const ShadowViewMutationList& mutations);
 
-  const StubView &getRootStubView() const;
+  const StubView& getRootStubView() const;
 
   /*
    * Returns a view with given tag.
    */
-  const StubView &getStubView(Tag tag) const;
+  const StubView& getStubView(Tag tag) const;
 
   /*
    * Returns the total amount of views in the tree.
@@ -38,17 +38,17 @@ class StubViewTree {
   Tag rootTag_{};
   std::unordered_map<Tag, StubView::Shared> registry_{};
 
-  friend bool operator==(const StubViewTree &lhs, const StubViewTree &rhs);
-  friend bool operator!=(const StubViewTree &lhs, const StubViewTree &rhs);
+  friend bool operator==(const StubViewTree& lhs, const StubViewTree& rhs);
+  friend bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs);
 
-  std::ostream &dumpTags(std::ostream &stream);
+  std::ostream& dumpTags(std::ostream& stream);
 
   bool hasTag(Tag tag) const {
     return registry_.find(tag) != registry_.end();
   }
 };
 
-bool operator==(const StubViewTree &lhs, const StubViewTree &rhs);
-bool operator!=(const StubViewTree &lhs, const StubViewTree &rhs);
+bool operator==(const StubViewTree& lhs, const StubViewTree& rhs);
+bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs);
 
 } // namespace facebook::react

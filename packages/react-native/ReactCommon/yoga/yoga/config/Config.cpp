@@ -6,14 +6,18 @@
  */
 
 #include <yoga/config/Config.h>
+#include <yoga/debug/Log.h>
+#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
-bool configUpdateInvalidatesLayout(Config* a, Config* b) {
-  return a->getErrata() != b->getErrata() ||
-      a->getEnabledExperiments() != b->getEnabledExperiments() ||
-      a->getPointScaleFactor() != b->getPointScaleFactor() ||
-      a->useWebDefaults() != b->useWebDefaults();
+bool configUpdateInvalidatesLayout(
+    const Config& oldConfig,
+    const Config& newConfig) {
+  return oldConfig.getErrata() != newConfig.getErrata() ||
+      oldConfig.getEnabledExperiments() != newConfig.getEnabledExperiments() ||
+      oldConfig.getPointScaleFactor() != newConfig.getPointScaleFactor() ||
+      oldConfig.useWebDefaults() != newConfig.useWebDefaults();
 }
 
 Config::Config(YGLogger logger) : cloneNodeCallback_{nullptr} {
@@ -37,37 +41,37 @@ bool Config::shouldPrintTree() const {
 }
 
 void Config::setExperimentalFeatureEnabled(
-    YGExperimentalFeature feature,
+    ExperimentalFeature feature,
     bool enabled) {
-  experimentalFeatures_.set(feature, enabled);
+  experimentalFeatures_.set(static_cast<size_t>(feature), enabled);
 }
 
-bool Config::isExperimentalFeatureEnabled(YGExperimentalFeature feature) const {
-  return experimentalFeatures_.test(feature);
+bool Config::isExperimentalFeatureEnabled(ExperimentalFeature feature) const {
+  return experimentalFeatures_.test(static_cast<size_t>(feature));
 }
 
-EnumBitset<YGExperimentalFeature> Config::getEnabledExperiments() const {
+ExperimentalFeatureSet Config::getEnabledExperiments() const {
   return experimentalFeatures_;
 }
 
-void Config::setErrata(YGErrata errata) {
+void Config::setErrata(Errata errata) {
   errata_ = errata;
 }
 
-void Config::addErrata(YGErrata errata) {
+void Config::addErrata(Errata errata) {
   errata_ |= errata;
 }
 
-void Config::removeErrata(YGErrata errata) {
+void Config::removeErrata(Errata errata) {
   errata_ &= (~errata);
 }
 
-YGErrata Config::getErrata() const {
+Errata Config::getErrata() const {
   return errata_;
 }
 
-bool Config::hasErrata(YGErrata errata) const {
-  return (errata_ & errata) != YGErrataNone;
+bool Config::hasErrata(Errata errata) const {
+  return (errata_ & errata) != Errata::None;
 }
 
 void Config::setPointScaleFactor(float pointScaleFactor) {
@@ -87,61 +91,38 @@ void* Config::getContext() const {
 }
 
 void Config::setLogger(YGLogger logger) {
-  logger_.noContext = logger;
-  flags_.loggerUsesContext = false;
-}
-
-void Config::setLogger(LogWithContextFn logger) {
-  logger_.withContext = logger;
-  flags_.loggerUsesContext = true;
-}
-
-void Config::setLogger(std::nullptr_t) {
-  setLogger(YGLogger{nullptr});
+  logger_ = logger;
 }
 
 void Config::log(
-    YGNodeRef node,
-    YGLogLevel logLevel,
-    void* logContext,
+    const yoga::Node* node,
+    LogLevel logLevel,
     const char* format,
-    va_list args) {
-  if (flags_.loggerUsesContext) {
-    logger_.withContext(this, node, logLevel, logContext, format, args);
-  } else {
-    logger_.noContext(this, node, logLevel, format, args);
-  }
+    va_list args) const {
+  logger_(this, node, unscopedEnum(logLevel), format, args);
 }
 
 void Config::setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
-  cloneNodeCallback_.noContext = cloneNode;
-  flags_.cloneNodeUsesContext = false;
-}
-
-void Config::setCloneNodeCallback(CloneWithContextFn cloneNode) {
-  cloneNodeCallback_.withContext = cloneNode;
-  flags_.cloneNodeUsesContext = true;
-}
-
-void Config::setCloneNodeCallback(std::nullptr_t) {
-  setCloneNodeCallback(YGCloneNodeFunc{nullptr});
+  cloneNodeCallback_ = cloneNode;
 }
 
 YGNodeRef Config::cloneNode(
-    YGNodeRef node,
-    YGNodeRef owner,
-    int childIndex,
-    void* cloneContext) const {
+    YGNodeConstRef node,
+    YGNodeConstRef owner,
+    size_t childIndex) const {
   YGNodeRef clone = nullptr;
-  if (cloneNodeCallback_.noContext != nullptr) {
-    clone = flags_.cloneNodeUsesContext
-        ? cloneNodeCallback_.withContext(node, owner, childIndex, cloneContext)
-        : cloneNodeCallback_.noContext(node, owner, childIndex);
+  if (cloneNodeCallback_ != nullptr) {
+    clone = cloneNodeCallback_(node, owner, childIndex);
   }
   if (clone == nullptr) {
     clone = YGNodeClone(node);
   }
   return clone;
+}
+
+/*static*/ const Config& Config::getDefault() {
+  static Config config{getDefaultLogger()};
+  return config;
 }
 
 } // namespace facebook::yoga

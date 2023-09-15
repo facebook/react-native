@@ -14,19 +14,7 @@
 #include <yoga/YGMacros.h>
 #include <yoga/YGValue.h>
 
-#if defined(__has_include) && __has_include(<version>)
-// needed to be able to evaluate defined(__cpp_lib_bit_cast)
-#include <version>
-#else
-// needed to be able to evaluate defined(__cpp_lib_bit_cast)
-#include <ciso646>
-#endif
-
-#ifdef __cpp_lib_bit_cast
-#include <bit>
-#else
-#include <cstring>
-#endif
+#include <yoga/bits/BitCast.h>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -53,10 +41,10 @@ namespace facebook::yoga {
 //            0x40000000         0x7f7fffff
 // - Zero is supported, negative zero is not
 // - values outside of the representable range are clamped
-class YOGA_EXPORT CompactValue {
+class YG_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
-public:
+ public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
@@ -76,7 +64,7 @@ public:
     }
 
     uint32_t unitBit = Unit == YGUnitPercent ? PERCENT_BIT : 0;
-    auto data = asU32(value);
+    auto data = yoga::bit_cast<uint32_t>(value);
     data -= BIAS;
     data |= unitBit;
     return {data};
@@ -129,7 +117,7 @@ public:
         return YGValue{0.0f, YGUnitPercent};
     }
 
-    if (std::isnan(asFloat(repr_))) {
+    if (std::isnan(yoga::bit_cast<float>(repr_))) {
       return YGValueUndefined;
     }
 
@@ -138,18 +126,21 @@ public:
     data += BIAS;
 
     return YGValue{
-        asFloat(data), repr_ & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+        yoga::bit_cast<float>(data),
+        repr_ & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {
     return (
         repr_ != AUTO_BITS && repr_ != ZERO_BITS_POINT &&
-        repr_ != ZERO_BITS_PERCENT && std::isnan(asFloat(repr_)));
+        repr_ != ZERO_BITS_PERCENT && std::isnan(yoga::bit_cast<float>(repr_)));
   }
 
-  bool isAuto() const noexcept { return repr_ == AUTO_BITS; }
+  bool isAuto() const noexcept {
+    return repr_ == AUTO_BITS;
+  }
 
-private:
+ private:
   uint32_t repr_;
 
   static constexpr uint32_t BIAS = 0x20000000;
@@ -163,30 +154,8 @@ private:
 
   constexpr CompactValue(uint32_t data) noexcept : repr_(data) {}
 
-  VISIBLE_FOR_TESTING uint32_t repr() { return repr_; }
-
-  static uint32_t asU32(float f) {
-#ifdef __cpp_lib_bit_cast
-    return std::bit_cast<uint32_t>(f);
-#else
-    uint32_t u;
-    static_assert(
-        sizeof(u) == sizeof(f), "uint32_t and float must have the same size");
-    std::memcpy(&u, &f, sizeof(f));
-    return u;
-#endif
-  }
-
-  static float asFloat(uint32_t u) {
-#ifdef __cpp_lib_bit_cast
-    return std::bit_cast<float>(u);
-#else
-    float f;
-    static_assert(
-        sizeof(f) == sizeof(u), "uint32_t and float must have the same size");
-    std::memcpy(&f, &u, sizeof(u));
-    return f;
-#endif
+  VISIBLE_FOR_TESTING uint32_t repr() {
+    return repr_;
   }
 };
 

@@ -21,13 +21,13 @@ jni::local_ref<EventBeatManager::jhybriddata> EventBeatManager::initHybrid(
 }
 
 void EventBeatManager::addObserver(
-    const EventBeatManagerObserver &observer) const {
+    const EventBeatManagerObserver& observer) const {
   std::scoped_lock lock(mutex_);
   observers_.insert(&observer);
 }
 
 void EventBeatManager::removeObserver(
-    const EventBeatManagerObserver &observer) const {
+    const EventBeatManagerObserver& observer) const {
   std::scoped_lock lock(mutex_);
   observers_.erase(&observer);
 }

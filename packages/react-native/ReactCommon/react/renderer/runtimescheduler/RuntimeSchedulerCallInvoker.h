@@ -20,9 +20,9 @@ class RuntimeSchedulerCallInvoker : public CallInvoker {
  public:
   RuntimeSchedulerCallInvoker(std::weak_ptr<RuntimeScheduler> runtimeScheduler);
 
-  void invokeAsync(CallFunc &&func) override;
-  void invokeSync(CallFunc &&func) override;
-  void invokeAsync(SchedulerPriority priority, CallFunc &&func) override;
+  void invokeAsync(CallFunc&& func) override;
+  void invokeSync(CallFunc&& func) override;
+  void invokeAsync(SchedulerPriority priority, CallFunc&& func) override;
 
  private:
   /*

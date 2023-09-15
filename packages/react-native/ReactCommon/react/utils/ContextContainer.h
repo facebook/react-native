@@ -40,7 +40,7 @@ class ContextContainer final {
    *`ReactNativeConfig`.
    */
   template <typename T>
-  void insert(const std::string &key, T const &instance) const {
+  void insert(const std::string& key, T const& instance) const {
     std::unique_lock lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
@@ -50,7 +50,7 @@ class ContextContainer final {
    * Removes an instance stored for a given `key`.
    * Does nothing if the instance was not found.
    */
-  void erase(const std::string &key) const {
+  void erase(const std::string& key) const {
     std::unique_lock lock(mutex_);
 
     instances_.erase(key);
@@ -61,10 +61,10 @@ class ContextContainer final {
    * Values with keys that already exist in the container will be replaced with
    * values from the given container.
    */
-  void update(const ContextContainer &contextContainer) const {
+  void update(const ContextContainer& contextContainer) const {
     std::unique_lock lock(mutex_);
 
-    for (const auto &pair : contextContainer.instances_) {
+    for (const auto& pair : contextContainer.instances_) {
       instances_.erase(pair.first);
       instances_.insert(pair);
     }
@@ -76,13 +76,13 @@ class ContextContainer final {
    * Throws an exception if the instance could not be found.
    */
   template <typename T>
-  T at(const std::string &key) const {
+  T at(const std::string& key) const {
     std::shared_lock lock(mutex_);
 
     react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-    return *static_cast<T *>(instances_.at(key).get());
+    return *static_cast<T*>(instances_.at(key).get());
   }
 
   /*
@@ -91,7 +91,7 @@ class ContextContainer final {
    * Returns an empty optional if the instance could not be found.
    */
   template <typename T>
-  std::optional<T> find(const std::string &key) const {
+  std::optional<T> find(const std::string& key) const {
     std::shared_lock lock(mutex_);
 
     auto iterator = instances_.find(key);
@@ -99,7 +99,7 @@ class ContextContainer final {
       return {};
     }
 
-    return *static_cast<T *>(iterator->second.get());
+    return *static_cast<T*>(iterator->second.get());
   }
 
  private:

@@ -25,9 +25,9 @@ class ShadowTreeDelegate {
    * Returning a `nullptr` cancels the commit.
    */
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
-      const ShadowTree &shadowTree,
-      const RootShadowNode::Shared &oldRootShadowNode,
-      const RootShadowNode::Unshared &newRootShadowNode) const = 0;
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode) const = 0;
 
   /*
    * Called right after Shadow Tree commit a new state of the tree.

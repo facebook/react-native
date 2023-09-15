@@ -19,9 +19,9 @@ namespace facebook::react {
 // During parser initialization, Props structs are used to parse
 // "fake"/empty objects, and `at` is called repeatedly which tells us
 // which props are accessed during parsing, and in which order.
-const RawValue *RawPropsParser::at(
-    const RawProps &rawProps,
-    const RawPropsKey &key) const noexcept {
+const RawValue* RawPropsParser::at(
+    const RawProps& rawProps,
+    const RawPropsKey& key) const noexcept {
   if (UNLIKELY(!ready_)) {
     // Check against the same key being inserted more than once.
     // This happens commonly with nested Props structs, where the higher-level
@@ -94,7 +94,7 @@ void RawPropsParser::postPrepare() noexcept {
   nameToIndex_.reindex();
 }
 
-void RawPropsParser::preparse(const RawProps &rawProps) const noexcept {
+void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
   const size_t keyCount = keys_.size();
   rawProps.keyIndexToValueIndex_.resize(keyCount, kRawPropsValueIndexEmpty);
 
@@ -113,7 +113,7 @@ void RawPropsParser::preparse(const RawProps &rawProps) const noexcept {
       return;
 
     case RawProps::Mode::JSI: {
-      auto &runtime = *rawProps.runtime_;
+      auto& runtime = *rawProps.runtime_;
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
@@ -147,10 +147,10 @@ void RawPropsParser::preparse(const RawProps &rawProps) const noexcept {
     }
 
     case RawProps::Mode::Dynamic: {
-      const auto &dynamic = rawProps.dynamic_;
+      const auto& dynamic = rawProps.dynamic_;
       auto valueIndex = RawPropsValueIndex{0};
 
-      for (const auto &pair : dynamic.items()) {
+      for (const auto& pair : dynamic.items()) {
         auto name = pair.first.getString();
 
         auto keyIndex = nameToIndex_.at(
@@ -173,16 +173,16 @@ void RawPropsParser::preparse(const RawProps &rawProps) const noexcept {
  * To be used by RawProps only. Value iterator functions.
  */
 void RawPropsParser::iterateOverValues(
-    const RawProps &rawProps,
+    const RawProps& rawProps,
     const std::function<
-        void(RawPropsPropNameHash, const char *, RawValue const &)> &visit)
+        void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
     const {
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:
       return;
 
     case RawProps::Mode::JSI: {
-      auto &runtime = *rawProps.runtime_;
+      auto& runtime = *rawProps.runtime_;
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
@@ -208,9 +208,9 @@ void RawPropsParser::iterateOverValues(
     }
 
     case RawProps::Mode::Dynamic: {
-      const auto &dynamic = rawProps.dynamic_;
+      const auto& dynamic = rawProps.dynamic_;
 
-      for (const auto &pair : dynamic.items()) {
+      for (const auto& pair : dynamic.items()) {
         auto name = pair.first.getString();
 
         auto nameHash = RAW_PROPS_KEY_HASH(name.c_str());

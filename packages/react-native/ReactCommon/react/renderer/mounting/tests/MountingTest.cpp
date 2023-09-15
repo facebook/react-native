@@ -21,7 +21,7 @@
 namespace facebook::react {
 
 static SharedViewProps nonFlattenedDefaultProps(
-    const ComponentDescriptor &componentDescriptor) {
+    const ComponentDescriptor& componentDescriptor) {
   folly::dynamic dynamic = folly::dynamic::object();
   dynamic["position"] = "absolute";
   dynamic["top"] = 0;
@@ -43,9 +43,9 @@ static SharedViewProps nonFlattenedDefaultProps(
 }
 
 static ShadowNode::Shared makeNode(
-    const ComponentDescriptor &componentDescriptor,
+    const ComponentDescriptor& componentDescriptor,
     int tag,
-    const ShadowNode::ListOfShared &children,
+    const ShadowNode::ListOfShared& children,
     bool flattened = false) {
   auto props = flattened ? generateDefaultProps(componentDescriptor)
                          : nonFlattenedDefaultProps(componentDescriptor);
@@ -191,37 +191,37 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
               ShadowNode::ListOfShared{shadowNodeV7})}));
 
   // Layout
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV1{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV1{};
   affectedLayoutableNodesV1.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV1)
       ->layoutIfNeeded(&affectedLayoutableNodesV1);
   rootNodeV1->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV2{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV2{};
   affectedLayoutableNodesV2.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV2)
       ->layoutIfNeeded(&affectedLayoutableNodesV2);
   rootNodeV2->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV3{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV3{};
   affectedLayoutableNodesV3.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV3)
       ->layoutIfNeeded(&affectedLayoutableNodesV3);
   rootNodeV3->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV4{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV4{};
   affectedLayoutableNodesV4.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV4)
       ->layoutIfNeeded(&affectedLayoutableNodesV4);
   rootNodeV4->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV5{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV5{};
   affectedLayoutableNodesV5.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV5)
       ->layoutIfNeeded(&affectedLayoutableNodesV5);
   rootNodeV5->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV6{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV6{};
   affectedLayoutableNodesV6.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV6)
       ->layoutIfNeeded(&affectedLayoutableNodesV6);
@@ -364,7 +364,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   // The actual nodes that should be created in this transaction have a tag >
   // 105.
   EXPECT_TRUE(mutations6.size() == 25);
-  for (auto &i : mutations6) {
+  for (auto& i : mutations6) {
     if (i.type == ShadowViewMutation::Create) {
       EXPECT_TRUE(i.newChildShadowView.tag > 105);
     }
@@ -593,31 +593,31 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
               ShadowNode::ListOfShared{shadowNodeV5})}));
 
   // Layout
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV1{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV1{};
   affectedLayoutableNodesV1.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV1)
       ->layoutIfNeeded(&affectedLayoutableNodesV1);
   rootNodeV1->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV2{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV2{};
   affectedLayoutableNodesV2.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV2)
       ->layoutIfNeeded(&affectedLayoutableNodesV2);
   rootNodeV2->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV3{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV3{};
   affectedLayoutableNodesV3.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV3)
       ->layoutIfNeeded(&affectedLayoutableNodesV3);
   rootNodeV3->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV4{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV4{};
   affectedLayoutableNodesV4.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV4)
       ->layoutIfNeeded(&affectedLayoutableNodesV4);
   rootNodeV4->sealRecursive();
 
-  std::vector<const LayoutableShadowNode *> affectedLayoutableNodesV5{};
+  std::vector<const LayoutableShadowNode*> affectedLayoutableNodesV5{};
   affectedLayoutableNodesV5.reserve(1024);
   std::const_pointer_cast<RootShadowNode>(rootNodeV5)
       ->layoutIfNeeded(&affectedLayoutableNodesV5);

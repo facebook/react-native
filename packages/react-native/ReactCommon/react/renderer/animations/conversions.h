@@ -57,7 +57,7 @@ static inline std::optional<AnimationProperty> parseAnimationProperty(
 }
 
 static inline std::optional<AnimationConfig> parseAnimationConfig(
-    const folly::dynamic &config,
+    const folly::dynamic& config,
     double defaultDuration,
     bool parsePropertyType) {
   if (config.empty() || !config.isObject()) {
@@ -173,7 +173,7 @@ static inline std::optional<AnimationConfig> parseAnimationConfig(
 
 // Parse animation config from JS
 static inline std::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
-    const folly::dynamic &config) {
+    const folly::dynamic& config) {
   if (config.empty() || !config.isObject()) {
     return {};
   }

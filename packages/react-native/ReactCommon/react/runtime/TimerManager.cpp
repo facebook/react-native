@@ -22,8 +22,8 @@ void TimerManager::setRuntimeExecutor(
 }
 
 std::shared_ptr<TimerHandle> TimerManager::createReactNativeMicrotask(
-    jsi::Function &&callback,
-    std::vector<jsi::Value> &&args) {
+    jsi::Function&& callback,
+    std::vector<jsi::Value>&& args) {
   auto sharedCallback = std::make_shared<TimerCallback>(
       std::move(callback), std::move(args), /* repeat */ false);
 
@@ -35,7 +35,7 @@ std::shared_ptr<TimerHandle> TimerManager::createReactNativeMicrotask(
   return std::make_shared<TimerHandle>(timerID);
 }
 
-void TimerManager::callReactNativeMicrotasks(jsi::Runtime &runtime) {
+void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
   std::vector<uint32_t> reactNativeMicrotasksQueue;
   while (!reactNativeMicrotasksQueue_.empty()) {
     reactNativeMicrotasksQueue.clear();
@@ -52,8 +52,8 @@ void TimerManager::callReactNativeMicrotasks(jsi::Runtime &runtime) {
 }
 
 std::shared_ptr<TimerHandle> TimerManager::createTimer(
-    jsi::Function &&callback,
-    std::vector<jsi::Value> &&args,
+    jsi::Function&& callback,
+    std::vector<jsi::Value>&& args,
     double delay) {
   auto sharedCallback = std::make_shared<TimerCallback>(
       std::move(callback), std::move(args), false);
@@ -68,8 +68,8 @@ std::shared_ptr<TimerHandle> TimerManager::createTimer(
 }
 
 std::shared_ptr<TimerHandle> TimerManager::createRecurringTimer(
-    jsi::Function &&callback,
-    std::vector<jsi::Value> &&args,
+    jsi::Function&& callback,
+    std::vector<jsi::Value>&& args,
     double delay) {
   auto sharedCallback = std::make_shared<TimerCallback>(
       std::move(callback), std::move(args), true);
@@ -84,7 +84,7 @@ std::shared_ptr<TimerHandle> TimerManager::createRecurringTimer(
 }
 
 void TimerManager::deleteReactNativeMicrotask(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::shared_ptr<TimerHandle> timerHandle) {
   if (timerHandle == nullptr) {
     throw jsi::JSError(
@@ -106,7 +106,7 @@ void TimerManager::deleteReactNativeMicrotask(
 }
 
 void TimerManager::deleteTimer(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::shared_ptr<TimerHandle> timerHandle) {
   if (timerHandle == nullptr) {
     throw jsi::JSError(runtime, "clearTimeout called with an invalid handle");
@@ -119,7 +119,7 @@ void TimerManager::deleteTimer(
 }
 
 void TimerManager::deleteRecurringTimer(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::shared_ptr<TimerHandle> timerHandle) {
   if (timerHandle == nullptr) {
     throw jsi::JSError(runtime, "clearInterval called with an invalid handle");
@@ -132,7 +132,7 @@ void TimerManager::deleteRecurringTimer(
 }
 
 void TimerManager::callTimer(uint32_t timerID) {
-  runtimeExecutor_([this, timerID](jsi::Runtime &runtime) {
+  runtimeExecutor_([this, timerID](jsi::Runtime& runtime) {
     SystraceSection s("TimerManager::callTimer");
     if (timers_.count(timerID) > 0) {
       timers_[timerID]->invoke(runtime);
@@ -145,7 +145,7 @@ void TimerManager::callTimer(uint32_t timerID) {
   });
 }
 
-void TimerManager::attachGlobals(jsi::Runtime &runtime) {
+void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
   // TODL (T96212789): Skip immediate APIs when JSVM microtask queue is used.
@@ -157,9 +157,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "setImmediate"),
           2, // Function, ...args
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0) {
               throw jsi::JSError(
@@ -192,9 +192,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "clearImmediate"),
           1, // handle
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0 || !args[0].isObject() ||
                 !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
@@ -214,9 +214,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "setTimeout"),
           3, // Function, delay, ...args
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0) {
               throw jsi::JSError(
@@ -257,9 +257,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "clearTimeout"),
           1, // timerID
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0 || !args[0].isObject() ||
                 !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
@@ -279,9 +279,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "setInterval"),
           3, // Function, delay, ...args
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count < 2) {
               throw jsi::JSError(
@@ -320,9 +320,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "clearInterval"),
           1, // timerID
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0 || !args[0].isObject() ||
                 !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
@@ -342,9 +342,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "requestAnimationFrame"),
           1, // callback
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0) {
               throw jsi::JSError(
@@ -365,9 +365,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
                 0,
                 [callbackContainer = std::make_shared<CallbackContainer>(
                      args[0].getObject(rt).getFunction(rt))](
-                    jsi::Runtime &rt,
-                    const jsi::Value &thisVal,
-                    const jsi::Value *args,
+                    jsi::Runtime& rt,
+                    const jsi::Value& thisVal,
+                    const jsi::Value* args,
                     size_t count) {
                   auto performance =
                       rt.global().getPropertyAsObject(rt, "performance");
@@ -396,9 +396,9 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           jsi::PropNameID::forAscii(runtime, "cancelAnimationFrame"),
           1, // timerID
           [this](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count == 0 || !args[0].isObject() ||
                 !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {

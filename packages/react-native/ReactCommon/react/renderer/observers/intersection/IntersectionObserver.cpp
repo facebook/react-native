@@ -24,7 +24,7 @@ IntersectionObserver::IntersectionObserver(
       thresholds_(std::move(thresholds)) {}
 
 static Rect getRootBoundingRect(
-    const LayoutableShadowNode &layoutableRootShadowNode) {
+    const LayoutableShadowNode& layoutableRootShadowNode) {
   auto layoutMetrics = layoutableRootShadowNode.getLayoutMetrics();
 
   if (layoutMetrics == EmptyLayoutMetrics ||
@@ -38,7 +38,7 @@ static Rect getRootBoundingRect(
 }
 
 static Rect getTargetBoundingRect(
-    const ShadowNodeFamily::AncestorList &targetAncestors) {
+    const ShadowNodeFamily::AncestorList& targetAncestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       targetAncestors,
       {/* .includeTransform = */ true,
@@ -47,7 +47,7 @@ static Rect getTargetBoundingRect(
 }
 
 static Rect getClippedTargetBoundingRect(
-    const ShadowNodeFamily::AncestorList &targetAncestors) {
+    const ShadowNodeFamily::AncestorList& targetAncestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       targetAncestors,
       {/* .includeTransform = */ true,
@@ -60,9 +60,9 @@ static Rect getClippedTargetBoundingRect(
 // Partially equivalent to
 // https://w3c.github.io/IntersectionObserver/#compute-the-intersection
 static Rect computeIntersection(
-    const Rect &rootBoundingRect,
-    const Rect &targetBoundingRect,
-    const ShadowNodeFamily::AncestorList &targetAncestors) {
+    const Rect& rootBoundingRect,
+    const Rect& targetBoundingRect,
+    const ShadowNodeFamily::AncestorList& targetAncestors) {
   auto absoluteIntersectionRect =
       Rect::intersect(rootBoundingRect, targetBoundingRect);
 
@@ -90,10 +90,10 @@ static Rect computeIntersection(
 // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
-    const RootShadowNode &rootShadowNode,
+    const RootShadowNode& rootShadowNode,
     double mountTime) {
   const auto layoutableRootShadowNode =
-      traitCast<const LayoutableShadowNode *>(&rootShadowNode);
+      traitCast<const LayoutableShadowNode*>(&rootShadowNode);
 
   react_native_assert(
       layoutableRootShadowNode != nullptr &&
@@ -153,9 +153,9 @@ Float IntersectionObserver::getHighestThresholdCrossed(
 
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::setIntersectingState(
-    const Rect &rootBoundingRect,
-    const Rect &targetBoundingRect,
-    const Rect &intersectionRect,
+    const Rect& rootBoundingRect,
+    const Rect& targetBoundingRect,
+    const Rect& intersectionRect,
     Float threshold,
     double mountTime) {
   auto newState = IntersectionObserverState::Intersecting(threshold);
@@ -179,8 +179,8 @@ IntersectionObserver::setIntersectingState(
 
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::setNotIntersectingState(
-    const Rect &rootBoundingRect,
-    const Rect &targetBoundingRect,
+    const Rect& rootBoundingRect,
+    const Rect& targetBoundingRect,
     double mountTime) {
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();

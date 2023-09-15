@@ -32,16 +32,16 @@ class ConcreteState : public State {
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(const SharedData &data, const State &state)
-      : State(data, state) {}
+  explicit ConcreteState(const SharedData& data, const State& previousState)
+      : State(data, previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and
    * `data`.
    */
   explicit ConcreteState(
-      const SharedData &data,
-      const ShadowNodeFamily::Shared &family)
+      const SharedData& data,
+      const ShadowNodeFamily::Shared& family)
       : State(data, family) {}
 
   ~ConcreteState() override = default;
@@ -49,8 +49,8 @@ class ConcreteState : public State {
   /*
    * Returns stored data.
    */
-  const Data &getData() const {
-    return *static_cast<const Data *>(data_.get());
+  const Data& getData() const {
+    return *static_cast<const Data*>(data_.get());
   }
 
   /*
@@ -59,15 +59,15 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data &&newData, EventPriority priority) const {
+  void updateState(Data&& newData, EventPriority priority) const {
     updateState(
-        [data{std::move(newData)}](const Data &oldData) -> SharedData {
+        [data{std::move(newData)}](const Data& oldData) -> SharedData {
           return std::make_shared<Data const>(data);
         },
         priority);
   }
 
-  void updateState(Data &&newData) const {
+  void updateState(Data&& newData) const {
     updateState(
         std::move(newData),
         CoreFeatures::enableDefaultAsyncBatchedPriority
@@ -84,7 +84,7 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data &oldData)> callback,
+      std::function<StateData::Shared(const Data& oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     auto family = family_.lock();
 
@@ -95,9 +95,9 @@ class ConcreteState : public State {
     }
 
     auto stateUpdate = StateUpdate{
-        family, [=](const StateData::Shared &oldData) -> StateData::Shared {
+        family, [=](const StateData::Shared& oldData) -> StateData::Shared {
           react_native_assert(oldData);
-          return callback(*static_cast<Data const *>(oldData.get()));
+          return callback(*static_cast<Data const*>(oldData.get()));
         }};
 
     family->dispatchRawState(std::move(stateUpdate), priority);
@@ -108,7 +108,7 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic &&data) const override {
+  void updateState(folly::dynamic&& data) const override {
     updateState(Data(getData(), std::move(data)));
   }
 

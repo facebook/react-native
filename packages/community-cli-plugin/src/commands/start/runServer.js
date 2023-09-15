@@ -68,10 +68,17 @@ async function runServer(
     server: {port},
     watchFolders,
   } = metroConfig;
+  const scheme = args.https === true ? 'https' : 'http';
+  const devServerUrl = `${scheme}://${host}:${port}`;
 
   logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
 
-  const serverStatus = await isDevServerRunning(host, port, projectRoot);
+  const serverStatus = await isDevServerRunning(
+    scheme,
+    host,
+    port,
+    projectRoot,
+  );
 
   if (serverStatus === 'matched_server_running') {
     logger.info(
@@ -106,10 +113,12 @@ async function runServer(
     watchFolders,
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host,
-    port,
     projectRoot,
     logger,
+    unstable_experiments: {
+      // NOTE: Only affects the /open-debugger endpoint
+      enableCustomDebuggerFrontend: true,
+    },
   });
 
   let reportEvent: (event: TerminalReportableEvent) => void;
@@ -124,7 +133,11 @@ async function runServer(
       }
       if (args.interactive && event.type === 'dep_graph_loaded') {
         logger.info('Dev server ready');
-        attachKeyHandlers(ctx, messageSocketEndpoint);
+        attachKeyHandlers({
+          cliConfig: ctx,
+          devServerUrl,
+          messageSocket: messageSocketEndpoint,
+        });
       }
     },
   };

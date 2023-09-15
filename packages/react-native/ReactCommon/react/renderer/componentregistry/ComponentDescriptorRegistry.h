@@ -38,7 +38,7 @@ class ComponentDescriptorRegistry {
    */
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
-      const ComponentDescriptorProviderRegistry &providerRegistry,
+      const ComponentDescriptorProviderRegistry& providerRegistry,
       ContextContainer::Shared contextContainer);
 
   /*
@@ -46,31 +46,31 @@ class ComponentDescriptorRegistry {
    * If you requesting a ComponentDescriptor and unsure that it's there, you are
    * doing something wrong.
    */
-  const ComponentDescriptor *
+  const ComponentDescriptor*
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle componentHandle) const;
 
-  const ComponentDescriptor &at(const std::string &componentName) const;
-  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
+  const ComponentDescriptor& at(const std::string& componentName) const;
+  const ComponentDescriptor& at(ComponentHandle componentHandle) const;
 
   bool hasComponentDescriptorAt(ComponentHandle componentHandle) const;
 
   ShadowNode::Shared createNode(
       Tag tag,
-      const std::string &viewName,
+      const std::string& viewName,
       SurfaceId surfaceId,
-      const folly::dynamic &props,
-      const InstanceHandle::Shared &instanceHandle) const;
+      const folly::dynamic& props,
+      const InstanceHandle::Shared& instanceHandle) const;
 
   void setFallbackComponentDescriptor(
-      const SharedComponentDescriptor &descriptor);
+      const SharedComponentDescriptor& descriptor);
   ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
 
  private:
   friend class ComponentDescriptorProviderRegistry;
 
   void registerComponentDescriptor(
-      const SharedComponentDescriptor &componentDescriptor) const;
+      const SharedComponentDescriptor& componentDescriptor) const;
 
   /*
    * Creates a `ComponentDescriptor` using specified
@@ -87,7 +87,7 @@ class ComponentDescriptorRegistry {
   mutable butter::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
-  const ComponentDescriptorProviderRegistry &providerRegistry_;
+  const ComponentDescriptorProviderRegistry& providerRegistry_;
   ContextContainer::Shared contextContainer_;
 };
 

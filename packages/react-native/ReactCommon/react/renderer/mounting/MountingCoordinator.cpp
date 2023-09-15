@@ -20,7 +20,7 @@
 
 namespace facebook::react {
 
-MountingCoordinator::MountingCoordinator(const ShadowTreeRevision &baseRevision)
+MountingCoordinator::MountingCoordinator(const ShadowTreeRevision& baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       telemetryController_(*this) {
@@ -67,7 +67,7 @@ bool MountingCoordinator::waitForTransaction(
 }
 
 void MountingCoordinator::updateBaseRevision(
-    const ShadowTreeRevision &baseRevision) const {
+    const ShadowTreeRevision& baseRevision) const {
   baseRevision_ = baseRevision;
 }
 
@@ -182,11 +182,11 @@ bool MountingCoordinator::hasPendingTransactions() const {
   return lastRevision_.has_value();
 }
 
-const TelemetryController &MountingCoordinator::getTelemetryController() const {
+const TelemetryController& MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
-const ShadowTreeRevision &MountingCoordinator::getBaseRevision() const {
+const ShadowTreeRevision& MountingCoordinator::getBaseRevision() const {
   return baseRevision_;
 }
 

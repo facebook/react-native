@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cxxreact/MessageQueueThread.h>
 #include <fbjni/fbjni.h>
 #include <jsc/JSCRuntime.h>
 #include <jsi/jsi.h>
@@ -29,7 +30,8 @@ class JSCInstance : public jni::HybridClass<JSCInstance, JJSEngineInstance> {
     });
   }
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept {
+  std::unique_ptr<jsi::Runtime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
     return jsc::makeJSCRuntime();
   }
 
@@ -40,7 +42,7 @@ class JSCInstance : public jni::HybridClass<JSCInstance, JJSEngineInstance> {
 
 } // namespace facebook::react
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
   return facebook::jni::initialize(
       vm, [] { facebook::react::JSCInstance::registerNatives(); });
 }

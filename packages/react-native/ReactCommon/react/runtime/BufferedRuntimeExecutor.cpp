@@ -17,7 +17,7 @@ BufferedRuntimeExecutor::BufferedRuntimeExecutor(
       isBufferingEnabled_(true),
       lastIndex_(0) {}
 
-void BufferedRuntimeExecutor::execute(Work &&callback) {
+void BufferedRuntimeExecutor::execute(Work&& callback) {
   if (!isBufferingEnabled_) {
     // Fast path: Schedule directly to RuntimeExecutor, without locking
     runtimeExecutor_(std::move(callback));
@@ -50,7 +50,7 @@ void BufferedRuntimeExecutor::flush() {
 
 void BufferedRuntimeExecutor::unsafeFlush() {
   while (queue_.size() > 0) {
-    const BufferedWork &bufferedWork = queue_.top();
+    const BufferedWork& bufferedWork = queue_.top();
     Work work = std::move(bufferedWork.work_);
     runtimeExecutor_(std::move(work));
     queue_.pop();

@@ -42,8 +42,7 @@ internal object ProjectUtils {
               .property(propertyString)
               .toString()
               .lowercaseCompat()
-              .toBooleanStrictOrNullCompat()
-              ?: true
+              .toBooleanStrictOrNullCompat() ?: true
         } else if (project.extensions.extraProperties.has("react")) {
           @Suppress("UNCHECKED_CAST")
           val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>

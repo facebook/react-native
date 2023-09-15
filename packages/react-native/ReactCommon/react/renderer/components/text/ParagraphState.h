@@ -55,16 +55,16 @@ struct ParagraphState {
 
 #ifdef ANDROID
   ParagraphState(
-      const AttributedString &attributedString,
-      const ParagraphAttributes &paragraphAttributes,
-      const ParagraphLayoutManager &paragraphLayoutManager)
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      const ParagraphLayoutManager& paragraphLayoutManager)
       : attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
         paragraphLayoutManager(paragraphLayoutManager) {}
   ParagraphState() = default;
   ParagraphState(
-      const ParagraphState &previousState,
-      const folly::dynamic &data) {
+      const ParagraphState& previousState,
+      const folly::dynamic& data) {
     react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;

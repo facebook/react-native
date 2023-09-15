@@ -314,8 +314,11 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  public void setTransform(@NonNull ReactViewGroup view, @Nullable ReadableArray matrix) {
-    super.setTransform(view, matrix);
+  protected void setTransformProperty(
+      @NonNull ReactViewGroup view,
+      @Nullable ReadableArray transforms,
+      @Nullable ReadableArray transformOrigin) {
+    super.setTransformProperty(view, transforms, transformOrigin);
     view.setBackfaceVisibilityDependantOpacity();
   }
 

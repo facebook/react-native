@@ -123,12 +123,11 @@ ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() co
   return static_cast<const std::string *>(flavor_.get())->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(const ShadowNode::Unshared &shadowNode) const
+void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode &shadowNode) const
 {
   ConcreteComponentDescriptor::adopt(shadowNode);
 
-  assert(std::dynamic_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode));
-  auto &legacyViewManagerInteropShadowNode = static_cast<LegacyViewManagerInteropShadowNode &>(*shadowNode);
+  auto &legacyViewManagerInteropShadowNode = static_cast<LegacyViewManagerInteropShadowNode &>(shadowNode);
 
   auto state = LegacyViewManagerInteropState{};
   state.coordinator = _coordinator;

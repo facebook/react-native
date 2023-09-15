@@ -51,7 +51,7 @@ class RawProps final {
   /*
    * Creates an object with given `runtime` and `value`.
    */
-  RawProps(jsi::Runtime &runtime, const jsi::Value &value) noexcept;
+  RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
   /*
    * Creates an object with given `folly::dynamic` object.
@@ -59,21 +59,21 @@ class RawProps final {
    * We need this temporary, only because we have a callsite that does not have
    * a `jsi::Runtime` behind the data.
    */
-  RawProps(const folly::dynamic &dynamic) noexcept;
+  RawProps(const folly::dynamic& dynamic) noexcept;
 
   /*
    * Not moveable.
    */
-  RawProps(RawProps &&other) noexcept = delete;
-  RawProps &operator=(RawProps &&other) noexcept = delete;
+  RawProps(RawProps&& other) noexcept = delete;
+  RawProps& operator=(RawProps&& other) noexcept = delete;
 
   /*
    * Not copyable.
    */
-  RawProps(const RawProps &other) noexcept = delete;
-  RawProps &operator=(const RawProps &other) noexcept = delete;
+  RawProps(const RawProps& other) noexcept = delete;
+  RawProps& operator=(const RawProps& other) noexcept = delete;
 
-  void parse(const RawPropsParser &parser, const PropsParserContext &)
+  void parse(const RawPropsParser& parser, const PropsParserContext&)
       const noexcept;
 
   /*
@@ -93,7 +93,7 @@ class RawProps final {
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue *at(const char *name, const char *prefix, const char *suffix)
+  const RawValue* at(const char* name, const char* prefix, const char* suffix)
       const noexcept;
 
   /**
@@ -102,13 +102,12 @@ class RawProps final {
    */
   void iterateOverValues(
       const std::function<
-          void(RawPropsPropNameHash, const char *, RawValue const &)> &fn)
-      const;
+          void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const;
 
  private:
   friend class RawPropsParser;
 
-  mutable const RawPropsParser *parser_{nullptr};
+  mutable const RawPropsParser* parser_{nullptr};
 
   /*
    * Source artefacts:
@@ -117,7 +116,7 @@ class RawProps final {
   mutable Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
-  jsi::Runtime *runtime_{};
+  jsi::Runtime* runtime_{};
   jsi::Value value_;
 
   // Case 2: Source data is represented as `folly::dynamic`.

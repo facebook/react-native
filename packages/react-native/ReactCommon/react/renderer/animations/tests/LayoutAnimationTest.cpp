@@ -61,7 +61,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
-      [](const std::function<void(jsi::Runtime &)> & /*unused*/) {};
+      [](const std::function<void(jsi::Runtime&)>& /*unused*/) {};
 
   // Create component descriptor registry for animation driver
   auto providerRegistry =
@@ -138,7 +138,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
               &messWithLayoutableOnlyFlag,
           });
 
-      std::vector<const LayoutableShadowNode *> affectedLayoutableNodes{};
+      std::vector<const LayoutableShadowNode*> affectedLayoutableNodes{};
       affectedLayoutableNodes.reserve(1024);
 
       // Laying out the tree.

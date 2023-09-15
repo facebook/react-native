@@ -25,7 +25,7 @@ std::string DebugStringConvertible::getDebugChildrenDescription(
   auto trailing = options.format ? std::string{"\n"} : std::string{""};
   std::string childrenString;
 
-  for (const auto &child : getDebugChildren()) {
+  for (const auto& child : getDebugChildren()) {
     if (!child) {
       continue;
     }
@@ -51,7 +51,7 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 
   std::string propsString;
 
-  for (const auto &prop : getDebugProps()) {
+  for (const auto& prop : getDebugProps()) {
     if (!prop) {
       continue;
     }
@@ -125,22 +125,22 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
 /*
  * `toString`-family implementation.
  */
-std::string toString(const std::string &value) {
+std::string toString(const std::string& value) {
   return value;
 }
-std::string toString(const int &value) {
+std::string toString(const int& value) {
   return folly::to<std::string>(value);
 }
-std::string toString(const bool &value) {
+std::string toString(const bool& value) {
   return folly::to<std::string>(value);
 }
-std::string toString(const float &value) {
+std::string toString(const float& value) {
   return folly::to<std::string>(value);
 }
-std::string toString(const double &value) {
+std::string toString(const double& value) {
   return folly::to<std::string>(value);
 }
-std::string toString(const void *value) {
+std::string toString(const void* value) {
   if (value == nullptr) {
     return "null";
   }

@@ -30,8 +30,8 @@ class TimelineFrame final {
   using List = std::vector<TimelineFrame>;
 
   TimelineFrame() = delete;
-  TimelineFrame(const TimelineFrame &timelineFrame) noexcept = default;
-  TimelineFrame &operator=(const TimelineFrame &other) noexcept = default;
+  TimelineFrame(const TimelineFrame& timelineFrame) noexcept = default;
+  TimelineFrame& operator=(const TimelineFrame& other) noexcept = default;
 
   int getIndex() const noexcept;
   TelemetryTimePoint getTimePoint() const noexcept;

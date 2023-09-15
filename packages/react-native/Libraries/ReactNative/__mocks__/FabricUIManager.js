@@ -199,12 +199,15 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       });
     },
   ),
+
   cloneNode: jest.fn((node: Node): Node => {
     return toNode({...fromNode(node)});
   }),
+
   cloneNodeWithNewChildren: jest.fn((node: Node): Node => {
     return toNode({...fromNode(node), children: []});
   }),
+
   cloneNodeWithNewProps: jest.fn((node: Node, newProps: NodeProps): Node => {
     return toNode({
       ...fromNode(node),
@@ -214,6 +217,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       },
     });
   }),
+
   cloneNodeWithNewChildrenAndProps: jest.fn(
     (node: Node, newProps: NodeProps): Node => {
       return toNode({
@@ -226,28 +230,34 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       });
     },
   ),
+
   createChildSet: jest.fn((rootTag: RootTag): NodeSet => {
     return [];
   }),
+
   appendChild: jest.fn((parentNode: Node, child: Node): Node => {
     // Although the signature returns a Node, React expects this to be mutating.
     fromNode(parentNode).children.push(child);
     return parentNode;
   }),
+
   appendChildToSet: jest.fn((childSet: NodeSet, child: Node): void => {
     childSet.push(child);
   }),
+
   completeRoot: jest.fn((rootTag: RootTag, childSet: NodeSet): void => {
     commitHooks.forEach(hook =>
       hook.shadowTreeWillCommit(rootTag, roots.get(rootTag), childSet),
     );
     roots.set(rootTag, childSet);
   }),
+
   measure: jest.fn((node: Node, callback: MeasureOnSuccessCallback): void => {
     ensureHostNode(node);
 
     callback(10, 10, 100, 100, 0, 0);
   }),
+
   measureInWindow: jest.fn(
     (node: Node, callback: MeasureInWindowOnSuccessCallback): void => {
       ensureHostNode(node);
@@ -255,6 +265,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       callback(10, 10, 100, 100);
     },
   ),
+
   measureLayout: jest.fn(
     (
       node: Node,
@@ -268,6 +279,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       onSuccess(1, 1, 100, 100);
     },
   ),
+
   configureNextLayoutAnimation: jest.fn(
     (
       config: LayoutAnimationConfig,
@@ -275,11 +287,15 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       errorCallback: () => void,
     ): void => {},
   ),
+
   sendAccessibilityEvent: jest.fn((node: Node, eventType: string): void => {}),
+
   findShadowNodeByTag_DEPRECATED: jest.fn((reactTag: number): ?Node => {}),
+
   getBoundingClientRect: jest.fn(
     (
       node: Node,
+      includeTransform: boolean,
     ): ?[
       /* x:*/ number,
       /* y:*/ number,
@@ -312,13 +328,19 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       return [x, y, width, height];
     },
   ),
+
   hasPointerCapture: jest.fn((node: Node, pointerId: number): boolean => false),
+
   setPointerCapture: jest.fn((node: Node, pointerId: number): void => {}),
+
   releasePointerCapture: jest.fn((node: Node, pointerId: number): void => {}),
+
   setNativeProps: jest.fn((node: Node, newProps: NodeProps): void => {}),
+
   dispatchCommand: jest.fn(
     (node: Node, commandName: string, args: Array<mixed>): void => {},
   ),
+
   getParentNode: jest.fn((node: Node): ?InternalInstanceHandle => {
     const ancestors = getAncestorsInCurrentTree(node);
     if (ancestors == null || ancestors.length - 2 < 0) {
@@ -329,6 +351,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     const parentInCurrentTree = fromNode(parentOfParent).children[position];
     return fromNode(parentInCurrentTree).instanceHandle;
   }),
+
   getChildNodes: jest.fn(
     (node: Node): $ReadOnlyArray<InternalInstanceHandle> => {
       const nodeInCurrentTree = getNodeInCurrentTree(node);
@@ -342,9 +365,11 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       );
     },
   ),
+
   isConnected: jest.fn((node: Node): boolean => {
     return getNodeInCurrentTree(node) != null;
   }),
+
   getTextContent: jest.fn((node: Node): string => {
     const nodeInCurrentTree = getNodeInCurrentTree(node);
 
@@ -366,6 +391,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
     }
     return result;
   }),
+
   compareDocumentPosition: jest.fn((node: Node, otherNode: Node): number => {
     /* eslint-disable no-bitwise */
     const ReadOnlyNode = require('../../DOM/Nodes/ReadOnlyNode').default;
@@ -419,6 +445,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
 
     return ReadOnlyNode.DOCUMENT_POSITION_FOLLOWING;
   }),
+
   getOffset: jest.fn(
     (
       node: Node,
@@ -469,6 +496,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       ];
     },
   ),
+
   getScrollPosition: jest.fn(
     (node: Node): ?[/* scrollLeft: */ number, /* scrollTop: */ number] => {
       ensureHostNode(node);
@@ -496,6 +524,109 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
       return [scrollLeft, scrollTop];
     },
   ),
+
+  getScrollSize: jest.fn(
+    (node: Node): ?[/* scrollLeft: */ number, /* scrollTop: */ number] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const scrollForTests: ?{
+        scrollWidth: number,
+        scrollHeight: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__scrollForTests;
+
+      if (scrollForTests == null) {
+        return null;
+      }
+
+      const {scrollWidth, scrollHeight} = scrollForTests;
+      return [scrollWidth, scrollHeight];
+    },
+  ),
+
+  getInnerSize: jest.fn(
+    (node: Node): ?[/* width: */ number, /* height: */ number] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const innerSizeForTests: ?{
+        width: number,
+        height: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__innerSizeForTests;
+
+      if (innerSizeForTests == null) {
+        return null;
+      }
+
+      const {width, height} = innerSizeForTests;
+      return [width, height];
+    },
+  ),
+
+  getBorderSize: jest.fn(
+    (
+      node: Node,
+    ): ?[
+      /* topWidth: */ number,
+      /* rightWidth: */ number,
+      /* bottomWidth: */ number,
+      /* leftWidth: */ number,
+    ] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const borderSizeForTests: ?{
+        topWidth?: number,
+        rightWidth?: number,
+        bottomWidth?: number,
+        leftWidth?: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__borderSizeForTests;
+
+      if (borderSizeForTests == null) {
+        return null;
+      }
+
+      const {
+        topWidth = 0,
+        rightWidth = 0,
+        bottomWidth = 0,
+        leftWidth = 0,
+      } = borderSizeForTests;
+      return [topWidth, rightWidth, bottomWidth, leftWidth];
+    },
+  ),
+
+  getTagName: jest.fn((node: Node): string => {
+    ensureHostNode(node);
+    return 'RN:' + fromNode(node).viewName;
+  }),
 
   __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
     return fromNode(node).instanceHandle;

@@ -22,7 +22,7 @@ class CoreComponentsRegistry
 
   static void registerNatives();
 
-  explicit CoreComponentsRegistry(ComponentFactory *delegate);
+  explicit CoreComponentsRegistry(ComponentFactory* delegate);
 
   static std::shared_ptr<const ComponentDescriptorProviderRegistry>
   sharedProviderRegistry();
@@ -30,11 +30,11 @@ class CoreComponentsRegistry
  private:
   friend HybridBase;
 
-  const ComponentFactory *delegate_;
+  const ComponentFactory* delegate_;
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
-      ComponentFactory *delegate);
+      ComponentFactory* delegate);
 };
 
 } // namespace facebook::react

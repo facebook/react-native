@@ -17,14 +17,14 @@
 
 namespace facebook::react {
 
-bool RawPropsKeyMap::hasSameName(const Item &lhs, const Item &rhs) noexcept {
+bool RawPropsKeyMap::hasSameName(const Item& lhs, const Item& rhs) noexcept {
   return lhs.length == rhs.length &&
       (std::memcmp(lhs.name, rhs.name, lhs.length) == 0);
 }
 
 bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
-    const Item &lhs,
-    const Item &rhs) noexcept {
+    const Item& lhs,
+    const Item& rhs) noexcept {
   if (lhs.length != rhs.length) {
     return lhs.length < rhs.length;
   }
@@ -33,7 +33,7 @@ bool RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne(
 }
 
 void RawPropsKeyMap::insert(
-    const RawPropsKey &key,
+    const RawPropsKey& key,
     RawPropsValueIndex value) noexcept {
   auto item = Item{};
   item.value = value;
@@ -77,7 +77,7 @@ void RawPropsKeyMap::reindex() noexcept {
 
   auto length = RawPropsPropNameLength{0};
   for (size_t i = 0; i < items_.size(); i++) {
-    auto &item = items_[i];
+    auto& item = items_[i];
     if (item.length != length) {
       for (auto j = length; j < item.length; j++) {
         buckets_[j] = static_cast<RawPropsPropNameLength>(i);
@@ -92,7 +92,7 @@ void RawPropsKeyMap::reindex() noexcept {
 }
 
 RawPropsValueIndex RawPropsKeyMap::at(
-    const char *name,
+    const char* name,
     RawPropsPropNameLength length) noexcept {
   react_native_assert(length > 0);
   react_native_assert(length < kPropNameLengthHardCap);

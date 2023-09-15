@@ -33,7 +33,7 @@
 
 namespace facebook::react {
 
-inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
+inline std::string toString(const DynamicTypeRamp& dynamicTypeRamp) {
   switch (dynamicTypeRamp) {
     case DynamicTypeRamp::Caption2:
       return "caption2";
@@ -67,9 +67,9 @@ inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    DynamicTypeRamp &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    DynamicTypeRamp& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -111,7 +111,7 @@ inline void fromRawValue(
   result = DynamicTypeRamp::Body;
 }
 
-inline std::string toString(const EllipsizeMode &ellipsisMode) {
+inline std::string toString(const EllipsizeMode& ellipsisMode) {
   switch (ellipsisMode) {
     case EllipsizeMode::Clip:
       return "clip";
@@ -131,9 +131,9 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    EllipsizeMode &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    EllipsizeMode& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -161,7 +161,7 @@ inline void fromRawValue(
   result = EllipsizeMode::Tail;
 }
 
-inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
+inline std::string toString(const TextBreakStrategy& textBreakStrategy) {
   switch (textBreakStrategy) {
     case TextBreakStrategy::Simple:
       return "simple";
@@ -177,9 +177,9 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextBreakStrategy &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -204,9 +204,9 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontWeight &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontWeight& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -248,14 +248,14 @@ inline void fromRawValue(
   result = FontWeight::Regular;
 }
 
-inline std::string toString(const FontWeight &fontWeight) {
+inline std::string toString(const FontWeight& fontWeight) {
   return folly::to<std::string>((int)fontWeight);
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontStyle &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -280,7 +280,7 @@ inline void fromRawValue(
   result = FontStyle::Normal;
 }
 
-inline std::string toString(const FontStyle &fontStyle) {
+inline std::string toString(const FontStyle& fontStyle) {
   switch (fontStyle) {
     case FontStyle::Normal:
       return "normal";
@@ -297,14 +297,14 @@ inline std::string toString(const FontStyle &fontStyle) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontVariant &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontVariant& result) {
   result = FontVariant::Default;
   react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = std::vector<std::string>{value};
-    for (const auto &item : items) {
+    for (const auto& item : items) {
       if (item == "small-caps") {
         result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
       } else if (item == "oldstyle-nums") {
@@ -327,7 +327,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const FontVariant &fontVariant) {
+inline std::string toString(const FontVariant& fontVariant) {
   auto result = std::string{};
   auto separator = std::string{", "};
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
@@ -354,9 +354,9 @@ inline std::string toString(const FontVariant &fontVariant) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextTransform &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextTransform& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -385,7 +385,7 @@ inline void fromRawValue(
   result = TextTransform::None;
 }
 
-inline std::string toString(const TextTransform &textTransform) {
+inline std::string toString(const TextTransform& textTransform) {
   switch (textTransform) {
     case TextTransform::None:
       return "none";
@@ -406,9 +406,9 @@ inline std::string toString(const TextTransform &textTransform) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextAlignment &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextAlignment& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -436,7 +436,7 @@ inline void fromRawValue(
   result = TextAlignment::Natural;
 }
 
-inline std::string toString(const TextAlignment &textAlignment) {
+inline std::string toString(const TextAlignment& textAlignment) {
   switch (textAlignment) {
     case TextAlignment::Natural:
       return "auto";
@@ -456,9 +456,9 @@ inline std::string toString(const TextAlignment &textAlignment) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    WritingDirection &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    WritingDirection& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -482,7 +482,7 @@ inline void fromRawValue(
   result = WritingDirection::Natural;
 }
 
-inline std::string toString(const WritingDirection &writingDirection) {
+inline std::string toString(const WritingDirection& writingDirection) {
   switch (writingDirection) {
     case WritingDirection::Natural:
       return "auto";
@@ -498,9 +498,9 @@ inline std::string toString(const WritingDirection &writingDirection) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    LineBreakStrategy &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    LineBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -526,7 +526,7 @@ inline void fromRawValue(
   result = LineBreakStrategy::None;
 }
 
-inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
+inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
   switch (lineBreakStrategy) {
     case LineBreakStrategy::None:
       return "none";
@@ -544,9 +544,9 @@ inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationLineType &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextDecorationLineType& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -577,7 +577,7 @@ inline void fromRawValue(
 }
 
 inline std::string toString(
-    const TextDecorationLineType &textDecorationLineType) {
+    const TextDecorationLineType& textDecorationLineType) {
   switch (textDecorationLineType) {
     case TextDecorationLineType::None:
       return "none";
@@ -596,9 +596,9 @@ inline std::string toString(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationStyle &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextDecorationStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -624,7 +624,7 @@ inline void fromRawValue(
   result = TextDecorationStyle::Solid;
 }
 
-inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
+inline std::string toString(const TextDecorationStyle& textDecorationStyle) {
   switch (textDecorationStyle) {
     case TextDecorationStyle::Solid:
       return "solid";
@@ -642,7 +642,7 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
   return "solid";
 }
 
-inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
+inline std::string toString(const HyphenationFrequency& hyphenationFrequency) {
   switch (hyphenationFrequency) {
     case HyphenationFrequency::None:
       return "none";
@@ -658,9 +658,9 @@ inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    HyphenationFrequency &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    HyphenationFrequency& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -685,10 +685,10 @@ inline void fromRawValue(
 }
 
 inline ParagraphAttributes convertRawProp(
-    const PropsParserContext &context,
-    const RawProps &rawProps,
-    const ParagraphAttributes &sourceParagraphAttributes,
-    const ParagraphAttributes &defaultParagraphAttributes) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const ParagraphAttributes& sourceParagraphAttributes,
+    const ParagraphAttributes& defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
@@ -744,9 +744,9 @@ inline ParagraphAttributes convertRawProp(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AttributedString::Range &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    AttributedString::Range& result) {
   auto map = (butter::map<std::string, int>)value;
 
   auto start = map.find("start");
@@ -759,7 +759,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const AttributedString::Range &range) {
+inline std::string toString(const AttributedString::Range& range) {
   return "{location: " + folly::to<std::string>(range.location) +
       ", length: " + folly::to<std::string>(range.length) + "}";
 }
@@ -767,7 +767,7 @@ inline std::string toString(const AttributedString::Range &range) {
 #ifdef ANDROID
 
 inline folly::dynamic toDynamic(
-    const ParagraphAttributes &paragraphAttributes) {
+    const ParagraphAttributes& paragraphAttributes) {
   auto values = folly::dynamic::object();
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
@@ -781,7 +781,7 @@ inline folly::dynamic toDynamic(
   return values;
 }
 
-inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
+inline folly::dynamic toDynamic(const FontVariant& fontVariant) {
   auto result = folly::dynamic::array();
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
     result.push_back("small-caps");
@@ -802,7 +802,7 @@ inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
   return result;
 }
 
-inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
+inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
     _textAttributes(
@@ -895,7 +895,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   return _textAttributes;
 }
 
-inline folly::dynamic toDynamic(const AttributedString &attributedString) {
+inline folly::dynamic toDynamic(const AttributedString& attributedString) {
   auto value = folly::dynamic::object();
   auto fragments = folly::dynamic::array();
   for (auto fragment : attributedString.getFragments()) {
@@ -921,7 +921,7 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   return value;
 }
 
-inline folly::dynamic toDynamic(const AttributedString::Range &range) {
+inline folly::dynamic toDynamic(const AttributedString::Range& range) {
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["location"] = range.location;
   dynamicValue["length"] = range.length;
@@ -978,7 +978,7 @@ constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
 constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
-inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
+inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   auto builder = MapBufferBuilder();
   builder.putInt(
       PA_KEY_MAX_NUMBER_OF_LINES, paragraphAttributes.maximumNumberOfLines);
@@ -998,7 +998,7 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const FontVariant &fontVariant) {
+inline MapBuffer toMapBuffer(const FontVariant& fontVariant) {
   auto builder = MapBufferBuilder();
   int index = 0;
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
@@ -1020,7 +1020,7 @@ inline MapBuffer toMapBuffer(const FontVariant &fontVariant) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
+inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
     builder.putInt(
@@ -1127,7 +1127,7 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
+inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   auto fragmentsBuilder = MapBufferBuilder();
 
   int index = 0;

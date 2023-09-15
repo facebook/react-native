@@ -11,9 +11,9 @@
 
 #include <yoga/YGEnums.h>
 
+#include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
-#include <yoga/Yoga-internal.h>
 
 namespace facebook::yoga {
 
@@ -34,7 +34,7 @@ static void appendFormattedString(std::string& str, const char* fmt, ...) {
   va_start(args, fmt);
   va_list argsCopy;
   va_copy(argsCopy, args);
-  std::vector<char> buf(1 + vsnprintf(NULL, 0, fmt, args));
+  std::vector<char> buf(1 + static_cast<size_t>(vsnprintf(NULL, 0, fmt, args)));
   va_end(args);
   vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
@@ -97,7 +97,7 @@ static void appendEdges(
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
-      appendNumberIfNotZero(base, str, edges[edge]);
+      appendNumberIfNotZero(base, str, edges[static_cast<size_t>(edge)]);
     }
   }
 }
@@ -118,13 +118,13 @@ static void appendEdgeIfNotUndefined(
 
 void nodeToString(
     std::string& str,
-    yoga::Node* node,
-    YGPrintOptions options,
+    const yoga::Node* node,
+    PrintOptions options,
     uint32_t level) {
   indent(str, level);
   appendFormattedString(str, "<div ");
 
-  if (options & YGPrintOptionsLayout) {
+  if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
     appendFormattedString(str, "layout=\"");
     appendFormattedString(
         str, "width: %g; ", node->getLayout().dimensions[YGDimensionWidth]);
@@ -137,7 +137,7 @@ void nodeToString(
     appendFormattedString(str, "\" ");
   }
 
-  if (options & YGPrintOptionsStyle) {
+  if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendFormattedString(str, "style=\"");
     const auto& style = node->getStyle();
     if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
@@ -228,9 +228,10 @@ void nodeToString(
   }
   appendFormattedString(str, ">");
 
-  const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
-  if (options & YGPrintOptionsChildren && childCount > 0) {
-    for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  if ((options & PrintOptions::Children) == PrintOptions::Children &&
+      childCount > 0) {
+    for (size_t i = 0; i < childCount; i++) {
       appendFormattedString(str, "\n");
       nodeToString(str, node->getChild(i), options, level + 1);
     }
@@ -238,6 +239,12 @@ void nodeToString(
     indent(str, level);
   }
   appendFormattedString(str, "</div>");
+}
+
+void print(const yoga::Node* node, PrintOptions options) {
+  std::string str;
+  yoga::nodeToString(str, node, options, 0);
+  yoga::log(node, LogLevel::Debug, str.c_str());
 }
 
 } // namespace facebook::yoga

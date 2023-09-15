@@ -12,11 +12,11 @@
 
 namespace facebook::react::HostPlatformViewTraitsInitializer {
 
-inline bool formsStackingContext(const ViewProps &viewProps) {
+inline bool formsStackingContext(const ViewProps& viewProps) {
   return viewProps.elevation != 0;
 }
 
-inline bool formsView(const ViewProps &viewProps) {
+inline bool formsView(const ViewProps& viewProps) {
   return viewProps.nativeBackground.has_value() ||
       viewProps.nativeForeground.has_value() || viewProps.focusable ||
       viewProps.hasTVPreferredFocus ||

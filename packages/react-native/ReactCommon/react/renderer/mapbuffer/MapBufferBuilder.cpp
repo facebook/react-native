@@ -29,7 +29,7 @@ MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
 void MapBufferBuilder::storeKeyValue(
     MapBuffer::Key key,
     MapBuffer::DataType type,
-    const uint8_t *value,
+    const uint8_t* value,
     uint32_t valueSize) {
   if (valueSize > MAX_BUCKET_VALUE_SIZE) {
     LOG(ERROR) << "Error: size of value must be <= MAX_VALUE_SIZE. ValueSize: "
@@ -38,7 +38,7 @@ void MapBufferBuilder::storeKeyValue(
   }
 
   uint64_t data = 0;
-  auto *dataPtr = reinterpret_cast<uint8_t *>(&data);
+  auto* dataPtr = reinterpret_cast<uint8_t*>(&data);
   memcpy(dataPtr, value, valueSize);
 
   buckets_.emplace_back(key, static_cast<uint16_t>(type), data);
@@ -56,7 +56,7 @@ void MapBufferBuilder::putBool(MapBuffer::Key key, bool value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Boolean,
-      reinterpret_cast<const uint8_t *>(&intValue),
+      reinterpret_cast<const uint8_t*>(&intValue),
       INT_SIZE);
 }
 
@@ -64,7 +64,7 @@ void MapBufferBuilder::putDouble(MapBuffer::Key key, double value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Double,
-      reinterpret_cast<const uint8_t *>(&value),
+      reinterpret_cast<const uint8_t*>(&value),
       DOUBLE_SIZE);
 }
 
@@ -72,13 +72,13 @@ void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Int,
-      reinterpret_cast<const uint8_t *>(&value),
+      reinterpret_cast<const uint8_t*>(&value),
       INT_SIZE);
 }
 
-void MapBufferBuilder::putString(MapBuffer::Key key, const std::string &value) {
+void MapBufferBuilder::putString(MapBuffer::Key key, const std::string& value) {
   auto strSize = value.size();
-  const char *strData = value.data();
+  const char* strData = value.data();
 
   // format [length of string (int)] + [Array of Characters in the string]
   auto offset = dynamicData_.size();
@@ -90,11 +90,11 @@ void MapBufferBuilder::putString(MapBuffer::Key key, const std::string &value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::String,
-      reinterpret_cast<const uint8_t *>(&offset),
+      reinterpret_cast<const uint8_t*>(&offset),
       INT_SIZE);
 }
 
-void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, const MapBuffer &map) {
+void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, const MapBuffer& map) {
   auto mapBufferSize = map.size();
 
   auto offset = dynamicData_.size();
@@ -109,23 +109,23 @@ void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, const MapBuffer &map) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Map,
-      reinterpret_cast<const uint8_t *>(&offset),
+      reinterpret_cast<const uint8_t*>(&offset),
       INT_SIZE);
 }
 
 void MapBufferBuilder::putMapBufferList(
     MapBuffer::Key key,
-    const std::vector<MapBuffer> &mapBufferList) {
+    const std::vector<MapBuffer>& mapBufferList) {
   int32_t offset = dynamicData_.size();
   int32_t dataSize = 0;
-  for (const MapBuffer &mapBuffer : mapBufferList) {
+  for (const MapBuffer& mapBuffer : mapBufferList) {
     dataSize = dataSize + INT_SIZE + mapBuffer.size();
   }
 
   dynamicData_.resize(offset + INT_SIZE, 0);
   memcpy(dynamicData_.data() + offset, &dataSize, INT_SIZE);
 
-  for (const MapBuffer &mapBuffer : mapBufferList) {
+  for (const MapBuffer& mapBuffer : mapBufferList) {
     int32_t mapBufferSize = mapBuffer.size();
     int32_t dynamicDataSize = dynamicData_.size();
     dynamicData_.resize(dynamicDataSize + INT_SIZE + mapBufferSize, 0);
@@ -142,13 +142,13 @@ void MapBufferBuilder::putMapBufferList(
   storeKeyValue(
       key,
       MapBuffer::DataType::Map,
-      reinterpret_cast<const uint8_t *>(&offset),
+      reinterpret_cast<const uint8_t*>(&offset),
       INT_SIZE);
 }
 
 static inline bool compareBuckets(
-    const MapBuffer::Bucket &a,
-    const MapBuffer::Bucket &b) {
+    const MapBuffer::Bucket& a,
+    const MapBuffer::Bucket& b) {
   return a.key < b.key;
 }
 

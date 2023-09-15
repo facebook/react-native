@@ -6,17 +6,22 @@
  */
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/ResolveValue.h>
+#include <yoga/debug/AssertFatal.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 
 namespace facebook::yoga {
 
-Node::Node(yoga::Config* config) : config_{config} {
-  YGAssert(config != nullptr, "Attempting to construct Node with null config");
+Node::Node() : Node{&Config::getDefault()} {}
+
+Node::Node(const yoga::Config* config) : config_{config} {
+  yoga::assertFatal(
+      config != nullptr, "Attempting to construct Node with null config");
 
   flags_.hasNewLayout = true;
   if (config->useWebDefaults()) {
@@ -27,10 +32,10 @@ Node::Node(yoga::Config* config) : config_{config} {
 Node::Node(Node&& node) {
   context_ = node.context_;
   flags_ = node.flags_;
-  measure_ = node.measure_;
-  baseline_ = node.baseline_;
-  print_ = node.print_;
-  dirtied_ = node.dirtied_;
+  measureFunc_ = node.measureFunc_;
+  baselineFunc_ = node.baselineFunc_;
+  printFunc_ = node.printFunc_;
+  dirtiedFunc_ = node.dirtiedFunc_;
   style_ = node.style_;
   layout_ = node.layout_;
   lineIndex_ = node.lineIndex_;
@@ -43,13 +48,9 @@ Node::Node(Node&& node) {
   }
 }
 
-void Node::print(void* printContext) {
-  if (print_.noContext != nullptr) {
-    if (flags_.printUsesContext) {
-      print_.withContext(this, printContext);
-    } else {
-      print_.noContext(this);
-    }
+void Node::print() {
+  if (printFunc_ != nullptr) {
+    printFunc_(this);
   }
 }
 
@@ -117,10 +118,10 @@ FloatOptional Node::getLeadingPosition(
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.position(), leading[axis], CompactValue::ofZero());
+            style_.position(), leadingEdge(axis), CompactValue::ofZero());
   return yoga::resolveValue(leadingPosition, axisSize);
 }
 
@@ -131,10 +132,10 @@ FloatOptional Node::getTrailingPosition(
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
-            trailing[axis],
+            trailingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.position(), trailing[axis], CompactValue::ofZero());
+            style_.position(), trailingEdge(axis), CompactValue::ofZero());
   return yoga::resolveValue(trailingPosition, axisSize);
 }
 
@@ -143,10 +144,10 @@ bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofUndefined())
       : computeEdgeValueForColumn(
-            style_.position(), leading[axis], CompactValue::ofUndefined());
+            style_.position(), leadingEdge(axis), CompactValue::ofUndefined());
   return !leadingPosition.isUndefined();
 }
 
@@ -155,10 +156,10 @@ bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
-            trailing[axis],
+            trailingEdge(axis),
             CompactValue::ofUndefined())
       : computeEdgeValueForColumn(
-            style_.position(), trailing[axis], CompactValue::ofUndefined());
+            style_.position(), trailingEdge(axis), CompactValue::ofUndefined());
   return !trailingPosition.isUndefined();
 }
 
@@ -167,9 +168,12 @@ FloatOptional Node::getLeadingMargin(
     const float widthSize) const {
   auto leadingMargin = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.margin(), YGEdgeStart, leading[axis], CompactValue::ofZero())
+            style_.margin(),
+            YGEdgeStart,
+            leadingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.margin(), leading[axis], CompactValue::ofZero());
+            style_.margin(), leadingEdge(axis), CompactValue::ofZero());
   return leadingMargin.isAuto() ? FloatOptional{0}
                                 : yoga::resolveValue(leadingMargin, widthSize);
 }
@@ -179,9 +183,12 @@ FloatOptional Node::getTrailingMargin(
     const float widthSize) const {
   auto trailingMargin = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.margin(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.margin(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.margin(), trailing[axis], CompactValue::ofZero());
+            style_.margin(), trailingEdge(axis), CompactValue::ofZero());
   return trailingMargin.isAuto()
       ? FloatOptional{0}
       : yoga::resolveValue(trailingMargin, widthSize);
@@ -204,58 +211,39 @@ FloatOptional Node::getGapForAxis(
 
 YGSize Node::measure(
     float width,
-    YGMeasureMode widthMode,
+    MeasureMode widthMode,
     float height,
-    YGMeasureMode heightMode,
-    void* layoutContext) {
-  return flags_.measureUsesContext
-      ? measure_.withContext(
-            this, width, widthMode, height, heightMode, layoutContext)
-      : measure_.noContext(this, width, widthMode, height, heightMode);
+    MeasureMode heightMode) {
+  return measureFunc_(
+      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
 }
 
-float Node::baseline(float width, float height, void* layoutContext) {
-  return flags_.baselineUsesContext
-      ? baseline_.withContext(this, width, height, layoutContext)
-      : baseline_.noContext(this, width, height);
+float Node::baseline(float width, float height) const {
+  return baselineFunc_(this, width, height);
 }
 
 // Setters
 
-void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
-  if (measureFunc.noContext == nullptr) {
+void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
+  if (measureFunc == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeDefault);
+    setNodeType(NodeType::Default);
   } else {
-    YGAssertWithNode(
+    yoga::assertFatalWithNode(
         this,
         children_.size() == 0,
         "Cannot set measure function: Nodes with measure functions cannot have "
         "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeText);
+    setNodeType(NodeType::Text);
   }
 
-  measure_ = measureFunc;
+  measureFunc_ = measureFunc;
 }
 
-void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
-  flags_.measureUsesContext = false;
-  decltype(Node::measure_) m;
-  m.noContext = measureFunc;
-  setMeasureFunc(m);
-}
-
-YOGA_EXPORT void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  flags_.measureUsesContext = true;
-  decltype(Node::measure_) m;
-  m.withContext = measureFunc;
-  setMeasureFunc(m);
-}
-
-void Node::replaceChild(Node* child, uint32_t index) {
+void Node::replaceChild(Node* child, size_t index) {
   children_[index] = child;
 }
 
@@ -263,18 +251,19 @@ void Node::replaceChild(Node* oldChild, Node* newChild) {
   std::replace(children_.begin(), children_.end(), oldChild, newChild);
 }
 
-void Node::insertChild(Node* child, uint32_t index) {
-  children_.insert(children_.begin() + index, child);
+void Node::insertChild(Node* child, size_t index) {
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index), child);
 }
 
 void Node::setConfig(yoga::Config* config) {
-  YGAssert(config != nullptr, "Attempting to set a null config on a Node");
-  YGAssertWithConfig(
+  yoga::assertFatal(
+      config != nullptr, "Attempting to set a null config on a Node");
+  yoga::assertFatalWithConfig(
       config,
       config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a Node");
 
-  if (yoga::configUpdateInvalidatesLayout(config_, config)) {
+  if (yoga::configUpdateInvalidatesLayout(*config_, *config)) {
     markDirtyAndPropagate();
   }
 
@@ -286,8 +275,8 @@ void Node::setDirty(bool isDirty) {
     return;
   }
   flags_.isDirty = isDirty;
-  if (isDirty && dirtied_) {
-    dirtied_(this);
+  if (isDirty && dirtiedFunc_) {
+    dirtiedFunc_(this);
   }
 }
 
@@ -301,24 +290,30 @@ bool Node::removeChild(Node* child) {
   return false;
 }
 
-void Node::removeChild(uint32_t index) {
-  children_.erase(children_.begin() + index);
+void Node::removeChild(size_t index) {
+  children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
 }
 
 void Node::setLayoutDirection(YGDirection direction) {
   layout_.setDirection(direction);
 }
 
-void Node::setLayoutMargin(float margin, int index) {
-  layout_.margin[index] = margin;
+void Node::setLayoutMargin(float margin, YGEdge edge) {
+  assertFatal(
+      edge < layout_.margin.size(), "Edge must be top/left/bottom/right");
+  layout_.margin[edge] = margin;
 }
 
-void Node::setLayoutBorder(float border, int index) {
-  layout_.border[index] = border;
+void Node::setLayoutBorder(float border, YGEdge edge) {
+  assertFatal(
+      edge < layout_.border.size(), "Edge must be top/left/bottom/right");
+  layout_.border[edge] = border;
 }
 
-void Node::setLayoutPadding(float padding, int index) {
-  layout_.padding[index] = padding;
+void Node::setLayoutPadding(float padding, YGEdge edge) {
+  assertFatal(
+      edge < layout_.padding.size(), "Edge must be top/left/bottom/right");
+  layout_.padding[edge] = padding;
 }
 
 void Node::setLayoutLastOwnerDirection(YGDirection direction) {
@@ -329,8 +324,10 @@ void Node::setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
-void Node::setLayoutPosition(float position, int index) {
-  layout_.position[index] = position;
+void Node::setLayoutPosition(float position, YGEdge edge) {
+  assertFatal(
+      edge < layout_.position.size(), "Edge must be top/left/bottom/right");
+  layout_.position[edge] = position;
 }
 
 void Node::setLayoutComputedFlexBasisGeneration(
@@ -338,16 +335,19 @@ void Node::setLayoutComputedFlexBasisGeneration(
   layout_.computedFlexBasisGeneration = computedFlexBasisGeneration;
 }
 
-void Node::setLayoutMeasuredDimension(float measuredDimension, int index) {
-  layout_.measuredDimensions[index] = measuredDimension;
+void Node::setLayoutMeasuredDimension(
+    float measuredDimension,
+    YGDimension dimension) {
+  layout_.measuredDimensions[static_cast<size_t>(dimension)] =
+      measuredDimension;
 }
 
 void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float dimension, int index) {
-  layout_.dimensions[index] = dimension;
+void Node::setLayoutDimension(float dimensionValue, YGDimension dimension) {
+  layout_.dimensions[static_cast<size_t>(dimension)] = dimensionValue;
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or
@@ -390,25 +390,25 @@ void Node::setPosition(
 
   setLayoutPosition(
       (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
-      leading[mainAxis]);
+      leadingEdge(mainAxis));
   setLayoutPosition(
       (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
-      trailing[mainAxis]);
+      trailingEdge(mainAxis));
   setLayoutPosition(
       (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross)
           .unwrap(),
-      leading[crossAxis]);
+      leadingEdge(crossAxis));
   setLayoutPosition(
       (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross)
           .unwrap(),
-      trailing[crossAxis]);
+      trailingEdge(crossAxis));
 }
 
 YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
-    return style_.margin()[leading[axis]];
+    return style_.margin()[leadingEdge(axis)];
   }
 }
 
@@ -416,7 +416,7 @@ YGValue Node::marginTrailingValue(const YGFlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
-    return style_.margin()[trailing[axis]];
+    return style_.margin()[trailingEdge(axis)];
   }
 }
 
@@ -454,15 +454,22 @@ YGDirection Node::resolveDirection(const YGDirection ownerDirection) {
   }
 }
 
-YOGA_EXPORT void Node::clearChildren() {
+void Node::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
 }
 
 // Other Methods
 
-void Node::cloneChildrenIfNeeded(void* cloneContext) {
-  iterChildrenAfterCloningIfNeeded([](Node*, void*) {}, cloneContext);
+void Node::cloneChildrenIfNeeded() {
+  size_t i = 0;
+  for (Node*& child : children_) {
+    if (child->getOwner() != this) {
+      child = resolveRef(config_->cloneNode(child, this, i));
+      child->setOwner(this);
+    }
+    i += 1;
+  }
 }
 
 void Node::markDirtyAndPropagate() {
@@ -493,7 +500,7 @@ float Node::resolveFlexGrow() const {
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
     return style_.flex().unwrap();
   }
-  return kDefaultFlexGrow;
+  return Style::DefaultFlexGrow;
 }
 
 float Node::resolveFlexShrink() const {
@@ -507,7 +514,8 @@ float Node::resolveFlexShrink() const {
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return config_->useWebDefaults() ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return config_->useWebDefaults() ? Style::WebDefaultFlexShrink
+                                   : Style::DefaultFlexShrink;
 }
 
 bool Node::isNodeFlexible() {
@@ -519,18 +527,24 @@ bool Node::isNodeFlexible() {
 float Node::getLeadingBorder(const YGFlexDirection axis) const {
   YGValue leadingBorder = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.border(), YGEdgeStart, leading[axis], CompactValue::ofZero())
+            style_.border(),
+            YGEdgeStart,
+            leadingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.border(), leading[axis], CompactValue::ofZero());
+            style_.border(), leadingEdge(axis), CompactValue::ofZero());
   return fmaxf(leadingBorder.value, 0.0f);
 }
 
 float Node::getTrailingBorder(const YGFlexDirection axis) const {
   YGValue trailingBorder = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.border(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.border(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.border(), trailing[axis], CompactValue::ofZero());
+            style_.border(), trailingEdge(axis), CompactValue::ofZero());
   return fmaxf(trailingBorder.value, 0.0f);
 }
 
@@ -541,10 +555,10 @@ FloatOptional Node::getLeadingPadding(
       ? computeEdgeValueForRow(
             style_.padding(),
             YGEdgeStart,
-            leading[axis],
+            leadingEdge(axis),
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.padding(), leading[axis], CompactValue::ofZero());
+            style_.padding(), leadingEdge(axis), CompactValue::ofZero());
   return yoga::maxOrDefined(
       yoga::resolveValue(leadingPadding, widthSize), FloatOptional(0.0f));
 }
@@ -554,9 +568,12 @@ FloatOptional Node::getTrailingPadding(
     const float widthSize) const {
   auto trailingPadding = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.padding(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
+            style_.padding(),
+            YGEdgeEnd,
+            trailingEdge(axis),
+            CompactValue::ofZero())
       : computeEdgeValueForColumn(
-            style_.padding(), trailing[axis], CompactValue::ofZero());
+            style_.padding(), trailingEdge(axis), CompactValue::ofZero());
   return yoga::maxOrDefined(
       yoga::resolveValue(trailingPadding, widthSize), FloatOptional(0.0f));
 }
@@ -576,11 +593,11 @@ FloatOptional Node::getTrailingPaddingAndBorder(
 }
 
 void Node::reset() {
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       this,
       children_.size() == 0,
       "Cannot reset a node which still has children attached");
-  YGAssertWithNode(
+  yoga::assertFatalWithNode(
       this, owner_ == nullptr, "Cannot reset a node still attached to a owner");
 
   *this = Node{getConfig()};

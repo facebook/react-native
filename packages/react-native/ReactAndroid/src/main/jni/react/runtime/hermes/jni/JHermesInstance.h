@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <cxxreact/MessageQueueThread.h>
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
@@ -29,7 +30,8 @@ class JHermesInstance
 
   static void registerNatives();
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept;
+  std::unique_ptr<jsi::Runtime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
 
   ~JHermesInstance() {}
 

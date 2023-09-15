@@ -78,12 +78,7 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
                 TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
+      return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);

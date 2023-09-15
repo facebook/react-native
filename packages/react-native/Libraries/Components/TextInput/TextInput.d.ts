@@ -815,6 +815,11 @@ export interface TextInputProps
   placeholderTextColor?: ColorValue | undefined;
 
   /**
+   * If `true`, text is not editable. The default value is `false`.
+   */
+  readOnly?: boolean | undefined;
+
+  /**
    * enum('default', 'go', 'google', 'join', 'next', 'route', 'search', 'send', 'yahoo', 'done', 'emergency-call')
    * Determines how the return key should look.
    */

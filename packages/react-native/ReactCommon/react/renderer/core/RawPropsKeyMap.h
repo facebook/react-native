@@ -26,7 +26,7 @@ class RawPropsKeyMap final {
   /*
    * Stores `value` with by given `key`.
    */
-  void insert(const RawPropsKey &key, RawPropsValueIndex value) noexcept;
+  void insert(const RawPropsKey& key, RawPropsValueIndex value) noexcept;
 
   /*
    * Reindexes the stored data.
@@ -39,7 +39,7 @@ class RawPropsKeyMap final {
    * Returns `kRawPropsValueIndexEmpty` if the value wan't found.
    */
   RawPropsValueIndex at(
-      const char *name,
+      const char* name,
       RawPropsPropNameLength length) noexcept;
 
  private:
@@ -50,9 +50,9 @@ class RawPropsKeyMap final {
   };
 
   static bool shouldFirstOneBeBeforeSecondOne(
-      const Item &lhs,
-      const Item &rhs) noexcept;
-  static bool hasSameName(const Item &lhs, const Item &rhs) noexcept;
+      const Item& lhs,
+      const Item& rhs) noexcept;
+  static bool hasSameName(const Item& lhs, const Item& rhs) noexcept;
 
   butter::small_vector<Item, kNumberOfExplicitlySpecifiedPropsSoftCap> items_{};
   butter::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>

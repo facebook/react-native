@@ -10,12 +10,12 @@
 namespace facebook::react {
 
 ComponentDescriptor::ComponentDescriptor(
-    const ComponentDescriptorParameters &parameters)
+    const ComponentDescriptorParameters& parameters)
     : eventDispatcher_(parameters.eventDispatcher),
       contextContainer_(parameters.contextContainer),
       flavor_(parameters.flavor) {}
 
-const ContextContainer::Shared &ComponentDescriptor::getContextContainer()
+const ContextContainer::Shared& ComponentDescriptor::getContextContainer()
     const {
   return contextContainer_;
 }

@@ -21,9 +21,9 @@ class ViewShadowNodeProps final : public ViewProps {
  public:
   ViewShadowNodeProps() = default;
   ViewShadowNodeProps(
-      const PropsParserContext &context,
-      const ViewShadowNodeProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const ViewShadowNodeProps& sourceProps,
+      const RawProps& rawProps);
 };
 
 /*
@@ -41,13 +41,13 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
   }
 
   ViewShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ShadowNodeFamily::Shared &family,
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
       ShadowNodeTraits traits);
 
   ViewShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment);
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
 
  private:
   void initialize() noexcept;

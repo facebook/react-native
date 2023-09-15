@@ -40,7 +40,7 @@ class MountingCoordinator final {
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.
    */
-  MountingCoordinator(const ShadowTreeRevision &baseRevision);
+  MountingCoordinator(const ShadowTreeRevision& baseRevision);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -77,16 +77,16 @@ class MountingCoordinator final {
    */
   bool waitForTransaction(std::chrono::duration<double> timeout) const;
 
-  const TelemetryController &getTelemetryController() const;
+  const TelemetryController& getTelemetryController() const;
 
-  const ShadowTreeRevision &getBaseRevision() const;
+  const ShadowTreeRevision& getBaseRevision() const;
 
   /*
    * Methods from this section are meant to be used by
    * `MountingOverrideDelegate` only.
    */
  public:
-  void updateBaseRevision(const ShadowTreeRevision &baseRevision) const;
+  void updateBaseRevision(const ShadowTreeRevision& baseRevision) const;
   void resetLatestRevision() const;
 
   void setMountingOverrideDelegate(

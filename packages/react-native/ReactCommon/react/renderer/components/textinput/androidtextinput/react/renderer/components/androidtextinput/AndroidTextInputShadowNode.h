@@ -38,7 +38,7 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  void setContextContainer(ContextContainer *contextContainer);
+  void setContextContainer(ContextContainer* contextContainer);
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
@@ -56,12 +56,12 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      const LayoutContext &layoutContext,
-      const LayoutConstraints &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
-  ContextContainer *contextContainer_{};
+  ContextContainer* contextContainer_{};
 
   /**
    * Get the most up-to-date attributed string for measurement and State.

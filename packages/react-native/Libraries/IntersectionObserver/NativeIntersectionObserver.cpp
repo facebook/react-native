@@ -26,20 +26,20 @@ NativeIntersectionObserver::NativeIntersectionObserver(
     : NativeIntersectionObserverCxxSpec(std::move(jsInvoker)) {}
 
 void NativeIntersectionObserver::observe(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     NativeIntersectionObserverObserveOptions options) {
   auto intersectionObserverId = options.intersectionObserverId;
   auto shadowNode =
       shadowNodeFromValue(runtime, std::move(options.targetShadowNode));
   auto thresholds = options.thresholds;
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+  auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
       intersectionObserverId, shadowNode, thresholds, uiManager);
 }
 
 void NativeIntersectionObserver::unobserve(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     IntersectionObserverObserverId intersectionObserverId,
     jsi::Object targetShadowNode) {
   auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
@@ -47,26 +47,26 @@ void NativeIntersectionObserver::unobserve(
 }
 
 void NativeIntersectionObserver::connect(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     AsyncCallback<> notifyIntersectionObserversCallback) {
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+  auto& uiManager = getUIManagerFromRuntime(runtime);
   intersectionObserverManager_.connect(
       uiManager, notifyIntersectionObserversCallback);
 }
 
-void NativeIntersectionObserver::disconnect(jsi::Runtime &runtime) {
-  auto &uiManager = getUIManagerFromRuntime(runtime);
+void NativeIntersectionObserver::disconnect(jsi::Runtime& runtime) {
+  auto& uiManager = getUIManagerFromRuntime(runtime);
   intersectionObserverManager_.disconnect(uiManager);
 }
 
 std::vector<NativeIntersectionObserverEntry>
-NativeIntersectionObserver::takeRecords(jsi::Runtime &runtime) {
+NativeIntersectionObserver::takeRecords(jsi::Runtime& runtime) {
   auto entries = intersectionObserverManager_.takeRecords();
 
   std::vector<NativeIntersectionObserverEntry> nativeModuleEntries;
   nativeModuleEntries.reserve(entries.size());
 
-  for (const auto &entry : entries) {
+  for (const auto& entry : entries) {
     nativeModuleEntries.emplace_back(
         convertToNativeModuleEntry(entry, runtime));
   }
@@ -77,7 +77,7 @@ NativeIntersectionObserver::takeRecords(jsi::Runtime &runtime) {
 NativeIntersectionObserverEntry
 NativeIntersectionObserver::convertToNativeModuleEntry(
     IntersectionObserverEntry entry,
-    jsi::Runtime &runtime) {
+    jsi::Runtime& runtime) {
   RectAsTuple targetRect = {
       entry.targetRect.origin.x,
       entry.targetRect.origin.y,
@@ -110,8 +110,8 @@ NativeIntersectionObserver::convertToNativeModuleEntry(
   return nativeModuleEntry;
 }
 
-UIManager &NativeIntersectionObserver::getUIManagerFromRuntime(
-    jsi::Runtime &runtime) {
+UIManager& NativeIntersectionObserver::getUIManagerFromRuntime(
+    jsi::Runtime& runtime) {
   return UIManagerBinding::getBinding(runtime)->getUIManager();
 }
 

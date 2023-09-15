@@ -15,10 +15,10 @@ namespace facebook::react {
 TimelineHandler TimelineController::enable(SurfaceId surfaceId) const {
   assert(uiManager_);
 
-  const ShadowTree *shadowTreePtr = nullptr;
+  const ShadowTree* shadowTreePtr = nullptr;
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId,
-      [&](const ShadowTree &shadowTree) { shadowTreePtr = &shadowTree; });
+      [&](const ShadowTree& shadowTree) { shadowTreePtr = &shadowTree; });
 
   assert(shadowTreePtr);
 
@@ -32,7 +32,7 @@ TimelineHandler TimelineController::enable(SurfaceId surfaceId) const {
   }
 }
 
-void TimelineController::disable(TimelineHandler &&handler) const {
+void TimelineController::disable(TimelineHandler&& handler) const {
   std::unique_lock<std::shared_mutex> lock(timelinesMutex_);
 
   auto iterator = timelines_.find(handler.getSurfaceId());
@@ -42,19 +42,19 @@ void TimelineController::disable(TimelineHandler &&handler) const {
 }
 
 void TimelineController::commitHookWasRegistered(
-    const UIManager &uiManager) noexcept {
+    const UIManager& uiManager) noexcept {
   uiManager_ = &uiManager;
 }
 
 void TimelineController::commitHookWasUnregistered(
-    const UIManager & /*uiManager*/) noexcept {
+    const UIManager& /*uiManager*/) noexcept {
   uiManager_ = nullptr;
 }
 
 RootShadowNode::Unshared TimelineController::shadowTreeWillCommit(
-    const ShadowTree &shadowTree,
-    const RootShadowNode::Shared &oldRootShadowNode,
-    const RootShadowNode::Unshared &newRootShadowNode) noexcept {
+    const ShadowTree& shadowTree,
+    const RootShadowNode::Shared& oldRootShadowNode,
+    const RootShadowNode::Unshared& newRootShadowNode) noexcept {
   std::shared_lock<std::shared_mutex> lock(timelinesMutex_);
 
   assert(uiManager_ && "`uiManager_` must not be `nullptr`.");
@@ -66,7 +66,7 @@ RootShadowNode::Unshared TimelineController::shadowTreeWillCommit(
     return newRootShadowNode;
   }
 
-  auto &timeline = *iterator->second;
+  auto& timeline = *iterator->second;
   return timeline.shadowTreeWillCommit(
       shadowTree, oldRootShadowNode, newRootShadowNode);
 }

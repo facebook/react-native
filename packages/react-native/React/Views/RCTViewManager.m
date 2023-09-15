@@ -15,6 +15,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTTransformOrigin.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -91,7 +92,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"scrollbar" : @(UIAccessibilityTraitNone),
       @"scrollview" : @(UIAccessibilityTraitNone),
       @"search" : @(UIAccessibilityTraitSearchField),
-      @"searchbox" : @(UIAccessibilityTraitNone),
+      @"searchbox" : @(UIAccessibilityTraitSearchField),
       @"selected" : @(UIAccessibilityTraitSelected),
       @"separator" : @(UIAccessibilityTraitNone),
       @"slider" : @(UIAccessibilityTraitNone),
@@ -120,6 +121,13 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
+
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json
+{
+  RCTTransformOrigin transformOrigin = {
+      [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
+  return transformOrigin;
+}
 
 @end
 
@@ -216,13 +224,8 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
       view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
-{
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in rotation, skew, or perspective transforms
-  view.layer.allowsEdgeAntialiasing =
-      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
-}
+RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
+RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {

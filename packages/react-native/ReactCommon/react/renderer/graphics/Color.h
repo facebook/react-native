@@ -35,11 +35,11 @@ class SharedColor {
     return color_;
   }
 
-  bool operator==(const SharedColor &otherColor) const {
+  bool operator==(const SharedColor& otherColor) const {
     return color_ == otherColor.color_;
   }
 
-  bool operator!=(const SharedColor &otherColor) const {
+  bool operator!=(const SharedColor& otherColor) const {
     return color_ != otherColor.color_;
   }
 
@@ -51,7 +51,7 @@ class SharedColor {
   Color color_;
 };
 
-bool isColorMeaningful(const SharedColor &color) noexcept;
+bool isColorMeaningful(const SharedColor& color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 

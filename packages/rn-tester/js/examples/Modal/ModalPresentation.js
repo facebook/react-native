@@ -224,7 +224,7 @@ function ModalPresentation() {
         onOrientationChange={onOrientationChange}>
         <View style={styles.modalContainer}>
           <View style={styles.modalInnerContainer}>
-            <Text>
+            <Text testID="modal_animationType_text">
               This modal was presented with animationType: '
               {props.animationType}'
             </Text>

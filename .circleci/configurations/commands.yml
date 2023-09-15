@@ -180,6 +180,24 @@ commands:
           name: Report size of RNTester.app (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
+  setup_hermes_version:
+    steps:
+      - run:
+          name: Set up Hermes workspace and caching
+          command: |
+            mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
+
+            if [ -f "$HERMES_VERSION_FILE" ]; then
+              echo "Hermes Version file found! Using this version for the build:"
+              cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
+            else
+              echo "Hermes Version file not found!!!"
+              echo "Using the last commit from main for the build:"
+              HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
+              echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
+            fi
+            cat /tmp/hermes/hermesversion
+
   get_react_native_version:
     steps:
       - run:
@@ -506,3 +524,53 @@ commands:
                 when: << parameters.when >>
                 path: << parameters.path >>
                 destination: << parameters.destination >>
+
+  prepare_ios_tests:
+    description: This command runs a set of commands to prepare iOS for running unit tests
+    steps:
+      - brew_install:
+          package: xcbeautify
+      - run:
+          name: Run Ruby Tests
+          command: |
+            cd packages/react-native/scripts
+            sh run_ruby_tests.sh
+      - run:
+          name: Boot iPhone Simulator
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: "Brew: Tap wix/brew"
+          command: brew tap wix/brew
+      - brew_install:
+          package: applesimutils watchman
+      - run:
+          name: Configure Watchman
+          command: echo "{}" > .watchmanconfig
+
+  run_ios_tests:
+    description: This command run iOS tests and collects results
+    steps:
+      - run:
+          name: "Run Tests: iOS Unit and Integration Tests"
+          command: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
+      - run:
+          name: Zip Derived data folder
+          when: always
+          command: |
+            echo "zipping tests results"
+            cd /Users/distiller/Library/Developer/Xcode
+            XCRESULT_PATH=$(find . -name '*.xcresult')
+            tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+      - store_artifacts_if_needed:
+          path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+      - report_bundle_size:
+          platform: ios
+      - store_test_results:
+          path: ./reports/junit

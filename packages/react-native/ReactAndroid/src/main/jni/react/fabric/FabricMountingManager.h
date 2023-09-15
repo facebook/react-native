@@ -23,29 +23,29 @@ struct ShadowView;
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      std::shared_ptr<const ReactNativeConfig> &config,
-      jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
-  FabricMountingManager(const FabricMountingManager &) = delete;
+      std::shared_ptr<const ReactNativeConfig>& config,
+      jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
+  FabricMountingManager(const FabricMountingManager&) = delete;
 
   void onSurfaceStart(SurfaceId surfaceId);
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void preallocateShadowView(SurfaceId surfaceId, const ShadowView &shadowView);
+  void preallocateShadowView(SurfaceId surfaceId, const ShadowView& shadowView);
 
-  void executeMount(const MountingTransaction &transaction);
+  void executeMount(const MountingTransaction& transaction);
 
   void dispatchCommand(
-      const ShadowView &shadowView,
-      const std::string &commandName,
-      const folly::dynamic &args);
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args);
 
   void sendAccessibilityEvent(
-      const ShadowView &shadowView,
-      const std::string &eventType);
+      const ShadowView& shadowView,
+      const std::string& eventType);
 
   void setIsJSResponder(
-      const ShadowView &shadowView,
+      const ShadowView& shadowView,
       bool isJSResponder,
       bool blockNativeResponder);
 
@@ -64,8 +64,8 @@ class FabricMountingManager final {
   const bool reduceDeleteCreateMutation_{false};
 
   jni::local_ref<jobject> getProps(
-      const ShadowView &oldShadowView,
-      const ShadowView &newShadowView);
+      const ShadowView& oldShadowView,
+      const ShadowView& newShadowView);
 };
 
 } // namespace facebook::react
