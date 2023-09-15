@@ -805,7 +805,7 @@ void YGNodePrint(const YGNodeConstRef nodeRef, const YGPrintOptions options) {
   const auto node = resolveRef(nodeRef);
   std::string str;
   yoga::nodeToString(str, node, options, 0);
-  yoga::log(node, YGLogLevelDebug, str.c_str());
+  yoga::log(node, LogLevel::Debug, str.c_str());
 }
 #endif
 

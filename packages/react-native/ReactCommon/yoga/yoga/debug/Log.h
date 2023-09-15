@@ -9,23 +9,23 @@
 
 #include <yoga/Yoga.h>
 
-#include <yoga/YGEnums.h>
 #include <yoga/config/Config.h>
+#include <yoga/enums/LogLevel.h>
 #include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
-void log(YGLogLevel level, const char* format, ...) noexcept;
+void log(LogLevel level, const char* format, ...) noexcept;
 
 void log(
     const yoga::Node* node,
-    YGLogLevel level,
+    LogLevel level,
     const char* message,
     ...) noexcept;
 
 void log(
     const yoga::Config* config,
-    YGLogLevel level,
+    LogLevel level,
     const char* format,
     ...) noexcept;
 

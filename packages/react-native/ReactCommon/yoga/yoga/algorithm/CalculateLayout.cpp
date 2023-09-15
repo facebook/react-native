@@ -2526,14 +2526,14 @@ bool calculateLayoutInternal(
     if (gPrintChanges && gPrintSkips) {
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "%s%d.{[skipped] ",
           spacerWithLength(depth),
           depth);
       node->print();
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2547,7 +2547,7 @@ bool calculateLayoutInternal(
     if (gPrintChanges) {
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "%s%d.{%s",
           spacerWithLength(depth),
           depth,
@@ -2555,7 +2555,7 @@ bool calculateLayoutInternal(
       node->print();
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "wm: %s, hm: %s, aw: %f ah: %f %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2582,7 +2582,7 @@ bool calculateLayoutInternal(
     if (gPrintChanges) {
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "%s%d.}%s",
           spacerWithLength(depth),
           depth,
@@ -2590,7 +2590,7 @@ bool calculateLayoutInternal(
       node->print();
       yoga::log(
           node,
-          YGLogLevelVerbose,
+          LogLevel::Verbose,
           "wm: %s, hm: %s, d: (%f, %f) %s\n",
           measureModeName(widthMeasureMode, performLayout),
           measureModeName(heightMeasureMode, performLayout),
@@ -2609,7 +2609,7 @@ bool calculateLayoutInternal(
       if (layout->nextCachedMeasurementsIndex ==
           LayoutResults::MaxCachedMeasurements) {
         if (gPrintChanges) {
-          yoga::log(node, YGLogLevelVerbose, "Out of cache entries!\n");
+          yoga::log(node, LogLevel::Verbose, "Out of cache entries!\n");
         }
         layout->nextCachedMeasurementsIndex = 0;
       }
