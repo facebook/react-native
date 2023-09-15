@@ -96,10 +96,10 @@ void Config::setLogger(YGLogger logger) {
 
 void Config::log(
     const yoga::Node* node,
-    YGLogLevel logLevel,
+    LogLevel logLevel,
     const char* format,
     va_list args) const {
-  logger_(this, node, logLevel, format, args);
+  logger_(this, node, unscopedEnum(logLevel), format, args);
 }
 
 void Config::setCloneNodeCallback(YGCloneNodeFunc cloneNode) {

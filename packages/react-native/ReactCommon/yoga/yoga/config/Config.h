@@ -12,6 +12,7 @@
 #include <yoga/Yoga.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/ExperimentalFeature.h>
+#include <yoga/enums/LogLevel.h>
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
 struct YGConfig {};
@@ -67,7 +68,7 @@ class YG_EXPORT Config : public ::YGConfig {
   void setLogger(YGLogger logger);
   void log(
       const yoga::Node* node,
-      YGLogLevel logLevel,
+      LogLevel logLevel,
       const char* format,
       va_list args) const;
 
