@@ -20,7 +20,7 @@ require_relative './cocoapods/runtime.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2021.07.22.00'
+$FOLLY_VERSION = '2022.05.16.00'
 
 $START_TIME = Time.now.to_i
 

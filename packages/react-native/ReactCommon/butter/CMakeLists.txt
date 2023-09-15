@@ -10,7 +10,7 @@ add_compile_options(
         -DLOG_TAG=\"Butter\"
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments)

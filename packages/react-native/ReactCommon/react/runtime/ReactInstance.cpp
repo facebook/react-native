@@ -244,7 +244,9 @@ void ReactInstance::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
     const folly::dynamic& args) {
-  bufferedRuntimeExecutor_->execute([=](jsi::Runtime& runtime) {
+  // TODO (C++ 20): This code previously implicitly captured `this` in a [=]
+  // capture group. Was it meaning to pass modules_ by value?
+  bufferedRuntimeExecutor_->execute([=, this](jsi::Runtime& runtime) {
     SystraceSection s(
         "ReactInstance::callFunctionOnModule",
         "moduleName",

@@ -162,6 +162,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "folly_runtime",
                 [
+                    new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
@@ -172,6 +173,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 [
                     new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),

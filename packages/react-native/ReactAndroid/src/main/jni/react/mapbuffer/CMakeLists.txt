@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"Fabric\")
+add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"Fabric\")
 
 file(GLOB mapbuffer_SRC CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/react/common/mapbuffer/*.cpp)

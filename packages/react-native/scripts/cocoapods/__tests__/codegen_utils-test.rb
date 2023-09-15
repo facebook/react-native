@@ -385,7 +385,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
             :fabric_enabled => false,
-            :folly_version=>"2021.07.22.00",
+            :folly_version=>"2022.05.16.00",
             :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
@@ -535,7 +535,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'homepage' => 'https://facebook.com/',
           'license' => 'Unlicense',
           'authors' => 'Facebook',
-          'compiler_flags'  => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -Wno-nullability-completeness -std=c++17",
+          'compiler_flags'  => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -Wno-nullability-completeness -std=c++20",
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
@@ -549,6 +549,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
               "\"$(PODS_ROOT)/boost\"",
               "\"$(PODS_ROOT)/RCT-Folly\"",
               "\"$(PODS_ROOT)/DoubleConversion\"",
+              "\"$(PODS_ROOT)/fmt/include\"",
               "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
               "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
               "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
@@ -595,7 +596,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"")
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],

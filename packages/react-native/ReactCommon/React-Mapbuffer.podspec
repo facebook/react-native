@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.public_header_files    = 'react/renderer/mapbuffer/*.h'
   s.header_dir             = "react/renderer/mapbuffer"
   s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"", "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'

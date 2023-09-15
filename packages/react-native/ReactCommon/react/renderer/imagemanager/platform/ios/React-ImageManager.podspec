@@ -16,7 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
     header_search_paths = header_search_paths + [
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
       "\"$(PODS_ROOT)/DoubleConversion\"",
+      "\"$(PODS_ROOT)/fmt/include\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\"",
@@ -57,7 +58,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig  = {
     "USE_HEADERMAP" => "NO",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "DEFINES_MODULE" => "YES",
   }
 

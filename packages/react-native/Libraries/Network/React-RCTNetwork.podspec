@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2022.05.16.00'
 
 header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTNetwork"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
   s.frameworks             = "MobileCoreServices"

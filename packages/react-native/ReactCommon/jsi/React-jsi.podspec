@@ -20,8 +20,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2022.05.16.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -36,11 +36,12 @@ Pod::Spec.new do |s|
 
   s.header_dir    = "jsi"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
                                "DEFINES_MODULE" => "YES" }
 
   s.dependency "boost", "1.76.0"
   s.dependency "DoubleConversion"
+  s.dependency 'fmt' , '~> 6.2.1'
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
 
