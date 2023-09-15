@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include <yoga/Yoga.h>
+#include <yoga/enums/PrintOptions.h>
 #include <yoga/node/Node.h>
 
 namespace facebook::yoga {
@@ -19,8 +19,10 @@ namespace facebook::yoga {
 void nodeToString(
     std::string& str,
     const yoga::Node* node,
-    YGPrintOptions options,
+    PrintOptions options,
     uint32_t level);
+
+void print(const yoga::Node* node, PrintOptions options);
 
 } // namespace facebook::yoga
 

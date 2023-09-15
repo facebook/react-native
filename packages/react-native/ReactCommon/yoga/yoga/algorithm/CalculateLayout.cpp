@@ -24,6 +24,7 @@
 #include <yoga/algorithm/ResolveValue.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
+#include <yoga/debug/NodeToString.h>
 #include <yoga/event/event.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
@@ -2737,9 +2738,9 @@ void calculateLayout(
 
 #ifdef DEBUG
     if (node->getConfig()->shouldPrintTree()) {
-      YGNodePrint(
+      yoga::print(
           node,
-          (YGPrintOptions)(YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle));
+          PrintOptions::Layout | PrintOptions::Children | PrintOptions::Style);
     }
 #endif
   }
