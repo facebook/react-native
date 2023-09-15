@@ -117,7 +117,7 @@ inline RawProps filterYogaProps(const RawProps& rawProps) {
     }
   }
 
-  return RawProps(filteredRawProps);
+  return RawProps(std::move(filteredRawProps));
 }
 } // namespace
 
