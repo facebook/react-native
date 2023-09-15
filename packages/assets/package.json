@@ -19,6 +19,9 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "path-support.js",
+    "registry.js",
+    "src"
   ]
 }
