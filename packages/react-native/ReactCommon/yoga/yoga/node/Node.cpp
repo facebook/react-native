@@ -211,10 +211,11 @@ FloatOptional Node::getGapForAxis(
 
 YGSize Node::measure(
     float width,
-    YGMeasureMode widthMode,
+    MeasureMode widthMode,
     float height,
-    YGMeasureMode heightMode) {
-  return measureFunc_(this, width, widthMode, height, heightMode);
+    MeasureMode heightMode) {
+  return measureFunc_(
+      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
 }
 
 float Node::baseline(float width, float height) const {
