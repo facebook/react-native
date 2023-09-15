@@ -51,6 +51,5 @@ target 'HelloWorld' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __fix_double_definition_of_clockid_in_folly()
   end
 end
