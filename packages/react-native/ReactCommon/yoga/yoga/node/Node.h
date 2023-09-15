@@ -14,6 +14,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
@@ -29,7 +30,7 @@ struct NodeFlags {
   bool hasNewLayout : 1;
   bool isReferenceBaseline : 1;
   bool isDirty : 1;
-  uint32_t nodeType : 1;
+  NodeType nodeType : bitCount<NodeType>();
 };
 #pragma pack(pop)
 
@@ -92,8 +93,8 @@ class YG_EXPORT Node : public ::YGNode {
     return flags_.hasNewLayout;
   }
 
-  YGNodeType getNodeType() const {
-    return static_cast<YGNodeType>(flags_.nodeType);
+  NodeType getNodeType() const {
+    return flags_.nodeType;
   }
 
   bool hasMeasureFunc() const noexcept {
@@ -250,8 +251,8 @@ class YG_EXPORT Node : public ::YGNode {
     flags_.hasNewLayout = hasNewLayout;
   }
 
-  void setNodeType(YGNodeType nodeType) {
-    flags_.nodeType = static_cast<uint32_t>(nodeType) & 0x01;
+  void setNodeType(NodeType nodeType) {
+    flags_.nodeType = nodeType;
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
