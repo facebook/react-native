@@ -851,13 +851,14 @@ void YGConfigSetExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature,
     const bool enabled) {
-  resolveRef(config)->setExperimentalFeatureEnabled(feature, enabled);
+  resolveRef(config)->setExperimentalFeatureEnabled(
+      scopedEnum(feature), enabled);
 }
 
 bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigConstRef config,
     const YGExperimentalFeature feature) {
-  return resolveRef(config)->isExperimentalFeatureEnabled(feature);
+  return resolveRef(config)->isExperimentalFeatureEnabled(scopedEnum(feature));
 }
 
 void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled) {

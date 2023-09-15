@@ -10,9 +10,9 @@
 namespace facebook::yoga {
 
 template <typename EnumT>
-constexpr inline int32_t ordinalCount() = delete;
+constexpr inline int32_t ordinalCount();
 
 template <typename EnumT>
-constexpr inline int32_t bitCount() = delete;
+constexpr inline int32_t bitCount();
 
 } // namespace facebook::yoga

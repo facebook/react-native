@@ -41,16 +41,16 @@ bool Config::shouldPrintTree() const {
 }
 
 void Config::setExperimentalFeatureEnabled(
-    YGExperimentalFeature feature,
+    ExperimentalFeature feature,
     bool enabled) {
-  experimentalFeatures_.set(feature, enabled);
+  experimentalFeatures_.set(static_cast<size_t>(feature), enabled);
 }
 
-bool Config::isExperimentalFeatureEnabled(YGExperimentalFeature feature) const {
-  return experimentalFeatures_.test(feature);
+bool Config::isExperimentalFeatureEnabled(ExperimentalFeature feature) const {
+  return experimentalFeatures_.test(static_cast<size_t>(feature));
 }
 
-EnumBitset<YGExperimentalFeature> Config::getEnabledExperiments() const {
+ExperimentalFeatureSet Config::getEnabledExperiments() const {
   return experimentalFeatures_;
 }
 
