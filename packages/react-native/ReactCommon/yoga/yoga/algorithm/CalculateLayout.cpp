@@ -154,7 +154,7 @@ static void computeFlexBasisForChild(
   if (!resolvedFlexBasis.isUndefined() && !yoga::isUndefined(mainAxisSize)) {
     if (child->getLayout().computedFlexBasis.isUndefined() ||
         (child->getConfig()->isExperimentalFeatureEnabled(
-             YGExperimentalFeatureWebFlexBasis) &&
+             ExperimentalFeature::WebFlexBasis) &&
          child->getLayout().computedFlexBasisGeneration != generationCount)) {
       const FloatOptional paddingAndBorder =
           FloatOptional(paddingAndBorderForAxis(child, mainAxis, ownerWidth));
@@ -479,7 +479,7 @@ static void layoutAbsoluteChild(
         leadingEdge(mainAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
-          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
+          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
       child->isLeadingPositionDefined(mainAxis)) {
     child->setLayoutPosition(
         child->getLeadingPosition(
@@ -526,7 +526,7 @@ static void layoutAbsoluteChild(
         leadingEdge(crossAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
-          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
+          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
       child->isLeadingPositionDefined(crossAxis)) {
     child->setLayoutPosition(
         child->getLeadingPosition(
@@ -2323,7 +2323,7 @@ static void calculateLayoutImpl(
       }
       const bool absolutePercentageAgainstPaddingEdge =
           node->getConfig()->isExperimentalFeatureEnabled(
-              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge);
+              ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge);
 
       layoutAbsoluteChild(
           node,
