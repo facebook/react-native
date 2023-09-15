@@ -1306,11 +1306,6 @@ static void YGJustifyMainAxis(
     const auto child = node->getChild(i);
     const Style& childStyle = child->getStyle();
     const LayoutResults& childLayout = child->getLayout();
-    const bool isLastChild = i == flexLine.endOfLineIndex - 1;
-    // remove the gap if it is the last element of the line
-    if (isLastChild) {
-      betweenMainDim -= gap;
-    }
     if (childStyle.display() == YGDisplayNone) {
       continue;
     }
@@ -1344,6 +1339,10 @@ static void YGJustifyMainAxis(
               leadingEdge(mainAxis));
         }
 
+        if (child != flexLine.itemsInFlow.back()) {
+          flexLine.layout.mainDim += betweenMainDim;
+        }
+
         if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(numberOfAutoMarginsOnCurrentLine);
@@ -1354,14 +1353,14 @@ static void YGJustifyMainAxis(
           // If we skipped the flex step, then we can't rely on the measuredDims
           // because they weren't computed. This means we can't call
           // dimensionWithMargin.
-          flexLine.layout.mainDim += betweenMainDim +
+          flexLine.layout.mainDim +=
               child->getMarginForAxis(mainAxis, availableInnerWidth).unwrap() +
               childLayout.computedFlexBasis.unwrap();
           flexLine.layout.crossDim = availableInnerCrossDim;
         } else {
           // The main dimension is the sum of all the elements dimension plus
           // the spacing.
-          flexLine.layout.mainDim += betweenMainDim +
+          flexLine.layout.mainDim +=
               dimensionWithMargin(child, mainAxis, availableInnerWidth);
 
           if (isNodeBaselineLayout) {
