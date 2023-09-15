@@ -59,7 +59,7 @@ class RawProps final {
    * We need this temporary, only because we have a callsite that does not have
    * a `jsi::Runtime` behind the data.
    */
-  RawProps(const folly::dynamic& dynamic) noexcept;
+  explicit RawProps(folly::dynamic dynamic) noexcept;
 
   /*
    * Not moveable.
