@@ -1755,7 +1755,7 @@ static void calculateLayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         bool useLegacyStretchBehaviour =
-            node->hasErrata(YGErrataStretchFlexBasis);
+            node->hasErrata(Errata::StretchFlexBasis);
 
         if (!useLegacyStretchBehaviour &&
             ((!yoga::isUndefined(flexLine.layout.totalFlexGrowFactors) &&

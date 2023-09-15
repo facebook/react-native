@@ -14,6 +14,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/enums/Errata.h>
 #include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
@@ -109,7 +110,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   float baseline(float width, float height) const;
 
-  bool hasErrata(YGErrata errata) const {
+  bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
   }
 
