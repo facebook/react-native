@@ -3021,11 +3021,6 @@ acorn@^8.9.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.10.0.tgz#8be5b3907a67221a81ab23c7889c4c5526b62ec5"
   integrity sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==
 
-actual-request-url@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/actual-request-url/-/actual-request-url-1.0.4.tgz#54454514e3715a4c60a1e26e9a49423e376a7563"
-  integrity sha512-9AOnrTOkog3eM7l4Y702+BKTYL1Tvxcl4EBbKrhDTB87npkss+I1dirUox2OyZVVz95BnavGgSZanWWas43j7A==
-
 agent-base@6:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-6.0.2.tgz#49fff58577cfee3f37176feab4c22e00f86d7f77"
