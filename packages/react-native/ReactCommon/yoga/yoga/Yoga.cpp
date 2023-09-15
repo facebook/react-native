@@ -801,11 +801,8 @@ YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border)
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding)
 
 #ifdef DEBUG
-void YGNodePrint(const YGNodeConstRef nodeRef, const YGPrintOptions options) {
-  const auto node = resolveRef(nodeRef);
-  std::string str;
-  yoga::nodeToString(str, node, options, 0);
-  yoga::log(node, LogLevel::Debug, str.c_str());
+void YGNodePrint(const YGNodeConstRef node, const YGPrintOptions options) {
+  yoga::print(resolveRef(node), scopedEnum(options));
 }
 #endif
 
