@@ -120,10 +120,6 @@ public class ModuleHolder {
     return mReactModuleInfo.canOverrideExistingModule();
   }
 
-  public boolean getHasConstants() {
-    return mReactModuleInfo.hasConstants();
-  }
-
   public boolean isTurboModule() {
     return mReactModuleInfo.isTurboModule();
   }
