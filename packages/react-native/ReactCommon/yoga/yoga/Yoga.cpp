@@ -81,11 +81,11 @@ void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
 }
 
 YGNodeType YGNodeGetNodeType(YGNodeConstRef node) {
-  return resolveRef(node)->getNodeType();
+  return unscopedEnum(resolveRef(node)->getNodeType());
 }
 
 void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType) {
-  return resolveRef(node)->setNodeType(nodeType);
+  return resolveRef(node)->setNodeType(scopedEnum(nodeType));
 }
 
 bool YGNodeIsDirty(YGNodeConstRef node) {
