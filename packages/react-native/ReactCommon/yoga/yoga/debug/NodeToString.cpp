@@ -11,6 +11,7 @@
 
 #include <yoga/YGEnums.h>
 
+#include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -118,12 +119,12 @@ static void appendEdgeIfNotUndefined(
 void nodeToString(
     std::string& str,
     const yoga::Node* node,
-    YGPrintOptions options,
+    PrintOptions options,
     uint32_t level) {
   indent(str, level);
   appendFormattedString(str, "<div ");
 
-  if (options & YGPrintOptionsLayout) {
+  if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
     appendFormattedString(str, "layout=\"");
     appendFormattedString(
         str, "width: %g; ", node->getLayout().dimensions[YGDimensionWidth]);
@@ -136,7 +137,7 @@ void nodeToString(
     appendFormattedString(str, "\" ");
   }
 
-  if (options & YGPrintOptionsStyle) {
+  if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendFormattedString(str, "style=\"");
     const auto& style = node->getStyle();
     if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
@@ -228,7 +229,8 @@ void nodeToString(
   appendFormattedString(str, ">");
 
   const size_t childCount = node->getChildCount();
-  if (options & YGPrintOptionsChildren && childCount > 0) {
+  if ((options & PrintOptions::Children) == PrintOptions::Children &&
+      childCount > 0) {
     for (size_t i = 0; i < childCount; i++) {
       appendFormattedString(str, "\n");
       nodeToString(str, node->getChild(i), options, level + 1);
@@ -237,6 +239,12 @@ void nodeToString(
     indent(str, level);
   }
   appendFormattedString(str, "</div>");
+}
+
+void print(const yoga::Node* node, PrintOptions options) {
+  std::string str;
+  yoga::nodeToString(str, node, options, 0);
+  yoga::log(node, LogLevel::Debug, str.c_str());
 }
 
 } // namespace facebook::yoga
