@@ -20,7 +20,6 @@ const config = {
   host: 'localhost',
   port: 4723,
   waitforTimeout: 60000,
-  logLevel: 'error',
   capabilities: {
     ...capabilities,
   },
