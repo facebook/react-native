@@ -27,12 +27,23 @@ const config = {
 };
 
 beforeEach(async () => {
+  let testName = expect.getState().currentTestName;
+  console.info(
+    '------------------------------------------------------------ Test is starting... ------------------------------------------------------------',
+  );
+  console.info(
+    '------------------------------ Test name: ' +
+      testName +
+      ' ------------------------------',
+  );
   driver = await wdio.remote(config);
 });
 
 afterEach(async () => {
-  console.info('[afterAll] Done with testing!');
   await driver.deleteSession();
+  console.info(
+    '------------------------------------------------------------ Done with testing. ------------------------------------------------------------',
+  );
 });
 
 export {driver};
