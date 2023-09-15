@@ -878,11 +878,11 @@ void* YGConfigGetContext(const YGConfigConstRef config) {
 }
 
 void YGConfigSetErrata(YGConfigRef config, YGErrata errata) {
-  resolveRef(config)->setErrata(errata);
+  resolveRef(config)->setErrata(scopedEnum(errata));
 }
 
 YGErrata YGConfigGetErrata(YGConfigConstRef config) {
-  return resolveRef(config)->getErrata();
+  return unscopedEnum(resolveRef(config)->getErrata());
 }
 
 void YGConfigSetCloneNodeFunc(
