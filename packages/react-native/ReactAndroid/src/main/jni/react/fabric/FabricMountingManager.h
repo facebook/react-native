@@ -8,8 +8,8 @@
 #pragma once
 
 #include <mutex>
+#include <unordered_set>
 
-#include <butter/set.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -58,7 +58,7 @@ class FabricMountingManager final {
 
   std::recursive_mutex commitMutex_;
 
-  butter::map<SurfaceId, butter::set<Tag>> allocatedViewRegistry_{};
+  butter::map<SurfaceId, std::unordered_set<Tag>> allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
   const bool reduceDeleteCreateMutation_{false};

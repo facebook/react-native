@@ -264,9 +264,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      butter::set<Tag> insertedTags;
-      butter::set<Tag> deletedTags;
-      butter::set<Tag> reparentedTags; // tags that are deleted and recreated
+      std::unordered_set<Tag> insertedTags;
+      std::unordered_set<Tag> deletedTags;
+      std::unordered_set<Tag>
+          reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto& mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
@@ -1630,7 +1631,7 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
 
   // Execute stopSurface on any ongoing animations
   if (inflightAnimationsExistInitially) {
-    butter::set<SurfaceId> surfaceIdsToStop{};
+    std::unordered_set<SurfaceId> surfaceIdsToStop{};
     {
       std::scoped_lock lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;
