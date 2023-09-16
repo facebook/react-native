@@ -228,8 +228,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                 .append(", ")
                 .append(reactModule.needsEagerInit())
                 .append(", ")
-                .append(hasConstants)
-                .append(", ")
                 .append(reactModule.isCxxModule())
                 .append(", ")
                 .append(isTurboModule)
