@@ -16,6 +16,9 @@ import java.lang.annotation.Target;
 /**
  * Annotation for use on {@link com.facebook.react.bridge.BaseJavaModule}s to describe properties
  * for that module.
+ *
+ * @deprecated This property is unused and it's planning to be removed in a future version of React
+ *     Native. Please refrain from using it.
  */
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -38,6 +41,7 @@ public @interface ReactModule {
    * Whether this module has constants to add, defaults to true as that is safer for when a correct
    * annotation is not included
    */
+  @Deprecated
   boolean hasConstants() default true;
 
   /**

@@ -36,7 +36,7 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-@ReactModule(name = NativeWebSocketModuleSpec.NAME, hasConstants = false)
+@ReactModule(name = NativeWebSocketModuleSpec.NAME)
 public final class WebSocketModule extends NativeWebSocketModuleSpec {
   public interface ContentHandler {
     void onMessage(String text, WritableMap params);
