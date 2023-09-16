@@ -260,29 +260,16 @@ RCT_EXPORT_MODULE()
   if (!devSettings.isProfilingEnabled) {
 #if RCT_ENABLE_INSPECTOR
     if (devSettings.isDeviceDebuggingAvailable) {
-      // For on-device debugging we link out to Flipper.
-      // Since we're assuming Flipper is available, also include the DevTools.
-      // Note: For parity with the Android code.
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
       [items addObject:[RCTDevMenuItem
                            buttonItemWithTitleBlock:^NSString * {
                              return @"Open Debugger";
                            }
                            handler:^{
                              [RCTInspectorDevServerHelper
-                                          openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
-                                    withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
-                           }]];
-
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return @"Open React DevTools";
-                           }
-                           handler:^{
-                             [RCTInspectorDevServerHelper
-                                          openURL:@"flipper://null/React?device=React%20Native"
-                                    withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
+                                     openDebugger:bundleManager.bundleURL
+                                 withErrorMessage:
+                                     @"Failed to open debugger. Please check that the dev server is running."];
                            }]];
     }
 #endif
