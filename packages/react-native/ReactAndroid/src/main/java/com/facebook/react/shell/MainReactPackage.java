@@ -283,7 +283,6 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
       for (Class<? extends NativeModule> moduleClass : moduleList) {
         ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
         if (reactModule != null) {
           reactModuleInfoMap.put(
               reactModule.name(),
@@ -292,12 +291,10 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
                   moduleClass.getName(),
                   reactModule.canOverrideExistingModule(),
                   reactModule.needsEagerInit(),
-                  reactModule.hasConstants(),
                   reactModule.isCxxModule(),
                   TurboModule.class.isAssignableFrom(moduleClass)));
         }
       }
-
       return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(

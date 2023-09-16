@@ -25,7 +25,6 @@ public class ReactModuleInfo {
       String className,
       boolean canOverrideExistingModule,
       boolean needsEagerInit,
-      boolean hasConstants,
       boolean isCxxModule,
       boolean isTurboModule) {
     mName = name;
@@ -34,6 +33,22 @@ public class ReactModuleInfo {
     mNeedsEagerInit = needsEagerInit;
     mIsCxxModule = isCxxModule;
     mIsTurboModule = isTurboModule;
+  }
+
+  /**
+   * @deprecated use {@link ReactModuleInfo#ReactModuleInfo(String, String, boolean, boolean,
+   *     boolean, boolean)}
+   */
+  @Deprecated
+  public ReactModuleInfo(
+      String name,
+      String className,
+      boolean canOverrideExistingModule,
+      boolean needsEagerInit,
+      boolean hasConstants,
+      boolean isCxxModule,
+      boolean isTurboModule) {
+    this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule);
   }
 
   public String name() {

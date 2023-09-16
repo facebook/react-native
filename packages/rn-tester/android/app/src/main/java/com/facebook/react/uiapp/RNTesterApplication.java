@@ -102,7 +102,6 @@ public class RNTesterApplication extends Application implements ReactApplication
                                 "SampleTurboModule",
                                 false, // canOverrideExistingModule
                                 false, // needsEagerInit
-                                true, // hasConstants
                                 false, // isCxxModule
                                 true // isTurboModule
                                 ));
@@ -114,7 +113,6 @@ public class RNTesterApplication extends Application implements ReactApplication
                                 "SampleLegacyModule",
                                 false, // canOverrideExistingModule
                                 false, // needsEagerInit
-                                true, // hasConstants
                                 false, // isCxxModule
                                 false // isTurboModule
                                 ));
