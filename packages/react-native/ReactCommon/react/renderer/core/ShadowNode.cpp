@@ -9,8 +9,6 @@
 #include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
-#include <butter/small_vector.h>
-
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>

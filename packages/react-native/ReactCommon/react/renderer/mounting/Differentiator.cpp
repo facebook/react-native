@@ -8,7 +8,6 @@
 #include "Differentiator.h"
 
 #include <butter/map.h>
-#include <butter/small_vector.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -62,7 +61,7 @@ namespace facebook::react {
  * where a bunch of views appears on the screen first time); in this
  * implementation, this is as performant as vector `push_back`.
  */
-template <typename KeyT, typename ValueT, int DefaultSize = 16>
+template <typename KeyT, typename ValueT>
 class TinyMap final {
  public:
   using Pair = std::pair<KeyT, ValueT>;
@@ -167,7 +166,7 @@ class TinyMap final {
     erasedAtFront_ = 0;
   }
 
-  butter::small_vector<Pair, DefaultSize> vector_;
+  std::vector<Pair> vector_;
   size_t numErased_{0};
   size_t erasedAtFront_{0};
 };

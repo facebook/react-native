@@ -26,8 +26,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
-  using ListOfShared =
-      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using ListOfShared = std::vector<Shared>;
 
   static ShadowNodeTraits BaseTraits();
   static ShadowNodeTraits::Trait IdentifierTrait();
