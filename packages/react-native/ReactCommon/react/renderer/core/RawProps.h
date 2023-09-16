@@ -11,7 +11,6 @@
 #include <optional>
 
 #include <butter/map.h>
-#include <butter/small_vector.h>
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -132,12 +131,8 @@ class RawProps final {
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
-  mutable butter::
-      small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
-          keyIndexToValueIndex_;
-  mutable butter::
-      small_vector<RawValue, kNumberOfExplicitlySpecifiedPropsSoftCap>
-          values_;
+  mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
+  mutable std::vector<RawValue> values_;
 };
 
 } // namespace facebook::react

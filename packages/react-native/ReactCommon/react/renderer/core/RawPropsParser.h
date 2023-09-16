@@ -8,7 +8,6 @@
 #pragma once
 
 #include <butter/map.h>
-#include <butter/small_vector.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -84,8 +83,7 @@ class RawPropsParser final {
           void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
       const;
 
-  mutable butter::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
-      keys_{};
+  mutable std::vector<RawPropsKey> keys_{};
   mutable RawPropsKeyMap nameToIndex_{};
   mutable bool ready_{false};
 };

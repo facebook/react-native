@@ -18,7 +18,7 @@
 namespace facebook::react {
 
 template <class T>
-using LayoutableSmallVector = butter::small_vector<T, 16>;
+using LayoutableSmallVector = std::vector<T>;
 
 static LayoutableSmallVector<Rect> calculateTransformedFrames(
     const LayoutableSmallVector<ShadowNode const*>& shadowNodeList,

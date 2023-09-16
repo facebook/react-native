@@ -10,7 +10,6 @@
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#include <butter/small_vector.h>
 #include <mutex>
 #include <vector>
 
@@ -58,7 +57,7 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable butter::small_vector<const ImageResponseObserver*, 1> observers_;
+  mutable std::vector<const ImageResponseObserver*> observers_;
 
   /*
    * Current status of image loading.
