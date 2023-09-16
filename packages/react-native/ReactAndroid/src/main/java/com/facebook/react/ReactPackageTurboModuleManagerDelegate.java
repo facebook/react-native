@@ -108,14 +108,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       true,
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       TurboModule.class.isAssignableFrom(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
-                      true,
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
                       TurboModule.class.isAssignableFrom(moduleClass));
