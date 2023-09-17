@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <butter/set.h>
 #include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/animations/primitives.h>
 #include <react/renderer/core/RawValue.h>
@@ -20,6 +19,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 
 #include <optional>
+#include <unordered_set>
 
 namespace facebook::react {
 
@@ -144,7 +144,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate* layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
-  mutable butter::set<SurfaceId> surfaceIdsToStop_{};
+  mutable std::unordered_set<SurfaceId> surfaceIdsToStop_{};
   bool reduceDeleteCreateMutation_{false};
 
   // Function that returns current time in milliseconds

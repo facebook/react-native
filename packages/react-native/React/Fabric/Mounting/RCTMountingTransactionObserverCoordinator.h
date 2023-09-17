@@ -6,10 +6,10 @@
  */
 
 #import <React/RCTComponentViewDescriptor.h>
+#import <unordered_set>
 #import "RCTMountingTransactionObserverCoordinator.h"
 
 #import <butter/map.h>
-#import <butter/set.h>
 
 #include <react/renderer/mounting/MountingTransaction.h>
 
@@ -40,6 +40,6 @@ class RCTMountingTransactionObserverCoordinator final {
  private:
   facebook::butter::map<
       facebook::react::SurfaceId,
-      facebook::butter::set<RCTComponentViewDescriptor>>
+      std::unordered_set<RCTComponentViewDescriptor>>
       registry_;
 };
