@@ -11,6 +11,7 @@
 #include <react/renderer/components/scrollview/primitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -102,7 +103,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     ScrollViewMaintainVisibleContentPosition& result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto minIndexForVisible = map.find("minIndexForVisible");
   if (minIndexForVisible != map.end()) {

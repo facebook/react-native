@@ -7,9 +7,6 @@
 
 #pragma once
 
-// foo bar 2
-
-// #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/graphics/Color.h>
 
@@ -22,6 +19,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
 #include <cinttypes>
+#include <unordered_map>
 #include <vector>
 
 namespace facebook::react {
@@ -35,7 +33,7 @@ static inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     AndroidTextInputTextShadowOffsetStruct& result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto width = map.find("width");
   if (width != map.end()) {

@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <butter/map.h>
 #include <mutex>
 #include <shared_mutex>
+#include <unordered_map>
 
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
@@ -60,7 +60,7 @@ class SurfaceManager final {
 
   const Scheduler& scheduler_;
   mutable std::shared_mutex mutex_; // Protects `registry_`.
-  mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
+  mutable std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace facebook::react
