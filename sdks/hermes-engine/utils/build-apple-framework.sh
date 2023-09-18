@@ -52,7 +52,7 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local build_cli_tools enable_bitcode enable_debugger cmake_build_type
+  local build_cli_tools enable_bitcode enable_debugger cmake_build_type xcode_15_flags xcode_major_version
 
   if [[ $1 == iphoneos || $1 == catalyst ]]; then
     enable_bitcode="true"
@@ -77,8 +77,15 @@ function configure_apple_framework {
     cmake_build_type="MinSizeRel"
   fi
 
+  xcode_15_flags=""
+  xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
+  if [[ $xcode_major_version -ge 15 ]]; then
+    xcode_15_flags="LINKER:-ld_classic"
+  fi
+
   pushd "$HERMES_PATH" > /dev/null || exit 1
     cmake -S . -B "build_$1" \
+      -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
       -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
       -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
       -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
