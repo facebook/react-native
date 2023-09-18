@@ -137,7 +137,7 @@ class ReactPlugin : Plugin<Project> {
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
               val packageJson = findPackageJsonFile(project, rootExtension.root)
-              val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
 
               val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
               if (jsSrcsDirInPackageJson != null) {
