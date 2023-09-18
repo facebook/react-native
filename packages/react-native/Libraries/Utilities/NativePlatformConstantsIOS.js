@@ -25,7 +25,7 @@ export type PlatformConstantsIOS = {|
   osVersion: string,
   systemName: string,
   interfaceIdiom: string,
-  isMacCatalyst: boolean,
+  isMacCatalyst?: boolean,
 |};
 
 export interface Spec extends TurboModule {

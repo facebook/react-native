@@ -35,7 +35,7 @@ type IOSPlatform = {
       prerelease: ?number,
     |},
     systemName: string,
-    isMacCatalyst: boolean,
+    isMacCatalyst?: boolean,
   |},
   // $FlowFixMe[unsafe-getters-setters]
   get isPad(): boolean,
