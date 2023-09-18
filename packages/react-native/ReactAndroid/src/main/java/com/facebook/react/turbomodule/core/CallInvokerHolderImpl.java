@@ -8,8 +8,8 @@
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
-import com.facebook.soloader.SoLoader;
 
 /**
  * JSCallInvoker is created at a different time/place (i.e: in CatalystInstance) than
@@ -17,20 +17,14 @@ import com.facebook.soloader.SoLoader;
  * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
 public class CallInvokerHolderImpl implements CallInvokerHolder {
-  private static volatile boolean sIsSoLibraryLoaded;
 
-  private final HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
-  private CallInvokerHolderImpl(HybridData hd) {
-    maybeLoadSoLibrary();
-    mHybridData = hd;
+  static {
+    NativeModuleSoLoader.maybeLoadSoLibrary();
   }
 
-  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
-  private static synchronized void maybeLoadSoLibrary() {
-    if (!sIsSoLibraryLoaded) {
-      SoLoader.loadLibrary("turbomodulejsijni");
-      sIsSoLibraryLoaded = true;
-    }
+  private CallInvokerHolderImpl(HybridData hd) {
+    mHybridData = hd;
   }
 }

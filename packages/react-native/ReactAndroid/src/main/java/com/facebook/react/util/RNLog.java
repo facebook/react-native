@@ -97,29 +97,15 @@ public class RNLog {
   private static String levelToString(int level) {
     switch (level) {
       case LOG:
-        {
-          return "log";
-        }
       case TRACE:
-        {
-          return "log";
-        }
+        return "log";
       case ADVICE:
-        {
-          return "warn";
-        }
       case WARN:
-        {
-          return "warn";
-        }
+        return "warn";
       case ERROR:
-        {
-          return "error";
-        }
+        return "error";
       default:
-        {
-          return "none";
-        }
+        return "none";
     }
   }
 }

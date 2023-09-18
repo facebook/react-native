@@ -22,16 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
-- (void)updateProps:(facebook::react::Props::Shared const &)props
-           oldProps:(facebook::react::Props::Shared const &)oldProps;
+- (void)updateProps:(const facebook::react::Props::Shared &)props
+           oldProps:(const facebook::react::Props::Shared &)oldProps;
 
-- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter;
+- (void)updateEventEmitter:(const facebook::react::EventEmitter::Shared &)eventEmitter;
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState;
+- (void)updateState:(const facebook::react::State::Shared &)state
+           oldState:(const facebook::react::State::Shared &)oldState;
 
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics;
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
 

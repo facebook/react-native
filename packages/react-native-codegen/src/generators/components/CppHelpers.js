@@ -49,6 +49,42 @@ function getCppTypeForAnnotation(
   }
 }
 
+function getCppArrayTypeForAnnotation(
+  typeElement: EventTypeAnnotation,
+  structParts?: string[],
+): string {
+  switch (typeElement.type) {
+    case 'BooleanTypeAnnotation':
+    case 'StringTypeAnnotation':
+    case 'DoubleTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+    case 'MixedTypeAnnotation':
+      return `std::vector<${getCppTypeForAnnotation(typeElement.type)}>`;
+    case 'StringEnumTypeAnnotation':
+    case 'ObjectTypeAnnotation':
+      if (!structParts) {
+        throw new Error(
+          `Trying to generate the event emitter for an Array of ${typeElement.type} without informations to generate the generic type`,
+        );
+      }
+      return `std::vector<${generateEventStructName(structParts)}>`;
+    case 'ArrayTypeAnnotation':
+      return `std::vector<${getCppArrayTypeForAnnotation(
+        typeElement.elementType,
+        structParts,
+      )}>`;
+    default:
+      throw new Error(
+        `Can't determine array type with typeElement: ${JSON.stringify(
+          typeElement,
+          null,
+          2,
+        )}`,
+      );
+  }
+}
+
 function getImports(
   properties:
     | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
@@ -222,6 +258,7 @@ function convertDefaultTypeToString(
 
 module.exports = {
   convertDefaultTypeToString,
+  getCppArrayTypeForAnnotation,
   getCppTypeForAnnotation,
   getEnumMaskName,
   getImports,

@@ -13,10 +13,10 @@
 
 namespace facebook::react {
 
-static std::ostream &operator<<(
-    std::ostream &os,
-    const RawPerformanceEntry &entry) {
-  static constexpr const char *entryTypeNames[] = {
+static std::ostream& operator<<(
+    std::ostream& os,
+    const RawPerformanceEntry& entry) {
+  static constexpr const char* entryTypeNames[] = {
       "UNDEFINED",
       "MARK",
       "MEASURE",
@@ -32,7 +32,7 @@ static std::ostream &operator<<(
 using namespace facebook::react;
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStartReporting) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();
@@ -47,7 +47,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStartReporting) {
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();
@@ -60,7 +60,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
   reporter.measure("measure0", 0.0, 0.0);
 
   auto res = reporter.popPendingEntries();
-  const auto &entries = res.entries;
+  const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
   ASSERT_EQ(3, entries.size());
@@ -84,7 +84,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();
@@ -96,7 +96,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   reporter.mark("mark2", 2.0);
 
   auto res = reporter.popPendingEntries();
-  const auto &entries = res.entries;
+  const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
   ASSERT_EQ(3, entries.size());
@@ -128,7 +128,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();
@@ -146,12 +146,15 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter.measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter.measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
+  reporter.setTimeStampProvider([]() { return 3.5; });
+  reporter.measure("measure5", 0.0, 0.0, std::nullopt, "mark2");
+
   reporter.mark("mark3", 2.0);
-  reporter.measure("measure5", 2.0, 2.0);
+  reporter.measure("measure6", 2.0, 2.0);
   reporter.mark("mark4", 2.0);
 
   auto res = reporter.popPendingEntries();
-  const auto &entries = res.entries;
+  const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
 
@@ -226,10 +229,17 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        std::nullopt,
        std::nullopt,
        std::nullopt},
-      {"measure5",
+      {"measure6",
        static_cast<int>(PerformanceEntryType::MEASURE),
        2.0,
        0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"measure5",
+       static_cast<int>(PerformanceEntryType::MEASURE),
+       2.0,
+       1.5,
        std::nullopt,
        std::nullopt,
        std::nullopt},
@@ -239,35 +249,35 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
 }
 
 static std::vector<std::string> getNames(
-    const std::vector<RawPerformanceEntry> &entries) {
+    const std::vector<RawPerformanceEntry>& entries) {
   std::vector<std::string> res;
   std::transform(
       entries.begin(),
       entries.end(),
       std::back_inserter(res),
-      [](const RawPerformanceEntry &e) { return e.name; });
+      [](const RawPerformanceEntry& e) { return e.name; });
   return res;
 }
 
 static std::vector<int32_t> getTypes(
-    const std::vector<RawPerformanceEntry> &entries) {
+    const std::vector<RawPerformanceEntry>& entries) {
   std::vector<int32_t> res;
   std::transform(
       entries.begin(),
       entries.end(),
       std::back_inserter(res),
-      [](const RawPerformanceEntry &e) { return e.entryType; });
+      [](const RawPerformanceEntry& e) { return e.entryType; });
   return res;
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();
 
   auto res = reporter.popPendingEntries();
-  const auto &entries = res.entries;
+  const auto& entries = res.entries;
 
   ASSERT_EQ(0, res.droppedEntriesCount);
   ASSERT_EQ(0, entries.size());
@@ -314,7 +324,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
-  auto &reporter = PerformanceEntryReporter::getInstance();
+  auto& reporter = PerformanceEntryReporter::getInstance();
 
   reporter.stopReporting();
   reporter.clearEntries();

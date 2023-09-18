@@ -7,15 +7,15 @@
 
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 ImageProps::ImageProps(
-    const PropsParserContext &context,
-    const ImageProps &sourceProps,
-    const RawProps &rawProps)
+    const PropsParserContext& context,
+    const ImageProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       sources(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.sources
@@ -78,10 +78,10 @@ ImageProps::ImageProps(
                     {})) {}
 
 void ImageProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

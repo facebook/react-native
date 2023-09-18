@@ -7,8 +7,12 @@
 
 #import "RCTConstants.h"
 
+NSString *const RCTPlatformName = @"ios";
+
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
+
+NSString *const RCTRootViewFrameDidChangeNotification = @"RCTRootViewFrameDidChangeNotification";
 
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
@@ -16,9 +20,6 @@ NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWil
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
-NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
-NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
-NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 
 /*
  * W3C Pointer Events
@@ -56,7 +57,7 @@ void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
  */
 static int RCTMemoryPressureUnloadLevel = 15;
 
-BOOL RCTGetMemoryPressureUnloadLevel(void)
+int RCTGetMemoryPressureUnloadLevel(void)
 {
   return RCTMemoryPressureUnloadLevel;
 }
@@ -80,4 +81,19 @@ BOOL RCTGetParseUnhandledJSErrorStackNatively(void)
 void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
 {
   RCTParseUnhandledJSErrorStackNatively = value;
+}
+
+/*
+ * Use native view configs in bridgeless mode
+ */
+static BOOL RCTUseNativeViewConfigsInBridgelessMode = NO;
+
+BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void)
+{
+  return RCTUseNativeViewConfigsInBridgelessMode;
+}
+
+void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value)
+{
+  RCTUseNativeViewConfigsInBridgelessMode = value;
 }

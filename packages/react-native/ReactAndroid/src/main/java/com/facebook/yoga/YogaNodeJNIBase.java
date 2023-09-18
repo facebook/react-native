@@ -155,7 +155,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private void clearChildren() {
     mChildren = null;
-    YogaNative.jni_YGNodeClearChildrenJNI(mNativePointer);
+    YogaNative.jni_YGNodeRemoveAllChildrenJNI(mNativePointer);
   }
 
   public YogaNodeJNIBase removeChildAt(int i) {

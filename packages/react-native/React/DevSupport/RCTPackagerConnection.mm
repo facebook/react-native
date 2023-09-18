@@ -14,6 +14,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
@@ -100,7 +101,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
   components.scheme = scheme;
   components.port = serverPort ? @(serverPort.integerValue) : @(kRCTBundleURLProviderDefaultPort);
   components.path = @"/message";
-  components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:@"ios"] ];
+  components.queryItems = @[ [NSURLQueryItem queryItemWithName:@"role" value:RCTPlatformName] ];
   static dispatch_queue_t queue;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

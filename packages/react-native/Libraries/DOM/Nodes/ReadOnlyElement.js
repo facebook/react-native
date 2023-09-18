@@ -15,7 +15,11 @@ import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
 import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
 import DOMRect from '../Geometry/DOMRect';
 import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
-import ReadOnlyNode, {getChildNodes, getShadowNode} from './ReadOnlyNode';
+import ReadOnlyNode, {
+  getChildNodes,
+  getInstanceHandle,
+  getShadowNode,
+} from './ReadOnlyNode';
 import {getElementSibling} from './Utilities/Traversal';
 import nullthrows from 'nullthrows';
 
@@ -29,19 +33,55 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientHeight(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get clientLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[3];
+      }
+    }
+
+    return 0;
   }
 
   get clientTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get clientWidth(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get firstElementChild(): ReadOnlyElement | null {
@@ -55,7 +95,11 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get id(): string {
-    throw new TypeError('Unimplemented');
+    const instanceHandle = getInstanceHandle(this);
+    // TODO: migrate off this private React API
+    // $FlowExpectedError[incompatible-use]
+    const props = instanceHandle?.stateNode?.canonical?.currentProps;
+    return props?.id ?? props?.nativeID ?? '';
   }
 
   get lastElementChild(): ReadOnlyElement | null {
@@ -91,23 +135,69 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollHeight(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[0];
+      }
+    }
+
+    return 0;
   }
 
   get scrollTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollWidth(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get tagName(): string {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).getTagName(node);
+    }
+
+    return '';
   }
 
   get textContent(): string | null {
@@ -121,24 +211,35 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   getBoundingClientRect(): DOMRect {
-    const shadowNode = getShadowNode(this);
-
-    if (shadowNode != null) {
-      const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
-        shadowNode,
-      );
-
-      if (rect) {
-        return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
-      }
-    }
-
-    // Empty rect if any of the above failed
-    return new DOMRect(0, 0, 0, 0);
+    return getBoundingClientRect(this, {includeTransform: true});
   }
 
-  getClientRects(): DOMRectList {
-    throw new TypeError('Unimplemented');
+  /**
+   * Pointer Capture APIs
+   */
+  hasPointerCapture(pointerId: number): boolean {
+    const node = getShadowNode(this);
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).hasPointerCapture(
+        node,
+        pointerId,
+      );
+    }
+    return false;
+  }
+
+  setPointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).setPointerCapture(node, pointerId);
+    }
+  }
+
+  releasePointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).releasePointerCapture(node, pointerId);
+    }
   }
 }
 
@@ -147,4 +248,30 @@ function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
   return getChildNodes(node).filter(
     childNode => childNode instanceof ReadOnlyElement,
   );
+}
+
+/**
+ * The public API for `getBoundingClientRect` always includes transform,
+ * so we use this internal version to get the data without transform to
+ * implement methods like `offsetWidth` and `offsetHeight`.
+ */
+export function getBoundingClientRect(
+  node: ReadOnlyElement,
+  {includeTransform}: {includeTransform: boolean},
+): DOMRect {
+  const shadowNode = getShadowNode(node);
+
+  if (shadowNode != null) {
+    const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
+      shadowNode,
+      includeTransform,
+    );
+
+    if (rect) {
+      return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
+    }
+  }
+
+  // Empty rect if any of the above failed
+  return new DOMRect(0, 0, 0, 0);
 }

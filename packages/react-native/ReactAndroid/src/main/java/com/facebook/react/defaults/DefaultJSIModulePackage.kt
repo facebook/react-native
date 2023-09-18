@@ -40,6 +40,7 @@ class DefaultJSIModulePackage(private val reactNativeHost: ReactNativeHost) : JS
       private val reactNativeHost: ReactNativeHost
   ) : JSIModuleSpec<UIManager> {
     override fun getJSIModuleType(): JSIModuleType = JSIModuleType.UIManager
+
     override fun getJSIModuleProvider(): JSIModuleProvider<UIManager> {
       val componentFactory = ComponentFactory()
 

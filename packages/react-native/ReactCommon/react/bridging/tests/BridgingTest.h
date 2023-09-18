@@ -17,11 +17,11 @@ namespace facebook::react {
 
 class TestCallInvoker : public CallInvoker {
  public:
-  void invokeAsync(std::function<void()> &&fn) override {
+  void invokeAsync(std::function<void()>&& fn) override {
     queue_.push_back(std::move(fn));
   }
 
-  void invokeSync(std::function<void()> &&) override {
+  void invokeSync(std::function<void()>&&) override {
     FAIL() << "JSCallInvoker does not support invokeSync()";
   }
 
@@ -53,11 +53,11 @@ class BridgingTest : public ::testing::Test {
     EXPECT_EQ(0, LongLivedObjectCollection::get().size());
   }
 
-  jsi::Value eval(const std::string &js) {
+  jsi::Value eval(const std::string& js) {
     return rt.global().getPropertyAsFunction(rt, "eval").call(rt, js);
   }
 
-  jsi::Function function(const std::string &js) {
+  jsi::Function function(const std::string& js) {
     return eval(("(" + js + ")").c_str()).getObject(rt).getFunction(rt);
   }
 
@@ -71,7 +71,7 @@ class BridgingTest : public ::testing::Test {
 
   std::shared_ptr<TestCallInvoker> invoker;
   std::unique_ptr<jsi::Runtime> runtime;
-  jsi::Runtime &rt;
+  jsi::Runtime& rt;
 };
 
 } // namespace facebook::react

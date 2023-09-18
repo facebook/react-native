@@ -1207,6 +1207,99 @@ const EVENT_PROPS: SchemaType = {
               },
             },
             {
+              name: 'onArrayEventType',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'bool_array_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'BooleanTypeAnnotation',
+                        },
+                      },
+                    },
+                    {
+                      name: 'string_enum_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'StringEnumTypeAnnotation',
+                          options: ['YES', 'NO'],
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_array_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'StringTypeAnnotation',
+                          },
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_object_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'lat',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'DoubleTypeAnnotation',
+                              },
+                            },
+                            {
+                              name: 'lon',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'DoubleTypeAnnotation',
+                              },
+                            },
+                            {
+                              name: 'names',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'ArrayTypeAnnotation',
+                                elementType: {
+                                  type: 'StringTypeAnnotation',
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_mixed_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'MixedTypeAnnotation',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
               name: 'onEventDirect',
               optional: true,
               bubblingType: 'direct',

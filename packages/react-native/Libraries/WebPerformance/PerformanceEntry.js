@@ -11,6 +11,14 @@
 export type HighResTimeStamp = number;
 export type PerformanceEntryType = 'mark' | 'measure' | 'event';
 
+export type PerformanceEntryJSON = {
+  name: string,
+  entryType: PerformanceEntryType,
+  startTime: HighResTimeStamp,
+  duration: HighResTimeStamp,
+  ...
+};
+
 export const ALWAYS_LOGGED_ENTRY_TYPES: $ReadOnlyArray<PerformanceEntryType> = [
   'mark',
   'measure',
@@ -34,12 +42,7 @@ export class PerformanceEntry {
     this.duration = init.duration;
   }
 
-  toJSON(): {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
-  } {
+  toJSON(): PerformanceEntryJSON {
     return {
       name: this.name,
       entryType: this.entryType,

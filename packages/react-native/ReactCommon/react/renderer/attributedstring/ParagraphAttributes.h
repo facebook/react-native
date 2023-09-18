@@ -70,8 +70,8 @@ class ParagraphAttributes : public DebugStringConvertible {
   Float minimumFontSize{std::numeric_limits<Float>::quiet_NaN()};
   Float maximumFontSize{std::numeric_limits<Float>::quiet_NaN()};
 
-  bool operator==(const ParagraphAttributes &) const;
-  bool operator!=(const ParagraphAttributes &) const;
+  bool operator==(const ParagraphAttributes&) const;
+  bool operator!=(const ParagraphAttributes&) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -87,7 +87,7 @@ namespace std {
 template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
-      const facebook::react::ParagraphAttributes &attributes) const {
+      const facebook::react::ParagraphAttributes& attributes) const {
     return folly::hash::hash_combine(
         0,
         attributes.maximumNumberOfLines,

@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
+@property (nonatomic, assign, readonly) BOOL dictationRecognizing;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;

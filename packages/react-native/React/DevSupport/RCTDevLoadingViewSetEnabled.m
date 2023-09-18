@@ -7,7 +7,7 @@
 
 #import "RCTDevLoadingViewSetEnabled.h"
 
-#if RCT_DEV | RCT_ENABLE_LOADING_VIEW
+#if RCT_DEV_MENU
 static BOOL isDevLoadingViewEnabled = YES;
 #else
 static BOOL isDevLoadingViewEnabled = NO;

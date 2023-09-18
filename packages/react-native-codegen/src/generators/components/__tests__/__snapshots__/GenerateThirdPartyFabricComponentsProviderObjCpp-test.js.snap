@@ -21,6 +21,7 @@ Map {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sFabricComponentsClassMap = {
+    #ifndef RCT_DYNAMIC_FRAMEWORKS
 
     {\\"NoPropsNoEventsComponent\\", NoPropsNoEventsComponentCls}, // NO_PROPS_NO_EVENTS
 
@@ -80,6 +81,7 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+    #endif
   };
 
   auto p = sFabricComponentsClassMap.find(name);

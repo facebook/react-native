@@ -34,14 +34,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
 
-  private static boolean shouldSupportLegacyPackages() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
-  }
+  private final boolean mShouldEnableLegacyModuleInterop =
+      ReactFeatureFlags.enableBridgelessArchitecture
+          && ReactFeatureFlags.unstable_useTurboModuleInterop;
 
-  private static boolean shouldCreateLegacyModules() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
+      mShouldEnableLegacyModuleInterop
+          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+
+  protected ReactPackageTurboModuleManagerDelegate() {
+    super();
   }
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -52,11 +54,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       if (reactPackage instanceof TurboReactPackage) {
         final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                return turboPkg.getModule(moduleName, applicationContext);
-              }
-            };
+            moduleName -> turboPkg.getModule(moduleName, applicationContext);
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
             moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
@@ -73,11 +71,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
         final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
-                return provider != null ? provider.get() : null;
-              }
+            moduleName -> {
+              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
+              return provider != null ? provider.get() : null;
             };
 
         mModuleProviders.add(moduleProvider);
@@ -88,13 +84,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
       if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
         // TODO(T145105887): Output error that ReactPackage was used
-
         continue;
       }
 
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
-
         final List<NativeModule> nativeModules =
             reactPackage.createNativeModules(reactApplicationContext);
 
@@ -114,14 +108,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       true,
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       TurboModule.class.isAssignableFrom(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
-                      true,
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
                       TurboModule.class.isAssignableFrom(moduleClass));
@@ -130,17 +122,22 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
           moduleMap.put(moduleName, module);
         }
 
-        final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                return moduleMap.get(moduleName);
-              }
-            };
+        final ModuleProvider moduleProvider = moduleMap::get;
 
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
       }
     }
+  }
+
+  @Override
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return mShouldEnableLegacyModuleInterop;
+  }
+
+  @Override
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
   }
 
   @Nullable
@@ -162,11 +159,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
-         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         * provide the module.
-         */
+        /*
+         TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+         this happens, it's safe to ignore the exception because a later TurboReactPackage could
+         provide the module.
+        */
       }
     }
 
@@ -179,10 +176,32 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return (TurboModule) resolvedModule;
   }
 
+  @Override
+  public boolean unstable_isModuleRegistered(String moduleName) {
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null && moduleInfo.isTurboModule()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean unstable_isLegacyModuleRegistered(String moduleName) {
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null && !moduleInfo.isTurboModule()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
-    if (!shouldCreateLegacyModules()) {
+    if (!unstable_shouldEnableLegacyModuleInterop()) {
       return null;
     }
 
@@ -202,7 +221,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
+        /*
          * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
          * this happens, it's safe to ignore the exception because a later TurboReactPackage could
          * provide the module.
@@ -219,13 +238,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return resolvedModule;
   }
 
-  @Deprecated
-  @Nullable
-  @Override
-  public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    return null;
-  }
-
   @Override
   public List<String> getEagerInitModuleNames() {
     List<String> moduleNames = new ArrayList<>();
@@ -237,6 +249,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       }
     }
     return moduleNames;
+  }
+
+  private boolean shouldSupportLegacyPackages() {
+    return unstable_shouldEnableLegacyModuleInterop();
   }
 
   public abstract static class Builder {

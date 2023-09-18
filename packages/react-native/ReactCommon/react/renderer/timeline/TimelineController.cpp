@@ -15,16 +15,15 @@ namespace facebook::react {
 TimelineHandler TimelineController::enable(SurfaceId surfaceId) const {
   assert(uiManager_);
 
-  auto shadowTreePtr = (ShadowTree const *){};
-
+  const ShadowTree* shadowTreePtr = nullptr;
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId,
-      [&](ShadowTree const &shadowTree) { shadowTreePtr = &shadowTree; });
+      [&](const ShadowTree& shadowTree) { shadowTreePtr = &shadowTree; });
 
   assert(shadowTreePtr);
 
   {
-    std::unique_lock<butter::shared_mutex> lock(timelinesMutex_);
+    std::unique_lock<std::shared_mutex> lock(timelinesMutex_);
 
     auto timeline = std::make_unique<Timeline>(*shadowTreePtr);
     auto handler = TimelineHandler{*timeline};
@@ -33,8 +32,8 @@ TimelineHandler TimelineController::enable(SurfaceId surfaceId) const {
   }
 }
 
-void TimelineController::disable(TimelineHandler &&handler) const {
-  std::unique_lock<butter::shared_mutex> lock(timelinesMutex_);
+void TimelineController::disable(TimelineHandler&& handler) const {
+  std::unique_lock<std::shared_mutex> lock(timelinesMutex_);
 
   auto iterator = timelines_.find(handler.getSurfaceId());
   assert(iterator != timelines_.end());
@@ -43,20 +42,20 @@ void TimelineController::disable(TimelineHandler &&handler) const {
 }
 
 void TimelineController::commitHookWasRegistered(
-    UIManager const &uiManager) const noexcept {
+    const UIManager& uiManager) noexcept {
   uiManager_ = &uiManager;
 }
 
 void TimelineController::commitHookWasUnregistered(
-    UIManager const & /*uiManager*/) const noexcept {
+    const UIManager& /*uiManager*/) noexcept {
   uiManager_ = nullptr;
 }
 
 RootShadowNode::Unshared TimelineController::shadowTreeWillCommit(
-    ShadowTree const &shadowTree,
-    RootShadowNode::Shared const &oldRootShadowNode,
-    RootShadowNode::Unshared const &newRootShadowNode) const noexcept {
-  std::shared_lock<butter::shared_mutex> lock(timelinesMutex_);
+    const ShadowTree& shadowTree,
+    const RootShadowNode::Shared& oldRootShadowNode,
+    const RootShadowNode::Unshared& newRootShadowNode) noexcept {
+  std::shared_lock<std::shared_mutex> lock(timelinesMutex_);
 
   assert(uiManager_ && "`uiManager_` must not be `nullptr`.");
 
@@ -67,7 +66,7 @@ RootShadowNode::Unshared TimelineController::shadowTreeWillCommit(
     return newRootShadowNode;
   }
 
-  auto &timeline = *iterator->second;
+  auto& timeline = *iterator->second;
   return timeline.shadowTreeWillCommit(
       shadowTree, oldRootShadowNode, newRootShadowNode);
 }

@@ -10,6 +10,7 @@ SET(folly_FLAGS
         -DFOLLY_NO_CONFIG=1
         -DFOLLY_HAVE_CLOCK_GETTIME=1
         -DFOLLY_USE_LIBCPP=1
+        -DFOLLY_CFG_NO_COROUTINES=1
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_RECVMMSG=1
         -DFOLLY_HAVE_PTHREAD=1
@@ -49,10 +50,6 @@ SET(folly_runtime_SRC
         folly/ScopeGuard.cpp
         folly/portability/SysUio.cpp)
 
-IF (CMAKE_BUILD_TYPE MATCHES Debug)
-  list(APPEND folly_runtime_SRC folly/lang/Assume.cpp)
-ENDIF ()
-
 add_library(folly_runtime SHARED ${folly_runtime_SRC})
 
 target_compile_options(folly_runtime
@@ -80,10 +77,7 @@ add_library(folly_futures STATIC
         folly/Try.cpp
         folly/concurrency/CacheLocality.cpp
         folly/detail/AsyncTrace.cpp
-        folly/detail/AtFork.cpp
         folly/detail/MemoryIdler.cpp
-        folly/detail/SingletonStackTrace.cpp
-        folly/detail/StaticSingletonManager.cpp
         folly/detail/ThreadLocalDetail.cpp
         folly/fibers/Baton.cpp
         folly/fibers/FiberManager.cpp
@@ -108,10 +102,11 @@ add_library(folly_futures STATIC
         folly/lang/Exception.cpp
         folly/memory/MallctlHelper.cpp
         folly/portability/SysMembarrier.cpp
-        folly/synchronization/AsymmetricMemoryBarrier.cpp
+        folly/synchronization/AsymmetricThreadFence.cpp
         folly/synchronization/Hazptr.cpp
         folly/synchronization/WaitOptions.cpp
         folly/synchronization/detail/Sleeper.cpp
+        folly/system/AtFork.cpp
         folly/system/Pid.cpp)
 
 target_compile_options(folly_futures

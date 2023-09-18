@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
@@ -25,4 +25,3 @@ target_include_directories(react_render_graphics
         )
 
 target_link_libraries(react_render_graphics glog fb fbjni folly_runtime react_debug)
-

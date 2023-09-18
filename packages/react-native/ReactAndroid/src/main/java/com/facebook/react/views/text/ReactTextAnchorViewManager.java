@@ -75,6 +75,16 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     view.setAdjustFontSizeToFit(adjustsFontSizeToFit);
   }
 
+  @ReactProp(name = ViewProps.FONT_SIZE)
+  public void setFontSize(ReactTextView view, float fontSize) {
+    view.setFontSize(fontSize);
+  }
+
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(ReactTextView view, float letterSpacing) {
+    view.setLetterSpacing(letterSpacing);
+  }
+
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
   public void setTextAlignVertical(ReactTextView view, @Nullable String textAlignVertical) {
     if (textAlignVertical == null || "auto".equals(textAlignVertical)) {

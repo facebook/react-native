@@ -25,7 +25,7 @@ class CalledOnceMovableOnlyFunction {
   bool wasMovedFrom_;
 
  public:
-  explicit CalledOnceMovableOnlyFunction(std::function<T> &&function)
+  explicit CalledOnceMovableOnlyFunction(std::function<T>&& function)
       : function_(std::move(function)) {
     wasCalled_ = false;
     wasMovedFrom_ = false;
@@ -40,24 +40,24 @@ class CalledOnceMovableOnlyFunction {
   /*
    * Not copyable.
    */
-  CalledOnceMovableOnlyFunction(CalledOnceMovableOnlyFunction const &other) =
+  CalledOnceMovableOnlyFunction(const CalledOnceMovableOnlyFunction& other) =
       delete;
-  CalledOnceMovableOnlyFunction &operator=(
-      CalledOnceMovableOnlyFunction const &other) = delete;
+  CalledOnceMovableOnlyFunction& operator=(
+      const CalledOnceMovableOnlyFunction& other) = delete;
 
   /*
    * Movable.
    */
   CalledOnceMovableOnlyFunction(
-      CalledOnceMovableOnlyFunction &&other) noexcept {
+      CalledOnceMovableOnlyFunction&& other) noexcept {
     wasCalled_ = false;
     wasMovedFrom_ = false;
     other.wasMovedFrom_ = true;
     function_ = std::move(other.function_);
   };
 
-  CalledOnceMovableOnlyFunction &operator=(
-      CalledOnceMovableOnlyFunction &&other) noexcept {
+  CalledOnceMovableOnlyFunction& operator=(
+      CalledOnceMovableOnlyFunction&& other) noexcept {
     react_native_assert(
         (wasCalled_ || wasMovedFrom_) &&
         "`CalledOnceMovableOnlyFunction` is re-assigned before being called.");

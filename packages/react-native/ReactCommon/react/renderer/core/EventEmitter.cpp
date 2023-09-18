@@ -30,32 +30,31 @@ static std::string normalizeEventType(std::string type) {
   return prefixedType;
 }
 
-std::mutex &EventEmitter::DispatchMutex() {
+std::mutex& EventEmitter::DispatchMutex() {
   static std::mutex mutex;
   return mutex;
 }
 
 ValueFactory EventEmitter::defaultPayloadFactory() {
   static auto payloadFactory =
-      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+      ValueFactory{[](jsi::Runtime& runtime) { return jsi::Object(runtime); }};
   return payloadFactory;
 }
 
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
-    Tag /*tag*/,
     EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const folly::dynamic &payload,
+    const folly::dynamic& payload,
     EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime &runtime) {
+      [payload](jsi::Runtime& runtime) {
         return valueFromDynamic(runtime, payload);
       },
       priority,
@@ -64,15 +63,27 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const folly::dynamic &payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime &runtime) {
+    const folly::dynamic& payload) const {
+  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
     return valueFromDynamic(runtime, payload);
   });
 }
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const ValueFactory &payloadFactory,
+    const ValueFactory& payloadFactory,
+    EventPriority priority,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      priority,
+      category);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    SharedEventPayload payload,
     EventPriority priority,
     RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
@@ -85,7 +96,7 @@ void EventEmitter::dispatchEvent(
   eventDispatcher->dispatchEvent(
       RawEvent(
           normalizeEventType(std::move(type)),
-          payloadFactory,
+          std::move(payload),
           eventTarget_,
           category),
       priority);
@@ -93,7 +104,15 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const ValueFactory &payloadFactory) const {
+    const ValueFactory& payloadFactory) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory));
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    SharedEventPayload payload) const {
   SystraceSection s("EventEmitter::dispatchUniqueEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -103,7 +122,7 @@ void EventEmitter::dispatchUniqueEvent(
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      payloadFactory,
+      std::move(payload),
       eventTarget_,
       RawEvent::Category::Continuous));
 }
@@ -131,7 +150,7 @@ void EventEmitter::setEnabled(bool enabled) const {
   }
 }
 
-const SharedEventTarget &EventEmitter::getEventTarget() const {
+const SharedEventTarget& EventEmitter::getEventTarget() const {
   return eventTarget_;
 }
 

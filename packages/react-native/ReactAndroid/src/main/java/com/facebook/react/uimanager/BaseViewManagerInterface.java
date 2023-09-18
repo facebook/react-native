@@ -52,6 +52,8 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);
 
+  void setRole(T view, @Nullable String role);
+
   void setNativeId(T view, @Nullable String nativeId);
 
   void setAccessibilityLabelledBy(T view, @Nullable Dynamic nativeId);
@@ -69,6 +71,8 @@ public interface BaseViewManagerInterface<T extends View> {
   void setTestId(T view, String testId);
 
   void setTransform(T view, @Nullable ReadableArray matrix);
+
+  void setTransformOrigin(T view, @Nullable ReadableArray transformOrigin);
 
   void setTranslateX(T view, float translateX);
 

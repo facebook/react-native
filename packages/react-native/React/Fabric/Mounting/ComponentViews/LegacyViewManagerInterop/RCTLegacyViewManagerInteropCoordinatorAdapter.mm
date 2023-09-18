@@ -24,6 +24,7 @@
 
 - (void)dealloc
 {
+  [_coordinator removeViewFromRegistryWithTag:_tag];
   [_paperView removeFromSuperview];
   [_coordinator removeObserveForTag:_tag];
 }
@@ -39,6 +40,7 @@
                             weakSelf.eventInterceptor(eventName, event);
                           }
                         }];
+    [_coordinator addViewToRegistry:_paperView withTag:_tag];
   }
   return _paperView;
 }

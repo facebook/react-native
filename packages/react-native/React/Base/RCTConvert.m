@@ -84,7 +84,6 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 
   @try { // NSURL has a history of crashing with bad input, so let's be safe
-
     NSURL *URL = [NSURL URLWithString:path];
     if (URL.scheme) { // Was a well-formed absolute URL
       return URL;

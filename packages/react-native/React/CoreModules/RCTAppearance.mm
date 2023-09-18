@@ -36,6 +36,15 @@ NSString *RCTCurrentOverrideAppearancePreference()
   return sColorSchemeOverride;
 }
 
+static UITraitCollection *getKeyWindowTraitCollection()
+{
+  __block UITraitCollection *traitCollection = nil;
+  RCTExecuteOnMainQueue(^{
+    traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+  });
+  return traitCollection;
+}
+
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
   static NSDictionary *appearances;
@@ -57,7 +66,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
+  traitCollection = traitCollection ?: getKeyWindowTraitCollection();
   return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
 
   // Default to light on older OS version - same behavior as Android.

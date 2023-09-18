@@ -23,25 +23,25 @@ jobs:
         with:
           script: |
             const verifyVersion = require('./.github/workflow-scripts/verifyVersion.js')
-            const labelToAdd = await verifyVersion(github, context);
+            const labelWithContext = await verifyVersion(github, context);
 
-            if(labelToAdd) {
+            if(labelWithContext && labelWithContext.label) {
               await github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                labels: [labelToAdd]
+                labels: [labelWithContext.label]
               })
 
               const actOnLabel = require('./.github/workflow-scripts/actOnLabel.js')
-              await actOnLabel(github, context, labelToAdd)
+              await actOnLabel(github, context, labelWithContext)
             }
 
       - name: Add descriptive label
         uses: actions/github-script@v6
         with:
           script: |
-            const addDescriptiveLabel = require('./.github/workflows/addDescriptiveLabels.js')
+            const addDescriptiveLabel = require('./.github/workflow-scripts/addDescriptiveLabels.js')
             await addDescriptiveLabel(github, context);
 
   # Reacts to the label that triggered this workflow (added manually or via other workflows)
@@ -54,4 +54,4 @@ jobs:
         with:
           script: |
             const actOnLabel = require('./.github/workflow-scripts/actOnLabel.js')
-            await actOnLabel(github, context, context.payload.label.name)
+            await actOnLabel(github, context, {label: context.payload.label.name})

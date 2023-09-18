@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
 import android.util.SparseArray;
+import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativePermissionsAndroidSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
@@ -198,9 +199,17 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
   @Override
   public boolean onRequestPermissionsResult(
       int requestCode, String[] permissions, int[] grantResults) {
-    mCallbacks.get(requestCode).invoke(grantResults, getPermissionAwareActivity());
-    mCallbacks.remove(requestCode);
-    return mCallbacks.size() == 0;
+    try {
+      mCallbacks.get(requestCode).invoke(grantResults, getPermissionAwareActivity());
+      mCallbacks.remove(requestCode);
+      return mCallbacks.size() == 0;
+    } catch (IllegalStateException e) {
+      FLog.e(
+          "PermissionsModule",
+          e,
+          "Unexpected invocation of `onRequestPermissionsResult` with invalid current activity");
+      return false;
+    }
   }
 
   private PermissionAwareActivity getPermissionAwareActivity() {

@@ -13,7 +13,6 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/leakchecker/LeakChecker.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
@@ -75,7 +74,7 @@ struct SchedulerToolbox final {
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.
    */
-  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks;
+  std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks;
 };
 
 } // namespace facebook::react

@@ -6,9 +6,8 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<47ba85d7f43c9b591d6804827322d00e>>
- *
- * This file was sync'd from the facebook/react repository.
+ * @nolint
+ * @generated SignedSource<<1b39316520f5af25f0a141d7d78b0809>>
  */
 
 'use strict';
@@ -109,6 +108,7 @@ exports.get = function (name: string): ViewConfig {
         'View config getter callback for component `%s` must be a function (received `%s`).%s',
         name,
         callback === null ? 'null' : typeof callback,
+        // $FlowFixMe[recursive-definition]
         typeof name[0] === 'string' && /[a-z]/.test(name[0])
           ? ' Make sure to start component names with a capital letter.'
           : '',

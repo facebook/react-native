@@ -12,12 +12,14 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
+export type I18nManagerConstants = {|
+  doLeftAndRightSwapInRTL: boolean,
+  isRTL: boolean,
+  localeIdentifier?: ?string,
+|};
+
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
-    isRTL: boolean,
-    doLeftAndRightSwapInRTL: boolean,
-    localeIdentifier: ?string,
-  |};
+  +getConstants: () => I18nManagerConstants;
   allowRTL: (allowRTL: boolean) => void;
   forceRTL: (forceRTL: boolean) => void;
   swapLeftAndRightInRTL: (flipStyles: boolean) => void;

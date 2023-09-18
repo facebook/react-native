@@ -15,10 +15,10 @@
 namespace facebook::react {
 
 static TextInputTraits convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    TextInputTraits const &sourceTraits,
-    TextInputTraits const &defaultTraits) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const TextInputTraits& sourceTraits,
+    const TextInputTraits& defaultTraits) {
   auto traits = TextInputTraits{};
 
   traits.multiline = convertRawProp(
@@ -141,17 +141,23 @@ static TextInputTraits convertRawProp(
       "passwordRules",
       sourceTraits.passwordRules,
       defaultTraits.passwordRules);
+  traits.smartInsertDelete = convertRawProp(
+      context,
+      rawProps,
+      "smartInsertDelete",
+      sourceTraits.smartInsertDelete,
+      defaultTraits.smartInsertDelete);
 
   return traits;
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    Selection &result) {
-  if (value.hasType<butter::map<std::string, int>>()) {
-    auto map = (butter::map<std::string, int>)value;
-    for (const auto &pair : map) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    Selection& result) {
+  if (value.hasType<std::unordered_map<std::string, int>>()) {
+    auto map = (std::unordered_map<std::string, int>)value;
+    for (const auto& pair : map) {
       if (pair.first == "start") {
         result.start = pair.second;
       } else if (pair.first == "end") {

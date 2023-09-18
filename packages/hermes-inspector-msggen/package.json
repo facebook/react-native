@@ -1,10 +1,19 @@
 {
   "name": "@react-native/hermes-inspector-msggen",
-  "private": true,
   "version": "0.72.0",
+  "private": true,
+  "description": "Hermes Inspector Message Generator for React Native",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/hermes-inspector-msggen"
+  },
   "bin": {
     "msggen": "./bin/index.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "flow": "flow",
@@ -17,11 +26,11 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.19.0",
+    "@babel/cli": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
-    "@babel/preset-flow": "^7.18.0",
-    "jest": "^29.2.1"
+    "@babel/preset-flow": "^7.20.0",
+    "jest": "^29.6.3"
   },
   "jest": {
     "transform": {

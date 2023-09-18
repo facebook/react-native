@@ -5,34 +5,39 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "jni.h"
-#include <yoga/YGValue.h>
-#include <yoga/Yoga.h>
+#pragma once
+
 #include <map>
+#include <vector>
+
+#include <yoga/Yoga.h>
+
 #include "common.h"
+#include "jni.h"
 
 class PtrJNodeMapVanilla {
-  std::map<YGNodeRef, size_t> ptrsToIdxs_;
-  jobjectArray javaNodes_;
+  std::map<YGNodeConstRef, jsize> ptrsToIdxs_{};
+  jobjectArray javaNodes_{};
 
-public:
-  PtrJNodeMapVanilla() : ptrsToIdxs_{}, javaNodes_{} {}
+ public:
+  PtrJNodeMapVanilla() = default;
+
   PtrJNodeMapVanilla(jlongArray javaNativePointers, jobjectArray javaNodes)
       : javaNodes_{javaNodes} {
     using namespace facebook::yoga::vanillajni;
 
     JNIEnv* env = getCurrentEnv();
-    size_t nativePointersSize = env->GetArrayLength(javaNativePointers);
-    std::vector<jlong> nativePointers(nativePointersSize);
+    jsize nativePointersSize = env->GetArrayLength(javaNativePointers);
+    std::vector<jlong> nativePointers(static_cast<size_t>(nativePointersSize));
     env->GetLongArrayRegion(
         javaNativePointers, 0, nativePointersSize, nativePointers.data());
 
-    for (size_t i = 0; i < nativePointersSize; ++i) {
-      ptrsToIdxs_[(YGNodeRef) nativePointers[i]] = i;
+    for (jsize i = 0; i < nativePointersSize; ++i) {
+      ptrsToIdxs_[(YGNodeConstRef)nativePointers[static_cast<size_t>(i)]] = i;
     }
   }
 
-  facebook::yoga::vanillajni::ScopedLocalRef<jobject> ref(YGNodeRef node) {
+  facebook::yoga::vanillajni::ScopedLocalRef<jobject> ref(YGNodeConstRef node) {
     using namespace facebook::yoga::vanillajni;
 
     JNIEnv* env = getCurrentEnv();

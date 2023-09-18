@@ -574,9 +574,6 @@ function clearInteractionHandle(
   }
 }
 
-export type PanResponderInstance = $Call<
-  $PropertyType<typeof PanResponder, 'create'>,
-  PanResponderConfig,
->;
+export type PanResponderInstance = ReturnType<(typeof PanResponder)['create']>;
 
 export default PanResponder;

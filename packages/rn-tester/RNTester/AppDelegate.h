@@ -5,13 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <RCTAppDelegate.h>
 #import <UIKit/UIKit.h>
 
-@class RCTBridge;
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, readonly) RCTBridge *bridge;
+@interface AppDelegate : RCTAppDelegate
 
 @end

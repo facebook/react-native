@@ -24,7 +24,7 @@ void RuntimeScheduler::scheduleWork(RawCallback callback) const {
   runtimeAccessRequests_ += 1;
 
   runtimeExecutor_(
-      [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+      [this, callback = std::move(callback)](jsi::Runtime& runtime) {
         runtimeAccessRequests_ -= 1;
         callback(runtime);
         startWorkLoop(runtime);
@@ -65,7 +65,7 @@ bool RuntimeScheduler::getIsSynchronous() const noexcept {
   return isSynchronous_;
 }
 
-void RuntimeScheduler::cancelTask(Task &task) noexcept {
+void RuntimeScheduler::cancelTask(Task& task) noexcept {
   task.callback.reset();
 }
 
@@ -81,7 +81,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(RawCallback callback) {
   runtimeAccessRequests_ += 1;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+      [this, callback = std::move(callback)](jsi::Runtime& runtime) {
         runtimeAccessRequests_ -= 1;
         isSynchronous_ = true;
         callback(runtime);
@@ -94,7 +94,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(RawCallback callback) {
   scheduleWorkLoopIfNecessary();
 }
 
-void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
+void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
   auto previousPriority = currentPriority_;
   try {
     while (!taskQueue_.empty()) {
@@ -118,7 +118,7 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
         }
       }
     }
-  } catch (jsi::JSError &error) {
+  } catch (jsi::JSError& error) {
     handleFatalError(runtime, error);
   }
 
@@ -130,14 +130,14 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime &runtime) {
 void RuntimeScheduler::scheduleWorkLoopIfNecessary() const {
   if (!isWorkLoopScheduled_ && !isPerformingWork_) {
     isWorkLoopScheduled_ = true;
-    runtimeExecutor_([this](jsi::Runtime &runtime) {
+    runtimeExecutor_([this](jsi::Runtime& runtime) {
       isWorkLoopScheduled_ = false;
       startWorkLoop(runtime);
     });
   }
 }
 
-void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
+void RuntimeScheduler::startWorkLoop(jsi::Runtime& runtime) const {
   auto previousPriority = currentPriority_;
   isPerformingWork_ = true;
   try {
@@ -163,7 +163,7 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
         }
       }
     }
-  } catch (jsi::JSError &error) {
+  } catch (jsi::JSError& error) {
     handleFatalError(runtime, error);
   }
 

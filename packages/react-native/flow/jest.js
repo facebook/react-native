@@ -39,6 +39,10 @@ type JestMockFn<TArguments: $ReadOnlyArray<any>, TReturn> = {
      */
     instances: Array<TReturn>,
     /**
+     * An array that contains the contexts for all calls of the mock function.
+     */
+    contexts: Array<mixed>,
+    /**
      * An array that contains all the object results that have been
      * returned by this mock function call
      */

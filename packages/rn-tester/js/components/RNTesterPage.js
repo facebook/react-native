@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
   },
   noscrollWrapper: {
     flex: 1,
-    paddingVertical: 10,
     rowGap: 30,
   },
   scrollWrapper: {

@@ -25,7 +25,7 @@ import TextInputState from '../../Components/TextInput/TextInputState';
 import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
 import {create as createAttributePayload} from '../../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../ReactNative/ReactFabricPublicInstance/warnForStyleProps';
-import ReadOnlyElement from './ReadOnlyElement';
+import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
 import ReadOnlyNode from './ReadOnlyNode';
 import {
   getPublicInstanceFromInternalInstanceHandle,
@@ -58,7 +58,9 @@ export default class ReactNativeElement
   }
 
   get offsetHeight(): number {
-    return Math.round(this.getBoundingClientRect().height);
+    return Math.round(
+      getBoundingClientRect(this, {includeTransform: false}).height,
+    );
   }
 
   get offsetLeft(): number {
@@ -79,7 +81,10 @@ export default class ReactNativeElement
 
     if (node != null) {
       const offset = nullthrows(getFabricUIManager()).getOffset(node);
-      if (offset != null) {
+      // For children of the root node we currently return offset data
+      // but a `null` parent because the root node is not accessible
+      // in JavaScript yet.
+      if (offset != null && offset[0] != null) {
         const offsetParentInstanceHandle = offset[0];
         const offsetParent = getPublicInstanceFromInternalInstanceHandle(
           offsetParentInstanceHandle,
@@ -107,7 +112,9 @@ export default class ReactNativeElement
   }
 
   get offsetWidth(): number {
-    return Math.round(this.getBoundingClientRect().width);
+    return Math.round(
+      getBoundingClientRect(this, {includeTransform: false}).width,
+    );
   }
 
   /**

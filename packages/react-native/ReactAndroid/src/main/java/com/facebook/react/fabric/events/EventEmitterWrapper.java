@@ -21,6 +21,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created in
  * FabricMountingManager.cpp, where the pointer to the C++ event emitter is set.
  */
+@DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
 public class EventEmitterWrapper {
 
@@ -30,6 +31,7 @@ public class EventEmitterWrapper {
 
   @DoNotStrip private final HybridData mHybridData;
 
+  @DoNotStrip
   private EventEmitterWrapper(HybridData hybridData) {
     mHybridData = hybridData;
   }
@@ -37,8 +39,7 @@ public class EventEmitterWrapper {
   private native void dispatchEvent(
       @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
 
-  private native void dispatchUniqueEvent(
-      @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
+  private native void dispatchUniqueEvent(@NonNull String eventName, @NonNull NativeMap params);
 
   /**
    * Invokes the execution of the C++ EventEmitter.
@@ -63,12 +64,11 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public synchronized void dispatchUnique(
-      @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
+  public synchronized void dispatchUnique(@NonNull String eventName, @Nullable WritableMap params) {
     if (!isValid()) {
       return;
     }
-    dispatchUniqueEvent(eventName, (NativeMap) params, customCoalesceKey);
+    dispatchUniqueEvent(eventName, (NativeMap) params);
   }
 
   public synchronized void destroy() {

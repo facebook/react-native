@@ -64,7 +64,11 @@ try {
   }
 
   describe('Create react-native package');
-  if (exec('node ./scripts/set-rn-version.js --version 1000.0.0').code) {
+  if (
+    exec(
+      'node ./scripts/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
+    ).code
+  ) {
     echo('Failed to set version and update package.json ready for release');
     exitCode = 1;
     throw Error(exitCode);
@@ -84,7 +88,8 @@ try {
   describe('Set up Verdaccio');
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
-  describe('Publish packages');
+  describe('Build and publish packages');
+  exec('node ./scripts/build/build.js', {cwd: ROOT});
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {

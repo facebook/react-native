@@ -17,13 +17,13 @@ Pod::Spec.new do |s|
   s.description     = "my-native-view"
   s.homepage        = "https://github.com/sota000/my-native-view.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => min_ios_version_supported }
+  s.platforms       = min_supported_versions
   s.compiler_flags  = boost_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/my-native-view.git", :tag => "#{s.version}" }
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
   }
 
   s.source_files    = "ios/**/*.{h,m,mm,cpp}"

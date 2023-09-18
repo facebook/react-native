@@ -17,7 +17,7 @@
 
 namespace facebook::react {
 
-auto contextContainer = std::make_shared<ContextContainer const>();
+auto contextContainer = std::make_shared<const ContextContainer>();
 auto eventDispatcher = std::shared_ptr<EventDispatcher>{nullptr};
 auto viewComponentDescriptor = ViewComponentDescriptor{
     ComponentDescriptorParameters{eventDispatcher, contextContainer}};
@@ -34,14 +34,14 @@ auto unsupportedPropsDynamic =
 auto sourceProps = ViewProps{};
 auto sharedSourceProps = ViewShadowNode::defaultSharedProps();
 
-static void emptyPropCreation(benchmark::State &state) {
+static void emptyPropCreation(benchmark::State& state) {
   for (auto _ : state) {
     ViewProps{};
   }
 }
 BENCHMARK(emptyPropCreation);
 
-static void propParsingEmptyRawProps(benchmark::State &state) {
+static void propParsingEmptyRawProps(benchmark::State& state) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
   for (auto _ : state) {
@@ -51,7 +51,7 @@ static void propParsingEmptyRawProps(benchmark::State &state) {
 }
 BENCHMARK(propParsingEmptyRawProps);
 
-static void propParsingRegularRawProps(benchmark::State &state) {
+static void propParsingRegularRawProps(benchmark::State& state) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
   for (auto _ : state) {
@@ -61,7 +61,7 @@ static void propParsingRegularRawProps(benchmark::State &state) {
 }
 BENCHMARK(propParsingRegularRawProps);
 
-static void propParsingUnsupportedRawProps(benchmark::State &state) {
+static void propParsingUnsupportedRawProps(benchmark::State& state) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
   for (auto _ : state) {
@@ -72,7 +72,7 @@ static void propParsingUnsupportedRawProps(benchmark::State &state) {
 BENCHMARK(propParsingUnsupportedRawProps);
 
 static void propParsingRegularRawPropsWithNoSourceProps(
-    benchmark::State &state) {
+    benchmark::State& state) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
   for (auto _ : state) {

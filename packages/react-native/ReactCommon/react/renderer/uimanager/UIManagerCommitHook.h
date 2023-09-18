@@ -22,10 +22,9 @@ class UIManagerCommitHook {
   /*
    * Called right after the commit hook is registered or unregistered.
    */
-  virtual void commitHookWasRegistered(
-      UIManager const &uiManager) const noexcept = 0;
+  virtual void commitHookWasRegistered(const UIManager& uiManager) noexcept = 0;
   virtual void commitHookWasUnregistered(
-      UIManager const &uiManager) const noexcept = 0;
+      const UIManager& uiManager) noexcept = 0;
 
   /*
    * Called right before a `ShadowTree` commits a new tree.
@@ -33,9 +32,9 @@ class UIManagerCommitHook {
    * from `ShadowTreeDelegate`.
    */
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
-      ShadowTree const &shadowTree,
-      RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode) const noexcept = 0;
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode) noexcept = 0;
 
   virtual ~UIManagerCommitHook() noexcept = default;
 };

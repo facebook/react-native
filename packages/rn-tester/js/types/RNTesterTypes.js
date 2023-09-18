@@ -16,7 +16,7 @@ export type RNTesterModuleExample = $ReadOnly<{|
   platform?: 'ios' | 'android',
   description?: string,
   expect?: string,
-  render: () => React.Node,
+  render: ({testID?: ?string}) => React.Node,
 |}>;
 
 export type RNTesterModule = $ReadOnly<{|

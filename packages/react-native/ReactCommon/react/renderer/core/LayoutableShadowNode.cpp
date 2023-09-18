@@ -18,10 +18,10 @@
 namespace facebook::react {
 
 template <class T>
-using LayoutableSmallVector = butter::small_vector<T, 16>;
+using LayoutableSmallVector = std::vector<T>;
 
 static LayoutableSmallVector<Rect> calculateTransformedFrames(
-    LayoutableSmallVector<ShadowNode const *> const &shadowNodeList,
+    const LayoutableSmallVector<ShadowNode const*>& shadowNodeList,
     LayoutableShadowNode::LayoutInspectingPolicy policy) {
   auto size = shadowNodeList.size();
   auto transformedFrames = LayoutableSmallVector<Rect>{size};
@@ -29,13 +29,13 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
   for (auto i = size; i > 0; --i) {
     auto currentShadowNode =
-        traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i - 1));
+        traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i - 1));
     auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
 
     if (policy.includeTransform) {
       if (Transform::isVerticalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
+            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
         currentFrame.origin.y =
             parentShadowNode->getLayoutMetrics().frame.size.height -
             currentFrame.size.height - currentFrame.origin.y;
@@ -43,7 +43,7 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
       if (Transform::isHorizontalInversion(transformation)) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
+            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
         currentFrame.origin.x =
             parentShadowNode->getLayoutMetrics().frame.size.width -
             currentFrame.size.width - currentFrame.origin.x;
@@ -51,15 +51,15 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 
       if (i != size) {
         auto parentShadowNode =
-            traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
-        auto contentOritinOffset = parentShadowNode->getContentOriginOffset();
+            traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
+        auto contentOriginOffset = parentShadowNode->getContentOriginOffset();
         if (Transform::isVerticalInversion(transformation)) {
-          contentOritinOffset.y = -contentOritinOffset.y;
+          contentOriginOffset.y = -contentOriginOffset.y;
         }
         if (Transform::isHorizontalInversion(transformation)) {
-          contentOritinOffset.x = -contentOritinOffset.x;
+          contentOriginOffset.x = -contentOriginOffset.x;
         }
-        currentFrame.origin += contentOritinOffset;
+        currentFrame.origin += contentOriginOffset;
       }
 
       transformation = transformation * currentShadowNode->getTransform();
@@ -72,21 +72,21 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
 }
 
 LayoutableShadowNode::LayoutableShadowNode(
-    ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
+    const ShadowNodeFragment& fragment,
+    const ShadowNodeFamily::Shared& family,
     ShadowNodeTraits traits)
     : ShadowNode(fragment, family, traits), layoutMetrics_({}) {}
 
 LayoutableShadowNode::LayoutableShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
+    const ShadowNode& sourceShadowNode,
+    const ShadowNodeFragment& fragment)
     : ShadowNode(sourceShadowNode, fragment),
-      layoutMetrics_(static_cast<LayoutableShadowNode const &>(sourceShadowNode)
+      layoutMetrics_(static_cast<const LayoutableShadowNode&>(sourceShadowNode)
                          .layoutMetrics_) {}
 
 LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
-    ShadowNodeFamily const &descendantNodeFamily,
-    LayoutableShadowNode const &ancestorNode,
+    const ShadowNodeFamily& descendantNodeFamily,
+    const LayoutableShadowNode& ancestorNode,
     LayoutInspectingPolicy policy) {
   // Prelude.
 
@@ -105,7 +105,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   }
 
   auto ancestors = descendantNodeFamily.getAncestors(ancestorNode);
+  return computeRelativeLayoutMetrics(ancestors, policy);
+}
 
+LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
+    const AncestorList& ancestors,
+    LayoutInspectingPolicy policy) {
   if (ancestors.empty()) {
     // Specified nodes do not form an ancestor-descender relationship
     // in the same tree. Aborting.
@@ -117,12 +122,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 1.
   // Creating a list of nodes that form a chain from the descender node to
   // ancestor node inclusively.
-  auto shadowNodeList = LayoutableSmallVector<ShadowNode const *>{};
+  auto shadowNodeList = LayoutableSmallVector<const ShadowNode*>{};
 
   // Finding the measured node.
   // The last element in the `AncestorList` is a pair of a parent of the node
   // and an index of this node in the parent's children list.
-  auto &pair = ancestors.at(ancestors.size() - 1);
+  auto& pair = ancestors.at(ancestors.size() - 1);
   auto descendantNode = pair.first.get().getChildren().at(pair.second).get();
 
   // Putting the node inside the list.
@@ -131,7 +136,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   shadowNodeList.push_back(descendantNode);
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    auto &shadowNode = it->first.get();
+    auto& shadowNode = it->first.get();
 
     shadowNodeList.push_back(&shadowNode);
 
@@ -147,7 +152,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // Step 2.
   // Computing the initial size of the measured node.
   auto descendantLayoutableNode =
-      traitCast<LayoutableShadowNode const *>(descendantNode);
+      traitCast<const LayoutableShadowNode*>(descendantNode);
 
   if (descendantLayoutableNode == nullptr) {
     return EmptyLayoutMetrics;
@@ -170,15 +175,15 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       ? calculateTransformedFrames(shadowNodeList, policy)
       : LayoutableSmallVector<Rect>();
   auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
-  auto &resultFrame = layoutMetrics.frame;
+  auto& resultFrame = layoutMetrics.frame;
   resultFrame.origin = {0, 0};
 
   // Step 3.
-  // Iterating on a list of nodes computing compound offset.
+  // Iterating on a list of nodes computing compound offset and size.
   auto size = shadowNodeList.size();
   for (size_t i = 0; i < size; i++) {
     auto currentShadowNode =
-        traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
+        traitCast<const LayoutableShadowNode*>(shadowNodeList.at(i));
 
     if (currentShadowNode == nullptr) {
       return EmptyLayoutMetrics;
@@ -200,18 +205,34 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
     auto isRootNode = currentShadowNode->getTraits().check(
         ShadowNodeTraits::Trait::RootNodeKind);
+
     auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
         (policy.includeViewportOffset && isRootNode);
 
+    // Move frame to the coordinate space of the current node.
+    resultFrame.origin += currentFrame.origin;
+
     if (shouldApplyTransformation) {
-      resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
-      currentFrame = currentFrame * currentShadowNode->getTransform();
+      // If a node has a transform, we need to use the center of that node as
+      // the origin of the transform when transforming its children (which
+      // affects the result of transforms like `scale` and `rotate`).
+      resultFrame = currentShadowNode->getTransform().applyWithCenter(
+          resultFrame, currentFrame.getCenter());
     }
 
-    resultFrame.origin += currentFrame.origin;
     if (!shouldCalculateTransformedFrames && i != 0 &&
         policy.includeTransform) {
       resultFrame.origin += currentShadowNode->getContentOriginOffset();
+    }
+
+    if (policy.enableOverflowClipping) {
+      auto overflowInset = currentShadowNode->getLayoutMetrics().overflowInset;
+      auto overflowRect = insetBy(
+          currentFrame * currentShadowNode->getTransform(), overflowInset);
+      resultFrame = Rect::intersect(resultFrame, overflowRect);
+      if (resultFrame.size.width == 0 && resultFrame.size.height == 0) {
+        return EmptyLayoutMetrics;
+      }
     }
   }
 
@@ -255,29 +276,29 @@ Point LayoutableShadowNode::getContentOriginOffset() const {
 LayoutableShadowNode::UnsharedList
 LayoutableShadowNode::getLayoutableChildNodes() const {
   LayoutableShadowNode::UnsharedList layoutableChildren;
-  for (const auto &childShadowNode : getChildren()) {
+  for (const auto& childShadowNode : getChildren()) {
     auto layoutableChildShadowNode =
-        traitCast<LayoutableShadowNode const *>(childShadowNode.get());
+        traitCast<const LayoutableShadowNode*>(childShadowNode.get());
     if (layoutableChildShadowNode != nullptr) {
       layoutableChildren.push_back(
-          const_cast<LayoutableShadowNode *>(layoutableChildShadowNode));
+          const_cast<LayoutableShadowNode*>(layoutableChildShadowNode));
     }
   }
   return layoutableChildren;
 }
 
 Size LayoutableShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const & /*layoutConstraints*/) const {
+    const LayoutContext& /*layoutContext*/,
+    const LayoutConstraints& /*layoutConstraints*/) const {
   return {};
 }
 
 Size LayoutableShadowNode::measure(
-    LayoutContext const &layoutContext,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
   auto clonedShadowNode = clone({});
-  auto &layoutableShadowNode =
-      static_cast<LayoutableShadowNode &>(*clonedShadowNode);
+  auto& layoutableShadowNode =
+      static_cast<LayoutableShadowNode&>(*clonedShadowNode);
 
   auto localLayoutContext = layoutContext;
   localLayoutContext.affectedNodes = nullptr;
@@ -296,10 +317,10 @@ Float LayoutableShadowNode::lastBaseline(Size /*size*/) const {
 }
 
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    ShadowNode::Shared const &node,
+    const ShadowNode::Shared& node,
     Point point) {
   auto layoutableShadowNode =
-      traitCast<const LayoutableShadowNode *>(node.get());
+      traitCast<const LayoutableShadowNode*>(node.get());
 
   if (layoutableShadowNode == nullptr) {
     return nullptr;
@@ -319,12 +340,12 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   std::stable_sort(
       sortedChildren.begin(),
       sortedChildren.end(),
-      [](auto const &lhs, auto const &rhs) -> bool {
+      [](const auto& lhs, const auto& rhs) -> bool {
         return lhs->getOrderIndex() < rhs->getOrderIndex();
       });
 
   for (auto it = sortedChildren.rbegin(); it != sortedChildren.rend(); it++) {
-    auto const &childShadowNode = *it;
+    const auto& childShadowNode = *it;
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {
       return hitView;
@@ -335,35 +356,41 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
-  auto list = SharedDebugStringConvertibleList{};
+  auto list = ShadowNode::getDebugProps();
+
+  auto layoutInfo = SharedDebugStringConvertibleList{};
 
   if (!getIsLayoutClean()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
   }
 
   auto layoutMetrics = getLayoutMetrics();
   auto defaultLayoutMetrics = LayoutMetrics();
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>(
+  layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
       "frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
         "borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
         "contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hidden"));
+    layoutInfo.push_back(
+        std::make_shared<DebugStringConvertibleItem>("hidden"));
   }
 
   if (layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("rtl"));
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>("rtl"));
   }
+
+  list.push_back(
+      std::make_shared<DebugStringConvertibleItem>("layout", "", layoutInfo));
 
   return list;
 }

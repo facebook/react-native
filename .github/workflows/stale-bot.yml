@@ -1,7 +1,7 @@
 name: Mark stale issues and pull requests
 on:
   schedule:
-    - cron: "0 0,6,12,18 * * *"
+    - cron: "*/10 5 * * *"
 jobs:
   stale:
     runs-on: ubuntu-latest
@@ -18,8 +18,8 @@ jobs:
           stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 7 days with no activity.'
-          exempt-issue-labels: Help Wanted :octocat:, Good first issue, Never gets stale
-          exempt-pr-labels: Help Wanted :octocat:, Good first issue, Never gets stale
+          exempt-issue-labels: 'Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro'
+          exempt-pr-labels: 'Help Wanted :octocat:, Never gets stale'
   stale-asc:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
@@ -36,8 +36,8 @@ jobs:
           stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 7 days with no activity.'
-          exempt-issue-labels: Help Wanted :octocat:, Good first issue, Never gets stale
-          exempt-pr-labels: Help Wanted :octocat:, Good first issue, Never gets stale
+          exempt-issue-labels: 'Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro'
+          exempt-pr-labels: 'Help Wanted :octocat:, Never gets stale'
   stale-needs-author-feedback:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
@@ -54,8 +54,8 @@ jobs:
           stale-pr-message: "This PR is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days"
           close-issue-message: "This issue was closed because the author hasn't provided the requested feedback after 7 days."
           close-pr-message: "This PR was closed because the author hasn't provided the requested feedback after 7 days."
-          exempt-issue-labels: Help Wanted :octocat:, Good first issue, Never gets stale
-          exempt-pr-labels: Help Wanted :octocat:, Good first issue, Never gets stale
+          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
+          exempt-pr-labels: "Help Wanted :octocat:, Never gets stale"
   stale-needs-author-feedback-asc:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
@@ -73,5 +73,5 @@ jobs:
           stale-pr-message: "This PR is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days"
           close-issue-message: "This issue was closed because the author hasn't provided the requested feedback after 7 days."
           close-pr-message: "This PR was closed because the author hasn't provided the requested feedback after 7 days."
-          exempt-issue-labels: Help Wanted :octocat:, Good first issue, Never gets stale
-          exempt-pr-labels: Help Wanted :octocat:, Good first issue, Never gets stale
+          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
+          exempt-pr-labels: "Help Wanted :octocat:, Never gets stale"

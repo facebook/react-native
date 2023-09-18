@@ -43,13 +43,12 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
     YogaNative.jni_YGConfigSetPointScaleFactorJNI(mNativePointer, pixelsInPoint);
   }
 
-  /**
-   * Yoga previously had an error where containers would take the maximum space possible instead of the minimum
-   * like they are supposed to. In practice this resulted in implicit behaviour similar to align-self: stretch;
-   * Because this was such a long-standing bug we must allow legacy users to switch back to this behaviour.
-   */
-  public void setUseLegacyStretchBehaviour(boolean useLegacyStretchBehaviour) {
-    YogaNative.jni_YGConfigSetUseLegacyStretchBehaviourJNI(mNativePointer, useLegacyStretchBehaviour);
+  public void setErrata(YogaErrata errata) {
+    YogaNative.jni_YGConfigSetErrataJNI(mNativePointer, errata.intValue());
+  }
+
+  public YogaErrata getErrata() {
+    return YogaErrata.fromInt(YogaNative.jni_YGConfigGetErrataJNI(mNativePointer));
   }
 
   public void setLogger(YogaLogger logger) {

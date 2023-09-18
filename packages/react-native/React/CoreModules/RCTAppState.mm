@@ -20,7 +20,11 @@ static NSString *RCTCurrentAppState()
   static NSDictionary *states;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    states = @{@(UIApplicationStateActive) : @"active", @(UIApplicationStateBackground) : @"background"};
+    states = @{
+      @(UIApplicationStateActive) : @"active",
+      @(UIApplicationStateBackground) : @"background",
+      @(UIApplicationStateInactive) : @"inactive"
+    };
   });
 
   if (RCTRunningInAppExtension()) {

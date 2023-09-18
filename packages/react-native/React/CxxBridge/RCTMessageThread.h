@@ -12,21 +12,22 @@
 
 #import <React/RCTJavaScriptExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
+#import <atomic>
 
 namespace facebook::react {
 
 class RCTMessageThread : public MessageQueueThread,
                          public std::enable_shared_from_this<RCTMessageThread> {
  public:
-  RCTMessageThread(NSRunLoop *runLoop, RCTJavaScriptCompleteBlock errorBlock);
+  RCTMessageThread(NSRunLoop* runLoop, RCTJavaScriptCompleteBlock errorBlock);
   ~RCTMessageThread() override;
-  void runOnQueue(std::function<void()> &&) override;
-  void runOnQueueSync(std::function<void()> &&) override;
+  void runOnQueue(std::function<void()>&&) override;
+  void runOnQueueSync(std::function<void()>&&) override;
   void quitSynchronous() override;
-  void setRunLoop(NSRunLoop *runLoop);
+  void setRunLoop(NSRunLoop* runLoop);
 
  private:
-  void tryFunc(const std::function<void()> &func);
+  void tryFunc(const std::function<void()>& func);
   void runAsync(std::function<void()> func);
   void runSync(std::function<void()> func);
 

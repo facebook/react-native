@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 import android.annotation.TargetApi;
 import android.graphics.Color;
@@ -41,43 +42,31 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests for {@link UIManagerModule} specifically for React Text/RawText. */
-@PrepareForTest({Arguments.class, ReactChoreographer.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T110934492
 public class ReactTextTest {
 
-  @Rule public PowerMockRule rule = new PowerMockRule();
-
+  private MockedStatic<Arguments> arguments;
+  private MockedStatic<ReactChoreographer> reactCoreographer;
   private ArrayList<ChoreographerCompat.FrameCallback> mPendingFrameCallbacks;
 
   @Before
   public void setUp() {
-    PowerMockito.mockStatic(Arguments.class, ReactChoreographer.class);
-
     ReactChoreographer uiDriverMock = mock(ReactChoreographer.class);
-    PowerMockito.when(Arguments.createMap())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyMap();
-              }
-            });
-    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(uiDriverMock);
+    arguments = mockStatic(Arguments.class);
+    arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
+
+    reactCoreographer = mockStatic(ReactChoreographer.class);
+    reactCoreographer.when(ReactChoreographer::getInstance).thenAnswer(invocation -> uiDriverMock);
 
     mPendingFrameCallbacks = new ArrayList<>();
     doAnswer(
@@ -476,7 +465,7 @@ public class ReactTextTest {
 
   private ReactRootView createText(
       UIManagerModule uiManager, JavaOnlyMap textProps, JavaOnlyMap rawTextProps) {
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
     int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;

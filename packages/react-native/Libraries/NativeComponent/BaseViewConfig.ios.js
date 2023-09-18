@@ -144,6 +144,18 @@ const bubblingEventTypes = {
       bubbled: 'onPointerOut',
     },
   },
+  topGotPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onGotPointerCaptureCapture',
+      bubbled: 'onGotPointerCapture',
+    },
+  },
+  topLostPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onLostPointerCaptureCapture',
+      bubbled: 'onLostPointerCapture',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -193,11 +205,13 @@ const validAttributesForNonEventProps = {
   overflow: true,
   shouldRasterizeIOS: true,
   transform: {diff: require('../Utilities/differ/matricesDiffer')},
+  transformOrigin: true,
   accessibilityRole: true,
   accessibilityState: true,
   nativeID: true,
   pointerEvents: true,
   removeClippedSubviews: true,
+  role: true,
   borderRadius: true,
   borderColor: {process: require('../StyleSheet/processColor').default},
   borderCurve: true,
@@ -322,6 +336,8 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
+
+  experimental_layoutConformance: true,
 };
 
 // Props for bubbling and direct events
@@ -365,6 +381,8 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onPointerLeave: true,
   onPointerOver: true,
   onPointerOut: true,
+  onGotPointerCapture: true,
+  onLostPointerCapture: true,
 });
 
 /**

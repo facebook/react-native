@@ -27,8 +27,6 @@ public class ReactTextUpdate {
   private final float mPaddingBottom;
   private final int mTextAlign;
   private final int mTextBreakStrategy;
-  private final int mSelectionStart;
-  private final int mSelectionEnd;
   private final int mJustificationMode;
 
   /**
@@ -55,35 +53,7 @@ public class ReactTextUpdate {
         paddingBottom,
         textAlign,
         Layout.BREAK_STRATEGY_HIGH_QUALITY,
-        Layout.JUSTIFICATION_MODE_NONE,
-        -1,
-        -1);
-  }
-
-  public ReactTextUpdate(
-      Spannable text,
-      int jsEventCounter,
-      boolean containsImages,
-      float paddingStart,
-      float paddingTop,
-      float paddingEnd,
-      float paddingBottom,
-      int textAlign,
-      int textBreakStrategy,
-      int justificationMode) {
-    this(
-        text,
-        jsEventCounter,
-        containsImages,
-        paddingStart,
-        paddingTop,
-        paddingEnd,
-        paddingBottom,
-        textAlign,
-        textBreakStrategy,
-        justificationMode,
-        -1,
-        -1);
+        Layout.JUSTIFICATION_MODE_NONE);
   }
 
   public ReactTextUpdate(
@@ -103,9 +73,7 @@ public class ReactTextUpdate {
         UNSET,
         textAlign,
         textBreakStrategy,
-        justificationMode,
-        -1,
-        -1);
+        justificationMode);
   }
 
   public ReactTextUpdate(
@@ -118,9 +86,7 @@ public class ReactTextUpdate {
       float paddingBottom,
       int textAlign,
       int textBreakStrategy,
-      int justificationMode,
-      int selectionStart,
-      int selectionEnd) {
+      int justificationMode) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -130,8 +96,6 @@ public class ReactTextUpdate {
     mPaddingBottom = paddingBottom;
     mTextAlign = textAlign;
     mTextBreakStrategy = textBreakStrategy;
-    mSelectionStart = selectionStart;
-    mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
   }
 
@@ -186,13 +150,5 @@ public class ReactTextUpdate {
 
   public int getJustificationMode() {
     return mJustificationMode;
-  }
-
-  public int getSelectionStart() {
-    return mSelectionStart;
-  }
-
-  public int getSelectionEnd() {
-    return mSelectionEnd;
   }
 }
