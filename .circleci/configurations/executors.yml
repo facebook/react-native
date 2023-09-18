@@ -18,6 +18,11 @@ executors:
     docker:
       - image: *nodelts_browser_image
     resource_class: "small"
+  node-browsers-medium:
+    <<: *defaults
+    docker:
+      - image: *nodelts_browser_image
+    resource_class: "medium"
   reactnativeandroid-xlarge:
     <<: *android-defaults
     resource_class: "xlarge"
