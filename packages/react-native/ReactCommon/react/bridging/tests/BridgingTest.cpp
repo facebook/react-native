@@ -99,15 +99,11 @@ TEST_F(BridgingTest, objectTest) {
       bridging::fromJs<std::map<std::string, std::string>>(rt, object, invoker);
   auto umap = bridging::fromJs<std::unordered_map<std::string, std::string>>(
       rt, object, invoker);
-  auto bmap = bridging::fromJs<butter::map<std::string, std::string>>(
-      rt, object, invoker);
 
   EXPECT_EQ(1, omap.size());
   EXPECT_EQ(1, umap.size());
-  EXPECT_EQ(1, bmap.size());
   EXPECT_EQ("bar"s, omap["foo"]);
   EXPECT_EQ("bar"s, umap["foo"]);
-  EXPECT_EQ("bar"s, bmap["foo"]);
 
   EXPECT_EQ(
       "bar"s,
@@ -118,12 +114,6 @@ TEST_F(BridgingTest, objectTest) {
   EXPECT_EQ(
       "bar"s,
       bridging::toJs(rt, umap, invoker)
-          .getProperty(rt, "foo")
-          .asString(rt)
-          .utf8(rt));
-  EXPECT_EQ(
-      "bar"s,
-      bridging::toJs(rt, bmap, invoker)
           .getProperty(rt, "foo")
           .asString(rt)
           .utf8(rt));

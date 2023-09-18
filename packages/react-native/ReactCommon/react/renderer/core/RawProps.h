@@ -10,8 +10,6 @@
 #include <limits>
 #include <optional>
 
-#include <butter/map.h>
-
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>

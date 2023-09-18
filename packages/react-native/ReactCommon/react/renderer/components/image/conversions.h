@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <butter/map.h>
+#include <unordered_map>
+
 #include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
@@ -29,8 +30,8 @@ inline void fromRawValue(
     return;
   }
 
-  if (value.hasType<butter::map<std::string, RawValue>>()) {
-    auto items = (butter::map<std::string, RawValue>)value;
+  if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
+    auto items = (std::unordered_map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;

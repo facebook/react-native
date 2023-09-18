@@ -15,6 +15,8 @@
 #include <yoga/YGValue.h>
 #include <yoga/style/CompactValue.h>
 
+#include <unordered_map>
+
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook::react {
@@ -171,7 +173,8 @@ class AndroidTextInputComponentDescriptor final
       "com/facebook/react/fabric/FabricUIManager";
 
   SharedTextLayoutManager textLayoutManager_;
-  mutable butter::map<int, yoga::Style::Edges> surfaceIdToThemePaddingMap_;
+  mutable std::unordered_map<int, yoga::Style::Edges>
+      surfaceIdToThemePaddingMap_;
 };
 
 } // namespace facebook::react
