@@ -261,23 +261,26 @@ RCT_EXPORT_MODULE()
 #if RCT_ENABLE_INSPECTOR
     if (devSettings.isDeviceDebuggingAvailable) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return @"Open Debugger";
-                           }
-                           handler:^{
-                             [RCTInspectorDevServerHelper
-                                     openDebugger:bundleManager.bundleURL
-                                 withErrorMessage:
-                                     @"Failed to open debugger. Please check that the dev server is running."];
-                           }]];
+      [items
+          addObject:
+              [RCTDevMenuItem
+                  buttonItemWithTitleBlock:^NSString * {
+                    return @"Open Debugger";
+                  }
+                  handler:^{
+                    [RCTInspectorDevServerHelper
+                            openDebugger:bundleManager.bundleURL
+                        withErrorMessage:
+                            @"Failed to open debugger. Please check that the dev server is running and reload the app."];
+                  }]];
     }
 #endif
   }
 
   [items addObject:[RCTDevMenuItem
                        buttonItemWithTitleBlock:^NSString * {
-                         return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
+                         return devSettings.isElementInspectorShown ? @"Hide Element Inspector"
+                                                                    : @"Show Element Inspector";
                        }
                        handler:^{
                          [devSettings toggleElementInspector];
