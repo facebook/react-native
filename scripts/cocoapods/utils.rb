@@ -155,6 +155,32 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
+        projects = self.extract_projects(installer)
+
+        gcc_preprocessor_definition_key = 'GCC_PREPROCESSOR_DEFINITIONS'
+        other_ld_flags_key = 'OTHER_LDFLAGS'
+        libcpp_cxx17_fix = '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION'
+        xcode15_compatibility_flags = '-Wl -ld_classic '
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                # fix for unary_function and binary_function
+                self.safe_init(config, gcc_preprocessor_definition_key)
+                self.add_value_to_setting_if_missing(config, gcc_preprocessor_definition_key, libcpp_cxx17_fix)
+
+                # fix for weak linking
+                self.safe_init(config, other_ld_flags_key)
+                if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
+                    self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
+                else
+                    self.remove_value_to_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
+                end
+            end
+            project.save()
+        end
+    end
+
     private
 
     def self.fix_library_search_path(config)
@@ -207,5 +233,59 @@ class ReactNativePodsUtils
                     config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
                 end
             end
+    end
+
+    # ========= #
+    # Utilities #
+    # ========= #
+
+    def self.extract_projects(installer)
+        return installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+    end
+
+    def self.safe_init(config, setting_name)
+        old_config = config.build_settings[setting_name]
+        if old_config == nil
+            config.build_settings[setting_name] ||= '$(inherited) '
+        end
+    end
+
+    def self.add_value_to_setting_if_missing(config, setting_name, value)
+        old_config = config.build_settings[setting_name]
+        if !old_config.include?(value)
+            config.build_settings[setting_name] << value
+        end
+    end
+
+    def self.remove_value_to_setting_if_present(config, setting_name, value)
+        old_config = config.build_settings[setting_name]
+        if old_config.include?(value)
+            # Old config can be either an Array or a String
+            if old_config.is_a?(Array)
+                old_config = old_config.join(" ")
+            end
+            new_config = old_config.gsub(value,  "")
+            config.build_settings[setting_name] = new_config
+        end
+    end
+
+    def self.is_using_xcode15_or_greter(xcodebuild_manager: Xcodebuild)
+        xcodebuild_version = xcodebuild_manager.version
+
+        # The output of xcodebuild -version is something like
+        # Xcode 15.0
+        # or
+        # Xcode 14.3.1
+        # We want to capture the version digits
+        regex = /(\d+)\.(\d+)(?:\.(\d+))?/
+        if match_data = xcodebuild_version.match(regex)
+            major = match_data[1].to_i
+            return major >= 15
+        end
+
+        return false
     end
 end
