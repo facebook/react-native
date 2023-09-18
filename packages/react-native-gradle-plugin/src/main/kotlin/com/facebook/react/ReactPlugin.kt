@@ -64,7 +64,7 @@ class ReactPlugin : Plugin<Project> {
       }
 
       configureReactNativeNdk(project, extension)
-      configureBuildConfigFields(project)
+      configureBuildConfigFields(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
 
