@@ -199,6 +199,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @Override
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
