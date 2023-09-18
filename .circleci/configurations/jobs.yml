@@ -9,7 +9,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: node-browsers-small
+    executor: node-browsers-medium
     steps:
       - checkout
       - run_yarn
