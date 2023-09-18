@@ -11,6 +11,14 @@ class SysctlChecker
     end
 end
 
+# Helper class that is used to easily send commands to Xcodebuild
+# And that can be subclassed for testing purposes.
+class Xcodebuild
+    def self.version
+        `xcodebuild -version`
+    end
+end
+
 # Helper object to wrap system properties like RUBY_PLATFORM
 # This makes it easier to mock the behaviour in tests
 class Environment
