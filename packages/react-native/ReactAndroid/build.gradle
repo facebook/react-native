@@ -382,18 +382,6 @@ tasks.register('prepareJSC', PrepareJSCTask) {
     it.outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
 }
 
-task downloadNdkBuildDependencies {
-    if (!boostPath) {
-        dependsOn(downloadBoost)
-    }
-    dependsOn(downloadDoubleConversion)
-    dependsOn(downloadFolly)
-    dependsOn(downloadGlog)
-    dependsOn(downloadFmt)
-    dependsOn(downloadLibevent)
-    dependsOn(downloadGtest)
-}
-
 task prepareKotlinBuildScriptModel {
     // This task is run when Gradle Sync is running.
     // We create it here so we can let it depend on preBuild inside the android{}
