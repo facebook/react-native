@@ -15,12 +15,20 @@ require_relative './cocoapods/codegen_utils.rb'
 require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
+require_relative './cocoapods/helpers.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 
 $START_TIME = Time.now.to_i
+
+# This function returns the min supported OS versions supported by React Native
+# By using this function, you won't have to manually change your Podfile
+# when we change the minimum version supported by the framework.
+def min_ios_version_supported
+  return Helpers::Constants.min_ios_version_supported
+end
 
 # Function that setup all the react native dependencies
 # 
@@ -163,10 +171,12 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.fix_react_bridging_header_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  ReactNativePodsUtils.updateIphoneOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
+
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
