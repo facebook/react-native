@@ -7,7 +7,6 @@
 
 #include "Differentiator.h"
 
-#include <butter/map.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>

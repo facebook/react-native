@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <butter/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
@@ -23,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -488,14 +488,14 @@ inline void fromRawValue(
 
   auto configurations = static_cast<std::vector<RawValue>>(value);
   for (const auto& configuration : configurations) {
-    if (!configuration.hasType<butter::map<std::string, RawValue>>()) {
+    if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
       // TODO: The following checks have to be removed after codegen is shipped.
       // See T45151459.
       continue;
     }
 
     auto configurationPair =
-        static_cast<butter::map<std::string, RawValue>>(configuration);
+        static_cast<std::unordered_map<std::string, RawValue>>(configuration);
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto& parameters = pair->second;

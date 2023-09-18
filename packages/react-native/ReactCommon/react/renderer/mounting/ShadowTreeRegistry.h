@@ -8,8 +8,7 @@
 #pragma once
 
 #include <shared_mutex>
-
-#include <butter/map.h>
+#include <unordered_map>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowTree.h>
@@ -63,7 +62,7 @@ class ShadowTreeRegistry final {
 
  private:
   mutable std::shared_mutex mutex_;
-  mutable butter::map<SurfaceId, std::unique_ptr<ShadowTree>>
+  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };
 
