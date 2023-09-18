@@ -14,6 +14,7 @@ namespace facebook::yoga {
 
 // Polyfill for std::bit_cast() from C++20, to allow safe type punning
 // https://en.cppreference.com/w/cpp/numeric/bit_cast
+// TODO: Remove when we upgrade to NDK 26+
 template <class To, class From>
 std::enable_if_t<
     sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> &&
