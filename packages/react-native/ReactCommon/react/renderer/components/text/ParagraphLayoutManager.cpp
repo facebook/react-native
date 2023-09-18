@@ -6,8 +6,8 @@
  */
 
 #include "ParagraphLayoutManager.h"
-#include <folly/Hash.h>
 #include <react/utils/CoreFeatures.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -43,7 +43,7 @@ bool ParagraphLayoutManager::shoudMeasureString(
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   size_t newParagraphInputHash =
-      folly::hash::hash_combine(0, attributedString, paragraphAttributes);
+      hash_combine(attributedString, paragraphAttributes);
 
   if (newParagraphInputHash != paragraphInputHash_) {
     // AttributedString or ParagraphAttributes have changed.
