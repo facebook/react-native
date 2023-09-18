@@ -33,6 +33,13 @@ if [ -z "$deployment_target" ]; then
   deployment_target=${MACOSX_DEPLOYMENT_TARGET}
 fi
 
+xcode_15_flags=""
+xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
+if [[ $xcode_major_version -ge 15 ]]; then
+  echo "########### Using LINKER:-ld_classic ###########"
+  xcode_15_flags="LINKER:-ld_classic"
+fi
+
 architectures=$( echo "$ARCHS" | tr  " " ";" )
 
 echo "Configure Apple framework"
@@ -40,6 +47,7 @@ echo "Configure Apple framework"
 "$CMAKE_BINARY" \
   -S "${PODS_ROOT}/hermes-engine" \
   -B "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
+  -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
   -DHERMES_APPLE_TARGET_PLATFORM:STRING="$PLATFORM_NAME" \
   -DCMAKE_OSX_ARCHITECTURES:STRING="$architectures" \
   -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$deployment_target" \
