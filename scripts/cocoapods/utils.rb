@@ -197,4 +197,35 @@ class ReactNativePodsUtils
             ENV['USE_FRAMEWORKS'] = nil
         end
     end
+
+    def self.updateIphoneOSDeploymentTarget(installer)
+        pod_to_update = Set.new([
+            "boost",
+            "CocoaAsyncSocket",
+            "Flipper",
+            "Flipper-DoubleConversion",
+            "Flipper-Fmt",
+            "Flipper-Boost-iOSX",
+            "Flipper-Folly",
+            "Flipper-Glog",
+            "Flipper-PeerTalk",
+            "FlipperKit",
+            "fmt",
+            "libevent",
+            "OpenSSL-Universal",
+            "RCT-Folly",
+            "SocketRocket",
+            "YogaKit"
+        ])
+
+        installer.target_installation_results.pod_target_installation_results
+            .each do |pod_name, target_installation_result|
+                unless pod_to_update.include?(pod_name)
+                    next
+                end
+                target_installation_result.native_target.build_configurations.each do |config|
+                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
+                end
+            end
+    end
 end

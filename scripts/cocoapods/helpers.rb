@@ -26,3 +26,11 @@ class Finder
         return `find #{path} -type f \\( #{js_files} -or #{ts_files} \\)`.split("\n").sort()
     end
 end
+
+module Helpers
+    class Constants
+        def self.min_ios_version_supported
+            return '13.4'
+        end
+    end
+end
