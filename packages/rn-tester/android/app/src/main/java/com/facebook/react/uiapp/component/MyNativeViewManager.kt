@@ -53,7 +53,7 @@ internal class MyNativeViewManager :
   @ReactProp(name = "values")
   override fun setValues(view: MyNativeView, value: ReadableArray?) {
     val values = mutableListOf<Int>()
-    value?.toArrayList()?.forEach { values.add(it as Int) }
+    value?.toArrayList()?.forEach { values.add((it as Double).toInt()) }
     view.emitOnArrayChangedEvent(values)
   }
 
