@@ -220,6 +220,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
           "scrollToEnd called on HorizontalScrollView without child");
     }
     int right = child.getWidth() + scrollView.getPaddingRight();
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {
