@@ -25,19 +25,19 @@ Config::Config(YGLogger logger) : cloneNodeCallback_{nullptr} {
 }
 
 void Config::setUseWebDefaults(bool useWebDefaults) {
-  flags_.useWebDefaults = useWebDefaults;
+  useWebDefaults_ = useWebDefaults;
 }
 
 bool Config::useWebDefaults() const {
-  return flags_.useWebDefaults;
+  return useWebDefaults_;
 }
 
 void Config::setShouldPrintTree(bool printTree) {
-  flags_.printTree = printTree;
+  printTree_ = printTree;
 }
 
 bool Config::shouldPrintTree() const {
-  return flags_.printTree;
+  return printTree_;
 }
 
 void Config::setExperimentalFeatureEnabled(
