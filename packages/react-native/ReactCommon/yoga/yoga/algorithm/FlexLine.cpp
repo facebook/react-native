@@ -39,7 +39,7 @@ FlexLine calculateFlexLine(
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
     if (child->getStyle().display() == YGDisplayNone ||
-        child->getStyle().positionType() == YGPositionTypeAbsolute) {
+        child->getStyle().positionType() == PositionType::Absolute) {
       continue;
     }
 
