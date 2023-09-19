@@ -10,6 +10,7 @@
 #include <array>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/node/CachedMeasurement.h>
 #include <yoga/numeric/FloatOptional.h>
 
@@ -27,7 +28,7 @@ struct LayoutResults {
   std::array<float, 4> padding = {};
 
  private:
-  uint32_t direction_ : 2 = static_cast<uint32_t>(YGDirectionInherit) & 0x03;
+  Direction direction_ : bitCount<Direction>() = Direction::Inherit;
   bool hadOverflow_ : 1 = false;
 
  public:
@@ -37,7 +38,7 @@ struct LayoutResults {
   // Instead of recomputing the entire layout every single time, we cache some
   // information to break early when nothing changed
   uint32_t generationCount = 0;
-  YGDirection lastOwnerDirection = YGDirectionInherit;
+  Direction lastOwnerDirection = Direction::Inherit;
 
   uint32_t nextCachedMeasurementsIndex = 0;
   std::array<CachedMeasurement, MaxCachedMeasurements> cachedMeasurements = {};
@@ -45,12 +46,12 @@ struct LayoutResults {
 
   CachedMeasurement cachedLayout{};
 
-  YGDirection direction() const {
-    return static_cast<YGDirection>(direction_);
+  Direction direction() const {
+    return direction_;
   }
 
-  void setDirection(YGDirection direction) {
-    direction_ = static_cast<uint32_t>(direction) & 0x03;
+  void setDirection(Direction direction) {
+    direction_ = direction;
   }
 
   bool hadOverflow() const {
