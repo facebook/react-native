@@ -174,8 +174,7 @@ void nodeToString(
     }
 
     if (style.display() != yoga::Node{}.getStyle().display()) {
-      appendFormattedString(
-          str, "display: %s; ", YGDisplayToString(style.display()));
+      appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
     appendEdges(str, "margin", style.margin());
     appendEdges(str, "padding", style.padding());

@@ -88,7 +88,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   void initialize() noexcept {
     auto& props = BaseShadowNode::getConcreteProps();
 
-    if (props.yogaStyle.display() == YGDisplayNone) {
+    if (props.yogaStyle.display() == yoga::Display::None) {
       BaseShadowNode::traits_.set(ShadowNodeTraits::Trait::Hidden);
     } else {
       BaseShadowNode::traits_.unset(ShadowNodeTraits::Trait::Hidden);
