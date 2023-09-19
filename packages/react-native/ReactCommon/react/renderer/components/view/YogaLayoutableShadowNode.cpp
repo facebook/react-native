@@ -725,7 +725,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
   }
 
-  if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the

@@ -500,10 +500,11 @@ YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
 }
 
 void YGNodeStyleSetOverflow(const YGNodeRef node, const YGOverflow overflow) {
-  updateStyle<MSVC_HINT(overflow)>(node, &Style::overflow, overflow);
+  updateStyle<MSVC_HINT(overflow)>(
+      node, &Style::overflow, scopedEnum(overflow));
 }
 YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().overflow();
+  return unscopedEnum(resolveRef(node)->getStyle().overflow());
 }
 
 void YGNodeStyleSetDisplay(const YGNodeRef node, const YGDisplay display) {

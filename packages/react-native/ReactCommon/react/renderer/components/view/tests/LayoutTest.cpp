@@ -132,7 +132,7 @@ class LayoutTest : public ::testing::Test {
                         auto &yogaStyle = props.yogaStyle;
 
                         if (testCase == CLIPPING) {
-                          yogaStyle.overflow() = YGOverflowHidden;
+                          yogaStyle.overflow() = yoga::Overflow::Hidden;
                         }
 
                         yogaStyle.positionType() = yoga::PositionType::Absolute;
