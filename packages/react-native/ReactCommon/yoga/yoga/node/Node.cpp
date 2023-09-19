@@ -296,7 +296,7 @@ void Node::removeChild(size_t index) {
   children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
 }
 
-void Node::setLayoutDirection(YGDirection direction) {
+void Node::setLayoutDirection(Direction direction) {
   layout_.setDirection(direction);
 }
 
@@ -318,7 +318,7 @@ void Node::setLayoutPadding(float padding, YGEdge edge) {
   layout_.padding[edge] = padding;
 }
 
-void Node::setLayoutLastOwnerDirection(YGDirection direction) {
+void Node::setLayoutLastOwnerDirection(Direction direction) {
   layout_.lastOwnerDirection = direction;
 }
 
@@ -369,14 +369,14 @@ FloatOptional Node::relativePosition(
 }
 
 void Node::setPosition(
-    const YGDirection direction,
+    const Direction direction,
     const float mainSize,
     const float crossSize,
     const float ownerWidth) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
-  const YGDirection directionRespectingRoot =
-      owner_ != nullptr ? direction : YGDirectionLTR;
+  const Direction directionRespectingRoot =
+      owner_ != nullptr ? direction : Direction::LTR;
   const YGFlexDirection mainAxis =
       yoga::resolveDirection(style_.flexDirection(), directionRespectingRoot);
   const YGFlexDirection crossAxis =
@@ -447,10 +447,10 @@ void Node::resolveDimension() {
   }
 }
 
-YGDirection Node::resolveDirection(const YGDirection ownerDirection) {
-  if (style_.direction() == YGDirectionInherit) {
-    return ownerDirection > YGDirectionInherit ? ownerDirection
-                                               : YGDirectionLTR;
+Direction Node::resolveDirection(const Direction ownerDirection) {
+  if (style_.direction() == Direction::Inherit) {
+    return ownerDirection != Direction::Inherit ? ownerDirection
+                                                : Direction::LTR;
   } else {
     return style_.direction();
   }

@@ -429,10 +429,10 @@ void updateIndexedStyleProp(
 #define MSVC_HINT(PROP) decltype(Style{}.PROP())
 
 void YGNodeStyleSetDirection(const YGNodeRef node, const YGDirection value) {
-  updateStyle<MSVC_HINT(direction)>(node, &Style::direction, value);
+  updateStyle<MSVC_HINT(direction)>(node, &Style::direction, scopedEnum(value));
 }
 YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().direction();
+  return unscopedEnum(resolveRef(node)->getStyle().direction());
 }
 
 void YGNodeStyleSetFlexDirection(
@@ -754,51 +754,82 @@ YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
   return resolveRef(node)->getStyle().maxDimensions()[YGDimensionHeight];
 }
 
-#define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
-  type YGNodeLayoutGet##name(const YGNodeConstRef node) {      \
-    return resolveRef(node)->getLayout().instanceName;         \
+namespace {
+
+template <auto LayoutMember>
+float getResolvedLayoutProperty(
+    const YGNodeConstRef nodeRef,
+    const YGEdge edge) {
+  const auto node = resolveRef(nodeRef);
+  yoga::assertFatalWithNode(
+      node,
+      edge <= YGEdgeEnd,
+      "Cannot get layout properties of multi-edge shorthands");
+
+  if (edge == YGEdgeStart) {
+    if (node->getLayout().direction() == Direction::RTL) {
+      return (node->getLayout().*LayoutMember)[YGEdgeRight];
+    } else {
+      return (node->getLayout().*LayoutMember)[YGEdgeLeft];
+    }
   }
 
-#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName) \
-  type YGNodeLayoutGet##name(                                           \
-      const YGNodeConstRef nodeRef, const YGEdge edge) {                \
-    const auto node = resolveRef(nodeRef);                              \
-    yoga::assertFatalWithNode(                                          \
-        node,                                                           \
-        edge <= YGEdgeEnd,                                              \
-        "Cannot get layout properties of multi-edge shorthands");       \
-                                                                        \
-    if (edge == YGEdgeStart) {                                          \
-      if (node->getLayout().direction() == YGDirectionRTL) {            \
-        return node->getLayout().instanceName[YGEdgeRight];             \
-      } else {                                                          \
-        return node->getLayout().instanceName[YGEdgeLeft];              \
-      }                                                                 \
-    }                                                                   \
-                                                                        \
-    if (edge == YGEdgeEnd) {                                            \
-      if (node->getLayout().direction() == YGDirectionRTL) {            \
-        return node->getLayout().instanceName[YGEdgeLeft];              \
-      } else {                                                          \
-        return node->getLayout().instanceName[YGEdgeRight];             \
-      }                                                                 \
-    }                                                                   \
-                                                                        \
-    return node->getLayout().instanceName[edge];                        \
+  if (edge == YGEdgeEnd) {
+    if (node->getLayout().direction() == Direction::RTL) {
+      return (node->getLayout().*LayoutMember)[YGEdgeLeft];
+    } else {
+      return (node->getLayout().*LayoutMember)[YGEdgeRight];
+    }
   }
 
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft])
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop])
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight])
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom])
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth])
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight])
-YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction())
-YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow())
+  return (node->getLayout().*LayoutMember)[edge];
+}
 
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin)
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border)
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding)
+} // namespace
+
+float YGNodeLayoutGetLeft(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().position[YGEdgeLeft];
+}
+
+float YGNodeLayoutGetTop(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().position[YGEdgeTop];
+}
+
+float YGNodeLayoutGetRight(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().position[YGEdgeRight];
+}
+
+float YGNodeLayoutGetBottom(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().position[YGEdgeBottom];
+}
+
+float YGNodeLayoutGetWidth(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().dimensions[YGDimensionWidth];
+}
+
+float YGNodeLayoutGetHeight(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().dimensions[YGDimensionHeight];
+}
+
+YGDirection YGNodeLayoutGetDirection(const YGNodeConstRef node) {
+  return unscopedEnum(resolveRef(node)->getLayout().direction());
+}
+
+bool YGNodeLayoutGetHadOverflow(const YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().hadOverflow();
+}
+
+float YGNodeLayoutGetMargin(YGNodeConstRef node, YGEdge edge) {
+  return getResolvedLayoutProperty<&LayoutResults::margin>(node, edge);
+}
+
+float YGNodeLayoutGetBorder(YGNodeConstRef node, YGEdge edge) {
+  return getResolvedLayoutProperty<&LayoutResults::border>(node, edge);
+}
+
+float YGNodeLayoutGetPadding(YGNodeConstRef node, YGEdge edge) {
+  return getResolvedLayoutProperty<&LayoutResults::padding>(node, edge);
+}
 
 #ifdef DEBUG
 void YGNodePrint(const YGNodeConstRef node, const YGPrintOptions options) {
@@ -926,5 +957,5 @@ void YGNodeCalculateLayout(
     const float ownerHeight,
     const YGDirection ownerDirection) {
   yoga::calculateLayout(
-      resolveRef(node), ownerWidth, ownerHeight, ownerDirection);
+      resolveRef(node), ownerWidth, ownerHeight, scopedEnum(ownerDirection));
 }
