@@ -62,13 +62,13 @@ void YogaStylableProps::propsDiffMapBuffer(
     if (oldStyle.overflow() != newStyle.overflow()) {
       int value;
       switch (newStyle.overflow()) {
-        case YGOverflowVisible:
+        case yoga::Overflow::Visible:
           value = 0;
           break;
-        case YGOverflowHidden:
+        case yoga::Overflow::Hidden:
           value = 1;
           break;
-        case YGOverflowScroll:
+        case yoga::Overflow::Scroll:
           value = 2;
           break;
       }

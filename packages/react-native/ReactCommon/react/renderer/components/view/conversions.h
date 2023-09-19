@@ -359,26 +359,26 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGOverflow& result) {
-  result = YGOverflowVisible;
+    yoga::Overflow& result) {
+  result = yoga::Overflow::Visible;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "visible") {
-    result = YGOverflowVisible;
+    result = yoga::Overflow::Visible;
     return;
   }
   if (stringValue == "hidden") {
-    result = YGOverflowHidden;
+    result = yoga::Overflow::Hidden;
     return;
   }
   if (stringValue == "scroll") {
-    result = YGOverflowScroll;
+    result = yoga::Overflow::Scroll;
     return;
   }
-  LOG(ERROR) << "Could not parse YGOverflow:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Overflow:" << stringValue;
   react_native_expect(false);
 }
 
@@ -822,13 +822,13 @@ inline std::string toString(const yoga::Wrap& value) {
   }
 }
 
-inline std::string toString(const YGOverflow& value) {
+inline std::string toString(const yoga::Overflow& value) {
   switch (value) {
-    case YGOverflowVisible:
+    case yoga::Overflow::Visible:
       return "visible";
-    case YGOverflowScroll:
+    case yoga::Overflow::Scroll:
       return "scroll";
-    case YGOverflowHidden:
+    case yoga::Overflow::Hidden:
       return "hidden";
   }
 }

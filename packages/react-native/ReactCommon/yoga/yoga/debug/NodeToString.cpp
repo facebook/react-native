@@ -170,8 +170,7 @@ void nodeToString(
     }
 
     if (style.overflow() != yoga::Node{}.getStyle().overflow()) {
-      appendFormattedString(
-          str, "overflow: %s; ", YGOverflowToString(style.overflow()));
+      appendFormattedString(str, "overflow: %s; ", toString(style.overflow()));
     }
 
     if (style.display() != yoga::Node{}.getStyle().display()) {

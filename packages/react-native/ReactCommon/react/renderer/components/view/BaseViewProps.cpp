@@ -404,7 +404,7 @@ Transform BaseViewProps::resolveTransform(
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {
-  return yogaStyle.overflow() != YGOverflowVisible;
+  return yogaStyle.overflow() != yoga::Overflow::Visible;
 }
 
 #pragma mark - DebugStringConvertible
