@@ -14,14 +14,14 @@
 
 namespace facebook::yoga {
 
-inline YGAlign resolveChildAlignment(
+inline Align resolveChildAlignment(
     const yoga::Node* node,
     const yoga::Node* child) {
-  const YGAlign align = child->getStyle().alignSelf() == YGAlignAuto
+  const Align align = child->getStyle().alignSelf() == Align::Auto
       ? node->getStyle().alignItems()
       : child->getStyle().alignSelf();
-  if (align == YGAlignBaseline && isColumn(node->getStyle().flexDirection())) {
-    return YGAlignFlexStart;
+  if (align == Align::Baseline && isColumn(node->getStyle().flexDirection())) {
+    return Align::FlexStart;
   }
   return align;
 }

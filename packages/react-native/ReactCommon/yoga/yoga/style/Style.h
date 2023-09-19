@@ -15,6 +15,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/enums/Align.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Justify.h>
@@ -95,8 +96,8 @@ class YG_EXPORT Style {
   };
 
   Style() {
-    alignContent() = YGAlignFlexStart;
-    alignItems() = YGAlignStretch;
+    alignContent() = Align::FlexStart;
+    alignItems() = Align::Stretch;
   }
   ~Style() = default;
 
@@ -109,11 +110,11 @@ class YG_EXPORT Style {
   static constexpr uint8_t alignContentOffset =
       justifyContentOffset + minimumBitCount<Justify>();
   static constexpr uint8_t alignItemsOffset =
-      alignContentOffset + minimumBitCount<YGAlign>();
+      alignContentOffset + minimumBitCount<Align>();
   static constexpr uint8_t alignSelfOffset =
-      alignItemsOffset + minimumBitCount<YGAlign>();
+      alignItemsOffset + minimumBitCount<Align>();
   static constexpr uint8_t positionTypeOffset =
-      alignSelfOffset + minimumBitCount<YGAlign>();
+      alignSelfOffset + minimumBitCount<Align>();
   static constexpr uint8_t flexWrapOffset =
       positionTypeOffset + minimumBitCount<YGPositionType>();
   static constexpr uint8_t overflowOffset =
@@ -163,24 +164,24 @@ class YG_EXPORT Style {
     return {*this, justifyContentOffset};
   }
 
-  YGAlign alignContent() const {
-    return getEnumData<YGAlign>(flags, alignContentOffset);
+  Align alignContent() const {
+    return getEnumData<Align>(flags, alignContentOffset);
   }
-  BitfieldRef<YGAlign> alignContent() {
+  BitfieldRef<Align> alignContent() {
     return {*this, alignContentOffset};
   }
 
-  YGAlign alignItems() const {
-    return getEnumData<YGAlign>(flags, alignItemsOffset);
+  Align alignItems() const {
+    return getEnumData<Align>(flags, alignItemsOffset);
   }
-  BitfieldRef<YGAlign> alignItems() {
+  BitfieldRef<Align> alignItems() {
     return {*this, alignItemsOffset};
   }
 
-  YGAlign alignSelf() const {
-    return getEnumData<YGAlign>(flags, alignSelfOffset);
+  Align alignSelf() const {
+    return getEnumData<Align>(flags, alignSelfOffset);
   }
-  BitfieldRef<YGAlign> alignSelf() {
+  BitfieldRef<Align> alignSelf() {
     return {*this, alignSelfOffset};
   }
 

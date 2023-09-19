@@ -150,15 +150,15 @@ void nodeToString(
     }
     if (style.alignItems() != yoga::Node{}.getStyle().alignItems()) {
       appendFormattedString(
-          str, "align-items: %s; ", YGAlignToString(style.alignItems()));
+          str, "align-items: %s; ", toString(style.alignItems()));
     }
     if (style.alignContent() != yoga::Node{}.getStyle().alignContent()) {
       appendFormattedString(
-          str, "align-content: %s; ", YGAlignToString(style.alignContent()));
+          str, "align-content: %s; ", toString(style.alignContent()));
     }
     if (style.alignSelf() != yoga::Node{}.getStyle().alignSelf()) {
       appendFormattedString(
-          str, "align-self: %s; ", YGAlignToString(style.alignSelf()));
+          str, "align-self: %s; ", toString(style.alignSelf()));
     }
     appendFloatOptionalIfDefined(str, "flex-grow", style.flexGrow());
     appendFloatOptionalIfDefined(str, "flex-shrink", style.flexShrink());

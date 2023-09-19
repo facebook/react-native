@@ -459,24 +459,26 @@ void YGNodeStyleSetAlignContent(
     const YGNodeRef node,
     const YGAlign alignContent) {
   updateStyle<MSVC_HINT(alignContent)>(
-      node, &Style::alignContent, alignContent);
+      node, &Style::alignContent, scopedEnum(alignContent));
 }
 YGAlign YGNodeStyleGetAlignContent(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().alignContent();
+  return unscopedEnum(resolveRef(node)->getStyle().alignContent());
 }
 
 void YGNodeStyleSetAlignItems(const YGNodeRef node, const YGAlign alignItems) {
-  updateStyle<MSVC_HINT(alignItems)>(node, &Style::alignItems, alignItems);
+  updateStyle<MSVC_HINT(alignItems)>(
+      node, &Style::alignItems, scopedEnum(alignItems));
 }
 YGAlign YGNodeStyleGetAlignItems(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().alignItems();
+  return unscopedEnum(resolveRef(node)->getStyle().alignItems());
 }
 
 void YGNodeStyleSetAlignSelf(const YGNodeRef node, const YGAlign alignSelf) {
-  updateStyle<MSVC_HINT(alignSelf)>(node, &Style::alignSelf, alignSelf);
+  updateStyle<MSVC_HINT(alignSelf)>(
+      node, &Style::alignSelf, scopedEnum(alignSelf));
 }
 YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().alignSelf();
+  return unscopedEnum(resolveRef(node)->getStyle().alignSelf());
 }
 
 void YGNodeStyleSetPositionType(
