@@ -106,17 +106,7 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
         break;
       }
 
-      currentPriority_ = topPriorityTask->priority;
-      auto result = topPriorityTask->execute(runtime, didUserCallbackTimeout);
-
-      if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-        topPriorityTask->callback =
-            result.getObject(runtime).getFunction(runtime);
-      } else {
-        if (taskQueue_.top() == topPriorityTask) {
-          taskQueue_.pop();
-        }
-      }
+      executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
     handleFatalError(runtime, error);
@@ -151,17 +141,7 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime& runtime) const {
         break;
       }
 
-      currentPriority_ = topPriorityTask->priority;
-      auto result = topPriorityTask->execute(runtime, didUserCallbackTimeout);
-
-      if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-        topPriorityTask->callback =
-            result.getObject(runtime).getFunction(runtime);
-      } else {
-        if (taskQueue_.top() == topPriorityTask) {
-          taskQueue_.pop();
-        }
-      }
+      executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
     handleFatalError(runtime, error);
@@ -169,6 +149,22 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime& runtime) const {
 
   currentPriority_ = previousPriority;
   isPerformingWork_ = false;
+}
+
+void RuntimeScheduler::executeTask(
+    jsi::Runtime& runtime,
+    std::shared_ptr<Task> task,
+    bool didUserCallbackTimeout) const {
+  currentPriority_ = task->priority;
+  auto result = task->execute(runtime, didUserCallbackTimeout);
+
+  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+    task->callback = result.getObject(runtime).getFunction(runtime);
+  } else {
+    if (taskQueue_.top() == task) {
+      taskQueue_.pop();
+    }
+  }
 }
 
 } // namespace facebook::react
