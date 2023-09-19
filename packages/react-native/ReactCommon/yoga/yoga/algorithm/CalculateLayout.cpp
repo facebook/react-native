@@ -211,16 +211,16 @@ static void computeFlexBasisForChild(
 
     // The W3C spec doesn't say anything about the 'overflow' property, but all
     // major browsers appear to implement the following logic.
-    if ((!isMainAxisRow && node->getStyle().overflow() == YGOverflowScroll) ||
-        node->getStyle().overflow() != YGOverflowScroll) {
+    if ((!isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
+        node->getStyle().overflow() != Overflow::Scroll) {
       if (yoga::isUndefined(childWidth) && !yoga::isUndefined(width)) {
         childWidth = width;
         childWidthMeasureMode = MeasureMode::AtMost;
       }
     }
 
-    if ((isMainAxisRow && node->getStyle().overflow() == YGOverflowScroll) ||
-        node->getStyle().overflow() != YGOverflowScroll) {
+    if ((isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
+        node->getStyle().overflow() != Overflow::Scroll) {
       if (yoga::isUndefined(childHeight) && !yoga::isUndefined(height)) {
         childHeight = height;
         childHeightMeasureMode = MeasureMode::AtMost;
@@ -2242,7 +2242,7 @@ static void calculateLayoutImpl(
   // If the user didn't specify a width or height for the node, set the
   // dimensions based on the children.
   if (measureModeMainDim == MeasureMode::Undefined ||
-      (node->getStyle().overflow() != YGOverflowScroll &&
+      (node->getStyle().overflow() != Overflow::Scroll &&
        measureModeMainDim == MeasureMode::AtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
@@ -2253,7 +2253,7 @@ static void calculateLayoutImpl(
 
   } else if (
       measureModeMainDim == MeasureMode::AtMost &&
-      node->getStyle().overflow() == YGOverflowScroll) {
+      node->getStyle().overflow() == Overflow::Scroll) {
     node->setLayoutMeasuredDimension(
         yoga::maxOrDefined(
             yoga::minOrDefined(
@@ -2269,7 +2269,7 @@ static void calculateLayoutImpl(
   }
 
   if (measureModeCrossDim == MeasureMode::Undefined ||
-      (node->getStyle().overflow() != YGOverflowScroll &&
+      (node->getStyle().overflow() != Overflow::Scroll &&
        measureModeCrossDim == MeasureMode::AtMost)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
@@ -2284,7 +2284,7 @@ static void calculateLayoutImpl(
 
   } else if (
       measureModeCrossDim == MeasureMode::AtMost &&
-      node->getStyle().overflow() == YGOverflowScroll) {
+      node->getStyle().overflow() == Overflow::Scroll) {
     node->setLayoutMeasuredDimension(
         yoga::maxOrDefined(
             yoga::minOrDefined(
