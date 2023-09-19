@@ -20,6 +20,7 @@
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/PositionType.h>
+#include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
@@ -119,7 +120,7 @@ class YG_EXPORT Style {
   static constexpr uint8_t flexWrapOffset =
       positionTypeOffset + minimumBitCount<PositionType>();
   static constexpr uint8_t overflowOffset =
-      flexWrapOffset + minimumBitCount<YGWrap>();
+      flexWrapOffset + minimumBitCount<Wrap>();
   static constexpr uint8_t displayOffset =
       overflowOffset + minimumBitCount<YGOverflow>();
 
@@ -193,10 +194,10 @@ class YG_EXPORT Style {
     return {*this, positionTypeOffset};
   }
 
-  YGWrap flexWrap() const {
-    return getEnumData<YGWrap>(flags, flexWrapOffset);
+  Wrap flexWrap() const {
+    return getEnumData<Wrap>(flags, flexWrapOffset);
   }
-  BitfieldRef<YGWrap> flexWrap() {
+  BitfieldRef<Wrap> flexWrap() {
     return {*this, flexWrapOffset};
   }
 

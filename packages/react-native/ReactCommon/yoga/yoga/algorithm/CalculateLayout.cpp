@@ -520,7 +520,7 @@ static void layoutAbsoluteChild(
   } else if (
       !child->isLeadingPositionDefined(crossAxis) &&
       ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
-       (node->getStyle().flexWrap() == YGWrapWrapReverse))) {
+       (node->getStyle().flexWrap() == Wrap::WrapReverse))) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dimension(crossAxis)] -
          child->getLayout().measuredDimensions[dimension(crossAxis)]),
@@ -877,7 +877,7 @@ static float distributeFreeSpaceSecondPass(
   float flexGrowFactor = 0;
   float deltaFreeSpace = 0;
   const bool isMainAxisRow = isRow(mainAxis);
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
+  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
 
   for (auto currentLineChild : flexLine.itemsInFlow) {
     childFlexBasis = boundAxisWithinMinAndMax(
@@ -1604,7 +1604,7 @@ static void calculateLayoutImpl(
       resolveDirection(node->getStyle().flexDirection(), direction);
   const FlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
   const bool isMainAxisRow = isRow(mainAxis);
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
+  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
 
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
   const float crossAxisownerSize = isMainAxisRow ? ownerHeight : ownerWidth;
@@ -2302,7 +2302,7 @@ static void calculateLayoutImpl(
 
   // As we only wrapped in normal direction yet, we need to reverse the
   // positions on wrap-reverse.
-  if (performLayout && node->getStyle().flexWrap() == YGWrapWrapReverse) {
+  if (performLayout && node->getStyle().flexWrap() == Wrap::WrapReverse) {
     for (size_t i = 0; i < childCount; i++) {
       const auto child = node->getChild(i);
       if (child->getStyle().positionType() != PositionType::Absolute) {
