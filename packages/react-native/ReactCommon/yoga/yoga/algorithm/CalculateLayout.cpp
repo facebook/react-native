@@ -821,7 +821,7 @@ static float computeFlexBasisForChildren(
           childDirection, mainDim, crossDim, availableInnerWidth);
     }
 
-    if (child->getStyle().positionType() == YGPositionTypeAbsolute) {
+    if (child->getStyle().positionType() == PositionType::Absolute) {
       continue;
     }
     if (child == singleFlexChild) {
@@ -1248,7 +1248,7 @@ static void justifyMainAxis(
   int numberOfAutoMarginsOnCurrentLine = 0;
   for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
     auto child = node->getChild(i);
-    if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
+    if (child->getStyle().positionType() != PositionType::Absolute) {
       if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
@@ -1310,7 +1310,7 @@ static void justifyMainAxis(
     if (childStyle.display() == YGDisplayNone) {
       continue;
     }
-    if (childStyle.positionType() == YGPositionTypeAbsolute &&
+    if (childStyle.positionType() == PositionType::Absolute &&
         child->isLeadingPositionDefined(mainAxis)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
@@ -1327,7 +1327,7 @@ static void justifyMainAxis(
       // Now that we placed the element, we need to update the variables.
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
-      if (childStyle.positionType() != YGPositionTypeAbsolute) {
+      if (childStyle.positionType() != PositionType::Absolute) {
         if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(numberOfAutoMarginsOnCurrentLine);
@@ -1866,7 +1866,7 @@ static void calculateLayoutImpl(
         if (child->getStyle().display() == YGDisplayNone) {
           continue;
         }
-        if (child->getStyle().positionType() == YGPositionTypeAbsolute) {
+        if (child->getStyle().positionType() == PositionType::Absolute) {
           // If the child is absolutely positioned and has a
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
@@ -2072,7 +2072,7 @@ static void calculateLayoutImpl(
         if (child->getStyle().display() == YGDisplayNone) {
           continue;
         }
-        if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
+        if (child->getStyle().positionType() != PositionType::Absolute) {
           if (child->getLineIndex() != i) {
             break;
           }
@@ -2115,7 +2115,7 @@ static void calculateLayoutImpl(
           if (child->getStyle().display() == YGDisplayNone) {
             continue;
           }
-          if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
+          if (child->getStyle().positionType() != PositionType::Absolute) {
             switch (resolveChildAlignment(node, child)) {
               case Align::FlexStart: {
                 child->setLayoutPosition(
@@ -2305,7 +2305,7 @@ static void calculateLayoutImpl(
   if (performLayout && node->getStyle().flexWrap() == YGWrapWrapReverse) {
     for (size_t i = 0; i < childCount; i++) {
       const auto child = node->getChild(i);
-      if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
+      if (child->getStyle().positionType() != PositionType::Absolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimensions[dimension(crossAxis)] -
                 child->getLayout().position[leadingEdge(crossAxis)] -
@@ -2319,7 +2319,7 @@ static void calculateLayoutImpl(
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
     for (auto child : node->getChildren()) {
       if (child->getStyle().display() == YGDisplayNone ||
-          child->getStyle().positionType() != YGPositionTypeAbsolute) {
+          child->getStyle().positionType() != PositionType::Absolute) {
         continue;
       }
       const bool absolutePercentageAgainstPaddingEdge =

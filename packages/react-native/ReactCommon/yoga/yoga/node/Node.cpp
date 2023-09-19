@@ -382,7 +382,7 @@ void Node::setPosition(
   const FlexDirection crossAxis =
       yoga::resolveCrossDirection(mainAxis, directionRespectingRoot);
 
-  // Here we should check for `YGPositionTypeStatic` and in this case zero inset
+  // Here we should check for `PositionType::Static` and in this case zero inset
   // properties (left, right, top, bottom, begin, end).
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
   const FloatOptional relativePositionMain =
@@ -522,7 +522,7 @@ float Node::resolveFlexShrink() const {
 
 bool Node::isNodeFlexible() {
   return (
-      (style_.positionType() != YGPositionTypeAbsolute) &&
+      (style_.positionType() != PositionType::Absolute) &&
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
 

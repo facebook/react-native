@@ -209,7 +209,7 @@ void nodeToString(
 
     if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
       appendFormattedString(
-          str, "position: %s; ", YGPositionTypeToString(style.positionType()));
+          str, "position: %s; ", toString(style.positionType()));
     }
 
     appendEdgeIfNotUndefined(str, "left", style.position(), YGEdgeLeft);
