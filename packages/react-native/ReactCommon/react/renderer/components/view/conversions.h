@@ -333,26 +333,26 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGWrap& result) {
-  result = YGWrapNoWrap;
+    yoga::Wrap& result) {
+  result = yoga::Wrap::NoWrap;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "nowrap") {
-    result = YGWrapNoWrap;
+    result = yoga::Wrap::NoWrap;
     return;
   }
   if (stringValue == "wrap") {
-    result = YGWrapWrap;
+    result = yoga::Wrap::Wrap;
     return;
   }
   if (stringValue == "wrap-reverse") {
-    result = YGWrapWrapReverse;
+    result = yoga::Wrap::WrapReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse YGWrap:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Wrap:" << stringValue;
   react_native_expect(false);
 }
 
@@ -811,13 +811,13 @@ inline std::string toString(const yoga::PositionType& value) {
   }
 }
 
-inline std::string toString(const YGWrap& value) {
+inline std::string toString(const yoga::Wrap& value) {
   switch (value) {
-    case YGWrapNoWrap:
+    case yoga::Wrap::NoWrap:
       return "no-wrap";
-    case YGWrapWrap:
+    case yoga::Wrap::Wrap:
       return "wrap";
-    case YGWrapWrapReverse:
+    case yoga::Wrap::WrapReverse:
       return "wrap-reverse";
   }
 }
