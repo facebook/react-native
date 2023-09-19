@@ -439,10 +439,10 @@ void YGNodeStyleSetFlexDirection(
     const YGNodeRef node,
     const YGFlexDirection flexDirection) {
   updateStyle<MSVC_HINT(flexDirection)>(
-      node, &Style::flexDirection, flexDirection);
+      node, &Style::flexDirection, scopedEnum(flexDirection));
 }
 YGFlexDirection YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().flexDirection();
+  return unscopedEnum(resolveRef(node)->getStyle().flexDirection());
 }
 
 void YGNodeStyleSetJustifyContent(
