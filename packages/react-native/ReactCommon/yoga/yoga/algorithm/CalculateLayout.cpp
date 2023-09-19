@@ -247,7 +247,7 @@ static void computeFlexBasisForChild(
     const bool hasExactWidth =
         !yoga::isUndefined(width) && widthMode == MeasureMode::Exactly;
     const bool childWidthStretch =
-        resolveChildAlignment(node, child) == YGAlignStretch &&
+        resolveChildAlignment(node, child) == Align::Stretch &&
         childWidthMeasureMode != MeasureMode::Exactly;
     if (!isMainAxisRow && !isRowStyleDimDefined && hasExactWidth &&
         childWidthStretch) {
@@ -263,7 +263,7 @@ static void computeFlexBasisForChild(
     const bool hasExactHeight =
         !yoga::isUndefined(height) && heightMode == MeasureMode::Exactly;
     const bool childHeightStretch =
-        resolveChildAlignment(node, child) == YGAlignStretch &&
+        resolveChildAlignment(node, child) == Align::Stretch &&
         childHeightMeasureMode != MeasureMode::Exactly;
     if (isMainAxisRow && !isColumnStyleDimDefined && hasExactHeight &&
         childHeightStretch) {
@@ -511,7 +511,7 @@ static void layoutAbsoluteChild(
 
   } else if (
       !child->isLeadingPositionDefined(crossAxis) &&
-      resolveChildAlignment(node, child) == YGAlignCenter) {
+      resolveChildAlignment(node, child) == Align::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dimension(crossAxis)] -
          child->getLayout().measuredDimensions[dimension(crossAxis)]) /
@@ -519,7 +519,7 @@ static void layoutAbsoluteChild(
         leadingEdge(crossAxis));
   } else if (
       !child->isLeadingPositionDefined(crossAxis) &&
-      ((resolveChildAlignment(node, child) == YGAlignFlexEnd) ^
+      ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
        (node->getStyle().flexWrap() == YGWrapWrapReverse))) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dimension(crossAxis)] -
@@ -959,7 +959,7 @@ static float distributeFreeSpaceSecondPass(
             currentLineChild, crossAxis, availableInnerCrossDim) &&
         measureModeCrossDim == MeasureMode::Exactly &&
         !(isNodeFlexWrap && mainAxisOverflows) &&
-        resolveChildAlignment(node, currentLineChild) == YGAlignStretch &&
+        resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
         currentLineChild->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
         currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
       childCrossSize = availableInnerCrossDim;
@@ -1005,7 +1005,7 @@ static float distributeFreeSpaceSecondPass(
     const bool requiresStretchLayout =
         !styleDefinesDimension(
             currentLineChild, crossAxis, availableInnerCrossDim) &&
-        resolveChildAlignment(node, currentLineChild) == YGAlignStretch &&
+        resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
         currentLineChild->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
         currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto;
 
@@ -1898,12 +1898,12 @@ static void calculateLayoutImpl(
           // For a relative children, we're either using alignItems (owner) or
           // alignSelf (child) in order to determine the position in the cross
           // axis
-          const YGAlign alignItem = resolveChildAlignment(node, child);
+          const Align alignItem = resolveChildAlignment(node, child);
 
           // If the child uses align stretch, we need to lay it out one more
           // time, this time forcing the cross-axis size to be the computed
           // cross size for the current line.
-          if (alignItem == YGAlignStretch &&
+          if (alignItem == Align::Stretch &&
               child->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
               child->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
             // If the child defines a definite size for its cross axis, there's
@@ -1949,7 +1949,7 @@ static void calculateLayoutImpl(
 
               auto alignContent = node->getStyle().alignContent();
               auto crossAxisDoesNotGrow =
-                  alignContent != YGAlignStretch && isNodeFlexWrap;
+                  alignContent != Align::Stretch && isNodeFlexWrap;
               const MeasureMode childWidthMeasureMode =
                   yoga::isUndefined(childWidth) ||
                       (!isMainAxisRow && crossAxisDoesNotGrow)
@@ -1990,9 +1990,9 @@ static void calculateLayoutImpl(
             } else if (
                 child->marginLeadingValue(crossAxis).unit == YGUnitAuto) {
               leadingCrossDim += yoga::maxOrDefined(0.0f, remainingCrossDim);
-            } else if (alignItem == YGAlignFlexStart) {
+            } else if (alignItem == Align::FlexStart) {
               // No-Op
-            } else if (alignItem == YGAlignCenter) {
+            } else if (alignItem == Align::Center) {
               leadingCrossDim += remainingCrossDim / 2;
             } else {
               leadingCrossDim += remainingCrossDim;
@@ -2022,19 +2022,19 @@ static void calculateLayoutImpl(
       const float remainingAlignContentDim =
           availableInnerCrossDim - totalLineCrossDim;
       switch (node->getStyle().alignContent()) {
-        case YGAlignFlexEnd:
+        case Align::FlexEnd:
           currentLead += remainingAlignContentDim;
           break;
-        case YGAlignCenter:
+        case Align::Center:
           currentLead += remainingAlignContentDim / 2;
           break;
-        case YGAlignStretch:
+        case Align::Stretch:
           if (availableInnerCrossDim > totalLineCrossDim) {
             crossDimLead =
                 remainingAlignContentDim / static_cast<float>(lineCount);
           }
           break;
-        case YGAlignSpaceAround:
+        case Align::SpaceAround:
           if (availableInnerCrossDim > totalLineCrossDim) {
             currentLead +=
                 remainingAlignContentDim / (2 * static_cast<float>(lineCount));
@@ -2046,15 +2046,15 @@ static void calculateLayoutImpl(
             currentLead += remainingAlignContentDim / 2;
           }
           break;
-        case YGAlignSpaceBetween:
+        case Align::SpaceBetween:
           if (availableInnerCrossDim > totalLineCrossDim && lineCount > 1) {
             crossDimLead =
                 remainingAlignContentDim / static_cast<float>(lineCount - 1);
           }
           break;
-        case YGAlignAuto:
-        case YGAlignFlexStart:
-        case YGAlignBaseline:
+        case Align::Auto:
+        case Align::FlexStart:
+        case Align::Baseline:
           break;
       }
     }
@@ -2083,7 +2083,7 @@ static void calculateLayoutImpl(
                     child->getMarginForAxis(crossAxis, availableInnerWidth)
                         .unwrap());
           }
-          if (resolveChildAlignment(node, child) == YGAlignBaseline) {
+          if (resolveChildAlignment(node, child) == Align::Baseline) {
             const float ascent = calculateBaseline(child) +
                 child
                     ->getLeadingMargin(
@@ -2117,7 +2117,7 @@ static void calculateLayoutImpl(
           }
           if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
             switch (resolveChildAlignment(node, child)) {
-              case YGAlignFlexStart: {
+              case Align::FlexStart: {
                 child->setLayoutPosition(
                     currentLead +
                         child->getLeadingMargin(crossAxis, availableInnerWidth)
@@ -2125,7 +2125,7 @@ static void calculateLayoutImpl(
                     leadingEdge(crossAxis));
                 break;
               }
-              case YGAlignFlexEnd: {
+              case Align::FlexEnd: {
                 child->setLayoutPosition(
                     currentLead + lineHeight -
                         child->getTrailingMargin(crossAxis, availableInnerWidth)
@@ -2135,7 +2135,7 @@ static void calculateLayoutImpl(
                     leadingEdge(crossAxis));
                 break;
               }
-              case YGAlignCenter: {
+              case Align::Center: {
                 float childHeight =
                     child->getLayout().measuredDimensions[dimension(crossAxis)];
 
@@ -2144,7 +2144,7 @@ static void calculateLayoutImpl(
                     leadingEdge(crossAxis));
                 break;
               }
-              case YGAlignStretch: {
+              case Align::Stretch: {
                 child->setLayoutPosition(
                     currentLead +
                         child->getLeadingMargin(crossAxis, availableInnerWidth)
@@ -2195,7 +2195,7 @@ static void calculateLayoutImpl(
                 }
                 break;
               }
-              case YGAlignBaseline: {
+              case Align::Baseline: {
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine -
                         calculateBaseline(child) +
@@ -2207,9 +2207,9 @@ static void calculateLayoutImpl(
 
                 break;
               }
-              case YGAlignAuto:
-              case YGAlignSpaceBetween:
-              case YGAlignSpaceAround:
+              case Align::Auto:
+              case Align::SpaceBetween:
+              case Align::SpaceAround:
                 break;
             }
           }

@@ -52,7 +52,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   void useWebDefaults() {
     style_.flexDirection() = FlexDirection::Row;
-    style_.alignContent() = YGAlignStretch;
+    style_.alignContent() = Align::Stretch;
   }
 
   // DANGER DANGER DANGER!
