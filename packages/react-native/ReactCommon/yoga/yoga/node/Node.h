@@ -26,20 +26,13 @@ struct YGNode {};
 
 namespace facebook::yoga {
 
-#pragma pack(push)
-#pragma pack(1)
-struct NodeFlags {
-  bool hasNewLayout : 1;
-  bool isReferenceBaseline : 1;
-  bool isDirty : 1;
-  NodeType nodeType : bitCount<NodeType>();
-};
-#pragma pack(pop)
-
 class YG_EXPORT Node : public ::YGNode {
  private:
+  bool hasNewLayout_ : 1 = true;
+  bool isReferenceBaseline_ : 1 = false;
+  bool isDirty_ : 1 = false;
+  NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
-  NodeFlags flags_ = {};
   YGMeasureFunc measureFunc_ = {nullptr};
   YGBaselineFunc baselineFunc_ = {nullptr};
   YGPrintFunc printFunc_ = {nullptr};
@@ -92,11 +85,11 @@ class YG_EXPORT Node : public ::YGNode {
   void print();
 
   bool getHasNewLayout() const {
-    return flags_.hasNewLayout;
+    return hasNewLayout_;
   }
 
   NodeType getNodeType() const {
-    return flags_.nodeType;
+    return nodeType_;
   }
 
   bool hasMeasureFunc() const noexcept {
@@ -142,7 +135,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   bool isReferenceBaseline() const {
-    return flags_.isReferenceBaseline;
+    return isReferenceBaseline_;
   }
 
   // returns the Node that owns this Node. An owner is used to identify
@@ -175,7 +168,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   bool isDirty() const {
-    return flags_.isDirty;
+    return isDirty_;
   }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
@@ -250,11 +243,11 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   void setHasNewLayout(bool hasNewLayout) {
-    flags_.hasNewLayout = hasNewLayout;
+    hasNewLayout_ = hasNewLayout;
   }
 
   void setNodeType(NodeType nodeType) {
-    flags_.nodeType = nodeType;
+    nodeType_ = nodeType;
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
@@ -280,7 +273,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
-    flags_.isReferenceBaseline = isReferenceBaseline;
+    isReferenceBaseline_ = isReferenceBaseline;
   }
 
   void setOwner(Node* owner) {

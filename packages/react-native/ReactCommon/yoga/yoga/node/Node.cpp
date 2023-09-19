@@ -23,15 +23,17 @@ Node::Node(const yoga::Config* config) : config_{config} {
   yoga::assertFatal(
       config != nullptr, "Attempting to construct Node with null config");
 
-  flags_.hasNewLayout = true;
   if (config->useWebDefaults()) {
     useWebDefaults();
   }
 }
 
 Node::Node(Node&& node) {
+  hasNewLayout_ = node.hasNewLayout_;
+  isReferenceBaseline_ = node.isReferenceBaseline_;
+  isDirty_ = node.isDirty_;
+  nodeType_ = node.nodeType_;
   context_ = node.context_;
-  flags_ = node.flags_;
   measureFunc_ = node.measureFunc_;
   baselineFunc_ = node.baselineFunc_;
   printFunc_ = node.printFunc_;
@@ -271,10 +273,10 @@ void Node::setConfig(yoga::Config* config) {
 }
 
 void Node::setDirty(bool isDirty) {
-  if (isDirty == flags_.isDirty) {
+  if (isDirty == isDirty_) {
     return;
   }
-  flags_.isDirty = isDirty;
+  isDirty_ = isDirty;
   if (isDirty && dirtiedFunc_) {
     dirtiedFunc_(this);
   }
@@ -473,7 +475,7 @@ void Node::cloneChildrenIfNeeded() {
 }
 
 void Node::markDirtyAndPropagate() {
-  if (!flags_.isDirty) {
+  if (!isDirty_) {
     setDirty(true);
     setLayoutComputedFlexBasis(FloatOptional());
     if (owner_) {
@@ -483,7 +485,7 @@ void Node::markDirtyAndPropagate() {
 }
 
 void Node::markDirtyAndPropagateDownwards() {
-  flags_.isDirty = true;
+  isDirty_ = true;
   for_each(children_.begin(), children_.end(), [](Node* childNode) {
     childNode->markDirtyAndPropagateDownwards();
   });
