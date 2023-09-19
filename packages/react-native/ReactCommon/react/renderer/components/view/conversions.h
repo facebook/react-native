@@ -167,26 +167,26 @@ inline YGDirection yogaDirectionFromLayoutDirection(LayoutDirection direction) {
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGDirection& result) {
-  result = YGDirectionInherit;
+    yoga::Direction& result) {
+  result = yoga::Direction::Inherit;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "inherit") {
-    result = YGDirectionInherit;
+    result = yoga::Direction::Inherit;
     return;
   }
   if (stringValue == "ltr") {
-    result = YGDirectionLTR;
+    result = yoga::Direction::LTR;
     return;
   }
   if (stringValue == "rtl") {
-    result = YGDirectionRTL;
+    result = yoga::Direction::RTL;
     return;
   }
-  LOG(ERROR) << "Could not parse YGDirection:" << stringValue;
+  LOG(ERROR) << "Could not parse Direction:" << stringValue;
   react_native_expect(false);
 }
 
@@ -724,32 +724,27 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
-inline std::string toString(
-    const std::array<float, yoga::enums::count<YGDimension>()>& dimensions) {
-  return "{" + folly::to<std::string>(dimensions[0]) + ", " +
-      folly::to<std::string>(dimensions[1]) + "}";
+template <size_t N>
+inline std::string toString(const std::array<float, N> vec) {
+  std::string s;
+
+  s.append("{");
+  for (size_t i = 0; i < N - 1; i++) {
+    s.append(std::to_string(vec[i]) + ", ");
+  }
+  s.append(std::to_string(vec[N - 1]));
+  s.append("}");
+
+  return s;
 }
 
-inline std::string toString(const std::array<float, 4>& position) {
-  return "{" + folly::to<std::string>(position[0]) + ", " +
-      folly::to<std::string>(position[1]) + "}";
-}
-
-inline std::string toString(
-    const std::array<float, yoga::enums::count<YGEdge>()>& edges) {
-  return "{" + folly::to<std::string>(edges[0]) + ", " +
-      folly::to<std::string>(edges[1]) + ", " +
-      folly::to<std::string>(edges[2]) + ", " +
-      folly::to<std::string>(edges[3]) + "}";
-}
-
-inline std::string toString(const YGDirection& value) {
+inline std::string toString(const yoga::Direction& value) {
   switch (value) {
-    case YGDirectionInherit:
+    case yoga::Direction::Inherit:
       return "inherit";
-    case YGDirectionLTR:
+    case yoga::Direction::LTR:
       return "ltr";
-    case YGDirectionRTL:
+    case yoga::Direction::RTL:
       return "rtl";
   }
 }
@@ -873,7 +868,7 @@ inline std::string toString(const yoga::Style::Dimensions& value) {
 }
 
 inline std::string toString(const yoga::Style::Edges& value) {
-  static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
+  static std::array<std::string, 9> names = {
       {"left",
        "top",
        "right",
@@ -887,7 +882,7 @@ inline std::string toString(const yoga::Style::Edges& value) {
   auto result = std::string{};
   auto separator = std::string{", "};
 
-  for (auto i = 0; i < yoga::enums::count<YGEdge>(); i++) {
+  for (auto i = 0; i < names.size(); i++) {
     YGValue v = value[i];
     if (v.unit == YGUnitUndefined) {
       continue;
