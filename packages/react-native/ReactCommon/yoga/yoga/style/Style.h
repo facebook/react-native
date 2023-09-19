@@ -15,6 +15,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
@@ -22,7 +23,7 @@ namespace facebook::yoga {
 
 class YG_EXPORT Style {
   template <typename Enum>
-  using Values = std::array<CompactValue, enums::count<Enum>()>;
+  using Values = std::array<CompactValue, ordinalCount<Enum>()>;
 
  public:
   using Dimensions = Values<YGDimension>;
@@ -100,7 +101,7 @@ class YG_EXPORT Style {
  private:
   static constexpr uint8_t directionOffset = 0;
   static constexpr uint8_t flexdirectionOffset =
-      directionOffset + minimumBitCount<YGDirection>();
+      directionOffset + minimumBitCount<Direction>();
   static constexpr uint8_t justifyContentOffset =
       flexdirectionOffset + minimumBitCount<YGFlexDirection>();
   static constexpr uint8_t alignContentOffset =
@@ -139,10 +140,10 @@ class YG_EXPORT Style {
   // for library users needing a type
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
-  YGDirection direction() const {
-    return getEnumData<YGDirection>(flags, directionOffset);
+  Direction direction() const {
+    return getEnumData<Direction>(flags, directionOffset);
   }
-  BitfieldRef<YGDirection> direction() {
+  BitfieldRef<Direction> direction() {
     return {*this, directionOffset};
   }
 

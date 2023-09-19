@@ -90,10 +90,11 @@
 
 #ifdef __cplusplus
 
-namespace facebook::yoga::enums {
+namespace facebook::yoga {
 
 template <typename T>
-constexpr int count(); // can't use `= delete` due to a defect in clang < 3.9
+constexpr int
+ordinalCount(); // can't use `= delete` due to a defect in clang < 3.9
 
 namespace detail {
 template <int... xs>
@@ -102,7 +103,7 @@ constexpr int n() {
 }
 } // namespace detail
 
-} // namespace facebook::yoga::enums
+} // namespace facebook::yoga
 #endif
 
 #define YG_ENUM_DECL(NAME, ...)                               \
@@ -110,16 +111,16 @@ constexpr int n() {
   YG_EXPORT const char* NAME##ToString(NAME);
 
 #ifdef __cplusplus
-#define YG_ENUM_SEQ_DECL(NAME, ...)  \
-  YG_ENUM_DECL(NAME, __VA_ARGS__)    \
-  YG_EXTERN_C_END                    \
-                                     \
-  namespace facebook::yoga::enums {  \
-  template <>                        \
-  constexpr int count<NAME>() {      \
-    return detail::n<__VA_ARGS__>(); \
-  }                                  \
-  }                                  \
+#define YG_ENUM_SEQ_DECL(NAME, ...)    \
+  YG_ENUM_DECL(NAME, __VA_ARGS__)      \
+  YG_EXTERN_C_END                      \
+                                       \
+  namespace facebook::yoga {           \
+  template <>                          \
+  constexpr int ordinalCount<NAME>() { \
+    return detail::n<__VA_ARGS__>();   \
+  }                                    \
+  }                                    \
   YG_EXTERN_C_BEGIN
 #else
 #define YG_ENUM_SEQ_DECL YG_ENUM_DECL

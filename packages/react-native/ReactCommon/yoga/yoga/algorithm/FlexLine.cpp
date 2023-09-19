@@ -15,7 +15,7 @@ namespace facebook::yoga {
 
 FlexLine calculateFlexLine(
     yoga::Node* const node,
-    const YGDirection ownerDirection,
+    const Direction ownerDirection,
     const float mainAxisownerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
