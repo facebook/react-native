@@ -47,7 +47,9 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
     std::unique_lock lock(mutex_);
 
     auto iterator = registry_.find(surfaceId);
-    registry_.erase(iterator);
+    if (iterator != registry_.end()) {
+      registry_.erase(iterator);
+    }
   }
 }
 
