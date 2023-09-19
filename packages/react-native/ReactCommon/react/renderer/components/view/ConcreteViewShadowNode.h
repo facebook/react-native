@@ -95,7 +95,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     }
 
     // `zIndex` is only defined for non-`static` positioned views.
-    if (props.yogaStyle.positionType() != YGPositionTypeStatic) {
+    if (props.yogaStyle.positionType() != yoga::PositionType::Static) {
       BaseShadowNode::orderIndex_ = props.zIndex.value_or(0);
     } else {
       BaseShadowNode::orderIndex_ = 0;

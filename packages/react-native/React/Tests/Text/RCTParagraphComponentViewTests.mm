@@ -32,6 +32,7 @@
 
 @end
 
+using namespace facebook;
 using namespace facebook::react;
 
 //┌──    RootShadowNode    ─────────────────────────────┐
@@ -132,7 +133,7 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
@@ -212,7 +213,7 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{30, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
@@ -256,7 +257,7 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{90, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
@@ -430,7 +431,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                                props.accessible = true;
                                props.accessibilityTraits = AccessibilityTraits::Link;
                                auto &yogaStyle = props.yogaStyle;
-                               yogaStyle.positionType() = YGPositionTypeAbsolute;
+                               yogaStyle.positionType() = yoga::PositionType::Absolute;
                                yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                                yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
                                yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};

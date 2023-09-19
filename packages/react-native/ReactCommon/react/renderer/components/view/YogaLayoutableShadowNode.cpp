@@ -566,7 +566,7 @@ void YogaLayoutableShadowNode::setPositionType(
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.positionType() = positionType;
+  style.positionType() = yoga::scopedEnum(positionType);
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
