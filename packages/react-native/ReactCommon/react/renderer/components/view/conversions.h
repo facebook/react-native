@@ -223,38 +223,38 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGJustify& result) {
-  result = YGJustifyFlexStart;
+    yoga::Justify& result) {
+  result = yoga::Justify::FlexStart;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "flex-start") {
-    result = YGJustifyFlexStart;
+    result = yoga::Justify::FlexStart;
     return;
   }
   if (stringValue == "center") {
-    result = YGJustifyCenter;
+    result = yoga::Justify::Center;
     return;
   }
   if (stringValue == "flex-end") {
-    result = YGJustifyFlexEnd;
+    result = yoga::Justify::FlexEnd;
     return;
   }
   if (stringValue == "space-between") {
-    result = YGJustifySpaceBetween;
+    result = yoga::Justify::SpaceBetween;
     return;
   }
   if (stringValue == "space-around") {
-    result = YGJustifySpaceAround;
+    result = yoga::Justify::SpaceAround;
     return;
   }
   if (stringValue == "space-evenly") {
-    result = YGJustifySpaceEvenly;
+    result = yoga::Justify::SpaceEvenly;
     return;
   }
-  LOG(ERROR) << "Could not parse YGJustify:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Justify:" << stringValue;
   react_native_expect(false);
 }
 
@@ -762,19 +762,19 @@ inline std::string toString(const yoga::FlexDirection& value) {
   }
 }
 
-inline std::string toString(const YGJustify& value) {
+inline std::string toString(const yoga::Justify& value) {
   switch (value) {
-    case YGJustifyFlexStart:
+    case yoga::Justify::FlexStart:
       return "flex-start";
-    case YGJustifyCenter:
+    case yoga::Justify::Center:
       return "center";
-    case YGJustifyFlexEnd:
+    case yoga::Justify::FlexEnd:
       return "flex-end";
-    case YGJustifySpaceBetween:
+    case yoga::Justify::SpaceBetween:
       return "space-between";
-    case YGJustifySpaceAround:
+    case yoga::Justify::SpaceAround:
       return "space-around";
-    case YGJustifySpaceEvenly:
+    case yoga::Justify::SpaceEvenly:
       return "space-evenly";
   }
 }

@@ -465,7 +465,7 @@ static void layoutAbsoluteChild(
         leadingEdge(mainAxis));
   } else if (
       !child->isLeadingPositionDefined(mainAxis) &&
-      node->getStyle().justifyContent() == YGJustifyCenter) {
+      node->getStyle().justifyContent() == Justify::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dimension(mainAxis)] -
          child->getLayout().measuredDimensions[dimension(mainAxis)]) /
@@ -473,7 +473,7 @@ static void layoutAbsoluteChild(
         leadingEdge(mainAxis));
   } else if (
       !child->isLeadingPositionDefined(mainAxis) &&
-      node->getStyle().justifyContent() == YGJustifyFlexEnd) {
+      node->getStyle().justifyContent() == Justify::FlexEnd) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dimension(mainAxis)] -
          child->getLayout().measuredDimensions[dimension(mainAxis)]),
@@ -1196,7 +1196,7 @@ static void resolveFlexibleLength(
   flexLine.layout.remainingFreeSpace = originalFreeSpace - distributedFreeSpace;
 }
 
-static void YGJustifyMainAxis(
+static void justifyMainAxis(
     yoga::Node* const node,
     FlexLine& flexLine,
     const size_t startOfLineIndex,
@@ -1263,36 +1263,36 @@ static void YGJustifyMainAxis(
   // each two elements.
   float leadingMainDim = 0;
   float betweenMainDim = gap;
-  const YGJustify justifyContent = node->getStyle().justifyContent();
+  const Justify justifyContent = node->getStyle().justifyContent();
 
   if (numberOfAutoMarginsOnCurrentLine == 0) {
     switch (justifyContent) {
-      case YGJustifyCenter:
+      case Justify::Center:
         leadingMainDim = flexLine.layout.remainingFreeSpace / 2;
         break;
-      case YGJustifyFlexEnd:
+      case Justify::FlexEnd:
         leadingMainDim = flexLine.layout.remainingFreeSpace;
         break;
-      case YGJustifySpaceBetween:
+      case Justify::SpaceBetween:
         if (flexLine.itemsInFlow.size() > 1) {
           betweenMainDim +=
               yoga::maxOrDefined(flexLine.layout.remainingFreeSpace, 0) /
               static_cast<float>(flexLine.itemsInFlow.size() - 1);
         }
         break;
-      case YGJustifySpaceEvenly:
+      case Justify::SpaceEvenly:
         // Space is distributed evenly across all elements
         leadingMainDim = flexLine.layout.remainingFreeSpace /
             static_cast<float>(flexLine.itemsInFlow.size() + 1);
         betweenMainDim += leadingMainDim;
         break;
-      case YGJustifySpaceAround:
+      case Justify::SpaceAround:
         // Space on the edges is half of the space between elements
         leadingMainDim = 0.5f * flexLine.layout.remainingFreeSpace /
             static_cast<float>(flexLine.itemsInFlow.size());
         betweenMainDim += leadingMainDim * 2;
         break;
-      case YGJustifyFlexStart:
+      case Justify::FlexStart:
         break;
     }
   }
@@ -1814,7 +1814,7 @@ static void calculateLayoutImpl(
     // of items that are aligned "stretch". We need to compute these stretch
     // values and set the final positions.
 
-    YGJustifyMainAxis(
+    justifyMainAxis(
         node,
         flexLine,
         startOfLineIndex,
