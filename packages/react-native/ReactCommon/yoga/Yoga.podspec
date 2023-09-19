@@ -60,4 +60,5 @@ Pod::Spec.new do |spec|
   all_header_files = 'yoga/**/*.h'
   all_header_files = File.join('ReactCommon/yoga', all_header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.private_header_files = Dir.glob(all_header_files) - Dir.glob(public_header_files)
+  spec.preserve_paths = [all_header_files]
 end
