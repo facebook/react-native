@@ -449,10 +449,10 @@ void YGNodeStyleSetJustifyContent(
     const YGNodeRef node,
     const YGJustify justifyContent) {
   updateStyle<MSVC_HINT(justifyContent)>(
-      node, &Style::justifyContent, justifyContent);
+      node, &Style::justifyContent, scopedEnum(justifyContent));
 }
 YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().justifyContent();
+  return unscopedEnum(resolveRef(node)->getStyle().justifyContent());
 }
 
 void YGNodeStyleSetAlignContent(
