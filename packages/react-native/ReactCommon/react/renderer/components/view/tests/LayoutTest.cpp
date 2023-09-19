@@ -89,7 +89,7 @@ class LayoutTest : public ::testing::Test {
                 auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
-                yogaStyle.positionType() = YGPositionTypeAbsolute;
+                yogaStyle.positionType() = yoga::PositionType::Absolute;
                 yogaStyle.dimensions()[YGDimensionWidth] = YGValue{50, YGUnitPoint};
                 yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
                 return sharedProps;
@@ -102,7 +102,7 @@ class LayoutTest : public ::testing::Test {
                     auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
                     yogaStyle.dimensions()[YGDimensionWidth] = YGValue{30, YGUnitPoint};
@@ -135,7 +135,7 @@ class LayoutTest : public ::testing::Test {
                           yogaStyle.overflow() = YGOverflowHidden;
                         }
 
-                        yogaStyle.positionType() = YGPositionTypeAbsolute;
+                        yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
                         yogaStyle.dimensions()[YGDimensionWidth] = YGValue{110, YGUnitPoint};
@@ -150,7 +150,7 @@ class LayoutTest : public ::testing::Test {
                             auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
-                            yogaStyle.positionType() = YGPositionTypeAbsolute;
+                            yogaStyle.positionType() = yoga::PositionType::Absolute;
                             yogaStyle.position()[YGEdgeLeft] = YGValue{70, YGUnitPoint};
                             yogaStyle.position()[YGEdgeTop] = YGValue{-50, YGUnitPoint};
                             yogaStyle.dimensions()[YGDimensionWidth] = YGValue{30, YGUnitPoint};
@@ -165,7 +165,7 @@ class LayoutTest : public ::testing::Test {
                         auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
-                        yogaStyle.positionType() = YGPositionTypeAbsolute;
+                        yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{-60, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{50, YGUnitPoint};
                         yogaStyle.dimensions()[YGDimensionWidth] = YGValue{70, YGUnitPoint};
