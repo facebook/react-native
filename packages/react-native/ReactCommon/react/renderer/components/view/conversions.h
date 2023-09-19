@@ -307,26 +307,26 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGPositionType& result) {
-  result = YGPositionTypeRelative;
+    yoga::PositionType& result) {
+  result = yoga::PositionType::Relative;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "static") {
-    result = YGPositionTypeStatic;
+    result = yoga::PositionType::Static;
     return;
   }
   if (stringValue == "relative") {
-    result = YGPositionTypeRelative;
+    result = yoga::PositionType::Relative;
     return;
   }
   if (stringValue == "absolute") {
-    result = YGPositionTypeAbsolute;
+    result = yoga::PositionType::Absolute;
     return;
   }
-  LOG(ERROR) << "Could not parse YGPositionType:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::PositionType:" << stringValue;
   react_native_expect(false);
 }
 
@@ -800,13 +800,13 @@ inline std::string toString(const yoga::Align& value) {
   }
 }
 
-inline std::string toString(const YGPositionType& value) {
+inline std::string toString(const yoga::PositionType& value) {
   switch (value) {
-    case YGPositionTypeStatic:
+    case yoga::PositionType::Static:
       return "static";
-    case YGPositionTypeRelative:
+    case yoga::PositionType::Relative:
       return "relative";
-    case YGPositionTypeAbsolute:
+    case yoga::PositionType::Absolute:
       return "absolute";
   }
 }

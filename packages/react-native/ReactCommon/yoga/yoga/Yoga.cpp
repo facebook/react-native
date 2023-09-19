@@ -485,10 +485,10 @@ void YGNodeStyleSetPositionType(
     const YGNodeRef node,
     const YGPositionType positionType) {
   updateStyle<MSVC_HINT(positionType)>(
-      node, &Style::positionType, positionType);
+      node, &Style::positionType, scopedEnum(positionType));
 }
 YGPositionType YGNodeStyleGetPositionType(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().positionType();
+  return unscopedEnum(resolveRef(node)->getStyle().positionType());
 }
 
 void YGNodeStyleSetFlexWrap(const YGNodeRef node, const YGWrap flexWrap) {
