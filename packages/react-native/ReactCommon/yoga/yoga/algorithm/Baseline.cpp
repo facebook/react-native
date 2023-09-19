@@ -41,7 +41,7 @@ float calculateBaseline(const yoga::Node* node) {
     if (child->getStyle().positionType() == YGPositionTypeAbsolute) {
       continue;
     }
-    if (resolveChildAlignment(node, child) == YGAlignBaseline ||
+    if (resolveChildAlignment(node, child) == Align::Baseline ||
         child->isReferenceBaseline()) {
       baselineChild = child;
       break;
@@ -64,14 +64,14 @@ bool isBaselineLayout(const yoga::Node* node) {
   if (isColumn(node->getStyle().flexDirection())) {
     return false;
   }
-  if (node->getStyle().alignItems() == YGAlignBaseline) {
+  if (node->getStyle().alignItems() == Align::Baseline) {
     return true;
   }
   const auto childCount = node->getChildCount();
   for (size_t i = 0; i < childCount; i++) {
     auto child = node->getChild(i);
     if (child->getStyle().positionType() != YGPositionTypeAbsolute &&
-        child->getStyle().alignSelf() == YGAlignBaseline) {
+        child->getStyle().alignSelf() == Align::Baseline) {
       return true;
     }
   }
