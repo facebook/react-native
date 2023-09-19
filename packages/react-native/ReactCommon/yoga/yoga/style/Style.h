@@ -16,6 +16,7 @@
 
 #include <yoga/bits/NumericBitfield.h>
 #include <yoga/enums/Direction.h>
+#include <yoga/enums/FlexDirection.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
@@ -103,7 +104,7 @@ class YG_EXPORT Style {
   static constexpr uint8_t flexdirectionOffset =
       directionOffset + minimumBitCount<Direction>();
   static constexpr uint8_t justifyContentOffset =
-      flexdirectionOffset + minimumBitCount<YGFlexDirection>();
+      flexdirectionOffset + minimumBitCount<FlexDirection>();
   static constexpr uint8_t alignContentOffset =
       justifyContentOffset + minimumBitCount<YGJustify>();
   static constexpr uint8_t alignItemsOffset =
@@ -147,10 +148,10 @@ class YG_EXPORT Style {
     return {*this, directionOffset};
   }
 
-  YGFlexDirection flexDirection() const {
-    return getEnumData<YGFlexDirection>(flags, flexdirectionOffset);
+  FlexDirection flexDirection() const {
+    return getEnumData<FlexDirection>(flags, flexdirectionOffset);
   }
-  BitfieldRef<YGFlexDirection> flexDirection() {
+  BitfieldRef<FlexDirection> flexDirection() {
     return {*this, flexdirectionOffset};
   }
 
