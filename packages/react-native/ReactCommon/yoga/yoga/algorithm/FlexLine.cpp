@@ -30,7 +30,7 @@ FlexLine calculateFlexLine(
   size_t endOfLineIndex = startOfLineIndex;
 
   float sizeConsumedIncludingMinConstraint = 0;
-  const YGFlexDirection mainAxis = resolveDirection(
+  const FlexDirection mainAxis = resolveDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
   const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
