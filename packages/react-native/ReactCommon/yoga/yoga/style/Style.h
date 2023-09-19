@@ -17,6 +17,7 @@
 #include <yoga/bits/NumericBitfield.h>
 #include <yoga/enums/Align.h>
 #include <yoga/enums/Direction.h>
+#include <yoga/enums/Display.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/Overflow.h>
@@ -209,10 +210,10 @@ class YG_EXPORT Style {
     return {*this, overflowOffset};
   }
 
-  YGDisplay display() const {
-    return getEnumData<YGDisplay>(flags, displayOffset);
+  Display display() const {
+    return getEnumData<Display>(flags, displayOffset);
   }
-  BitfieldRef<YGDisplay> display() {
+  BitfieldRef<Display> display() {
     return {*this, displayOffset};
   }
 

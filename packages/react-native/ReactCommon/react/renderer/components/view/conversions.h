@@ -141,9 +141,9 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.getStyle().display() == YGDisplayNone
-      ? DisplayType::None
-      : DisplayType::Flex;
+  layoutMetrics.displayType =
+      yogaNode.getStyle().display() == yoga::Display::None ? DisplayType::None
+                                                           : DisplayType::Flex;
 
   layoutMetrics.layoutDirection =
       YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL
@@ -385,22 +385,22 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGDisplay& result) {
-  result = YGDisplayFlex;
+    yoga::Display& result) {
+  result = yoga::Display::Flex;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "flex") {
-    result = YGDisplayFlex;
+    result = yoga::Display::Flex;
     return;
   }
   if (stringValue == "none") {
-    result = YGDisplayNone;
+    result = yoga::Display::None;
     return;
   }
-  LOG(ERROR) << "Could not parse YGDisplay:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Display:" << stringValue;
   react_native_expect(false);
 }
 
@@ -833,11 +833,11 @@ inline std::string toString(const yoga::Overflow& value) {
   }
 }
 
-inline std::string toString(const YGDisplay& value) {
+inline std::string toString(const yoga::Display& value) {
   switch (value) {
-    case YGDisplayFlex:
+    case yoga::Display::Flex:
       return "flex";
-    case YGDisplayNone:
+    case yoga::Display::None:
       return "none";
   }
 }

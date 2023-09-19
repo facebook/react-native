@@ -508,10 +508,10 @@ YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
 }
 
 void YGNodeStyleSetDisplay(const YGNodeRef node, const YGDisplay display) {
-  updateStyle<MSVC_HINT(display)>(node, &Style::display, display);
+  updateStyle<MSVC_HINT(display)>(node, &Style::display, scopedEnum(display));
 }
 YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().display();
+  return unscopedEnum(resolveRef(node)->getStyle().display());
 }
 
 // TODO(T26792433): Change the API to accept FloatOptional.

@@ -804,7 +804,7 @@ static float computeFlexBasisForChildren(
 
   for (auto child : children) {
     child->resolveDimension();
-    if (child->getStyle().display() == YGDisplayNone) {
+    if (child->getStyle().display() == Display::None) {
       zeroOutLayoutRecursively(child);
       child->setHasNewLayout(true);
       child->setDirty(false);
@@ -1307,7 +1307,7 @@ static void justifyMainAxis(
     const auto child = node->getChild(i);
     const Style& childStyle = child->getStyle();
     const LayoutResults& childLayout = child->getLayout();
-    if (childStyle.display() == YGDisplayNone) {
+    if (childStyle.display() == Display::None) {
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
@@ -1863,7 +1863,7 @@ static void calculateLayoutImpl(
     if (performLayout) {
       for (size_t i = startOfLineIndex; i < endOfLineIndex; i++) {
         const auto child = node->getChild(i);
-        if (child->getStyle().display() == YGDisplayNone) {
+        if (child->getStyle().display() == Display::None) {
           continue;
         }
         if (child->getStyle().positionType() == PositionType::Absolute) {
@@ -2069,7 +2069,7 @@ static void calculateLayoutImpl(
       float maxDescentForCurrentLine = 0;
       for (ii = startIndex; ii < childCount; ii++) {
         const auto child = node->getChild(ii);
-        if (child->getStyle().display() == YGDisplayNone) {
+        if (child->getStyle().display() == Display::None) {
           continue;
         }
         if (child->getStyle().positionType() != PositionType::Absolute) {
@@ -2112,7 +2112,7 @@ static void calculateLayoutImpl(
       if (performLayout) {
         for (ii = startIndex; ii < endIndex; ii++) {
           const auto child = node->getChild(ii);
-          if (child->getStyle().display() == YGDisplayNone) {
+          if (child->getStyle().display() == Display::None) {
             continue;
           }
           if (child->getStyle().positionType() != PositionType::Absolute) {
@@ -2318,7 +2318,7 @@ static void calculateLayoutImpl(
   if (performLayout) {
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
     for (auto child : node->getChildren()) {
-      if (child->getStyle().display() == YGDisplayNone ||
+      if (child->getStyle().display() == Display::None ||
           child->getStyle().positionType() != PositionType::Absolute) {
         continue;
       }
@@ -2352,7 +2352,7 @@ static void calculateLayoutImpl(
     if (needsMainTrailingPos || needsCrossTrailingPos) {
       for (size_t i = 0; i < childCount; i++) {
         const auto child = node->getChild(i);
-        if (child->getStyle().display() == YGDisplayNone) {
+        if (child->getStyle().display() == Display::None) {
           continue;
         }
         if (needsMainTrailingPos) {

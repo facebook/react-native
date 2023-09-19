@@ -137,7 +137,7 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
         auto& props = *viewProps;
 
         props.yogaStyle.alignContent() = yoga::Align::Baseline;
-        props.yogaStyle.display() = YGDisplayNone;
+        props.yogaStyle.display() = yoga::Display::None;
 
         return oldShadowNode.clone(ShadowNodeFragment{viewProps});
       });

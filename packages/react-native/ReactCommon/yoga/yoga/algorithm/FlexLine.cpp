@@ -38,7 +38,7 @@ FlexLine calculateFlexLine(
   // Add items to the current line until it's full or we run out of items.
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
-    if (child->getStyle().display() == YGDisplayNone ||
+    if (child->getStyle().display() == Display::None ||
         child->getStyle().positionType() == PositionType::Absolute) {
       continue;
     }

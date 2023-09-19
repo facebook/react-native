@@ -764,7 +764,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.display() = YGDisplayNone;
+    yogaStyle.display() = yoga::Display::None;
   });
 
   testViewTree_([](const StubViewTree& viewTree) {
