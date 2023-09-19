@@ -64,7 +64,7 @@ struct FlexLine {
 // computeFlexBasisForChildren function).
 FlexLine calculateFlexLine(
     yoga::Node* const node,
-    YGDirection ownerDirection,
+    Direction ownerDirection,
     float mainAxisownerSize,
     float availableInnerWidth,
     float availableInnerMainDim,

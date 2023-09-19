@@ -16,6 +16,6 @@ void calculateLayout(
     yoga::Node* const node,
     const float ownerWidth,
     const float ownerHeight,
-    const YGDirection ownerDirection);
+    const Direction ownerDirection);
 
 } // namespace facebook::yoga
