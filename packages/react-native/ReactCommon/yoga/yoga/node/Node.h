@@ -14,6 +14,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
@@ -289,7 +290,7 @@ class YG_EXPORT Node : public ::YGNode {
   void setConfig(Config* config);
 
   void setDirty(bool isDirty);
-  void setLayoutLastOwnerDirection(YGDirection direction);
+  void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
@@ -298,13 +299,13 @@ class YG_EXPORT Node : public ::YGNode {
       YGDimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float dimensionValue, YGDimension dimension);
-  void setLayoutDirection(YGDirection direction);
+  void setLayoutDirection(Direction direction);
   void setLayoutMargin(float margin, YGEdge edge);
   void setLayoutBorder(float border, YGEdge edge);
   void setLayoutPadding(float padding, YGEdge edge);
   void setLayoutPosition(float position, YGEdge edge);
   void setPosition(
-      const YGDirection direction,
+      const Direction direction,
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
@@ -315,7 +316,7 @@ class YG_EXPORT Node : public ::YGNode {
   YGValue marginTrailingValue(const YGFlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
-  YGDirection resolveDirection(const YGDirection ownerDirection);
+  Direction resolveDirection(const Direction ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(Node* oldChild, Node* newChild);
