@@ -25,8 +25,8 @@ inline bool isColumn(const YGFlexDirection flexDirection) {
 
 inline YGFlexDirection resolveDirection(
     const YGFlexDirection flexDirection,
-    const YGDirection direction) {
-  if (direction == YGDirectionRTL) {
+    const Direction direction) {
+  if (direction == Direction::RTL) {
     if (flexDirection == YGFlexDirectionRow) {
       return YGFlexDirectionRowReverse;
     } else if (flexDirection == YGFlexDirectionRowReverse) {
@@ -39,7 +39,7 @@ inline YGFlexDirection resolveDirection(
 
 inline YGFlexDirection resolveCrossDirection(
     const YGFlexDirection flexDirection,
-    const YGDirection direction) {
+    const Direction direction) {
   return isColumn(flexDirection)
       ? resolveDirection(YGFlexDirectionRow, direction)
       : YGFlexDirectionColumn;
