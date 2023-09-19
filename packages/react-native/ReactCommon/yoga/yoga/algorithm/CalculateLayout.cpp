@@ -38,7 +38,7 @@ bool calculateLayoutInternal(
     yoga::Node* const node,
     const float availableWidth,
     const float availableHeight,
-    const YGDirection ownerDirection,
+    const Direction ownerDirection,
     const MeasureMode widthMeasureMode,
     const MeasureMode heightMeasureMode,
     const float ownerWidth,
@@ -130,7 +130,7 @@ static void computeFlexBasisForChild(
     const float ownerWidth,
     const float ownerHeight,
     const MeasureMode heightMode,
-    const YGDirection direction,
+    const Direction direction,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -321,7 +321,7 @@ static void layoutAbsoluteChild(
     const float width,
     const MeasureMode widthMode,
     const float height,
-    const YGDirection direction,
+    const Direction direction,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -771,7 +771,7 @@ static float computeFlexBasisForChildren(
     const float availableInnerHeight,
     MeasureMode widthMeasureMode,
     MeasureMode heightMeasureMode,
-    YGDirection direction,
+    Direction direction,
     YGFlexDirection mainAxis,
     bool performLayout,
     LayoutData& layoutMarkerData,
@@ -812,7 +812,7 @@ static float computeFlexBasisForChildren(
     }
     if (performLayout) {
       // Set the initial position (relative to the owner).
-      const YGDirection childDirection = child->resolveDirection(direction);
+      const Direction childDirection = child->resolveDirection(direction);
       const float mainDim =
           isRow(mainAxis) ? availableInnerWidth : availableInnerHeight;
       const float crossDim =
@@ -1478,7 +1478,7 @@ static void calculateLayoutImpl(
     yoga::Node* const node,
     const float availableWidth,
     const float availableHeight,
-    const YGDirection ownerDirection,
+    const Direction ownerDirection,
     const MeasureMode widthMeasureMode,
     const MeasureMode heightMeasureMode,
     const float ownerWidth,
@@ -1506,7 +1506,7 @@ static void calculateLayoutImpl(
   (performLayout ? layoutMarkerData.layouts : layoutMarkerData.measures) += 1;
 
   // Set the resolved resolution in the node's layout.
-  const YGDirection direction = node->resolveDirection(ownerDirection);
+  const Direction direction = node->resolveDirection(ownerDirection);
   node->setLayoutDirection(direction);
 
   const YGFlexDirection flexRowDirection =
@@ -1515,8 +1515,8 @@ static void calculateLayoutImpl(
       resolveDirection(YGFlexDirectionColumn, direction);
 
   const YGEdge startEdge =
-      direction == YGDirectionLTR ? YGEdgeLeft : YGEdgeRight;
-  const YGEdge endEdge = direction == YGDirectionLTR ? YGEdgeRight : YGEdgeLeft;
+      direction == Direction::LTR ? YGEdgeLeft : YGEdgeRight;
+  const YGEdge endEdge = direction == Direction::LTR ? YGEdgeRight : YGEdgeLeft;
 
   const float marginRowLeading =
       node->getLeadingMargin(flexRowDirection, ownerWidth).unwrap();
@@ -2408,7 +2408,7 @@ bool calculateLayoutInternal(
     yoga::Node* const node,
     const float availableWidth,
     const float availableHeight,
-    const YGDirection ownerDirection,
+    const Direction ownerDirection,
     const MeasureMode widthMeasureMode,
     const MeasureMode heightMeasureMode,
     const float ownerWidth,
@@ -2668,7 +2668,7 @@ void calculateLayout(
     yoga::Node* const node,
     const float ownerWidth,
     const float ownerHeight,
-    const YGDirection ownerDirection) {
+    const Direction ownerDirection) {
   Event::publish<Event::LayoutPassStart>(node);
   LayoutData markerData = {};
 
