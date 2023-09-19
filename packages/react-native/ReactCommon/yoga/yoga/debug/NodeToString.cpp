@@ -146,9 +146,7 @@ void nodeToString(
     }
     if (style.justifyContent() != yoga::Node{}.getStyle().justifyContent()) {
       appendFormattedString(
-          str,
-          "justify-content: %s; ",
-          YGJustifyToString(style.justifyContent()));
+          str, "justify-content: %s; ", toString(style.justifyContent()));
     }
     if (style.alignItems() != yoga::Node{}.getStyle().alignItems()) {
       appendFormattedString(
