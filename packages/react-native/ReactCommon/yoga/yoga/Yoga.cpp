@@ -492,10 +492,11 @@ YGPositionType YGNodeStyleGetPositionType(const YGNodeConstRef node) {
 }
 
 void YGNodeStyleSetFlexWrap(const YGNodeRef node, const YGWrap flexWrap) {
-  updateStyle<MSVC_HINT(flexWrap)>(node, &Style::flexWrap, flexWrap);
+  updateStyle<MSVC_HINT(flexWrap)>(
+      node, &Style::flexWrap, scopedEnum(flexWrap));
 }
 YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
-  return resolveRef(node)->getStyle().flexWrap();
+  return unscopedEnum(resolveRef(node)->getStyle().flexWrap());
 }
 
 void YGNodeStyleSetOverflow(const YGNodeRef node, const YGOverflow overflow) {

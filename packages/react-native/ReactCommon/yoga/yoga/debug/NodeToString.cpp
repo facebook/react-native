@@ -166,8 +166,7 @@ void nodeToString(
     appendFloatOptionalIfDefined(str, "flex", style.flex());
 
     if (style.flexWrap() != yoga::Node{}.getStyle().flexWrap()) {
-      appendFormattedString(
-          str, "flex-wrap: %s; ", YGWrapToString(style.flexWrap()));
+      appendFormattedString(str, "flex-wrap: %s; ", toString(style.flexWrap()));
     }
 
     if (style.overflow() != yoga::Node{}.getStyle().overflow()) {
