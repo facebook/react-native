@@ -133,6 +133,11 @@ class RuntimeScheduler final {
    */
   void scheduleWorkLoopIfNecessary() const;
 
+  void executeTask(
+      jsi::Runtime& runtime,
+      std::shared_ptr<Task> task,
+      bool didUserCallbackTimeout) const;
+
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
