@@ -193,30 +193,30 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGFlexDirection& result) {
-  result = YGFlexDirectionColumn;
+    yoga::FlexDirection& result) {
+  result = yoga::FlexDirection::Column;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "row") {
-    result = YGFlexDirectionRow;
+    result = yoga::FlexDirection::Row;
     return;
   }
   if (stringValue == "column") {
-    result = YGFlexDirectionColumn;
+    result = yoga::FlexDirection::Column;
     return;
   }
   if (stringValue == "column-reverse") {
-    result = YGFlexDirectionColumnReverse;
+    result = yoga::FlexDirection::ColumnReverse;
     return;
   }
   if (stringValue == "row-reverse") {
-    result = YGFlexDirectionRowReverse;
+    result = yoga::FlexDirection::RowReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse YGFlexDirection:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::FlexDirection:" << stringValue;
   react_native_expect(false);
 }
 
@@ -749,15 +749,15 @@ inline std::string toString(const yoga::Direction& value) {
   }
 }
 
-inline std::string toString(const YGFlexDirection& value) {
+inline std::string toString(const yoga::FlexDirection& value) {
   switch (value) {
-    case YGFlexDirectionColumn:
+    case yoga::FlexDirection::Column:
       return "column";
-    case YGFlexDirectionColumnReverse:
+    case yoga::FlexDirection::ColumnReverse:
       return "column-reverse";
-    case YGFlexDirectionRow:
+    case yoga::FlexDirection::Row:
       return "row";
-    case YGFlexDirectionRowReverse:
+    case yoga::FlexDirection::RowReverse:
       return "row-reverse";
   }
 }
