@@ -81,14 +81,6 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/attributedstring"
   end
 
-  s.subspec "butter" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "butter/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "butter/tests"
-    ss.header_dir           = "butter"
-  end
-
   s.subspec "core" do |ss|
     header_search_path = [
       "\"$(PODS_ROOT)/boost\"",
