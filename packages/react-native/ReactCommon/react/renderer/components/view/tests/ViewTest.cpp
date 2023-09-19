@@ -52,7 +52,7 @@ class YogaDirtyFlagTest : public ::testing::Test {
                     auto &props = *mutableViewProps;
                     props.nativeId = "native Id";
                     props.opacity = 0.5;
-                    props.yogaStyle.alignContent() = YGAlignBaseline;
+                    props.yogaStyle.alignContent() = yoga::Align::Baseline;
                     props.yogaStyle.flexDirection() = yoga::FlexDirection::RowReverse;
                     return mutableViewProps;
                   }),
@@ -136,7 +136,7 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
         auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto& props = *viewProps;
 
-        props.yogaStyle.alignContent() = YGAlignBaseline;
+        props.yogaStyle.alignContent() = yoga::Align::Baseline;
         props.yogaStyle.display() = YGDisplayNone;
 
         return oldShadowNode.clone(ShadowNodeFragment{viewProps});

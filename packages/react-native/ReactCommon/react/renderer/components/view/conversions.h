@@ -261,46 +261,46 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    YGAlign& result) {
-  result = YGAlignStretch;
+    yoga::Align& result) {
+  result = yoga::Align::Stretch;
   react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     return;
   }
   auto stringValue = (std::string)value;
   if (stringValue == "auto") {
-    result = YGAlignAuto;
+    result = yoga::Align::Auto;
     return;
   }
   if (stringValue == "flex-start") {
-    result = YGAlignFlexStart;
+    result = yoga::Align::FlexStart;
     return;
   }
   if (stringValue == "center") {
-    result = YGAlignCenter;
+    result = yoga::Align::Center;
     return;
   }
   if (stringValue == "flex-end") {
-    result = YGAlignFlexEnd;
+    result = yoga::Align::FlexEnd;
     return;
   }
   if (stringValue == "stretch") {
-    result = YGAlignStretch;
+    result = yoga::Align::Stretch;
     return;
   }
   if (stringValue == "baseline") {
-    result = YGAlignBaseline;
+    result = yoga::Align::Baseline;
     return;
   }
   if (stringValue == "space-between") {
-    result = YGAlignSpaceBetween;
+    result = yoga::Align::SpaceBetween;
     return;
   }
   if (stringValue == "space-around") {
-    result = YGAlignSpaceAround;
+    result = yoga::Align::SpaceAround;
     return;
   }
-  LOG(ERROR) << "Could not parse YGAlign:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Align:" << stringValue;
   react_native_expect(false);
 }
 
@@ -779,23 +779,23 @@ inline std::string toString(const yoga::Justify& value) {
   }
 }
 
-inline std::string toString(const YGAlign& value) {
+inline std::string toString(const yoga::Align& value) {
   switch (value) {
-    case YGAlignAuto:
+    case yoga::Align::Auto:
       return "auto";
-    case YGAlignFlexStart:
+    case yoga::Align::FlexStart:
       return "flex-start";
-    case YGAlignCenter:
+    case yoga::Align::Center:
       return "center";
-    case YGAlignFlexEnd:
+    case yoga::Align::FlexEnd:
       return "flex-end";
-    case YGAlignStretch:
+    case yoga::Align::Stretch:
       return "stretch";
-    case YGAlignBaseline:
+    case yoga::Align::Baseline:
       return "baseline";
-    case YGAlignSpaceBetween:
+    case yoga::Align::SpaceBetween:
       return "space-between";
-    case YGAlignSpaceAround:
+    case yoga::Align::SpaceAround:
       return "space-around";
   }
 }
