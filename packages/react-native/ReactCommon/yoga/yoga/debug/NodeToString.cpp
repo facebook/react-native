@@ -142,9 +142,7 @@ void nodeToString(
     const auto& style = node->getStyle();
     if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
       appendFormattedString(
-          str,
-          "flex-direction: %s; ",
-          YGFlexDirectionToString(style.flexDirection()));
+          str, "flex-direction: %s; ", toString(style.flexDirection()));
     }
     if (style.justifyContent() != yoga::Node{}.getStyle().justifyContent()) {
       appendFormattedString(

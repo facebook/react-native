@@ -53,7 +53,7 @@ class YogaDirtyFlagTest : public ::testing::Test {
                     props.nativeId = "native Id";
                     props.opacity = 0.5;
                     props.yogaStyle.alignContent() = YGAlignBaseline;
-                    props.yogaStyle.flexDirection() = YGFlexDirectionRowReverse;
+                    props.yogaStyle.flexDirection() = yoga::FlexDirection::RowReverse;
                     return mutableViewProps;
                   }),
                 Element<ViewShadowNode>()
