@@ -11,7 +11,6 @@
 
 #include <yoga/Yoga.h>
 #include <yoga/numeric/FloatOptional.h>
-#include <yoga/style/CompactValue.h>
 
 namespace facebook::yoga {
 
@@ -61,6 +60,10 @@ inline bool inexactEquals(const double a, const double b) {
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
+inline bool inexactEquals(const FloatOptional a, const FloatOptional b) {
+  return inexactEquals(a.unwrap(), b.unwrap());
+}
+
 inline bool inexactEquals(const YGValue& a, const YGValue& b) {
   if (a.unit != b.unit) {
     return false;
@@ -72,10 +75,6 @@ inline bool inexactEquals(const YGValue& a, const YGValue& b) {
   }
 
   return fabs(a.value - b.value) < 0.0001f;
-}
-
-inline bool inexactEquals(CompactValue a, CompactValue b) {
-  return inexactEquals((YGValue)a, (YGValue)b);
 }
 
 template <std::size_t Size, typename ElementT>

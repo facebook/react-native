@@ -127,9 +127,9 @@ void nodeToString(
   if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
     appendFormattedString(str, "layout=\"");
     appendFormattedString(
-        str, "width: %g; ", node->getLayout().dimensions[YGDimensionWidth]);
+        str, "width: %g; ", node->getLayout().dimension(YGDimensionWidth));
     appendFormattedString(
-        str, "height: %g; ", node->getLayout().dimensions[YGDimensionHeight]);
+        str, "height: %g; ", node->getLayout().dimension(YGDimensionHeight));
     appendFormattedString(
         str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
     appendFormattedString(
@@ -193,16 +193,16 @@ void nodeToString(
       appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
     }
 
-    appendNumberIfNotAuto(str, "width", style.dimensions()[YGDimensionWidth]);
-    appendNumberIfNotAuto(str, "height", style.dimensions()[YGDimensionHeight]);
+    appendNumberIfNotAuto(str, "width", style.dimension(YGDimensionWidth));
+    appendNumberIfNotAuto(str, "height", style.dimension(YGDimensionHeight));
     appendNumberIfNotAuto(
-        str, "max-width", style.maxDimensions()[YGDimensionWidth]);
+        str, "max-width", style.maxDimension(YGDimensionWidth));
     appendNumberIfNotAuto(
-        str, "max-height", style.maxDimensions()[YGDimensionHeight]);
+        str, "max-height", style.maxDimension(YGDimensionHeight));
     appendNumberIfNotAuto(
-        str, "min-width", style.minDimensions()[YGDimensionWidth]);
+        str, "min-width", style.minDimension(YGDimensionWidth));
     appendNumberIfNotAuto(
-        str, "min-height", style.minDimensions()[YGDimensionHeight]);
+        str, "min-height", style.minDimension(YGDimensionHeight));
 
     if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
       appendFormattedString(

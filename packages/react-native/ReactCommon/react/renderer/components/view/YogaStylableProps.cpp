@@ -181,9 +181,19 @@ static inline T const getFieldValue(
     return;                                                           \
   }
 
-#define REBUILD_FIELD_YG_DIMENSION(field, widthStr, heightStr)             \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGDimensionWidth, widthStr); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGDimensionHeight, heightStr);
+#define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                    \
+    field, setter, index, fieldName)                                    \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                       \
+    yogaStyle.setter(                                                   \
+        index, getFieldValue(context, value, ygDefaults.field(index))); \
+    return;                                                             \
+  }
+
+#define REBUILD_FIELD_YG_DIMENSION(field, setter, widthStr, heightStr) \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
+      field, setter, YGDimensionWidth, widthStr);                      \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
+      field, setter, YGDimensionHeight, heightStr);
 
 #define REBUILD_FIELD_YG_GUTTER(field, rowGapStr, columnGapStr, gapStr)      \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterRow, rowGapStr);       \
@@ -242,9 +252,11 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
     REBUILD_FIELD_YG_GUTTER(gap, "rowGap", "columnGap", "gap");
     REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
-    REBUILD_FIELD_YG_DIMENSION(dimensions, "width", "height");
-    REBUILD_FIELD_YG_DIMENSION(minDimensions, "minWidth", "minHeight");
-    REBUILD_FIELD_YG_DIMENSION(maxDimensions, "maxWidth", "maxHeight");
+    REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
+    REBUILD_FIELD_YG_DIMENSION(
+        minDimension, setMinDimension, "minWidth", "minHeight");
+    REBUILD_FIELD_YG_DIMENSION(
+        maxDimension, setMaxDimension, "maxWidth", "maxHeight");
     REBUILD_FIELD_YG_EDGES_POSITION();
     REBUILD_FIELD_YG_EDGES(margin, "margin", "");
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
@@ -336,15 +348,29 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
       debugStringConvertibleItem(
           "border", yogaStyle.border(), defaultYogaStyle.border()),
       debugStringConvertibleItem(
-          "dimensions", yogaStyle.dimensions(), defaultYogaStyle.dimensions()),
+          "width",
+          yogaStyle.dimension(YGDimensionWidth),
+          defaultYogaStyle.dimension(YGDimensionWidth)),
       debugStringConvertibleItem(
-          "minDimensions",
-          yogaStyle.minDimensions(),
-          defaultYogaStyle.minDimensions()),
+          "height",
+          yogaStyle.dimension(YGDimensionHeight),
+          defaultYogaStyle.dimension(YGDimensionHeight)),
       debugStringConvertibleItem(
-          "maxDimensions",
-          yogaStyle.maxDimensions(),
-          defaultYogaStyle.maxDimensions()),
+          "minWidth",
+          yogaStyle.minDimension(YGDimensionWidth),
+          defaultYogaStyle.minDimension(YGDimensionWidth)),
+      debugStringConvertibleItem(
+          "minHeight",
+          yogaStyle.minDimension(YGDimensionHeight),
+          defaultYogaStyle.minDimension(YGDimensionHeight)),
+      debugStringConvertibleItem(
+          "maxWidth",
+          yogaStyle.maxDimension(YGDimensionWidth),
+          defaultYogaStyle.maxDimension(YGDimensionWidth)),
+      debugStringConvertibleItem(
+          "maxHeight",
+          yogaStyle.maxDimension(YGDimensionHeight),
+          defaultYogaStyle.maxDimension(YGDimensionHeight)),
       debugStringConvertibleItem(
           "aspectRatio",
           yogaStyle.aspectRatio(),

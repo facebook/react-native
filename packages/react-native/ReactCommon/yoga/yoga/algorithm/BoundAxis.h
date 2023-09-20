@@ -35,14 +35,14 @@ inline FloatOptional boundAxisWithinMinAndMax(
 
   if (isColumn(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimensions()[YGDimensionHeight], axisSize);
+        node->getStyle().minDimension(YGDimensionHeight), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimensions()[YGDimensionHeight], axisSize);
+        node->getStyle().maxDimension(YGDimensionHeight), axisSize);
   } else if (isRow(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimensions()[YGDimensionWidth], axisSize);
+        node->getStyle().minDimension(YGDimensionWidth), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimensions()[YGDimensionWidth], axisSize);
+        node->getStyle().maxDimension(YGDimensionWidth), axisSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {
