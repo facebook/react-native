@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   }
   s.header_dir             = "cxxreact"
 
-  s.dependency "boost", "1.76.0"
+  s.dependency "boost", "1.83.0"
   s.dependency "DoubleConversion"
   s.dependency 'fmt' , '~> 6.2.1'
   s.dependency "RCT-Folly", folly_version
