@@ -11,10 +11,7 @@
 
 import type {Config} from '@react-native-community/cli-types';
 
-import {
-  addInteractionListener,
-  logger,
-} from '@react-native-community/cli-tools';
+import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
@@ -22,15 +19,17 @@ import readline from 'readline';
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
-const CTRL_Z = '\u0026';
+const CTRL_D = '\u0004';
 
 export default function attachKeyHandlers({
   cliConfig,
+  serverInstance,
   devServerUrl,
   messageSocket,
 }: {
   cliConfig: Config,
   devServerUrl: string,
+  serverInstance: http$Server | https$Server,
   messageSocket: $ReadOnly<{
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
@@ -53,7 +52,7 @@ export default function attachKeyHandlers({
     switch (key) {
       case 'r':
         messageSocket.broadcast('reload', null);
-        logger.info('Reloading app...');
+        logger.info('Reloading connected app(s)...');
         break;
       case 'd':
         messageSocket.broadcast('devMenu', null);
@@ -86,27 +85,28 @@ export default function attachKeyHandlers({
       case 'j':
         await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
         break;
-      case CTRL_Z:
-        process.emit('SIGTSTP', 'SIGTSTP');
-        break;
       case CTRL_C:
-        process.exit();
+      case CTRL_D:
+        logger.info('Stopping server');
+        listener?.({pause: true});
+        serverInstance.close(() => {
+          process.emit('SIGINT');
+          process.exit();
+        });
     }
   };
 
   const keyPressHandler = new KeyPressHandler(onPress);
   const listener = keyPressHandler.createInteractionListener();
-  addInteractionListener(listener);
   keyPressHandler.startInterceptingKeyStrokes();
 
   logger.log(
-    '\n' +
-      [
-        `${chalk.bold('i')} - run on iOS`,
-        `${chalk.bold('a')} - run on Android`,
-        `${chalk.bold('d')} - open Dev Menu`,
-        `${chalk.bold('j')} - open debugger`,
-        `${chalk.bold('r')} - reload app`,
-      ].join('\n'),
+    `
+${chalk.bold('i')} - run on iOS
+${chalk.bold('a')} - run on Android
+${chalk.bold('d')} - open Dev Menu
+${chalk.bold('j')} - open debugger
+${chalk.bold('r')} - reload app
+`,
   );
 }
