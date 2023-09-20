@@ -71,7 +71,6 @@ public class ModuleHolder {
             nativeModule.getClass().getSimpleName(),
             nativeModule.canOverrideExistingModule(),
             true,
-            true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
             TurboModule.class.isAssignableFrom(nativeModule.getClass()));
 
@@ -118,10 +117,6 @@ public class ModuleHolder {
 
   public boolean getCanOverrideExistingModule() {
     return mReactModuleInfo.canOverrideExistingModule();
-  }
-
-  public boolean getHasConstants() {
-    return mReactModuleInfo.hasConstants();
   }
 
   public boolean isTurboModule() {

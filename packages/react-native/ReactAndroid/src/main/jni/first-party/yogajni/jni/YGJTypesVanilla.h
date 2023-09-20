@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <map>
 #include <vector>
 
@@ -17,7 +19,7 @@ class PtrJNodeMapVanilla {
   std::map<YGNodeConstRef, jsize> ptrsToIdxs_{};
   jobjectArray javaNodes_{};
 
-public:
+ public:
   PtrJNodeMapVanilla() = default;
 
   PtrJNodeMapVanilla(jlongArray javaNativePointers, jobjectArray javaNodes)
@@ -31,7 +33,7 @@ public:
         javaNativePointers, 0, nativePointersSize, nativePointers.data());
 
     for (jsize i = 0; i < nativePointersSize; ++i) {
-      ptrsToIdxs_[(YGNodeConstRef) nativePointers[static_cast<size_t>(i)]] = i;
+      ptrsToIdxs_[(YGNodeConstRef)nativePointers[static_cast<size_t>(i)]] = i;
     }
   }
 

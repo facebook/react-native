@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <butter/small_vector.h>
 #include <folly/Hash.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -64,10 +63,8 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  *
  */
 struct ShadowViewNodePair final {
-  using NonOwningList = butter::
-      small_vector<ShadowViewNodePair*, kShadowNodeChildrenSmallVectorSize>;
-  using OwningList = butter::
-      small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
+  using NonOwningList = std::vector<ShadowViewNodePair*>;
+  using OwningList = std::vector<ShadowViewNodePair>;
 
   ShadowView shadowView;
   const ShadowNode* shadowNode;
@@ -102,9 +99,7 @@ struct ShadowViewNodePair final {
  *
  */
 struct ShadowViewNodePairLegacy final {
-  using OwningList = butter::small_vector<
-      ShadowViewNodePairLegacy,
-      kShadowNodeChildrenSmallVectorSize>;
+  using OwningList = std::vector<ShadowViewNodePairLegacy>;
 
   ShadowView shadowView;
   const ShadowNode* shadowNode;

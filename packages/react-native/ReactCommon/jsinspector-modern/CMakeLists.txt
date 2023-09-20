@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
         -fexceptions
-        -std=c++17)
+        -std=c++20)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(jsinspector SHARED ${jsinspector_SRC})

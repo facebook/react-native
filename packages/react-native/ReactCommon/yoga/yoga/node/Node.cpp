@@ -17,23 +17,27 @@
 
 namespace facebook::yoga {
 
-Node::Node(yoga::Config* config) : config_{config} {
+Node::Node() : Node{&Config::getDefault()} {}
+
+Node::Node(const yoga::Config* config) : config_{config} {
   yoga::assertFatal(
       config != nullptr, "Attempting to construct Node with null config");
 
-  flags_.hasNewLayout = true;
   if (config->useWebDefaults()) {
     useWebDefaults();
   }
 }
 
 Node::Node(Node&& node) {
+  hasNewLayout_ = node.hasNewLayout_;
+  isReferenceBaseline_ = node.isReferenceBaseline_;
+  isDirty_ = node.isDirty_;
+  nodeType_ = node.nodeType_;
   context_ = node.context_;
-  flags_ = node.flags_;
-  measure_ = node.measure_;
-  baseline_ = node.baseline_;
-  print_ = node.print_;
-  dirtied_ = node.dirtied_;
+  measureFunc_ = node.measureFunc_;
+  baselineFunc_ = node.baselineFunc_;
+  printFunc_ = node.printFunc_;
+  dirtiedFunc_ = node.dirtiedFunc_;
   style_ = node.style_;
   layout_ = node.layout_;
   lineIndex_ = node.lineIndex_;
@@ -46,13 +50,9 @@ Node::Node(Node&& node) {
   }
 }
 
-void Node::print(void* printContext) {
-  if (print_.noContext != nullptr) {
-    if (flags_.printUsesContext) {
-      print_.withContext(this, printContext);
-    } else {
-      print_.noContext(this);
-    }
+void Node::print() {
+  if (printFunc_ != nullptr) {
+    printFunc_(this);
   }
 }
 
@@ -114,7 +114,7 @@ CompactValue Node::computeColumnGap(
 }
 
 FloatOptional Node::getLeadingPosition(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float axisSize) const {
   auto leadingPosition = isRow(axis)
       ? computeEdgeValueForRow(
@@ -128,7 +128,7 @@ FloatOptional Node::getLeadingPosition(
 }
 
 FloatOptional Node::getTrailingPosition(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float axisSize) const {
   auto trailingPosition = isRow(axis)
       ? computeEdgeValueForRow(
@@ -141,7 +141,7 @@ FloatOptional Node::getTrailingPosition(
   return yoga::resolveValue(trailingPosition, axisSize);
 }
 
-bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
+bool Node::isLeadingPositionDefined(const FlexDirection axis) const {
   auto leadingPosition = isRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
@@ -153,7 +153,7 @@ bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
   return !leadingPosition.isUndefined();
 }
 
-bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
+bool Node::isTrailingPosDefined(const FlexDirection axis) const {
   auto trailingPosition = isRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
@@ -166,7 +166,7 @@ bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
 }
 
 FloatOptional Node::getLeadingMargin(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   auto leadingMargin = isRow(axis)
       ? computeEdgeValueForRow(
@@ -181,7 +181,7 @@ FloatOptional Node::getLeadingMargin(
 }
 
 FloatOptional Node::getTrailingMargin(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   auto trailingMargin = isRow(axis)
       ? computeEdgeValueForRow(
@@ -197,13 +197,13 @@ FloatOptional Node::getTrailingMargin(
 }
 
 FloatOptional Node::getMarginForAxis(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
 FloatOptional Node::getGapForAxis(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   auto gap = isRow(axis)
       ? computeColumnGap(style_.gap(), CompactValue::ofZero())
@@ -213,30 +213,24 @@ FloatOptional Node::getGapForAxis(
 
 YGSize Node::measure(
     float width,
-    YGMeasureMode widthMode,
+    MeasureMode widthMode,
     float height,
-    YGMeasureMode heightMode,
-    void* layoutContext) {
-  return flags_.measureUsesContext
-      ? measure_.withContext(
-            this, width, widthMode, height, heightMode, layoutContext)
-      : measure_.noContext(this, width, widthMode, height, heightMode);
+    MeasureMode heightMode) {
+  return measureFunc_(
+      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
 }
 
-float Node::baseline(float width, float height, void* layoutContext) const {
-  return flags_.baselineUsesContext
-      ? baseline_.withContext(
-            const_cast<Node*>(this), width, height, layoutContext)
-      : baseline_.noContext(const_cast<Node*>(this), width, height);
+float Node::baseline(float width, float height) const {
+  return baselineFunc_(this, width, height);
 }
 
 // Setters
 
-void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
-  if (measureFunc.noContext == nullptr) {
+void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
+  if (measureFunc == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeDefault);
+    setNodeType(NodeType::Default);
   } else {
     yoga::assertFatalWithNode(
         this,
@@ -245,24 +239,10 @@ void Node::setMeasureFunc(decltype(Node::measure_) measureFunc) {
         "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    setNodeType(YGNodeTypeText);
+    setNodeType(NodeType::Text);
   }
 
-  measure_ = measureFunc;
-}
-
-void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
-  flags_.measureUsesContext = false;
-  decltype(Node::measure_) m;
-  m.noContext = measureFunc;
-  setMeasureFunc(m);
-}
-
-YOGA_EXPORT void Node::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  flags_.measureUsesContext = true;
-  decltype(Node::measure_) m;
-  m.withContext = measureFunc;
-  setMeasureFunc(m);
+  measureFunc_ = measureFunc;
 }
 
 void Node::replaceChild(Node* child, size_t index) {
@@ -285,7 +265,7 @@ void Node::setConfig(yoga::Config* config) {
       config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a Node");
 
-  if (yoga::configUpdateInvalidatesLayout(config_, config)) {
+  if (yoga::configUpdateInvalidatesLayout(*config_, *config)) {
     markDirtyAndPropagate();
   }
 
@@ -293,12 +273,12 @@ void Node::setConfig(yoga::Config* config) {
 }
 
 void Node::setDirty(bool isDirty) {
-  if (isDirty == flags_.isDirty) {
+  if (isDirty == isDirty_) {
     return;
   }
-  flags_.isDirty = isDirty;
-  if (isDirty && dirtied_) {
-    dirtied_(this);
+  isDirty_ = isDirty;
+  if (isDirty && dirtiedFunc_) {
+    dirtiedFunc_(this);
   }
 }
 
@@ -316,7 +296,7 @@ void Node::removeChild(size_t index) {
   children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
 }
 
-void Node::setLayoutDirection(YGDirection direction) {
+void Node::setLayoutDirection(Direction direction) {
   layout_.setDirection(direction);
 }
 
@@ -338,7 +318,7 @@ void Node::setLayoutPadding(float padding, YGEdge edge) {
   layout_.padding[edge] = padding;
 }
 
-void Node::setLayoutLastOwnerDirection(YGDirection direction) {
+void Node::setLayoutLastOwnerDirection(Direction direction) {
   layout_.lastOwnerDirection = direction;
 }
 
@@ -375,7 +355,7 @@ void Node::setLayoutDimension(float dimensionValue, YGDimension dimension) {
 // If both left and right are defined, then use left. Otherwise return +left or
 // -right depending on which is defined.
 FloatOptional Node::relativePosition(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float axisSize) const {
   if (isLeadingPositionDefined(axis)) {
     return getLeadingPosition(axis, axisSize);
@@ -389,20 +369,20 @@ FloatOptional Node::relativePosition(
 }
 
 void Node::setPosition(
-    const YGDirection direction,
+    const Direction direction,
     const float mainSize,
     const float crossSize,
     const float ownerWidth) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
-  const YGDirection directionRespectingRoot =
-      owner_ != nullptr ? direction : YGDirectionLTR;
-  const YGFlexDirection mainAxis =
+  const Direction directionRespectingRoot =
+      owner_ != nullptr ? direction : Direction::LTR;
+  const FlexDirection mainAxis =
       yoga::resolveDirection(style_.flexDirection(), directionRespectingRoot);
-  const YGFlexDirection crossAxis =
+  const FlexDirection crossAxis =
       yoga::resolveCrossDirection(mainAxis, directionRespectingRoot);
 
-  // Here we should check for `YGPositionTypeStatic` and in this case zero inset
+  // Here we should check for `PositionType::Static` and in this case zero inset
   // properties (left, right, top, bottom, begin, end).
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
   const FloatOptional relativePositionMain =
@@ -426,7 +406,7 @@ void Node::setPosition(
       trailingEdge(crossAxis));
 }
 
-YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
+YGValue Node::marginLeadingValue(const FlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
@@ -434,7 +414,7 @@ YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
   }
 }
 
-YGValue Node::marginTrailingValue(const YGFlexDirection axis) const {
+YGValue Node::marginTrailingValue(const FlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
@@ -467,28 +447,35 @@ void Node::resolveDimension() {
   }
 }
 
-YGDirection Node::resolveDirection(const YGDirection ownerDirection) {
-  if (style_.direction() == YGDirectionInherit) {
-    return ownerDirection > YGDirectionInherit ? ownerDirection
-                                               : YGDirectionLTR;
+Direction Node::resolveDirection(const Direction ownerDirection) {
+  if (style_.direction() == Direction::Inherit) {
+    return ownerDirection != Direction::Inherit ? ownerDirection
+                                                : Direction::LTR;
   } else {
     return style_.direction();
   }
 }
 
-YOGA_EXPORT void Node::clearChildren() {
+void Node::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
 }
 
 // Other Methods
 
-void Node::cloneChildrenIfNeeded(void* cloneContext) {
-  iterChildrenAfterCloningIfNeeded([](Node*, void*) {}, cloneContext);
+void Node::cloneChildrenIfNeeded() {
+  size_t i = 0;
+  for (Node*& child : children_) {
+    if (child->getOwner() != this) {
+      child = resolveRef(config_->cloneNode(child, this, i));
+      child->setOwner(this);
+    }
+    i += 1;
+  }
 }
 
 void Node::markDirtyAndPropagate() {
-  if (!flags_.isDirty) {
+  if (!isDirty_) {
     setDirty(true);
     setLayoutComputedFlexBasis(FloatOptional());
     if (owner_) {
@@ -498,7 +485,7 @@ void Node::markDirtyAndPropagate() {
 }
 
 void Node::markDirtyAndPropagateDownwards() {
-  flags_.isDirty = true;
+  isDirty_ = true;
   for_each(children_.begin(), children_.end(), [](Node* childNode) {
     childNode->markDirtyAndPropagateDownwards();
   });
@@ -535,11 +522,11 @@ float Node::resolveFlexShrink() const {
 
 bool Node::isNodeFlexible() {
   return (
-      (style_.positionType() != YGPositionTypeAbsolute) &&
+      (style_.positionType() != PositionType::Absolute) &&
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
 
-float Node::getLeadingBorder(const YGFlexDirection axis) const {
+float Node::getLeadingBorder(const FlexDirection axis) const {
   YGValue leadingBorder = isRow(axis)
       ? computeEdgeValueForRow(
             style_.border(),
@@ -551,7 +538,7 @@ float Node::getLeadingBorder(const YGFlexDirection axis) const {
   return fmaxf(leadingBorder.value, 0.0f);
 }
 
-float Node::getTrailingBorder(const YGFlexDirection axis) const {
+float Node::getTrailingBorder(const FlexDirection axis) const {
   YGValue trailingBorder = isRow(axis)
       ? computeEdgeValueForRow(
             style_.border(),
@@ -564,7 +551,7 @@ float Node::getTrailingBorder(const YGFlexDirection axis) const {
 }
 
 FloatOptional Node::getLeadingPadding(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   auto leadingPadding = isRow(axis)
       ? computeEdgeValueForRow(
@@ -579,7 +566,7 @@ FloatOptional Node::getLeadingPadding(
 }
 
 FloatOptional Node::getTrailingPadding(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   auto trailingPadding = isRow(axis)
       ? computeEdgeValueForRow(
@@ -594,14 +581,14 @@ FloatOptional Node::getTrailingPadding(
 }
 
 FloatOptional Node::getLeadingPaddingAndBorder(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   return getLeadingPadding(axis, widthSize) +
       FloatOptional(getLeadingBorder(axis));
 }
 
 FloatOptional Node::getTrailingPaddingAndBorder(
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) const {
   return getTrailingPadding(axis, widthSize) +
       FloatOptional(getTrailingBorder(axis));

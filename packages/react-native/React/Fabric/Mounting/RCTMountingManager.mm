@@ -8,7 +8,6 @@
 #import "RCTMountingManager.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <butter/map.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponent.h>

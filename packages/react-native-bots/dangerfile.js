@@ -132,8 +132,9 @@ async function handleStatuses() {
     const data = await response.json();
     const e2e_jobs = data.filter(job => {
       return (
-        job.context === 'ci/circleci: test_e2e_ios' ||
-        job.context === 'ci/circleci: test_e2e_android'
+        job.context === 'ci/circleci: test_e2e_ios'
+        // test_e2e_android does not currently tun
+        // || job.context === 'ci/circleci: test_e2e_android'
       );
     });
     if (e2e_jobs.length <= 0) {

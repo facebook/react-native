@@ -5,12 +5,35 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import groovy.json.JsonSlurper
+
 plugins {
     id("com.facebook.react")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
 
+def reactNativeVersionRequireNewArchEnabled(reactNativeDirPath) {
+    def reactNativePackageJson = "$reactNativeDirPath/package.json"
+    def slurper = new JsonSlurper()
+    def jsonData = slurper.parse(new File(reactNativePackageJson))
+    def rnVersion = jsonData.version
+    def regexPattern = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
+
+
+    if (rnVersion =~ regexPattern) {
+        def result = (rnVersion =~ regexPattern).findAll().first()
+
+        def major = result[1].toInteger()
+        if (major > 0 && major < 1000) {
+            return true
+        }
+    }
+    return false
+}
+
+def reactNativeDirPath = "$rootDir/packages/react-native"
+def isNewArchEnabled = project.property("newArchEnabled") == "true" || reactNativeVersionRequireNewArchEnabled(reactNativeDirPath)
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -20,11 +43,11 @@ react {
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
     root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = file("$rootDir/packages/react-native")
+    reactNativeDir = file(reactNativeDirPath)
     //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
     codegenDir = file("$rootDir/node_modules/@react-native/codegen")
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    cliFile = file("$rootDir/packages/react-native/cli.js")
+    cliFile = file("$reactNativeDirPath/cli.js")
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -54,7 +77,7 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    hermesCommand = "$rootDir/packages/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 }
 
@@ -148,7 +171,7 @@ android {
         java {
             // SampleTurboModule.
             srcDirs += [
-                "$rootDir/packages/react-native/ReactCommon/react/nativemodule/samples/platform/android",
+                "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
     }
@@ -172,7 +195,7 @@ android {
         cmake {
             // RN Tester is doing custom linking of C++ libraries therefore needs
             // a dedicated CMakeLists.txt file.
-            if (project.property("newArchEnabled") == "true") {
+            if (isNewArchEnabled) {
                 path("src/main/jni/CMakeLists.txt")
             }
         }
@@ -189,7 +212,7 @@ afterEvaluate {
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.
     // We fixing this by instructing Gradle to always mergeLibs after they've been built.
-    if (project.property("newArchEnabled") == "true") {
+    if (isNewArchEnabled) {
         mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
         mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
         mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)

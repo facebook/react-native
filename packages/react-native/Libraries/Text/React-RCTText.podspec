@@ -30,6 +30,7 @@ Pod::Spec.new do |s|
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
   s.framework              = ["MobileCoreServices"]
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
   s.dependency "Yoga"
   s.dependency "React-Core/RCTTextHeaders", version

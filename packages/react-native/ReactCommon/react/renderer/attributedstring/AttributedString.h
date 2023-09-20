@@ -61,7 +61,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     int length{0};
   };
 
-  using Fragments = butter::small_vector<Fragment, 1>;
+  using Fragments = std::vector<Fragment>;
 
   /*
    * Appends and prepends a `fragment` to the string.

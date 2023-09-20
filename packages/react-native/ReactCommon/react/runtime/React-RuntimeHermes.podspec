@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
+folly_version = '2022.05.16.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/runtime/hermes"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\"",
                                 "USE_HEADERMAP" => "YES",
-                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                 "GCC_WARN_PEDANTIC" => "YES" }
   s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 

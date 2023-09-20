@@ -98,7 +98,7 @@ void Binding::driveCxxAnimations() {
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
-  const auto& scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
     return;
@@ -430,13 +430,16 @@ void Binding::installFabricUIManager(
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
-  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
   CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
       getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
   CoreFeatures::enableCleanParagraphYogaNode =
       getFeatureFlagValue("enableCleanParagraphYogaNode");
   CoreFeatures::enableDefaultAsyncBatchedPriority =
       getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
+  CoreFeatures::enableClonelessStateProgression =
+      getFeatureFlagValue("enableClonelessStateProgression");
+  CoreFeatures::excludeYogaFromRawProps =
+      getFeatureFlagValue("excludeYogaFromRawProps");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =

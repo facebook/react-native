@@ -17,7 +17,6 @@ target_include_directories(fabricjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(
         fabricjni
-        butter
         fb
         fbjni
         folly_runtime
@@ -64,6 +63,6 @@ target_compile_options(
         -DLOG_TAG=\"Fabric\"
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
 )

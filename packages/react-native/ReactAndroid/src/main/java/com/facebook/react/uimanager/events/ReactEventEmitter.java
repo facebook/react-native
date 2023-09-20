@@ -62,8 +62,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
   @Override
   public void receiveEvent(
       int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
-    // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
-    // meaning outside of Fabric.
+    // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
     receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED);
   }
 

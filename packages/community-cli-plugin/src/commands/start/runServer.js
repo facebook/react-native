@@ -113,9 +113,8 @@ async function runServer(
     watchFolders,
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host,
-    port,
     projectRoot,
+    serverBaseUrl: devServerUrl,
     logger,
     unstable_experiments: {
       // NOTE: Only affects the /open-debugger endpoint
@@ -133,11 +132,12 @@ async function runServer(
       if (reportEvent) {
         reportEvent(event);
       }
-      if (args.interactive && event.type === 'dep_graph_loaded') {
+      if (args.interactive && event.type === 'initialize_done') {
         logger.info('Dev server ready');
         attachKeyHandlers({
           cliConfig: ctx,
           devServerUrl,
+          serverInstance,
           messageSocket: messageSocketEndpoint,
         });
       }

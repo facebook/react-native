@@ -26,8 +26,7 @@ class HostPlatformViewProps : public BaseViewProps {
   HostPlatformViewProps(
       const PropsParserContext& context,
       const HostPlatformViewProps& sourceProps,
-      const RawProps& rawProps,
-      bool shouldSetRawProps = true);
+      const RawProps& rawProps);
 
   void setProp(
       const PropsParserContext& context,

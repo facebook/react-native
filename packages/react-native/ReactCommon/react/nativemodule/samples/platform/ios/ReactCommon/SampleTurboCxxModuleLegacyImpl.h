@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <cxxreact/CxxModule.h>
+#include <cxxreact/CxxModule.h>
 
 namespace facebook::react {
 

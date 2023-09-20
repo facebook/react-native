@@ -16,7 +16,7 @@ target_compile_options(
         hermes_inspector_modern
         PRIVATE
         -DHERMES_INSPECTOR_FOLLY_KLUDGE=1
-        -std=c++17
+        -std=c++20
         -fexceptions
 )
 

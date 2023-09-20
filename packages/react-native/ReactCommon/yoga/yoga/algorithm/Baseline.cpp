@@ -14,15 +14,13 @@
 
 namespace facebook::yoga {
 
-float calculateBaseline(const yoga::Node* node, void* layoutContext) {
+float calculateBaseline(const yoga::Node* node) {
   if (node->hasBaselineFunc()) {
-
     Event::publish<Event::NodeBaselineStart>(node);
 
     const float baseline = node->baseline(
         node->getLayout().measuredDimensions[YGDimensionWidth],
-        node->getLayout().measuredDimensions[YGDimensionHeight],
-        layoutContext);
+        node->getLayout().measuredDimensions[YGDimensionHeight]);
 
     Event::publish<Event::NodeBaselineEnd>(node);
 
@@ -34,16 +32,16 @@ float calculateBaseline(const yoga::Node* node, void* layoutContext) {
   }
 
   yoga::Node* baselineChild = nullptr;
-  const uint32_t childCount = YGNodeGetChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
     auto child = node->getChild(i);
     if (child->getLineIndex() > 0) {
       break;
     }
-    if (child->getStyle().positionType() == YGPositionTypeAbsolute) {
+    if (child->getStyle().positionType() == PositionType::Absolute) {
       continue;
     }
-    if (resolveChildAlignment(node, child) == YGAlignBaseline ||
+    if (resolveChildAlignment(node, child) == Align::Baseline ||
         child->isReferenceBaseline()) {
       baselineChild = child;
       break;
@@ -58,8 +56,27 @@ float calculateBaseline(const yoga::Node* node, void* layoutContext) {
     return node->getLayout().measuredDimensions[YGDimensionHeight];
   }
 
-  const float baseline = calculateBaseline(baselineChild, layoutContext);
+  const float baseline = calculateBaseline(baselineChild);
   return baseline + baselineChild->getLayout().position[YGEdgeTop];
+}
+
+bool isBaselineLayout(const yoga::Node* node) {
+  if (isColumn(node->getStyle().flexDirection())) {
+    return false;
+  }
+  if (node->getStyle().alignItems() == Align::Baseline) {
+    return true;
+  }
+  const auto childCount = node->getChildCount();
+  for (size_t i = 0; i < childCount; i++) {
+    auto child = node->getChild(i);
+    if (child->getStyle().positionType() != PositionType::Absolute &&
+        child->getStyle().alignSelf() == Align::Baseline) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 } // namespace facebook::yoga

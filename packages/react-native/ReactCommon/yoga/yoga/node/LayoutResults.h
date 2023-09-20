@@ -10,18 +10,11 @@
 #include <array>
 
 #include <yoga/bits/NumericBitfield.h>
-#include <yoga/numeric/FloatOptional.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/node/CachedMeasurement.h>
+#include <yoga/numeric/FloatOptional.h>
 
 namespace facebook::yoga {
-
-#pragma pack(push)
-#pragma pack(1)
-struct LayoutResultFlags {
-  uint32_t direction : 2;
-  bool hadOverflow : 1;
-};
-#pragma pack(pop)
 
 struct LayoutResults {
   // This value was chosen based on empirical data:
@@ -34,17 +27,18 @@ struct LayoutResults {
   std::array<float, 4> border = {};
   std::array<float, 4> padding = {};
 
-private:
-  LayoutResultFlags flags_{};
+ private:
+  Direction direction_ : bitCount<Direction>() = Direction::Inherit;
+  bool hadOverflow_ : 1 = false;
 
-public:
+ public:
   uint32_t computedFlexBasisGeneration = 0;
   FloatOptional computedFlexBasis = {};
 
   // Instead of recomputing the entire layout every single time, we cache some
   // information to break early when nothing changed
   uint32_t generationCount = 0;
-  YGDirection lastOwnerDirection = YGDirectionInherit;
+  Direction lastOwnerDirection = Direction::Inherit;
 
   uint32_t nextCachedMeasurementsIndex = 0;
   std::array<CachedMeasurement, MaxCachedMeasurements> cachedMeasurements = {};
@@ -52,19 +46,25 @@ public:
 
   CachedMeasurement cachedLayout{};
 
-  YGDirection direction() const {
-    return static_cast<YGDirection>(flags_.direction);
+  Direction direction() const {
+    return direction_;
   }
 
-  void setDirection(YGDirection direction) {
-    flags_.direction = static_cast<uint32_t>(direction) & 0x03;
+  void setDirection(Direction direction) {
+    direction_ = direction;
   }
 
-  bool hadOverflow() const { return flags_.hadOverflow; }
-  void setHadOverflow(bool hadOverflow) { flags_.hadOverflow = hadOverflow; }
+  bool hadOverflow() const {
+    return hadOverflow_;
+  }
+  void setHadOverflow(bool hadOverflow) {
+    hadOverflow_ = hadOverflow;
+  }
 
   bool operator==(LayoutResults layout) const;
-  bool operator!=(LayoutResults layout) const { return !(*this == layout); }
+  bool operator!=(LayoutResults layout) const {
+    return !(*this == layout);
+  }
 };
 
 } // namespace facebook::yoga

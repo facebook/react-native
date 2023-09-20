@@ -26,8 +26,8 @@
 namespace facebook::react {
 
 static int FabricDefaultYogaLog(
-    const YGConfigRef /*unused*/,
-    const YGNodeRef /*unused*/,
+    const YGConfigConstRef /*unused*/,
+    const YGNodeConstRef /*unused*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -123,9 +123,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
 
-  YGConfigRef previousConfig = YGNodeGetConfig(
+  YGConfigConstRef previousConfig =
       &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-           .yogaNode_);
+           .yogaConfig_;
 
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
@@ -190,9 +190,7 @@ void YogaLayoutableShadowNode::appendYogaChild(
   ensureYogaChildrenLookFine();
 
   yogaLayoutableChildren_.push_back(childNode);
-  yogaNode_.insertChild(
-      &childNode->yogaNode_,
-      static_cast<uint32_t>(yogaNode_.getChildren().size()));
+  yogaNode_.insertChild(&childNode->yogaNode_, yogaNode_.getChildren().size());
 
   ensureYogaChildrenLookFine();
 }
@@ -219,7 +217,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     auto clonedChildNode = childNode.clone({});
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, static_cast<int>(index));
+    replaceChild(childNode, clonedChildNode, static_cast<int32_t>(index));
   }
 
   ensureYogaChildrenLookFine();
@@ -513,7 +511,7 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
-    int32_t layoutableChildIndex) {
+    size_t layoutableChildIndex) {
   ensureUnsealed();
 
   const auto& childNode = *yogaLayoutableChildren_[layoutableChildIndex];
@@ -525,7 +523,8 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
 
-  replaceChild(childNode, clonedChildNode, layoutableChildIndex);
+  replaceChild(
+      childNode, clonedChildNode, static_cast<int32_t>(layoutableChildIndex));
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
 
@@ -567,7 +566,7 @@ void YogaLayoutableShadowNode::setPositionType(
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.positionType() = positionType;
+  style.positionType() = yoga::scopedEnum(positionType);
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -726,7 +725,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
   }
 
-  if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the
@@ -787,10 +786,10 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 
 #pragma mark - Yoga Connectors
 
-YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
-    YGNode* /*oldYogaNode*/,
-    YGNode* parentYogaNode,
-    int childIndex) {
+YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
+    YGNodeConstRef /*oldYogaNode*/,
+    YGNodeConstRef parentYogaNode,
+    size_t childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
   auto& parentNode = shadowNodeFromContext(parentYogaNode);
@@ -798,7 +797,7 @@ YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
-    YGNode* yogaNode,
+    YGNodeConstRef yogaNode,
     float width,
     YGMeasureMode widthMode,
     float height,
@@ -845,14 +844,14 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
-    YGNodeRef yogaNode) {
+    YGNodeConstRef yogaNode) {
   return traitCast<YogaLayoutableShadowNode&>(
       *static_cast<ShadowNode*>(YGNodeGetContext(yogaNode)));
 }
 
 yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     yoga::Config& config,
-    const YGConfigRef previousConfig) {
+    YGConfigConstRef previousConfig) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   if (previousConfig != nullptr) {

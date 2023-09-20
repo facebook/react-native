@@ -7,13 +7,12 @@
 
 #pragma once
 
-#include <bitset>
-#include <yoga/YGEnums.h>
-
 namespace facebook::yoga {
 
-// std::bitset with one bit for each option defined in YG_ENUM_SEQ_DECL
-template <typename Enum>
-using EnumBitset = std::bitset<enums::count<Enum>()>;
+template <typename EnumT>
+constexpr inline int32_t ordinalCount();
+
+template <typename EnumT>
+constexpr inline int32_t bitCount();
 
 } // namespace facebook::yoga

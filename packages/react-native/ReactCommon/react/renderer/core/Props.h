@@ -33,8 +33,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps,
-      bool shouldSetRawProps = true);
+      const RawProps& rawProps);
   virtual ~Props() = default;
 
   /**
@@ -62,6 +61,13 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       const Props* oldProps,
       MapBufferBuilder& builder) const;
 #endif
+
+ protected:
+  /** Initialize member variables of Props instance */
+  void initialize(
+      const PropsParserContext& context,
+      const Props& sourceProps,
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react

@@ -69,4 +69,8 @@ public interface MessageQueueThread {
    */
   @DoNotStrip
   void resetPerfStats();
+
+  /** Returns true if the message queue is idle */
+  @DoNotStrip
+  boolean isIdle();
 }

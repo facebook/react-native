@@ -49,7 +49,7 @@ Pod::Spec.new do |s|
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
 
   use_react_native_codegen!(s, {

@@ -9,10 +9,10 @@
 
 #include <yoga/Yoga.h>
 
+#include <stdint.h>
+#include <array>
 #include <functional>
 #include <vector>
-#include <array>
-#include <stdint.h>
 
 namespace facebook::yoga {
 
@@ -48,7 +48,7 @@ struct LayoutData {
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);
 
-struct YOGA_EXPORT Event {
+struct YG_EXPORT Event {
   enum Type {
     NodeAllocation,
     NodeDeallocation,
@@ -70,7 +70,7 @@ struct YOGA_EXPORT Event {
   class Data {
     const void* data_;
 
-  public:
+   public:
     template <Type E>
     Data(const TypedData<E>& data) : data_{&data} {}
 
@@ -89,34 +89,27 @@ struct YOGA_EXPORT Event {
     publish(node, E, Data{eventData});
   }
 
-private:
+ private:
   static void publish(YGNodeConstRef, Type, const Data&);
 };
 
 template <>
 struct Event::TypedData<Event::NodeAllocation> {
-  YGConfigRef config;
+  YGConfigConstRef config;
 };
 
 template <>
 struct Event::TypedData<Event::NodeDeallocation> {
-  YGConfigRef config;
-};
-
-template <>
-struct Event::TypedData<Event::LayoutPassStart> {
-  void* layoutContext;
+  YGConfigConstRef config;
 };
 
 template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
-  void* layoutContext;
   LayoutData* layoutData;
 };
 
 template <>
 struct Event::TypedData<Event::MeasureCallbackEnd> {
-  void* layoutContext;
   float width;
   YGMeasureMode widthMeasureMode;
   float height;
@@ -129,7 +122,6 @@ struct Event::TypedData<Event::MeasureCallbackEnd> {
 template <>
 struct Event::TypedData<Event::NodeLayout> {
   LayoutType layoutType;
-  void* layoutContext;
 };
 
 } // namespace facebook::yoga

@@ -1211,6 +1211,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _nestedChildLists: ChildListCollection<VirtualizedList> =
     new ChildListCollection();
   _offsetFromParentVirtualizedList: number = 0;
+  _pendingViewabilityUpdate: boolean = false;
   _prevParentOffset: number = 0;
   _scrollMetrics: {
     dOffset: number,
@@ -1301,21 +1302,39 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       orientation: this._orientation(),
     });
 
+    // In RTL layout we need parent content length to calculate the offset of a
+    // cell from the start of the list. In Paper, layout events are bottom up,
+    // so we do not know this yet, and must defer calculation until after
+    // `onContentSizeChange` is called.
+    const deferCellMetricCalculation =
+      this._listMetrics.getLayoutEventDirection() === 'bottom-up' &&
+      this._listMetrics.needsContentLengthForCellMetrics();
+
+    // Note: In Paper RTL logical position may have changed when
+    // `layoutHasChanged` is false if a cell maintains same X/Y coordinates,
+    // but contentLength shifts. This will be corrected by
+    // `onContentSizeChange` triggering a cell update.
     if (layoutHasChanged) {
-      // TODO: We have not yet received parent content length, meaning we do not
-      // yet have up to date offsets in RTL. This means layout queries done
-      // when scheduling a new batch may not yet be correct. This is corrected
-      // when we schedule again in response to `onContentSizeChange`.
-      const {horizontal, rtl} = this._orientation();
       this._scheduleCellsToRenderUpdate({
-        allowImmediateExecution: !(horizontal && rtl),
+        allowImmediateExecution: !deferCellMetricCalculation,
       });
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
 
     this._computeBlankness();
-    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
+
+    if (deferCellMetricCalculation) {
+      if (!this._pendingViewabilityUpdate) {
+        this._pendingViewabilityUpdate = true;
+        setTimeout(() => {
+          this._updateViewableItems(this.props, this.state.cellsAroundViewport);
+          this._pendingViewabilityUpdate = false;
+        }, 0);
+      }
+    } else {
+      this._updateViewableItems(this.props, this.state.cellsAroundViewport);
+    }
   };
 
   _onCellFocusCapture(cellKey: string) {

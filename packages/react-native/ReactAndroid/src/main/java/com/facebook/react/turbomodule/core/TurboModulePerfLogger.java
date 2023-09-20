@@ -12,7 +12,7 @@ import com.facebook.react.perflogger.NativeModulePerfLogger;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public class TurboModulePerfLogger {
+class TurboModulePerfLogger {
 
   @Nullable private static NativeModulePerfLogger sNativeModulePerfLogger = null;
 

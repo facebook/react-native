@@ -64,7 +64,7 @@ const ComponentDescriptor& ShadowNodeFamily::getComponentDescriptor() const {
 
 AncestorList ShadowNodeFamily::getAncestors(
     const ShadowNode& ancestorShadowNode) const {
-  auto families = butter::small_vector<const ShadowNodeFamily*, 64>{};
+  auto families = std::vector<const ShadowNodeFamily*>{};
   auto ancestorFamily = ancestorShadowNode.family_.get();
 
   auto family = this;

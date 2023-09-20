@@ -22,7 +22,7 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++17)
+add_compile_options(-Wall -Werror -std=c++20)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -64,7 +64,6 @@ add_react_common_subdir(jsiexecutor)
 add_react_common_subdir(cxxreact)
 add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
-add_react_common_subdir(butter)
 add_react_common_subdir(callinvoker)
 add_react_common_subdir(jsinspector-modern)
 add_react_common_subdir(hermes/executor)
@@ -188,7 +187,7 @@ add_executable(reactnative_unittest
     -Werror
     -fexceptions
     -frtti
-    -std=c++17
+    -std=c++20
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest

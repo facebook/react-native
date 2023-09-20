@@ -88,6 +88,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
     [self createReactHost];
+    [self unstable_registerLegacyComponents];
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName
                                                       initialProperties:launchOptions];
 

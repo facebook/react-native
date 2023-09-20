@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/Yoga.h>
-
 #include <yoga/algorithm/Cache.h>
 #include <yoga/algorithm/PixelGrid.h>
 #include <yoga/numeric/Comparison.h>
@@ -14,43 +12,43 @@
 namespace facebook::yoga {
 
 static inline bool sizeIsExactAndMatchesOldMeasuredSize(
-    YGMeasureMode sizeMode,
+    MeasureMode sizeMode,
     float size,
     float lastComputedSize) {
-  return sizeMode == YGMeasureModeExactly &&
+  return sizeMode == MeasureMode::Exactly &&
       yoga::inexactEquals(size, lastComputedSize);
 }
 
 static inline bool oldSizeIsUnspecifiedAndStillFits(
-    YGMeasureMode sizeMode,
+    MeasureMode sizeMode,
     float size,
-    YGMeasureMode lastSizeMode,
+    MeasureMode lastSizeMode,
     float lastComputedSize) {
-  return sizeMode == YGMeasureModeAtMost &&
-      lastSizeMode == YGMeasureModeUndefined &&
+  return sizeMode == MeasureMode::AtMost &&
+      lastSizeMode == MeasureMode::Undefined &&
       (size >= lastComputedSize || yoga::inexactEquals(size, lastComputedSize));
 }
 
 static inline bool newMeasureSizeIsStricterAndStillValid(
-    YGMeasureMode sizeMode,
+    MeasureMode sizeMode,
     float size,
-    YGMeasureMode lastSizeMode,
+    MeasureMode lastSizeMode,
     float lastSize,
     float lastComputedSize) {
-  return lastSizeMode == YGMeasureModeAtMost &&
-      sizeMode == YGMeasureModeAtMost && !std::isnan(lastSize) &&
+  return lastSizeMode == MeasureMode::AtMost &&
+      sizeMode == MeasureMode::AtMost && !std::isnan(lastSize) &&
       !std::isnan(size) && !std::isnan(lastComputedSize) && lastSize > size &&
       (lastComputedSize <= size || yoga::inexactEquals(size, lastComputedSize));
 }
 
 bool canUseCachedMeasurement(
-    const YGMeasureMode widthMode,
+    const MeasureMode widthMode,
     const float availableWidth,
-    const YGMeasureMode heightMode,
+    const MeasureMode heightMode,
     const float availableHeight,
-    const YGMeasureMode lastWidthMode,
+    const MeasureMode lastWidthMode,
     const float lastAvailableWidth,
-    const YGMeasureMode lastHeightMode,
+    const MeasureMode lastHeightMode,
     const float lastAvailableHeight,
     const float lastComputedWidth,
     const float lastComputedHeight,
