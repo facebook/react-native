@@ -37,87 +37,86 @@ import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
 class RNTesterApplication : Application(), ReactApplication {
-    private var mReactHost: ReactHostImpl? = null
-    private val mReactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
-        public override fun getJSMainModuleName(): String {
-            return "js/RNTesterApp.android"
+    private var reactHost: ReactHostImpl? = null
+    override val reactNativeHost: ReactNativeHost
+      get() {
+        if (ReactFeatureFlags.enableBridgelessArchitecture) {
+          throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
         }
+        return object : DefaultReactNativeHost(this) {
+          public override fun getJSMainModuleName(): String = "js/RNTesterApp.android"
 
-        public override fun getBundleAssetName(): String? {
-            return "RNTesterApp.android.bundle"
-        }
+          public override fun getBundleAssetName(): String = "RNTesterApp.android.bundle"
 
-        override fun getUseDeveloperSupport(): Boolean {
-            return BuildConfig.DEBUG
-        }
+          override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 
-        public override fun getPackages(): List<ReactPackage> {
+          public override fun getPackages(): List<ReactPackage> {
             return listOf(
-                    MainReactPackage(),
-                    object : TurboReactPackage() {
-                        override fun getModule(
-                                name: String, reactContext: ReactApplicationContext): NativeModule? {
-                            if (!ReactFeatureFlags.useTurboModules) {
-                                return null
-                            }
-                            if (SampleTurboModule.NAME == name) {
-                                return SampleTurboModule(reactContext)
-                            }
-                            if (SampleLegacyModule.NAME == name) {
-                                return SampleLegacyModule(reactContext)
-                            }
-                          return null;
-                        }
+              MainReactPackage(),
+              object : TurboReactPackage() {
+                override fun getModule(
+                  name: String, reactContext: ReactApplicationContext): NativeModule? {
+                  if (!ReactFeatureFlags.useTurboModules) {
+                    return null
+                  }
+                  if (SampleTurboModule.NAME == name) {
+                    return SampleTurboModule(reactContext)
+                  }
+                  if (SampleLegacyModule.NAME == name) {
+                    return SampleLegacyModule(reactContext)
+                  }
+                  return null;
+                }
 
-                        // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
-                        // yet. For now, hardcode this information, though it's not necessary for most
-                        // modules.
-                        override fun getReactModuleInfoProvider(): ReactModuleInfoProvider = ReactModuleInfoProvider {
-                                if (ReactFeatureFlags.useTurboModules) {
-                                    mapOf(
-                                      SampleTurboModule.NAME to
-                                        ReactModuleInfo(
-                                          SampleTurboModule.NAME,
-                                          "SampleTurboModule",
-                                          false,  // canOverrideExistingModule
-                                          false,  // needsEagerInit
-                                          false,  // isCxxModule
-                                          true // isTurboModule
-                                        ),
-                                      SampleLegacyModule.NAME to
-                                        ReactModuleInfo(
-                                          SampleLegacyModule.NAME,
-                                          "SampleLegacyModule",
-                                          false,  // canOverrideExistingModule
-                                          false,  // needsEagerInit
-                                          false,  // isCxxModule
-                                          false // isTurboModule
-                                        )
-                                    )
-                                } else {
-                                  emptyMap()
-                                }
-                            }
+                // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
+                // yet. For now, hardcode this information, though it's not necessary for most
+                // modules.
+                override fun getReactModuleInfoProvider(): ReactModuleInfoProvider = ReactModuleInfoProvider {
+                  if (ReactFeatureFlags.useTurboModules) {
+                    mapOf(
+                      SampleTurboModule.NAME to
+                        ReactModuleInfo(
+                          SampleTurboModule.NAME,
+                          "SampleTurboModule",
+                          false,  // canOverrideExistingModule
+                          false,  // needsEagerInit
+                          false,  // isCxxModule
+                          true // isTurboModule
+                        ),
+                      SampleLegacyModule.NAME to
+                        ReactModuleInfo(
+                          SampleLegacyModule.NAME,
+                          "SampleLegacyModule",
+                          false,  // canOverrideExistingModule
+                          false,  // needsEagerInit
+                          false,  // isCxxModule
+                          false // isTurboModule
+                        )
+                    )
+                  } else {
+                    emptyMap()
+                  }
+                }
 
-                    },
-                    object : ReactPackage {
-                        override fun createNativeModules(
-                                reactContext: ReactApplicationContext): List<NativeModule> {
-                            return emptyList()
-                        }
+              },
+              object : ReactPackage {
+                override fun createNativeModules(
+                  reactContext: ReactApplicationContext): List<NativeModule> {
+                  return emptyList()
+                }
 
-                        override fun createViewManagers(
-                                reactContext: ReactApplicationContext
-                        ): List<ViewManager<*, *>> =
-                          listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext));
-                    })
+                override fun createViewManagers(
+                  reactContext: ReactApplicationContext
+                ): List<ViewManager<*, *>> =
+                  listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext));
+              })
+          }
+
+          override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+          override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR
         }
+      }
 
-        override val isNewArchEnabled: Boolean
-            protected get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-        override val isHermesEnabled: Boolean
-            protected get() = BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR
-    }
 
     override fun onCreate() {
         ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
@@ -133,25 +132,17 @@ class RNTesterApplication : Application(), ReactApplication {
         }
     }
 
-    override val reactNativeHost: ReactNativeHost
-        get() {
-            if (ReactFeatureFlags.enableBridgelessArchitecture) {
-                throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
-            }
-            return mReactNativeHost
-        }
-
     @UnstableReactNativeAPI
     override val reactHostInterface: ReactHost
         get() {
-            if (mReactHost == null) {
+            if (reactHost == null) {
                 // Create an instance of ReactHost to manager the instance of ReactInstance,
                 // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
                 val reactHostDelegate = RNTesterReactHostDelegate(applicationContext)
                 val reactJsExceptionHandler = RNTesterReactJsExceptionHandler()
                 val componentFactory = ComponentFactory()
                 register(componentFactory)
-                mReactHost = ReactHostImpl(
+                reactHost = ReactHostImpl(
                         this.applicationContext,
                         reactHostDelegate,
                         componentFactory,
@@ -159,13 +150,13 @@ class RNTesterApplication : Application(), ReactApplication {
                         reactJsExceptionHandler,
                         true)
                 if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
-                    mReactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
+                    reactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
                 } else {
-                    mReactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
+                    reactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
                 }
-                reactHostDelegate.reactHost = mReactHost
+                reactHostDelegate.reactHost = reactHost
             }
-            return mReactHost!!
+            return reactHost!!
         }
 
     @UnstableReactNativeAPI
