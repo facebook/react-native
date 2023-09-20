@@ -71,8 +71,8 @@ void roundLayoutResultsToPixelGrid(
   const double nodeLeft = node->getLayout().position[YGEdgeLeft];
   const double nodeTop = node->getLayout().position[YGEdgeTop];
 
-  const double nodeWidth = node->getLayout().dimensions[YGDimensionWidth];
-  const double nodeHeight = node->getLayout().dimensions[YGDimensionHeight];
+  const double nodeWidth = node->getLayout().dimension(YGDimensionWidth);
+  const double nodeHeight = node->getLayout().dimension(YGDimensionHeight);
 
   const double absoluteNodeLeft = absoluteLeft + nodeLeft;
   const double absoluteNodeTop = absoluteTop + nodeTop;

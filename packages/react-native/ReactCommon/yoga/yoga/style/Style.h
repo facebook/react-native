@@ -280,25 +280,25 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  const Dimensions& dimensions() const {
-    return dimensions_;
+  CompactValue dimension(YGDimension axis) const {
+    return dimensions_[axis];
   }
-  IdxRef<YGDimension, &Style::dimensions_> dimensions() {
-    return {*this};
-  }
-
-  const Dimensions& minDimensions() const {
-    return minDimensions_;
-  }
-  IdxRef<YGDimension, &Style::minDimensions_> minDimensions() {
-    return {*this};
+  void setDimension(YGDimension axis, CompactValue value) {
+    dimensions_[axis] = value;
   }
 
-  const Dimensions& maxDimensions() const {
-    return maxDimensions_;
+  CompactValue minDimension(YGDimension axis) const {
+    return minDimensions_[axis];
   }
-  IdxRef<YGDimension, &Style::maxDimensions_> maxDimensions() {
-    return {*this};
+  void setMinDimension(YGDimension axis, CompactValue value) {
+    minDimensions_[axis] = value;
+  }
+
+  CompactValue maxDimension(YGDimension axis) const {
+    return maxDimensions_[axis];
+  }
+  void setMaxDimension(YGDimension axis, CompactValue value) {
+    maxDimensions_[axis] = value;
   }
 
   // Yoga specific properties, not compatible with flexbox specification
@@ -308,10 +308,26 @@ class YG_EXPORT Style {
   Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() {
     return {*this};
   }
+
+  bool operator==(const Style& other) const {
+    return flags == other.flags && inexactEquals(flex_, other.flex_) &&
+        inexactEquals(flexGrow_, other.flexGrow_) &&
+        inexactEquals(flexShrink_, other.flexShrink_) &&
+        inexactEquals(flexBasis_, other.flexBasis_) &&
+        inexactEquals(margin_, other.margin_) &&
+        inexactEquals(position_, other.position_) &&
+        inexactEquals(padding_, other.padding_) &&
+        inexactEquals(border_, other.border_) &&
+        inexactEquals(gap_, other.gap_) &&
+        inexactEquals(dimensions_, other.dimensions_) &&
+        inexactEquals(minDimensions_, other.minDimensions_) &&
+        inexactEquals(maxDimensions_, other.maxDimensions_) &&
+        inexactEquals(aspectRatio_, other.aspectRatio_);
+  }
+
+  bool operator!=(const Style& other) const {
+    return !(*this == other);
+  }
 };
 
-YG_EXPORT bool operator==(const Style& lhs, const Style& rhs);
-YG_EXPORT inline bool operator!=(const Style& lhs, const Style& rhs) {
-  return !(lhs == rhs);
-}
 } // namespace facebook::yoga

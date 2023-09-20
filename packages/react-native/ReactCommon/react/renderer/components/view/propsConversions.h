@@ -17,28 +17,6 @@ namespace facebook::react {
 
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
-static inline yoga::Style::Dimensions convertRawProp(
-    const PropsParserContext& context,
-    const RawProps& rawProps,
-    const char* widthName,
-    const char* heightName,
-    const yoga::Style::Dimensions& sourceValue,
-    const yoga::Style::Dimensions& defaultValue) {
-  auto dimensions = defaultValue;
-  dimensions[YGDimensionWidth] = convertRawProp(
-      context,
-      rawProps,
-      widthName,
-      sourceValue[YGDimensionWidth],
-      defaultValue[YGDimensionWidth]);
-  dimensions[YGDimensionHeight] = convertRawProp(
-      context,
-      rawProps,
-      heightName,
-      sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionHeight]);
-  return dimensions;
-}
 
 static inline yoga::Style::Edges convertRawProp(
     const PropsParserContext& context,
@@ -294,33 +272,65 @@ static inline yoga::Style convertRawProp(
       "Width",
       sourceValue.border(),
       yogaStyle.border());
-  yogaStyle.dimensions() = convertRawProp(
-      context,
-      rawProps,
-      "width",
-      "height",
-      sourceValue.dimensions(),
-      yogaStyle.dimensions());
-  yogaStyle.minDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "minWidth",
-      "minHeight",
-      sourceValue.minDimensions(),
-      yogaStyle.minDimensions());
-  yogaStyle.maxDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "maxWidth",
-      "maxHeight",
-      sourceValue.maxDimensions(),
-      yogaStyle.maxDimensions());
+
+  yogaStyle.setDimension(
+      YGDimensionWidth,
+      convertRawProp(
+          context,
+          rawProps,
+          "width",
+          sourceValue.dimension(YGDimensionWidth),
+          {}));
+  yogaStyle.setDimension(
+      YGDimensionHeight,
+      convertRawProp(
+          context,
+          rawProps,
+          "height",
+          sourceValue.dimension(YGDimensionHeight),
+          {}));
+
+  yogaStyle.setMinDimension(
+      YGDimensionWidth,
+      convertRawProp(
+          context,
+          rawProps,
+          "minWidth",
+          sourceValue.minDimension(YGDimensionWidth),
+          {}));
+  yogaStyle.setMinDimension(
+      YGDimensionHeight,
+      convertRawProp(
+          context,
+          rawProps,
+          "minHeight",
+          sourceValue.minDimension(YGDimensionHeight),
+          {}));
+
+  yogaStyle.setMaxDimension(
+      YGDimensionWidth,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxWidth",
+          sourceValue.maxDimension(YGDimensionWidth),
+          {}));
+  yogaStyle.setMaxDimension(
+      YGDimensionHeight,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxHeight",
+          sourceValue.maxDimension(YGDimensionHeight),
+          {}));
+
   yogaStyle.aspectRatio() = convertRawProp(
       context,
       rawProps,
       "aspectRatio",
       sourceValue.aspectRatio(),
       yogaStyle.aspectRatio());
+
   return yogaStyle;
 }
 

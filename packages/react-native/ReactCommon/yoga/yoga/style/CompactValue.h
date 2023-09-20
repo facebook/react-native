@@ -15,6 +15,7 @@
 #include <yoga/YGValue.h>
 
 #include <yoga/bits/BitCast.h>
+#include <yoga/numeric/Comparison.h>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -174,6 +175,10 @@ constexpr bool operator==(CompactValue a, CompactValue b) noexcept {
 
 constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
   return !(a == b);
+}
+
+inline bool inexactEquals(CompactValue a, CompactValue b) {
+  return inexactEquals((YGValue)a, (YGValue)b);
 }
 
 } // namespace facebook::yoga
