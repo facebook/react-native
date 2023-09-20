@@ -140,6 +140,11 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)stopObserving
 {
+
+}
+
+- (void)invalidate {
+  [super invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
