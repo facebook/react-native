@@ -45,7 +45,7 @@ def cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
 ext.cmake_version = cmakeVersion
 
 // You need to have following folders in this directory:
-//   - boost_1_76_0
+//   - boost_1_83_0
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
@@ -164,14 +164,14 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 [
                     new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
-                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
                 "react_nativemodule_core",
                 [
-                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),

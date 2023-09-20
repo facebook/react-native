@@ -1,5 +1,5 @@
 PODS:
-  - boost (1.76.0)
+  - boost (1.83.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
@@ -363,7 +363,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
     - SocketRocket (= 0.6.0)
   - React-cxxreact (1000.0.0):
-    - boost (= 1.76.0)
+    - boost (= 1.83.0)
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
@@ -966,7 +966,7 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-Mapbuffer
   - React-jsi (1000.0.0):
-    - boost (= 1.76.0)
+    - boost (= 1.83.0)
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
@@ -1360,7 +1360,7 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: a0b90ce379cb01df2495a908c5f8a795fe08c25d
+  boost: 26fad476bfa736552bbfa698a06cc530475c1505
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: b233b98f08056318bc56f4deccea817b00edeac5

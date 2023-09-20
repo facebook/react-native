@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
                                "DEFINES_MODULE" => "YES" }
 
-  s.dependency "boost", "1.76.0"
+  s.dependency "boost", "1.83.0"
   s.dependency "DoubleConversion"
   s.dependency 'fmt' , '~> 6.2.1'
   s.dependency "RCT-Folly", folly_version
