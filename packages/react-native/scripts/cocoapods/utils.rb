@@ -155,17 +155,11 @@ class ReactNativePodsUtils
     def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
         projects = self.extract_projects(installer)
 
-        gcc_preprocessor_definition_key = 'GCC_PREPROCESSOR_DEFINITIONS'
         other_ld_flags_key = 'OTHER_LDFLAGS'
-        libcpp_cxx17_fix = '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION'
         xcode15_compatibility_flags = '-Wl -ld_classic '
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                # fix for unary_function and binary_function
-                self.safe_init(config, gcc_preprocessor_definition_key)
-                self.add_value_to_setting_if_missing(config, gcc_preprocessor_definition_key, libcpp_cxx17_fix)
-
                 # fix for weak linking
                 self.safe_init(config, other_ld_flags_key)
                 if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
