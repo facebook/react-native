@@ -1224,7 +1224,7 @@ jobs:
                   else
                     export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
                   fi
-                  node ./scripts/publish-npm.js --<< parameters.release_type >>
+                  node ./scripts/publish-npm.js -t << parameters.release_type >>
 
       - run:
           name: Zip Maven Artifacts from /tmp/maven-local
