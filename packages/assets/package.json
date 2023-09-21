@@ -1,6 +1,6 @@
 {
   "name": "@react-native/assets-registry",
-  "version": "0.73.0",
+  "version": "0.73.1",
   "description": "Asset support code for React Native.",
   "license": "MIT",
   "repository": {
@@ -9,7 +9,12 @@
     "directory": "packages/assets"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/assets#readme",
-  "keywords": ["assets", "registry", "react-native", "support"],
+  "keywords": [
+    "assets",
+    "registry",
+    "react-native",
+    "support"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"
