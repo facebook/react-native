@@ -214,7 +214,19 @@ function buildArtifactsLocally(
     expandHermesSourceTarball();
   }
 
-  // need to move the scripts inside the local hermes cloned folder
+  // need to move the podspec file from hermes-engine to hermes folder
+  // cp sdks/hermes-engine/hermes-engine.podspec <your_hermes_checkout>/hermes-engine.podspec
+  cp(
+    `${reactNativePackagePath}/sdks/hermes-engine/hermes-engine.podspec`,
+    `${reactNativePackagePath}/sdks/hermes/hermes-engine.podspec`,
+  );
+  // need to move the hermes-utils file from hermes-engine to hermes folder
+  // cp sdks/hermes-engine/hermes-utils.rb <your_hermes_checkout>/hermes-utils.rb
+  cp(
+    `${reactNativePackagePath}/sdks/hermes-engine/hermes-utils.rb`,
+    `${reactNativePackagePath}/sdks/hermes/hermes-utils.rb`,
+  );
+  // need to move the shell scripts file from hermes-engine to hermes folder
   // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
   cp(
     `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
