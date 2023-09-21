@@ -680,6 +680,10 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
 
 bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
 {
+  if (returnType == VoidKind && shouldVoidMethodsExecuteSync_) {
+    return true;
+  }
+
   return !(returnType == VoidKind || returnType == PromiseKind);
 }
 
