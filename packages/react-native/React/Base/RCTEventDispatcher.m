@@ -28,3 +28,12 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
 }
 
 @end
+
+@implementation RCTBridgeProxy (RCTEventDispatcher)
+
+- (id<RCTEventDispatcherProtocol>)eventDispatcher
+{
+  return [self moduleForName:@"EventDispatcher" lazilyLoadIfNecessary:YES];
+}
+
+@end

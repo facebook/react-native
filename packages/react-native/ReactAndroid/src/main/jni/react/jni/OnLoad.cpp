@@ -16,6 +16,7 @@
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapper.h"
 #include "JCallback.h"
+#include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
 #include "WritableNativeArray.h"
@@ -31,8 +32,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -69,7 +69,7 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<
 
 } // namespace
 
-extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
 #if WITH_GLOGINIT
     gloginit::initialize();
@@ -86,6 +86,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     NativeMap::registerNatives();
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
+    JReactMarker::registerNatives();
 
 #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
@@ -93,5 +94,4 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

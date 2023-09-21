@@ -12,8 +12,7 @@
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JniJSModulesUnbundle : public JSModulesUnbundle {
   /**
@@ -22,24 +21,23 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
  public:
   JniJSModulesUnbundle() = default;
   JniJSModulesUnbundle(
-      AAssetManager *assetManager,
-      const std::string &moduleDirectory);
-  JniJSModulesUnbundle(JniJSModulesUnbundle &&other) = delete;
-  JniJSModulesUnbundle &operator=(JSModulesUnbundle &&other) = delete;
+      AAssetManager* assetManager,
+      const std::string& moduleDirectory);
+  JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
+  JniJSModulesUnbundle& operator=(JSModulesUnbundle&& other) = delete;
 
   static std::unique_ptr<JniJSModulesUnbundle> fromEntryFile(
-      AAssetManager *assetManager,
-      const std::string &entryFile);
+      AAssetManager* assetManager,
+      const std::string& entryFile);
 
   static bool isUnbundle(
-      AAssetManager *assetManager,
-      const std::string &assetName);
+      AAssetManager* assetManager,
+      const std::string& assetName);
   virtual Module getModule(uint32_t moduleId) const override;
 
  private:
-  AAssetManager *m_assetManager = nullptr;
+  AAssetManager* m_assetManager = nullptr;
   std::string m_moduleDirectory;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

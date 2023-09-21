@@ -58,10 +58,8 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
-
-  if (@available(iOS 12.0, *)) {
-    toTextInput.passwordRules = fromTextInput.passwordRules;
-  }
+  toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
+  toTextInput.passwordRules = fromTextInput.passwordRules;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 #endif // [macOS]
@@ -194,13 +192,14 @@ UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(ReturnKeyType returnKeyType)
   }
 }
 
-UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
+UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
 {
   static dispatch_once_t onceToken;
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
   dispatch_once(&onceToken, ^{
-    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [@{
+    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [NSMutableDictionary new];
+    [mutableContentTypeMap addEntriesFromDictionary:@{
       @"" : @"",
       @"none" : @"",
       @"URL" : UITextContentTypeURL,
@@ -228,23 +227,45 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
       @"username" : UITextContentTypeUsername,
       @"password" : UITextContentTypePassword,
-    } mutableCopy];
+      @"newPassword" : UITextContentTypeNewPassword,
+      @"oneTimeCode" : UITextContentTypeOneTimeCode,
+    }];
 
-    if (@available(iOS 12.0, *)) {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+    if (@available(iOS 17.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
-        @"newPassword" : UITextContentTypeNewPassword,
-        @"oneTimeCode" : UITextContentTypeOneTimeCode
+        @"creditCardExpiration" : UITextContentTypeCreditCardExpiration,
+        @"creditCardExpirationMonth" : UITextContentTypeCreditCardExpirationMonth,
+        @"creditCardExpirationYear" : UITextContentTypeCreditCardExpirationYear,
+        @"creditCardSecurityCode" : UITextContentTypeCreditCardSecurityCode,
+        @"creditCardType" : UITextContentTypeCreditCardType,
+        @"creditCardName" : UITextContentTypeCreditCardName,
+        @"creditCardGivenName" : UITextContentTypeCreditCardGivenName,
+        @"creditCardMiddleName" : UITextContentTypeCreditCardMiddleName,
+        @"creditCardFamilyName" : UITextContentTypeCreditCardFamilyName,
+        @"birthdate" : UITextContentTypeBirthdate,
+        @"birthdateDay" : UITextContentTypeBirthdateDay,
+        @"birthdateMonth" : UITextContentTypeBirthdateMonth,
+        @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+#endif
 
-    contentTypeMap = [mutableContentTypeMap copy];
+    contentTypeMap = mutableContentTypeMap;
   });
 
   return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";
 }
 
-UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules)
+UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(const std::string &passwordRules)
 {
   return [UITextInputPasswordRules passwordRulesWithDescriptor:RCTNSStringFromStringNilIfEmpty(passwordRules)];
+}
+
+UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete)
+{
+  return smartInsertDelete.has_value()
+      ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
+      : UITextSmartInsertDeleteTypeDefault;
 }
 #endif // [macOS]

@@ -52,6 +52,7 @@ public interface NativeModule {
    *
    * @deprecated use {@link #invalidate()} instead.
    */
+  @Deprecated
   void onCatalystInstanceDestroy();
 
   /** Allow NativeModule to clean up. Called before {CatalystInstance#onHostDestroy} */

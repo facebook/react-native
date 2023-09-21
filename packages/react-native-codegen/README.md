@@ -15,7 +15,7 @@ yarn add --dev @react-native/codegen
 
 ## Testing
 
-To run the tests in this package, run the following commands from the react Native root folder:
+To run the tests in this package, run the following commands from the React Native root folder:
 
 1. `yarn` to install the dependencies. You just need to run this once
-2. `yarn jest react-native-codegen`.
+2. `yarn jest packages/react-native-codegen`.

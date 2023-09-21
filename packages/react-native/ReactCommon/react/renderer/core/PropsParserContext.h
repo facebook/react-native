@@ -7,23 +7,34 @@
 
 #pragma once
 
+#include <optional>
+
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // For props requiring some context to parse, this toolbox can be used.
 // It should be used as infrequently as possible - most props can and should
 // be parsed without any context.
 struct PropsParserContext {
-  // Non-copyable
-  PropsParserContext(const PropsParserContext &) = delete;
-  PropsParserContext &operator=(const PropsParserContext &) = delete;
+  PropsParserContext(
+      const SurfaceId surfaceId,
+      const ContextContainer& contextContainer)
+      : surfaceId(surfaceId), contextContainer(contextContainer) {}
 
-  SurfaceId const surfaceId;
-  ContextContainer const &contextContainer;
+  // Non-copyable
+  PropsParserContext(const PropsParserContext&) = delete;
+  PropsParserContext& operator=(const PropsParserContext&) = delete;
+
+  const SurfaceId surfaceId;
+  const ContextContainer& contextContainer;
+
+  // Temporary feature flags
+  bool treatAutoAsYGValueUndefined() const;
+
+ private:
+  mutable std::optional<bool> treatAutoAsYGValueUndefined_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

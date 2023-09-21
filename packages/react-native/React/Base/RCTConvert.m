@@ -85,7 +85,6 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 
   @try { // NSURL has a history of crashing with bad input, so let's be safe
-
     NSURL *URL = [NSURL URLWithString:path];
     if (URL.scheme) { // Was a well-formed absolute URL
       return URL;
@@ -516,6 +515,18 @@ RCT_ENUM_CONVERTER(
 #endif // [macOS]
 
 RCT_ENUM_CONVERTER(
+    UIInterfaceOrientationMask,
+    (@{
+      @"ALL" : @(UIInterfaceOrientationMaskAll),
+      @"PORTRAIT" : @(UIInterfaceOrientationMaskPortrait),
+      @"LANDSCAPE" : @(UIInterfaceOrientationMaskLandscape),
+      @"LANDSCAPE_LEFT" : @(UIInterfaceOrientationMaskLandscapeLeft),
+      @"LANDSCAPE_RIGHT" : @(UIInterfaceOrientationMaskLandscapeRight),
+    }),
+    NSNotFound,
+    unsignedIntegerValue)
+
+RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
       @"scale-to-fill" : @(UIViewContentModeScaleToFill),
@@ -669,7 +680,7 @@ static NSString *const RCTIndex = @"index";
  *  If the RCTIndex key is present then object returned from UIColor is an
  *  NSArray and the object at index RCTIndex is to be used.
  */
-static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
+static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap(void)
 {
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
@@ -971,7 +982,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
 
 /** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
-static NSString *RCTSemanticColorNames()
+static NSString *RCTSemanticColorNames(void)
 {
   NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
@@ -1084,31 +1095,22 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
       RCTUIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark]; // [macOS]
       if (lightColor != nil && darkColor != nil) {
 #if !TARGET_OS_OSX // [macOS]
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-        if (@available(iOS 13.0, *)) {
-          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
-                                        UITraitCollection *_Nonnull collection) {
-            if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
-                return highContrastDarkColor;
-              } else {
-                return darkColor;
-              }
+        UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
+          if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+              return highContrastDarkColor;
             } else {
-              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
-                return highContrastLightColor;
-              } else {
-                return lightColor;
-              }
+              return darkColor;
             }
-          }];
-          return color;
-        } else {
-#endif
-          return lightColor;
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-        }
-#endif
+          } else {
+            if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+              return highContrastLightColor;
+            } else {
+              return lightColor;
+            }
+          }
+        }];
+        return color;
 #else // [macOS
         NSColor *color = [NSColor colorWithName:nil dynamicProvider:^NSColor * _Nonnull(NSAppearance * _Nonnull appearance) {
           NSMutableArray<NSAppearanceName> *appearances = [NSMutableArray arrayWithArray:@[NSAppearanceNameAqua,NSAppearanceNameDarkAqua]];
@@ -1134,6 +1136,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
         }];
         return color;
 #endif // macOS]
+
       } else {
         RCTLogConvertError(json, @"a UIColor. Expected an apple dynamic appearance aware color."); // [macOS]
         return nil;

@@ -346,7 +346,10 @@ class TouchableHighlight extends React.Component<Props, State> {
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
-        nativeID={this.props.nativeID}
+        focusable={
+          this.props.focusable !== false && this.props.onPress !== undefined
+        }
+        nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         // [macOS
         acceptsFirstMouse={

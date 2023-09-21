@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/uimanager/PointerEventsProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -26,33 +27,33 @@ class UIManagerBinding : public jsi::HostObject {
    * Thread synchronization must be enforced externally.
    */
   static void createAndInstallIfNeeded(
-      jsi::Runtime &runtime,
-      std::shared_ptr<UIManager> const &uiManager);
+      jsi::Runtime& runtime,
+      const std::shared_ptr<UIManager>& uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
    * Thread synchronization must be enforced externally.
    */
-  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime& runtime);
 
   UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
-  ~UIManagerBinding();
+  ~UIManagerBinding() override;
 
   jsi::Value getInspectorDataForInstance(
-      jsi::Runtime &runtime,
-      EventEmitter const &eventEmitter) const;
+      jsi::Runtime& runtime,
+      const EventEmitter& eventEmitter) const;
 
   /*
    * Delivers raw event data to JavaScript.
    * Thread synchronization must be enforced externally.
    */
   void dispatchEvent(
-      jsi::Runtime &runtime,
-      EventTarget const *eventTarget,
-      std::string const &type,
+      jsi::Runtime& runtime,
+      const EventTarget* eventTarget,
+      const std::string& type,
       ReactEventPriority priority,
-      ValueFactory const &payloadFactory) const;
+      const EventPayload& payload) const;
 
   /*
    * Invalidates the binding and underlying UIManager.
@@ -66,11 +67,25 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * `jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
+  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
+
+  UIManager& getUIManager();
 
  private:
+  /*
+   * Internal method that sends the event to JS. Should only be called from
+   * UIManagerBinding::dispatchEvent.
+   */
+  void dispatchEventToJS(
+      jsi::Runtime& runtime,
+      const EventTarget* eventTarget,
+      const std::string& type,
+      ReactEventPriority priority,
+      const EventPayload& payload) const;
+
   std::shared_ptr<UIManager> uiManager_;
-  std::unique_ptr<EventHandler const> eventHandler_;
+  std::unique_ptr<const EventHandler> eventHandler_;
+  mutable PointerEventsProcessor pointerEventsProcessor_;
   mutable ReactEventPriority currentEventPriority_;
 };
 

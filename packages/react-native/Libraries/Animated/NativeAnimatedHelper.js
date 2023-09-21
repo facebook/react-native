@@ -28,9 +28,7 @@ import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
 const NativeAnimatedModule =
-  Platform.OS === 'ios' && global.RN$Bridgeless === true
-    ? NativeAnimatedTurboModule
-    : NativeAnimatedNonTurboModule;
+  NativeAnimatedNonTurboModule ?? NativeAnimatedTurboModule;
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
@@ -425,6 +423,9 @@ const SUPPORTED_TRANSFORMS = {
   rotateY: true,
   rotateZ: true,
   perspective: true,
+  skewX: true,
+  skewY: true,
+  matrix: ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform(),
 };
 
 const SUPPORTED_INTERPOLATION_PARAMS = {
@@ -451,19 +452,19 @@ function addWhitelistedInterpolationParam(param: string): void {
 }
 
 function isSupportedColorStyleProp(prop: string): boolean {
-  return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
+  return SUPPORTED_COLOR_STYLES[prop] === true;
 }
 
 function isSupportedStyleProp(prop: string): boolean {
-  return SUPPORTED_STYLES.hasOwnProperty(prop);
+  return SUPPORTED_STYLES[prop] === true;
 }
 
 function isSupportedTransformProp(prop: string): boolean {
-  return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
+  return SUPPORTED_TRANSFORMS[prop] === true;
 }
 
 function isSupportedInterpolationParam(param: string): boolean {
-  return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
+  return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
 }
 
 function validateTransform(
@@ -562,10 +563,13 @@ function transformDataType(value: number | string): number | string {
   if (typeof value !== 'string') {
     return value;
   }
-  if (/deg$/.test(value)) {
+
+  // Normalize degrees and radians to a number expressed in radians
+  if (value.endsWith('deg')) {
     const degrees = parseFloat(value) || 0;
-    const radians = (degrees * Math.PI) / 180.0;
-    return radians;
+    return (degrees * Math.PI) / 180.0;
+  } else if (value.endsWith('rad')) {
+    return parseFloat(value) || 0;
   } else {
     return value;
   }

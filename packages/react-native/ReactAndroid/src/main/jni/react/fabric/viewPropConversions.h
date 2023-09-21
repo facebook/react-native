@@ -16,15 +16,14 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 static MapBuffer convertAccessibilityActions(
-    std::vector<AccessibilityAction> const &actions) {
+    const std::vector<AccessibilityAction>& actions) {
   MapBufferBuilder builder(actions.size());
   for (auto i = 0; i < actions.size(); i++) {
-    auto const &action = actions[i];
+    const auto& action = actions[i];
     MapBufferBuilder actionsBuilder(2);
     actionsBuilder.putString(ACCESSIBILITY_ACTION_NAME, action.name);
     if (action.label.has_value()) {
@@ -37,7 +36,7 @@ static MapBuffer convertAccessibilityActions(
 }
 
 static MapBuffer convertAccessibilityLabelledBy(
-    AccessibilityLabelledBy const &labelledBy) {
+    const AccessibilityLabelledBy& labelledBy) {
   MapBufferBuilder builder(labelledBy.value.size());
   for (auto i = 0; i < labelledBy.value.size(); i++) {
     builder.putString(i, labelledBy.value[i]);
@@ -52,7 +51,7 @@ constexpr MapBuffer::Key ACCESSIBILITY_STATE_EXPANDED = 2;
 constexpr MapBuffer::Key ACCESSIBILITY_STATE_SELECTED = 3;
 constexpr MapBuffer::Key ACCESSIBILITY_STATE_CHECKED = 4;
 
-MapBuffer convertAccessibilityState(AccessibilityState const &state) {
+MapBuffer convertAccessibilityState(const AccessibilityState& state) {
   MapBufferBuilder builder(5);
   builder.putBool(ACCESSIBILITY_STATE_BUSY, state.busy);
   builder.putBool(ACCESSIBILITY_STATE_DISABLED, state.disabled);
@@ -78,9 +77,9 @@ MapBuffer convertAccessibilityState(AccessibilityState const &state) {
 }
 
 inline void putOptionalColor(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    std::optional<SharedColor> const &color) {
+    const std::optional<SharedColor>& color) {
   builder.putInt(key, color.has_value() ? toAndroidRepr(color.value()) : -1);
 }
 
@@ -92,7 +91,7 @@ constexpr MapBuffer::Key EDGE_START = 4;
 constexpr MapBuffer::Key EDGE_END = 5;
 constexpr MapBuffer::Key EDGE_ALL = 6;
 
-MapBuffer convertBorderColors(CascadedBorderColors const &colors) {
+MapBuffer convertBorderColors(const CascadedBorderColors& colors) {
   MapBufferBuilder builder(7);
   putOptionalColor(builder, EDGE_TOP, colors.top);
   putOptionalColor(builder, EDGE_RIGHT, colors.right);
@@ -119,13 +118,13 @@ constexpr MapBuffer::Key CORNER_START_END = 11;
 constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    std::optional<Float> const &value) {
+    const std::optional<Float>& value) {
   builder.putDouble(key, value.value_or(NAN));
 }
 
-MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
+MapBuffer convertBorderRadii(const CascadedBorderRadii& radii) {
   MapBufferBuilder builder(13);
   putOptionalFloat(builder, CORNER_TOP_LEFT, radii.topLeft);
   putOptionalFloat(builder, CORNER_TOP_RIGHT, radii.topRight);
@@ -143,7 +142,7 @@ MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
   return builder.build();
 }
 
-MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
+MapBuffer convertBorderWidths(const yoga::Style::Edges& border) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
       builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));
@@ -162,7 +161,7 @@ MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
   return builder.build();
 }
 
-MapBuffer convertEdgeInsets(EdgeInsets const &insets) {
+MapBuffer convertEdgeInsets(const EdgeInsets& insets) {
   MapBufferBuilder builder(4);
   builder.putDouble(EDGE_TOP, insets.top);
   builder.putDouble(EDGE_RIGHT, insets.right);
@@ -179,12 +178,12 @@ constexpr MapBuffer::Key NATIVE_DRAWABLE_COLOR = 2;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_BORDERLESS = 3;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_RIPPLE_RADIUS = 4;
 
-MapBuffer convertNativeBackground(std::optional<NativeDrawable> const &value) {
+MapBuffer convertNativeBackground(const std::optional<NativeDrawable>& value) {
   if (!value.has_value()) {
     return MapBufferBuilder::EMPTY();
   }
 
-  auto const &drawable = value.value();
+  const auto& drawable = value.value();
   MapBufferBuilder builder(4);
   switch (drawable.kind) {
     case NativeDrawable::Kind::ThemeAttr:
@@ -210,7 +209,7 @@ MapBuffer convertNativeBackground(std::optional<NativeDrawable> const &value) {
 
 #endif
 
-MapBuffer convertTransform(Transform const &transform) {
+MapBuffer convertTransform(const Transform& transform) {
   MapBufferBuilder builder(16);
   for (int32_t i = 0; i < transform.matrix.size(); i++) {
     builder.putDouble(i, transform.matrix[i]);
@@ -219,5 +218,4 @@ MapBuffer convertTransform(Transform const &transform) {
 }
 } // namespace
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

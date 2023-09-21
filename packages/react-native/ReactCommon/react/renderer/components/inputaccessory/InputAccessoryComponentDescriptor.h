@@ -11,8 +11,7 @@
 #include <react/renderer/components/inputaccessory/InputAccessoryShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <InputAccessoryView> component.
@@ -22,25 +21,21 @@ class InputAccessoryComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    auto concreteShadowNode =
-        std::static_pointer_cast<InputAccessoryShadowNode>(shadowNode);
+  void adopt(ShadowNode& shadowNode) const override {
+    auto& layoutableShadowNode =
+        static_cast<YogaLayoutableShadowNode&>(shadowNode);
 
-    auto layoutableShadowNode =
-        std::static_pointer_cast<YogaLayoutableShadowNode>(concreteShadowNode);
+    auto& stateData =
+        static_cast<const InputAccessoryShadowNode::ConcreteState&>(
+            *shadowNode.getState())
+            .getData();
 
-    auto state =
-        std::static_pointer_cast<const InputAccessoryShadowNode::ConcreteState>(
-            shadowNode->getState());
-    auto stateData = state->getData();
-
-    layoutableShadowNode->setSize(
+    layoutableShadowNode.setSize(
         Size{stateData.viewportSize.width, stateData.viewportSize.height});
-    layoutableShadowNode->setPositionType(YGPositionTypeAbsolute);
+    layoutableShadowNode.setPositionType(YGPositionTypeAbsolute);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

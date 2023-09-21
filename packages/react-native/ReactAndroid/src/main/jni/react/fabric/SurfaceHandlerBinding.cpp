@@ -8,12 +8,11 @@
 #include "SurfaceHandlerBinding.h"
 #include <react/renderer/scheduler/Scheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SurfaceHandlerBinding::SurfaceHandlerBinding(
     SurfaceId surfaceId,
-    std::string const &moduleName)
+    const std::string& moduleName)
     : surfaceHandler_(moduleName, surfaceId) {}
 
 void SurfaceHandlerBinding::setDisplayMode(jint mode) {
@@ -84,11 +83,11 @@ void SurfaceHandlerBinding::setLayoutConstraints(
   surfaceHandler_.constraintLayout(constraints, context);
 }
 
-void SurfaceHandlerBinding::setProps(NativeMap *props) {
+void SurfaceHandlerBinding::setProps(NativeMap* props) {
   surfaceHandler_.setProps(props->consume());
 }
 
-SurfaceHandler const &SurfaceHandlerBinding::getSurfaceHandler() {
+const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
   return surfaceHandler_;
 }
 
@@ -113,5 +112,4 @@ void SurfaceHandlerBinding::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

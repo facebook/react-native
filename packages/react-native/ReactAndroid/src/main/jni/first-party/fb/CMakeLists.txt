@@ -21,7 +21,7 @@ add_compile_options(
         -Wno-error=unused-but-set-variable
         -DHAVE_POSIX_CLOCKS
 )
-if(${CMAKE_BUILD_TYPE} MATCHES Release)
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         add_compile_options(-DNDEBUG)
 endif()
 

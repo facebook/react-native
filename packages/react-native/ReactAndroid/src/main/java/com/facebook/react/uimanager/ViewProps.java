@@ -151,6 +151,8 @@ public class ViewProps {
   public static final String ON_LAYOUT = "onLayout";
 
   public static final String TRANSFORM = "transform";
+
+  public static final String TRANSFORM_ORIGIN = "transformOrigin";
   public static final String ELEVATION = "elevation";
   public static final String SHADOW_COLOR = "shadowColor";
   public static final String Z_INDEX = "zIndex";
@@ -166,6 +168,7 @@ public class ViewProps {
   public static final String ACCESSIBILITY_VALUE = "accessibilityValue";
   public static final String ACCESSIBILITY_LABELLED_BY = "accessibilityLabelledBy";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+  public static final String ROLE = "role";
 
   // DEPRECATED
   public static final String ROTATION = "rotation";

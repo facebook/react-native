@@ -11,8 +11,7 @@
 #include "AndroidProgressBarMeasurementsManager.h"
 #include "AndroidProgressBarShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <AndroidProgressBar> component.
@@ -21,26 +20,26 @@ class AndroidProgressBarComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidProgressBarShadowNode> {
  public:
   AndroidProgressBarComponentDescriptor(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor(parameters),
         measurementsManager_(
             std::make_shared<AndroidProgressBarMeasurementsManager>(
                 contextContainer_)) {}
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto androidProgressBarShadowNode =
-        std::static_pointer_cast<AndroidProgressBarShadowNode>(shadowNode);
+    auto& androidProgressBarShadowNode =
+        static_cast<AndroidProgressBarShadowNode&>(shadowNode);
 
     // `AndroidProgressBarShadowNode` uses
     // `AndroidProgressBarMeasurementsManager` to provide measurements to Yoga.
-    androidProgressBarShadowNode->setAndroidProgressBarMeasurementsManager(
+    androidProgressBarShadowNode.setAndroidProgressBarMeasurementsManager(
         measurementsManager_);
 
     // All `AndroidProgressBarShadowNode`s must have leaf Yoga nodes with
     // properly setup measure function.
-    androidProgressBarShadowNode->enableMeasurement();
+    androidProgressBarShadowNode.enableMeasurement();
   }
 
  private:
@@ -48,5 +47,4 @@ class AndroidProgressBarComponentDescriptor final
       measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

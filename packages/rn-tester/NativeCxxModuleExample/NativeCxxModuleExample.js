@@ -54,11 +54,15 @@ export type ValueStruct = {|
   z: ObjectStruct,
 |};
 
+export type CustomHostObject = {};
+
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
   +getCustomEnum: (arg: EnumInt) => EnumInt;
+  +getCustomHostObject: () => CustomHostObject;
+  +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
   +getNumEnum: (arg: EnumInt) => EnumFloat;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
@@ -70,8 +74,15 @@ export interface Spec extends TurboModule {
   +getValue: (x: number, y: string, z: ObjectStruct) => ValueStruct;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
+  +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
+  +voidFuncThrows: () => void;
+  +getObjectThrows: (arg: ObjectStruct) => ObjectStruct;
+  +promiseThrows: () => Promise<void>;
+  +voidFuncAssert: () => void;
+  +getObjectAssert: (arg: ObjectStruct) => ObjectStruct;
+  +promiseAssert: () => Promise<void>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

@@ -31,9 +31,7 @@ type Context = $ReadOnly<{
     cellKey: string,
     ref: React.ElementRef<VirtualizedList>,
   }) => void,
-  unregisterAsNestedChild: ({
-    ref: React.ElementRef<VirtualizedList>,
-  }) => void,
+  unregisterAsNestedChild: ({ref: React.ElementRef<VirtualizedList>}) => void,
 }>;
 
 export const VirtualizedListContext: React.Context<?Context> =

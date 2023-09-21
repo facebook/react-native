@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <yoga/Yoga.h>
+
 const short int LAYOUT_EDGE_SET_FLAG_INDEX = 0;
 const short int LAYOUT_WIDTH_INDEX = 1;
 const short int LAYOUT_HEIGHT_INDEX = 2;
@@ -20,14 +22,14 @@ namespace {
 const int HAS_NEW_LAYOUT = 16;
 
 union YGNodeContext {
-  uintptr_t edgesSet = 0;
+  int32_t edgesSet = 0;
   void* asVoidPtr;
 };
 
 class YGNodeEdges {
-  uintptr_t edges_;
+  int32_t edges_;
 
-public:
+ public:
   enum Edge {
     MARGIN = 1,
     PADDING = 2,
@@ -36,24 +38,28 @@ public:
 
   YGNodeEdges(YGNodeRef node) {
     auto context = YGNodeContext{};
-    context.asVoidPtr = node->getContext();
+    context.asVoidPtr = YGNodeGetContext(node);
     edges_ = context.edgesSet;
   }
 
   void setOn(YGNodeRef node) {
     auto context = YGNodeContext{};
     context.edgesSet = edges_;
-    node->setContext(context.asVoidPtr);
+    YGNodeSetContext(node, context.asVoidPtr);
   }
 
-  bool has(Edge edge) { return (edges_ & edge) == edge; }
+  bool has(Edge edge) {
+    return (edges_ & edge) == edge;
+  }
 
   YGNodeEdges& add(Edge edge) {
     edges_ |= edge;
     return *this;
   }
 
-  int get() { return edges_; }
+  int get() {
+    return edges_;
+  }
 };
 
 struct YogaValue {
@@ -62,10 +68,10 @@ struct YogaValue {
   static jlong asJavaLong(const YGValue& value) {
     uint32_t valueBytes = 0;
     memcpy(&valueBytes, &value.value, sizeof valueBytes);
-    return ((jlong) value.unit) << 32 | valueBytes;
+    return ((jlong)value.unit) << 32 | valueBytes;
   }
   constexpr static jlong undefinedAsJavaLong() {
-    return ((jlong) YGUnitUndefined) << 32 | NAN_BYTES;
+    return ((jlong)YGUnitUndefined) << 32 | NAN_BYTES;
   }
 };
 } // namespace

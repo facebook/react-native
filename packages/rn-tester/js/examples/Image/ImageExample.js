@@ -49,6 +49,7 @@ class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
   };
 
   UNSAFE_componentWillMount() {
+    // $FlowFixMe[unused-promise]
     (async () => {
       const result = await fetch(this.props.url);
       const blob = await result.blob();
@@ -159,6 +160,7 @@ class NetworkImageCallbackExample extends React.Component<
                   this._loadEventFired(
                     `✔ Prefetch OK (+${Date.now() - mountTime}ms)`,
                   );
+                  // $FlowFixMe[unused-promise]
                   Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
                     const result = map[IMAGE_PREFETCH_URL];
                     if (result) {

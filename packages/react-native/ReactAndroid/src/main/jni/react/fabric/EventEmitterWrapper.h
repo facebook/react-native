@@ -11,29 +11,24 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/EventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
 class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/events/EventEmitterWrapper;";
 
   static void registerNatives();
 
+  EventEmitterWrapper(SharedEventEmitter eventEmitter)
+      : eventEmitter(std::move(eventEmitter)){};
+
   SharedEventEmitter eventEmitter;
 
-  void invokeEvent(std::string eventName, NativeMap *params, int category);
-  void invokeUniqueEvent(
-      std::string eventName,
-      NativeMap *params,
-      int customCoalesceKey);
-
- private:
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  void dispatchEvent(std::string eventName, NativeMap* params, int category);
+  void dispatchUniqueEvent(std::string eventName, NativeMap* params);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

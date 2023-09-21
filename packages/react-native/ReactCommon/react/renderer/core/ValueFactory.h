@@ -11,10 +11,8 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-using ValueFactory = std::function<jsi::Value(jsi::Runtime &runtime)>;
+using ValueFactory = std::function<jsi::Value(jsi::Runtime& runtime)>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

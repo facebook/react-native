@@ -9,17 +9,16 @@
 
 #include <rncore.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<std::shared_ptr<TurboModule>(
-    const std::string &,
-    const std::shared_ptr<CallInvoker> &)>
+    const std::string&,
+    const std::shared_ptr<CallInvoker>&)>
     DefaultTurboModuleManagerDelegate::cxxModuleProvider{nullptr};
 
 std::function<std::shared_ptr<TurboModule>(
-    const std::string &,
-    const JavaTurboModule::InitParams &)>
+    const std::string&,
+    const JavaTurboModule::InitParams&)>
     DefaultTurboModuleManagerDelegate::javaModuleProvider{nullptr};
 
 jni::local_ref<DefaultTurboModuleManagerDelegate::jhybriddata>
@@ -35,8 +34,8 @@ void DefaultTurboModuleManagerDelegate::registerNatives() {
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
-    const std::string &name,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::string& name,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
   auto moduleProvider = DefaultTurboModuleManagerDelegate::cxxModuleProvider;
   if (moduleProvider) {
     return moduleProvider(name, jsInvoker);
@@ -45,8 +44,8 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
-    const std::string &name,
-    const JavaTurboModule::InitParams &params) {
+    const std::string& name,
+    const JavaTurboModule::InitParams& params) {
   auto moduleProvider = DefaultTurboModuleManagerDelegate::javaModuleProvider;
   if (moduleProvider) {
     if (auto resolvedModule = moduleProvider(name, params)) {
@@ -56,5 +55,4 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
   return rncore_ModuleProvider(name, params);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

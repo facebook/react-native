@@ -11,52 +11,51 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SampleTurboCxxModule::SampleTurboCxxModule(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeSampleTurboCxxModuleSpecJSI(jsInvoker) {}
 
-void SampleTurboCxxModule::voidFunc(jsi::Runtime &rt) {
+void SampleTurboCxxModule::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
 }
 
-bool SampleTurboCxxModule::getBool(jsi::Runtime &rt, bool arg) {
+bool SampleTurboCxxModule::getBool(jsi::Runtime& rt, bool arg) {
   return arg;
 }
 
-double SampleTurboCxxModule::getEnum(jsi::Runtime &rt, double arg) {
+double SampleTurboCxxModule::getEnum(jsi::Runtime& rt, double arg) {
   return arg;
 }
 
-double SampleTurboCxxModule::getNumber(jsi::Runtime &rt, double arg) {
+double SampleTurboCxxModule::getNumber(jsi::Runtime& rt, double arg) {
   return arg;
 }
 
 jsi::String SampleTurboCxxModule::getString(
-    jsi::Runtime &rt,
-    const jsi::String &arg) {
+    jsi::Runtime& rt,
+    const jsi::String& arg) {
   return jsi::String::createFromUtf8(rt, arg.utf8(rt));
 }
 
 jsi::Array SampleTurboCxxModule::getArray(
-    jsi::Runtime &rt,
-    const jsi::Array &arg) {
+    jsi::Runtime& rt,
+    const jsi::Array& arg) {
   return deepCopyJSIArray(rt, arg);
 }
 
 jsi::Object SampleTurboCxxModule::getObject(
-    jsi::Runtime &rt,
-    const jsi::Object &arg) {
+    jsi::Runtime& rt,
+    const jsi::Object& arg) {
   return deepCopyJSIObject(rt, arg);
 }
 
 jsi::Object SampleTurboCxxModule::getValue(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     double x,
-    const jsi::String &y,
-    const jsi::Object &z) {
+    const jsi::String& y,
+    const jsi::Object& z) {
   // Note: return type isn't type-safe.
   jsi::Object result(rt);
   result.setProperty(rt, "x", jsi::Value(x));
@@ -66,16 +65,16 @@ jsi::Object SampleTurboCxxModule::getValue(
 }
 
 void SampleTurboCxxModule::getValueWithCallback(
-    jsi::Runtime &rt,
-    const jsi::Function &callback) {
+    jsi::Runtime& rt,
+    const jsi::Function& callback) {
   callback.call(rt, jsi::String::createFromUtf8(rt, "value from callback!"));
 }
 
 jsi::Value SampleTurboCxxModule::getValueWithPromise(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     bool error) {
   return createPromiseAsJSIValue(
-      rt, [error](jsi::Runtime &rt2, std::shared_ptr<Promise> promise) {
+      rt, [error](jsi::Runtime& rt2, std::shared_ptr<Promise> promise) {
         if (error) {
           promise->reject("intentional promise rejection");
         } else {
@@ -84,7 +83,7 @@ jsi::Value SampleTurboCxxModule::getValueWithPromise(
       });
 }
 
-jsi::Object SampleTurboCxxModule::getConstants(jsi::Runtime &rt) {
+jsi::Object SampleTurboCxxModule::getConstants(jsi::Runtime& rt) {
   // Note: return type isn't type-safe.
   jsi::Object result(rt);
   result.setProperty(rt, "const1", jsi::Value(true));
@@ -94,5 +93,4 @@ jsi::Object SampleTurboCxxModule::getConstants(jsi::Runtime &rt) {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

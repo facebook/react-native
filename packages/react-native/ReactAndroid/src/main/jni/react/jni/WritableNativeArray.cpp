@@ -11,13 +11,12 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 WritableNativeArray::WritableNativeArray()
     : HybridBase(folly::dynamic::array()) {}
 
-WritableNativeArray::WritableNativeArray(folly::dynamic &&val)
+WritableNativeArray::WritableNativeArray(folly::dynamic&& val)
     : HybridBase(std::move(val)) {
   if (!array_.isArray()) {
     throw std::runtime_error("WritableNativeArray value must be an array.");
@@ -58,7 +57,7 @@ void WritableNativeArray::pushString(jstring value) {
   array_.push_back(wrap_alias(value)->toStdString());
 }
 
-void WritableNativeArray::pushNativeArray(ReadableNativeArray *otherArray) {
+void WritableNativeArray::pushNativeArray(ReadableNativeArray* otherArray) {
   if (otherArray == NULL) {
     pushNull();
     return;
@@ -67,7 +66,7 @@ void WritableNativeArray::pushNativeArray(ReadableNativeArray *otherArray) {
   array_.push_back(otherArray->consume());
 }
 
-void WritableNativeArray::pushNativeMap(ReadableNativeMap *map) {
+void WritableNativeArray::pushNativeMap(ReadableNativeMap* map) {
   if (map == NULL) {
     pushNull();
     return;
@@ -89,5 +88,4 @@ void WritableNativeArray::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,8 +11,7 @@
 
 #import <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
@@ -22,5 +21,4 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
       facebook::jsc::makeJSCRuntime(), delegate, JSIExecutor::defaultTimeoutInvoker, runtimeInstaller_);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

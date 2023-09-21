@@ -29,11 +29,18 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (void)removeObserveForTag:(NSInteger)tag;
 
-- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view; // [macOS]
+- (void)setProps:(const folly::dynamic &)props forView:(RCTUIView *)view; // [macOS]
 
 - (NSString *)componentViewName;
 
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args reactTag:(NSInteger)tag;
+- (void)handleCommand:(NSString *)commandName
+                 args:(NSArray *)args
+             reactTag:(NSInteger)tag
+            paperView:(UIView *)paperView;
+
+- (void)removeViewFromRegistryWithTag:(NSInteger)tag;
+
+- (void)addViewToRegistry:(UIView *)view withTag:(NSInteger)tag;
 
 @end
 

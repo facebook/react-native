@@ -91,11 +91,6 @@ function generateiOSArtifacts(
 ) {
   pushd(`${hermesCoreSourceFolder}`);
 
-  //Need to generate hermesc
-  exec(
-    `${hermesCoreSourceFolder}/utils/build-hermesc-xcode.sh ${hermesCoreSourceFolder}/build_host_hermesc`,
-  );
-
   //Generating iOS Artifacts
   exec(
     `JSI_PATH=${jsiFolder} BUILD_TYPE=${buildType} ${hermesCoreSourceFolder}/utils/build-mac-framework.sh`,

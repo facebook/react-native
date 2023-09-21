@@ -11,8 +11,7 @@
 #include <tuple>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // pure destructors in C++ are odd. You would think they don't want an
 // implementation, but in fact the linker requires one. Define them to be
@@ -27,8 +26,8 @@ namespace {
 class InspectorImpl : public IInspector {
  public:
   int addPage(
-      const std::string &title,
-      const std::string &vm,
+      const std::string& title,
+      const std::string& vm,
       ConnectFunc connectFunc) override;
   void removePage(int pageId) override;
 
@@ -45,10 +44,10 @@ class InspectorImpl : public IInspector {
 };
 
 int InspectorImpl::addPage(
-    const std::string &title,
-    const std::string &vm,
+    const std::string& title,
+    const std::string& vm,
     ConnectFunc connectFunc) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
   titles_[pageId] = std::make_tuple(title, vm);
@@ -58,17 +57,17 @@ int InspectorImpl::addPage(
 }
 
 void InspectorImpl::removePage(int pageId) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   titles_.erase(pageId);
   connectFuncs_.erase(pageId);
 }
 
 std::vector<InspectorPage> InspectorImpl::getPages() const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   std::vector<InspectorPage> inspectorPages;
-  for (auto &it : titles_) {
+  for (auto& it : titles_) {
     inspectorPages.push_back(InspectorPage{
         it.first, std::get<0>(it.second), std::get<1>(it.second)});
   }
@@ -82,7 +81,7 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
   IInspector::ConnectFunc connectFunc;
 
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
 
     auto it = connectFuncs_.find(pageId);
     if (it != connectFuncs_.end()) {
@@ -95,7 +94,7 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
 
 } // namespace
 
-IInspector &getInspectorInstance() {
+IInspector& getInspectorInstance() {
   static InspectorImpl instance;
   return instance;
 }
@@ -104,5 +103,4 @@ std::unique_ptr<IInspector> makeTestInspectorInstance() {
   return std::make_unique<InspectorImpl>();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

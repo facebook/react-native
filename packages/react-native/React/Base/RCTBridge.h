@@ -9,6 +9,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
@@ -31,12 +32,6 @@
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
 /**
- * These blocks are used to report whether an additional bundle
- * fails or succeeds loading.
- */
-typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
-
-/**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -48,13 +43,26 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
-// Turn on TurboModule eager initialization
-RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
+// Turn on TurboModule interop
+RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
 
-// Turn off TurboModule delegate locking
-RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
-RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
+// Turn on TurboModule interop's Bridge proxy
+RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
+typedef enum {
+  kRCTBridgeProxyLoggingLevelNone,
+  kRCTBridgeProxyLoggingLevelWarning,
+  kRCTBridgeProxyLoggingLevelError,
+} RCTBridgeProxyLoggingLevel;
+
+RCT_EXTERN RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+RCT_EXTERN void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
+
+// Route all TurboModules through TurboModule interop
+RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
 typedef enum {
   kRCTGlobalScope,
@@ -133,11 +141,11 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
- * This hook is called by the TurboModule infra with every TurboModule that's created.
- * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * This hook is called by the TurboModule infra with every ObjC module that's created.
+ * It allows the bridge to attach properties to ObjC modules that give those modules
  * access to Bridge APIs.
  */
-- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.
@@ -218,12 +226,5 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  * Says whether bridge has started receiving calls from JavaScript.
  */
 - (BOOL)isBatchActive;
-
-/**
- * Loads and executes additional bundles in the VM for development.
- */
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete;
 
 @end

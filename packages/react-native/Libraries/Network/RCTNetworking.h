@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTURLRequestHandler.h>
@@ -56,6 +57,12 @@
 @end
 
 @interface RCTBridge (RCTNetworking)
+
+@property (nonatomic, readonly) RCTNetworking *networking;
+
+@end
+
+@interface RCTBridgeProxy (RCTNetworking)
 
 @property (nonatomic, readonly) RCTNetworking *networking;
 

@@ -40,6 +40,8 @@ import {
   DrawerLayoutAndroid,
   DrawerSlideEvent,
   DynamicColorIOS,
+  EmitterSubscription,
+  EventSubscription,
   FlatList,
   FlatListProps,
   GestureResponderEvent,
@@ -82,8 +84,7 @@ import {
   SectionListProps,
   SectionListRenderItemInfo,
   Share,
-  ShareDismissedAction,
-  ShareSharedAction,
+  ShareAction,
   StatusBar,
   StyleProp,
   StyleSheet,
@@ -385,6 +386,7 @@ const testNativeSyntheticEvent = <T extends {}>(
   e.isTrusted;
   e.nativeEvent;
   e.target;
+  e.target.measure(() => {});
   e.timeStamp;
   e.type;
   e.nativeEvent;
@@ -1066,7 +1068,6 @@ const sub2 = androidEventEmitter.addListener(
 androidEventEmitter.listenerCount('event'); // $ExpectType number
 sub2.remove();
 androidEventEmitter.removeAllListeners('event');
-androidEventEmitter.removeSubscription(sub1);
 
 // NativeEventEmitter - IOS
 const nativeModule: NativeModule = {
@@ -1079,7 +1080,6 @@ const sub4 = iosEventEmitter.addListener('event', (event: object) => event, {});
 iosEventEmitter.listenerCount('event');
 sub4.remove();
 iosEventEmitter.removeAllListeners('event');
-iosEventEmitter.removeSubscription(sub3);
 
 class CustomEventEmitter extends NativeEventEmitter {}
 

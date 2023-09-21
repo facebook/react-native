@@ -13,8 +13,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using facebook::jni::alias_ref;
 
@@ -43,8 +42,8 @@ class JavaJSModule : public jni::JavaClass<JavaJSModule> {
       int b,
       double x,
       double y,
-      const std::string &s,
-      const std::string &t) {
+      const std::string& s,
+      const std::string& t) {
     static auto method =
         javaClassLocal()
             ->getMethod<void(
@@ -143,8 +142,8 @@ class CxxBenchmarkModule : public xplat::module::CxxModule {
       int b,
       double x,
       double y,
-      const std::string &s,
-      const std::string &t) {
+      const std::string& s,
+      const std::string& t) {
     if (iters == 0) {
       CatalystBridgeBenchmarks::countDown(javaTestInstance);
     } else {
@@ -174,7 +173,7 @@ static bool gHasSeenMessage = false;
 /**
  * NB: Don't put JNI logic (or anything else that could trigger a log) here!
  */
-static void stubLogHandler(int pri, const char *tag, const char *msg) {
+static void stubLogHandler(int pri, const char* tag, const char* msg) {
   if (gMessageToLookFor.empty()) {
     return;
   }
@@ -184,18 +183,18 @@ static void stubLogHandler(int pri, const char *tag, const char *msg) {
   gHasSeenMessage |= priorityMatches && substringFound;
 }
 
-static jboolean hasSeenExpectedLogMessage(JNIEnv *, jclass) {
+static jboolean hasSeenExpectedLogMessage(JNIEnv*, jclass) {
   return gHasSeenMessage ? JNI_TRUE : JNI_FALSE;
 }
 
-static void stopWatchingLogMessages(JNIEnv *, jclass) {
+static void stopWatchingLogMessages(JNIEnv*, jclass) {
   gMessageToLookFor = "";
   gHasSeenMessage = false;
   setLogHandler(NULL);
 }
 
 static void startWatchingForLogMessage(
-    JNIEnv *env,
+    JNIEnv* env,
     jclass loggerClass,
     jstring jmsg,
     jint priority) {
@@ -207,16 +206,15 @@ static void startWatchingForLogMessage(
 
 } // namespace logwatcher
 } // namespace
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 
-extern "C" facebook::xplat::module::CxxModule *CxxBenchmarkModule() {
+extern "C" facebook::xplat::module::CxxModule* CxxBenchmarkModule() {
   return new facebook::react::CxxBenchmarkModule();
 }
 
-extern "C" jint JNI_OnLoad(JavaVM *vm, void *) {
+extern "C" jint JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
     facebook::jni::registerNatives(
         "com/facebook/catalyst/testing/LogWatcher",

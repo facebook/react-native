@@ -32,7 +32,7 @@ function MemoryExample(): React.Node {
     setMemoryInfo(performance.memory);
   }, []);
   return (
-    <RNTesterPage noSpacer={true} noScroll={true} title="performance.memory">
+    <RNTesterPage noScroll={true} title="performance.memory">
       <View style={styles.container}>
         <Button onPress={onGetMemoryInfo} title="Click to update memory info" />
         <View>
@@ -63,34 +63,29 @@ function StartupTimingExample(): React.Node {
     setStartUpTiming(performance.reactNativeStartupTiming);
   }, []);
   return (
-    <RNTesterPage
-      noSpacer={true}
-      noScroll={true}
-      title="performance.reactNativeStartupTiming">
+    <RNTesterPage noScroll={true} title="performance.reactNativeStartupTiming">
       <View style={styles.container}>
         <Button
           onPress={onGetStartupTiming}
           title="Click to update React startup timing"
         />
         <View>
-          <Text>{`startTime: ${
-            startUpTiming == null ? 'N/A' : startUpTiming.startTime
-          } ms`}</Text>
+          <Text>{`startTime: ${String(startUpTiming?.startTime)} ms`}</Text>
+          <Text>{`initializeRuntimeStart: ${String(
+            startUpTiming?.initializeRuntimeStart,
+          )} ms`}</Text>
           <Text>
-            {`executeJavaScriptBundleEntryPointStart: ${
-              startUpTiming == null
-                ? 'N/A'
-                : startUpTiming.executeJavaScriptBundleEntryPointStart
-            } ms`}
+            {`executeJavaScriptBundleEntryPointStart: ${String(
+              startUpTiming?.executeJavaScriptBundleEntryPointStart,
+            )} ms`}
           </Text>
-          <Text>{`executeJavaScriptBundleEntryPointEnd: ${
-            startUpTiming == null
-              ? 'N/A'
-              : startUpTiming.executeJavaScriptBundleEntryPointEnd
-          } ms`}</Text>
-          <Text>{`endTime: ${
-            startUpTiming == null ? 'N/A' : startUpTiming.endTime
-          } ms`}</Text>
+          <Text>{`executeJavaScriptBundleEntryPointEnd: ${String(
+            startUpTiming?.executeJavaScriptBundleEntryPointEnd,
+          )} ms`}</Text>
+          <Text>{`initializeRuntimeEnd: ${String(
+            startUpTiming?.initializeRuntimeEnd,
+          )} ms`}</Text>
+          <Text>{`endTime: ${String(startUpTiming?.endTime)} ms`}</Text>
         </View>
       </View>
     </RNTesterPage>

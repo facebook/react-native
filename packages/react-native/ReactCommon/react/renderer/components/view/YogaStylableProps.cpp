@@ -9,35 +9,151 @@
 
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <yoga/YGNode.h>
+#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
+#include <unordered_set>
 
 #include "conversions.h"
 
 namespace facebook::react {
 
+namespace {
+inline RawProps filterYogaProps(const RawProps& rawProps) {
+  const static std::unordered_set<std::string> yogaStylePropNames = {
+      {"direction",
+       "flexDirection",
+       "justifyContent",
+       "alignContent",
+       "alignItems",
+       "alignSelf",
+       "position",
+       "flexWrap",
+       "display",
+       "flex",
+       "flexGrow",
+       "flexShrink",
+       "flexBasis",
+       "margin",
+       "padding",
+       "rowGap",
+       "columnGap",
+       "gap",
+       // TODO: T163711275 also filter out width/height when SVG no longer read
+       // them from RawProps
+       "minWidth",
+       "maxWidth",
+       "minHeight",
+       "maxHeight",
+       "aspectRatio",
+
+       // edges
+       "left",
+       "right",
+       "top",
+       "bottom",
+       "start",
+       "end",
+
+       // variants of inset
+       "inset",
+       "insetStart",
+       "insetEnd",
+       "insetInline",
+       "insetInlineStart",
+       "insetInlineEnd",
+       "insetBlock",
+       "insetBlockEnd",
+       "insetBlockStart",
+       "insetVertical",
+       "insetHorizontal",
+       "insetTop",
+       "insetBottom",
+       "insetLeft",
+       "insetRight",
+
+       // variants of margin
+       "marginStart",
+       "marginEnd",
+       "marginInline",
+       "marginInlineStart",
+       "marginInlineEnd",
+       "marginBlock",
+       "marginBlockStart",
+       "marginBlockEnd",
+       "marginVertical",
+       "marginHorizontal",
+       "marginTop",
+       "marginBottom",
+       "marginLeft",
+       "marginRight",
+
+       // variants of padding
+       "paddingStart",
+       "paddingEnd",
+       "paddingInline",
+       "paddingInlineStart",
+       "paddingInlineEnd",
+       "paddingBlock",
+       "paddingBlockStart",
+       "paddingBlockEnd",
+       "paddingVertical",
+       "paddingHorizontal",
+       "paddingTop",
+       "paddingBottom",
+       "paddingLeft",
+       "paddingRight"}};
+
+  auto filteredRawProps = (folly::dynamic)rawProps;
+
+  auto it = filteredRawProps.items().begin();
+  while (it != filteredRawProps.items().end()) {
+    auto key = it->first.asString();
+    if (yogaStylePropNames.find(key) != yogaStylePropNames.end()) {
+      it = filteredRawProps.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  return RawProps(std::move(filteredRawProps));
+}
+} // namespace
+
 YogaStylableProps::YogaStylableProps(
-    const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps,
-    bool shouldSetRawProps)
-    : Props(context, sourceProps, rawProps, shouldSetRawProps),
-      yogaStyle(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.yogaStyle
-              : convertRawProp(context, rawProps, sourceProps.yogaStyle)) {
-  if (!CoreFeatures::enablePropIteratorSetter) {
-    convertRawPropAliases(context, sourceProps, rawProps);
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps)
+    : Props() {
+  if (CoreFeatures::excludeYogaFromRawProps) {
+    const auto filteredRawProps = filterYogaProps(rawProps);
+    initialize(context, sourceProps, filteredRawProps);
+
+    yogaStyle = CoreFeatures::enablePropIteratorSetter
+        ? sourceProps.yogaStyle
+        : convertRawProp(context, filteredRawProps, sourceProps.yogaStyle);
+
+    if (!CoreFeatures::enablePropIteratorSetter) {
+      convertRawPropAliases(context, sourceProps, filteredRawProps);
+    }
+  } else {
+    initialize(context, sourceProps, rawProps);
+
+    yogaStyle = CoreFeatures::enablePropIteratorSetter
+        ? sourceProps.yogaStyle
+        : convertRawProp(context, rawProps, sourceProps.yogaStyle);
+
+    if (!CoreFeatures::enablePropIteratorSetter) {
+      convertRawPropAliases(context, sourceProps, rawProps);
+    }
   }
 };
 
 template <typename T>
 static inline T const getFieldValue(
-    const PropsParserContext &context,
-    RawValue const &value,
+    const PropsParserContext& context,
+    const RawValue& value,
     T const defaultValue) {
   if (value.hasValue()) {
     T res;
@@ -65,9 +181,19 @@ static inline T const getFieldValue(
     return;                                                           \
   }
 
-#define REBUILD_FIELD_YG_DIMENSION(field, widthStr, heightStr)             \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGDimensionWidth, widthStr); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGDimensionHeight, heightStr);
+#define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                    \
+    field, setter, index, fieldName)                                    \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                       \
+    yogaStyle.setter(                                                   \
+        index, getFieldValue(context, value, ygDefaults.field(index))); \
+    return;                                                             \
+  }
+
+#define REBUILD_FIELD_YG_DIMENSION(field, setter, widthStr, heightStr) \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
+      field, setter, YGDimensionWidth, widthStr);                      \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
+      field, setter, YGDimensionHeight, heightStr);
 
 #define REBUILD_FIELD_YG_GUTTER(field, rowGapStr, columnGapStr, gapStr)      \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterRow, rowGapStr);       \
@@ -100,11 +226,12 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeEnd, "end");
 
 void YogaStylableProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
-  static const auto ygDefaults = YGStyle{};
+    const char* propName,
+    const RawValue& value) {
+  static const auto ygDefaults = yoga::Style{};
+  static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
 
@@ -125,15 +252,15 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
     REBUILD_FIELD_YG_GUTTER(gap, "rowGap", "columnGap", "gap");
     REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
-    REBUILD_FIELD_YG_DIMENSION(dimensions, "width", "height");
-    REBUILD_FIELD_YG_DIMENSION(minDimensions, "minWidth", "minHeight");
-    REBUILD_FIELD_YG_DIMENSION(maxDimensions, "maxWidth", "maxHeight");
+    REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
+    REBUILD_FIELD_YG_DIMENSION(
+        minDimension, setMinDimension, "minWidth", "minHeight");
+    REBUILD_FIELD_YG_DIMENSION(
+        maxDimension, setMaxDimension, "maxWidth", "maxHeight");
     REBUILD_FIELD_YG_EDGES_POSITION();
     REBUILD_FIELD_YG_EDGES(margin, "margin", "");
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
-
-    static const auto defaults = YogaStylableProps{};
 
     // Aliases
     RAW_SET_PROP_SWITCH_CASE(inset, "inset");
@@ -162,7 +289,7 @@ void YogaStylableProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  auto const defaultYogaStyle = YGStyle{};
+  const auto defaultYogaStyle = yoga::Style{};
   return {
       debugStringConvertibleItem(
           "direction", yogaStyle.direction(), defaultYogaStyle.direction()),
@@ -221,15 +348,29 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
       debugStringConvertibleItem(
           "border", yogaStyle.border(), defaultYogaStyle.border()),
       debugStringConvertibleItem(
-          "dimensions", yogaStyle.dimensions(), defaultYogaStyle.dimensions()),
+          "width",
+          yogaStyle.dimension(YGDimensionWidth),
+          defaultYogaStyle.dimension(YGDimensionWidth)),
       debugStringConvertibleItem(
-          "minDimensions",
-          yogaStyle.minDimensions(),
-          defaultYogaStyle.minDimensions()),
+          "height",
+          yogaStyle.dimension(YGDimensionHeight),
+          defaultYogaStyle.dimension(YGDimensionHeight)),
       debugStringConvertibleItem(
-          "maxDimensions",
-          yogaStyle.maxDimensions(),
-          defaultYogaStyle.maxDimensions()),
+          "minWidth",
+          yogaStyle.minDimension(YGDimensionWidth),
+          defaultYogaStyle.minDimension(YGDimensionWidth)),
+      debugStringConvertibleItem(
+          "minHeight",
+          yogaStyle.minDimension(YGDimensionHeight),
+          defaultYogaStyle.minDimension(YGDimensionHeight)),
+      debugStringConvertibleItem(
+          "maxWidth",
+          yogaStyle.maxDimension(YGDimensionWidth),
+          defaultYogaStyle.maxDimension(YGDimensionWidth)),
+      debugStringConvertibleItem(
+          "maxHeight",
+          yogaStyle.maxDimension(YGDimensionHeight),
+          defaultYogaStyle.maxDimension(YGDimensionHeight)),
       debugStringConvertibleItem(
           "aspectRatio",
           yogaStyle.aspectRatio(),
@@ -239,9 +380,9 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
 #endif
 
 void YogaStylableProps::convertRawPropAliases(
-    const PropsParserContext &context,
-    YogaStylableProps const &sourceProps,
-    RawProps const &rawProps) {
+    const PropsParserContext& context,
+    const YogaStylableProps& sourceProps,
+    const RawProps& rawProps) {
   inset = convertRawProp(
       context,
       rawProps,

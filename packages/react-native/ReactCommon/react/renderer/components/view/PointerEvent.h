@@ -7,14 +7,14 @@
 
 #pragma once
 
+#include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Point.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-struct PointerEvent {
+struct PointerEvent : public EventPayload {
   /*
    * A unique identifier for the pointer causing the event.
    */
@@ -110,16 +110,21 @@ struct PointerEvent {
    * was fired.
    */
   int button;
+
+  /*
+   * EventPayload implementations
+   */
+  jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
+  EventPayloadType getType() const override;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const &pointerEvent);
+std::string getDebugName(const PointerEvent& pointerEvent);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    PointerEvent const &pointerEvent,
+    const PointerEvent& pointerEvent,
     DebugStringConvertibleOptions options);
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class AccessibilityTraits : uint32_t {
   None = 0,
@@ -55,14 +54,14 @@ struct AccessibilityAction {
 };
 
 inline static bool operator==(
-    AccessibilityAction const &lhs,
-    AccessibilityAction const &rhs) {
+    const AccessibilityAction& lhs,
+    const AccessibilityAction& rhs) {
   return lhs.name == rhs.name && lhs.label == rhs.label;
 }
 
 inline static bool operator!=(
-    AccessibilityAction const &lhs,
-    AccessibilityAction const &rhs) {
+    const AccessibilityAction& lhs,
+    const AccessibilityAction& rhs) {
   return !(rhs == lhs);
 }
 
@@ -75,16 +74,16 @@ struct AccessibilityState {
 };
 
 constexpr bool operator==(
-    AccessibilityState const &lhs,
-    AccessibilityState const &rhs) {
+    const AccessibilityState& lhs,
+    const AccessibilityState& rhs) {
   return lhs.disabled == rhs.disabled && lhs.selected == rhs.selected &&
       lhs.checked == rhs.checked && lhs.busy == rhs.busy &&
       lhs.expanded == rhs.expanded;
 }
 
 constexpr bool operator!=(
-    AccessibilityState const &lhs,
-    AccessibilityState const &rhs) {
+    const AccessibilityState& lhs,
+    const AccessibilityState& rhs) {
   return !(rhs == lhs);
 }
 
@@ -93,14 +92,14 @@ struct AccessibilityLabelledBy {
 };
 
 inline static bool operator==(
-    AccessibilityLabelledBy const &lhs,
-    AccessibilityLabelledBy const &rhs) {
+    const AccessibilityLabelledBy& lhs,
+    const AccessibilityLabelledBy& rhs) {
   return lhs.value == rhs.value;
 }
 
 inline static bool operator!=(
-    AccessibilityLabelledBy const &lhs,
-    AccessibilityLabelledBy const &rhs) {
+    const AccessibilityLabelledBy& lhs,
+    const AccessibilityLabelledBy& rhs) {
   return !(lhs == rhs);
 }
 
@@ -112,15 +111,15 @@ struct AccessibilityValue {
 };
 
 constexpr bool operator==(
-    AccessibilityValue const &lhs,
-    AccessibilityValue const &rhs) {
+    const AccessibilityValue& lhs,
+    const AccessibilityValue& rhs) {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.now == rhs.now &&
       lhs.text == rhs.text;
 }
 
 constexpr bool operator!=(
-    AccessibilityValue const &lhs,
-    AccessibilityValue const &rhs) {
+    const AccessibilityValue& lhs,
+    const AccessibilityValue& rhs) {
   return !(rhs == lhs);
 }
 
@@ -137,5 +136,131 @@ enum class AccessibilityLiveRegion : uint8_t {
   Assertive,
 };
 
-} // namespace react
-} // namespace facebook
+enum class AccessibilityRole {
+  None,
+  Button,
+  Dropdownlist,
+  Togglebutton,
+  Link,
+  Search,
+  Image,
+  Keyboardkey,
+  Text,
+  Adjustable,
+  Imagebutton,
+  Header,
+  Summary,
+  Alert,
+  Checkbox,
+  Combobox,
+  Menu,
+  Menubar,
+  Menuitem,
+  Progressbar,
+  Radio,
+  Radiogroup,
+  Scrollbar,
+  Spinbutton,
+  Switch,
+  Tab,
+  Tabbar,
+  Tablist,
+  Timer,
+  List,
+  Toolbar,
+  Grid,
+  Pager,
+  Scrollview,
+  Horizontalscrollview,
+  Viewgroup,
+  Webview,
+  Drawerlayout,
+  Slidingdrawer,
+  Iconmenu,
+};
+
+enum class Role {
+  Alert,
+  Alertdialog,
+  Application,
+  Article,
+  Banner,
+  Button,
+  Cell,
+  Checkbox,
+  Columnheader,
+  Combobox,
+  Complementary,
+  Contentinfo,
+  Definition,
+  Dialog,
+  Directory,
+  Document,
+  Feed,
+  Figure,
+  Form,
+  Grid,
+  Group,
+  Heading,
+  Img,
+  Link,
+  List,
+  Listitem,
+  Log,
+  Main,
+  Marquee,
+  Math,
+  Menu,
+  Menubar,
+  Menuitem,
+  Meter,
+  Navigation,
+  None,
+  Note,
+  Option,
+  Presentation,
+  Progressbar,
+  Radio,
+  Radiogroup,
+  Region,
+  Row,
+  Rowgroup,
+  Rowheader,
+  Scrollbar,
+  Searchbox,
+  Separator,
+  Slider,
+  Spinbutton,
+  Status,
+  Summary,
+  Switch,
+  Tab,
+  Table,
+  Tablist,
+  Tabpanel,
+  Term,
+  Timer,
+  Toolbar,
+  Tooltip,
+  Tree,
+  Treegrid,
+  Treeitem,
+};
+
+} // namespace facebook::react
+
+namespace std {
+template <>
+struct hash<facebook::react::AccessibilityRole> {
+  size_t operator()(const facebook::react::AccessibilityRole& v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::Role> {
+  size_t operator()(const facebook::react::Role& v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+} // namespace std

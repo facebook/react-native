@@ -15,36 +15,50 @@ const mockComponent = jest.requireActual('./mockComponent');
 jest.requireActual('@react-native/js-polyfills/Object.es8');
 jest.requireActual('@react-native/js-polyfills/error-guard');
 
-global.__DEV__ = true;
-
-global.performance = {
-  now: jest.fn(Date.now),
-};
-
-global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
-global.window = global;
-
-global.requestAnimationFrame = function (callback) {
-  return setTimeout(() => callback(jest.now()), 0);
-};
-global.cancelAnimationFrame = function (id) {
-  clearTimeout(id);
-};
-
-// there's a __mock__ for it.
-jest.setMock(
-  '../Libraries/vendor/core/ErrorUtils',
-  require('../Libraries/vendor/core/ErrorUtils'),
-);
+Object.defineProperties(global, {
+  __DEV__: {
+    configurable: true,
+    enumerable: true,
+    value: true,
+    writable: true,
+  },
+  cancelAnimationFrame: {
+    configurable: true,
+    enumerable: true,
+    value: id => clearTimeout(id),
+    writable: true,
+  },
+  performance: {
+    configurable: true,
+    enumerable: true,
+    value: {
+      now: jest.fn(Date.now),
+    },
+    writable: true,
+  },
+  regeneratorRuntime: {
+    configurable: true,
+    enumerable: true,
+    value: jest.requireActual('regenerator-runtime/runtime'),
+    writable: true,
+  },
+  requestAnimationFrame: {
+    configurable: true,
+    enumerable: true,
+    value: callback => setTimeout(() => callback(jest.now()), 0),
+    writable: true,
+  },
+  window: {
+    configurable: true,
+    enumerable: true,
+    value: global,
+    writable: true,
+  },
+});
 
 jest
   .mock('../Libraries/Core/InitializeCore', () => {})
-  .mock('../Libraries/Core/NativeExceptionsManager', () => ({
-    __esModule: true,
-    default: {
-      reportException: jest.fn(),
-    },
-  }))
+  .mock('../Libraries/Core/NativeExceptionsManager')
   .mock('../Libraries/ReactNative/UIManager', () => ({
     AndroidViewPager: {
       Commands: {
@@ -95,9 +109,17 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () =>
-    mockComponent('../Libraries/Image/Image'),
-  )
+  .mock('../Libraries/Image/Image', () => {
+    const Image = mockComponent('../Libraries/Image/Image');
+    Image.getSize = jest.fn();
+    Image.getSizeWithHeaders = jest.fn();
+    Image.prefetch = jest.fn();
+    Image.prefetchWithMetadata = jest.fn();
+    Image.queryCache = jest.fn();
+    Image.resolveAssetSource = jest.fn();
+
+    return Image;
+  })
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
@@ -374,4 +396,11 @@ jest
       __esModule: true,
       default: Component,
     };
+  })
+  // In tests, we can use the default version instead of the one using
+  // dependency injection.
+  .mock('../Libraries/ReactNative/RendererProxy', () => {
+    return jest.requireActual(
+      '../Libraries/ReactNative/RendererImplementation',
+    );
   });

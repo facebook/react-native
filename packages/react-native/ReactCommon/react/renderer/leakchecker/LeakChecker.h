@@ -13,8 +13,7 @@
 #include <react/renderer/leakchecker/WeakFamilyRegistry.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using GarbageCollectionTrigger = std::function<void()>;
 
@@ -23,17 +22,16 @@ class LeakChecker final {
   LeakChecker(RuntimeExecutor runtimeExecutor);
 
   void uiManagerDidCreateShadowNodeFamily(
-      ShadowNodeFamily::Shared const &shadowNodeFamily) const;
+      const ShadowNodeFamily::Shared& shadowNodeFamily) const;
   void stopSurface(SurfaceId surfaceId);
 
  private:
   void checkSurfaceForLeaks(SurfaceId surfaceId) const;
 
-  RuntimeExecutor const runtimeExecutor_{};
+  const RuntimeExecutor runtimeExecutor_{};
 
   WeakFamilyRegistry registry_{};
   SurfaceId previouslyStoppedSurface_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

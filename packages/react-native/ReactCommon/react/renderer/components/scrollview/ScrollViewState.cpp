@@ -9,6 +9,14 @@
 
 namespace facebook::react {
 
+ScrollViewState::ScrollViewState(
+    Point contentOffset,
+    Rect contentBoundingRect,
+    int scrollAwayPaddingTop)
+    : contentOffset(contentOffset),
+      contentBoundingRect(contentBoundingRect),
+      scrollAwayPaddingTop(scrollAwayPaddingTop) {}
+
 Size ScrollViewState::getContentSize() const {
   return contentBoundingRect.size;
 }

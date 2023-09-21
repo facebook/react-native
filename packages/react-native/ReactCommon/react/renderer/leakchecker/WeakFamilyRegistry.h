@@ -12,14 +12,13 @@
 #include <unordered_map>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class WeakFamilyRegistry final {
  public:
   using WeakFamilies = std::vector<ShadowNodeFamily::Weak>;
 
-  void add(ShadowNodeFamily::Shared const &shadowNodeFamily) const;
+  void add(const ShadowNodeFamily::Shared& shadowNodeFamily) const;
   void removeFamiliesWithSurfaceId(SurfaceId surfaceId) const;
   WeakFamilies weakFamiliesForSurfaceId(SurfaceId surfaceId) const;
 
@@ -35,5 +34,4 @@ class WeakFamilyRegistry final {
   mutable std::unordered_map<SurfaceId, WeakFamilies> families_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -16,19 +16,18 @@
 using namespace facebook::jni;
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
     jni::alias_ref<jclass>,
-    const std::string &soPath,
-    const std::string &fname) {
+    const std::string& soPath,
+    const std::string& fname) {
   // soPath is the path of a library which has already been loaded by
   // java SoLoader.loadLibrary().  So this returns the same handle,
   // and increments the reference counter.  We can't just use
   // dlsym(RTLD_DEFAULT, ...), because that crashes on 4.4.2 and
   // earlier: https://code.google.com/p/android/issues/detail?id=61799
-  void *handle = dlopen(soPath.c_str(), RTLD_NOW);
+  void* handle = dlopen(soPath.c_str(), RTLD_NOW);
   if (!handle) {
     throwNewJavaException(
         gJavaLangIllegalArgumentException,
@@ -41,7 +40,7 @@ jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
   // here.
   auto guard = folly::makeGuard([&] { CHECK(dlclose(handle) == 0); });
 
-  void *sym = dlsym(handle, fname.c_str());
+  void* sym = dlsym(handle, fname.c_str());
   if (!sym) {
     throwNewJavaException(
         gJavaLangIllegalArgumentException,
@@ -49,11 +48,10 @@ jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
         fname.c_str(),
         soPath.c_str());
   }
-  auto factory = reinterpret_cast<CxxModule *(*)()>(sym);
+  auto factory = reinterpret_cast<CxxModule* (*)()>(sym);
 
   return CxxModuleWrapper::newObjectCxxArgs(
       std::unique_ptr<CxxModule>((*factory)()));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

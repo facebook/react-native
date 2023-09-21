@@ -23,7 +23,10 @@ const {
 
 function PlatformColorsExample() {
   function createTable() {
-    let colors: Array<{color: $Call<typeof PlatformColor>, label: string}> = [];
+    let colors: Array<{
+      color: ReturnType<typeof PlatformColor>,
+      label: string,
+    }> = [];
     if (Platform.OS === 'ios') {
       colors = [
         // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors

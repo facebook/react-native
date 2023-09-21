@@ -10,9 +10,6 @@
 #include <limits>
 #include <optional>
 
-#include <butter/map.h>
-#include <butter/small_vector.h>
-
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -21,8 +18,7 @@
 #include <react/renderer/core/RawValue.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawPropsParser;
 
@@ -52,7 +48,7 @@ class RawProps final {
   /*
    * Creates an object with given `runtime` and `value`.
    */
-  RawProps(jsi::Runtime &runtime, jsi::Value const &value) noexcept;
+  RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
   /*
    * Creates an object with given `folly::dynamic` object.
@@ -60,21 +56,21 @@ class RawProps final {
    * We need this temporary, only because we have a callsite that does not have
    * a `jsi::Runtime` behind the data.
    */
-  RawProps(folly::dynamic const &dynamic) noexcept;
+  explicit RawProps(folly::dynamic dynamic) noexcept;
 
   /*
    * Not moveable.
    */
-  RawProps(RawProps &&other) noexcept = delete;
-  RawProps &operator=(RawProps &&other) noexcept = delete;
+  RawProps(RawProps&& other) noexcept = delete;
+  RawProps& operator=(RawProps&& other) noexcept = delete;
 
   /*
    * Not copyable.
    */
-  RawProps(RawProps const &other) noexcept = delete;
-  RawProps &operator=(RawProps const &other) noexcept = delete;
+  RawProps(const RawProps& other) noexcept = delete;
+  RawProps& operator=(const RawProps& other) noexcept = delete;
 
-  void parse(RawPropsParser const &parser, const PropsParserContext &)
+  void parse(const RawPropsParser& parser, const PropsParserContext&)
       const noexcept;
 
   /*
@@ -94,7 +90,7 @@ class RawProps final {
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue *at(char const *name, char const *prefix, char const *suffix)
+  const RawValue* at(const char* name, const char* prefix, const char* suffix)
       const noexcept;
 
   /**
@@ -102,14 +98,13 @@ class RawProps final {
    * instead of using `at` to access values randomly.
    */
   void iterateOverValues(
-      std::function<
-          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
-      const;
+      const std::function<
+          void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const;
 
  private:
   friend class RawPropsParser;
 
-  mutable RawPropsParser const *parser_{nullptr};
+  mutable const RawPropsParser* parser_{nullptr};
 
   /*
    * Source artefacts:
@@ -118,7 +113,7 @@ class RawProps final {
   mutable Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
-  jsi::Runtime *runtime_{};
+  jsi::Runtime* runtime_{};
   jsi::Value value_;
 
   // Case 2: Source data is represented as `folly::dynamic`.
@@ -134,13 +129,8 @@ class RawProps final {
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
-  mutable butter::
-      small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
-          keyIndexToValueIndex_;
-  mutable butter::
-      small_vector<RawValue, kNumberOfExplicitlySpecifiedPropsSoftCap>
-          values_;
+  mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
+  mutable std::vector<RawValue> values_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

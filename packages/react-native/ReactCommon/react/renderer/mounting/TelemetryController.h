@@ -13,14 +13,13 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MountingCoordinator;
 
 using MountingTransactionCallback = std::function<void(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry)>;
+    const MountingTransaction& transaction,
+    const SurfaceTelemetry& surfaceTelemetry)>;
 
 /*
  * Provides convenient tools for aggregating and accessing telemetry data
@@ -32,13 +31,13 @@ class TelemetryController final {
   /*
    * To be used by `MountingCoordinator`.
    */
-  TelemetryController(MountingCoordinator const &mountingCoordinator) noexcept;
+  TelemetryController(const MountingCoordinator& mountingCoordinator) noexcept;
 
   /*
    * Not copyable.
    */
-  TelemetryController(TelemetryController const &other) noexcept = delete;
-  TelemetryController &operator=(TelemetryController const &other) noexcept =
+  TelemetryController(const TelemetryController& other) noexcept = delete;
+  TelemetryController& operator=(const TelemetryController& other) noexcept =
       delete;
 
  public:
@@ -46,15 +45,14 @@ class TelemetryController final {
    * Calls `MountingCoordinator::pullTransaction()` and aggregates telemetry.
    */
   bool pullTransaction(
-      MountingTransactionCallback const &willMount,
-      MountingTransactionCallback const &doMount,
-      MountingTransactionCallback const &didMount) const;
+      const MountingTransactionCallback& willMount,
+      const MountingTransactionCallback& doMount,
+      const MountingTransactionCallback& didMount) const;
 
  private:
-  MountingCoordinator const &mountingCoordinator_;
+  const MountingCoordinator& mountingCoordinator_;
   mutable SurfaceTelemetry compoundTelemetry_{};
   mutable std::mutex mutex_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -8,13 +8,13 @@
 #pragma once
 
 #include <shared_mutex>
+#include <unordered_map>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ComponentDescriptorProviderRequest =
     std::function<void(ComponentName componentName)>;
@@ -32,7 +32,7 @@ class ComponentDescriptorProviderRegistry final {
    * `ComponentDescriptorRegistry`s accordingly.
    * The methods can be called on any thread.
    */
-  void add(const ComponentDescriptorProvider &provider) const;
+  void add(const ComponentDescriptorProvider& provider) const;
 
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component
@@ -51,7 +51,7 @@ class ComponentDescriptorProviderRegistry final {
    * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
-      ComponentDescriptorParameters const &parameters) const;
+      const ComponentDescriptorParameters& parameters) const;
 
  private:
   friend class ComponentDescriptorRegistry;
@@ -59,13 +59,12 @@ class ComponentDescriptorProviderRegistry final {
   void request(ComponentName componentName) const;
 
   mutable std::shared_mutex mutex_;
-  mutable std::vector<std::weak_ptr<ComponentDescriptorRegistry const>>
+  mutable std::vector<std::weak_ptr<const ComponentDescriptorRegistry>>
       componentDescriptorRegistries_;
-  mutable butter::map<ComponentHandle, ComponentDescriptorProvider const>
+  mutable std::unordered_map<ComponentHandle, ComponentDescriptorProvider const>
       componentDescriptorProviders_;
   mutable ComponentDescriptorProviderRequest
       componentDescriptorProviderRequest_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

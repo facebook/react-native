@@ -12,14 +12,13 @@
 #include <functional>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class HermesExecutorFactory : public JSExecutorFactory {
  public:
   explicit HermesExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
-      const JSIScopedTimeoutInvoker &timeoutInvoker =
+      const JSIScopedTimeoutInvoker& timeoutInvoker =
           JSIExecutor::defaultTimeoutInvoker,
       ::hermes::vm::RuntimeConfig runtimeConfig = defaultRuntimeConfig())
       : runtimeInstaller_(runtimeInstaller),
@@ -30,7 +29,7 @@ class HermesExecutorFactory : public JSExecutorFactory {
 
   void setEnableDebugger(bool enableDebugger);
 
-  void setDebuggerName(const std::string &debuggerName);
+  void setDebuggerName(const std::string& debuggerName);
 
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
@@ -52,12 +51,11 @@ class HermesExecutor : public JSIExecutor {
       std::shared_ptr<jsi::Runtime> runtime,
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      const JSIScopedTimeoutInvoker &timeoutInvoker,
+      const JSIScopedTimeoutInvoker& timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

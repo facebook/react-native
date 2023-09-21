@@ -11,13 +11,12 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class AndroidSwitchMeasurementsManager {
  public:
   AndroidSwitchMeasurementsManager(
-      const ContextContainer::Shared &contextContainer)
+      const ContextContainer::Shared& contextContainer)
       : contextContainer_(contextContainer) {}
 
   Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
@@ -29,5 +28,4 @@ class AndroidSwitchMeasurementsManager {
   mutable Size cachedMeasurement_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

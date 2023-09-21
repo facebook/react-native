@@ -13,8 +13,7 @@
 
 #include "ReadableNativeArray.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct ReadableNativeMap;
 
@@ -25,11 +24,11 @@ struct WritableArray : jni::JavaClass<WritableArray> {
 
 struct WritableNativeArray
     : public jni::HybridClass<WritableNativeArray, ReadableNativeArray> {
-  static constexpr const char *kJavaDescriptor =
+  static constexpr const char* kJavaDescriptor =
       "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray();
-  WritableNativeArray(folly::dynamic &&val);
+  WritableNativeArray(folly::dynamic&& val);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -38,11 +37,10 @@ struct WritableNativeArray
   void pushDouble(jdouble value);
   void pushInt(jint value);
   void pushString(jstring value);
-  void pushNativeArray(ReadableNativeArray *otherArray);
-  void pushNativeMap(ReadableNativeMap *map);
+  void pushNativeArray(ReadableNativeArray* otherArray);
+  void pushNativeMap(ReadableNativeMap* map);
 
   static void registerNatives();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

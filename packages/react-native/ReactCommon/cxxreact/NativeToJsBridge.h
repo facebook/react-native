@@ -20,8 +20,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct InstanceCallback;
 class JsToNativeBridge;
@@ -44,7 +43,7 @@ class NativeToJsBridge {
    * This must be called on the main JS thread.
    */
   NativeToJsBridge(
-      JSExecutorFactory *jsExecutorFactory,
+      JSExecutorFactory* jsExecutorFactory,
       std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<InstanceCallback> callback);
@@ -55,14 +54,14 @@ class NativeToJsBridge {
    * arguments in JS.
    */
   void callFunction(
-      std::string &&module,
-      std::string &&method,
-      folly::dynamic &&args);
+      std::string&& module,
+      std::string&& method,
+      folly::dynamic&& args);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(double callbackId, folly::dynamic &&args);
+  void invokeCallback(double callbackId, folly::dynamic&& args);
 
   /**
    * Sets global variables in the JS Context.
@@ -83,11 +82,11 @@ class NativeToJsBridge {
       std::unique_ptr<const JSBigString> startupCode,
       std::string sourceURL);
 
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
-  void *getJavaScriptContext();
+  void* getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
 
@@ -98,14 +97,14 @@ class NativeToJsBridge {
    */
   void destroy();
 
-  void runOnExecutorQueue(std::function<void(JSExecutor *)> task);
+  void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
 
   /**
-   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeMethodCallInvoker is used by TurboModules to schedule work on the
    * NativeModule thread(s).
    */
-  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
-      std::shared_ptr<CallInvoker> nativeInvoker);
+  std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
+      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued
@@ -128,9 +127,8 @@ class NativeToJsBridge {
   bool m_applicationScriptHasFailure = false;
 
 #ifdef WITH_FBSYSTRACE
-  std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT(0);
+  std::atomic<uint_least32_t> m_systraceCookie{0};
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

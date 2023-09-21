@@ -10,18 +10,33 @@
 #include <memory>
 #include <shared_mutex>
 
-#include <butter/small_vector.h>
-
 #include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptor;
 class ShadowNode;
 class State;
+
+/*
+ * This is a collection of fields serving as a specification to create new
+ * `ShadowNodeFamily` instances.
+ *
+ * Do not use this class as a general purpose container to share information
+ * about a `ShadowNodeFamily`. Pelase define specific purpose containers in
+ * those cases.
+ *
+ * Note: All of the fields are `const &` references (essentially just raw
+ * pointers) which means that the Fragment does not copy/store them nor
+ * retain ownership of them.
+ */
+struct ShadowNodeFamilyFragment {
+  const Tag tag;
+  const SurfaceId surfaceId;
+  const InstanceHandle::Shared& instanceHandle;
+};
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -29,26 +44,24 @@ class State;
  */
 class ShadowNodeFamily final {
  public:
-  using Shared = std::shared_ptr<ShadowNodeFamily const>;
-  using Weak = std::weak_ptr<ShadowNodeFamily const>;
+  using Shared = std::shared_ptr<const ShadowNodeFamily>;
+  using Weak = std::weak_ptr<const ShadowNodeFamily>;
 
-  using AncestorList = butter::small_vector<
-      std::pair<
-          std::reference_wrapper<ShadowNode const> /* parentNode */,
-          int /* childIndex */>,
-      64>;
+  using AncestorList = std::vector<std::pair<
+      std::reference_wrapper<const ShadowNode> /* parentNode */,
+      int /* childIndex */>>;
 
   ShadowNodeFamily(
-      ShadowNodeFamilyFragment const &fragment,
+      const ShadowNodeFamilyFragment& fragment,
       EventDispatcher::Weak eventDispatcher,
-      ComponentDescriptor const &componentDescriptor);
+      const ComponentDescriptor& componentDescriptor);
 
   /*
    * Sets the parent.
    * This is not technically thread-safe, but practically it mutates the object
    * only once (and the model enforces that this first call is not concurrent).
    */
-  void setParent(ShadowNodeFamily::Shared const &parent) const;
+  void setParent(const ShadowNodeFamily::Shared& parent) const;
 
   /*
    * Returns a handle (or name) associated with the component.
@@ -59,7 +72,7 @@ class ShadowNodeFamily final {
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
    */
-  const ComponentDescriptor &getComponentDescriptor() const;
+  const ComponentDescriptor& getComponentDescriptor() const;
 
   /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
@@ -70,20 +83,22 @@ class ShadowNodeFamily final {
    * Can be called from any thread.
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
-  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
+  AncestorList getAncestors(const ShadowNode& ancestorShadowNode) const;
 
   SurfaceId getSurfaceId() const;
+
+  SharedEventEmitter getEventEmitter() const;
 
   /*
    * Sets and gets the most recent state.
    */
-  std::shared_ptr<State const> getMostRecentState() const;
-  void setMostRecentState(std::shared_ptr<State const> const &state) const;
+  std::shared_ptr<const State> getMostRecentState() const;
+  void setMostRecentState(const std::shared_ptr<State const>& state) const;
 
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(StateUpdate &&stateUpdate, EventPriority priority)
+  void dispatchRawState(StateUpdate&& stateUpdate, EventPriority priority)
       const;
 
   /*
@@ -95,7 +110,6 @@ class ShadowNodeFamily final {
 
  private:
   friend ShadowNode;
-  friend ShadowNodeFamilyFragment;
   friend State;
 
   /*
@@ -103,33 +117,38 @@ class ShadowNodeFamily final {
    * otherwise returns `nullptr`.
    * To be used by `State` only.
    */
-  std::shared_ptr<State const> getMostRecentStateIfObsolete(
-      State const &state) const;
+  std::shared_ptr<const State> getMostRecentStateIfObsolete(
+      const State& state) const;
 
   EventDispatcher::Weak eventDispatcher_;
-  mutable std::shared_ptr<State const> mostRecentState_;
+  mutable std::shared_ptr<const State> mostRecentState_;
   mutable std::shared_mutex mutex_;
 
   /*
    * Deprecated.
    */
-  Tag const tag_;
+  const Tag tag_;
 
   /*
    * Identifier of a running Surface instance.
    */
-  SurfaceId const surfaceId_;
+  const SurfaceId surfaceId_;
+
+  /*
+   * Weak reference to the React instance handle
+   */
+  InstanceHandle::Shared const instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.
    */
-  SharedEventEmitter const eventEmitter_;
+  const SharedEventEmitter eventEmitter_;
 
   /*
    * Reference to a concrete `ComponentDescriptor` that manages nodes of this
    * type.
    */
-  ComponentDescriptor const &componentDescriptor_;
+  const ComponentDescriptor& componentDescriptor_;
 
   /*
    * ComponentHandle and ComponentName must be stored (cached) inside the object
@@ -151,5 +170,4 @@ class ShadowNodeFamily final {
   mutable bool hasParent_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

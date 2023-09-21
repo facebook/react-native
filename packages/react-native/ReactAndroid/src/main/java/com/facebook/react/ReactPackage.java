@@ -8,11 +8,15 @@
 package com.facebook.react;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Main interface for providing additional capabilities to the catalyst framework by couple of
@@ -30,16 +34,32 @@ import java.util.List;
  *
  * <p>TODO(6788500, 6788507): Implement support for adding custom views, events and resources
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ReactPackage {
 
   /**
    * @param reactContext react application context that can be used to create modules
-   * @return list of native modules to register with the newly created catalyst instance
+   * @return list of native modules to register with the newly created catalyst instance This method
+   *     is deprecated in the new Architecture of React Native.
    */
   @NonNull
+  @DeprecatedInNewArchitecture
   List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext);
 
   /** @return a list of view managers that should be registered with {@link UIManagerModule} */
   @NonNull
   List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext);
+
+  /**
+   * Given a module name, it returns an instance of {@link NativeModule} for the name
+   *
+   * @param name name of the Native Module
+   * @param reactContext {@link ReactApplicationContext} context for this
+   */
+  @Nullable
+  @UnstableReactNativeAPI
+  default NativeModule getModule(
+      @NonNull String name, @NonNull ReactApplicationContext reactContext) {
+    return null;
+  }
 }

@@ -25,9 +25,9 @@ using namespace facebook::react;
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
   RootShadowNode::Unshared shadowTreeWillCommit(
-      ShadowTree const & /*shadowTree*/,
-      RootShadowNode::Shared const & /*oldRootShadowNode*/,
-      RootShadowNode::Unshared const &newRootShadowNode) const override {
+      const ShadowTree& /*shadowTree*/,
+      const RootShadowNode::Shared& /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared& newRootShadowNode) const override {
     return newRootShadowNode;
   };
 
@@ -36,68 +36,66 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
       bool mountSynchronously) const override{};
 };
 
-inline ShadowNode const *findDescendantNode(
-    ShadowNode const &shadowNode,
-    ShadowNodeFamily const &family) {
-  ShadowNode const *result = nullptr;
-  shadowNode.cloneTree(family, [&](ShadowNode const &oldShadowNode) {
-    result = &oldShadowNode;
-    return oldShadowNode.clone({});
-  });
-  return result;
+namespace {
+const ShadowNode* findDescendantNode(
+    const ShadowNode& shadowNode,
+    const ShadowNodeFamily& family) {
+  if (&shadowNode.getFamily() == &family) {
+    return &shadowNode;
+  }
+
+  for (auto childNode : shadowNode.getChildren()) {
+    auto descendant = findDescendantNode(*childNode, family);
+    if (descendant != nullptr) {
+      return descendant;
+    }
+  }
+
+  return nullptr;
 }
 
-inline ShadowNode const *findDescendantNode(
-    ShadowTree const &shadowTree,
-    ShadowNodeFamily const &family) {
+const ShadowNode* findDescendantNode(
+    const ShadowTree& shadowTree,
+    const ShadowNodeFamily& family) {
   return findDescendantNode(
       *shadowTree.getCurrentRevision().rootShadowNode, family);
 }
+} // namespace
 
-TEST(StateReconciliationTest, testStateReconciliation) {
-  auto builder = simpleComponentBuilder();
+class StateReconciliationTest : public ::testing::TestWithParam<bool> {
+ public:
+  StateReconciliationTest() : builder_(simpleComponentBuilder()) {
+    CoreFeatures::enableClonelessStateProgression = GetParam();
+  }
 
+  ComponentBuilder builder_;
+};
+
+TEST_P(StateReconciliationTest, testStateReconciliation) {
   auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
   auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
   auto shadowNodeAB = std::shared_ptr<ScrollViewShadowNode>{};
-  auto shadowNodeABA = std::shared_ptr<ViewShadowNode>{};
-  auto shadowNodeABB = std::shared_ptr<ViewShadowNode>{};
-  auto shadowNodeABC = std::shared_ptr<ViewShadowNode>{};
 
   // clang-format off
   auto element =
       Element<RootShadowNode>()
         .reference(shadowNodeA)
-        .finalize([](RootShadowNode &shadowNode){
-          shadowNode.sealRecursive();
-        })
         .children({
           Element<ViewShadowNode>()
             .reference(shadowNodeAA),
           Element<ScrollViewShadowNode>()
             .reference(shadowNodeAB)
-            .children({
-              Element<ViewShadowNode>()
-              .children({
-                Element<ViewShadowNode>()
-                  .reference(shadowNodeABA),
-                Element<ViewShadowNode>()
-                  .reference(shadowNodeABB),
-                Element<ViewShadowNode>()
-                  .reference(shadowNodeABC)
-              })
-            })
         });
   // clang-format on
 
   ContextContainer contextContainer{};
 
-  auto shadowNode = builder.build(element);
+  auto shadowNode = builder_.build(element);
 
   auto rootShadowNodeState1 = shadowNode->ShadowNode::clone({});
 
-  auto &scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
-  auto &family = shadowNodeAB->getFamily();
+  auto& scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
+  auto& family = shadowNodeAB->getFamily();
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
@@ -108,7 +106,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       contextContainer};
 
   shadowTree.commit(
-      [&](RootShadowNode const & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
       {true});
@@ -119,10 +117,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState1, family)->getState(), state1);
 
   auto state2 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<ScrollViewState const>());
+      family, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState2 =
-      shadowNode->cloneTree(family, [&](ShadowNode const &oldShadowNode) {
+      shadowNode->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
              ShadowNodeFragment::childrenPlaceholder(),
@@ -133,7 +131,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState2, family)->getState(), state2);
 
   shadowTree.commit(
-      [&](RootShadowNode const & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});
@@ -142,10 +140,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   EXPECT_EQ(state2->getMostRecentState(), state2);
 
   auto state3 = scrollViewComponentDescriptor.createState(
-      family, std::make_shared<ScrollViewState const>());
+      family, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
-      family, [&](ShadowNode const &oldShadowNode) {
+      family, [&](const ShadowNode& oldShadowNode) {
         return oldShadowNode.clone(
             {ShadowNodeFragment::propsPlaceholder(),
              ShadowNodeFragment::childrenPlaceholder(),
@@ -156,7 +154,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       findDescendantNode(*rootShadowNodeState3, family)->getState(), state3);
 
   shadowTree.commit(
-      [&](RootShadowNode const & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
       {true});
@@ -171,10 +169,133 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   // Here we commit the old tree but we expect that the state associated with
   // the node will stay the same (newer that the old tree has).
   shadowTree.commit(
-      [&](RootShadowNode const & /*oldRootShadowNode*/) {
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
       {true});
 
-  EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
+  // Warning:
+  // there is important semantic difference with the approach. With the old
+  // algorithm, you couldn't go back to a shadow node with old state. New state
+  // was always enforced when state reconciliation was enabled. The clone-less
+  // algorithm does not support that, because it can't mutate such a node in
+  // place.
+  if (!GetParam()) {
+    EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
+  } else {
+    EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state2);
+  }
 }
+
+TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
+  auto shadowNodeA = std::shared_ptr<RootShadowNode>{};
+  auto shadowNodeAA = std::shared_ptr<ViewShadowNode>{};
+  auto shadowNodeAB = std::shared_ptr<ScrollViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .reference(shadowNodeA)
+        .children({
+          Element<ViewShadowNode>()
+            .reference(shadowNodeAA),
+          Element<ScrollViewShadowNode>()
+            .reference(shadowNodeAB)
+        });
+  // clang-format on
+
+  ContextContainer contextContainer{};
+
+  auto rootShadowNode1 = builder_.build(element);
+
+  auto& scrollViewComponentDescriptor = shadowNodeAB->getComponentDescriptor();
+  auto& family = shadowNodeAB->getFamily();
+  auto state1 = shadowNodeAB->getState();
+  auto shadowTreeDelegate = DummyShadowTreeDelegate{};
+  ShadowTree shadowTree{
+      SurfaceId{11},
+      LayoutConstraints{},
+      LayoutContext{},
+      shadowTreeDelegate,
+      contextContainer};
+
+  shadowTree.commit(
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
+        return std::static_pointer_cast<RootShadowNode>(rootShadowNode1);
+      },
+      {true});
+
+  EXPECT_EQ(state1->getMostRecentState(), state1);
+
+  EXPECT_EQ(findDescendantNode(*rootShadowNode1, family)->getState(), state1);
+
+  auto state2 = scrollViewComponentDescriptor.createState(
+      family, std::make_shared<const ScrollViewState>());
+
+  auto rootShadowNode2 =
+      rootShadowNode1->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state2});
+      });
+
+  EXPECT_EQ(findDescendantNode(*rootShadowNode2, family)->getState(), state2);
+  EXPECT_EQ(state1->getMostRecentState(), state1);
+
+  shadowTree.commit(
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
+        return std::static_pointer_cast<RootShadowNode>(rootShadowNode2);
+      },
+      {true});
+
+  EXPECT_EQ(state1->getMostRecentState(), state2);
+  EXPECT_EQ(state2->getMostRecentState(), state2);
+
+  ShadowNode::Unshared newlyClonedShadowNode;
+
+  auto rootShadowNodeClonedFromReact =
+      rootShadowNode2->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
+        newlyClonedShadowNode = oldShadowNode.clone({});
+        return newlyClonedShadowNode;
+      });
+
+  auto state3 = scrollViewComponentDescriptor.createState(
+      family, std::make_shared<const ScrollViewState>());
+
+  auto rootShadowNodeClonedFromStateUpdate =
+      rootShadowNode2->cloneTree(family, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state3});
+      });
+
+  shadowTree.commit(
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
+        return std::static_pointer_cast<RootShadowNode>(
+            rootShadowNodeClonedFromStateUpdate);
+      },
+      {});
+
+  shadowTree.commit(
+      [&](const RootShadowNode& /*oldRootShadowNode*/) {
+        return std::static_pointer_cast<RootShadowNode>(
+            rootShadowNodeClonedFromReact);
+      },
+      {true});
+
+  auto scrollViewShadowNode = findDescendantNode(shadowTree, family);
+
+  EXPECT_EQ(scrollViewShadowNode->getState(), state3);
+
+  if (GetParam()) {
+    // Checking that newlyClonedShadowNode was not cloned unnecessarly by state
+    // progression. This fails with the old algorithm.
+    EXPECT_EQ(scrollViewShadowNode, newlyClonedShadowNode.get());
+  }
+}
+INSTANTIATE_TEST_SUITE_P(
+    StateReconciliationTestInstantiation,
+    StateReconciliationTest,
+    testing::Values(false, true));

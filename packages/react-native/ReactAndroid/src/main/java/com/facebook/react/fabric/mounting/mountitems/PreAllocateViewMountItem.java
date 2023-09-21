@@ -9,6 +9,7 @@ package com.facebook.react.fabric.mounting.mountitems;
 
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 import static com.facebook.react.fabric.FabricUIManager.TAG;
+import static com.facebook.react.fabric.mounting.mountitems.FabricNameComponentMapping.getFabricComponentName;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +20,7 @@ import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
-public class PreAllocateViewMountItem implements MountItem {
+final class PreAllocateViewMountItem implements MountItem {
 
   private final @NonNull String mComponent;
   private final int mSurfaceId;
@@ -29,15 +30,15 @@ public class PreAllocateViewMountItem implements MountItem {
   private final @Nullable EventEmitterWrapper mEventEmitterWrapper;
   private final boolean mIsLayoutable;
 
-  public PreAllocateViewMountItem(
+  PreAllocateViewMountItem(
       int surfaceId,
       int reactTag,
       @NonNull String component,
       @Nullable Object props,
-      @NonNull StateWrapper stateWrapper,
+      @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
-    mComponent = component;
+    mComponent = getFabricComponentName(component);
     mSurfaceId = surfaceId;
     mProps = props;
     mStateWrapper = stateWrapper;
@@ -65,6 +66,7 @@ public class PreAllocateViewMountItem implements MountItem {
   }
 
   @Override
+  @NonNull
   public String toString() {
     StringBuilder result =
         new StringBuilder("PreAllocateViewMountItem [")
@@ -81,7 +83,10 @@ public class PreAllocateViewMountItem implements MountItem {
           .append(" props: ")
           .append(mProps != null ? mProps : "<null>")
           .append(" state: ")
-          .append(mStateWrapper != null ? mStateWrapper : "<null>");
+          .append(
+              mStateWrapper != null && mStateWrapper.getStateData() != null
+                  ? mStateWrapper.getStateData().toString()
+                  : "<null>");
     }
 
     return result.toString();

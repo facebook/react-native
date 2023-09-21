@@ -14,43 +14,44 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TouchEventEmitter;
 
-using SharedTouchEventEmitter = std::shared_ptr<TouchEventEmitter const>;
+using SharedTouchEventEmitter = std::shared_ptr<const TouchEventEmitter>;
 
 class TouchEventEmitter : public EventEmitter {
  public:
   using EventEmitter::EventEmitter;
 
-  void onTouchStart(TouchEvent const &event) const;
-  void onTouchMove(TouchEvent const &event) const;
-  void onTouchEnd(TouchEvent const &event) const;
-  void onTouchCancel(TouchEvent const &event) const;
+  void onTouchStart(const TouchEvent& event) const;
+  void onTouchMove(const TouchEvent& event) const;
+  void onTouchEnd(const TouchEvent& event) const;
+  void onTouchCancel(const TouchEvent& event) const;
 
-  void onPointerCancel(PointerEvent const &event) const;
-  void onPointerDown(PointerEvent const &event) const;
-  void onPointerMove(PointerEvent const &event) const;
-  void onPointerUp(PointerEvent const &event) const;
-  void onPointerEnter(PointerEvent const &event) const;
-  void onPointerLeave(PointerEvent const &event) const;
-  void onPointerOver(PointerEvent const &event) const;
-  void onPointerOut(PointerEvent const &event) const;
+  void onClick(const PointerEvent& event) const;
+  void onPointerCancel(const PointerEvent& event) const;
+  void onPointerDown(const PointerEvent& event) const;
+  void onPointerMove(const PointerEvent& event) const;
+  void onPointerUp(const PointerEvent& event) const;
+  void onPointerEnter(const PointerEvent& event) const;
+  void onPointerLeave(const PointerEvent& event) const;
+  void onPointerOver(const PointerEvent& event) const;
+  void onPointerOut(const PointerEvent& event) const;
+  void onGotPointerCapture(const PointerEvent& event) const;
+  void onLostPointerCapture(const PointerEvent& event) const;
 
  private:
   void dispatchTouchEvent(
       std::string type,
-      TouchEvent const &event,
+      const TouchEvent& event,
       EventPriority priority,
       RawEvent::Category category) const;
   void dispatchPointerEvent(
       std::string type,
-      PointerEvent const &event,
+      const PointerEvent& event,
       EventPriority priority,
       RawEvent::Category category) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

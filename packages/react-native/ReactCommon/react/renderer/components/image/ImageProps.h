@@ -10,23 +10,22 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO (T28334063): Consider for codegen.
 class ImageProps final : public ViewProps {
  public:
   ImageProps() = default;
   ImageProps(
-      const PropsParserContext &context,
-      const ImageProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const ImageProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 
@@ -39,5 +38,4 @@ class ImageProps final : public ViewProps {
   std::string internal_analyticTag{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

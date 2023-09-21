@@ -14,8 +14,7 @@
 
 #include <react/renderer/element/ElementFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `Element<>` is an abstraction layer that allows describing component
@@ -31,15 +30,15 @@ template <typename ShadowNodeT>
 class Element final {
  public:
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
-  using SharedConcreteProps = std::shared_ptr<ConcreteProps const>;
+  using SharedConcreteProps = std::shared_ptr<const ConcreteProps>;
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteStateData;
-  using SharedConcreteState = std::shared_ptr<ConcreteState const>;
+  using SharedConcreteState = std::shared_ptr<const ConcreteState>;
   using ConcreteShadowNode = ShadowNodeT;
   using ConcreteUnsharedShadowNode = std::shared_ptr<ConcreteShadowNode>;
 
   using ConcreteReferenceCallback =
-      std::function<void(std::shared_ptr<ShadowNodeT const> const &shadowNode)>;
+      std::function<void(const std::shared_ptr<ShadowNodeT const>& shadowNode)>;
 
   /*
    * Constructs an `Element`.
@@ -60,7 +59,7 @@ class Element final {
   /*
    * Sets `tag`.
    */
-  Element &tag(Tag tag) {
+  Element& tag(Tag tag) {
     fragment_.tag = tag;
     return *this;
   }
@@ -68,7 +67,7 @@ class Element final {
   /*
    * Sets `surfaceId`.
    */
-  Element &surfaceId(SurfaceId surfaceId) {
+  Element& surfaceId(SurfaceId surfaceId) {
     fragment_.surfaceId = surfaceId;
     return *this;
   }
@@ -76,7 +75,7 @@ class Element final {
   /*
    * Sets `props`.
    */
-  Element &props(SharedConcreteProps props) {
+  Element& props(SharedConcreteProps props) {
     fragment_.props = props;
     return *this;
   }
@@ -84,7 +83,7 @@ class Element final {
   /*
    * Sets `props` using callback.
    */
-  Element &props(std::function<SharedConcreteProps()> callback) {
+  Element& props(std::function<SharedConcreteProps()> callback) {
     fragment_.props = callback();
     return *this;
   }
@@ -92,10 +91,12 @@ class Element final {
   /*
    * Sets `state` using callback.
    */
-  Element &stateData(std::function<void(ConcreteStateData &)> callback) {
-    fragment_.stateCallback = [callback =
-                                   std::move(callback)]() -> StateData::Shared {
-      auto stateData = ConcreteStateData();
+  Element& stateData(std::function<void(ConcreteStateData&)> callback) {
+    fragment_.stateCallback =
+        [callback = std::move(callback)](
+            const State::Shared& state) -> StateData::Shared {
+      auto stateData =
+          static_cast<ConcreteState const*>(state.get())->getData();
       callback(stateData);
       return std::make_shared<ConcreteStateData>(stateData);
     };
@@ -105,10 +106,10 @@ class Element final {
   /*
    * Sets children.
    */
-  Element &children(std::vector<ElementFragment> children) {
+  Element& children(std::vector<ElementFragment> children) {
     auto fragments = ElementFragment::List{};
     fragments.reserve(children.size());
-    for (auto const &child : children) {
+    for (const auto& child : children) {
       fragments.push_back(child);
     }
     fragment_.children = fragments;
@@ -119,10 +120,14 @@ class Element final {
    * Calls the callback during component construction with a pointer to the
    * component which is being constructed.
    */
-  Element &reference(
-      std::function<void(ConcreteUnsharedShadowNode const &shadowNode)>
+  Element& reference(
+      std::function<void(const ConcreteUnsharedShadowNode& shadowNode)>
           callback) {
-    fragment_.referenceCallback = callback;
+    fragment_.referenceCallback =
+        [callback = std::move(callback)](const ShadowNode::Shared& shadowNode) {
+          callback(std::const_pointer_cast<ConcreteShadowNode>(
+              std::static_pointer_cast<ConcreteShadowNode const>(shadowNode)));
+        };
     return *this;
   }
 
@@ -130,8 +135,8 @@ class Element final {
    * During component construction, assigns a given pointer to a component
    * that is being constructed.
    */
-  Element &reference(ConcreteUnsharedShadowNode &outShadowNode) {
-    fragment_.referenceCallback = [&](ShadowNode::Shared const &shadowNode) {
+  Element& reference(ConcreteUnsharedShadowNode& outShadowNode) {
+    fragment_.referenceCallback = [&](const ShadowNode::Shared& shadowNode) {
       outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
           std::static_pointer_cast<ConcreteShadowNode const>(shadowNode));
     };
@@ -141,10 +146,10 @@ class Element final {
   /*
    * Calls the callback with a reference to a just constructed component.
    */
-  Element &finalize(
-      std::function<void(ConcreteShadowNode &shadowNode)> finalizeCallback) {
-    fragment_.finalizeCallback = [=](ShadowNode &shadowNode) {
-      return finalizeCallback(static_cast<ConcreteShadowNode &>(shadowNode));
+  Element& finalize(
+      std::function<void(ConcreteShadowNode& shadowNode)> finalizeCallback) {
+    fragment_.finalizeCallback = [=](ShadowNode& shadowNode) {
+      return finalizeCallback(static_cast<ConcreteShadowNode&>(shadowNode));
     };
     return *this;
   }
@@ -154,5 +159,4 @@ class Element final {
   ElementFragment fragment_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

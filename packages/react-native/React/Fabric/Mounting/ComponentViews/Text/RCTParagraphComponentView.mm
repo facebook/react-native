@@ -86,10 +86,10 @@ using namespace facebook::react;
       concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  auto const &oldParagraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  auto const &newParagraphProps = *std::static_pointer_cast<ParagraphProps const>(props);
+  const auto &oldParagraphProps = static_cast<const ParagraphProps &>(*_props);
+  const auto &newParagraphProps = static_cast<const ParagraphProps &>(*props);
 
   _paragraphAttributes = newParagraphProps.paragraphAttributes;
 
@@ -106,7 +106,7 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   [self setNeedsDisplay];
@@ -157,7 +157,7 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
 - (NSArray *)accessibilityElements
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
 
   // If the component is not `accessible`, we return an empty array.
   // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
@@ -254,13 +254,13 @@ using namespace facebook::react;
 
 - (BOOL)canBecomeFirstResponder
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
   return paragraphProps.isSelectable;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
 
   if (paragraphProps.isSelectable && action == @selector(copy:)) {
     return YES;

@@ -9,11 +9,9 @@
 
 #include <folly/dynamic.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 folly::dynamic convertIdToFollyDynamic(id json);
-id convertFollyDynamicToId(const folly::dynamic &dyn);
+id convertFollyDynamicToId(const folly::dynamic& dyn);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

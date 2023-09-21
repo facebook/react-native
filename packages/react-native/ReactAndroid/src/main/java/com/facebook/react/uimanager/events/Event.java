@@ -11,8 +11,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -35,7 +33,6 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
-  private @UIManagerType int mUIManagerType;
   private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
@@ -70,27 +67,6 @@ public abstract class Event<T extends Event> {
   protected void init(int surfaceId, int viewTag, long timestampMs) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
-
-    // We infer UIManagerType. Even though it's not passed in explicitly, we have a
-    // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
-    // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
-    //
-    // Why does this matter?
-    // Events can be sent to Views that are part of the View hierarchy *but not directly managed
-    // by React Native*. For example, embedded custom hierarchies, Litho hierarchies, etc.
-    // In those cases it's important to know that the Event should be sent to the Fabric or
-    // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
-    // by RN and is essentially a random number.
-    // At some point it would be great to pass the SurfaceContext here instead.
-    @UIManagerType
-    int uiManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
-    if (uiManagerType == UIManagerType.DEFAULT && !ViewUtil.isRootTag(viewTag)) {
-      // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
-      // not a React RootView, double check if the tag belongs to Fabric.
-      uiManagerType = ViewUtil.getUIManagerType(viewTag);
-    }
-    mUIManagerType = uiManagerType;
-
     mTimestampMs = timestampMs;
     mInitialized = true;
   }
@@ -157,10 +133,6 @@ public abstract class Event<T extends Event> {
   /*package*/ final void dispose() {
     mInitialized = false;
     onDispose();
-  }
-
-  public final @UIManagerType int getUIManagerType() {
-    return mUIManagerType;
   }
 
   /** @return the name of this event as registered in JS */

@@ -123,19 +123,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
-- (BOOL)hasBridge
+- (RCTUIView *)view // [macOS]
 {
-  return _bridge != nil;
-}
-
-- (RCTModuleRegistry *)moduleRegistry
-{
-  return _bridge.moduleRegistry;
-}
-
-- (id<RCTEventDispatcherProtocol>)eventDispatcher
-{
-  return [self.moduleRegistry moduleForName:"EventDispatcher"];
+  return self;
 }
 
 #pragma mark - passThroughTouches

@@ -44,11 +44,6 @@ export interface TextPropsIOS {
     | undefined;
 
   /**
-   * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
-   */
-  minimumFontScale?: number | undefined;
-
-  /**
    * When `true`, no visual change is made when text is pressed down. By
    * default, a gray oval highlights the text on press down.
    */
@@ -209,6 +204,11 @@ export interface TextProps
    * - >= 1: sets the maxFontSizeMultiplier of this node to this value
    */
   maxFontSizeMultiplier?: number | null | undefined;
+
+  /**
+   * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+   */
+  minimumFontScale?: number | undefined;
 }
 
 /**

@@ -19,8 +19,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NativeModule;
 
@@ -38,7 +37,7 @@ class RN_EXPORT ModuleRegistry {
   // notifyCatalystInstanceInitialized: this is really only used by view-related
   // code notifyCatalystInstanceDestroy: use RAII instead
 
-  using ModuleNotFoundCallback = std::function<bool(const std::string &name)>;
+  using ModuleNotFoundCallback = std::function<bool(const std::string& name)>;
 
   ModuleRegistry(
       std::vector<std::unique_ptr<NativeModule>> modules,
@@ -47,17 +46,17 @@ class RN_EXPORT ModuleRegistry {
 
   std::vector<std::string> moduleNames();
 
-  std::optional<ModuleConfig> getConfig(const std::string &name);
+  std::optional<ModuleConfig> getConfig(const std::string& name);
 
   void callNativeMethod(
       unsigned int moduleId,
       unsigned int methodId,
-      folly::dynamic &&params,
+      folly::dynamic&& params,
       int callId);
   MethodCallResult callSerializableNativeHook(
       unsigned int moduleId,
       unsigned int methodId,
-      folly::dynamic &&args);
+      folly::dynamic&& args);
 
   std::string getModuleName(unsigned int moduleId);
   std::string getModuleSyncMethodName(
@@ -88,5 +87,4 @@ class RN_EXPORT ModuleRegistry {
   ModuleNotFoundCallback moduleNotFoundCallback_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

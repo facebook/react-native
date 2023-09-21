@@ -10,16 +10,14 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JBackgroundExecutor : public jni::JavaClass<JBackgroundExecutor> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/BackgroundExecutor;";
 
-  static BackgroundExecutor create(const std::string &name);
+  static BackgroundExecutor create(const std::string& name);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

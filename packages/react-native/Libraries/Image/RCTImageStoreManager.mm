@@ -256,6 +256,15 @@ RCT_EXPORT_METHOD(addImageFromBase64
 
 @end
 
+@implementation RCTBridgeProxy (RCTImageStoreManager)
+
+- (RCTImageStoreManager *)imageStoreManager
+{
+  return [self moduleForClass:[RCTImageStoreManager class]];
+}
+
+@end
+
 Class RCTImageStoreManagerCls(void)
 {
   return RCTImageStoreManager.class;

@@ -22,10 +22,13 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -36,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -55,7 +57,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   // character.
   // https://en.wikipedia.org/wiki/Bi-directional_text#weak_characters
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
-  public static final int UNSET = -1;
+  public static final int UNSET = ReactFontManager.TypefaceStyle.UNSET;
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
   public static final String PROP_SHADOW_OFFSET_WIDTH = "width";
@@ -68,31 +70,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
-
-  private static class SetSpanOperation {
-    protected int start, end;
-    protected ReactSpan what;
-
-    SetSpanOperation(int start, int end, ReactSpan what) {
-      this.start = start;
-      this.end = end;
-      this.what = what;
-    }
-
-    public void execute(SpannableStringBuilder sb, int priority) {
-      // All spans will automatically extend to the right of the text, but not the left - except
-      // for spans that start at the beginning of the text.
-      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
-      if (start == 0) {
-        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
-      }
-
-      spanFlags &= ~Spannable.SPAN_PRIORITY;
-      spanFlags |= (priority << Spannable.SPAN_PRIORITY_SHIFT) & Spannable.SPAN_PRIORITY;
-
-      sb.setSpan(what, start, end, spanFlags);
-    }
-  }
 
   private static void buildSpannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
@@ -180,7 +157,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (textShadowNode.mIsAccessibilityLink) {
+      boolean roleIsLink =
+          textShadowNode.mRole != null
+              ? textShadowNode.mRole == Role.LINK
+              : textShadowNode.mAccessibilityRole == AccessibilityRole.LINK;
+      if (roleIsLink) {
         ops.add(
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
@@ -276,8 +257,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
     // While setting the Spans on the final text, we also check whether any of them are inline views
     // or images.
-    int priority = 0;
-    for (SetSpanOperation op : ops) {
+    for (int priorityIndex = 0; priorityIndex < ops.size(); priorityIndex++) {
+      final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+
       boolean isInlineImage = op.what instanceof TextInlineImageSpan;
       if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
         int height;
@@ -304,9 +286,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
 
       // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priority} DOES matter.
-      op.execute(sb, priority);
-      priority++;
+      // but the {@code priorityIndex} DOES matter.
+      op.execute(sb, priorityIndex);
     }
 
     textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
@@ -325,7 +306,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
-  protected boolean mIsAccessibilityLink = false;
+
+  protected @Nullable AccessibilityRole mAccessibilityRole = null;
+  protected @Nullable Role mRole = null;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
@@ -499,9 +482,17 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
-  public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
+  public void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (isVirtual()) {
-      mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
+      mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.ROLE)
+  public void setRole(@Nullable String role) {
+    if (isVirtual()) {
+      mRole = Role.fromValue(role);
       markUpdated();
     }
   }

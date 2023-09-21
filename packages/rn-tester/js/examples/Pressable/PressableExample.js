@@ -48,7 +48,9 @@ function ContentPress() {
             setTimesPressed(current => current + 1);
           }}>
           {({pressed}) => (
-            <Text style={styles.text}>{pressed ? 'Pressed!' : 'Press Me'}</Text>
+            <Text testID="one_press_me_button" style={styles.text}>
+              {pressed ? 'Pressed!' : 'Press Me'}
+            </Text>
           )}
         </Pressable>
       </View>

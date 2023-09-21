@@ -9,10 +9,8 @@
 
 #import <logger/react_native_log.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char *message);
+void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char* message);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

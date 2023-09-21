@@ -7,55 +7,39 @@
 
 #include <react/renderer/imagemanager/ImageRequest.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageRequest::ImageRequest(
     ImageSource imageSource,
-    std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
+    std::shared_ptr<const ImageTelemetry> telemetry,
+    SharedFunction<> cancelationFunction)
+    : imageSource_(std::move(imageSource)),
+      telemetry_(std::move(telemetry)),
+      cancelRequest_(std::move(cancelationFunction)) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
-ImageRequest::ImageRequest(ImageRequest &&other) noexcept
-    : imageSource_(std::move(other.imageSource_)),
-      telemetry_(std::move(other.telemetry_)),
-      coordinator_(std::move(other.coordinator_)) {
-  other.coordinator_ = nullptr;
-  other.cancelRequest_ = nullptr;
-  other.telemetry_ = nullptr;
-  other.imageSource_ = {};
+void ImageRequest::cancel() const {
+  cancelRequest_();
 }
 
-ImageRequest::~ImageRequest() {
-  if (cancelRequest_) {
-    cancelRequest_();
-  }
-}
-
-void ImageRequest::setCancelationFunction(
-    std::function<void(void)> cancelationFunction) {
-  cancelRequest_ = cancelationFunction;
-}
-
-const ImageSource &ImageRequest::getImageSource() const {
+const ImageSource& ImageRequest::getImageSource() const {
   return imageSource_;
 }
 
-const std::shared_ptr<const ImageTelemetry> &ImageRequest::getSharedTelemetry()
+const std::shared_ptr<const ImageTelemetry>& ImageRequest::getSharedTelemetry()
     const {
   return telemetry_;
 }
 
-const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator& ImageRequest::getObserverCoordinator()
     const {
   return *coordinator_;
 }
 
-const std::shared_ptr<const ImageResponseObserverCoordinator>
-    &ImageRequest::getSharedObserverCoordinator() const {
+const std::shared_ptr<const ImageResponseObserverCoordinator>&
+ImageRequest::getSharedObserverCoordinator() const {
   return coordinator_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

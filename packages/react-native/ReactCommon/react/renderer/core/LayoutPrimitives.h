@@ -10,8 +10,7 @@
 #include <functional>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Defines visibility of the shadow node and particular layout
@@ -32,20 +31,19 @@ enum class LayoutDirection {
   RightToLeft = 2,
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>
 struct hash<facebook::react::LayoutDirection> {
-  size_t operator()(const facebook::react::LayoutDirection &v) const {
+  size_t operator()(const facebook::react::LayoutDirection& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::DisplayType> {
-  size_t operator()(const facebook::react::DisplayType &v) const {
+  size_t operator()(const facebook::react::DisplayType& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

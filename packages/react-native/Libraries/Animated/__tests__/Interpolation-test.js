@@ -349,4 +349,20 @@ describe('Interpolation', () => {
     expect(interpolation(1e-12)).toBe('rgba(0, 0, 0, 0)');
     expect(interpolation(2 / 3)).toBe('rgba(0, 0, 0, 0.667)');
   });
+
+  it.each([
+    ['radians', ['1rad', '2rad'], [1, 2]],
+    ['degrees', ['90deg', '180deg'], [Math.PI / 2, Math.PI]],
+    ['numbers', [1024, Math.PI], [1024, Math.PI]],
+    ['unknown', ['5foo', '10foo'], ['5foo', '10foo']],
+  ])(
+    'should convert %s to numbers in the native config',
+    (_, outputRange, expected) => {
+      const config = new AnimatedInterpolation(
+        {},
+        {inputRange: [0, 1], outputRange},
+      ).__getNativeConfig();
+      expect(config.outputRange).toEqual(expected);
+    },
+  );
 });

@@ -13,15 +13,14 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static constexpr auto kBlobModuleJavaDescriptor =
     "com/facebook/react/modules/blob/BlobModule";
 
 BlobCollector::BlobCollector(
     jni::global_ref<jobject> blobModule,
-    const std::string &blobId)
+    const std::string& blobId)
     : blobModule_(blobModule), blobId_(blobId) {}
 
 BlobCollector::~BlobCollector() {
@@ -37,7 +36,7 @@ void BlobCollector::nativeInstall(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
-  auto &runtime = *((jsi::Runtime *)jsContextNativePointer);
+  auto& runtime = *((jsi::Runtime*)jsContextNativePointer);
   auto blobModuleRef = jni::make_global(blobModule);
   runtime.global().setProperty(
       runtime,
@@ -47,9 +46,9 @@ void BlobCollector::nativeInstall(
           jsi::PropNameID::forAscii(runtime, "__blobCollectorProvider"),
           1,
           [blobModuleRef](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             auto blobId = args[0].asString(rt).utf8(rt);
             auto blobCollector =
@@ -63,5 +62,4 @@ void BlobCollector::registerNatives() {
       {makeNativeMethod("nativeInstall", BlobCollector::nativeInstall)});
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -99,15 +99,11 @@ TEST_F(BridgingTest, objectTest) {
       bridging::fromJs<std::map<std::string, std::string>>(rt, object, invoker);
   auto umap = bridging::fromJs<std::unordered_map<std::string, std::string>>(
       rt, object, invoker);
-  auto bmap = bridging::fromJs<butter::map<std::string, std::string>>(
-      rt, object, invoker);
 
   EXPECT_EQ(1, omap.size());
   EXPECT_EQ(1, umap.size());
-  EXPECT_EQ(1, bmap.size());
   EXPECT_EQ("bar"s, omap["foo"]);
   EXPECT_EQ("bar"s, umap["foo"]);
-  EXPECT_EQ("bar"s, bmap["foo"]);
 
   EXPECT_EQ(
       "bar"s,
@@ -121,17 +117,11 @@ TEST_F(BridgingTest, objectTest) {
           .getProperty(rt, "foo")
           .asString(rt)
           .utf8(rt));
-  EXPECT_EQ(
-      "bar"s,
-      bridging::toJs(rt, bmap, invoker)
-          .getProperty(rt, "foo")
-          .asString(rt)
-          .utf8(rt));
 }
 
 TEST_F(BridgingTest, hostObjectTest) {
   struct TestHostObject : public jsi::HostObject {
-    jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &name) override {
+    jsi::Value get(jsi::Runtime& rt, const jsi::PropNameID& name) override {
       if (name.utf8(rt) == "test") {
         return jsi::Value(1);
       }
@@ -436,76 +426,74 @@ TEST_F(BridgingTest, supportTest) {
   // trivially converted to JSI values.
   EXPECT_TRUE((bridging::supportsFromJs<bool>));
   EXPECT_TRUE((bridging::supportsFromJs<bool, bool>));
-  EXPECT_TRUE((bridging::supportsFromJs<bool, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<bool, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<int>));
   EXPECT_TRUE((bridging::supportsFromJs<int, int>));
-  EXPECT_TRUE((bridging::supportsFromJs<int, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<int, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<double>));
   EXPECT_TRUE((bridging::supportsFromJs<double, double>));
-  EXPECT_TRUE((bridging::supportsFromJs<double, jsi::Value &>));
+  EXPECT_TRUE((bridging::supportsFromJs<double, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string>));
   EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::string, jsi::String&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array&>));
   EXPECT_TRUE(
       (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object>));
   EXPECT_TRUE(
-      (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object &>));
+      (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object&>));
 
   // Ensure incompatible conversions will fail.
   EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<bool, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<int, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<double, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::string, jsi::Object&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::set<int>, jsi::String&>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
-  EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
+  EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String&>));
 
-  // Ensure copying and up/down casting JSI values is also supported.
+  // Ensure copying and down casting JSI values is also supported.
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value &>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Object, jsi::Function&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Array, jsi::Object&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Function&>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object &>));
+  EXPECT_TRUE((bridging::supportsFromJs<jsi::Function, jsi::Object&>));
 
   // Ensure incorrect casts will fail.
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function>));
-  EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function &>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::Array, jsi::Function&>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array>));
-  EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array &>));
+  EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array&>));
 
   // Ensure we can convert some basic types to JSI values.
   EXPECT_TRUE((bridging::supportsToJs<bool>));
@@ -524,12 +512,98 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsToJs<void (*)(), jsi::Function>));
 
   // Ensure invalid conversions to JSI values are not supported.
-  EXPECT_FALSE((bridging::supportsToJs<void *>));
+  EXPECT_FALSE((bridging::supportsToJs<void*>));
   EXPECT_FALSE((bridging::supportsToJs<bool, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<int, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<double, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::string, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::vector<int>, jsi::Function>));
+}
+
+TEST_F(BridgingTest, dynamicTest) {
+  // Null
+  auto nullFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value::null(), invoker);
+  EXPECT_TRUE(nullFromJsResult.isNull());
+
+  auto nullToJsResult = bridging::toJs<folly::dynamic>(rt, nullptr, invoker);
+  EXPECT_TRUE(nullToJsResult.isNull());
+
+  // Boolean
+  auto booleanFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value(true), invoker);
+  EXPECT_TRUE(booleanFromJsResult.isBool());
+  EXPECT_TRUE(booleanFromJsResult.asBool());
+
+  auto booleanToJsResult = bridging::toJs<folly::dynamic>(rt, true, invoker);
+  EXPECT_TRUE(booleanToJsResult.isBool());
+  EXPECT_TRUE(booleanToJsResult.asBool());
+
+  // Number
+  auto numberFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value(1.2), invoker);
+  EXPECT_TRUE(numberFromJsResult.isNumber());
+  EXPECT_DOUBLE_EQ(1.2, numberFromJsResult.asDouble());
+
+  auto numberToJsResult = bridging::toJs<folly::dynamic>(rt, 1.2, invoker);
+  EXPECT_TRUE(numberToJsResult.isNumber());
+  EXPECT_DOUBLE_EQ(1.2, numberToJsResult.asNumber());
+
+  // String
+  auto stringFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt, jsi::Value(jsi::String::createFromAscii(rt, "hello")), invoker);
+  EXPECT_TRUE(stringFromJsResult.isString());
+  EXPECT_EQ("hello"s, stringFromJsResult.asString());
+
+  auto stringToJsResult = bridging::toJs<folly::dynamic>(rt, "hello", invoker);
+  EXPECT_TRUE(stringToJsResult.isString());
+  EXPECT_EQ("hello"s, stringToJsResult.asString(rt).utf8(rt));
+
+  // Array
+  auto arrayFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt,
+      jsi::Value(jsi::Array::createWithElements(rt, "foo", "bar")),
+      invoker);
+  EXPECT_TRUE(arrayFromJsResult.isArray());
+  EXPECT_EQ(2, arrayFromJsResult.size());
+  EXPECT_EQ("foo"s, arrayFromJsResult[0].asString());
+  EXPECT_EQ("bar"s, arrayFromJsResult[1].asString());
+
+  auto arrayToJsResult = bridging::toJs<folly::dynamic>(
+      rt, folly::dynamic::array("foo", "bar"), invoker);
+  EXPECT_TRUE(arrayToJsResult.isObject());
+  EXPECT_TRUE(arrayToJsResult.asObject(rt).isArray(rt));
+  auto arrayToJsResultArray = arrayToJsResult.asObject(rt).asArray(rt);
+  EXPECT_EQ(2, arrayToJsResultArray.size(rt));
+  EXPECT_EQ(
+      "foo"s,
+      arrayToJsResultArray.getValueAtIndex(rt, 0).asString(rt).utf8(rt));
+  EXPECT_EQ(
+      "bar"s,
+      arrayToJsResultArray.getValueAtIndex(rt, 1).asString(rt).utf8(rt));
+
+  // Object
+  auto jsiObject = jsi::Object(rt);
+  jsiObject.setProperty(rt, "foo", "bar");
+  auto objectFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt, jsi::Value(std::move(jsiObject)), invoker);
+
+  EXPECT_TRUE(objectFromJsResult.isObject());
+  EXPECT_EQ(1, objectFromJsResult.size());
+  EXPECT_EQ("bar"s, objectFromJsResult["foo"].asString());
+
+  auto objectToJsResult = bridging::toJs<folly::dynamic>(
+      rt, folly::dynamic::object("foo", "bar"), invoker);
+  EXPECT_TRUE(objectToJsResult.isObject());
+  auto objectToJsResultObject = objectToJsResult.asObject(rt);
+  EXPECT_EQ(
+      "bar"s,
+      objectToJsResultObject.getProperty(rt, "foo").asString(rt).utf8(rt));
+
+  // Undefined
+  auto undefinedFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value::undefined(), invoker);
+  EXPECT_TRUE(undefinedFromJsResult.isNull());
 }
 
 } // namespace facebook::react

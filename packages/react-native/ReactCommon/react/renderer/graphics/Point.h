@@ -12,8 +12,7 @@
 #include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains a point in a two-dimensional coordinate system.
@@ -22,49 +21,48 @@ struct Point {
   Float x{0};
   Float y{0};
 
-  Point &operator+=(Point const &point) noexcept {
+  Point& operator+=(const Point& point) noexcept {
     x += point.x;
     y += point.y;
     return *this;
   }
 
-  Point &operator-=(Point const &point) noexcept {
+  Point& operator-=(const Point& point) noexcept {
     x -= point.x;
     y -= point.y;
     return *this;
   }
 
-  Point &operator*=(Point const &point) noexcept {
+  Point& operator*=(const Point& point) noexcept {
     x *= point.x;
     y *= point.y;
     return *this;
   }
 
-  friend Point operator+(Point lhs, Point const &rhs) noexcept {
+  friend Point operator+(Point lhs, const Point& rhs) noexcept {
     return lhs += rhs;
   }
 
-  friend Point operator-(Point lhs, Point const &rhs) noexcept {
+  friend Point operator-(Point lhs, const Point& rhs) noexcept {
     return lhs -= rhs;
   }
 };
 
-inline bool operator==(Point const &rhs, Point const &lhs) noexcept {
+inline bool operator==(const Point& rhs, const Point& lhs) noexcept {
   return std::tie(lhs.x, lhs.y) == std::tie(rhs.x, rhs.y);
 }
 
-inline bool operator!=(Point const &rhs, Point const &lhs) noexcept {
+inline bool operator!=(const Point& rhs, const Point& lhs) noexcept {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 
 template <>
 struct hash<facebook::react::Point> {
-  size_t operator()(facebook::react::Point const &point) const noexcept {
+  size_t operator()(const facebook::react::Point& point) const noexcept {
     return folly::hash::hash_combine(0, point.x, point.y);
   }
 };

@@ -15,6 +15,7 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -22,6 +23,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <cmath>
+#include <unordered_map>
 
 #ifdef ANDROID
 #include <react/renderer/mapbuffer/MapBuffer.h>
@@ -30,10 +32,9 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
+inline std::string toString(const DynamicTypeRamp& dynamicTypeRamp) {
   switch (dynamicTypeRamp) {
     case DynamicTypeRamp::Caption2:
       return "caption2";
@@ -67,9 +68,9 @@ inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    DynamicTypeRamp &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    DynamicTypeRamp& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -111,7 +112,7 @@ inline void fromRawValue(
   result = DynamicTypeRamp::Body;
 }
 
-inline std::string toString(const EllipsizeMode &ellipsisMode) {
+inline std::string toString(const EllipsizeMode& ellipsisMode) {
   switch (ellipsisMode) {
     case EllipsizeMode::Clip:
       return "clip";
@@ -131,9 +132,9 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    EllipsizeMode &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    EllipsizeMode& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -161,7 +162,7 @@ inline void fromRawValue(
   result = EllipsizeMode::Tail;
 }
 
-inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
+inline std::string toString(const TextBreakStrategy& textBreakStrategy) {
   switch (textBreakStrategy) {
     case TextBreakStrategy::Simple:
       return "simple";
@@ -177,9 +178,9 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextBreakStrategy &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -204,9 +205,9 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontWeight &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontWeight& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -248,14 +249,14 @@ inline void fromRawValue(
   result = FontWeight::Regular;
 }
 
-inline std::string toString(const FontWeight &fontWeight) {
+inline std::string toString(const FontWeight& fontWeight) {
   return folly::to<std::string>((int)fontWeight);
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontStyle &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -280,7 +281,7 @@ inline void fromRawValue(
   result = FontStyle::Normal;
 }
 
-inline std::string toString(const FontStyle &fontStyle) {
+inline std::string toString(const FontStyle& fontStyle) {
   switch (fontStyle) {
     case FontStyle::Normal:
       return "normal";
@@ -297,14 +298,14 @@ inline std::string toString(const FontStyle &fontStyle) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    FontVariant &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    FontVariant& result) {
   result = FontVariant::Default;
   react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = std::vector<std::string>{value};
-    for (const auto &item : items) {
+    for (const auto& item : items) {
       if (item == "small-caps") {
         result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
       } else if (item == "oldstyle-nums") {
@@ -327,7 +328,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(const FontVariant &fontVariant) {
+inline std::string toString(const FontVariant& fontVariant) {
   auto result = std::string{};
   auto separator = std::string{", "};
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
@@ -354,9 +355,9 @@ inline std::string toString(const FontVariant &fontVariant) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextTransform &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextTransform& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -385,7 +386,7 @@ inline void fromRawValue(
   result = TextTransform::None;
 }
 
-inline std::string toString(const TextTransform &textTransform) {
+inline std::string toString(const TextTransform& textTransform) {
   switch (textTransform) {
     case TextTransform::None:
       return "none";
@@ -406,9 +407,9 @@ inline std::string toString(const TextTransform &textTransform) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextAlignment &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextAlignment& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -436,7 +437,7 @@ inline void fromRawValue(
   result = TextAlignment::Natural;
 }
 
-inline std::string toString(const TextAlignment &textAlignment) {
+inline std::string toString(const TextAlignment& textAlignment) {
   switch (textAlignment) {
     case TextAlignment::Natural:
       return "auto";
@@ -456,9 +457,9 @@ inline std::string toString(const TextAlignment &textAlignment) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    WritingDirection &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    WritingDirection& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -482,7 +483,7 @@ inline void fromRawValue(
   result = WritingDirection::Natural;
 }
 
-inline std::string toString(const WritingDirection &writingDirection) {
+inline std::string toString(const WritingDirection& writingDirection) {
   switch (writingDirection) {
     case WritingDirection::Natural:
       return "auto";
@@ -498,9 +499,9 @@ inline std::string toString(const WritingDirection &writingDirection) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    LineBreakStrategy &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    LineBreakStrategy& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -526,7 +527,7 @@ inline void fromRawValue(
   result = LineBreakStrategy::None;
 }
 
-inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
+inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
   switch (lineBreakStrategy) {
     case LineBreakStrategy::None:
       return "none";
@@ -544,9 +545,9 @@ inline std::string toString(const LineBreakStrategy &lineBreakStrategy) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationLineType &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextDecorationLineType& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -577,7 +578,7 @@ inline void fromRawValue(
 }
 
 inline std::string toString(
-    const TextDecorationLineType &textDecorationLineType) {
+    const TextDecorationLineType& textDecorationLineType) {
   switch (textDecorationLineType) {
     case TextDecorationLineType::None:
       return "none";
@@ -596,9 +597,9 @@ inline std::string toString(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationStyle &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    TextDecorationStyle& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -624,7 +625,7 @@ inline void fromRawValue(
   result = TextDecorationStyle::Solid;
 }
 
-inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
+inline std::string toString(const TextDecorationStyle& textDecorationStyle) {
   switch (textDecorationStyle) {
     case TextDecorationStyle::Solid:
       return "solid";
@@ -642,151 +643,7 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
   return "solid";
 }
 
-inline std::string toString(const AccessibilityRole &accessibilityRole) {
-  switch (accessibilityRole) {
-    case AccessibilityRole::None:
-      return "none";
-    case AccessibilityRole::Button:
-      return "button";
-    case AccessibilityRole::Link:
-      return "link";
-    case AccessibilityRole::Search:
-      return "search";
-    case AccessibilityRole::Image:
-      return "image";
-    case AccessibilityRole::Imagebutton:
-      return "imagebutton";
-    case AccessibilityRole::Keyboardkey:
-      return "keyboardkey";
-    case AccessibilityRole::Text:
-      return "text";
-    case AccessibilityRole::Adjustable:
-      return "adjustable";
-    case AccessibilityRole::Summary:
-      return "summary";
-    case AccessibilityRole::Header:
-      return "header";
-    case AccessibilityRole::Alert:
-      return "alert";
-    case AccessibilityRole::Checkbox:
-      return "checkbox";
-    case AccessibilityRole::Combobox:
-      return "combobox";
-    case AccessibilityRole::Menu:
-      return "menu";
-    case AccessibilityRole::Menubar:
-      return "menubar";
-    case AccessibilityRole::Menuitem:
-      return "menuitem";
-    case AccessibilityRole::Progressbar:
-      return "progressbar";
-    case AccessibilityRole::Radio:
-      return "radio";
-    case AccessibilityRole::Radiogroup:
-      return "radiogroup";
-    case AccessibilityRole::Scrollbar:
-      return "scrollbar";
-    case AccessibilityRole::Spinbutton:
-      return "spinbutton";
-    case AccessibilityRole::Switch:
-      return "switch";
-    case AccessibilityRole::Tab:
-      return "tab";
-    case AccessibilityRole::TabBar:
-      return "tabbar";
-    case AccessibilityRole::Tablist:
-      return "tablist";
-    case AccessibilityRole::Timer:
-      return "timer";
-    case AccessibilityRole::Toolbar:
-      return "toolbar";
-  }
-
-  LOG(ERROR) << "Unsupported AccessibilityRole value";
-  react_native_expect(false);
-  // sane default for prod
-  return "none";
-}
-
-inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AccessibilityRole &result) {
-  react_native_expect(value.hasType<std::string>());
-  if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
-    if (string == "none") {
-      result = AccessibilityRole::None;
-    } else if (string == "button" || string == "togglebutton") {
-      result = AccessibilityRole::Button;
-    } else if (string == "link") {
-      result = AccessibilityRole::Link;
-    } else if (string == "search") {
-      result = AccessibilityRole::Search;
-    } else if (string == "image") {
-      result = AccessibilityRole::Image;
-    } else if (string == "imagebutton") {
-      result = AccessibilityRole::Imagebutton;
-    } else if (string == "keyboardkey") {
-      result = AccessibilityRole::Keyboardkey;
-    } else if (string == "text") {
-      result = AccessibilityRole::Text;
-    } else if (string == "adjustable") {
-      result = AccessibilityRole::Adjustable;
-    } else if (string == "summary") {
-      result = AccessibilityRole::Summary;
-    } else if (string == "header") {
-      result = AccessibilityRole::Header;
-    } else if (string == "alert") {
-      result = AccessibilityRole::Alert;
-    } else if (string == "checkbox") {
-      result = AccessibilityRole::Checkbox;
-    } else if (string == "combobox") {
-      result = AccessibilityRole::Combobox;
-    } else if (string == "menu") {
-      result = AccessibilityRole::Menu;
-    } else if (string == "menubar") {
-      result = AccessibilityRole::Menubar;
-    } else if (string == "menuitem") {
-      result = AccessibilityRole::Menuitem;
-    } else if (string == "progressbar") {
-      result = AccessibilityRole::Progressbar;
-    } else if (string == "radio") {
-      result = AccessibilityRole::Radio;
-    } else if (string == "radiogroup") {
-      result = AccessibilityRole::Radiogroup;
-    } else if (string == "scrollbar") {
-      result = AccessibilityRole::Scrollbar;
-    } else if (string == "spinbutton") {
-      result = AccessibilityRole::Spinbutton;
-    } else if (string == "switch") {
-      result = AccessibilityRole::Switch;
-    } else if (string == "tab") {
-      result = AccessibilityRole::Tab;
-    } else if (string == "tabbar") {
-      result = AccessibilityRole::TabBar;
-    } else if (string == "tablist") {
-      result = AccessibilityRole::Tablist;
-    } else if (string == "timer") {
-      result = AccessibilityRole::Timer;
-    } else if (string == "toolbar") {
-      result = AccessibilityRole::Toolbar;
-    } else {
-      LOG(ERROR) << "Unsupported AccessibilityRole value: " << string;
-      react_native_expect(false);
-      // sane default for prod
-      result = AccessibilityRole::None;
-    }
-    return;
-  }
-
-  LOG(ERROR) << "Unsupported AccessibilityRole type";
-  react_native_expect(false);
-  // sane default for prod
-  result = AccessibilityRole::None;
-}
-
-inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
+inline std::string toString(const HyphenationFrequency& hyphenationFrequency) {
   switch (hyphenationFrequency) {
     case HyphenationFrequency::None:
       return "none";
@@ -802,9 +659,9 @@ inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    HyphenationFrequency &result) {
+    const PropsParserContext& context,
+    const RawValue& value,
+    HyphenationFrequency& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -829,10 +686,10 @@ inline void fromRawValue(
 }
 
 inline ParagraphAttributes convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    ParagraphAttributes const &sourceParagraphAttributes,
-    ParagraphAttributes const &defaultParagraphAttributes) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const ParagraphAttributes& sourceParagraphAttributes,
+    const ParagraphAttributes& defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
@@ -888,10 +745,10 @@ inline ParagraphAttributes convertRawProp(
 }
 
 inline void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &value,
-    AttributedString::Range &result) {
-  auto map = (butter::map<std::string, int>)value;
+    const PropsParserContext& context,
+    const RawValue& value,
+    AttributedString::Range& result) {
+  auto map = (std::unordered_map<std::string, int>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {
@@ -903,7 +760,7 @@ inline void fromRawValue(
   }
 }
 
-inline std::string toString(AttributedString::Range const &range) {
+inline std::string toString(const AttributedString::Range& range) {
   return "{location: " + folly::to<std::string>(range.location) +
       ", length: " + folly::to<std::string>(range.length) + "}";
 }
@@ -911,7 +768,7 @@ inline std::string toString(AttributedString::Range const &range) {
 #ifdef ANDROID
 
 inline folly::dynamic toDynamic(
-    const ParagraphAttributes &paragraphAttributes) {
+    const ParagraphAttributes& paragraphAttributes) {
   auto values = folly::dynamic::object();
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
@@ -925,7 +782,7 @@ inline folly::dynamic toDynamic(
   return values;
 }
 
-inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
+inline folly::dynamic toDynamic(const FontVariant& fontVariant) {
   auto result = folly::dynamic::array();
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
     result.push_back("small-caps");
@@ -946,7 +803,7 @@ inline folly::dynamic toDynamic(const FontVariant &fontVariant) {
   return result;
 }
 
-inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
+inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
     _textAttributes(
@@ -1039,7 +896,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   return _textAttributes;
 }
 
-inline folly::dynamic toDynamic(const AttributedString &attributedString) {
+inline folly::dynamic toDynamic(const AttributedString& attributedString) {
   auto value = folly::dynamic::object();
   auto fragments = folly::dynamic::array();
   for (auto fragment : attributedString.getFragments()) {
@@ -1065,7 +922,7 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   return value;
 }
 
-inline folly::dynamic toDynamic(AttributedString::Range const &range) {
+inline folly::dynamic toDynamic(const AttributedString::Range& range) {
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["location"] = range.location;
   dynamicValue["length"] = range.length;
@@ -1106,10 +963,13 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
-constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
-constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
-constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
-constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DX = 20;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DY = 21;
+constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 22;
+constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 23;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
+constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
+constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1119,7 +979,7 @@ constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
 constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
-inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
+inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   auto builder = MapBufferBuilder();
   builder.putInt(
       PA_KEY_MAX_NUMBER_OF_LINES, paragraphAttributes.maximumNumberOfLines);
@@ -1139,7 +999,7 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const FontVariant &fontVariant) {
+inline MapBuffer toMapBuffer(const FontVariant& fontVariant) {
   auto builder = MapBufferBuilder();
   int index = 0;
   if ((int)fontVariant & (int)FontVariant::SmallCaps) {
@@ -1161,7 +1021,7 @@ inline MapBuffer toMapBuffer(const FontVariant &fontVariant) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
+inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   auto builder = MapBufferBuilder();
   if (textAttributes.foregroundColor) {
     builder.putInt(
@@ -1244,6 +1104,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
         TA_KEY_TEXT_SHADOW_COLOR,
         toAndroidRepr(textAttributes.textShadowColor));
   }
+  if (textAttributes.textShadowOffset) {
+    builder.putDouble(
+        TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
+    builder.putDouble(
+        TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
+  }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
     builder.putBool(TA_KEY_IS_HIGHLIGHTED, *textAttributes.isHighlighted);
@@ -1256,10 +1122,13 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
+  if (textAttributes.role.has_value()) {
+    builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
+  }
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
+inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   auto fragmentsBuilder = MapBufferBuilder();
 
   int index = 0;
@@ -1298,5 +1167,4 @@ inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

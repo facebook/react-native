@@ -18,9 +18,10 @@ import com.facebook.react.fabric.FabricSoLoader;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
- * This class holds reference to the C++ EventEmitter object. Instances of this class are created on
- * the Bindings.cpp, where the pointer to the C++ event emitter is set.
+ * This class holds reference to the C++ EventEmitter object. Instances of this class are created in
+ * FabricMountingManager.cpp, where the pointer to the C++ event emitter is set.
  */
+@DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
 public class EventEmitterWrapper {
 
@@ -30,17 +31,15 @@ public class EventEmitterWrapper {
 
   @DoNotStrip private final HybridData mHybridData;
 
-  private static native HybridData initHybrid();
-
-  private EventEmitterWrapper() {
-    mHybridData = initHybrid();
+  @DoNotStrip
+  private EventEmitterWrapper(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
-  private native void invokeEvent(
+  private native void dispatchEvent(
       @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
 
-  private native void invokeUniqueEvent(
-      @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
+  private native void dispatchUniqueEvent(@NonNull String eventName, @NonNull NativeMap params);
 
   /**
    * Invokes the execution of the C++ EventEmitter.
@@ -48,14 +47,14 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public synchronized void invoke(
+  public synchronized void dispatch(
       @NonNull String eventName,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
     if (!isValid()) {
       return;
     }
-    invokeEvent(eventName, (NativeMap) params, eventCategory);
+    dispatchEvent(eventName, (NativeMap) params, eventCategory);
   }
 
   /**
@@ -65,12 +64,11 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public synchronized void invokeUnique(
-      @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
+  public synchronized void dispatchUnique(@NonNull String eventName, @Nullable WritableMap params) {
     if (!isValid()) {
       return;
     }
-    invokeUniqueEvent(eventName, (NativeMap) params, customCoalesceKey);
+    dispatchUniqueEvent(eventName, (NativeMap) params);
   }
 
   public synchronized void destroy() {

@@ -12,8 +12,7 @@
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidProgressBarComponentName[];
 
@@ -29,18 +28,17 @@ class AndroidProgressBarShadowNode final : public ConcreteViewShadowNode<
 
   // Associates a shared `AndroidProgressBarMeasurementsManager` with the node.
   void setAndroidProgressBarMeasurementsManager(
-      const std::shared_ptr<AndroidProgressBarMeasurementsManager>
-          &measurementsManager);
+      const std::shared_ptr<AndroidProgressBarMeasurementsManager>&
+          measurementsManager);
 
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
 
  private:
   std::shared_ptr<AndroidProgressBarMeasurementsManager> measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

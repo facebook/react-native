@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -48,7 +49,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -68,6 +68,7 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -332,8 +333,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         if (!args.isNull(1)) {
           String text = args.getString(1);
-          reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetTextFromJS(getReactTextUpdate(text, mostRecentEventCount));
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
@@ -346,13 +346,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  private ReactTextUpdate getReactTextUpdate(
-      String text, int mostRecentEventCount, int start, int end) {
+  private ReactTextUpdate getReactTextUpdate(String text, int mostRecentEventCount) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0);
   }
 
   @Override
@@ -383,9 +382,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       // Ensure that selection is handled correctly on text update
       boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
-      int selectionStart = update.getSelectionStart();
-      int selectionEnd = update.getSelectionEnd();
-      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+      int selectionStart = UNSET;
+      int selectionEnd = UNSET;
+      if (isCurrentSelectionEmpty) {
         // if selection is not set by state, shift current selection to ensure constant gap to
         // text end
         int textLength = view.getText() == null ? 0 : view.getText().length();
@@ -422,6 +421,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(ReactEditText view, @Nullable String fontStyle) {
     view.setFontStyle(fontStyle);
+  }
+
+  @ReactProp(name = ViewProps.FONT_VARIANT)
+  public void setFontVariant(ReactEditText view, @Nullable ReadableArray fontVariant) {
+    view.setFontFeatureSettings(ReactTypefaceUtils.parseFontVariant(fontVariant));
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
@@ -512,7 +516,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, String placeholder) {
-    view.setHint(placeholder);
+    view.setPlaceholder(placeholder);
   }
 
   @ReactProp(name = "placeholderTextColor", customType = "Color")
@@ -947,6 +951,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setAutoFocus(autoFocus);
   }
 
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(ReactEditText view, @Nullable String textDecorationLineString) {
+    view.setPaintFlags(
+        view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
+
+    for (String token : textDecorationLineString.split(" ")) {
+      if (token.equals("underline")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+      } else if (token.equals("line-through")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+      }
+    }
+  }
+
   @ReactPropGroup(
       names = {
         ViewProps.BORDER_WIDTH,
@@ -1046,23 +1064,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
-      if (stateManager.hasStateWrapper()) {
-        // Fabric: communicate to C++ layer that text has changed
-        // We need to call `incrementAndGetEventCounter` here explicitly because this
-        // update may race with other updates.
-        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
-        // on the native side, triggering a measure.
-        stateManager.setState(
-            new FabricViewStateManager.StateUpdateCallback() {
-              @Override
-              public WritableMap getStateUpdate() {
-                WritableMap map = new WritableNativeMap();
-                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                map.putInt("opaqueCacheId", mEditText.getId());
-                return map;
-              }
-            });
+      StateWrapper stateWrapper = mEditText.getStateWrapper();
+
+      if (stateWrapper != null) {
+        WritableMap newStateData = new WritableNativeMap();
+        newStateData.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+        newStateData.putInt("opaqueCacheId", mEditText.getId());
+        stateWrapper.updateState(newStateData);
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1310,8 +1318,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    FabricViewStateManager stateManager = view.getFabricViewStateManager();
-    if (!stateManager.hasStateWrapper()) {
+    StateWrapper stateManager = view.getStateWrapper();
+    if (stateManager == null) {
       // HACK: In Fabric, we assume all components start off with zero padding, which is
       // not true for TextInput components. We expose the theme's default padding via
       // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
@@ -1319,7 +1327,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setPadding(0, 0, 0, 0);
     }
 
-    stateManager.setStateWrapper(stateWrapper);
+    view.setStateWrapper(stateWrapper);
 
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {
@@ -1341,9 +1349,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    boolean containsMultipleFragments =
-        attributedString.getArray("fragments").toArrayList().size() > 1;
-
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
@@ -1356,8 +1361,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(
             props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
-        containsMultipleFragments);
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 
   public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
@@ -1378,9 +1382,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    boolean containsMultipleFragments =
-        attributedString.getMapBuffer(TextLayoutManagerMapBuffer.AS_KEY_FRAGMENTS).getCount() > 1;
-
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
@@ -1393,7 +1394,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(
             props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
-        containsMultipleFragments);
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 }

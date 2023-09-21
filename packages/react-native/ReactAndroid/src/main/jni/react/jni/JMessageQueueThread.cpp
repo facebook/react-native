@@ -15,8 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using namespace jni;
 
@@ -27,13 +26,13 @@ struct JavaJSException : jni::JavaClass<JavaJSException, JThrowable> {
       "Lcom/facebook/react/devsupport/JSException;";
 
   static local_ref<JavaJSException>
-  create(const char *message, const char *stack, const std::exception &ex) {
+  create(const char* message, const char* stack, const std::exception& ex) {
     local_ref<jthrowable> cause = jni::JCppException::create(ex);
     return newInstance(make_jstring(message), make_jstring(stack), cause.get());
   }
 };
 
-std::function<void()> wrapRunnable(std::function<void()> &&runnable) {
+std::function<void()> wrapRunnable(std::function<void()>&& runnable) {
   return [runnable = std::move(runnable)]() mutable {
     if (!runnable) {
       // Runnable is empty, nothing to run.
@@ -48,7 +47,7 @@ std::function<void()> wrapRunnable(std::function<void()> &&runnable) {
 
     try {
       localRunnable();
-    } catch (const jsi::JSError &ex) {
+    } catch (const jsi::JSError& ex) {
       throwNewJavaException(
           JavaJSException::create(
               ex.getMessage().c_str(), ex.getStack().c_str(), ex)
@@ -63,7 +62,7 @@ JMessageQueueThread::JMessageQueueThread(
     alias_ref<JavaMessageQueueThread::javaobject> jobj)
     : m_jobj(make_global(jobj)) {}
 
-void JMessageQueueThread::runOnQueue(std::function<void()> &&runnable) {
+void JMessageQueueThread::runOnQueue(std::function<void()>&& runnable) {
   // For C++ modules, this can be called from an arbitrary thread
   // managed by the module, via callJSCallback or callJSFunction.  So,
   // we ensure that it is registered with the JVM.
@@ -76,7 +75,7 @@ void JMessageQueueThread::runOnQueue(std::function<void()> &&runnable) {
   method(m_jobj, jrunnable.get());
 }
 
-void JMessageQueueThread::runOnQueueSync(std::function<void()> &&runnable) {
+void JMessageQueueThread::runOnQueueSync(std::function<void()>&& runnable) {
   static auto jIsOnThread =
       JavaMessageQueueThread::javaClassStatic()->getMethod<jboolean()>(
           "isOnThread");
@@ -89,7 +88,7 @@ void JMessageQueueThread::runOnQueueSync(std::function<void()> &&runnable) {
     bool runnableComplete = false;
 
     runOnQueue([&]() mutable {
-      std::lock_guard<std::mutex> lock(signalMutex);
+      std::scoped_lock lock(signalMutex);
 
       runnable();
       runnableComplete = true;
@@ -109,5 +108,4 @@ void JMessageQueueThread::quitSynchronous() {
   method(m_jobj);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

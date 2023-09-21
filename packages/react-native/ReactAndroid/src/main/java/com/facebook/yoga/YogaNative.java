@@ -24,23 +24,24 @@ public class YogaNative {
   static native void jni_YGConfigSetUseWebDefaultsJNI(long nativePointer, boolean useWebDefaults);
   static native void jni_YGConfigSetPrintTreeFlagJNI(long nativePointer, boolean enable);
   static native void jni_YGConfigSetPointScaleFactorJNI(long nativePointer, float pixelsInPoint);
-  static native void jni_YGConfigSetUseLegacyStretchBehaviourJNI(long nativePointer, boolean useLegacyStretchBehaviour);
+  static native void jni_YGConfigSetErrataJNI(long nativePointer, int errata);
+  static native int jni_YGConfigGetErrataJNI(long nativePointer);
   static native void jni_YGConfigSetLoggerJNI(long nativePointer, YogaLogger logger);
 
   // YGNode related
   static native long jni_YGNodeNewJNI();
   static native long jni_YGNodeNewWithConfigJNI(long configPointer);
-  static native void jni_YGNodeFreeJNI(long nativePointer);
+  static native void jni_YGNodeDeallocateJNI(long nativePointer);
   static native void jni_YGNodeResetJNI(long nativePointer);
   static native void jni_YGNodeInsertChildJNI(long nativePointer, long childPointer, int index);
   static native void jni_YGNodeSwapChildJNI(long nativePointer, long childPointer, int index);
   static native void jni_YGNodeSetIsReferenceBaselineJNI(long nativePointer, boolean isReferenceBaseline);
   static native boolean jni_YGNodeIsReferenceBaselineJNI(long nativePointer);
-  static native void jni_YGNodeClearChildrenJNI(long nativePointer);
+  static native void jni_YGNodeRemoveAllChildrenJNI(long nativePointer);
   static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
   static native void jni_YGNodeCalculateLayoutJNI(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
-  static native void jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(long nativePointer);
+  static native void jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(long nativePointer);
   static native boolean jni_YGNodeIsDirtyJNI(long nativePointer);
   static native void jni_YGNodeCopyStyleJNI(long dstNativePointer, long srcNativePointer);
   static native int jni_YGNodeStyleGetDirectionJNI(long nativePointer);

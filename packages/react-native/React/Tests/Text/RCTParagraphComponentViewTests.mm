@@ -32,6 +32,7 @@
 
 @end
 
+using namespace facebook;
 using namespace facebook::react;
 
 //┌──    RootShadowNode    ─────────────────────────────┐
@@ -120,8 +121,8 @@ using namespace facebook::react;
             auto &props = *sharedProps;
             props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-            yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
             return sharedProps;
           })
           .children({
@@ -132,11 +133,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
                     return sharedProps;
                   })
                   .children({
@@ -212,11 +213,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{30, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
+                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
                     return sharedProps;
                   })
                   .children({
@@ -256,11 +257,11 @@ using namespace facebook::react;
                     auto &props = *sharedProps;
                     props.accessible = true;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{90, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
+                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
                     return sharedProps;
                   })
                   .children({
@@ -417,8 +418,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                        auto &props = *sharedProps;
                        props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
                        auto &yogaStyle = props.yogaStyle;
-                       yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                       yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+                       yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+                       yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
                        return sharedProps;
                      })
                      .children({
@@ -430,11 +431,11 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                                props.accessible = true;
                                props.accessibilityTraits = AccessibilityTraits::Link;
                                auto &yogaStyle = props.yogaStyle;
-                               yogaStyle.positionType() = YGPositionTypeAbsolute;
+                               yogaStyle.positionType() = yoga::PositionType::Absolute;
                                yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                                yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                               yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-                               yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                               yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+                               yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
                                return sharedProps;
                              })
                              .children({

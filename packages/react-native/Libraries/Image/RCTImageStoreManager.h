@@ -8,6 +8,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTURLRequestHandler.h>
 
 @interface RCTImageStoreManager : NSObject <RCTURLRequestHandler>
@@ -40,6 +41,12 @@
 @end
 
 @interface RCTBridge (RCTImageStoreManager)
+
+@property (nonatomic, readonly) RCTImageStoreManager *imageStoreManager;
+
+@end
+
+@interface RCTBridgeProxy (RCTImageStoreManager)
 
 @property (nonatomic, readonly) RCTImageStoreManager *imageStoreManager;
 

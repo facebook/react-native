@@ -27,7 +27,7 @@
 
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
 
-[r]: https://reactjs.org/
+[r]: https://react.dev/
 [p]: https://reactnative.dev/docs/out-of-tree-platforms
 [e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
 
@@ -47,7 +47,7 @@ You can read more about the macOS implementation in our website - [React Native 
 
 ## 📋 Requirements
 
-React Native apps may target iOS 12.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
+React Native apps may target iOS 13.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 
@@ -109,5 +109,58 @@ The React Native for macOS extension, including modifications to the original Fa
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 [docs]: https://reactnative.dev/docs/getting-started
-[r-docs]: https://reactjs.org/docs/getting-started.html
+[r-docs]: https://react.dev/learn
 [repo-website]: https://github.com/facebook/react-native-website
+
+## 🚀 Upgrading
+
+Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
+
+React Native releases are discussed [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
+
+[u]: https://reactnative.dev/docs/upgrading
+[repo-releases]: https://github.com/react-native-community/react-native-releases
+
+## 👏 How to Contribute
+
+The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving React Native.
+
+### [Code of Conduct][code]
+
+Facebook has adopted a Code of Conduct that we expect project participants to adhere to.
+Please read the [full text][code] so that you can understand what actions will and will not be tolerated.
+
+[code]: https://code.fb.com/codeofconduct/
+
+### [Contributing Guide][contribute]
+
+Read our [**Contributing Guide**][contribute] to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
+
+[contribute]: https://reactnative.dev/docs/contributing
+
+### [Open Source Roadmap][roadmap]
+
+You can learn more about our vision for React Native in the [**Roadmap**][roadmap].
+
+[roadmap]: https://github.com/facebook/react-native/wiki/Roadmap
+
+### Good First Issues
+
+We have a list of [good first issues][gfi] that contain bugs which have a relatively limited scope. This is a great place to get started, gain experience, and get familiar with our contribution process.
+
+[gfi]: https://github.com/facebook/react-native/labels/good%20first%20issue
+
+### Discussions
+
+Larger discussions and proposals are discussed in [**@react-native-community/discussions-and-proposals**][repo-meta].
+
+[repo-meta]: https://github.com/react-native-community/discussions-and-proposals
+
+## 📄 License
+
+React Native is MIT licensed, as found in the [LICENSE][l] file.
+
+React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
+
+[l]: https://github.com/facebook/react-native/blob/main/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/main/LICENSE-docs

@@ -18,7 +18,7 @@ import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
 import NativePerformanceObserver from './NativePerformanceObserver';
-import {PerformanceEntry} from './PerformanceEntry';
+import {ALWAYS_LOGGED_ENTRY_TYPES, PerformanceEntry} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
 import {
   performanceEntryTypeToRaw,
@@ -42,6 +42,17 @@ declare var global: {
 const getCurrentTimeStamp: () => HighResTimeStamp = global.nativePerformanceNow
   ? global.nativePerformanceNow
   : () => Date.now();
+
+// We want some of the performance entry types to be always logged,
+// even if they are not currently observed - this is either to be able to
+// retrieve them at any time via Performance.getEntries* or to refer by other entries
+// (such as when measures may refer to marks, even if the latter are not observed)
+if (NativePerformanceObserver?.setIsBuffered) {
+  NativePerformanceObserver?.setIsBuffered(
+    ALWAYS_LOGGED_ENTRY_TYPES.map(performanceEntryTypeToRaw),
+    true,
+  );
+}
 
 export class PerformanceMark extends PerformanceEntry {
   detail: DetailType;
@@ -132,9 +143,22 @@ export default class Performance {
   // Startup metrics is not used in web, but only in React Native.
   get reactNativeStartupTiming(): ReactNativeStartupTiming {
     if (NativePerformance?.getReactNativeStartupTiming) {
-      return new ReactNativeStartupTiming(
-        NativePerformance.getReactNativeStartupTiming(),
-      );
+      const {
+        startTime,
+        endTime,
+        initializeRuntimeStart,
+        initializeRuntimeEnd,
+        executeJavaScriptBundleEntryPointStart,
+        executeJavaScriptBundleEntryPointEnd,
+      } = NativePerformance.getReactNativeStartupTiming();
+      return new ReactNativeStartupTiming({
+        startTime,
+        endTime,
+        initializeRuntimeStart,
+        initializeRuntimeEnd,
+        executeJavaScriptBundleEntryPointStart,
+        executeJavaScriptBundleEntryPointEnd,
+      });
     }
     return new ReactNativeStartupTiming();
   }
@@ -146,7 +170,7 @@ export default class Performance {
     const mark = new PerformanceMark(markName, markOptions);
 
     if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, mark.startTime, mark.duration);
+      NativePerformance.mark(markName, mark.startTime);
     } else {
       warnNoNativePerformance();
     }
@@ -261,7 +285,7 @@ export default class Performance {
    * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
    */
   getEntries(): PerformanceEntryList {
-    if (!NativePerformanceObserver?.clearEntries) {
+    if (!NativePerformanceObserver?.getEntries) {
       warnNoNativePerformanceObserver();
       return [];
     }
@@ -269,14 +293,16 @@ export default class Performance {
   }
 
   getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList {
-    if (entryType !== 'mark' && entryType !== 'measure') {
-      console.log(
-        `Performance.getEntriesByType: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+    if (!ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)) {
+      console.warn(
+        `Performance.getEntriesByType: Only valid for ${JSON.stringify(
+          ALWAYS_LOGGED_ENTRY_TYPES,
+        )} entry types, got ${entryType}`,
       );
       return [];
     }
 
-    if (!NativePerformanceObserver?.clearEntries) {
+    if (!NativePerformanceObserver?.getEntries) {
       warnNoNativePerformanceObserver();
       return [];
     }
@@ -291,16 +317,17 @@ export default class Performance {
   ): PerformanceEntryList {
     if (
       entryType !== undefined &&
-      entryType !== 'mark' &&
-      entryType !== 'measure'
+      !ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)
     ) {
-      console.log(
-        `Performance.getEntriesByName: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+      console.warn(
+        `Performance.getEntriesByName: Only valid for ${JSON.stringify(
+          ALWAYS_LOGGED_ENTRY_TYPES,
+        )} entry types, got ${entryType}`,
       );
       return [];
     }
 
-    if (!NativePerformanceObserver?.clearEntries) {
+    if (!NativePerformanceObserver?.getEntries) {
       warnNoNativePerformanceObserver();
       return [];
     }

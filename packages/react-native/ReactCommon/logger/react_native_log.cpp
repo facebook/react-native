@@ -13,20 +13,20 @@ static reactnativelogfunctype _reactnativelogfunc = NULL;
 void set_react_native_logfunc(reactnativelogfunctype newlogfunc) {
   _reactnativelogfunc = newlogfunc;
 }
-void react_native_log_info(const char *message) {
+void react_native_log_info(const char* message) {
   _react_native_log(ReactNativeLogLevelInfo, message);
 }
-void react_native_log_warn(const char *message) {
+void react_native_log_warn(const char* message) {
   _react_native_log(ReactNativeLogLevelWarning, message);
 }
-void react_native_log_error(const char *message) {
+void react_native_log_error(const char* message) {
   _react_native_log(ReactNativeLogLevelError, message);
 }
-void react_native_log_fatal(const char *message) {
+void react_native_log_fatal(const char* message) {
   _react_native_log(ReactNativeLogLevelFatal, message);
 }
 
-void _react_native_log(ReactNativeLogLevel level, const char *message) {
+void _react_native_log(ReactNativeLogLevel level, const char* message) {
   if (_reactnativelogfunc == NULL) {
     _react_native_log_default(level, message);
   } else {
@@ -34,7 +34,7 @@ void _react_native_log(ReactNativeLogLevel level, const char *message) {
   }
 }
 
-void _react_native_log_default(ReactNativeLogLevel level, const char *message) {
+void _react_native_log_default(ReactNativeLogLevel level, const char* message) {
   switch (level) {
     case ReactNativeLogLevelInfo:
       LOG(INFO) << message;

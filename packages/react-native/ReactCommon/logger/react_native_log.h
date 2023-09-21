@@ -14,20 +14,20 @@ enum ReactNativeLogLevel {
   ReactNativeLogLevelFatal = 4
 };
 
-typedef void (*reactnativelogfunctype)(ReactNativeLogLevel, const char *);
+typedef void (*reactnativelogfunctype)(ReactNativeLogLevel, const char*);
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 void set_react_native_logfunc(reactnativelogfunctype newlogfunc);
 
-void react_native_log_info(const char *text);
-void react_native_log_warn(const char *text);
-void react_native_log_error(const char *text);
-void react_native_log_fatal(const char *text);
+void react_native_log_info(const char* text);
+void react_native_log_warn(const char* text);
+void react_native_log_error(const char* text);
+void react_native_log_fatal(const char* text);
 
-void _react_native_log(ReactNativeLogLevel level, const char *text);
-void _react_native_log_default(ReactNativeLogLevel level, const char *text);
+void _react_native_log(ReactNativeLogLevel level, const char* text);
+void _react_native_log_default(ReactNativeLogLevel level, const char* text);
 #ifdef __cplusplus
 }
 #endif // __cpusplus

@@ -7,18 +7,10 @@
 
 package com.facebook.react.modules.network;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactContext;
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -38,13 +30,11 @@ public class ForwardingCookieHandler extends CookieHandler {
   private static final String VERSION_ONE_HEADER = "Set-cookie2";
   private static final String COOKIE_HEADER = "Cookie";
 
-  private final CookieSaver mCookieSaver;
   private final ReactContext mContext;
   private @Nullable CookieManager mCookieManager;
 
   public ForwardingCookieHandler(ReactContext context) {
     mContext = context;
-    mCookieSaver = new CookieSaver();
   }
 
   @Override
@@ -73,21 +63,9 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   public void clearCookies(final Callback callback) {
-    clearCookiesAsync(callback);
-  }
-
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private void clearCookiesAsync(final Callback callback) {
     CookieManager cookieManager = getCookieManager();
     if (cookieManager != null) {
-      cookieManager.removeAllCookies(
-          new ValueCallback<Boolean>() {
-            @Override
-            public void onReceiveValue(Boolean value) {
-              mCookieSaver.onCookiesModified();
-              callback.invoke(value);
-            }
-          });
+      cookieManager.removeAllCookies(value -> callback.invoke(value));
     }
   }
 
@@ -101,10 +79,8 @@ public class ForwardingCookieHandler extends CookieHandler {
       addCookieAsync(url, cookie);
     }
     cookieManager.flush();
-    mCookieSaver.onCookiesModified();
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void addCookieAsync(String url, String cookie) {
     CookieManager cookieManager = getCookieManager();
     if (cookieManager != null) {
@@ -116,22 +92,12 @@ public class ForwardingCookieHandler extends CookieHandler {
     return name.equalsIgnoreCase(VERSION_ZERO_HEADER) || name.equalsIgnoreCase(VERSION_ONE_HEADER);
   }
 
-  private void runInBackground(final Runnable runnable) {
-    new GuardedAsyncTask<Void, Void>(mContext) {
-      @Override
-      protected void doInBackgroundGuarded(Void... params) {
-        runnable.run();
-      }
-    }.execute();
-  }
-
   /**
    * Instantiating CookieManager will load the Chromium task taking a 100ish ms so we do it lazily
    * to make sure it's done on a background thread as needed.
    */
   private @Nullable CookieManager getCookieManager() {
     if (mCookieManager == null) {
-      possiblyWorkaroundSyncManager(mContext);
       try {
         mCookieManager = CookieManager.getInstance();
       } catch (IllegalArgumentException ex) {
@@ -154,57 +120,5 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
 
     return mCookieManager;
-  }
-
-  private static void possiblyWorkaroundSyncManager(Context context) {}
-
-  /**
-   * Responsible for flushing cookies to disk. Flushes to disk with a maximum delay of 30 seconds.
-   * This class is only active if we are on API < 21.
-   */
-  private class CookieSaver {
-    private static final int MSG_PERSIST_COOKIES = 1;
-
-    private static final int TIMEOUT = 30 * 1000; // 30 seconds
-
-    private final Handler mHandler;
-
-    public CookieSaver() {
-      mHandler =
-          new Handler(
-              Looper.getMainLooper(),
-              new Handler.Callback() {
-                @Override
-                public boolean handleMessage(Message msg) {
-                  if (msg.what == MSG_PERSIST_COOKIES) {
-                    persistCookies();
-                    return true;
-                  } else {
-                    return false;
-                  }
-                }
-              });
-    }
-
-    public void onCookiesModified() {}
-
-    public void persistCookies() {
-      mHandler.removeMessages(MSG_PERSIST_COOKIES);
-      runInBackground(
-          new Runnable() {
-            @Override
-            public void run() {
-              flush();
-            }
-          });
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void flush() {
-      CookieManager cookieManager = getCookieManager();
-      if (cookieManager != null) {
-        cookieManager.flush();
-      }
-    }
   }
 }

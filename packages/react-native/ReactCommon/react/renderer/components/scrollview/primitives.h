@@ -8,9 +8,9 @@
 #pragma once
 
 #include <optional>
+#include <tuple>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class ScrollViewSnapToAlignment { Start, Center, End };
 
@@ -30,15 +30,14 @@ class ScrollViewMaintainVisibleContentPosition final {
   int minIndexForVisible{0};
   std::optional<int> autoscrollToTopThreshold{};
 
-  bool operator==(const ScrollViewMaintainVisibleContentPosition &rhs) const {
+  bool operator==(const ScrollViewMaintainVisibleContentPosition& rhs) const {
     return std::tie(this->minIndexForVisible, this->autoscrollToTopThreshold) ==
         std::tie(rhs.minIndexForVisible, rhs.autoscrollToTopThreshold);
   }
 
-  bool operator!=(const ScrollViewMaintainVisibleContentPosition &rhs) const {
+  bool operator!=(const ScrollViewMaintainVisibleContentPosition& rhs) const {
     return !(*this == rhs);
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

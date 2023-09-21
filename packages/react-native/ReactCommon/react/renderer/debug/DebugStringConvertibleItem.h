@@ -11,8 +11,7 @@
 
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -21,7 +20,7 @@ namespace react {
 // in custom implementations of `getDebugChildren` and `getDebugProps`.
 class DebugStringConvertibleItem : public DebugStringConvertible {
  public:
-  DebugStringConvertibleItem(const DebugStringConvertibleItem &item) = default;
+  DebugStringConvertibleItem(const DebugStringConvertibleItem& item) = default;
 
   DebugStringConvertibleItem(
       std::string name = "",
@@ -43,5 +42,4 @@ class DebugStringConvertibleItem : public DebugStringConvertible {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

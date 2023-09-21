@@ -15,8 +15,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -25,12 +24,11 @@ class JSCExecutorFactory : public JSExecutorFactory {
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override {
-    auto installBindings = [](jsi::Runtime &runtime) {
+    auto installBindings = [](jsi::Runtime& runtime) {
       react::Logger androidLogger =
-          static_cast<void (*)(const std::string &, unsigned int)>(
+          static_cast<void (*)(const std::string&, unsigned int)>(
               &reactAndroidLoggingHook);
       react::bindNativeLogger(runtime, androidLogger);
-      react::bindNativePerformanceNow(runtime);
     };
     return std::make_unique<JSIExecutor>(
         jsc::makeJSCRuntime(),
@@ -52,7 +50,7 @@ class JSCExecutorHolder
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
-      ReadableNativeMap *) {
+      ReadableNativeMap*) {
     // This is kind of a weird place for stuff, but there's no other
     // good place for initialization which is specific to JSC on
     // Android.
@@ -72,10 +70,9 @@ class JSCExecutorHolder
   using HybridBase::HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
   return facebook::jni::initialize(
       vm, [] { facebook::react::JSCExecutorHolder::registerNatives(); });
 }

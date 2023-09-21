@@ -47,4 +47,21 @@
   return module;
 }
 
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  RCTBridge *bridge = _bridge;
+
+  if (bridge) {
+    return [bridge moduleIsInitialized:moduleClass];
+  }
+
+  id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
+  if (turboModuleRegistry) {
+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+    return [turboModuleRegistry moduleIsInitialized:[moduleName UTF8String]];
+  }
+
+  return NO;
+}
+
 @end

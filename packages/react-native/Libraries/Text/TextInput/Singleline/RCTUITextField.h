@@ -17,11 +17,16 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Just regular UITextField... but much better!
  */
+#if !TARGET_OS_OSX // [macOS]
+@interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
+#else // [macOS
 #if RCT_SUBCLASS_SECURETEXTFIELD
 @interface RCTUISecureTextField : NSSecureTextField <RCTBackedTextInputViewProtocol>
 #else
-@interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
-#endif
+@interface RCTUITextField : NSTextField <RCTBackedTextInputViewProtocol>
+#endif // RCT_SUBCLASS_SECURETEXTFIELD
+#endif // macOS]
+
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 
@@ -34,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 #else // [macOS
 @property (nonatomic, assign) BOOL textWasPasted;
 #endif // macOS]
+@property (nonatomic, assign, readonly) BOOL dictationRecognizing;
 @property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // [macOS]
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 #if !TARGET_OS_OSX // [macOS]

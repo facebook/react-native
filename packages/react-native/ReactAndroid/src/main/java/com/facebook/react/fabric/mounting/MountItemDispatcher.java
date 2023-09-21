@@ -26,7 +26,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
-import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,8 +50,7 @@ public class MountItemDispatcher {
   private final ConcurrentLinkedQueue<MountItem> mMountItems = new ConcurrentLinkedQueue<>();
 
   @NonNull
-  private final ConcurrentLinkedQueue<PreAllocateViewMountItem> mPreMountItems =
-      new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<MountItem> mPreMountItems = new ConcurrentLinkedQueue<>();
 
   private boolean mInDispatch = false;
   private int mReDispatchCounter = 0;
@@ -74,9 +72,10 @@ public class MountItemDispatcher {
     mMountItems.add(mountItem);
   }
 
-  public void addPreAllocateMountItem(PreAllocateViewMountItem mountItem) {
+  public void addPreAllocateMountItem(MountItem mountItem) {
     // We do this check only for PreAllocateViewMountItem - and not DispatchMountItem or regular
-    // MountItem - because PreAllocateViewMountItem is not batched, and is relatively more expensive
+    // MountItem - because PreAllocateViewMountItems are not batched, and is relatively more
+    // expensive
     // both to queue, to drain, and to execute.
     if (!mMountingManager.surfaceIsStopped(mountItem.getSurfaceId())) {
       mPreMountItems.add(mountItem);
@@ -193,6 +192,8 @@ public class MountItemDispatcher {
       return false;
     }
 
+    mItemDispatchListener.willMountItems(mountItemsToDispatch);
+
     // As an optimization, execute all ViewCommands first
     // This should be:
     // 1) Performant: ViewCommands are often a replacement for SetNativeProps, which we've always
@@ -245,13 +246,13 @@ public class MountItemDispatcher {
 
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
     // first
-    Collection<PreAllocateViewMountItem> preMountItemsToDispatch = getAndResetPreMountItems();
+    Collection<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
 
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
 
-      for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
+      for (MountItem preMountItem : preMountItemsToDispatch) {
         executeOrEnqueue(preMountItem);
       }
 
@@ -299,6 +300,9 @@ public class MountItemDispatcher {
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
+
+    mItemDispatchListener.didMountItems(mountItemsToDispatch);
+
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     return true;
@@ -319,7 +323,7 @@ public class MountItemDispatcher {
           break;
         }
 
-        PreAllocateViewMountItem preMountItemToDispatch = mPreMountItems.poll();
+        MountItem preMountItemToDispatch = mPreMountItems.poll();
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
@@ -393,7 +397,7 @@ public class MountItemDispatcher {
     return drainConcurrentItemQueue(mMountItems);
   }
 
-  private Collection<PreAllocateViewMountItem> getAndResetPreMountItems() {
+  private Collection<MountItem> getAndResetPreMountItems() {
     return drainConcurrentItemQueue(mPreMountItems);
   }
 
@@ -415,6 +419,10 @@ public class MountItemDispatcher {
   }
 
   public interface ItemDispatchListener {
+    void willMountItems(List<MountItem> mountItems);
+
+    void didMountItems(List<MountItem> mountItems);
+
     void didDispatchMountItems();
   }
 }

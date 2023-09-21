@@ -16,8 +16,7 @@
 
 #include <react/renderer/attributedstring/AttributedString.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[];
 
@@ -39,7 +38,7 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  void setContextContainer(ContextContainer *contextContainer);
+  void setContextContainer(ContextContainer* contextContainer);
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
@@ -57,12 +56,12 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
-  ContextContainer *contextContainer_{};
+  ContextContainer* contextContainer_{};
 
   /**
    * Get the most up-to-date attributed string for measurement and State.
@@ -84,5 +83,4 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
   mutable std::optional<AttributedString> cachedAttributedString_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

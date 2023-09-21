@@ -9,26 +9,26 @@
 
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
-#include <react/renderer/graphics/ColorComponents.h>
+#include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/RCTPlatformColorUtils.h>
+#include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-inline ColorComponents parsePlatformColor(
-    const PropsParserContext &context,
-    const RawValue &value) {
-  if (value.hasType<butter::map<std::string, RawValue>>()) {
-    auto items = (butter::map<std::string, RawValue>)value;
+inline SharedColor parsePlatformColor(
+    const PropsParserContext& context,
+    const RawValue& value) {
+  if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
+    auto items = (std::unordered_map<std::string, RawValue>)value;
     if (items.find("semantic") != items.end() &&
         items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return RCTPlatformColorComponentsFromSemanticItems(semanticItems);
+      return {colorFromComponents(
+          RCTPlatformColorComponentsFromSemanticItems(semanticItems))};
     }
   }
 
-  return {0, 0, 0, 0};
+  return clearColor();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

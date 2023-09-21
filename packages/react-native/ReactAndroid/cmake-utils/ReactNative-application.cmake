@@ -46,7 +46,20 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
+target_compile_options(${CMAKE_PROJECT_NAME}
+        PRIVATE
+                -Wall
+                -Werror
+                # We suppress cpp #error and #warning to don't fail the build
+                # due to use migrating away from
+                # #include <react/renderer/graphics/conversions.h>
+                # This can be removed for React Native 0.73
+                -Wno-error=cpp
+                -fexceptions
+                -frtti
+                -std=c++20
+                -DWITH_INSPECTOR=1
+                -DLOG_TAG=\"ReactNative\")
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)
@@ -55,6 +68,7 @@ add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
 add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 add_library(react_debug ALIAS ReactAndroid::react_debug)
+add_library(react_utils ALIAS ReactAndroid::react_utils)
 add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
@@ -82,6 +96,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         jsi                                 # prefab ready
         react_codegen_rncore                # prefab ready
         react_debug                         # prefab ready
+        react_utils                         # prefab ready
         react_nativemodule_core             # prefab ready
         react_newarchdefaults               # prefab ready
         react_render_componentregistry      # prefab ready

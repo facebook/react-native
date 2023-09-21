@@ -24,34 +24,34 @@ bool constexpr DEBUG_FLY = false;
 
 struct RBCContext {
   const Tag rootTag;
-  const std::vector<ShadowNode::Shared> &nodes;
-  const std::vector<folly::dynamic> &registers;
-  const ComponentDescriptorRegistry &componentDescriptorRegistry;
-  const NativeModuleRegistry &nativeModuleRegistry;
+  const std::vector<ShadowNode::Shared>& nodes;
+  const std::vector<folly::dynamic>& registers;
+  const ComponentDescriptorRegistry& componentDescriptorRegistry;
+  const NativeModuleRegistry& nativeModuleRegistry;
 };
 
 // TODO: use RBCContext instead of all the separate arguments.
 ShadowNode::Shared UITemplateProcessor::runCommand(
-    const folly::dynamic &command,
+    const folly::dynamic& command,
     SurfaceId surfaceId,
-    std::vector<ShadowNode::Shared> &nodes,
-    std::vector<folly::dynamic> &registers,
-    const ComponentDescriptorRegistry &componentDescriptorRegistry,
-    const NativeModuleRegistry &nativeModuleRegistry,
-    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
-  const std::string &opcode = command[0].asString();
+    std::vector<ShadowNode::Shared>& nodes,
+    std::vector<folly::dynamic>& registers,
+    const ComponentDescriptorRegistry& componentDescriptorRegistry,
+    const NativeModuleRegistry& nativeModuleRegistry,
+    const std::shared_ptr<const ReactNativeConfig>& reactNativeConfig) {
+  const std::string& opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
   if (opcode == "createNode") {
     Tag tag = static_cast<Tag>(command[1].asInt());
-    const auto &type = command[2].asString();
+    const auto& type = command[2].asString();
     const auto parentTag = command[3].asInt();
-    const auto &props = command[4];
+    const auto& props = command[4];
     nodes[tag] = componentDescriptorRegistry.createNode(
         tag + tagOffset, type, surfaceId, props, nullptr);
     if (parentTag > -1) { // parentTag == -1 indicates root node
       auto parentShadowNode = nodes[static_cast<size_t>(parentTag)];
-      auto const &componentDescriptor = componentDescriptorRegistry.at(
+      const auto& componentDescriptor = componentDescriptorRegistry.at(
           parentShadowNode->getComponentHandle());
       componentDescriptor.appendChild(parentShadowNode, nodes[tag]);
     }
@@ -81,9 +81,9 @@ ShadowNode::Shared UITemplateProcessor::runCommand(
           "' but needs to be 'boolean' for conditionals");
       throw err;
     }
-    const auto &nextCommands =
+    const auto& nextCommands =
         conditionDynamic.asBool() ? command[2] : command[3];
-    for (const auto &nextCommand : nextCommands) {
+    for (const auto& nextCommand : nextCommands) {
       runCommand(
           nextCommand,
           surfaceId,
@@ -100,20 +100,20 @@ ShadowNode::Shared UITemplateProcessor::runCommand(
 }
 
 ShadowNode::Shared UITemplateProcessor::buildShadowTree(
-    const std::string &jsonStr,
+    const std::string& jsonStr,
     SurfaceId surfaceId,
-    const folly::dynamic &params,
-    const ComponentDescriptorRegistry &componentDescriptorRegistry,
-    const NativeModuleRegistry &nativeModuleRegistry,
-    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
+    const folly::dynamic& params,
+    const ComponentDescriptorRegistry& componentDescriptorRegistry,
+    const NativeModuleRegistry& nativeModuleRegistry,
+    const std::shared_ptr<const ReactNativeConfig>& reactNativeConfig) {
   if (DEBUG_FLY) {
     LOG(INFO)
         << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
   }
 
   std::string content = jsonStr;
-  for (const auto &param : params.items()) {
-    const auto &key = param.first.asString();
+  for (const auto& param : params.items()) {
+    const auto& key = param.first.asString();
     size_t start_pos = content.find(key);
     if (start_pos != std::string::npos) {
       content.replace(start_pos, key.length(), param.second.asString());
@@ -123,7 +123,7 @@ ShadowNode::Shared UITemplateProcessor::buildShadowTree(
   auto commands = parsed["commands"];
   std::vector<ShadowNode::Shared> nodes(commands.size() * 2);
   std::vector<folly::dynamic> registers(32);
-  for (const auto &command : commands) {
+  for (const auto& command : commands) {
     try {
       if (DEBUG_FLY) {
         LOG(INFO) << "try to run command " << folly::toJson(command);
@@ -139,7 +139,7 @@ ShadowNode::Shared UITemplateProcessor::buildShadowTree(
       if (ret != nullptr) {
         return ret;
       }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       LOG(ERROR) << "   >>> Exception <<<    running previous command '"
                  << folly::toJson(command) << "': '" << e.what() << "'";
     }

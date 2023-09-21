@@ -9,6 +9,8 @@
 
 'use strict';
 
+const {defaults} = require('jest-config');
+
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
@@ -18,13 +20,14 @@ module.exports = {
   setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
-    legacyFakeTimers: true,
+    legacyFakeTimers: false,
   },
   snapshotFormat: {
     escapeString: true,
     printBasicPrototype: true,
   },
-  testRegex: '/__tests__/.*-test\\.js$',
+  // This allows running Meta-internal tests with the `-test.fb.js` suffix.
+  testRegex: '/__tests__/.*-test(\\.fb)?\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/packages/react-native/template',
@@ -36,6 +39,13 @@ module.exports = {
     defaultPlatform: 'ios',
     platforms: ['ios', 'android', 'macos'],
   },
+  moduleNameMapper: {
+    // This module is internal to Meta and used by their custom React renderer.
+    // In tests, we can just use a mock.
+    '^ReactNativeInternalFeatureFlags$':
+      '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
+  },
+  moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
   unmockedModulePathPatterns: [
     'node_modules/react/',
     'packages/react-native/Libraries/Renderer',

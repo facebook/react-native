@@ -156,6 +156,7 @@ const RCTTextInputViewConfig = {
     showSoftInputOnFocus: true,
     autoFocus: true,
     lineBreakStrategyIOS: true,
+    smartInsertDelete: true,
     // [macOS
     clearTextOnSubmit: true,
     grammarCheck: true,

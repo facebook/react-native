@@ -16,14 +16,23 @@ import typeof RawEventEmitter from '../Core/RawEventEmitter';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
+import typeof {
+  createPublicInstance,
+  createPublicTextInstance,
+  getNativeTagFromPublicInstance,
+  getNodeFromPublicInstance,
+} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
+import typeof {
+  create as createAttributePayload,
+  diff as diffAttributePayloads,
+} from '../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import typeof UIManager from '../ReactNative/UIManager';
 import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
+import type {DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof Platform from '../Utilities/Platform';
-
-import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {
@@ -48,6 +57,7 @@ module.exports = {
   get UIManager(): UIManager {
     return require('../ReactNative/UIManager');
   },
+  // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
     return require('../Utilities/differ/deepDiffer');
   },
@@ -56,6 +66,7 @@ module.exports = {
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
+  // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
     return require('../StyleSheet/flattenStyle');
@@ -71,5 +82,29 @@ module.exports = {
   },
   get CustomEvent(): CustomEvent {
     return require('../Events/CustomEvent').default;
+  },
+  get createAttributePayload(): createAttributePayload {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
+      .create;
+  },
+  get diffAttributePayloads(): diffAttributePayloads {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
+      .diff;
+  },
+  get createPublicInstance(): createPublicInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicInstance;
+  },
+  get createPublicTextInstance(): createPublicTextInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicTextInstance;
+  },
+  get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .getNativeTagFromPublicInstance;
+  },
+  get getNodeFromPublicInstance(): getNodeFromPublicInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .getNodeFromPublicInstance;
   },
 };

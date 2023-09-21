@@ -20,12 +20,12 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +36,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.CookieJar;
 import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -94,7 +93,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
-  private static @Nullable CustomClientBuilder customClientBuilder = null;
+  private static @Nullable com.facebook.react.modules.network.CustomClientBuilder
+      customClientBuilder = null;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -163,13 +163,18 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
   }
 
-  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+  public static void setCustomClientBuilder(
+      com.facebook.react.modules.network.CustomClientBuilder ccb) {
     customClientBuilder = ccb;
   }
 
-  public static interface CustomClientBuilder {
-    public void apply(OkHttpClient.Builder builder);
-  }
+  /**
+   * @deprecated To be removed in a future release. See
+   *     https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914
+   */
+  @Deprecated
+  public interface CustomClientBuilder
+      extends com.facebook.react.modules.network.CustomClientBuilder {}
 
   private static void applyCustomBuilder(OkHttpClient.Builder builder) {
     if (customClientBuilder != null) {
@@ -305,36 +310,32 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     // response and counts bytes received.
     if (useIncrementalUpdates) {
       clientBuilder.addNetworkInterceptor(
-          new Interceptor() {
-            @Override
-            public Response intercept(Interceptor.Chain chain) throws IOException {
-              Response originalResponse = chain.proceed(chain.request());
-              ProgressResponseBody responseBody =
-                  new ProgressResponseBody(
-                      originalResponse.body(),
-                      new ProgressListener() {
-                        long last = System.nanoTime();
+          chain -> {
+            Response originalResponse = chain.proceed(chain.request());
+            ProgressResponseBody responseBody =
+                new ProgressResponseBody(
+                    originalResponse.body(),
+                    new ProgressListener() {
+                      long last = System.nanoTime();
 
-                        @Override
-                        public void onProgress(
-                            long bytesWritten, long contentLength, boolean done) {
-                          long now = System.nanoTime();
-                          if (!done && !shouldDispatch(now, last)) {
-                            return;
-                          }
-                          if (responseType.equals("text")) {
-                            // For 'text' responses we continuously send response data with progress
-                            // info to
-                            // JS below, so no need to do anything here.
-                            return;
-                          }
-                          ResponseUtil.onDataReceivedProgress(
-                              reactApplicationContext, requestId, bytesWritten, contentLength);
-                          last = now;
+                      @Override
+                      public void onProgress(long bytesWritten, long contentLength, boolean done) {
+                        long now = System.nanoTime();
+                        if (!done && !shouldDispatch(now, last)) {
+                          return;
                         }
-                      });
-              return originalResponse.newBuilder().body(responseBody).build();
-            }
+                        if (responseType.equals("text")) {
+                          // For 'text' responses we continuously send response data with progress
+                          // info to
+                          // JS below, so no need to do anything here.
+                          return;
+                        }
+                        ResponseUtil.onDataReceivedProgress(
+                            reactApplicationContext, requestId, bytesWritten, contentLength);
+                        last = now;
+                      }
+                    });
+            return originalResponse.newBuilder().body(responseBody).build();
           });
     }
 
@@ -342,8 +343,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     // client and set the timeout explicitly on the clone.  This is cheap as everything else is
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
-    if (timeout != mClient.connectTimeoutMillis()) {
-      clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+    if (timeout != mClient.callTimeoutMillis()) {
+      clientBuilder.callTimeout(timeout, TimeUnit.MILLISECONDS);
     }
     OkHttpClient client = clientBuilder.build();
 

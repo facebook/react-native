@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<RCTUIView *> *)descendantViews; // [macOS]
 
+/**
+ * (Experimental and unused for Paper) Pointer event handlers.
+ */
+@property (nonatomic, assign) RCTBubblingEventBlock onClick;
+
 @end
 
 NS_ASSUME_NONNULL_END

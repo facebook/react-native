@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 #else // [macOS
 @property (nonatomic, assign) BOOL textWasPasted;
 #endif // macOS]
+@property (nonatomic, assign, readonly) BOOL dictationRecognizing;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // [macOS]
 

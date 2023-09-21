@@ -1,0 +1,40 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+import type {RootTag} from '../Types/RootTagTypes';
+import type {ResolvedAssetSource} from './AssetSourceResolver';
+import type {ImageIOS, ImageAndroid} from './Image.flow';
+
+export type ImageComponentStatics = $ReadOnly<{
+  getSize: (
+    uri: string,
+    success: (width: number, height: number) => void,
+    failure?: (error: any) => void,
+  ) => void,
+  getSizeWithHeaders: (
+    uri: string,
+    headers: {[string]: string},
+    success: (width: number, height: number) => void,
+    failure?: (error: any) => void,
+  ) => any,
+  prefetch: (url: string) => any,
+  abortPrefetch?: number => void,
+  prefetchWithMetadata: (
+    url: string,
+    queryRootName: string,
+    rootTag?: ?RootTag,
+  ) => any,
+  queryCache: (
+    urls: Array<string>,
+  ) => Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}>,
+  resolveAssetSource: (source: any) => ?ResolvedAssetSource,
+}>;
+
+declare module.exports: ImageIOS | ImageAndroid;

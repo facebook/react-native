@@ -11,12 +11,11 @@
 
 #ifdef WITH_INSPECTOR
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
-class RemoteConnection : public IRemoteConnection {
+class RemoteConnection : public jsinspector_modern::IRemoteConnection {
  public:
   RemoteConnection(jni::alias_ref<JRemoteConnection::javaobject> connection)
       : connection_(jni::make_global(connection)) {}
@@ -36,7 +35,7 @@ class RemoteConnection : public IRemoteConnection {
 } // namespace
 
 jni::local_ref<JPage::javaobject>
-JPage::create(int id, const std::string &title, const std::string &vm) {
+JPage::create(int id, const std::string& title, const std::string& vm) {
   static auto constructor = javaClassStatic()
                                 ->getConstructor<JPage::javaobject(
                                     jint,
@@ -46,7 +45,7 @@ JPage::create(int id, const std::string &title, const std::string &vm) {
       constructor, id, jni::make_jstring(title), jni::make_jstring(vm));
 }
 
-void JRemoteConnection::onMessage(const std::string &message) const {
+void JRemoteConnection::onMessage(const std::string& message) const {
   static auto method =
       javaClassStatic()->getMethod<void(jni::local_ref<jstring>)>("onMessage");
   method(self(), jni::make_jstring(message));
@@ -57,7 +56,8 @@ void JRemoteConnection::onDisconnect() const {
   method(self());
 }
 
-JLocalConnection::JLocalConnection(std::unique_ptr<ILocalConnection> connection)
+JLocalConnection::JLocalConnection(
+    std::unique_ptr<jsinspector_modern::ILocalConnection> connection)
     : connection_(std::move(connection)) {}
 
 void JLocalConnection::sendMessage(std::string message) {
@@ -77,13 +77,13 @@ void JLocalConnection::registerNatives() {
 
 jni::global_ref<JInspector::javaobject> JInspector::instance(
     jni::alias_ref<jclass>) {
-  static auto instance =
-      jni::make_global(newObjectCxxArgs(&getInspectorInstance()));
+  static auto instance = jni::make_global(
+      newObjectCxxArgs(&jsinspector_modern::getInspectorInstance()));
   return instance;
 }
 
 jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
-  std::vector<InspectorPage> pages = inspector_->getPages();
+  std::vector<jsinspector_modern::InspectorPage> pages = inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
     (*array)[i] = JPage::create(pages[i].id, pages[i].title, pages[i].vm);
@@ -96,7 +96,9 @@ jni::local_ref<JLocalConnection::javaobject> JInspector::connect(
     jni::alias_ref<JRemoteConnection::javaobject> remote) {
   auto localConnection = inspector_->connect(
       pageId, std::make_unique<RemoteConnection>(std::move(remote)));
-  return JLocalConnection::newObjectCxxArgs(std::move(localConnection));
+  return localConnection
+      ? JLocalConnection::newObjectCxxArgs(std::move(localConnection))
+      : nullptr;
 }
 
 void JInspector::registerNatives() {
@@ -108,7 +110,6 @@ void JInspector::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

@@ -31,6 +31,7 @@ export type LogBoxLogData = $ReadOnly<{|
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
+  extraData?: mixed,
 |}>;
 
 class LogBoxLog {
@@ -43,6 +44,7 @@ class LogBoxLog {
   level: LogLevel;
   codeFrame: ?CodeFrame;
   isComponentError: boolean;
+  extraData: mixed | void;
   symbolicated:
     | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
     | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
@@ -62,6 +64,7 @@ class LogBoxLog {
     this.componentStack = data.componentStack;
     this.codeFrame = data.codeFrame;
     this.isComponentError = data.isComponentError;
+    this.extraData = data.extraData;
     this.count = 1;
   }
 
@@ -91,7 +94,7 @@ class LogBoxLog {
   handleSymbolicate(callback?: (status: SymbolicationStatus) => void): void {
     if (this.symbolicated.status !== 'PENDING') {
       this.updateStatus(null, null, null, callback);
-      LogBoxSymbolication.symbolicate(this.stack).then(
+      LogBoxSymbolication.symbolicate(this.stack, this.extraData).then(
         data => {
           this.updateStatus(null, data?.stack, data?.codeFrame, callback);
         },

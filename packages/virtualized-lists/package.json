@@ -1,7 +1,8 @@
 {
   "name": "@react-native-mac/virtualized-lists",
-  "version": "0.72.1",
+  "version": "0.73.0",
   "description": "Virtualized lists for React Native macOS.",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:microsoft/react-native-macos.git",
@@ -12,7 +13,12 @@
     "check": "beachball check",
     "beachball:publish": "beachball publish"
   },
-  "license": "MIT",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
+  "keywords": ["lists", "virtualized-lists", "section-lists", "react-native"],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"

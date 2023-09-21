@@ -16,17 +16,17 @@ namespace facebook::react {
 using Status = SurfaceHandler::Status;
 
 SurfaceHandler::SurfaceHandler(
-    std::string const &moduleName,
+    const std::string& moduleName,
     SurfaceId surfaceId) noexcept {
   parameters_.moduleName = moduleName;
   parameters_.surfaceId = surfaceId;
 }
 
-SurfaceHandler::SurfaceHandler(SurfaceHandler &&other) noexcept {
+SurfaceHandler::SurfaceHandler(SurfaceHandler&& other) noexcept {
   operator=(std::move(other));
 }
 
-SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
+SurfaceHandler& SurfaceHandler::operator=(SurfaceHandler&& other) noexcept {
   std::unique_lock lock1(linkMutex_, std::defer_lock);
   std::unique_lock lock2(parametersMutex_, std::defer_lock);
   std::unique_lock lock3(other.linkMutex_, std::defer_lock);
@@ -108,10 +108,13 @@ void SurfaceHandler::stop() const noexcept {
   // mounted views, so we need to commit an empty tree to trigger all
   // side-effects (including destroying and removing mounted views).
   react_native_assert(shadowTree && "`shadowTree` must not be null.");
-  shadowTree->commitEmptyTree();
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
+  auto parameters = Parameters{};
   {
     std::unique_lock lock(parametersMutex_);
     if (parameters_.displayMode == displayMode) {
@@ -119,6 +122,7 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     parameters_.displayMode = displayMode;
+    parameters = parameters_;
   }
 
   {
@@ -129,10 +133,10 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     link_.uiManager->setSurfaceProps(
-        parameters_.surfaceId,
-        parameters_.moduleName,
-        parameters_.props,
-        parameters_.displayMode);
+        parameters.surfaceId,
+        parameters.moduleName,
+        parameters.props,
+        parameters.displayMode);
 
     applyDisplayMode(displayMode);
   }
@@ -160,10 +164,27 @@ std::string SurfaceHandler::getModuleName() const noexcept {
   return parameters_.moduleName;
 }
 
-void SurfaceHandler::setProps(folly::dynamic const &props) const noexcept {
+void SurfaceHandler::setProps(const folly::dynamic& props) const noexcept {
   SystraceSection s("SurfaceHandler::setProps");
-  std::unique_lock lock(parametersMutex_);
-  parameters_.props = props;
+  auto parameters = Parameters{};
+  {
+    std::unique_lock lock(parametersMutex_);
+
+    parameters_.props = props;
+    parameters = parameters_;
+  }
+
+  {
+    std::shared_lock lock(linkMutex_);
+
+    if (link_.status == Status::Running) {
+      link_.uiManager->setSurfaceProps(
+          parameters.surfaceId,
+          parameters.moduleName,
+          parameters.props,
+          parameters.displayMode);
+    }
+  }
 }
 
 folly::dynamic SurfaceHandler::getProps() const noexcept {
@@ -171,7 +192,7 @@ folly::dynamic SurfaceHandler::getProps() const noexcept {
   return parameters_.props;
 }
 
-std::shared_ptr<MountingCoordinator const>
+std::shared_ptr<const MountingCoordinator>
 SurfaceHandler::getMountingCoordinator() const noexcept {
   std::shared_lock lock(linkMutex_);
   react_native_assert(
@@ -184,8 +205,8 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
 #pragma mark - Layout
 
 Size SurfaceHandler::measure(
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const noexcept {
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const noexcept {
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
@@ -208,8 +229,8 @@ Size SurfaceHandler::measure(
 }
 
 void SurfaceHandler::constraintLayout(
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const noexcept {
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const noexcept {
   SystraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock lock(parametersMutex_);
@@ -236,7 +257,7 @@ void SurfaceHandler::constraintLayout(
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit(
-        [&](RootShadowNode const &oldRootShadowNode) {
+        [&](const RootShadowNode& oldRootShadowNode) {
           return oldRootShadowNode.clone(
               propsParserContext, layoutConstraints, layoutContext);
         },
@@ -281,7 +302,7 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
       // Committing the current revision back. It will be mounted only when
       // `DisplayMode` is changed back to `Normal`.
       link_.shadowTree->commit(
-          [&](RootShadowNode const & /*oldRootShadowNode*/) {
+          [&](const RootShadowNode& /*oldRootShadowNode*/) {
             return std::static_pointer_cast<RootShadowNode>(
                 revision.rootShadowNode->ShadowNode::clone({}));
           },
@@ -290,7 +311,7 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
   }
 }
 
-void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
+void SurfaceHandler::setUIManager(const UIManager* uiManager) const noexcept {
   std::unique_lock lock(linkMutex_);
 
   react_native_assert(
@@ -306,11 +327,9 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      link_.status == Status::Unregistered &&
-  //      "`SurfaceHandler` must be unregistered (or moved-from) before
-  //      deallocation.");
+  react_native_assert(
+      link_.status == Status::Unregistered &&
+      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
 }
 
 } // namespace facebook::react

@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-Timeline::Timeline(ShadowTree const &shadowTree) : shadowTree_(&shadowTree) {
+Timeline::Timeline(const ShadowTree& shadowTree) : shadowTree_(&shadowTree) {
   record(shadowTree.getCurrentRevision().rootShadowNode);
 };
 
@@ -22,13 +22,13 @@ SurfaceId Timeline::getSurfaceId() const noexcept {
 }
 
 void Timeline::pause() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   assert(!paused_ && "");
   paused_ = true;
 }
 
 void Timeline::resume() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   if (!snapshots_.empty()) {
     rewind(snapshots_.at(snapshots_.size() - 1));
@@ -39,16 +39,16 @@ void Timeline::resume() const noexcept {
 }
 
 bool Timeline::isPaused() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   return paused_;
 }
 
 TimelineFrame::List Timeline::getFrames() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   auto frames = TimelineFrame::List{};
   frames.reserve(snapshots_.size());
-  for (auto const &snapshot : snapshots_) {
+  for (const auto& snapshot : snapshots_) {
     frames.push_back(snapshot.getFrame());
   }
   return frames;
@@ -59,16 +59,16 @@ TimelineFrame Timeline::getCurrentFrame() const noexcept {
   return snapshots_.at(currentSnapshotIndex_).getFrame();
 }
 
-void Timeline::rewind(TimelineFrame const &frame) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+void Timeline::rewind(const TimelineFrame& frame) const noexcept {
+  std::scoped_lock lock(mutex_);
   rewind(snapshots_.at(frame.getIndex()));
 }
 
 RootShadowNode::Unshared Timeline::shadowTreeWillCommit(
-    ShadowTree const & /*shadowTree*/,
-    RootShadowNode::Shared const & /*oldRootShadowNode*/,
-    RootShadowNode::Unshared const &newRootShadowNode) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+    const ShadowTree& /*shadowTree*/,
+    const RootShadowNode::Shared& /*oldRootShadowNode*/,
+    const RootShadowNode::Unshared& newRootShadowNode) const noexcept {
+  std::scoped_lock lock(mutex_);
 
   if (rewinding_) {
     return newRootShadowNode;
@@ -86,7 +86,7 @@ RootShadowNode::Unshared Timeline::shadowTreeWillCommit(
 #pragma mark - Private & Internal
 
 void Timeline::record(
-    RootShadowNode::Shared const &rootShadowNode) const noexcept {
+    const RootShadowNode::Shared& rootShadowNode) const noexcept {
   auto index = (int)snapshots_.size();
   snapshots_.push_back(TimelineSnapshot{rootShadowNode, index});
 
@@ -95,8 +95,8 @@ void Timeline::record(
   }
 }
 
-void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+void Timeline::rewind(const TimelineSnapshot& snapshot) const noexcept {
+  std::scoped_lock lock(mutex_);
 
   currentSnapshotIndex_ = snapshot.getFrame().getIndex();
 
@@ -106,11 +106,12 @@ void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
   auto rootShadowNode = snapshot.getRootShadowNode();
 
   shadowTree_->commit(
-      [&](RootShadowNode const & /*oldRootShadowNode*/)
+      [&](const RootShadowNode& /*oldRootShadowNode*/)
           -> RootShadowNode::Unshared {
         return std::static_pointer_cast<RootShadowNode>(
             rootShadowNode->ShadowNode::clone({}));
-      });
+      },
+      {});
 
   assert(rewinding_ && "");
   rewinding_ = false;

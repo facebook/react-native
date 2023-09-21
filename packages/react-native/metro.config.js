@@ -9,15 +9,16 @@
 
 'use strict';
 
+const {getDefaultConfig} = require('@react-native/metro-config');
+const {mergeConfig} = require('metro-config');
 const path = require('path');
-const getPolyfills = require('./rn-get-polyfills');
 
 /**
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
 const config = {
-  // [macOS] Move object to variable so we can modify it below
+  // Make Metro able to resolve required packages that might be imported from /packages/react-native
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
     path.resolve(__dirname, '../assets'),
@@ -33,10 +34,6 @@ const config = {
     },
     platforms: ['ios', 'macos', 'android'],
   },
-  serializer: {
-    getPolyfills,
-  },
-  transformer: {},
 };
 
 // [macOS Github#1728: Investigate removing this diff
@@ -48,6 +45,6 @@ if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
   config.serializer.getModulesRunBeforeMainModule = () => [InitializeCore];
   config.transformer.assetRegistryPath = AssetRegistry;
 }
-
-module.exports = config;
 // macOS]
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

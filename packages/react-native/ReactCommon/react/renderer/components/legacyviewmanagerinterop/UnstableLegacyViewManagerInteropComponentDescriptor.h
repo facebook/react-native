@@ -11,8 +11,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <UnstableReactLegacyComponent> component.
@@ -20,13 +19,13 @@ namespace react {
  * This component is part of the Fabric Interop Layer and is subject to future
  * changes (hence the "Unstable" prefix).
  */
-template <const char *concreteComponentName>
+template <const char* concreteComponentName>
 class UnstableLegacyViewManagerInteropComponentDescriptor
     : public ConcreteComponentDescriptor<
           ConcreteViewShadowNode<concreteComponentName, ViewProps>> {
  public:
   UnstableLegacyViewManagerInteropComponentDescriptor<concreteComponentName>(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters& parameters)
       : ConcreteComponentDescriptor<
             ConcreteViewShadowNode<concreteComponentName, ViewProps>>(
             parameters) {}
@@ -34,5 +33,4 @@ class UnstableLegacyViewManagerInteropComponentDescriptor
  private:
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

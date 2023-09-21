@@ -7,27 +7,29 @@
 
 #include "EventListener.h"
 
+#include <mutex>
+
 namespace facebook::react {
 
-bool EventListenerContainer::willDispatchEvent(const RawEvent &event) {
+bool EventListenerContainer::willDispatchEvent(const RawEvent& event) {
   std::shared_lock lock(mutex_);
 
   bool handled = false;
-  for (auto const &listener : eventListeners_) {
+  for (const auto& listener : eventListeners_) {
     handled = handled || listener->operator()(event);
   }
   return handled;
 }
 
 void EventListenerContainer::addListener(
-    const std::shared_ptr<EventListener const> &listener) {
+    const std::shared_ptr<const EventListener>& listener) {
   std::unique_lock lock(mutex_);
 
   eventListeners_.push_back(listener);
 }
 
 void EventListenerContainer::removeListener(
-    const std::shared_ptr<EventListener const> &listener) {
+    const std::shared_ptr<const EventListener>& listener) {
   std::unique_lock lock(mutex_);
 
   auto it = std::find(eventListeners_.begin(), eventListeners_.end(), listener);

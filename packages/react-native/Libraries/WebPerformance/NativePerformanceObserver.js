@@ -33,6 +33,10 @@ export type GetPendingEntriesResult = {|
 export interface Spec extends TurboModule {
   +startReporting: (entryType: RawPerformanceEntryType) => void;
   +stopReporting: (entryType: RawPerformanceEntryType) => void;
+  +setIsBuffered: (
+    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
+    isBuffered: boolean,
+  ) => void;
   +popPendingEntries: () => GetPendingEntriesResult;
   +setOnPerformanceEntryCallback: (callback?: () => void) => void;
   +logRawEntry: (entry: RawPerformanceEntry) => void;

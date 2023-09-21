@@ -38,7 +38,7 @@ using namespace facebook::react;
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
 
-    static auto const defaultProps = std::make_shared<PullToRefreshViewProps const>();
+    static const auto defaultProps = std::make_shared<const PullToRefreshViewProps>();
     _props = defaultProps;
 
 #if !TARGET_OS_OSX // [macOS]
@@ -59,10 +59,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<PullToRefreshViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
-  auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
+  const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+  const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
 #if !TARGET_OS_OSX // [macOS]
@@ -95,12 +95,12 @@ using namespace facebook::react;
 
 - (void)handleUIControlEventValueChanged
 {
-  std::static_pointer_cast<PullToRefreshViewEventEmitter const>(_eventEmitter)->onRefresh({});
+  static_cast<const PullToRefreshViewEventEmitter &>(*_eventEmitter).onRefresh({});
 }
 
 - (void)_updateTitle
 {
-  auto const &concreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
+  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
 
   if (concreteProps.title.empty()) {
 #if !TARGET_OS_OSX // [macOS]

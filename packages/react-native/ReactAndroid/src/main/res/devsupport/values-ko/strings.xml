@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: ko_KR -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">React Native 개발자 메뉴 (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s 실행 중</string>
 </resources>

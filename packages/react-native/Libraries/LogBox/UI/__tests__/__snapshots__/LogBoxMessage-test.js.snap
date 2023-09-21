@@ -10,7 +10,7 @@ exports[`LogBoxMessage Should handle multiple links 1`] = `
       }
     }
   >
-    http://reactnative.dev
+    https://reactnative.dev
   </Text>
   <Text>
      and 
@@ -23,7 +23,7 @@ exports[`LogBoxMessage Should handle multiple links 1`] = `
       }
     }
   >
-    http://reactjs.org
+    https://react.dev
   </Text>
 </Text>
 `;
@@ -38,10 +38,10 @@ exports[`LogBoxMessage Should handle truncated links 1`] = `
       }
     }
   >
-    http://reactnative.dev
+    https://reactnative.dev
   </Text>
   <Text>
-     and http://r
+     and https:/
   </Text>
 </Text>
 `;
@@ -56,7 +56,7 @@ exports[`LogBoxMessage Should make links tappable 1`] = `
       }
     }
   >
-    http://reactnative.dev
+    https://reactnative.dev
   </Text>
 </Text>
 `;

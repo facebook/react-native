@@ -11,10 +11,12 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
+#pragma clang diagnostic pop
 
 std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::singleBundleRegistry(
     std::unique_ptr<JSModulesUnbundle> mainBundle) {
@@ -70,9 +72,8 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(
   };
 }
 
-JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
+JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
   return m_bundles.at(bundleId).get();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

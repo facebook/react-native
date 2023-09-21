@@ -20,12 +20,11 @@ using fbsystrace::FbSystraceSection;
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class AssetManagerString : public JSBigString {
  public:
-  AssetManagerString(AAsset *asset) : asset_(asset){};
+  AssetManagerString(AAsset* asset) : asset_(asset){};
 
   virtual ~AssetManagerString() {
     AAsset_close(asset_);
@@ -35,8 +34,8 @@ class AssetManagerString : public JSBigString {
     return false;
   }
 
-  const char *c_str() const override {
-    return (const char *)AAsset_getBuffer(asset_);
+  const char* c_str() const override {
+    return (const char*)AAsset_getBuffer(asset_);
   }
 
   // Length of the c_str without the NULL byte.
@@ -45,17 +44,17 @@ class AssetManagerString : public JSBigString {
   }
 
  private:
-  AAsset *asset_;
+  AAsset* asset_;
 };
 
-__attribute__((visibility("default"))) AAssetManager *extractAssetManager(
+__attribute__((visibility("default"))) AAssetManager* extractAssetManager(
     alias_ref<JAssetManager::javaobject> assetManager) {
   auto env = Environment::current();
   return AAssetManager_fromJava(env, assetManager.get());
 }
 
 __attribute__((visibility("default"))) std::unique_ptr<const JSBigString>
-loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
+loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
 #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(
       TRACE_TAG_REACT_CXX_BRIDGE,
@@ -75,8 +74,8 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
         // When using bytecode, it's safe for the underlying buffer to not be \0
         // terminated. In all other scenarios, we will force a copy of the
         // script to ensure we have a terminator.
-        const BundleHeader *header =
-            reinterpret_cast<const BundleHeader *>(script->c_str());
+        const BundleHeader* header =
+            reinterpret_cast<const BundleHeader*>(script->c_str());
         if (isHermesBytecodeBundle(*header)) {
           return script;
         }
@@ -95,5 +94,4 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
       "' is packaged correctly for release."));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

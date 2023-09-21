@@ -13,8 +13,7 @@
 
 #include <fbjni/ByteBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReadableMapBuffer : public jni::HybridClass<JReadableMapBuffer> {
  public:
@@ -24,9 +23,9 @@ class JReadableMapBuffer : public jni::HybridClass<JReadableMapBuffer> {
   static void registerNatives();
 
   static jni::local_ref<JReadableMapBuffer::jhybridobject> createWithContents(
-      MapBuffer &&map);
+      MapBuffer&& map);
 
-  explicit JReadableMapBuffer(MapBuffer &&map);
+  explicit JReadableMapBuffer(MapBuffer&& map);
 
   jni::local_ref<jni::JByteBuffer> importByteBuffer();
 
@@ -36,5 +35,4 @@ class JReadableMapBuffer : public jni::HybridClass<JReadableMapBuffer> {
   std::vector<uint8_t> serializedData_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

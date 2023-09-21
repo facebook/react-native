@@ -13,8 +13,7 @@
 
 using namespace facebook::jsi;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<ComponentFactory::jhybriddata> ComponentFactory::initHybrid(
     jni::alias_ref<jclass>) {
@@ -27,5 +26,4 @@ void ComponentFactory::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

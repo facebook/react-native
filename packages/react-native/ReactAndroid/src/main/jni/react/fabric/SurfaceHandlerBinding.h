@@ -13,17 +13,16 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/SurfaceHandlerBinding;";
 
   static void registerNatives();
 
-  SurfaceHandlerBinding(SurfaceId surfaceId, std::string const &moduleName);
+  SurfaceHandlerBinding(SurfaceId surfaceId, const std::string& moduleName);
 
   void start();
   void stop();
@@ -47,9 +46,9 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
       jboolean isRTL,
       jfloat pixelDensity);
 
-  void setProps(NativeMap *props);
+  void setProps(NativeMap* props);
 
-  SurfaceHandler const &getSurfaceHandler();
+  const SurfaceHandler& getSurfaceHandler();
 
  private:
   mutable std::shared_mutex lifecycleMutex_;
@@ -63,5 +62,4 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
       jni::alias_ref<jstring> moduleName);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

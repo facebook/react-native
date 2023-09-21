@@ -55,7 +55,10 @@
 @property (nonatomic, assign) BOOL snapToEnd;
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, assign) BOOL inverted;
+/** Focus area of newly-activated text input relative to the window to compare against UIKeyboardFrameBegin/End */
+@property (nonatomic, assign) CGRect firstResponderFocus;
 @property (nonatomic, assign) BOOL hasOverlayStyleIndicator; // [macOS]
+
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events
@@ -71,6 +74,12 @@
 @property (nonatomic, copy) RCTDirectEventBlock onInvertedDidChange; // [macOS]
 
 - (void)flashScrollIndicators; // [macOS]
+
+@end
+
+@interface RCTPlatformView (RCTScrollView) // [macOS]
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView;
 
 @end
 

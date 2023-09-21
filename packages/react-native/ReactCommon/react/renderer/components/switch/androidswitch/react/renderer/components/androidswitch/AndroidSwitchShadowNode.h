@@ -13,8 +13,7 @@
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidSwitchComponentName[];
 
@@ -30,18 +29,17 @@ class AndroidSwitchShadowNode final : public ConcreteViewShadowNode<
 
   // Associates a shared `AndroidSwitchMeasurementsManager` with the node.
   void setAndroidSwitchMeasurementsManager(
-      const std::shared_ptr<AndroidSwitchMeasurementsManager>
-          &measurementsManager);
+      const std::shared_ptr<AndroidSwitchMeasurementsManager>&
+          measurementsManager);
 
 #pragma mark - LayoutableShadowNode
 
   Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const override;
+      const LayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const override;
 
  private:
   std::shared_ptr<AndroidSwitchMeasurementsManager> measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

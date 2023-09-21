@@ -9,7 +9,6 @@ package com.facebook.react;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -36,30 +35,24 @@ public abstract class LazyReactPackage implements ReactPackage {
   @Deprecated
   public static ReactModuleInfoProvider getReactModuleInfoProviderViaReflection(
       LazyReactPackage lazyReactPackage) {
-    return new ReactModuleInfoProvider() {
-      @Override
-      public Map<String, ReactModuleInfo> getReactModuleInfos() {
-        return Collections.emptyMap();
-      }
-    };
+    return Collections::emptyMap;
   }
+
   /**
    * We return an iterable
    *
-   * @param reactContext
-   * @return
+   * @param reactContext context
+   * @return {@link Iterable<ModuleHolder>} that contains all native modules registered for the
+   *     context
    */
-  public Iterable<ModuleHolder> getNativeModuleIterator(
-      final ReactApplicationContext reactContext) {
+  /** package */
+  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);
 
-    return new Iterable<ModuleHolder>() {
-      @NonNull
-      @Override
-      public Iterator<ModuleHolder> iterator() {
-        return new Iterator<ModuleHolder>() {
+    return () ->
+        new Iterator<ModuleHolder>() {
           int position = 0;
 
           @Override
@@ -93,8 +86,6 @@ public abstract class LazyReactPackage implements ReactPackage {
             throw new UnsupportedOperationException("Cannot remove native modules from the list");
           }
         };
-      }
-    };
   }
 
   /**

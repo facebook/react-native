@@ -9,8 +9,7 @@
 #include <memory>
 #include <shared_mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `SharedFunction` implements a pattern of a shared callable object that
@@ -22,39 +21,40 @@ namespace react {
  * - When captured by `std::function` arguments are not copyable;
  * - When we need to replace the content of the callable later on the go.
  */
-template <typename ReturnT = void, typename... ArgumentT>
+template <typename... ArgumentT>
 class SharedFunction {
-  using T = ReturnT(ArgumentT...);
+  using T = void(ArgumentT...);
 
   struct Pair {
-    Pair(std::function<T> &&function) : function(std::move(function)) {}
+    Pair(std::function<T>&& function) : function(std::move(function)) {}
     std::function<T> function;
     std::shared_mutex mutex{};
   };
 
  public:
-  SharedFunction(std::function<T> &&function = nullptr)
+  SharedFunction(std::function<T>&& function = nullptr)
       : pair_(std::make_shared<Pair>(std::move(function))) {}
 
-  SharedFunction(const SharedFunction &other) = default;
-  SharedFunction(SharedFunction &&other) noexcept = default;
+  SharedFunction(const SharedFunction& other) = default;
+  SharedFunction(SharedFunction&& other) noexcept = default;
 
-  SharedFunction &operator=(const SharedFunction &other) = default;
-  SharedFunction &operator=(SharedFunction &&other) noexcept = default;
+  SharedFunction& operator=(const SharedFunction& other) = default;
+  SharedFunction& operator=(SharedFunction&& other) noexcept = default;
 
   void assign(std::function<T> function) const {
     std::unique_lock lock(pair_->mutex);
     pair_->function = function;
   }
 
-  ReturnT operator()(ArgumentT... args) const {
+  void operator()(ArgumentT... args) const {
     std::shared_lock lock(pair_->mutex);
-    return pair_->function(args...);
+    if (pair_->function) {
+      pair_->function(args...);
+    }
   }
 
  private:
   std::shared_ptr<Pair> pair_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

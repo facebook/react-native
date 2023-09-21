@@ -174,6 +174,7 @@ abstract class BundleHermesCTask : DefaultTask() {
     return windowsAwareCommandLine(
         hermesCommand,
         "-emit-binary",
+        "-max-diagnostic-width=80",
         "-out",
         bytecodeFile.cliPath(rootFile),
         bundleFile.cliPath(rootFile),

@@ -38,7 +38,7 @@ import java.util.Map;
     for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
-        throw new IllegalArgumentException("Mapped style node does not exists");
+        throw new IllegalArgumentException("Mapped style node does not exist");
       } else if (node instanceof TransformAnimatedNode) {
         ((TransformAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
@@ -52,6 +52,8 @@ import java.util.Map;
         }
       } else if (node instanceof ColorAnimatedNode) {
         propsMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
+      } else if (node instanceof ObjectAnimatedNode) {
+        ((ObjectAnimatedNode) node).collectViewUpdates(entry.getKey(), propsMap);
       } else {
         throw new IllegalArgumentException(
             "Unsupported type of node used in property node " + node.getClass());

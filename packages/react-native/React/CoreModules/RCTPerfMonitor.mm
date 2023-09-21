@@ -36,8 +36,8 @@
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
-static CGFloat const RCTPerfMonitorBarHeight = 50;
-static CGFloat const RCTPerfMonitorExpandHeight = 250;
+static const CGFloat RCTPerfMonitorBarHeight = 50;
+static const CGFloat RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
 
@@ -45,35 +45,7 @@ NSArray<NSString *> *LabelsForRCTPerformanceLoggerTags();
 
 static BOOL RCTJSCSetOption(const char *option)
 {
-  static RCTJSCSetOptionType setOption;
-  static dispatch_once_t onceToken;
-
-  // As of iOS 13.4, it is no longer possible to change the JavaScriptCore
-  // options at runtime. The options are protected and will cause an
-  // exception when you try to change them after the VM has been initialized.
-  // https://github.com/facebook/react-native/issues/28414
-  if (@available(iOS 13.4, *)) {
-    return NO;
-  }
-
-  dispatch_once(&onceToken, ^{
-    /**
-     * JSC private C++ static method to toggle options at runtime
-     *
-     * JSC::Options::setOptions - JavaScriptCore/runtime/Options.h
-     */
-    setOption = reinterpret_cast<RCTJSCSetOptionType>(dlsym(RTLD_DEFAULT, "_ZN3JSC7Options9setOptionEPKc"));
-
-    if (RCT_DEBUG && setOption == NULL) {
-      RCTLogWarn(@"The symbol used to enable JSC runtime options is not available in this iOS version");
-    }
-  });
-
-  if (setOption) {
-    return setOption(option);
-  } else {
-    return NO;
-  }
+  return NO;
 }
 
 static vm_size_t RCTGetResidentMemorySize(void)
@@ -211,19 +183,17 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
+    CGSize statusBarSize = RCTSharedApplication().statusBarFrame.size;
+    CGFloat statusBarHeight = statusBarSize.height;
+    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
 
     _container.backgroundColor = [UIColor whiteColor];
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      _container.backgroundColor = [UIColor systemBackgroundColor];
-    }
-#endif
+
+    _container.backgroundColor = [UIColor systemBackgroundColor];
   }
 
   return _container;

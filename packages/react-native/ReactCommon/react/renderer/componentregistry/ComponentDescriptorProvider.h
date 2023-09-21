@@ -11,8 +11,7 @@
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Callable signature that represents the signature of `ComponentDescriptor`
@@ -20,7 +19,7 @@ namespace react {
  * abstract type and ownership of the newly created object.
  */
 using ComponentDescriptorConstructor = ComponentDescriptor::Unique(
-    ComponentDescriptorParameters const &parameters);
+    const ComponentDescriptorParameters& parameters);
 
 /*
  * Represents a unified way to construct an instance of a particular stored
@@ -37,7 +36,7 @@ class ComponentDescriptorProvider final {
   ComponentHandle handle;
   ComponentName name;
   ComponentDescriptor::Flavor flavor;
-  ComponentDescriptorConstructor *constructor;
+  ComponentDescriptorConstructor* constructor;
 };
 
 /*
@@ -45,12 +44,12 @@ class ComponentDescriptorProvider final {
  */
 template <typename ComponentDescriptorT>
 ComponentDescriptor::Unique concreteComponentDescriptorConstructor(
-    ComponentDescriptorParameters const &parameters) {
+    const ComponentDescriptorParameters& parameters) {
   static_assert(
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,
       "ComponentDescriptorT must be a descendant of ComponentDescriptor");
 
-  return std::make_unique<ComponentDescriptorT const>(parameters);
+  return std::make_unique<const ComponentDescriptorT>(parameters);
 }
 
 /*
@@ -70,5 +69,4 @@ ComponentDescriptorProvider concreteComponentDescriptorProvider() {
       &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
