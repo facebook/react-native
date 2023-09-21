@@ -687,7 +687,8 @@ ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
       nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
-      isSyncModule_(params.isSyncModule)
+      isSyncModule_(params.isSyncModule),
+      shouldVoidMethodsExecuteSync_(params.shouldVoidMethodsExecuteSync)
 {
 }
 
