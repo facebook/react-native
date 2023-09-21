@@ -62,6 +62,14 @@ describe('publish-npm', () => {
     jest.resetAllMocks();
   });
 
+  describe('publish-npm.js', () => {
+    it('Fails when invalid build type is passed', () => {
+      expect(() => publishNpm('invalid')).toThrowError(
+        'Unsupported build type: invalid',
+      );
+    });
+  });
+
   describe('dry-run', () => {
     it('should set version and not publish', () => {
       publishNpm('dry-run');
