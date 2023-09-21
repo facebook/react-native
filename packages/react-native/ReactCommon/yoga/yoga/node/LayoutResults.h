@@ -10,9 +10,12 @@
 #include <array>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/debug/CheckCppVersion.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/node/CachedMeasurement.h>
 #include <yoga/numeric/FloatOptional.h>
+
+YG_CHECK_CPP_VERSION()
 
 namespace facebook::yoga {
 

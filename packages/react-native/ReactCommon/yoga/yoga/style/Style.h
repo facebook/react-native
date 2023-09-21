@@ -15,6 +15,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/debug/CheckCppVersion.h>
 #include <yoga/enums/Align.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
@@ -25,6 +26,8 @@
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
+
+YG_CHECK_CPP_VERSION()
 
 namespace facebook::yoga {
 

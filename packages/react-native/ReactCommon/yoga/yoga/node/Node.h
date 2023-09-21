@@ -14,6 +14,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/debug/CheckCppVersion.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
@@ -21,6 +22,8 @@
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
+
+YG_CHECK_CPP_VERSION()
 
 // Tag struct used to form the opaque YGNodeRef for the public C API
 struct YGNode {};

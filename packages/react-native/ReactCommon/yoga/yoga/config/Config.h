@@ -10,9 +10,12 @@
 #include <bitset>
 
 #include <yoga/Yoga.h>
+#include <yoga/debug/CheckCppVersion.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/ExperimentalFeature.h>
 #include <yoga/enums/LogLevel.h>
+
+YG_CHECK_CPP_VERSION()
 
 // Tag struct used to form the opaque YGConfigRef for the public C API
 struct YGConfig {};
