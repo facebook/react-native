@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/renderer/core/RawPropsPrimitives.h>
-#include <react/utils/fnv1a.h>
 #include <functional>
 
 // We need to use clang pragmas inside of a macro below,
@@ -24,7 +23,7 @@
   ([]() constexpr->RawPropsPropNameHash {                 \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
-    return facebook::react::fnv1a(s);                     \
+    return folly::hash::fnv32_buf(s, sizeof(s) - 1);      \
     CLANG_PRAGMA("clang diagnostic pop")                  \
   }())
 
