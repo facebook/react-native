@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/utils/FloatComparison.h>
 #include <react/utils/SimpleThreadSafeCache.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -114,8 +114,7 @@ inline size_t textAttributesHashLayoutWise(
     const TextAttributes& textAttributes) {
   // Taking into account the same props as
   // `areTextAttributesEquivalentLayoutWise` mentions.
-  return folly::hash::hash_combine(
-      0,
+  return facebook::react::hash_combine(
       textAttributes.fontFamily,
       textAttributes.fontSize,
       textAttributes.fontSizeMultiplier,
