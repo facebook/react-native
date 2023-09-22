@@ -9,9 +9,9 @@
 
 #include <limits>
 
-#include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -52,8 +52,7 @@ template <>
 struct hash<facebook::react::LayoutConstraints> {
   size_t operator()(
       const facebook::react::LayoutConstraints& constraints) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         constraints.minimumSize,
         constraints.maximumSize,
         constraints.layoutDirection);
