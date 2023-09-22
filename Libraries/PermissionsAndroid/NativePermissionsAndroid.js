@@ -44,7 +44,7 @@ export type PermissionType =
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
   | 'android.permission.WRITE_EXTERNAL_STORAGE';
-  | 'android.permission.POST_NOTIFICATIONS';
+  | 'android.permission.POST_NOTIFICATIONS'; 
 */
 
 export interface Spec extends TurboModule {

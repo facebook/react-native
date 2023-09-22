@@ -97,7 +97,7 @@ class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
-    POST_NOTIFICATIONS: string,
+    POST_NOTIFICATIONS: string, 
   |} = PERMISSIONS;
   RESULTS: {|
     DENIED: $TEMPORARY$string<'denied'>,
