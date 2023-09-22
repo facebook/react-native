@@ -1027,6 +1027,79 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Some text cutoff cases that may happen on some occasions',
+    render: function (): React.Node {
+      return (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <Text
+              allowFontScaling={false}
+              style={{
+                fontSize: 14,
+                fontWeight: '500',
+                fontFamily: 'sans-serif',
+              }}>
+              Case01: Next line should be "￥999".
+            </Text>
+          </View>
+          <View
+            style={{
+              marginTop: 1,
+              alignItems: 'baseline',
+              flexDirection: 'row',
+              overflow: 'hidden',
+              alignSelf: 'auto',
+            }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 16,
+                fontWeight: '500',
+              }}>
+              ¥
+            </Text>
+            <Text
+              style={{
+                color: 'red',
+                fontSize: 26,
+                fontWeight: '500',
+                letterSpacing: 0,
+              }}>
+              999
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <Text
+              allowFontScaling={false}
+              style={{
+                fontSize: 14,
+                fontWeight: '500',
+                fontFamily: 'sans-serif',
+              }}>
+              Case02: Next line should be "Hello React Native App".
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              height: '100%',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+            <Text style={{color: 'red'}}>Hello React Native App</Text>
+          </View>
+        </View>
+      );
+    },
+  },
 ];
 
 module.exports = ({
