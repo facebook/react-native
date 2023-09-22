@@ -61,6 +61,7 @@ const PERMISSIONS = Object.freeze({
   RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
   READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
+  POST_NOTIFICATIONS: 'android.permission.POST_NOTIFICATIONS',
 });
 
 /**
@@ -96,6 +97,7 @@ class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
+    POST_NOTIFICATIONS: string,
   |} = PERMISSIONS;
   RESULTS: {|
     DENIED: $TEMPORARY$string<'denied'>,
