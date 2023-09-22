@@ -198,7 +198,7 @@ void RawPropsParser::iterateOverValues(
 
         auto name = nameValue.utf8(runtime);
 
-        auto nameHash = RAW_PROPS_KEY_HASH(name);
+        auto nameHash = RAW_PROPS_KEY_HASH(name.c_str());
         auto rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
 
         visit(nameHash, name.c_str(), rawValue);
@@ -213,7 +213,7 @@ void RawPropsParser::iterateOverValues(
       for (const auto& pair : dynamic.items()) {
         auto name = pair.first.getString();
 
-        auto nameHash = RAW_PROPS_KEY_HASH(name);
+        auto nameHash = RAW_PROPS_KEY_HASH(name.c_str());
         auto rawValue = RawValue{pair.second};
         visit(nameHash, name.c_str(), rawValue);
       }
