@@ -273,7 +273,7 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
-  ReactNativePodsUtils.updateIphoneOSDeploymentTarget(installer)
+  ReactNativePodsUtils.updateOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)

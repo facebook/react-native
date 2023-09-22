@@ -290,7 +290,7 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.updateIphoneOSDeploymentTarget(installer)
+    def self.updateOSDeploymentTarget(installer)
         pod_to_update = Set.new([
             "boost",
             "CocoaAsyncSocket",
