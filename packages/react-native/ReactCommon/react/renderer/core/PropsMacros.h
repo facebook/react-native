@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/RawPropsPrimitives.h>
+#include <functional>
 
 // We need to use clang pragmas inside of a macro below,
 // so we need to pull out the "if" statement here.
@@ -26,7 +27,7 @@
     CLANG_PRAGMA("clang diagnostic pop")                  \
   }())
 
-#define RAW_PROPS_KEY_HASH(s) folly::hash::fnv32_buf(s, std::strlen(s))
+#define RAW_PROPS_KEY_HASH(s) std::hash<std::string>{}(s)
 
 // Convenience for building setProps switch statements.
 // This injects `fromRawValue` into source; each file that uses
