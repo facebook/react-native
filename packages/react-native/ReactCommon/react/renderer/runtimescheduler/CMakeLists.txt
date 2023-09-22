@@ -25,4 +25,5 @@ target_link_libraries(react_render_runtimescheduler
         jsi
         react_debug
         react_render_core
+        react_render_debug
         runtimeexecutor)

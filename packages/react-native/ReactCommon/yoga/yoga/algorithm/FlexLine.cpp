@@ -15,7 +15,7 @@ namespace facebook::yoga {
 
 FlexLine calculateFlexLine(
     yoga::Node* const node,
-    const YGDirection ownerDirection,
+    const Direction ownerDirection,
     const float mainAxisownerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
@@ -30,16 +30,16 @@ FlexLine calculateFlexLine(
   size_t endOfLineIndex = startOfLineIndex;
 
   float sizeConsumedIncludingMinConstraint = 0;
-  const YGFlexDirection mainAxis = resolveDirection(
+  const FlexDirection mainAxis = resolveDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
+  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
   const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
 
   // Add items to the current line until it's full or we run out of items.
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
-    if (child->getStyle().display() == YGDisplayNone ||
-        child->getStyle().positionType() == YGPositionTypeAbsolute) {
+    if (child->getStyle().display() == Display::None ||
+        child->getStyle().positionType() == PositionType::Absolute) {
       continue;
     }
 

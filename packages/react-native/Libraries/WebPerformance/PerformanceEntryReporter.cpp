@@ -111,6 +111,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   if (buffer.hasNameLookup) {
     auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
     if (overwriteCandidate != nullptr) {
+      std::scoped_lock lock2(nameLookupMutex_);
       auto it = buffer.nameLookup.find(overwriteCandidate);
       if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
         buffer.nameLookup.erase(it);
@@ -128,6 +129,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   }
 
   if (buffer.hasNameLookup) {
+    std::scoped_lock lock2(nameLookupMutex_);
     buffer.nameLookup.insert(&buffer.entries.back());
   }
 
@@ -163,6 +165,7 @@ void PerformanceEntryReporter::clearEntries(
     auto& buffer = getBuffer(entryType);
     if (entryName != nullptr) {
       if (buffer.hasNameLookup) {
+        std::scoped_lock lock2(nameLookupMutex_);
         RawPerformanceEntry entry{
             entryName,
             static_cast<int>(entryType),
@@ -173,12 +176,20 @@ void PerformanceEntryReporter::clearEntries(
             std::nullopt};
         buffer.nameLookup.erase(&entry);
       }
+
+      std::scoped_lock lock(entriesMutex_);
       buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
         return std::strcmp(entry.name.c_str(), entryName) == 0;
       });
     } else {
-      buffer.entries.clear();
-      buffer.nameLookup.clear();
+      {
+        std::scoped_lock lock(entriesMutex_);
+        buffer.entries.clear();
+      }
+      {
+        std::scoped_lock lock2(nameLookupMutex_);
+        buffer.nameLookup.clear();
+      }
     }
   }
 }
@@ -193,6 +204,7 @@ void PerformanceEntryReporter::getEntries(
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
+    std::scoped_lock lock(entriesMutex_);
     const auto& entries = getBuffer(entryType).entries;
     if (entryName == nullptr) {
       entries.getEntries(res);
@@ -251,6 +263,7 @@ double PerformanceEntryReporter::getMarkTime(
       std::nullopt,
       std::nullopt};
 
+  std::scoped_lock lock(nameLookupMutex_);
   const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
   auto it = marksBuffer.nameLookup.find(&mark);
   if (it != marksBuffer.nameLookup.end()) {

@@ -97,7 +97,6 @@ class CoreReactPackage extends TurboReactPackage {
                   moduleClass.getName(),
                   reactModule.canOverrideExistingModule(),
                   reactModule.needsEagerInit(),
-                  reactModule.hasConstants(),
                   reactModule.isCxxModule(),
                   TurboModule.class.isAssignableFrom(moduleClass)));
         }

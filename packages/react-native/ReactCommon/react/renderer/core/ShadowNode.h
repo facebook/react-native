@@ -12,7 +12,6 @@
 #include <type_traits>
 #include <vector>
 
-#include <butter/small_vector.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -24,8 +23,6 @@
 
 namespace facebook::react {
 
-static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
-
 class ComponentDescriptor;
 struct ShadowNodeFragment;
 
@@ -36,19 +33,15 @@ class ShadowNode : public Sealable,
   using Shared = std::shared_ptr<const ShadowNode>;
   using Weak = std::weak_ptr<const ShadowNode>;
   using Unshared = std::shared_ptr<ShadowNode>;
-  using ListOfShared =
-      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
-  using ListOfWeak =
-      butter::small_vector<Weak, kShadowNodeChildrenSmallVectorSize>;
+  using ListOfShared = std::vector<Shared>;
+  using ListOfWeak = std::vector<Weak>;
   using SharedListOfShared = std::shared_ptr<const ListOfShared>;
   using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
   using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
 
-  using AncestorList = butter::small_vector<
-      std::pair<
-          std::reference_wrapper<const ShadowNode> /* parentNode */,
-          int /* childIndex */>,
-      64>;
+  using AncestorList = std::vector<std::pair<
+      std::reference_wrapper<const ShadowNode> /* parentNode */,
+      int /* childIndex */>>;
 
   static SharedListOfShared emptySharedShadowNodeSharedList();
 

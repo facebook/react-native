@@ -591,7 +591,18 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.sendAccessibilityEvent(mTag, mEventType);
+      try {
+        mNativeViewHierarchyManager.sendAccessibilityEvent(mTag, mEventType);
+      } catch (RetryableMountingLayerException e) {
+        // Accessibility events are similar to commands in that they're imperative
+        // calls from JS, disconnected from the commit lifecycle, and therefore
+        // inherently unpredictable and dangerous. If we encounter a "retryable"
+        // error, that is, a known category of errors that this is likely to hit
+        // due to race conditions (like the view disappearing after the event is
+        // queued and before it executes), we log a soft exception and continue along.
+        // Other categories of errors will still cause a hard crash.
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
+      }
     }
   }
 

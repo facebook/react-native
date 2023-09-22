@@ -14,6 +14,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
@@ -26,20 +27,13 @@ struct YGNode {};
 
 namespace facebook::yoga {
 
-#pragma pack(push)
-#pragma pack(1)
-struct NodeFlags {
-  bool hasNewLayout : 1;
-  bool isReferenceBaseline : 1;
-  bool isDirty : 1;
-  NodeType nodeType : bitCount<NodeType>();
-};
-#pragma pack(pop)
-
 class YG_EXPORT Node : public ::YGNode {
  private:
+  bool hasNewLayout_ : 1 = true;
+  bool isReferenceBaseline_ : 1 = false;
+  bool isDirty_ : 1 = false;
+  NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
-  NodeFlags flags_ = {};
   YGMeasureFunc measureFunc_ = {nullptr};
   YGBaselineFunc baselineFunc_ = {nullptr};
   YGPrintFunc printFunc_ = {nullptr};
@@ -53,13 +47,12 @@ class YG_EXPORT Node : public ::YGNode {
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
-  FloatOptional relativePosition(
-      const YGFlexDirection axis,
-      const float axisSize) const;
+  FloatOptional relativePosition(const FlexDirection axis, const float axisSize)
+      const;
 
   void useWebDefaults() {
-    style_.flexDirection() = YGFlexDirectionRow;
-    style_.alignContent() = YGAlignStretch;
+    style_.flexDirection() = FlexDirection::Row;
+    style_.alignContent() = Align::Stretch;
   }
 
   // DANGER DANGER DANGER!
@@ -92,11 +85,11 @@ class YG_EXPORT Node : public ::YGNode {
   void print();
 
   bool getHasNewLayout() const {
-    return flags_.hasNewLayout;
+    return hasNewLayout_;
   }
 
   NodeType getNodeType() const {
-    return flags_.nodeType;
+    return nodeType_;
   }
 
   bool hasMeasureFunc() const noexcept {
@@ -142,7 +135,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   bool isReferenceBaseline() const {
-    return flags_.isReferenceBaseline;
+    return isReferenceBaseline_;
   }
 
   // returns the Node that owns this Node. An owner is used to identify
@@ -175,7 +168,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   bool isDirty() const {
-    return flags_.isDirty;
+    return isDirty_;
   }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
@@ -207,37 +200,37 @@ class YG_EXPORT Node : public ::YGNode {
 
   // Methods related to positions, margin, padding and border
   FloatOptional getLeadingPosition(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float axisSize) const;
-  bool isLeadingPositionDefined(const YGFlexDirection axis) const;
-  bool isTrailingPosDefined(const YGFlexDirection axis) const;
+  bool isLeadingPositionDefined(const FlexDirection axis) const;
+  bool isTrailingPosDefined(const FlexDirection axis) const;
   FloatOptional getTrailingPosition(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float axisSize) const;
   FloatOptional getLeadingMargin(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
   FloatOptional getTrailingMargin(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
-  float getLeadingBorder(const YGFlexDirection flexDirection) const;
-  float getTrailingBorder(const YGFlexDirection flexDirection) const;
+  float getLeadingBorder(const FlexDirection flexDirection) const;
+  float getTrailingBorder(const FlexDirection flexDirection) const;
   FloatOptional getLeadingPadding(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
   FloatOptional getTrailingPadding(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
   FloatOptional getLeadingPaddingAndBorder(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
   FloatOptional getTrailingPaddingAndBorder(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
   FloatOptional getMarginForAxis(
-      const YGFlexDirection axis,
+      const FlexDirection axis,
       const float widthSize) const;
-  FloatOptional getGapForAxis(const YGFlexDirection axis, const float widthSize)
+  FloatOptional getGapForAxis(const FlexDirection axis, const float widthSize)
       const;
   // Setters
 
@@ -250,11 +243,11 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   void setHasNewLayout(bool hasNewLayout) {
-    flags_.hasNewLayout = hasNewLayout;
+    hasNewLayout_ = hasNewLayout;
   }
 
   void setNodeType(NodeType nodeType) {
-    flags_.nodeType = nodeType;
+    nodeType_ = nodeType;
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
@@ -280,7 +273,7 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
-    flags_.isReferenceBaseline = isReferenceBaseline;
+    isReferenceBaseline_ = isReferenceBaseline;
   }
 
   void setOwner(Node* owner) {
@@ -296,7 +289,7 @@ class YG_EXPORT Node : public ::YGNode {
   void setConfig(Config* config);
 
   void setDirty(bool isDirty);
-  void setLayoutLastOwnerDirection(YGDirection direction);
+  void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
@@ -305,24 +298,24 @@ class YG_EXPORT Node : public ::YGNode {
       YGDimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float dimensionValue, YGDimension dimension);
-  void setLayoutDirection(YGDirection direction);
+  void setLayoutDirection(Direction direction);
   void setLayoutMargin(float margin, YGEdge edge);
   void setLayoutBorder(float border, YGEdge edge);
   void setLayoutPadding(float padding, YGEdge edge);
   void setLayoutPosition(float position, YGEdge edge);
   void setPosition(
-      const YGDirection direction,
+      const Direction direction,
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
   void markDirtyAndPropagateDownwards();
 
   // Other methods
-  YGValue marginLeadingValue(const YGFlexDirection axis) const;
-  YGValue marginTrailingValue(const YGFlexDirection axis) const;
+  YGValue marginLeadingValue(const FlexDirection axis) const;
+  YGValue marginTrailingValue(const FlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
-  YGDirection resolveDirection(const YGDirection ownerDirection);
+  Direction resolveDirection(const Direction ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(Node* oldChild, Node* newChild);

@@ -121,7 +121,7 @@ void HostPlatformViewProps::setProp(
 
 bool HostPlatformViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED()
     const {
-  return yogaStyle.flexDirection() == YGFlexDirectionRow;
+  return yogaStyle.flexDirection() == yoga::FlexDirection::Row;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

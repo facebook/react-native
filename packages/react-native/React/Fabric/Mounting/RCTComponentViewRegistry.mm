@@ -14,8 +14,7 @@
 #import <React/RCTImageComponentView.h>
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTViewComponentView.h>
-
-#import <butter/map.h>
+#import <unordered_map>
 
 using namespace facebook;
 using namespace facebook::react;
@@ -23,8 +22,8 @@ using namespace facebook::react;
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 @implementation RCTComponentViewRegistry {
-  butter::map<Tag, RCTComponentViewDescriptor> _registry;
-  butter::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
+  std::unordered_map<Tag, RCTComponentViewDescriptor> _registry;
+  std::unordered_map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
 }
 
 - (instancetype)init

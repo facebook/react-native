@@ -87,5 +87,4 @@ end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
-  __fix_double_definition_of_clockid_in_folly()
 end

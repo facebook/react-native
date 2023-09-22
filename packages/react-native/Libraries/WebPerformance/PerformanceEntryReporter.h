@@ -154,12 +154,10 @@ class PerformanceEntryReporter : public EventLogger {
  private:
   std::optional<AsyncCallback<>> callback_;
 
-  std::mutex entriesMutex_;
+  mutable std::mutex entriesMutex_;
   std::array<PerformanceEntryBuffer, NUM_PERFORMANCE_ENTRY_TYPES> buffers_;
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  // Mark registry for "measure" lookup
-  PerformanceEntryRegistryType marksRegistry_;
   uint32_t droppedEntryCount_{0};
 
   struct EventEntry {
@@ -173,9 +171,11 @@ class PerformanceEntryReporter : public EventLogger {
   // but since we only report discrete events, the volume is normally low,
   // so a hash map should be just fine.
   std::unordered_map<EventTag, EventEntry> eventsInFlight_;
-  std::mutex eventsInFlightMutex_;
+  mutable std::mutex eventsInFlightMutex_;
 
   std::function<double()> timeStampProvider_ = nullptr;
+
+  mutable std::mutex nameLookupMutex_;
 
   static EventTag sCurrentEventTag_;
 

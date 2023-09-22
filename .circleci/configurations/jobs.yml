@@ -9,7 +9,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: node-browsers-small
+    executor: node-browsers-medium
     steps:
       - checkout
       - run_yarn
@@ -1224,7 +1224,7 @@ jobs:
                   else
                     export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
                   fi
-                  node ./scripts/publish-npm.js --<< parameters.release_type >>
+                  node ./scripts/publish-npm.js -t << parameters.release_type >>
 
       - run:
           name: Zip Maven Artifacts from /tmp/maven-local

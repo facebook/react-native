@@ -27,18 +27,18 @@ object DefaultNewArchitectureEntryPoint {
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnaled: Boolean = false,
+      bridgelessEnabled: Boolean = false,
       dynamicLibraryName: String = "appmodules",
   ) {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
-    ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnaled
+    ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
 
     this.privateFabricEnabled = fabricEnabled
     this.privateTurboModulesEnabled = turboModulesEnabled
     this.privateConcurrentReactEnabled = fabricEnabled
-    this.privateBridgelessEnabled = bridgelessEnaled
+    this.privateBridgelessEnabled = bridgelessEnabled
 
     SoLoader.loadLibrary("react_newarchdefaults")
     SoLoader.loadLibrary(dynamicLibraryName)
@@ -52,11 +52,11 @@ object DefaultNewArchitectureEntryPoint {
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnaled: Boolean = false,
+      bridgelessEnabled: Boolean = false,
       @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean = true,
       dynamicLibraryName: String = "appmodules",
   ) {
-    load(turboModulesEnabled, fabricEnabled, bridgelessEnaled, dynamicLibraryName)
+    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled, dynamicLibraryName)
   }
 
   private var privateFabricEnabled: Boolean = false
@@ -76,6 +76,6 @@ object DefaultNewArchitectureEntryPoint {
 
   private var privateBridgelessEnabled: Boolean = false
   @JvmStatic
-  val bridgelessEnaled: Boolean
+  val bridgelessEnabled: Boolean
     get() = privateBridgelessEnabled
 }

@@ -162,4 +162,7 @@ public class ReactFeatureFlags {
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
+
+  /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
+  public static boolean enableTurboModuleStableAPI = false;
 }

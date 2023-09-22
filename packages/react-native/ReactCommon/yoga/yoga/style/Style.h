@@ -15,6 +15,14 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/enums/Align.h>
+#include <yoga/enums/Direction.h>
+#include <yoga/enums/Display.h>
+#include <yoga/enums/FlexDirection.h>
+#include <yoga/enums/Justify.h>
+#include <yoga/enums/Overflow.h>
+#include <yoga/enums/PositionType.h>
+#include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
@@ -22,7 +30,7 @@ namespace facebook::yoga {
 
 class YG_EXPORT Style {
   template <typename Enum>
-  using Values = std::array<CompactValue, enums::count<Enum>()>;
+  using Values = std::array<CompactValue, ordinalCount<Enum>()>;
 
  public:
   using Dimensions = Values<YGDimension>;
@@ -92,31 +100,31 @@ class YG_EXPORT Style {
   };
 
   Style() {
-    alignContent() = YGAlignFlexStart;
-    alignItems() = YGAlignStretch;
+    alignContent() = Align::FlexStart;
+    alignItems() = Align::Stretch;
   }
   ~Style() = default;
 
  private:
   static constexpr uint8_t directionOffset = 0;
   static constexpr uint8_t flexdirectionOffset =
-      directionOffset + minimumBitCount<YGDirection>();
+      directionOffset + minimumBitCount<Direction>();
   static constexpr uint8_t justifyContentOffset =
-      flexdirectionOffset + minimumBitCount<YGFlexDirection>();
+      flexdirectionOffset + minimumBitCount<FlexDirection>();
   static constexpr uint8_t alignContentOffset =
-      justifyContentOffset + minimumBitCount<YGJustify>();
+      justifyContentOffset + minimumBitCount<Justify>();
   static constexpr uint8_t alignItemsOffset =
-      alignContentOffset + minimumBitCount<YGAlign>();
+      alignContentOffset + minimumBitCount<Align>();
   static constexpr uint8_t alignSelfOffset =
-      alignItemsOffset + minimumBitCount<YGAlign>();
+      alignItemsOffset + minimumBitCount<Align>();
   static constexpr uint8_t positionTypeOffset =
-      alignSelfOffset + minimumBitCount<YGAlign>();
+      alignSelfOffset + minimumBitCount<Align>();
   static constexpr uint8_t flexWrapOffset =
-      positionTypeOffset + minimumBitCount<YGPositionType>();
+      positionTypeOffset + minimumBitCount<PositionType>();
   static constexpr uint8_t overflowOffset =
-      flexWrapOffset + minimumBitCount<YGWrap>();
+      flexWrapOffset + minimumBitCount<Wrap>();
   static constexpr uint8_t displayOffset =
-      overflowOffset + minimumBitCount<YGOverflow>();
+      overflowOffset + minimumBitCount<Overflow>();
 
   uint32_t flags = 0;
 
@@ -139,73 +147,73 @@ class YG_EXPORT Style {
   // for library users needing a type
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
-  YGDirection direction() const {
-    return getEnumData<YGDirection>(flags, directionOffset);
+  Direction direction() const {
+    return getEnumData<Direction>(flags, directionOffset);
   }
-  BitfieldRef<YGDirection> direction() {
+  BitfieldRef<Direction> direction() {
     return {*this, directionOffset};
   }
 
-  YGFlexDirection flexDirection() const {
-    return getEnumData<YGFlexDirection>(flags, flexdirectionOffset);
+  FlexDirection flexDirection() const {
+    return getEnumData<FlexDirection>(flags, flexdirectionOffset);
   }
-  BitfieldRef<YGFlexDirection> flexDirection() {
+  BitfieldRef<FlexDirection> flexDirection() {
     return {*this, flexdirectionOffset};
   }
 
-  YGJustify justifyContent() const {
-    return getEnumData<YGJustify>(flags, justifyContentOffset);
+  Justify justifyContent() const {
+    return getEnumData<Justify>(flags, justifyContentOffset);
   }
-  BitfieldRef<YGJustify> justifyContent() {
+  BitfieldRef<Justify> justifyContent() {
     return {*this, justifyContentOffset};
   }
 
-  YGAlign alignContent() const {
-    return getEnumData<YGAlign>(flags, alignContentOffset);
+  Align alignContent() const {
+    return getEnumData<Align>(flags, alignContentOffset);
   }
-  BitfieldRef<YGAlign> alignContent() {
+  BitfieldRef<Align> alignContent() {
     return {*this, alignContentOffset};
   }
 
-  YGAlign alignItems() const {
-    return getEnumData<YGAlign>(flags, alignItemsOffset);
+  Align alignItems() const {
+    return getEnumData<Align>(flags, alignItemsOffset);
   }
-  BitfieldRef<YGAlign> alignItems() {
+  BitfieldRef<Align> alignItems() {
     return {*this, alignItemsOffset};
   }
 
-  YGAlign alignSelf() const {
-    return getEnumData<YGAlign>(flags, alignSelfOffset);
+  Align alignSelf() const {
+    return getEnumData<Align>(flags, alignSelfOffset);
   }
-  BitfieldRef<YGAlign> alignSelf() {
+  BitfieldRef<Align> alignSelf() {
     return {*this, alignSelfOffset};
   }
 
-  YGPositionType positionType() const {
-    return getEnumData<YGPositionType>(flags, positionTypeOffset);
+  PositionType positionType() const {
+    return getEnumData<PositionType>(flags, positionTypeOffset);
   }
-  BitfieldRef<YGPositionType> positionType() {
+  BitfieldRef<PositionType> positionType() {
     return {*this, positionTypeOffset};
   }
 
-  YGWrap flexWrap() const {
-    return getEnumData<YGWrap>(flags, flexWrapOffset);
+  Wrap flexWrap() const {
+    return getEnumData<Wrap>(flags, flexWrapOffset);
   }
-  BitfieldRef<YGWrap> flexWrap() {
+  BitfieldRef<Wrap> flexWrap() {
     return {*this, flexWrapOffset};
   }
 
-  YGOverflow overflow() const {
-    return getEnumData<YGOverflow>(flags, overflowOffset);
+  Overflow overflow() const {
+    return getEnumData<Overflow>(flags, overflowOffset);
   }
-  BitfieldRef<YGOverflow> overflow() {
+  BitfieldRef<Overflow> overflow() {
     return {*this, overflowOffset};
   }
 
-  YGDisplay display() const {
-    return getEnumData<YGDisplay>(flags, displayOffset);
+  Display display() const {
+    return getEnumData<Display>(flags, displayOffset);
   }
-  BitfieldRef<YGDisplay> display() {
+  BitfieldRef<Display> display() {
     return {*this, displayOffset};
   }
 
@@ -272,25 +280,25 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  const Dimensions& dimensions() const {
-    return dimensions_;
+  CompactValue dimension(YGDimension axis) const {
+    return dimensions_[axis];
   }
-  IdxRef<YGDimension, &Style::dimensions_> dimensions() {
-    return {*this};
-  }
-
-  const Dimensions& minDimensions() const {
-    return minDimensions_;
-  }
-  IdxRef<YGDimension, &Style::minDimensions_> minDimensions() {
-    return {*this};
+  void setDimension(YGDimension axis, CompactValue value) {
+    dimensions_[axis] = value;
   }
 
-  const Dimensions& maxDimensions() const {
-    return maxDimensions_;
+  CompactValue minDimension(YGDimension axis) const {
+    return minDimensions_[axis];
   }
-  IdxRef<YGDimension, &Style::maxDimensions_> maxDimensions() {
-    return {*this};
+  void setMinDimension(YGDimension axis, CompactValue value) {
+    minDimensions_[axis] = value;
+  }
+
+  CompactValue maxDimension(YGDimension axis) const {
+    return maxDimensions_[axis];
+  }
+  void setMaxDimension(YGDimension axis, CompactValue value) {
+    maxDimensions_[axis] = value;
   }
 
   // Yoga specific properties, not compatible with flexbox specification
@@ -300,10 +308,26 @@ class YG_EXPORT Style {
   Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() {
     return {*this};
   }
+
+  bool operator==(const Style& other) const {
+    return flags == other.flags && inexactEquals(flex_, other.flex_) &&
+        inexactEquals(flexGrow_, other.flexGrow_) &&
+        inexactEquals(flexShrink_, other.flexShrink_) &&
+        inexactEquals(flexBasis_, other.flexBasis_) &&
+        inexactEquals(margin_, other.margin_) &&
+        inexactEquals(position_, other.position_) &&
+        inexactEquals(padding_, other.padding_) &&
+        inexactEquals(border_, other.border_) &&
+        inexactEquals(gap_, other.gap_) &&
+        inexactEquals(dimensions_, other.dimensions_) &&
+        inexactEquals(minDimensions_, other.minDimensions_) &&
+        inexactEquals(maxDimensions_, other.maxDimensions_) &&
+        inexactEquals(aspectRatio_, other.aspectRatio_);
+  }
+
+  bool operator!=(const Style& other) const {
+    return !(*this == other);
+  }
 };
 
-YG_EXPORT bool operator==(const Style& lhs, const Style& rhs);
-YG_EXPORT inline bool operator!=(const Style& lhs, const Style& rhs) {
-  return !(lhs == rhs);
-}
 } // namespace facebook::yoga

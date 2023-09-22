@@ -30,15 +30,6 @@ bool configUpdateInvalidatesLayout(
     const Config& oldConfig,
     const Config& newConfig);
 
-#pragma pack(push)
-#pragma pack(1)
-// Packed structure of <32-bit options to miminize size per node.
-struct ConfigFlags {
-  bool useWebDefaults : 1;
-  bool printTree : 1;
-};
-#pragma pack(pop)
-
 class YG_EXPORT Config : public ::YGConfig {
  public:
   Config(YGLogger logger);
@@ -82,7 +73,9 @@ class YG_EXPORT Config : public ::YGConfig {
   YGCloneNodeFunc cloneNodeCallback_;
   YGLogger logger_;
 
-  ConfigFlags flags_{};
+  bool useWebDefaults_ : 1 = false;
+  bool printTree_ : 1 = false;
+
   ExperimentalFeatureSet experimentalFeatures_{};
   Errata errata_ = Errata::None;
   float pointScaleFactor_ = 1.0f;

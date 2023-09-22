@@ -73,7 +73,6 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
                 moduleClass.getName(),
                 reactModule.canOverrideExistingModule(),
                 reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
                 reactModule.isCxxModule(),
                 TurboModule.class.isAssignableFrom(moduleClass)));
       }

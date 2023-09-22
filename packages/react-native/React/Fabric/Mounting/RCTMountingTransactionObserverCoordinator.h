@@ -6,10 +6,10 @@
  */
 
 #import <React/RCTComponentViewDescriptor.h>
-#import "RCTMountingTransactionObserverCoordinator.h"
+#import <unordered_map>
+#import <unordered_set>
 
-#import <butter/map.h>
-#import <butter/set.h>
+#import "RCTMountingTransactionObserverCoordinator.h"
 
 #include <react/renderer/mounting/MountingTransaction.h>
 
@@ -38,8 +38,8 @@ class RCTMountingTransactionObserverCoordinator final {
       const facebook::react::SurfaceTelemetry& surfaceTelemetry) const;
 
  private:
-  facebook::butter::map<
+  std::unordered_map<
       facebook::react::SurfaceId,
-      facebook::butter::set<RCTComponentViewDescriptor>>
+      std::unordered_set<RCTComponentViewDescriptor>>
       registry_;
 };

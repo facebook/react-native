@@ -22,7 +22,6 @@ target_include_directories(react_render_mounting PRIVATE .)
 target_include_directories(react_render_mounting PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_mounting
-        butter
         folly_runtime
         glog
         glog_init

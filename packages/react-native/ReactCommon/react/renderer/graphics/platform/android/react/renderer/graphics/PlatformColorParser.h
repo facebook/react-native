@@ -11,6 +11,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -19,7 +20,8 @@ inline SharedColor parsePlatformColor(
     const RawValue& value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
 
-  if (value.hasType<butter::map<std::string, std::vector<std::string>>>()) {
+  if (value.hasType<
+          std::unordered_map<std::string, std::vector<std::string>>>()) {
     const auto& fabricUIManager =
         context.contextContainer.at<jni::global_ref<jobject>>(
             "FabricUIManager");
@@ -27,7 +29,7 @@ inline SharedColor parsePlatformColor(
         fabricUIManager->getClass()
             ->getMethod<jint(jint, jni::JArrayClass<jni::JString>)>("getColor");
 
-    auto map = (butter::map<std::string, std::vector<std::string>>)value;
+    auto map = (std::unordered_map<std::string, std::vector<std::string>>)value;
     auto& resourcePaths = map["resource_paths"];
 
     auto javaResourcePaths =

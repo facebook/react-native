@@ -16,6 +16,7 @@ require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
+require_relative './cocoapods/helpers.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -37,7 +38,7 @@ require Pod::Executable.execute_command('node', ['-p',
 
 
 def min_ios_version_supported
-  return '13.4'
+  return Helpers::Constants.min_ios_version_supported
 end
 
 # This function returns the min supported OS versions supported by React Native
@@ -272,9 +273,11 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
+  ReactNativePodsUtils.updateOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
+
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
@@ -378,24 +381,4 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-end
-
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon machines.
-# Call this in the app's main Podfile's post_install hook.
-# See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
-# Actual fix was authored by https://github.com/mikehardy.
-# New app template will call this for now until the underlying issue is resolved.
-def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # NOTE: This fix is still required due to RCT-Folly
-  # creating a function with a better name but keeping the
-  # previous for backward compatibility
-  __fix_double_definition_of_clockid_in_folly()
-end
-
-def __fix_double_definition_of_clockid_in_folly()
-  # "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
-  # See https://github.com/facebook/flipper/issues/834 for more details.
-  time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' '#{time_header}'`
 end

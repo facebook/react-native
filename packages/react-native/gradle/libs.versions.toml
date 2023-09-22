@@ -31,7 +31,7 @@ soloader = "0.10.5"
 xstream = "1.4.20"
 yoga-proguard-annotations = "1.19.0"
 # Native Dependencies
-boost="1_76_0"
+boost="1_83_0"
 doubleconversion="1.1.6"
 fmt="6.2.1"
 folly="2022.05.16.00"

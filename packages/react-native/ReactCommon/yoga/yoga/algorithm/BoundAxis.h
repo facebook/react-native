@@ -9,6 +9,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/ResolveValue.h>
+#include <yoga/enums/FlexDirection.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 #include <yoga/numeric/FloatOptional.h>
@@ -17,7 +18,7 @@ namespace facebook::yoga {
 
 inline float paddingAndBorderForAxis(
     const yoga::Node* const node,
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float widthSize) {
   return (node->getLeadingPaddingAndBorder(axis, widthSize) +
           node->getTrailingPaddingAndBorder(axis, widthSize))
@@ -26,7 +27,7 @@ inline float paddingAndBorderForAxis(
 
 inline FloatOptional boundAxisWithinMinAndMax(
     const yoga::Node* const node,
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const FloatOptional value,
     const float axisSize) {
   FloatOptional min;
@@ -34,14 +35,14 @@ inline FloatOptional boundAxisWithinMinAndMax(
 
   if (isColumn(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimensions()[YGDimensionHeight], axisSize);
+        node->getStyle().minDimension(YGDimensionHeight), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimensions()[YGDimensionHeight], axisSize);
+        node->getStyle().maxDimension(YGDimensionHeight), axisSize);
   } else if (isRow(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimensions()[YGDimensionWidth], axisSize);
+        node->getStyle().minDimension(YGDimensionWidth), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimensions()[YGDimensionWidth], axisSize);
+        node->getStyle().maxDimension(YGDimensionWidth), axisSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {
@@ -59,7 +60,7 @@ inline FloatOptional boundAxisWithinMinAndMax(
 // go below the padding and border amount.
 inline float boundAxis(
     const yoga::Node* const node,
-    const YGFlexDirection axis,
+    const FlexDirection axis,
     const float value,
     const float axisSize,
     const float widthSize) {

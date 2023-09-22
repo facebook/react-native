@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimeexecutor"
   s.dependency "React-callinvoker"
   s.dependency "React-debug"
+  s.dependency "React-rendererdebug"
   s.dependency "React-utils"
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version

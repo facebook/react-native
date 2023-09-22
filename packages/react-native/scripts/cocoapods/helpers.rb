@@ -11,6 +11,14 @@ class SysctlChecker
     end
 end
 
+# Helper class that is used to easily send commands to Xcodebuild
+# And that can be subclassed for testing purposes.
+class Xcodebuild
+    def self.version
+        `xcodebuild -version`
+    end
+end
+
 # Helper object to wrap system properties like RUBY_PLATFORM
 # This makes it easier to mock the behaviour in tests
 class Environment
@@ -24,5 +32,13 @@ class Finder
         js_files = '-name "Native*.js" -or -name "*NativeComponent.js"'
         ts_files = '-name "Native*.ts" -or -name "*NativeComponent.ts"'
         return `find #{path} -type f \\( #{js_files} -or #{ts_files} \\)`.split("\n").sort()
+    end
+end
+
+module Helpers
+    class Constants
+        def self.min_ios_version_supported
+            return '13.4'
+        end
     end
 end
