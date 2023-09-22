@@ -9,8 +9,8 @@
 
 #include <tuple>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -57,8 +57,7 @@ template <typename T>
 struct hash<facebook::react::RectangleCorners<T>> {
   size_t operator()(
       const facebook::react::RectangleCorners<T>& corners) const noexcept {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         corners.topLeft,
         corners.bottomLeft,
         corners.topRight,

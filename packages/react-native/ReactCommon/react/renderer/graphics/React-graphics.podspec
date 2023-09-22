@@ -57,4 +57,5 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "React-Core/Default", version
+  s.dependency "React-utils"
 end
