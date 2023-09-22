@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <tuple>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -125,7 +125,7 @@ namespace std {
 template <>
 struct hash<facebook::react::Rect> {
   size_t operator()(const facebook::react::Rect& rect) const noexcept {
-    return folly::hash::hash_combine(0, rect.origin, rect.size);
+    return facebook::react::hash_combine(rect.origin, rect.size);
   }
 };
 
