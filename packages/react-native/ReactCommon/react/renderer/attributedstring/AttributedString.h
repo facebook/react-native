@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/mounting/ShadowView.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -123,8 +122,7 @@ template <>
 struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment& fragment) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         fragment.string,
         fragment.textAttributes,
         fragment.parentShadowView,
@@ -139,7 +137,7 @@ struct hash<facebook::react::AttributedString> {
     auto seed = size_t{0};
 
     for (const auto& fragment : attributedString.getFragments()) {
-      seed = folly::hash::hash_combine(seed, fragment);
+      facebook::react::hash_combine(seed, fragment);
     }
 
     return seed;
