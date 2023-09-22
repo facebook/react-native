@@ -13,6 +13,7 @@
 #include <functional>
 #include <mutex>
 #include <optional>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include "BoundedConsumableBuffer.h"
@@ -125,11 +126,11 @@ class PerformanceEntryReporter : public EventLogger {
 
   void clearEntries(
       PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
-      const char* entryName = nullptr);
+      std::string_view entryName = {});
 
   std::vector<RawPerformanceEntry> getEntries(
       PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
-      const char* entryName = nullptr) const;
+      std::string_view entryName = {}) const;
 
   void event(
       std::string name,
@@ -139,7 +140,7 @@ class PerformanceEntryReporter : public EventLogger {
       double processingEnd,
       uint32_t interactionId);
 
-  EventTag onEventStart(const char* name) override;
+  EventTag onEventStart(std::string_view name) override;
   void onEventDispatch(EventTag tag) override;
   void onEventEnd(EventTag tag) override;
 
@@ -161,7 +162,7 @@ class PerformanceEntryReporter : public EventLogger {
   uint32_t droppedEntryCount_{0};
 
   struct EventEntry {
-    const char* name;
+    std::string_view name;
     double startTime{0.0};
     double dispatchTime{0.0};
   };
@@ -186,7 +187,7 @@ class PerformanceEntryReporter : public EventLogger {
 
   void getEntries(
       PerformanceEntryType entryType,
-      const char* entryName,
+      std::string_view entryName,
       std::vector<RawPerformanceEntry>& res) const;
 
   double getCurrentTimeStamp() const;
