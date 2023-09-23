@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
@@ -50,6 +49,135 @@ import java.util.Map;
  * can be used in concrete classes to feed native views and compute layout.
  */
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
+  /**
+   * Implementation of {@link EffectiveTextAttributeProvider} that provides effective text
+   * attributes based on a {@link ReactBaseTextShadowNode} instance and its parent.
+   */
+  private static class HierarchicTextAttributeProvider implements EffectiveTextAttributeProvider {
+    final private ReactBaseTextShadowNode textShadowNode;
+    final private TextAttributes parentTextAttributes;
+    final private TextAttributes textAttributes;
+
+    private HierarchicTextAttributeProvider(
+      ReactBaseTextShadowNode textShadowNode,
+      TextAttributes parentTextAttributes,
+      TextAttributes textAttributes
+    ) {
+      this.textShadowNode = textShadowNode;
+      this.parentTextAttributes = parentTextAttributes;
+      this.textAttributes = textAttributes;
+    }
+
+    @Override
+    public TextTransform getTextTransform() {
+      return textAttributes.getTextTransform();
+    }
+
+    @Override
+    public Role getRole() {
+      return textShadowNode.mRole;
+    }
+
+    @Override
+    public AccessibilityRole getAccessibilityRole() {
+      return textShadowNode.mAccessibilityRole;
+    }
+
+    @Override
+    public boolean isBackgroundColorSet() {
+      return textShadowNode.mIsBackgroundColorSet;
+    }
+
+    @Override
+    public int getBackgroundColor() {
+      return textShadowNode.mBackgroundColor;
+    }
+
+    @Override
+    public boolean isColorSet() {
+      return textShadowNode.mIsColorSet;
+    }
+
+    @Override
+    public int getColor() {
+      return textShadowNode.mColor;
+    }
+
+    @Override
+    public int getFontStyle() {
+      return textShadowNode.mFontStyle;
+    }
+
+    @Override
+    public int getFontWeight() {
+      return textShadowNode.mFontWeight;
+    }
+
+    @Override
+    public String getFontFamily() {
+      return textShadowNode.mFontFamily;
+    }
+
+    @Override
+    public String getFontFeatureSettings() {
+      return textShadowNode.mFontFeatureSettings;
+    }
+
+    @Override
+    public boolean isUnderlineTextDecorationSet() {
+      return textShadowNode.mIsUnderlineTextDecorationSet;
+    }
+
+    @Override
+    public boolean isLineThroughTextDecorationSet() {
+      return textShadowNode.mIsLineThroughTextDecorationSet;
+    }
+
+    @Override
+    public float getTextShadowOffsetDx() {
+      return textShadowNode.mTextShadowOffsetDx;
+    }
+
+    @Override
+    public float getTextShadowOffsetDy() {
+      return textShadowNode.mTextShadowOffsetDy;
+    }
+
+    @Override
+    public float getTextShadowRadius() {
+      return textShadowNode.mTextShadowRadius;
+    }
+
+    @Override
+    public int getTextShadowColor() {
+      return textShadowNode.mTextShadowColor;
+    }
+
+    @Override
+    public float getEffectiveLetterSpacing() {
+      final float letterSpacing = textAttributes.getEffectiveLetterSpacing();
+
+      if (!Float.isNaN(letterSpacing)
+        && (parentTextAttributes == null
+        || parentTextAttributes.getEffectiveLetterSpacing() != letterSpacing)) {
+        return letterSpacing;
+      } else {
+        return Float.NaN;
+      }
+    }
+
+    @Override
+    public float getEffectiveLineHeight() {
+      final float lineHeight = textAttributes.getEffectiveLineHeight();
+      if (!Float.isNaN(lineHeight)
+        && (parentTextAttributes == null
+        || parentTextAttributes.getEffectiveLineHeight() != lineHeight)) {
+        return  lineHeight;
+      } else {
+        return Float.NaN;
+      }
+    }
+  }
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous
   // character.
@@ -85,13 +213,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       textAttributes = textShadowNode.mTextAttributes;
     }
 
+    final var textAttributeProvider = new HierarchicTextAttributeProvider(textShadowNode, parentTextAttributes, textAttributes);
+
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(
-            TextTransform.apply(
-                ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
+        TextLayoutUtils.addText(sb, ((ReactRawTextShadowNode) child).getText(), textAttributeProvider);
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
             (ReactBaseTextShadowNode) child,
@@ -132,11 +260,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         // into
         // the text so that the inline view doesn't run over any following text.
         sb.append(INLINE_VIEW_PLACEHOLDER);
-        ops.add(
-            new SetSpanOperation(
-                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
-                sb.length(),
-                new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
+
+        TextLayoutUtils.addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height);
+
         inlineViews.put(reactTag, child);
       } else {
         throw new IllegalViewOperationException(
@@ -146,78 +272,34 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
     int end = sb.length();
     if (end >= start) {
-      if (textShadowNode.mIsColorSet) {
-        ops.add(
-            new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
-      }
-      if (textShadowNode.mIsBackgroundColorSet) {
-        ops.add(
-            new SetSpanOperation(
-                start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
-      }
-      boolean roleIsLink =
-          textShadowNode.mRole != null
-              ? textShadowNode.mRole == Role.LINK
-              : textShadowNode.mAccessibilityRole == AccessibilityRole.LINK;
-      if (roleIsLink) {
-        ops.add(
-            new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
-      }
-      float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)
-          && (parentTextAttributes == null
-              || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
-        ops.add(
-            new SetSpanOperation(start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
-      }
+      final int reactTag = textShadowNode.getReactTag();
+
+      TextLayoutUtils.addColorSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addBackgroundColorSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addLinkSpanIfApplicable(ops, textAttributeProvider, reactTag, start, end);
+
+      TextLayoutUtils.addLetterSpacingSpanIfApplicable(ops, textAttributeProvider, start, end);
+
       int effectiveFontSize = textAttributes.getEffectiveFontSize();
       if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything like
       // `Float.NaN`.
       parentTextAttributes == null
           || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
-        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
+        TextLayoutUtils.addFontSizeSpan(ops, start, end, effectiveFontSize);
       }
-      if (textShadowNode.mFontStyle != UNSET
-          || textShadowNode.mFontWeight != UNSET
-          || textShadowNode.mFontFamily != null) {
-        ops.add(
-            new SetSpanOperation(
-                start,
-                end,
-                new CustomStyleSpan(
-                    textShadowNode.mFontStyle,
-                    textShadowNode.mFontWeight,
-                    textShadowNode.mFontFeatureSettings,
-                    textShadowNode.mFontFamily,
-                    textShadowNode.getThemedContext().getAssets())));
-      }
-      if (textShadowNode.mIsUnderlineTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
-      }
-      if (textShadowNode.mIsLineThroughTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
-      }
-      if ((textShadowNode.mTextShadowOffsetDx != 0
-              || textShadowNode.mTextShadowOffsetDy != 0
-              || textShadowNode.mTextShadowRadius != 0)
-          && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
-        ops.add(
-            new SetSpanOperation(
-                start,
-                end,
-                new ShadowStyleSpan(
-                    textShadowNode.mTextShadowOffsetDx,
-                    textShadowNode.mTextShadowOffsetDy,
-                    textShadowNode.mTextShadowRadius,
-                    textShadowNode.mTextShadowColor)));
-      }
-      float effectiveLineHeight = textAttributes.getEffectiveLineHeight();
-      if (!Float.isNaN(effectiveLineHeight)
-          && (parentTextAttributes == null
-              || parentTextAttributes.getEffectiveLineHeight() != effectiveLineHeight)) {
-        ops.add(new SetSpanOperation(start, end, new CustomLineHeightSpan(effectiveLineHeight)));
-      }
-      ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
+      TextLayoutUtils.addCustomStyleSpanIfApplicable(ops, textAttributeProvider, textShadowNode.getThemedContext(), start, end);
+
+      TextLayoutUtils.addUnderlineSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addStrikethroughSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addShadowStyleSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addLineHeightSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+      TextLayoutUtils.addReactTagSpan(ops,  start, end, reactTag);
     }
   }
 

@@ -30,7 +30,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
-public class TextAttributeProps {
+public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   // constants for Text Attributes serialization
   public static final short TA_KEY_FOREGROUND_COLOR = 0;
@@ -343,6 +343,7 @@ public class TextAttributeProps {
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
+  @Override
   public float getEffectiveLineHeight() {
     boolean useInlineViewHeight =
         !Float.isNaN(mLineHeight)
@@ -371,7 +372,13 @@ public class TextAttributeProps {
     mLetterSpacingInput = letterSpacing;
   }
 
-  public float getLetterSpacing() {
+  @Override
+  public TextTransform getTextTransform() {
+    return mTextTransform;
+  }
+
+  @Override
+  public float getEffectiveLetterSpacing() {
     float letterSpacingPixels =
         mAllowFontScaling
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
@@ -678,5 +685,85 @@ public class TextAttributeProps {
       }
     }
     return androidHyphenationFrequency;
+  }
+
+  @Override
+  public Role getRole() {
+    return mRole;
+  }
+
+  @Override
+  public AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
+  @Override
+  public boolean isBackgroundColorSet() {
+    return mIsBackgroundColorSet;
+  }
+
+  @Override
+  public int getBackgroundColor() {
+    return mBackgroundColor;
+  }
+
+  @Override
+  public boolean isColorSet() {
+    return mIsColorSet;
+  }
+
+  @Override
+  public int getColor() {
+    return mColor;
+  }
+
+  @Override
+  public int getFontStyle() {
+    return mFontStyle;
+  }
+
+  @Override
+  public int getFontWeight() {
+    return mFontWeight;
+  }
+
+  @Override
+  public String getFontFamily() {
+    return mFontFamily;
+  }
+
+  @Override
+  public String getFontFeatureSettings() {
+    return mFontFeatureSettings;
+  }
+
+  @Override
+  public boolean isUnderlineTextDecorationSet() {
+    return mIsUnderlineTextDecorationSet;
+  }
+
+  @Override
+  public boolean isLineThroughTextDecorationSet() {
+    return mIsLineThroughTextDecorationSet;
+  }
+
+  @Override
+  public float getTextShadowOffsetDx() {
+    return mTextShadowOffsetDx;
+  }
+
+  @Override
+  public float getTextShadowOffsetDy() {
+    return mTextShadowOffsetDy;
+  }
+
+  @Override
+  public float getTextShadowRadius() {
+    return mTextShadowRadius;
+  }
+
+  @Override
+  public int getTextShadowColor() {
+    return mTextShadowColor;
   }
 }
