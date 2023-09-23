@@ -46,27 +46,7 @@ public class TextLayoutUtils {
 
         addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height);
       } else if (end >= start) {
-        addColorSpanIfApplicable(ops, textAttributes, start, end);
-
-        addBackgroundColorSpanIfApplicable(ops, textAttributes, start, end);
-
-        addLinkSpanIfApplicable(ops, textAttributes, reactTag, start, end);
-
-        addLetterSpacingSpanIfApplicable(ops, textAttributes, start, end);
-
-        addFontSizeSpanIfApplicable(ops, textAttributes, start, end);
-
-        addCustomStyleSpanIfApplicable(ops, textAttributes, context, start, end);
-
-        addUnderlineSpanIfApplicable(ops, textAttributes, start, end);
-
-        addStrikethroughSpanIfApplicable(ops, textAttributes, start, end);
-
-        addShadowStyleSpanIfApplicable(ops, textAttributes, start, end);
-
-        addLineHeightSpanIfApplicable(ops, textAttributes, start, end);
-
-        addReactTagSpan(ops, start, end, reactTag);
+        addApplicableTextAttributeSpans(ops, textAttributes, reactTag, context, start, end);
       }
     }
   }
@@ -82,8 +62,33 @@ public class TextLayoutUtils {
       new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
   }
 
+  public static void addApplicableTextAttributeSpans(List<SetSpanOperation> ops,
+                                             EffectiveTextAttributeProvider textAttributeProvider, int reactTag, Context context,
+                                             int start, int end) {
+    addColorSpanIfApplicable(ops, textAttributeProvider, start, end);
 
-  public static void addLinkSpanIfApplicable(List<SetSpanOperation> ops,
+    addBackgroundColorSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addLinkSpanIfApplicable(ops, textAttributeProvider, reactTag, start, end);
+
+    addLetterSpacingSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addFontSizeSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addCustomStyleSpanIfApplicable(ops, textAttributeProvider, context, start, end);
+
+    addUnderlineSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addStrikethroughSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addShadowStyleSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addLineHeightSpanIfApplicable(ops, textAttributeProvider, start, end);
+
+    addReactTagSpan(ops, start, end, reactTag);
+  }
+
+  private static void addLinkSpanIfApplicable(List<SetSpanOperation> ops,
                                              EffectiveTextAttributeProvider textAttributeProvider, int reactTag,
                                              int start, int end) {
     boolean roleIsLink = textAttributeProvider.getRole() != null ?
@@ -94,7 +99,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addColorSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addColorSpanIfApplicable(List<SetSpanOperation> ops,
                                               EffectiveTextAttributeProvider textAttributeProvider, int start,
                                               int end) {
     if (textAttributeProvider.isColorSet()) {
@@ -102,7 +107,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addBackgroundColorSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addBackgroundColorSpanIfApplicable(List<SetSpanOperation> ops,
                                                         EffectiveTextAttributeProvider textAttributeProvider,
                                                         int start, int end) {
     if (textAttributeProvider.isBackgroundColorSet()) {
@@ -111,7 +116,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addLetterSpacingSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addLetterSpacingSpanIfApplicable(List<SetSpanOperation> ops,
                                                       EffectiveTextAttributeProvider textAttributeProvider, int start
     , int end) {
     final float effectiveLetterSpacing = textAttributeProvider.getEffectiveLetterSpacing();
@@ -122,7 +127,7 @@ public class TextLayoutUtils {
   }
 
 
-  public static void addFontSizeSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addFontSizeSpanIfApplicable(List<SetSpanOperation> ops,
                                                  EffectiveTextAttributeProvider textAttributeProvider, int start,
                                                  int end) {
     final int effectiveFontSize = textAttributeProvider.getEffectiveFontSize();
@@ -132,7 +137,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addCustomStyleSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addCustomStyleSpanIfApplicable(List<SetSpanOperation> ops,
                                                     EffectiveTextAttributeProvider textAttributeProvider,
                                                     Context context, int start, int end) {
     final int fontStyle = textAttributeProvider.getFontStyle();
@@ -146,7 +151,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addUnderlineSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addUnderlineSpanIfApplicable(List<SetSpanOperation> ops,
                                                   EffectiveTextAttributeProvider textAttributeProvider, int start,
                                                   int end) {
     if (textAttributeProvider.isUnderlineTextDecorationSet()) {
@@ -154,7 +159,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addStrikethroughSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addStrikethroughSpanIfApplicable(List<SetSpanOperation> ops,
                                                       EffectiveTextAttributeProvider textAttributeProvider, int start
     , int end) {
     if (textAttributeProvider.isLineThroughTextDecorationSet()) {
@@ -163,7 +168,7 @@ public class TextLayoutUtils {
   }
 
 
-  public static void addShadowStyleSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addShadowStyleSpanIfApplicable(List<SetSpanOperation> ops,
                                                     EffectiveTextAttributeProvider textAttributeProvider, int start,
                                                     int end) {
     if ((textAttributeProvider.getTextShadowOffsetDx() != 0 || textAttributeProvider.getTextShadowOffsetDy() != 0 || textAttributeProvider.getTextShadowRadius() != 0) && Color.alpha(textAttributeProvider.getTextShadowColor()) != 0) {
@@ -173,7 +178,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addLineHeightSpanIfApplicable(List<SetSpanOperation> ops,
+  private static void addLineHeightSpanIfApplicable(List<SetSpanOperation> ops,
                                                    EffectiveTextAttributeProvider textAttributeProvider, int start,
                                                    int end) {
     final float effectiveLineHeight = textAttributeProvider.getEffectiveLineHeight();
@@ -182,7 +187,7 @@ public class TextLayoutUtils {
     }
   }
 
-  public static void addReactTagSpan(List<SetSpanOperation> ops, int start, int end, int reactTag) {
+  private static void addReactTagSpan(List<SetSpanOperation> ops, int start, int end, int reactTag) {
     ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
 
   }

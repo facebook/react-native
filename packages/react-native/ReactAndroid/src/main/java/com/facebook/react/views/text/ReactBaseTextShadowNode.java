@@ -148,27 +148,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
     if (end >= start) {
       final int reactTag = textShadowNode.getReactTag();
 
-      TextLayoutUtils.addColorSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addBackgroundColorSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addLinkSpanIfApplicable(ops, textAttributeProvider, reactTag, start, end);
-
-      TextLayoutUtils.addLetterSpacingSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addFontSizeSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addCustomStyleSpanIfApplicable(ops, textAttributeProvider, textShadowNode.getThemedContext(), start, end);
-
-      TextLayoutUtils.addUnderlineSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addStrikethroughSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addShadowStyleSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addLineHeightSpanIfApplicable(ops, textAttributeProvider, start, end);
-
-      TextLayoutUtils.addReactTagSpan(ops,  start, end, reactTag);
+      TextLayoutUtils.addApplicableTextAttributeSpans(
+        ops, textAttributeProvider, reactTag, textShadowNode.getThemedContext(), start, end);
     }
   }
 
