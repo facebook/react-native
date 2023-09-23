@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -21,7 +20,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -33,10 +31,8 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -99,102 +95,15 @@ public class TextLayoutManager {
     sTagToSpannableCache.remove(reactTag);
   }
 
-  private static void buildSpannableFromFragment(
+  private static void buildSpannableFromFragments(
       Context context,
       ReadableArray fragments,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
 
-    for (int i = 0, length = fragments.size(); i < length; i++) {
-      ReadableMap fragment = fragments.getMap(i);
-      int start = sb.length();
+    final var textFragmentList = new BridgeTextFragmentList(fragments);
 
-      // ReactRawText
-      TextAttributeProps textAttributes =
-          TextAttributeProps.fromReadableMap(
-              new ReactStylesDiffMap(fragment.getMap("textAttributes")));
-
-      sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
-
-      int end = sb.length();
-      int reactTag = fragment.hasKey("reactTag") ? fragment.getInt("reactTag") : View.NO_ID;
-      if (fragment.hasKey(ViewProps.IS_ATTACHMENT)
-          && fragment.getBoolean(ViewProps.IS_ATTACHMENT)) {
-        float width = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.WIDTH));
-        float height = PixelUtil.toPixelFromSP(fragment.getDouble(ViewProps.HEIGHT));
-        ops.add(
-            new SetSpanOperation(
-                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
-                sb.length(),
-                new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
-      } else if (end >= start) {
-        boolean roleIsLink =
-            textAttributes.mRole != null
-                ? textAttributes.mRole == Role.LINK
-                : textAttributes.mAccessibilityRole == AccessibilityRole.LINK;
-        if (roleIsLink) {
-          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
-        }
-        if (textAttributes.mIsColorSet) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
-        }
-        if (textAttributes.mIsBackgroundColorSet) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
-        }
-        if (!Float.isNaN(textAttributes.getLetterSpacing())) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
-        }
-        ops.add(
-            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
-        if (textAttributes.mFontStyle != UNSET
-            || textAttributes.mFontWeight != UNSET
-            || textAttributes.mFontFamily != null) {
-          ops.add(
-              new SetSpanOperation(
-                  start,
-                  end,
-                  new CustomStyleSpan(
-                      textAttributes.mFontStyle,
-                      textAttributes.mFontWeight,
-                      textAttributes.mFontFeatureSettings,
-                      textAttributes.mFontFamily,
-                      context.getAssets())));
-        }
-        if (textAttributes.mIsUnderlineTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
-        }
-        if (textAttributes.mIsLineThroughTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
-        }
-        if ((textAttributes.mTextShadowOffsetDx != 0
-                || textAttributes.mTextShadowOffsetDy != 0
-                || textAttributes.mTextShadowRadius != 0)
-            && Color.alpha(textAttributes.mTextShadowColor) != 0) {
-          ops.add(
-              new SetSpanOperation(
-                  start,
-                  end,
-                  new ShadowStyleSpan(
-                      textAttributes.mTextShadowOffsetDx,
-                      textAttributes.mTextShadowOffsetDy,
-                      textAttributes.mTextShadowRadius,
-                      textAttributes.mTextShadowColor)));
-        }
-        if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-        }
-
-        ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
-      }
-    }
+    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
@@ -219,7 +128,7 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
+    buildSpannableFromFragments(context, attributedString.getArray("fragments"), sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
