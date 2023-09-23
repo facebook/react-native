@@ -104,40 +104,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
             inlineViews,
             sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
-        // We make the image take up 1 character in the span and put a corresponding character into
-        // the text so that the image doesn't run over any following text.
-        sb.append(INLINE_VIEW_PLACEHOLDER);
-        ops.add(
-            new SetSpanOperation(
-                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
-                sb.length(),
-                ((ReactTextInlineImageShadowNode) child).buildInlineImageSpan()));
+        addInlineImageSpan(ops, sb, (ReactTextInlineImageShadowNode) child);
       } else if (supportsInlineViews) {
-        int reactTag = child.getReactTag();
-        YogaValue widthValue = child.getStyleWidth();
-        YogaValue heightValue = child.getStyleHeight();
+        addInlineViewPlaceholderSpan(ops, sb, child);
 
-        float width;
-        float height;
-        if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          // If the measurement of the child isn't calculated, we calculate the layout for the
-          // view using Yoga
-          child.calculateLayout();
-          width = child.getLayoutWidth();
-          height = child.getLayoutHeight();
-        } else {
-          width = widthValue.value;
-          height = heightValue.value;
-        }
-
-        // We make the inline view take up 1 character in the span and put a corresponding character
-        // into
-        // the text so that the inline view doesn't run over any following text.
-        sb.append(INLINE_VIEW_PLACEHOLDER);
-
-        TextLayoutUtils.addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height);
-
-        inlineViews.put(reactTag, child);
+        inlineViews.put(child.getReactTag(), child);
       } else {
         throw new IllegalViewOperationException(
             "Unexpected view type nested under a <Text> or <TextInput> node: " + child.getClass());
@@ -151,6 +122,40 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
       TextLayoutUtils.addApplicableTextAttributeSpans(
         ops, textAttributeProvider, reactTag, textShadowNode.getThemedContext(), start, end);
     }
+  }
+
+  private static void addInlineImageSpan(List<SetSpanOperation> ops, SpannableStringBuilder sb,
+                                         ReactTextInlineImageShadowNode child) {
+    // We make the image take up 1 character in the span and put a corresponding character into
+    // the text so that the image doesn't run over any following text.
+    sb.append(INLINE_VIEW_PLACEHOLDER);
+    ops.add(new SetSpanOperation(sb.length() - INLINE_VIEW_PLACEHOLDER.length(), sb.length(),
+      child.buildInlineImageSpan()));
+  }
+
+  private static void addInlineViewPlaceholderSpan(List<SetSpanOperation> ops, SpannableStringBuilder sb,
+                                                   ReactShadowNode child) {
+    YogaValue widthValue = child.getStyleWidth();
+    YogaValue heightValue = child.getStyleHeight();
+
+    float width;
+    float height;
+    if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
+      // If the measurement of the child isn't calculated, we calculate the layout for the
+      // view using Yoga
+      child.calculateLayout();
+      width = child.getLayoutWidth();
+      height = child.getLayoutHeight();
+    } else {
+      width = widthValue.value;
+      height = heightValue.value;
+    }
+
+    // We make the inline view take up 1 character in the span and put a corresponding character into the text so that
+    // the inline view doesn't run over any following text.
+    sb.append(INLINE_VIEW_PLACEHOLDER);
+
+    TextLayoutUtils.addInlineViewPlaceholderSpan(ops, sb, child.getReactTag(), width, height);
   }
 
   // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
