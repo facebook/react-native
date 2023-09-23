@@ -393,6 +393,11 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     return letterSpacingPixels / mFontSize;
   }
 
+  @Override
+  public int getEffectiveFontSize() {
+    return mFontSize;
+  }
+
   private void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;

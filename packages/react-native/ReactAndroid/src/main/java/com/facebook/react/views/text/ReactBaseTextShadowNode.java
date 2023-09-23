@@ -167,6 +167,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     @Override
+    public int getEffectiveFontSize() {
+      final int fontSize = textAttributes.getEffectiveFontSize();
+
+      if (
+        // `getEffectiveFontSize` always returns a value so don't need to check for anything like `Float.NaN`.
+        parentTextAttributes == null
+          || parentTextAttributes.getEffectiveFontSize() != fontSize) {
+        return fontSize;
+      } else {
+        return UNSET;
+      }
+    }
+
+    @Override
     public float getEffectiveLineHeight() {
       final float lineHeight = textAttributes.getEffectiveLineHeight();
       if (!Float.isNaN(lineHeight)
@@ -282,13 +296,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
       TextLayoutUtils.addLetterSpacingSpanIfApplicable(ops, textAttributeProvider, start, end);
 
-      int effectiveFontSize = textAttributes.getEffectiveFontSize();
-      if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything like
-      // `Float.NaN`.
-      parentTextAttributes == null
-          || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
-        TextLayoutUtils.addFontSizeSpan(ops, start, end, effectiveFontSize);
-      }
+      TextLayoutUtils.addFontSizeSpanIfApplicable(ops, textAttributeProvider, start, end);
+
       TextLayoutUtils.addCustomStyleSpanIfApplicable(ops, textAttributeProvider, textShadowNode.getThemedContext(), start, end);
 
       TextLayoutUtils.addUnderlineSpanIfApplicable(ops, textAttributeProvider, start, end);

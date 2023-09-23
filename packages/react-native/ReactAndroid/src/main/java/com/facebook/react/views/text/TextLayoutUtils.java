@@ -54,7 +54,7 @@ public class TextLayoutUtils {
 
         addLetterSpacingSpanIfApplicable(ops, textAttributes, start, end);
 
-        addFontSizeSpan(ops, start, end, textAttributes.mFontSize);
+        addFontSizeSpanIfApplicable(ops, textAttributes, start, end);
 
         addCustomStyleSpanIfApplicable(ops, textAttributes, context, start, end);
 
@@ -122,9 +122,14 @@ public class TextLayoutUtils {
   }
 
 
-  public static void addFontSizeSpan(List<SetSpanOperation> ops, int start, int end, int effectiveFontSize) {
+  public static void addFontSizeSpanIfApplicable(List<SetSpanOperation> ops,
+                                                 EffectiveTextAttributeProvider textAttributeProvider, int start,
+                                                 int end) {
+    final int effectiveFontSize = textAttributeProvider.getEffectiveFontSize();
 
-    ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
+    if (effectiveFontSize != UNSET) {
+      ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
+    }
   }
 
   public static void addCustomStyleSpanIfApplicable(List<SetSpanOperation> ops,
