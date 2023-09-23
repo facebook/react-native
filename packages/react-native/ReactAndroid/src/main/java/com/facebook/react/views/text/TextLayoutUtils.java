@@ -46,11 +46,11 @@ public class TextLayoutUtils {
 
         addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height);
       } else if (end >= start) {
-        addLinkSpanIfApplicable(ops, textAttributes, reactTag, start, end);
-
         addColorSpanIfApplicable(ops, textAttributes, start, end);
 
         addBackgroundColorSpanIfApplicable(ops, textAttributes, start, end);
+
+        addLinkSpanIfApplicable(ops, textAttributes, reactTag, start, end);
 
         addLetterSpacingSpanIfApplicable(ops, textAttributes, start, end);
 
