@@ -12,7 +12,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import com.facebook.common.logging.FLog;
 
-class SetSpanOperation {
+public class SetSpanOperation {
   private static final String TAG = "SetSpanOperation";
   static final int SPAN_MAX_PRIORITY = Spanned.SPAN_PRIORITY >> Spanned.SPAN_PRIORITY_SHIFT;
 
