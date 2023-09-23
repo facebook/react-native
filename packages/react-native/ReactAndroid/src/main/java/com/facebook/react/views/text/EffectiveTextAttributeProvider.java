@@ -1,12 +1,20 @@
 package com.facebook.react.views.text;
 
+import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 
 public interface EffectiveTextAttributeProvider {
+  int UNSET = ReactFontManager.TypefaceStyle.UNSET;
+
   TextTransform getTextTransform();
 
   float getEffectiveLetterSpacing();
+
+  /**
+   * @return The effective font size, or {@link #UNSET} if not set
+   */
+  int getEffectiveFontSize();
 
   Role getRole();
 
