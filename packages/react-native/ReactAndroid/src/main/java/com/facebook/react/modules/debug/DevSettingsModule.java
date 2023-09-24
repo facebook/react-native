@@ -101,7 +101,7 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
 
   // [macOS
   @Override
-  public void setIsShakeToShowDevMenuEnabled(boolean enabled) {
+  public void setIsSecondaryClickToShowDevMenuEnabled(boolean enabled) {
     // macOS only
   }
   // macOS]

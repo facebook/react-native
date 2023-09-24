@@ -116,10 +116,6 @@ try {
   mv('_prettierrc.js', '.prettierrc.js');
   mv('_watchmanconfig', '.watchmanconfig');
 
-  // [macOS
-  process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
-  // macOS]
-
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);
 

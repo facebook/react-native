@@ -31,8 +31,5 @@ module.exports = {
         'packages/rn-tester/android/app/src/main/AndroidManifest.xml',
       packageName: 'com.facebook.react.uiapp',
     },
-    android: {
-      sourceDir: '../../',
-    },
   },
 };

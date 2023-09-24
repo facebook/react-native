@@ -27,7 +27,6 @@ const config = {
     path.resolve(__dirname, '../virtualized-lists'),
   ],
   resolver: {
-    // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
     blockList: [/buck-out/, /sdks\/hermes/],
     extraNodeModules: {
       'react-native': __dirname,
@@ -35,16 +34,5 @@ const config = {
     platforms: ['ios', 'macos', 'android'],
   },
 };
-
-// [macOS Github#1728: Investigate removing this diff
-// In scripts/run-ci-e2e-tests.js this file gets copied to a new app, in which
-// case these settings do not apply.
-if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
-  const InitializeCore = require.resolve('./Libraries/Core/InitializeCore');
-  const AssetRegistry = require.resolve('./Libraries/Image/AssetRegistry');
-  config.serializer.getModulesRunBeforeMainModule = () => [InitializeCore];
-  config.transformer.assetRegistryPath = AssetRegistry;
-}
-// macOS]
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
