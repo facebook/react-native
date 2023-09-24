@@ -727,7 +727,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 }
 #endif // macOS]
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [[super description] stringByAppendingFormat:@" reactTag: %@; frame = %@; layer = %@",
@@ -735,7 +734,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
                                                       NSStringFromCGRect(self.frame),
                                                       self.layer];
 }
-#endif // macOS]
 
 #if TARGET_OS_OSX // [macOS
 - (void)setShadowColor:(NSColor *)shadowColor

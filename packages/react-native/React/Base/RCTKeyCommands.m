@@ -75,7 +75,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return [_key isEqual:input] && (_flags == flags || flags == 0);
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@:%p input=\"%@\" flags=%lld hasBlock=%@>",
@@ -85,7 +84,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                                     (long long)_flags,
                                     _block ? @"YES" : @"NO"];
 }
-#endif // macOS]
 
 @end
 

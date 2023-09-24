@@ -24,13 +24,11 @@
   [self.superview dirtyLayout];
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   NSString *superDescription = super.description;
   return [[superDescription substringToIndex:superDescription.length - 1]
       stringByAppendingFormat:@"; text: %@>", self.text];
 }
-#endif // macOS]
 
 @end

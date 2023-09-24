@@ -64,7 +64,6 @@
        [_deletingLayoutAnimation isEqual:deletingLayoutAnimation]);
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return
@@ -76,6 +75,5 @@
                     [_updatingLayoutAnimation description],
                     [_deletingLayoutAnimation description]];
 }
-#endif // macOS]
 
 @end

@@ -136,7 +136,6 @@ static NSRegularExpression *RCTJSStackFrameRegex(void)
   return stack;
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
@@ -147,6 +146,5 @@ static NSRegularExpression *RCTJSStackFrameRegex(void)
                                     (long)self.lineNumber,
                                     (long)self.column];
 }
-#endif // macOS]
 
 @end

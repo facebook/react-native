@@ -190,7 +190,6 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
       _animationType == animation.animationType;
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [NSString
@@ -205,6 +204,5 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
           _initialVelocity,
           (long)_animationType];
 }
-#endif // macOS]
 
 @end
