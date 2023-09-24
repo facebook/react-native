@@ -28,9 +28,9 @@ using namespace facebook::react;
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_OSX // [macOS]
   UIInterfaceOrientation _currentInterfaceOrientation;
+#endif // [macOS]
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
-#endif // [macOS]
   BOOL _invalidated;
 }
 
@@ -62,9 +62,11 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
+#endif // [macOS]
 
   _currentInterfaceDimensions = [self _exportedDimensions];
 
+#if !TARGET_OS_OSX // [macOS]
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidBecomeActiveNotification
@@ -74,12 +76,11 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
-
+#endif // [macOS]
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTRootViewFrameDidChangeNotification
                                              object:nil];
-#endif // [macOS]
 }
 
 - (void)invalidate
@@ -87,9 +88,9 @@ RCT_EXPORT_MODULE()
   _invalidated = YES;
 }
 
-#if !TARGET_OS_OSX // [macOS]
 static BOOL RCTIsIPhoneNotched()
 {
+#if !TARGET_OS_OSX // [macOS]
   static BOOL isIPhoneNotched = NO;
   static dispatch_once_t onceToken;
 
@@ -101,13 +102,16 @@ static BOOL RCTIsIPhoneNotched()
   });
 
   return isIPhoneNotched;
+#else // [macOS
+  return NO;
+#endif // macOS]
 }
-#endif // [macOS]
+
 
 #if !TARGET_OS_OSX // [macOS]
-static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
+NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 #else // [macOS
-NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
+static NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #endif // macOS]
 {
   RCTAssertMainQueue();
@@ -141,7 +145,12 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
       (RCTAccessibilityManager *)[_moduleRegistry moduleForName:"AccessibilityManager"];
   RCTAssert(accessibilityManager, @"Failed to get exported dimensions: AccessibilityManager is nil");
   CGFloat fontScale = accessibilityManager ? accessibilityManager.multiplier : 1.0;
+#if !TARGET_OS_OSX // [macOS]
   return RCTExportedDimensions(fontScale);
+#else // [macOS
+  // TODO: Saad - get root view here
+  return RCTExportedDimensions(nil);
+#endif // macOS]
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -223,6 +232,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #pragma clang diagnostic pop
   }
 }
+#endif // [macOS]
 
 - (void)interfaceFrameDidChange
 {
@@ -248,7 +258,6 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #pragma clang diagnostic pop
   }
 }
-#endif // [macOS]
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {

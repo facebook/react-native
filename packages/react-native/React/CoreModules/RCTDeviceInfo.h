@@ -9,13 +9,6 @@
 
 #import <React/RCTBridge.h>
 
-#if TARGET_OS_OSX // [macOS RCTExportedDimensions is needed in RCTRootContentView
-#ifdef __cplusplus
-extern "C"
-#endif
-NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge);
-#endif // macOS]
-
 @interface RCTDeviceInfo : NSObject <RCTBridgeModule>
 
 @end
