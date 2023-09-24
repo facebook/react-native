@@ -51,6 +51,7 @@
   self.selectedSegmentIndex = selectedIndex; // [macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)setBackgroundColor:(RCTUIColor *)backgroundColor // [macOS]
 {
   [super setBackgroundColor:backgroundColor];
@@ -61,7 +62,6 @@
   [self setTitleTextAttributes:@{NSForegroundColorAttributeName : textColor} forState:UIControlStateNormal];
 }
 
-#if !TARGET_OS_OSX // [macOS] no concept of tintColor on macOS
 - (void)setTintColor:(UIColor *)tintColor // [macOS]
 {
   [super setTintColor:tintColor];

@@ -66,7 +66,7 @@ RCT_EXPORT_METHOD(changeBackgroundColor : (nonnull NSNumber *)reactTag color : (
 - (RCTUIView *)view // [macOS]
 {
   RNTLegacyView *view = [[RNTLegacyView alloc] init];
-  view.backgroundColor = UIColor.redColor;
+  view.backgroundColor = RCTUIColor.redColor; // [macOS]
   return view;
 }
 

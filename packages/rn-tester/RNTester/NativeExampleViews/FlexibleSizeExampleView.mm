@@ -12,10 +12,9 @@
 #import <React/RCTRootViewDelegate.h>
 #import <React/RCTViewManager.h>
 
-#if !TARGET_OS_OSX // [macOS]
+
 #import "AppDelegate.h"
-#else // [macOS
-#import "../../RNTester-macOS/AppDelegate.h"
+#if TARGET_OS_OSX // [macOS
 #define UITextView NSTextView
 #endif // macOS]
 

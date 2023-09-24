@@ -18,10 +18,9 @@ const {
 } = require('@react-native/community-cli-plugin');
 
 // Remove commands so that react-native-macos can coexist with react-native in repos that depend on both.
-const path = require('path');
-const isReactNativeMacOS = path.basename(__dirname) === 'react-native-macos';  // [macOS]
-const iosCommands = isReactNativeMacOS ? [] : ios.commands; // [macOS]
-const androidCommands = isReactNativeMacOS ? [] : android.commands;  // [macOS]
+// const path = require('path');
+const iosCommands = []; // [macOS]
+const androidCommands = []; // [macOS]
 const macosCommands = [require('./local-cli/runMacOS/runMacOS')]; // [macOS]
 
 module.exports = {
@@ -74,9 +73,7 @@ module.exports = {
       },
       projectConfig: () => null,
       dependencyConfig: () => null,
-      npmPackageName: isReactNativeMacOS
-        ? 'react-native-macos'
-        : 'react-native',
+      npmPackageName: 'react-native-macos', // [macOS]
     },
   },
 };

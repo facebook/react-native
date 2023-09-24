@@ -128,6 +128,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.rootViewController = rootViewController;
   self.window.windowScene.delegate = self;
   [self.window makeKeyAndVisible];
+
+  return YES;
 #else // [macOS
   NSRect frame = NSMakeRect(0,0,1024,768);
   self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
@@ -143,8 +145,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [self.window makeKeyAndOrderFront:self];
   [self.window center];
 #endif // macOS]
-
-  return YES;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -203,7 +203,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 #endif // macOS]
 
-- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
+- (void)setRootView:(RCTPlatformView *)rootView toRootViewController:(UIViewController *)rootViewController // [macOS]
 {
   rootViewController.view = rootView;
 }
@@ -214,6 +214,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 
 #pragma mark - UISceneDelegate
+#if !TARGET_OS_OSX // [macOS]
 - (void)windowScene:(UIWindowScene *)windowScene
     didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
         interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
@@ -221,6 +222,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
 }
+#endif // [macOS]
 
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge

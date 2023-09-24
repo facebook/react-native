@@ -106,7 +106,7 @@
  *
  * @return: void
  */
-- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
+- (void)setRootView:(RCTPlatformView *)rootView toRootViewController:(UIViewController *)rootViewController; // [macOS]
 
 /// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
 ///

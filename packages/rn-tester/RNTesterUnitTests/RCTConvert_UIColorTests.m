@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// [macOS]
-
 #import <XCTest/XCTest.h>
 
 #import <React/RCTConvert.h>
@@ -35,13 +33,13 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
 {
 #if !TARGET_OS_OSX  // [macOS]
   id json = RCTJSONParse(@"{ \"semantic\": \"lightTextColor\" }", nil);
-  UIColor *value = [RCTConvert UIColor:json]; // [macOS]
-  XCTAssertEqualObjects(value, [UIColor lightTextColor]);  // [macOS]
-#else
+  UIColor *value = [RCTConvert UIColor:json];
+  XCTAssertEqualObjects(value, [UIColor lightTextColor]);
+#else // [macOS
   id json = RCTJSONParse(@"{ \"semantic\": \"textColor\" }", nil);
-  NSColor *value = [RCTConvert NSColor:json]; // [macOS]
-  XCTAssertEqualObjects(value, [NSColor textColor]);  // [macOS]
-#endif
+  NSColor *value = [RCTConvert NSColor:json];
+  XCTAssertEqualObjects(value, [NSColor textColor]);
+#endif // macOS]
 }
 
 - (void)testColorFailure
@@ -59,7 +57,7 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
         errorMessage = message;
       });
 
-  RCTUIColor *value = [RCTConvert UIColor:json];
+  RCTUIColor *value = [RCTConvert UIColor:json]; // [macOS]
 
   RCTSetLogFunction(defaultLogFunction);
 
@@ -75,6 +73,7 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
   XCTAssertTrue(CGColorsAreEqual([value CGColor], [[RCTUIColor blueColor] CGColor])); // [macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)testDynamicColor
 {
   // 0        == 0x00000000 == black
@@ -128,7 +127,6 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
   [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
 }
 
-#if !TARGET_OS_OSX // [macOS]
 - (void)testGenerateFallbacks
 {
   NSDictionary<NSString *, NSNumber *> *semanticColors = @{

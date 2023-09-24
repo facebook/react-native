@@ -17,7 +17,7 @@ import type {ColorValue} from './StyleSheet';
 import {
   ColorWithSystemEffectMacOSPrivate,
   DynamicColorMacOSPrivate,
-} from './PlatformColorValueTypes';
+} from './PlatformColorValueTypes.macos';
 
 export type DynamicColorMacOSTuple = {
   light: ColorValue,

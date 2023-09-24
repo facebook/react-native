@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, RCTPointerEventType) {
   RCTPointerEventTypeCancel,
 };
 
+#if !TARGET_OS_OSX // [macOS]
 static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
 {
   for (UITouch *touch in touches) {
@@ -43,6 +44,7 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
   }
   return NO;
 }
+#endif // [macOS]
 
 struct ActivePointer {
   /*
@@ -53,12 +55,12 @@ struct ActivePointer {
   /*
    * The component view on which the touch started.
    */
-  RCTUIView<RCTComponentViewProtocol> *initialComponentView = nil; // [macOS]
+  RCTPlatformView<RCTComponentViewProtocol> *initialComponentView = nil; // [macOS]
 
   /*
    * The current target component view of the pointer
    */
-  RCTUIView<RCTComponentViewProtocol> *componentView = nil; // [macOS]
+  RCTPlatformView<RCTComponentViewProtocol> *componentView = nil; // [macOS]
 
   /*
    * The location of the pointer relative to the root component view
@@ -155,13 +157,12 @@ static NSInteger constexpr kPencilPointerId = 1;
 // do not conflict
 static NSInteger constexpr kTouchIdentifierPoolOffset = 2;
 
-#if !TARGET_OS_OSX // [macOS]
 static SharedTouchEventEmitter GetTouchEmitterFromView(RCTUIView *componentView, CGPoint point) // [macOS]
 {
   return [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:point];
 }
 
-static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(RCTUIView *componentView) // [macOS]
+static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(RCTPlatformView *componentView) // [macOS]
 {
   NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
   do {
@@ -173,7 +174,7 @@ static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(RCTUIVi
   return results;
 }
 
-static UIView *FindClosestFabricManagedTouchableView(RCTUIView *componentView) // [macOS]
+static RCTPlatformView *FindClosestFabricManagedTouchableView(RCTPlatformView *componentView) // [macOS]
 {
   while (componentView) {
     if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
@@ -183,7 +184,6 @@ static UIView *FindClosestFabricManagedTouchableView(RCTUIView *componentView) /
   }
   return nil;
 }
-#endif // [macOS]
 
 static NSInteger ButtonMaskDiffToButton(UIEventButtonMask prevButtonMask, UIEventButtonMask curButtonMask)
 {
@@ -585,7 +585,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       activePointer.shouldLeaveWhenReleased = YES;
     }
 
+#if !TARGET_OS_OSX // [macOS]
     activePointer.initialComponentView = FindClosestFabricManagedTouchableView(touch.view);
+#else // [macOS
+	CGPoint touchLocation = [_rootComponentView.superview convertPoint:touch.locationInWindow fromView:nil];
+	RCTPlatformView *componentView = (RCTPlatformView *) [_rootComponentView hitTest:touchLocation];
+	activePointer.initialComponentView = FindClosestFabricManagedTouchableView(componentView);
+#endif // macOS]
 
     UpdateActivePointerWithUITouch(activePointer, touch, event, _rootComponentView);
 

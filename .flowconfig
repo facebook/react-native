@@ -8,9 +8,6 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; [macOS] Ignore metro.config.js
-<PROJECT_ROOT>/metro.config.js
-
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 ; Checked-in build output

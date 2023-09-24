@@ -146,7 +146,7 @@
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<RCTUIView *> *)descendantViews // [macOS]
+       descendantViews:(NSArray<RCTPlatformView *> *)descendantViews // [macOS]
 {
   // This lets the textView own its text storage on macOS
   // We update and replace the text container `_textView.textStorage.attributedString` when text/layout changes

@@ -452,8 +452,8 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
 
 #if !TARGET_OS_OSX // [macOS]
 - (NSString *)accessibilityRole
-#else // [macOS
-- (NSString *)accessibilityRoleInternal renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+#else // [macOS renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+- (NSString *)accessibilityRoleInternal
 #endif // macOS]
 {
   return objc_getAssociatedObject(self, _cmd);

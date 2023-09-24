@@ -277,7 +277,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // This enables RCTViewRegistry in modules to return UIViews from its viewForReactTag method
   __weak RCTSurfacePresenter *weakSurfacePresenter = _surfacePresenter;
-  [_bridgeModuleDecorator.viewRegistry_DEPRECATED setBridgelessComponentViewProvider:^UIView *(NSNumber *reactTag) {
+  [_bridgeModuleDecorator.viewRegistry_DEPRECATED setBridgelessComponentViewProvider:^RCTPlatformView *(NSNumber *reactTag) { // [macOS]
     RCTSurfacePresenter *strongSurfacePresenter = weakSurfacePresenter;
     if (strongSurfacePresenter == nil) {
       return nil;

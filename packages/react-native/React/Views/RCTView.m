@@ -1238,7 +1238,9 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
 #if !TARGET_OS_OSX // [macOS]
   backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
-#endif // [macOS]
+#else // [macOS
+  backgroundColor = [_backgroundColor CGColor];
+#endif // macOS]
 
 #if TARGET_OS_OSX // [macOS
   CATransform3D transform = [self transform3D];

@@ -34,11 +34,13 @@ RCT_ENUM_CONVERTER(
     RCTTextTransformUndefined,
     integerValue)
 
+#if !TARGET_OS_OSX // [macOS]
 + (UITextSmartInsertDeleteType)UITextSmartInsertDeleteType:(id)json
 {
   return json == nil           ? UITextSmartInsertDeleteTypeDefault
       : [RCTConvert BOOL:json] ? UITextSmartInsertDeleteTypeYes
                                : UITextSmartInsertDeleteTypeNo;
 }
+#endif// macOS]
 
 @end

@@ -44,6 +44,7 @@ module.exports = {
     // In tests, we can just use a mock.
     '^ReactNativeInternalFeatureFlags$':
       '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
+    '^react-native(.*)': '<rootDir>/packages/react-native$1', // [macOS]
   },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
   unmockedModulePathPatterns: [
@@ -55,11 +56,6 @@ module.exports = {
     'denodeify',
   ],
   testEnvironment: 'node',
-  moduleNameMapper: {
-    'react-native-codegen/(.*)': '<rootDir>/packages/react-native-codegen/$1',
-    'eslint/lib/rules/(.*)': '<rootDir>/node_modules/eslint/lib/rules/$1',
-    '^react-native(.*)': '<rootDir>/packages/react-native$1',
-  },
   collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
   coveragePathIgnorePatterns: [
     '/__tests__/',

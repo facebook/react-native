@@ -77,11 +77,13 @@
 
 @end
 
-@interface RCTPlatformView (RCTScrollView) // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+@interface UIView (RCTScrollView) // [macOS]
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView;
 
 @end
+#endif // [macOS]
 
 @interface RCTScrollView (Internal)
 

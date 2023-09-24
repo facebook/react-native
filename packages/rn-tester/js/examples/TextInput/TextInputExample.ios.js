@@ -1096,7 +1096,7 @@ const examples: Array<RNTesterModuleExample> = [
 
 // [macOS
 if (Platform.OS === 'macos') {
-  exports.examples.push(
+  examples.push(
     {
       title:
         'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',

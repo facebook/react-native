@@ -28,9 +28,9 @@ RCT_EXPORT_VIEW_PROPERTY(values, NSArray<NSString *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 #if !TARGET_OS_OSX // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
-#endif // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textColor, UIColor)
+#endif // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(momentary, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)

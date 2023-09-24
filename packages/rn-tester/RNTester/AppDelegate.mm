@@ -23,14 +23,22 @@
 
 @implementation AppDelegate
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+#else // [macOS
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+#endif // macOS]
 {
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [self prepareInitialProps];
 
+#if !TARGET_OS_OSX // [macOS]
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+#else // [macOS
+  [super applicationDidFinishLaunching:notification];
+#endif // macOS]
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -153,7 +161,11 @@
 
 - (NSURL *)getBundleURL
 {
+#if !TARGET_OS_OSX // [macOS]
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+#else // [macOS
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.macos"];
+#endif // macOS]
 }
 #endif
 

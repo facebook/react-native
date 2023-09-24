@@ -593,9 +593,9 @@ UIApplication *__nullable RCTSharedApplication(void)
 #endif // macOS]
 }
 
-#if !TARGET_OS_OSX // [macOS]
-UIWindow *__nullable RCTKeyWindow(void)
+RCTPlatformWindow *__nullable RCTKeyWindow(void) // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   if (RCTRunningInAppExtension()) {
     return nil;
   }
@@ -607,8 +607,12 @@ UIWindow *__nullable RCTKeyWindow(void)
     }
   }
   return nil;
+#else // [macOS
+  return [NSApp keyWindow];
+#endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 UIViewController *__nullable RCTPresentedViewController(void)
 {
   if ([RCTUtilsUIOverride hasPresentedViewController]) {

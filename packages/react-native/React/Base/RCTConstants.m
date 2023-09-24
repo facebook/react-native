@@ -7,7 +7,11 @@
 
 #import "RCTConstants.h"
 
+#if !TARGET_OS_OSX // [macOS]
 NSString *const RCTPlatformName = @"ios";
+#else // [macOS
+NSString *const RCTPlatformName = @"macos";
+#endif // macOS]
 
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";

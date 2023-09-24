@@ -15,6 +15,7 @@
   RCTSurfaceTouchHandler *_touchHandler;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (instancetype)init
 {
   if (!(self = [super init])) {
@@ -27,7 +28,6 @@
   return self;
 }
 
-#if !TARGET_OS_OSX // [macOS]
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];

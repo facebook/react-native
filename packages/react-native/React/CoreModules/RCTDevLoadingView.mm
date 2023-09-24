@@ -164,15 +164,15 @@ RCT_EXPORT_MODULE()
 
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
+
+    UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
+    self->_window.windowScene = scene;
 #else // [macOS
     self->_label.stringValue = message;
     self->_label.textColor = color;
     self->_label.backgroundColor = backgroundColor;
     [self->_window orderFront:nil];
 #endif // macOS]
-
-    UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
-    self->_window.windowScene = scene;
   });
 
   [self hideBannerAfter:15.0];

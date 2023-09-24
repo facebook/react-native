@@ -13,7 +13,7 @@ exports[`TouchableHighlight renders correctly 1`] = `
   }
   accessible={true}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -115,7 +115,7 @@ exports[`TouchableHighlight with disabled state should disable button when acces
   }
   accessible={true}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}

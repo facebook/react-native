@@ -23,6 +23,13 @@ void setTouchPayloadOnObject(
   object.setProperty(runtime, "target", touch.target);
   object.setProperty(runtime, "timestamp", touch.timestamp * 1000);
   object.setProperty(runtime, "force", touch.force);
+#if TARGET_OS_OSX // [macOS
+  object.setProperty(runtime, "button", touch.button);
+  object.setProperty(runtime, "altKey", touch.altKey);
+  object.setProperty(runtime, "ctrlKey", touch.ctrlKey);
+  object.setProperty(runtime, "shiftKey", touch.shiftKey);
+  object.setProperty(runtime, "metaKey", touch.metaKey);
+#endif // macOS]
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -42,6 +49,13 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"target", getDebugDescription(touch.target, options)},
       {"force", getDebugDescription(touch.force, options)},
       {"timestamp", getDebugDescription(touch.timestamp, options)},
+#if TARGET_OS_SX // [macOS
+	  {"button", getDebugDescription(touch.button, options)},
+	  {"altKey", getDebugDescription(touch.altKey, options)},
+	  {"ctrlKey", getDebugDescription(touch.ctrlKey, options)},
+	  {"shiftKey", getDebugDescription(touch.shiftKey, options)},
+	  {"metaKey", getDebugDescription(touch.metaKey, options)},
+#endif // macOS]
   };
 }
 

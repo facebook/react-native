@@ -297,11 +297,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   // [macOS
   ensureItemAtIndexIsVisible(rowIndex: number) {
-    const frame = this.__getFrameMetricsApprox(rowIndex, this.props);
+    const frame = this._listMetrics.getCellMetricsApprox(rowIndex, this.props);
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
     const visEnd = visTop + visLen;
-    const contentLength = this._scrollMetrics.contentLength;
+    const contentLength = this._listMetrics.getContentLength();
     const frameEnd = frame.offset + frame.length;
 
     if (frameEnd > visEnd) {

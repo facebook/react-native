@@ -10,11 +10,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
 
-#if !TARGET_OS_OSX // [macOS]
 #import "AppDelegate.h"
-#else // [macOS
-#import "../../RNTester-macOS/AppDelegate.h"
-#endif // macOS]
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 

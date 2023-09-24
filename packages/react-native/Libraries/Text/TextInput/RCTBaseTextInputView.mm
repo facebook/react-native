@@ -38,6 +38,7 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
   BOOL _didMoveToWindow;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
 {
   if (![self isDescendantOfView:scrollView]) {
@@ -61,6 +62,7 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
   }
   scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
+#endif // [macOS]
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -170,6 +172,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
       [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       self.backedTextInputView.markedTextRange || self.backedTextInputView.isSecureTextEntry ||
 #else // [macOS
+  BOOL shouldFallbackToBareTextComparison =
     // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
     [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
     [self.backedTextInputView hasMarkedText] || [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
@@ -319,6 +322,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
 - (void)setTextContentType:(NSString *)type
 {
+#if !TARGET_OS_OSX // [macOS]
   static dispatch_once_t onceToken;
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
@@ -381,6 +385,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
   // Setting textContentType to an empty string will disable any
   // default behaviour, like the autofill bar for password inputs
   self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
+#endif // [macOS]
 }
 
 #if !TARGET_OS_OSX // [macOS]

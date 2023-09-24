@@ -66,7 +66,7 @@
     _useSecureTextField = useSecureTextField;
     RCTUITextField *previousTextField = _backedTextInputView;
     if (useSecureTextField) {
-      _backedTextInputView = [[RCTUISecureTextField alloc] initWithFrame:self.bounds];
+      _backedTextInputView = (RCTUITextField *)[[RCTUISecureTextField alloc] initWithFrame:self.bounds];
     } else {
       _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     }
