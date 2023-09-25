@@ -29,7 +29,7 @@ function getCachedConstants(): Object {
   return cachedConstants;
 }
 
-module.exports = {
+const UIManagerJS: {[string]: $FlowFixMe} = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode()) {
       return getCachedConstants()[viewManagerName];
@@ -178,3 +178,11 @@ module.exports = {
   dismissPopupMenu: (): void =>
     console.error(errorMessageForMethod('dismissPopupMenu')),
 };
+
+if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode()) {
+  Object.keys(getCachedConstants()).forEach(viewConfigName => {
+    UIManagerJS[viewConfigName] = getCachedConstants()[viewConfigName];
+  });
+}
+
+module.exports = UIManagerJS;

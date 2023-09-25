@@ -1490,8 +1490,7 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
   // native.
   moduleConstants[@"Commands"] = viewConfig[@"Commands"];
-  // In the Old Architecture "Constants" are empty.
-  moduleConstants[@"Constants"] = [NSDictionary new];
+  moduleConstants[@"Constants"] = viewConfig[@"Constants"];
 
   // Add direct events
   for (NSString *eventName in viewConfig[@"directEvents"]) {
