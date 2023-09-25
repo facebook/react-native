@@ -31,7 +31,8 @@ class RNTesterActivity : ReactActivity() {
       super.onCreate(savedInstanceState)
     }
 
-    override fun getLaunchOptions() = initialProps
+    override fun getLaunchOptions() =
+        if (this::initialProps.isInitialized) initialProps else Bundle()
   }
 
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)
