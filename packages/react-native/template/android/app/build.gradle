@@ -116,4 +116,7 @@ dependencies {
     }
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+def reactNativeRoot = resolveNodePackage('react-native', rootDir)
+def cliPlatformAndroidPath = resolveNodePackage('@react-native-community/cli-platform-android', reactNativeRoot)
+
+apply from: new File(cliPlatformAndroidPath, "native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

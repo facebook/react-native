@@ -1,0 +1,14 @@
+ext.resolveNodePackage = { String packageName, File startDir ->
+    def candidate = new File(startDir, "node_modules/$packageName")
+
+    if (candidate.exists()) {
+        return candidate.canonicalFile
+    }
+
+    def parentDir = startDir.parentFile
+    if (parentDir == null || startDir.canonicalPath == parentDir.canonicalPath) {
+        throw new GradleException("Failed to find the package '$packageName'. Ensure you have installed node_modules.")
+    }
+
+    return resolveNodePackage(packageName, parentDir)
+}
