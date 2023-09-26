@@ -15,15 +15,19 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -58,6 +62,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private @Nullable Spannable mPreparedSpannableText;
 
   private boolean mShouldNotifyOnTextLayout;
+  private int mLineCount = -1;
+  private int mBoringWidth = -1;
 
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
@@ -193,6 +199,51 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     }
   }
 
+  private void resetDetectConditions() {
+    mLineCount = -1;
+    mBoringWidth = -1;
+  }
+
+  /**
+   * Detect if there is a text cutoff phenomenon.
+   * @param text Text from UI
+   * @param lineCount Line count from UI Layout instance
+   * @param boringWidth Width from UI BoringLayout.Metrics instance
+   */
+  public void detectTextCutoff(String text, int lineCount, int boringWidth) {
+    if (mPreparedSpannableText == null) {
+      FLog.w(ReactConstants.TAG,
+        "ReactTextShadowNode.detectTextCutoff: mPreparedSpannableText is null");
+      return;
+    }
+
+    if (mBoringWidth < 0) {
+      FLog.w(ReactConstants.TAG,
+        "ReactTextShadowNode.detectTextCutoff: mBoringWidth not get a value");
+      return;
+    }
+
+    String preparedText = mPreparedSpannableText.toString();
+    if (lineCount < 0 || boringWidth < 0 || !preparedText.equals(text)) {
+      return;
+    }
+
+    if (mBoringWidth < boringWidth && mLineCount < lineCount) {
+      // A text cutoff phenomenon occurred
+      FLog.w(ReactConstants.TAG,
+        "ReactTextShadowNode.detectTextCutoff: A text cutoff do occur with text=" + text);
+      FLog.w(ReactConstants.TAG,
+        "ReactTextShadowNode.detectTextCutoff: mLineCount=" + mLineCount + " mBoringWidth=" +
+          mBoringWidth + " lineCount=" + lineCount + " boringWidth=" + boringWidth +
+          " mNumberOfLines=" + mNumberOfLines + " mTextBreakStrategy=" + mTextBreakStrategy +
+          " mFontFeatureSettings" + mFontFeatureSettings + " mContainsImage=" + mContainsImages +
+          " mHyphenationFrequency=" + mHyphenationFrequency + " mIncludeFontPadding=" +
+          mIncludeFontPadding + " mAdjustsFontSizeToFit=" + mAdjustsFontSizeToFit + " mTextAlign=" +
+          mTextAlign + " mTextAttributes=" + mTextAttributes);
+    }
+
+    resetDetectConditions();
+  }
   private Layout measureSpannedText(Spannable text, float width, YogaMeasureMode widthMode) {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
@@ -287,6 +338,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         layout = builder.build();
       }
     }
+
+    if (boring != null) {
+      mBoringWidth = boring.width;
+    }
+    mLineCount = layout.getLineCount();
+
     return layout;
   }
 

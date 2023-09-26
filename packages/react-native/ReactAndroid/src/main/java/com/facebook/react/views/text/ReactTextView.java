@@ -12,9 +12,11 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.StaticLayout;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -36,13 +38,19 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,6 +74,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
+  private Field mFieldBoring = null;
 
   public ReactTextView(Context context) {
     super(context);
@@ -177,6 +186,89 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return (context instanceof TintContextWrapper)
         ? (ReactContext) ((TintContextWrapper) context).getBaseContext()
         : (ReactContext) context;
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    BoringLayout.Metrics originBoring = null;
+    Layout originLayout = null;
+
+    if (ReactFeatureFlags.enableDetectTextCutoff) {
+      originBoring = getBoringMetrics();
+      originLayout = getLayout();
+    }
+
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    if (ReactFeatureFlags.enableDetectTextCutoff) {
+      detectTextCutoffAsync(originBoring, originLayout);
+    }
+  }
+
+  private void detectTextCutoffAsync(BoringLayout.Metrics originBoring, Layout originLayout) {
+    BoringLayout.Metrics boring = getBoringMetrics();
+    Layout layout = getLayout();
+    if (boring == null || boring == originBoring ||
+      !(layout instanceof StaticLayout) || layout == originLayout) {
+      return;
+    }
+
+    CharSequence charSequence = getText();
+    if (charSequence == null || charSequence.length() <= 0) {
+      return;
+    }
+
+    int lineCount = layout.getLineCount();
+    int boringWidth = boring.width;
+
+    getReactContext().runOnNativeModulesQueueThread(() -> {
+      UIImplementation implementation =
+        getReactContext().getNativeModule(UIManagerModule.class).getUIImplementation();
+      if (implementation == null) {
+        return;
+      }
+
+      ReactShadowNode shadowNode = implementation.resolveShadowNode(getId());
+      if (!(shadowNode instanceof ReactTextShadowNode)) {
+        return;
+      }
+
+      ReactTextShadowNode node = (ReactTextShadowNode) shadowNode;
+      node.detectTextCutoff(charSequence.toString(), lineCount, boringWidth);
+    });
+  }
+
+  private BoringLayout.Metrics getBoringMetrics() {
+    BoringLayout.Metrics boring = null;
+    try {
+      if (mFieldBoring == null) {
+        Class fatherClz = getClass().getSuperclass();
+        if (fatherClz == null) {
+          FLog.w(ReactConstants.TAG, "ReactTextView.getBoringMetrics: father class is null");
+          return null;
+        }
+        Class grandFatherClz = fatherClz.getSuperclass();
+        if (grandFatherClz == null) {
+          FLog.w(ReactConstants.TAG, "ReactTextView.getBoringMetrics: grandfather class is null");
+          return null;
+        }
+        final String fieldName = "mBoring";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          Method metaGetDeclareFieldMethod =
+            Class.class.getDeclaredMethod("getDeclaredField", String.class);
+          metaGetDeclareFieldMethod.setAccessible(true);
+          mFieldBoring = (Field) metaGetDeclareFieldMethod.invoke(grandFatherClz, fieldName);
+        } else {
+          mFieldBoring = grandFatherClz.getDeclaredField(fieldName);
+        }
+      }
+      mFieldBoring.setAccessible(true);
+      boring = (BoringLayout.Metrics) mFieldBoring.get(this);
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
+
+    return boring;
   }
 
   @Override
