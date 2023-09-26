@@ -34,6 +34,7 @@ object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
+    ReactFeatureFlags.useNativeViewConfigsInBridgelessMode = fabricEnabled && bridgelessEnabled
 
     this.privateFabricEnabled = fabricEnabled
     this.privateTurboModulesEnabled = turboModulesEnabled
