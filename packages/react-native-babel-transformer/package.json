@@ -1,6 +1,6 @@
 {
   "name": "@react-native/metro-babel-transformer",
-  "version": "0.73.11",
+  "version": "0.73.12",
   "description": "Babel transformer for React Native applications.",
   "main": "src/index.js",
   "repository": {
