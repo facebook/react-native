@@ -138,20 +138,20 @@ class RNTesterApplication : Application(), ReactApplication {
         val reactJsExceptionHandler = RNTesterReactJsExceptionHandler()
         val componentFactory = ComponentFactory()
         register(componentFactory)
-        val reactHostImpl = ReactHostImpl(
-                this.applicationContext,
-                reactHostDelegate,
-                componentFactory,
-                true,
-                reactJsExceptionHandler,
-                true)
-        if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
-          reactHostImpl.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
+      ReactHostImpl(
+        this.applicationContext,
+        reactHostDelegate,
+        componentFactory,
+        true,
+        reactJsExceptionHandler,
+        true).apply {
+        jsEngineResolutionAlgorithm = if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
+          JSEngineResolutionAlgorithm.HERMES
         } else {
-          reactHostImpl.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
+          JSEngineResolutionAlgorithm.JSC
         }
-        reactHostDelegate.reactHost = reactHostImpl
-     reactHostImpl
+        reactHostDelegate.reactHost = this
+      }
     }
 
     @UnstableReactNativeAPI
