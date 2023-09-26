@@ -35,6 +35,7 @@
     "cli.js",
     "flow",
     "gradle.properties",
+    "gradle/libs.versions.toml",
     "index.js",
     "interface.js",
     "jest-preset.js",
