@@ -1,6 +1,6 @@
 {
   "name": "@react-native/babel-preset",
-  "version": "0.73.17",
+  "version": "0.73.18",
   "description": "Babel preset for React Native applications",
   "main": "src/index.js",
   "repository": {
