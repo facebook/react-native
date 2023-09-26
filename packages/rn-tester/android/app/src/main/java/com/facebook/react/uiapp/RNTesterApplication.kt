@@ -37,7 +37,6 @@ import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
 class RNTesterApplication : Application(), ReactApplication {
-    private lateinit var reactHost: ReactHostImpl
     override val reactNativeHost: ReactNativeHost by lazy {
         if (ReactFeatureFlags.enableBridgelessArchitecture) {
           throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
@@ -132,31 +131,28 @@ class RNTesterApplication : Application(), ReactApplication {
     }
 
     @UnstableReactNativeAPI
-    override val reactHostInterface: ReactHost
-        get() {
-            if (!::reactHost.isInitialized) {
-                // Create an instance of ReactHost to manager the instance of ReactInstance,
-                // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
-                val reactHostDelegate = RNTesterReactHostDelegate(applicationContext)
-                val reactJsExceptionHandler = RNTesterReactJsExceptionHandler()
-                val componentFactory = ComponentFactory()
-                register(componentFactory)
-                reactHost = ReactHostImpl(
-                        this.applicationContext,
-                        reactHostDelegate,
-                        componentFactory,
-                        true,
-                        reactJsExceptionHandler,
-                        true)
-                if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
-                    reactHost.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
-                } else {
-                    reactHost.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
-                }
-                reactHostDelegate.reactHost = reactHost
-            }
-            return reactHost
+    override val reactHost: ReactHost by lazy {
+        // Create an instance of ReactHost to manager the instance of ReactInstance,
+        // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
+        val reactHostDelegate = RNTesterReactHostDelegate(applicationContext)
+        val reactJsExceptionHandler = RNTesterReactJsExceptionHandler()
+        val componentFactory = ComponentFactory()
+        register(componentFactory)
+        val reactHostImpl = ReactHostImpl(
+                this.applicationContext,
+                reactHostDelegate,
+                componentFactory,
+                true,
+                reactJsExceptionHandler,
+                true)
+        if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
+          reactHostImpl.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
+        } else {
+          reactHostImpl.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
         }
+        reactHostDelegate.reactHost = reactHostImpl
+     reactHostImpl
+    }
 
     @UnstableReactNativeAPI
     class RNTesterReactJsExceptionHandler : ReactJsExceptionHandler {
