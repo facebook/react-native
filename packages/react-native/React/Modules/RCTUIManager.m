@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE()
     NSMutableDictionary<NSNumber *, id<RCTComponent>> *viewRegistry =
         (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry;
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-      UIView *rootView = self->_viewRegistry[rootViewTag];
+      UIView *rootView = viewRegistry[rootViewTag];
       if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
         [self _purgeChildren:[rootView reactSubviews] fromRegistry:viewRegistry];
         [(id<RCTInvalidating>)rootView invalidate];
