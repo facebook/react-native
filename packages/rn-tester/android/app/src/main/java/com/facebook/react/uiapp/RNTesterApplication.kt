@@ -37,13 +37,12 @@ import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
 class RNTesterApplication : Application(), ReactApplication {
-    private var reactHost: ReactHostImpl? = null
-    override val reactNativeHost: ReactNativeHost
-      get() {
+    private lateinit var reactHost: ReactHostImpl
+    override val reactNativeHost: ReactNativeHost by lazy {
         if (ReactFeatureFlags.enableBridgelessArchitecture) {
           throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
         }
-        return object : DefaultReactNativeHost(this) {
+         object : DefaultReactNativeHost(this) {
           public override fun getJSMainModuleName(): String = "js/RNTesterApp.android"
 
           public override fun getBundleAssetName(): String = "RNTesterApp.android.bundle"
@@ -135,7 +134,7 @@ class RNTesterApplication : Application(), ReactApplication {
     @UnstableReactNativeAPI
     override val reactHostInterface: ReactHost
         get() {
-            if (reactHost == null) {
+            if (!::reactHost.isInitialized) {
                 // Create an instance of ReactHost to manager the instance of ReactInstance,
                 // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
                 val reactHostDelegate = RNTesterReactHostDelegate(applicationContext)
@@ -150,13 +149,13 @@ class RNTesterApplication : Application(), ReactApplication {
                         reactJsExceptionHandler,
                         true)
                 if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
-                    reactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
+                    reactHost.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.HERMES
                 } else {
-                    reactHost!!.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
+                    reactHost.jsEngineResolutionAlgorithm = JSEngineResolutionAlgorithm.JSC
                 }
                 reactHostDelegate.reactHost = reactHost
             }
-            return reactHost!!
+            return reactHost
         }
 
     @UnstableReactNativeAPI
