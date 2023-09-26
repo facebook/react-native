@@ -87,6 +87,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
+    // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
+    RCTSetUseNativeViewConfigsInBridgelessMode([self fabricEnabled]);
     [self createReactHost];
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
