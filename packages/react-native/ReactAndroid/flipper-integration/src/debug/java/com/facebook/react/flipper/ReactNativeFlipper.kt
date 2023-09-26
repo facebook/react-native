@@ -21,6 +21,7 @@ import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPl
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.network.NetworkingModule
 
 /**
@@ -30,6 +31,9 @@ import com.facebook.react.modules.network.NetworkingModule
 object ReactNativeFlipper {
   @JvmStatic
   fun initializeFlipper(context: Context, reactInstanceManager: ReactInstanceManager) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      return
+    }
     if (FlipperUtils.shouldEnableFlipper(context)) {
       val client = AndroidFlipperClient.getInstance(context)
       client.addPlugin(InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()))
