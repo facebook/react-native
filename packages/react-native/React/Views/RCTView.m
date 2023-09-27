@@ -883,7 +883,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
       RCTLogAdvice(
           @"View #%@ of type %@ has a shadow set but cannot calculate "
-           "shadow efficiently. Consider setting a background color to "
+           "shadow efficiently. Consider setting a solid background color to "
            "fix this, or apply the shadow to a more specific component.",
           view.reactTag,
           [view class]);
