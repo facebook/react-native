@@ -423,7 +423,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public void initialize() {}
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     /*
      * Halt the production of new TurboModules.
      *
