@@ -31,7 +31,7 @@ public class JSIModuleHolder {
 
   public void notifyJSInstanceDestroy() {
     if (mModule != null) {
-      mModule.onCatalystInstanceDestroy();
+      mModule.invalidate();
     }
   }
 }
