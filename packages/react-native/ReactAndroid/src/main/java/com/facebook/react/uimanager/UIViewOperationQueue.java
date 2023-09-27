@@ -94,41 +94,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private final class EmitOnLayoutEventOperation extends ViewOperation {
-
-    private final int mScreenX;
-    private final int mScreenY;
-    private final int mScreenWidth;
-    private final int mScreenHeight;
-
-    public EmitOnLayoutEventOperation(
-        int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-      super(tag);
-      mScreenX = screenX;
-      mScreenY = screenY;
-      mScreenWidth = screenWidth;
-      mScreenHeight = screenHeight;
-    }
-
-    @Override
-    public void execute() {
-      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
-
-      if (uiManager != null) {
-        uiManager
-            .getEventDispatcher()
-            .dispatchEvent(
-                OnLayoutEvent.obtain(
-                    -1 /* SurfaceId not used in classic renderer */,
-                    mTag,
-                    mScreenX,
-                    mScreenY,
-                    mScreenWidth,
-                    mScreenHeight));
-      }
-    }
-  }
-
   private final class UpdateInstanceHandleOperation extends ViewOperation {
 
     private final long mInstanceHandle;
@@ -765,12 +730,6 @@ public class UIViewOperationQueue {
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mUpdatePropertiesOperationCount++;
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
-  }
-
-  public void enqueueOnLayoutEvent(
-      int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-    mOperations.add(
-        new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
   }
 
   public void enqueueUpdateLayout(
