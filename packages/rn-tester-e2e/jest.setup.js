@@ -26,7 +26,8 @@ const config = {
 };
 
 beforeEach(async () => {
-  let testName = expect.getState().currentTestName;
+  // $FlowFixMe
+  let testName: any = expect.getState().currentTestName;
   console.info(
     '------------------------------------------------------------ Test is starting... ------------------------------------------------------------',
   );
