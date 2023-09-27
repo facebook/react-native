@@ -411,7 +411,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   @AnyThread
   @ThreadConfined(ANY)
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDevToolsReactPerfLogger != null) {

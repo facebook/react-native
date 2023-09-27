@@ -370,7 +370,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
                         if (mTurboModuleManagerJSIModule != null) {
-                          mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+                          mTurboModuleManagerJSIModule.invalidate();
                         }
 
                         getReactQueueConfiguration()

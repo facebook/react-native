@@ -414,8 +414,8 @@ final class ReactInstance {
   /* package */ void destroy() {
     FLog.d(TAG, "ReactInstance.destroy() is called.");
     mQueueConfiguration.destroy();
-    mTurboModuleManager.onCatalystInstanceDestroy();
-    mFabricUIManager.onCatalystInstanceDestroy();
+    mTurboModuleManager.invalidate();
+    mFabricUIManager.invalidate();
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
