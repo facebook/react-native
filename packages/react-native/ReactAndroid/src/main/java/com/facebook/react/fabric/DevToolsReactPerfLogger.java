@@ -20,80 +20,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-class LongStreamingStats {
-  // TODO(T138627466): Calculate median value with better algorithm after Android API 24.
-  private Queue<Long> minHeap =
-      new PriorityQueue<>(
-          11,
-          new Comparator<Long>() {
-            @Override
-            public int compare(Long first, Long second) {
-              // Natural order
-              return Long.compare(first, second);
-            }
-          });
-  private Queue<Long> maxHeap =
-      new PriorityQueue<>(
-          11,
-          new Comparator<Long>() {
-            @Override
-            public int compare(Long first, Long second) {
-              // Reversed order
-              return Long.compare(second, first);
-            }
-          });
-  private double streamingAverage = 0.0;
-  private int len = 0;
-  private long max = 0;
-
-  LongStreamingStats() {}
-
-  public void add(long n) {
-    // To make medians more useful, we discard all zero values
-    // This isn't perfect and certainly makes this a totally invalid median, but, alas...
-    if (n != 0) {
-      if (minHeap.size() == maxHeap.size()) {
-        maxHeap.offer(n);
-        minHeap.offer(maxHeap.poll());
-      } else {
-        minHeap.offer(n);
-        maxHeap.offer(minHeap.poll());
-      }
-    }
-
-    len++;
-    if (len == 1) {
-      streamingAverage = n;
-    } else {
-      streamingAverage = (streamingAverage / (len / (len - 1))) + (n / len);
-    }
-
-    max = (n > max ? n : max);
-  }
-
-  public double getMedian() {
-    if (minHeap.size() == 0 && maxHeap.size() == 0) {
-      return 0;
-    }
-
-    long median;
-    if (minHeap.size() > maxHeap.size()) {
-      median = minHeap.peek();
-    } else {
-      median = (minHeap.peek() + maxHeap.peek()) / 2;
-    }
-    return median;
-  }
-
-  public double getAverage() {
-    return streamingAverage;
-  }
-
-  public long getMax() {
-    return max;
-  }
-}
-
 public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener {
 
   private final Map<Integer, FabricCommitPoint> mFabricCommitMarkers = new HashMap<>();
@@ -228,6 +154,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       return getBatchExecutionEnd() - getBatchExecutionStart();
     }
 
+    @Override
     public String toString() {
       StringBuilder builder = new StringBuilder("FabricCommitPoint{");
       builder.append("mCommitNumber=").append(mCommitNumber);
@@ -294,5 +221,79 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
         || name == FABRIC_UPDATE_UI_MAIN_THREAD_START
         || name == FABRIC_UPDATE_UI_MAIN_THREAD_END
         || name == FABRIC_LAYOUT_AFFECTED_NODES;
+  }
+
+  private static class LongStreamingStats {
+    // TODO(T138627466): Calculate median value with better algorithm after Android API 24.
+    private final Queue<Long> minHeap =
+        new PriorityQueue<>(
+            11,
+            new Comparator<Long>() {
+              @Override
+              public int compare(Long first, Long second) {
+                // Natural order
+                return Long.compare(first, second);
+              }
+            });
+    private final Queue<Long> maxHeap =
+        new PriorityQueue<>(
+            11,
+            new Comparator<Long>() {
+              @Override
+              public int compare(Long first, Long second) {
+                // Reversed order
+                return Long.compare(second, first);
+              }
+            });
+    private double streamingAverage = 0.0;
+    private int len = 0;
+    private long max = 0;
+
+    LongStreamingStats() {}
+
+    public void add(long n) {
+      // To make medians more useful, we discard all zero values
+      // This isn't perfect and certainly makes this a totally invalid median, but, alas...
+      if (n != 0) {
+        if (minHeap.size() == maxHeap.size()) {
+          maxHeap.offer(n);
+          minHeap.offer(maxHeap.poll());
+        } else {
+          minHeap.offer(n);
+          maxHeap.offer(minHeap.poll());
+        }
+      }
+
+      len++;
+      if (len == 1) {
+        streamingAverage = n;
+      } else {
+        streamingAverage = (streamingAverage / (len / (len - 1))) + (n / len);
+      }
+
+      max = (n > max ? n : max);
+    }
+
+    public double getMedian() {
+      if (minHeap.size() == 0 && maxHeap.size() == 0) {
+        return 0;
+      }
+
+      long median;
+      if (minHeap.size() > maxHeap.size()) {
+        median = minHeap.peek();
+      } else {
+        median = (minHeap.peek() + maxHeap.peek()) / 2;
+      }
+      return median;
+    }
+
+    public double getAverage() {
+      return streamingAverage;
+    }
+
+    public long getMax() {
+      return max;
+    }
   }
 }
