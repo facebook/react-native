@@ -739,6 +739,11 @@ export interface TextInputProps
     | undefined;
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;
+
+  /**
    * Callback that is called when a touch is engaged.
    */
   onPressIn?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;

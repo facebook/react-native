@@ -767,6 +767,11 @@ export type Props = $ReadOnly<{|
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
+
+  /**
    * Called when a touch is engaged.
    */
   onPressIn?: ?(event: PressEvent) => mixed,
