@@ -22,17 +22,16 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Test updating view through {@link ViewManager} with {@link ReactProp} and {@link ReactPropGroup}
  * annotations.
  */
 @RunWith(RobolectricTestRunner.class)
-@Ignore // TODO T14964130
 public class ReactPropAnnotationSetterTest {
 
   public interface ViewManagerUpdatesReceiver {
@@ -208,36 +207,38 @@ public class ReactPropAnnotationSetterTest {
 
   private ViewManagerUnderTest mViewManager;
   private ViewManagerUpdatesReceiver mUpdatesReceiverMock;
+  private View mTargetView;
 
   @Before
   public void setup() {
     mUpdatesReceiverMock = mock(ViewManagerUpdatesReceiver.class);
     mViewManager = new ViewManagerUnderTest(mUpdatesReceiverMock);
+    mTargetView = new View(RuntimeEnvironment.getApplication());
   }
 
   @Test
   public void testBooleanSetter() {
-    mViewManager.updateProperties(null, buildStyles("boolProp", true));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolProp", true));
     verify(mUpdatesReceiverMock).onBooleanSetterCalled(true);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boolProp", false));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolProp", false));
     verify(mUpdatesReceiverMock).onBooleanSetterCalled(false);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boolProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolProp", null));
     verify(mUpdatesReceiverMock).onBooleanSetterCalled(false);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boolPropWithDefault", false));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolPropWithDefault", false));
     verify(mUpdatesReceiverMock).onBooleanSetterCalled(false);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boolPropWithDefault", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolPropWithDefault", null));
     verify(mUpdatesReceiverMock).onBooleanSetterCalled(true);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -245,22 +246,22 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testIntSetter() {
-    mViewManager.updateProperties(null, buildStyles("intProp", 13));
+    mViewManager.updateProperties(mTargetView, buildStyles("intProp", 13));
     verify(mUpdatesReceiverMock).onIntSetterCalled(13);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("intProp", null));
     verify(mUpdatesReceiverMock).onIntSetterCalled(0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intPropWithDefault", -1));
+    mViewManager.updateProperties(mTargetView, buildStyles("intPropWithDefault", -1));
     verify(mUpdatesReceiverMock).onIntSetterCalled(-1);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intPropWithDefault", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("intPropWithDefault", null));
     verify(mUpdatesReceiverMock).onIntSetterCalled(7168);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -268,22 +269,22 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testDoubleSetter() {
-    mViewManager.updateProperties(null, buildStyles("doubleProp", 13.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("doubleProp", 13.0));
     verify(mUpdatesReceiverMock).onDoubleSetterCalled(13.0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("doubleProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("doubleProp", null));
     verify(mUpdatesReceiverMock).onDoubleSetterCalled(0.0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("doublePropWithDefault", -1.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("doublePropWithDefault", -1.0));
     verify(mUpdatesReceiverMock).onDoubleSetterCalled(-1.0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("doublePropWithDefault", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("doublePropWithDefault", null));
     verify(mUpdatesReceiverMock).onDoubleSetterCalled(-88.0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -291,22 +292,22 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testFloatSetter() {
-    mViewManager.updateProperties(null, buildStyles("floatProp", 13.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatProp", 13.0));
     verify(mUpdatesReceiverMock).onFloatSetterCalled(13.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatProp", null));
     verify(mUpdatesReceiverMock).onFloatSetterCalled(0.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatPropWithDefault", -1.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatPropWithDefault", -1.0));
     verify(mUpdatesReceiverMock).onFloatSetterCalled(-1.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatPropWithDefault", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatPropWithDefault", null));
     verify(mUpdatesReceiverMock).onFloatSetterCalled(14.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -314,12 +315,12 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testStringSetter() {
-    mViewManager.updateProperties(null, buildStyles("stringProp", "someRandomString"));
+    mViewManager.updateProperties(mTargetView, buildStyles("stringProp", "someRandomString"));
     verify(mUpdatesReceiverMock).onStringSetterCalled("someRandomString");
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("stringProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("stringProp", null));
     verify(mUpdatesReceiverMock).onStringSetterCalled(null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -327,17 +328,17 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testBoxedBooleanSetter() {
-    mViewManager.updateProperties(null, buildStyles("boxedBoolProp", true));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedBoolProp", true));
     verify(mUpdatesReceiverMock).onBoxedBooleanSetterCalled(Boolean.TRUE);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boxedBoolProp", false));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedBoolProp", false));
     verify(mUpdatesReceiverMock).onBoxedBooleanSetterCalled(Boolean.FALSE);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boxedBoolProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedBoolProp", null));
     verify(mUpdatesReceiverMock).onBoxedBooleanSetterCalled(null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -345,12 +346,12 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testBoxedIntSetter() {
-    mViewManager.updateProperties(null, buildStyles("boxedIntProp", 55));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedIntProp", 55));
     verify(mUpdatesReceiverMock).onBoxedIntSetterCalled(Integer.valueOf(55));
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boxedIntProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedIntProp", null));
     verify(mUpdatesReceiverMock).onBoxedIntSetterCalled(null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -359,12 +360,12 @@ public class ReactPropAnnotationSetterTest {
   @Test
   public void testArraySetter() {
     ReadableArray array = new JavaOnlyArray();
-    mViewManager.updateProperties(null, buildStyles("arrayProp", array));
+    mViewManager.updateProperties(mTargetView, buildStyles("arrayProp", array));
     verify(mUpdatesReceiverMock).onArraySetterCalled(array);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("arrayProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("arrayProp", null));
     verify(mUpdatesReceiverMock).onArraySetterCalled(null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -373,12 +374,12 @@ public class ReactPropAnnotationSetterTest {
   @Test
   public void testMapSetter() {
     ReadableMap map = new JavaOnlyMap();
-    mViewManager.updateProperties(null, buildStyles("mapProp", map));
+    mViewManager.updateProperties(mTargetView, buildStyles("mapProp", map));
     verify(mUpdatesReceiverMock).onMapSetterCalled(map);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("mapProp", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("mapProp", null));
     verify(mUpdatesReceiverMock).onMapSetterCalled(null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -386,22 +387,22 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testFloatGroupSetter() {
-    mViewManager.updateProperties(null, buildStyles("floatGroupPropFirst", 11.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatGroupPropFirst", 11.0));
     verify(mUpdatesReceiverMock).onFloatGroupPropSetterCalled(0, 11.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatGroupPropSecond", -111.0));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatGroupPropSecond", -111.0));
     verify(mUpdatesReceiverMock).onFloatGroupPropSetterCalled(1, -111.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatGroupPropSecond", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatGroupPropSecond", null));
     verify(mUpdatesReceiverMock).onFloatGroupPropSetterCalled(1, 0.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("floatGroupPropWithDefaultFirst", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("floatGroupPropWithDefaultFirst", null));
     verify(mUpdatesReceiverMock).onFloatGroupPropSetterCalled(0, -100.0f);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -409,32 +410,32 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testIntGroupSetter() {
-    mViewManager.updateProperties(null, buildStyles("intGroupPropFirst", -7));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropFirst", -7));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(0, -7);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intGroupPropSecond", -77));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropSecond", -77));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(1, -77);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intGroupPropSecond", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropSecond", null));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(1, 0);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intGroupPropWithDefaultFirst", 5));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropWithDefaultFirst", 5));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(0, 5);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intGroupPropWithDefaultFirst", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropWithDefaultFirst", null));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(0, 555);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("intGroupPropWithDefaultSecond", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("intGroupPropWithDefaultSecond", null));
     verify(mUpdatesReceiverMock).onIntGroupPropSetterCalled(1, 555);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -442,17 +443,17 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testStringGroupSetter() {
-    mViewManager.updateProperties(null, buildStyles("boxedIntGroupPropFirst", -7));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedIntGroupPropFirst", -7));
     verify(mUpdatesReceiverMock).onBoxedIntGroupPropSetterCalled(0, -7);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boxedIntGroupPropSecond", 12345));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedIntGroupPropSecond", 12345));
     verify(mUpdatesReceiverMock).onBoxedIntGroupPropSetterCalled(1, 12345);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
 
-    mViewManager.updateProperties(null, buildStyles("boxedIntGroupPropSecond", null));
+    mViewManager.updateProperties(mTargetView, buildStyles("boxedIntGroupPropSecond", null));
     verify(mUpdatesReceiverMock).onBoxedIntGroupPropSetterCalled(1, null);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
     reset(mUpdatesReceiverMock);
@@ -460,36 +461,26 @@ public class ReactPropAnnotationSetterTest {
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateBoolPropWithMap() {
-    mViewManager.updateProperties(null, buildStyles("boolProp", new JavaOnlyMap()));
+    mViewManager.updateProperties(mTargetView, buildStyles("boolProp", new JavaOnlyMap()));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateStringPropWithDouble() {
-    mViewManager.updateProperties(null, buildStyles("stringProp", 14.5));
+    mViewManager.updateProperties(mTargetView, buildStyles("stringProp", 14.5));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateDoublePropWithString() {
-    mViewManager.updateProperties(null, buildStyles("doubleProp", "hello"));
-  }
-
-  @Test(expected = JSApplicationIllegalArgumentException.class)
-  public void testFailToUpdateIntPropWithDouble() {
-    mViewManager.updateProperties(null, buildStyles("intProp", -7.4));
+    mViewManager.updateProperties(mTargetView, buildStyles("doubleProp", "hello"));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateArrayPropWithBool() {
-    mViewManager.updateProperties(null, buildStyles("arrayProp", false));
+    mViewManager.updateProperties(mTargetView, buildStyles("arrayProp", false));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateMapPropWithArray() {
-    mViewManager.updateProperties(null, buildStyles("mapProp", new JavaOnlyArray()));
-  }
-
-  @Test(expected = JSApplicationIllegalArgumentException.class)
-  public void testFailToUpdateBoxedIntPropWithBoxedDouble() {
-    mViewManager.updateProperties(null, buildStyles("boxedIntProp", Double.valueOf(1)));
+    mViewManager.updateProperties(mTargetView, buildStyles("mapProp", new JavaOnlyArray()));
   }
 }
