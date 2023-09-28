@@ -9,4 +9,5 @@
     <string name="combobox_description" gender="unknown">Qutiya Vebûnok</string>
     <string name="menu_description" gender="unknown">Menû</string>
     <string name="state_on_description" gender="unknown">vekirî</string>
+    <string name="state_off_description" gender="unknown">girtî</string>
 </resources>
