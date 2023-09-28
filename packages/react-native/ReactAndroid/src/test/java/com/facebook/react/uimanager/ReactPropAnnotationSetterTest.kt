@@ -51,6 +51,7 @@ class ReactPropAnnotationSetterTest {
     fun onBoxedIntGroupPropSetterCalled(index: Int, value: Int?)
   }
 
+  @Suppress("UNUSED_PARAMETER")
   private inner class ViewManagerUnderTest
   constructor(val mViewManagerUpdatesReceiver: ViewManagerUpdatesReceiver) :
     ViewManager<View?, ReactShadowNode<*>?>() {
