@@ -339,7 +339,7 @@ void Node::setLayoutComputedFlexBasisGeneration(
 
 void Node::setLayoutMeasuredDimension(
     float measuredDimension,
-    YGDimension dimension) {
+    Dimension dimension) {
   layout_.setMeasuredDimension(dimension, measuredDimension);
 }
 
@@ -347,7 +347,7 @@ void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float dimensionValue, YGDimension dimension) {
+void Node::setLayoutDimension(float dimensionValue, Dimension dimension) {
   layout_.setDimension(dimension, dimensionValue);
 }
 
@@ -433,14 +433,13 @@ YGValue Node::resolveFlexBasisPtr() const {
 }
 
 void Node::resolveDimension() {
-  using namespace yoga;
   const Style& style = getStyle();
-  for (auto dim : {YGDimensionWidth, YGDimensionHeight}) {
+  for (auto dim : {Dimension::Width, Dimension::Height}) {
     if (!style.maxDimension(dim).isUndefined() &&
         yoga::inexactEquals(style.maxDimension(dim), style.minDimension(dim))) {
-      resolvedDimensions_[dim] = style.maxDimension(dim);
+      resolvedDimensions_[yoga::to_underlying(dim)] = style.maxDimension(dim);
     } else {
-      resolvedDimensions_[dim] = style.dimension(dim);
+      resolvedDimensions_[yoga::to_underlying(dim)] = style.dimension(dim);
     }
   }
 }

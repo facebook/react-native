@@ -533,9 +533,11 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 
   auto style = yogaNode_.getStyle();
   style.setDimension(
-      YGDimensionWidth, yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
+      yoga::Dimension::Width,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
   style.setDimension(
-      YGDimensionHeight, yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
+      yoga::Dimension::Height,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -631,19 +633,19 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      YGDimensionWidth,
+      yoga::Dimension::Width,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      YGDimensionHeight,
+      yoga::Dimension::Height,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      YGDimensionWidth,
+      yoga::Dimension::Width,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      YGDimensionHeight,
+      yoga::Dimension::Height,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.height));
 
   auto direction =

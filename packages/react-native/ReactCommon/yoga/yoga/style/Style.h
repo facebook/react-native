@@ -16,6 +16,7 @@
 
 #include <yoga/bits/NumericBitfield.h>
 #include <yoga/enums/Align.h>
+#include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
 #include <yoga/enums/FlexDirection.h>
@@ -33,7 +34,7 @@ class YG_EXPORT Style {
   using Values = std::array<CompactValue, ordinalCount<Enum>()>;
 
  public:
-  using Dimensions = Values<YGDimension>;
+  using Dimensions = Values<Dimension>;
   using Edges = Values<YGEdge>;
   using Gutters = Values<YGGutter>;
 
@@ -280,25 +281,25 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  CompactValue dimension(YGDimension axis) const {
-    return dimensions_[axis];
+  CompactValue dimension(Dimension axis) const {
+    return dimensions_[yoga::to_underlying(axis)];
   }
-  void setDimension(YGDimension axis, CompactValue value) {
-    dimensions_[axis] = value;
-  }
-
-  CompactValue minDimension(YGDimension axis) const {
-    return minDimensions_[axis];
-  }
-  void setMinDimension(YGDimension axis, CompactValue value) {
-    minDimensions_[axis] = value;
+  void setDimension(Dimension axis, CompactValue value) {
+    dimensions_[yoga::to_underlying(axis)] = value;
   }
 
-  CompactValue maxDimension(YGDimension axis) const {
-    return maxDimensions_[axis];
+  CompactValue minDimension(Dimension axis) const {
+    return minDimensions_[yoga::to_underlying(axis)];
   }
-  void setMaxDimension(YGDimension axis, CompactValue value) {
-    maxDimensions_[axis] = value;
+  void setMinDimension(Dimension axis, CompactValue value) {
+    minDimensions_[yoga::to_underlying(axis)] = value;
+  }
+
+  CompactValue maxDimension(Dimension axis) const {
+    return maxDimensions_[yoga::to_underlying(axis)];
+  }
+  void setMaxDimension(Dimension axis, CompactValue value) {
+    maxDimensions_[yoga::to_underlying(axis)] = value;
   }
 
   // Yoga specific properties, not compatible with flexbox specification
