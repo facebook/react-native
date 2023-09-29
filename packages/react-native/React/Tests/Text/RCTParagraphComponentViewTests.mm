@@ -121,8 +121,8 @@ using namespace facebook::react;
             auto &props = *sharedProps;
             props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(200));
             return sharedProps;
           })
           .children({
@@ -136,8 +136,8 @@ using namespace facebook::react;
                     yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(200));
                     return sharedProps;
                   })
                   .children({
@@ -216,8 +216,8 @@ using namespace facebook::react;
                     yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{30, YGUnitPoint};
-                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(50));
                     return sharedProps;
                   })
                   .children({
@@ -260,8 +260,8 @@ using namespace facebook::react;
                     yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{90, YGUnitPoint};
-                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(50));
                     return sharedProps;
                   })
                   .children({
@@ -418,8 +418,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                        auto &props = *sharedProps;
                        props.layoutConstraints = LayoutConstraints{{0, 0}, {500, 500}};
                        auto &yogaStyle = props.yogaStyle;
-                       yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-                       yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
+                       yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+                       yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(200));
                        return sharedProps;
                      })
                      .children({
@@ -434,8 +434,8 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
                                yogaStyle.positionType() = yoga::PositionType::Absolute;
                                yogaStyle.position()[YGEdgeLeft] = YGValue{0, YGUnitPoint};
                                yogaStyle.position()[YGEdgeTop] = YGValue{0, YGUnitPoint};
-                               yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-                               yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
+                               yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+                               yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(20));
                                return sharedProps;
                              })
                              .children({

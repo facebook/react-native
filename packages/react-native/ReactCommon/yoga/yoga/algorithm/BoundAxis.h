@@ -9,6 +9,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/ResolveValue.h>
+#include <yoga/enums/Dimension.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
@@ -35,14 +36,14 @@ inline FloatOptional boundAxisWithinMinAndMax(
 
   if (isColumn(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimension(YGDimensionHeight), axisSize);
+        node->getStyle().minDimension(Dimension::Height), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimension(YGDimensionHeight), axisSize);
+        node->getStyle().maxDimension(Dimension::Height), axisSize);
   } else if (isRow(axis)) {
     min = yoga::resolveValue(
-        node->getStyle().minDimension(YGDimensionWidth), axisSize);
+        node->getStyle().minDimension(Dimension::Width), axisSize);
     max = yoga::resolveValue(
-        node->getStyle().maxDimension(YGDimensionWidth), axisSize);
+        node->getStyle().maxDimension(Dimension::Width), axisSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {
