@@ -76,7 +76,7 @@ class ReactNativePodsUtils
                     excluded_archs_includes_I386 = current_setting.include?("i386")
 
                     if !excluded_archs_includes_I386
-                        # Hermes does not support `i386` architecture
+                        # Hermes does not support 'i386' architecture
                         config.build_settings[key] = "#{current_setting} i386".strip
                     end
                 end
@@ -341,20 +341,26 @@ class ReactNativePodsUtils
 
     def self.add_value_to_setting_if_missing(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if !old_config.include?(value)
-            config.build_settings[setting_name] << value
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if !old_config.include?(trimmed_value)
+            config.build_settings[setting_name] = "#{old_config.strip()} #{trimmed_value}".strip()
         end
     end
 
     def self.remove_value_from_setting_if_present(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if old_config.include?(value)
-            # Old config can be either an Array or a String
-            if old_config.is_a?(Array)
-                old_config = old_config.join(" ")
-            end
-            new_config = old_config.gsub(value,  "")
-            config.build_settings[setting_name] = new_config
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if old_config.include?(trimmed_value)
+            new_config = old_config.gsub(trimmed_value,  "")
+            config.build_settings[setting_name] = new_config.strip()
         end
     end
 
