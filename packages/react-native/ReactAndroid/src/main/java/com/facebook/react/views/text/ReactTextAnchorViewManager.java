@@ -92,7 +92,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
   public void setLetterSpacing(ReactTextView view, float letterSpacing) {
-    view.setLetterSpacing(letterSpacing);
+    view.setLetterSpacingAttr(letterSpacing);
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)

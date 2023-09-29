@@ -664,7 +664,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return super.dispatchHoverEvent(event);
   }
 
-  public void setLetterSpacing(float letterSpacing) {
+  /**
+   * Save letterSpacing in TextAttributes temporarily.
+   */
+  public void setLetterSpacingAttr(float letterSpacing) {
     mTextAttributes.setLetterSpacing(letterSpacing);
   }
 
@@ -694,7 +697,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
     if (!Float.isNaN(effectiveLetterSpacing)) {
-      super.setLetterSpacing(effectiveLetterSpacing);
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 }
