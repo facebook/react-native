@@ -40,12 +40,12 @@
     [_runner runTest:_cmd module:@ #name]; \
   }
 
-#if !TARGET_OS_OSX // [macOS] Github #1739: Disable these failing tests
+/* [macOS] Github #1739: These tests are disabled upstream in `scripts/objc-test.sh`
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ScrollViewExample)
 RCT_TEST(TextExample)
-#endif // [macOS]
+macOS] */
 
 - (void)testZZZNotInRecordMode
 {
