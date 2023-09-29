@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -35,7 +33,6 @@ import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 
 @VisibleForTesting
-@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     implements YogaMeasureFunction {
 
@@ -53,10 +50,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     super(reactTextViewManagerCallback);
-    mTextBreakStrategy =
-        (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            ? Layout.BREAK_STRATEGY_SIMPLE
-            : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
     initMeasureFunction();
   }
@@ -118,8 +112,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
         editText.setLines(mNumberOfLines);
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          && editText.getBreakStrategy() != mTextBreakStrategy) {
+      if (editText.getBreakStrategy() != mTextBreakStrategy) {
         editText.setBreakStrategy(mTextBreakStrategy);
       }
     }
@@ -182,10 +175,6 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   @Override
   public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
     if (textBreakStrategy == null || "simple".equals(textBreakStrategy)) {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
     } else if ("highQuality".equals(textBreakStrategy)) {
