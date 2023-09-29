@@ -613,7 +613,7 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) -Wl -ld_classic ", config.build_settings["OTHER_LDFLAGS"])
+            assert_equal("$(inherited) -Wl -ld_classic", config.build_settings["OTHER_LDFLAGS"])
         end
 
         # User project and Pods project
@@ -662,7 +662,7 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
+            assert_equal("$(inherited)", config.build_settings["OTHER_LDFLAGS"])
         end
 
         # User project and Pods project
