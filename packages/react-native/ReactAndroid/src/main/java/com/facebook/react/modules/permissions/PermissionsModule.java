@@ -175,7 +175,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
       mCallbacks.get(requestCode).invoke(grantResults, getPermissionAwareActivity());
       mCallbacks.remove(requestCode);
       return mCallbacks.size() == 0;
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException | NullPointerException e) {
       FLog.e(
           "PermissionsModule",
           e,
