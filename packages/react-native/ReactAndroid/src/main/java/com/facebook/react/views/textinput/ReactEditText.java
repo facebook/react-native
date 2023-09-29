@@ -9,8 +9,6 @@ package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -210,9 +208,7 @@ public class ReactEditText extends AppCompatEditText {
           public void onDestroyActionMode(ActionMode mode) {}
         };
     setCustomSelectionActionModeCallback(customActionModeCallback);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setCustomInsertionActionModeCallback(customActionModeCallback);
-    }
+    setCustomInsertionActionModeCallback(customActionModeCallback);
   }
 
   @Override
@@ -308,26 +304,7 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public boolean onTextContextMenuItem(int id) {
     if (id == android.R.id.paste) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        id = android.R.id.pasteAsPlainText;
-      } else {
-        ClipboardManager clipboard =
-            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData previousClipData = clipboard.getPrimaryClip();
-        if (previousClipData != null) {
-          for (int i = 0; i < previousClipData.getItemCount(); i++) {
-            final CharSequence text = previousClipData.getItemAt(i).coerceToText(getContext());
-            final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
-            if (paste != null) {
-              ClipData clipData = ClipData.newPlainText(null, text);
-              clipboard.setPrimaryClip(clipData);
-            }
-          }
-          boolean actionPerformed = super.onTextContextMenuItem(id);
-          clipboard.setPrimaryClip(previousClipData);
-          return actionPerformed;
-        }
-      }
+      id = android.R.id.pasteAsPlainText;
     }
     return super.onTextContextMenuItem(id);
   }
@@ -702,10 +679,8 @@ public class ReactEditText extends AppCompatEditText {
     }
     mDisableTextDiffing = false;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
-        setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
-      }
+    if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
+      setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
     }
 
     // Update cached spans (in Fabric only).
