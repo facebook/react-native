@@ -33,7 +33,7 @@ FlexLine calculateFlexLine(
   const FlexDirection mainAxis = resolveDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
-  const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
+  const float gap = node->getGapForAxis(mainAxis, availableInnerWidth);
 
   // Add items to the current line until it's full or we run out of items.
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {

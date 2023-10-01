@@ -202,13 +202,13 @@ FloatOptional Node::getMarginForAxis(
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
-FloatOptional Node::getGapForAxis(
-    const FlexDirection axis,
-    const float widthSize) const {
+float Node::getGapForAxis(const FlexDirection axis, const float widthSize)
+    const {
   auto gap = isRow(axis)
-      ? computeColumnGap(style_.gap(), CompactValue::ofZero())
-      : computeRowGap(style_.gap(), CompactValue::ofZero());
-  return yoga::resolveValue(gap, widthSize);
+      ? computeColumnGap(style_.gap(), CompactValue::ofUndefined())
+      : computeRowGap(style_.gap(), CompactValue::ofUndefined());
+  auto resolvedGap = yoga::resolveValue(gap, widthSize);
+  return maxOrDefined(resolvedGap.unwrap(), 0);
 }
 
 YGSize Node::measure(
