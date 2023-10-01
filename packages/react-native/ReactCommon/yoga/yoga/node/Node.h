@@ -231,8 +231,7 @@ class YG_EXPORT Node : public ::YGNode {
   FloatOptional getMarginForAxis(
       const FlexDirection axis,
       const float widthSize) const;
-  FloatOptional getGapForAxis(const FlexDirection axis, const float widthSize)
-      const;
+  float getGapForAxis(const FlexDirection axis, const float widthSize) const;
   // Setters
 
   void setContext(void* context) {
