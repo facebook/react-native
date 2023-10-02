@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge;
 
-public class JSIModuleHolder {
+class JSIModuleHolder {
 
   private JSIModule mModule;
   private final JSIModuleSpec mSpec;
