@@ -252,6 +252,16 @@ async function testRNTestProject(circleCIArtifacts) {
     `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
   );
 
+  // Update gradle properties to set Hermes as false
+  if (!argv.hermes) {
+    sed(
+      '-i',
+      'hermesEnabled=true',
+      'hermesEnabled=false',
+      'android/gradle.properties',
+    );
+  }
+
   // doing the pod install here so that it's easier to play around RNTestProject
   cd('ios');
   exec('bundle install');
