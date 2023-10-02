@@ -248,7 +248,7 @@ NSString *RCTMD5Hash(NSString *string)
                                     result[15]];
 }
 
-BOOL RCTIsMainQueue()
+BOOL RCTIsMainQueue(void)
 {
   static void *mainQueueKey = &mainQueueKey;
   static dispatch_once_t onceToken;
@@ -302,14 +302,14 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
 static dispatch_once_t onceTokenScreenScale;
 static CGFloat screenScale;
 
-void RCTComputeScreenScale()
+void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
     screenScale = [UIScreen mainScreen].scale;
   });
 }
 
-CGFloat RCTScreenScale()
+CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
     screenScale = [UIScreen mainScreen].scale;
@@ -318,7 +318,7 @@ CGFloat RCTScreenScale()
   return screenScale;
 }
 
-CGFloat RCTFontSizeMultiplier()
+CGFloat RCTFontSizeMultiplier(void)
 {
   static NSDictionary<NSString *, NSNumber *> *mapping;
   static dispatch_once_t onceToken;
@@ -342,7 +342,7 @@ CGFloat RCTFontSizeMultiplier()
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
-CGSize RCTScreenSize()
+CGSize RCTScreenSize(void)
 {
   // FIXME: this caches whatever the bounds were when it was first called, and then
   // doesn't update when the device is rotated. We need to find another thread-
@@ -364,18 +364,18 @@ CGFloat RCTScreenScale()
   return [NSScreen mainScreen].backingScaleFactor;
 }
 
-CGFloat RCTFontSizeMultiplier() {
+CGFloat RCTFontSizeMultiplier(void) {
   return 1.0;
 }
 
-CGSize RCTScreenSize()
+CGSize RCTScreenSize(void)
 {
   return [NSScreen mainScreen].frame.size;
 }
 #endif // macOS]
 
 #if !TARGET_OS_OSX // [macOS]
-CGSize RCTViewportSize()
+CGSize RCTViewportSize(void)
 {
   UIWindow *window = RCTKeyWindow();
   return window ? window.bounds.size : RCTScreenSize();
@@ -593,9 +593,9 @@ UIApplication *__nullable RCTSharedApplication(void)
 #endif // macOS]
 }
 
-#if !TARGET_OS_OSX // [macOS]
-UIWindow *__nullable RCTKeyWindow(void)
+RCTPlatformWindow *__nullable RCTKeyWindow(void) // [macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
   if (RCTRunningInAppExtension()) {
     return nil;
   }
@@ -607,8 +607,12 @@ UIWindow *__nullable RCTKeyWindow(void)
     }
   }
   return nil;
+#else // [macOS
+  return [NSApp keyWindow];
+#endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 UIViewController *__nullable RCTPresentedViewController(void)
 {
   if ([RCTUtilsUIOverride hasPresentedViewController]) {
@@ -1162,10 +1166,10 @@ RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
 RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSObject *obj,
     id expectedClass,
-    NSString const *expectedType,
-    NSString const *componentName,
-    NSString const *commandName,
-    NSString const *argPos)
+    const NSString *expectedType,
+    const NSString *componentName,
+    const NSString *commandName,
+    const NSString *argPos)
 {
   if (![obj isKindOfClass:expectedClass]) {
     NSString *kindOfClass = RCTHumanReadableType(obj);

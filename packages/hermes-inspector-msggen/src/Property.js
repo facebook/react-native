@@ -34,12 +34,19 @@ export class Property {
 
   static createArray(
     domain: string,
+    parent: string,
     elements: Array<any>,
     ignoreExperimental: boolean,
+    includeExperimental: Set<string>,
   ): Array<Property> {
     let props = elements.map(elem => Property.create(domain, elem));
     if (ignoreExperimental) {
-      props = props.filter(prop => !prop.experimental);
+      props = props.filter(prop => {
+        return (
+          !prop.experimental ||
+          includeExperimental.has(domain + '.' + parent + '.' + prop.name)
+        );
+      });
     }
     return props;
   }
@@ -78,8 +85,14 @@ function maybeWrapOptional(
   type: string,
   optional: ?boolean,
   recursive: ?boolean,
+  cyclical: ?boolean,
 ) {
-  if (optional) {
+  if (cyclical) {
+    // n.b. need to use unique_ptr with a custom deleter since
+    // due to the type cycle we only have the fwd def here and
+    // the type is incomplete
+    return `std::unique_ptr<${type}, std::function<void(${type}*)>>`;
+  } else if (optional) {
     return recursive ? `std::unique_ptr<${type}>` : `std::optional<${type}>`;
   }
   return type;
@@ -101,8 +114,8 @@ function toDomainAndId(
     domain = curDomain;
     id = absOrRelRef;
   } else {
-    domain = absOrRelRef.substr(0, i);
-    id = absOrRelRef.substr(i + 1);
+    domain = absOrRelRef.slice(0, i);
+    id = absOrRelRef.slice(i + 1);
   }
 
   return [domain, id];
@@ -150,11 +163,13 @@ class PrimitiveProperty extends Property {
 class RefProperty extends Property {
   $ref: string;
   recursive: ?boolean;
+  cyclical: ?boolean;
 
   constructor(domain: string, obj: any) {
     super(domain, obj);
     this.$ref = obj.$ref;
     this.recursive = obj.recursive;
+    this.cyclical = obj.cyclical;
   }
 
   getRefDebuggerName(): ?string {
@@ -164,13 +179,23 @@ class RefProperty extends Property {
 
   getFullCppType(): string {
     const fullCppType = toFullCppType(this.domain, this.$ref);
-    return maybeWrapOptional(`${fullCppType}`, this.optional, this.recursive);
+    return maybeWrapOptional(
+      `${fullCppType}`,
+      this.optional,
+      this.recursive,
+      this.cyclical,
+    );
   }
 
   getInitializer(): string {
     // must zero-init non-optional ref props since the ref could just be an
     // alias to a C++ primitive type like int which we always want to zero-init
-    return this.optional ? '' : '{}';
+    const fullCppType = toFullCppType(this.domain, this.$ref);
+    return this.cyclical
+      ? `{nullptr, deleter<${fullCppType}>}`
+      : this.optional
+      ? ''
+      : '{}';
   }
 }
 

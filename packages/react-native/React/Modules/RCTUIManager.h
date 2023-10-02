@@ -173,3 +173,10 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 @property (nonatomic, readonly) RCTUIManager *uiManager;
 
 @end
+
+RCT_EXTERN NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    Class managerClass,
+    NSString *name,
+    NSDictionary<NSString *, id> *viewConfig);

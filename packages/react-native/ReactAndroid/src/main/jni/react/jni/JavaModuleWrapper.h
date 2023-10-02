@@ -13,8 +13,7 @@
 
 #include "MethodInvoker.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class MessageQueueThread;
@@ -72,11 +71,11 @@ class JavaNativeModule : public NativeModule {
   std::string getSyncMethodName(unsigned int reactMethodId) override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId)
       override;
   MethodCallResult callSerializableNativeHook(
       unsigned int reactMethodId,
-      folly::dynamic &&params) override;
+      folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
@@ -85,5 +84,4 @@ class JavaNativeModule : public NativeModule {
   std::vector<std::optional<MethodInvoker>> syncMethods_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

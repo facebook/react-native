@@ -8,11 +8,7 @@ set -x
 
 release_version="$1"; shift
 hermesc_path="$1"; shift
-
-build_cli_tools="false"
-if [[ "$PLATFORM_NAME" == macosx ]]; then
-  build_cli_tools="true"
-fi
+jsi_path="$1"; shift
 
 enable_debugger="false"
 if [[ "$CONFIGURATION" == "Debug" ]]; then
@@ -33,6 +29,13 @@ if [ -z "$deployment_target" ]; then
   deployment_target=${MACOSX_DEPLOYMENT_TARGET}
 fi
 
+xcode_15_flags=""
+xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
+if [[ $xcode_major_version -ge 15 ]]; then
+  echo "########### Using LINKER:-ld_classic ###########"
+  xcode_15_flags="LINKER:-ld_classic"
+fi
+
 architectures=$( echo "$ARCHS" | tr  " " ";" )
 
 echo "Configure Apple framework"
@@ -40,6 +43,7 @@ echo "Configure Apple framework"
 "$CMAKE_BINARY" \
   -S "${PODS_ROOT}/hermes-engine" \
   -B "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
+  -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
   -DHERMES_APPLE_TARGET_PLATFORM:STRING="$PLATFORM_NAME" \
   -DCMAKE_OSX_ARCHITECTURES:STRING="$architectures" \
   -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$deployment_target" \
@@ -51,22 +55,20 @@ echo "Configure Apple framework"
   -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
   -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
-  -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
+  -DJSI_DIR="$jsi_path" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
-  -DCMAKE_INSTALL_PREFIX:PATH="${PODS_ROOT}/hermes-engine/destroot" \
   -DCMAKE_BUILD_TYPE="$cmake_build_type"
 
 echo "Build Apple framework"
 
 "$CMAKE_BINARY" \
   --build "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
-  --target "install/strip" \
+  --target libhermes \
   -j "$(sysctl -n hw.ncpu)"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
 
 cp -pfR \
-  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/ios"
-rm -rf "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}"

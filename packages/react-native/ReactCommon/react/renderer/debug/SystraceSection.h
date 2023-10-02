@@ -11,8 +11,7 @@
 #include <fbsystrace.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Allow providing an fbsystrace implementation that can short-circuit out
@@ -38,8 +37,8 @@ struct ConcreteSystraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit ConcreteSystraceSection(
-      const char *name,
-      ConvertsToStringPiece &&...args)
+      const char* name,
+      ConvertsToStringPiece&&... args)
       : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
 
  private:
@@ -51,11 +50,10 @@ struct DummySystraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit DummySystraceSection(
-      __unused const char *name,
-      __unused ConvertsToStringPiece &&...args) {}
+      __unused const char* name,
+      __unused ConvertsToStringPiece&&... args) {}
 };
 using SystraceSection = DummySystraceSection;
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

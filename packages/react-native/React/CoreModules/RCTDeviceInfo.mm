@@ -13,7 +13,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
-#import <React/RCTUIKit.h> // [macOS]
+#import <React/RCTInvalidating.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 #import "UIView+React.h" // [macOS]
@@ -22,18 +22,18 @@
 
 using namespace facebook::react;
 
-@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing>
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing, RCTInvalidating>
 @end
 
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_OSX // [macOS]
   UIInterfaceOrientation _currentInterfaceOrientation;
+#endif // [macOS]
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
-#endif // [macOS]
+  BOOL _invalidated;
 }
 
-@synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
@@ -62,9 +62,11 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
+#endif // [macOS]
 
-  _currentInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
+  _currentInterfaceDimensions = [self _exportedDimensions];
 
+#if !TARGET_OS_OSX // [macOS]
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidBecomeActiveNotification
@@ -75,56 +77,49 @@ RCT_EXPORT_MODULE()
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
 #endif // [macOS]
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:RCTRootViewFrameDidChangeNotification
+                                             object:nil];
 }
 
-static BOOL RCTIsIPhoneX()
+- (void)invalidate
 {
-  static BOOL isIPhoneX = NO;
+  _invalidated = YES;
+}
+
+static BOOL RCTIsIPhoneNotched()
+{
 #if !TARGET_OS_OSX // [macOS]
+  static BOOL isIPhoneNotched = NO;
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
 
-    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
-    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
-    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
-    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
-    CGSize iPhone12ScreenSize = CGSizeMake(1170, 2532);
-    CGSize iPhone12MiniScreenSize = CGSizeMake(1080, 2340);
-    CGSize iPhone12ProMaxScreenSize = CGSizeMake(1284, 2778);
-
-    isIPhoneX = CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) || CGSizeEqualToSize(screenSize, iPhoneXRScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhone12ScreenSize) || CGSizeEqualToSize(screenSize, iPhone12MiniScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhone12ProMaxScreenSize);
-    ;
+    // 20pt is the top safeArea value in non-notched devices
+    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
   });
-#endif // [macOS]
-  return isIPhoneX;
+
+  return isIPhoneNotched;
+#else // [macOS
+  return NO;
+#endif // macOS]
 }
 
+
 #if !TARGET_OS_OSX // [macOS]
-static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RCTBridge *bridge)
+NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 #else // [macOS
-NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge)
+static NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #endif // macOS]
 {
   RCTAssertMainQueue();
-
 #if !TARGET_OS_OSX // [macOS]
-  RCTDimensions dimensions;
-  if (moduleRegistry) {
-    RCTAccessibilityManager *accessibilityManager =
-        (RCTAccessibilityManager *)[moduleRegistry moduleForName:"AccessibilityManager"];
-    dimensions = RCTGetDimensions(accessibilityManager ? accessibilityManager.multiplier : 1.0);
-  } else {
-    RCTAssert(false, @"ModuleRegistry must be set to properly init dimensions. Bridge exists: %d", bridge != nil);
-  }
+  RCTDimensions dimensions = RCTGetDimensions(fontScale);
 #else // [macOS
   RCTDimensions dimensions = RCTGetDimensions(rootView);
 #endif // macOS]
-
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
     @"width" : @(window.width),
@@ -142,6 +137,22 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
   return @{@"window" : dimsWindow, @"screen" : dimsScreen};
 }
 
+- (NSDictionary *)_exportedDimensions
+{
+  RCTAssert(!_invalidated, @"Failed to get exported dimensions: RCTDeviceInfo has been invalidated");
+  RCTAssert(_moduleRegistry, @"Failed to get exported dimensions: RCTModuleRegistry is nil");
+  RCTAccessibilityManager *accessibilityManager =
+      (RCTAccessibilityManager *)[_moduleRegistry moduleForName:"AccessibilityManager"];
+  RCTAssert(accessibilityManager, @"Failed to get exported dimensions: AccessibilityManager is nil");
+  CGFloat fontScale = accessibilityManager ? accessibilityManager.multiplier : 1.0;
+#if !TARGET_OS_OSX // [macOS]
+  return RCTExportedDimensions(fontScale);
+#else // [macOS
+  // TODO: Saad - get root view here
+  return RCTExportedDimensions(nil);
+#endif // macOS]
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return [self getConstants];
@@ -150,20 +161,15 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 - (NSDictionary<NSString *, id> *)getConstants
 {
   __block NSDictionary<NSString *, id> *constants;
-  RCTModuleRegistry *moduleRegistry = _moduleRegistry;
-  RCTBridge *bridge = _bridge;
+  __weak __typeof(self) weakSelf = self;
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
-#if !TARGET_OS_OSX // [macOS]
-      @"Dimensions" : RCTExportedDimensions(moduleRegistry, bridge),
-#else // [macOS
-      @"Dimensions": RCTExportedDimensions(nil, bridge),
-#endif // macOS]
+      @"Dimensions" : [weakSelf _exportedDimensions],
       // Note:
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
       // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
     };
   });
 
@@ -172,19 +178,14 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 
 - (void)didReceiveNewContentSizeMultiplier
 {
+  __weak __typeof(self) weakSelf = self;
   RCTModuleRegistry *moduleRegistry = _moduleRegistry;
-  RCTBridge *bridge = _bridge;
   RCTExecuteOnMainQueue(^{
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-#if !TARGET_OS_OSX // [macOS]
-                           body:RCTExportedDimensions(moduleRegistry, bridge)];
-#else // [macOS
-                           body:RCTExportedDimensions(nil, bridge)];
-#endif // macOS]
+    [[moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                         body:[weakSelf _exportedDimensions]];
 #pragma clang diagnostic pop
   });
 }
@@ -222,9 +223,8 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
   if ((isOrientationChanging || isResizingOrChangingToFullscreen) && RCTIsAppActive()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[_moduleRegistry moduleForName:"EventDispatcher"]
-        sendDeviceEventWithName:@"didUpdateDimensions"
-                           body:RCTExportedDimensions(_moduleRegistry, _bridge)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
+                                                                          body:[self _exportedDimensions]];
     // We only want to track the current _currentInterfaceOrientation and _isFullscreen only
     // when it happens and only when it is published.
     _currentInterfaceOrientation = nextOrientation;
@@ -232,6 +232,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 #pragma clang diagnostic pop
   }
 }
+#endif // [macOS]
 
 - (void)interfaceFrameDidChange
 {
@@ -243,7 +244,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 
 - (void)_interfaceFrameDidChange
 {
-  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_moduleRegistry, _bridge);
+  NSDictionary *nextInterfaceDimensions = [self _exportedDimensions];
 
   // update and publish the even only when the app is in active state
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && RCTIsAppActive()) {
@@ -257,7 +258,6 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge
 #pragma clang diagnostic pop
   }
 }
-#endif // [macOS]
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {

@@ -17,8 +17,7 @@
 #include <react/renderer/core/RawEvent.h>
 #include <react/renderer/core/StateUpdate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Event Queue synchronized with given Event Beat and dispatching event
@@ -35,20 +34,20 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given event.
    * Can be called on any thread.
    */
-  void enqueueEvent(RawEvent &&rawEvent) const;
+  void enqueueEvent(RawEvent&& rawEvent) const;
 
   /*
    * Enqueues and (probably later) dispatches a given event.
    * Deletes last RawEvent from the queue if it has the same type and target.
    * Can be called on any thread.
    */
-  void enqueueUniqueEvent(RawEvent &&rawEvent) const;
+  void enqueueUniqueEvent(RawEvent&& rawEvent) const;
 
   /*
    * Enqueues and (probably later) dispatch a given state update.
    * Can be called on any thread.
    */
-  void enqueueStateUpdate(StateUpdate &&stateUpdate) const;
+  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
 
  protected:
   /*
@@ -57,9 +56,9 @@ class EventQueue {
    * Default implementation does nothing.
    */
   virtual void onEnqueue() const = 0;
-  void onBeat(jsi::Runtime &runtime) const;
+  void onBeat(jsi::Runtime& runtime) const;
 
-  void flushEvents(jsi::Runtime &runtime) const;
+  void flushEvents(jsi::Runtime& runtime) const;
   void flushStateUpdates() const;
 
   EventQueueProcessor eventProcessor_;
@@ -72,5 +71,4 @@ class EventQueue {
   mutable bool hasContinuousEventStarted_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

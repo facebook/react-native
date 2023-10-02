@@ -1,9 +1,4 @@
 [ignore]
-; We fork some components by platform
-.*/*[.]android.js
-; [macOS]
-.*/*[.]macos.js
-
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
 
@@ -13,13 +8,10 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; [macOS] Ignore metro.config.js
-<PROJECT_ROOT>/metro.config.js
-
-; Flow doesn't support platforms
-.*/packages/react-native/Libraries/Utilities/LoadingView.js
-
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
+
+; Checked-in build output
+<PROJECT_ROOT>/packages/debugger-frontend/dist/
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -30,11 +22,12 @@
 .*/node_modules/.*
 
 [libs]
+flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
-packages/react-native/flow-typed/
 
 [options]
+experimental.global_find_ref=true
 enums=true
 
 emoji=true
@@ -45,12 +38,16 @@ format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
-module.file_ext=.ios.js
+
+experimental.multi_platform=true
+experimental.multi_platform.extensions=.ios
+experimental.multi_platform.extensions=.android
 
 munge_underscores=true
 
 module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/packages/react-native/index.js'
 module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native/\1'
+module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
 suppress_type=$FlowIssue
@@ -68,6 +65,7 @@ nonstrict-import=warn
 deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
+unused-promise=error
 
 [strict]
 deprecated-type
@@ -79,4 +77,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.202.0
+^0.216.1

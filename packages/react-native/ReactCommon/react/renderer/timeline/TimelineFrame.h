@@ -11,8 +11,7 @@
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents a reference to a commit from the past.
@@ -31,8 +30,8 @@ class TimelineFrame final {
   using List = std::vector<TimelineFrame>;
 
   TimelineFrame() = delete;
-  TimelineFrame(TimelineFrame const &timelineFrame) noexcept = default;
-  TimelineFrame &operator=(TimelineFrame const &other) noexcept = default;
+  TimelineFrame(const TimelineFrame& timelineFrame) noexcept = default;
+  TimelineFrame& operator=(const TimelineFrame& other) noexcept = default;
 
   int getIndex() const noexcept;
   TelemetryTimePoint getTimePoint() const noexcept;
@@ -42,5 +41,4 @@ class TimelineFrame final {
   TelemetryTimePoint timePoint_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

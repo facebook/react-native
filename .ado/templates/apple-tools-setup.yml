@@ -3,9 +3,5 @@ steps:
     inputs:
       versionSpec: '18.x'
 
-  - task: UseRubyVersion@0
-    inputs:
-      versionSpec: '>= 2.7'
-
   - script: 'brew bundle --file .ado/Brewfile'
     displayName: 'brew bundle'

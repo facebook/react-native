@@ -49,12 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *nativeId;
 
 /**
- * Provides access to `foregroundColor` prop of the component.
- * Must be used by subclasses only.
- */
-@property (nonatomic, strong, nullable) RCTUIColor *foregroundColor; // [macOS]
-
-/**
  * Returns the object - usually (sub)view - which represents this
  * component view in terms of accessibility.
  * All accessibility properties will be applied to this object.
@@ -73,11 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
  * The methods update the instance variables.
  */
-- (void)updateProps:(facebook::react::Props::Shared const &)props
-           oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;
-- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter NS_REQUIRES_SUPER;
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics NS_REQUIRES_SUPER;
+- (void)updateProps:(const facebook::react::Props::Shared &)props
+           oldProps:(const facebook::react::Props::Shared &)oldProps NS_REQUIRES_SUPER;
+- (void)updateEventEmitter:(const facebook::react::EventEmitter::Shared &)eventEmitter NS_REQUIRES_SUPER;
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics NS_REQUIRES_SUPER;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
 - (void)prepareForRecycle NS_REQUIRES_SUPER;
 

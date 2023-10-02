@@ -41,7 +41,7 @@ export default {
   title: 'SectionList onEndReached',
   name: 'SectionList-onEndReached',
   description: 'Test onEndReached behavior',
-  render: function (): React.Element<typeof SectionList_onEndReached> {
+  render: function (): React.MixedElement {
     return <SectionList_onEndReached />;
   },
 };

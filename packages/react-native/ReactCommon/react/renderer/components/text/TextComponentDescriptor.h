@@ -10,10 +10,8 @@
 #include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using TextComponentDescriptor = ConcreteComponentDescriptor<TextShadowNode>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

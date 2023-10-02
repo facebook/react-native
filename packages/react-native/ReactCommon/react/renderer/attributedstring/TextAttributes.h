@@ -13,6 +13,7 @@
 
 #include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -20,8 +21,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TextAttributes;
 
@@ -81,6 +81,7 @@ class TextAttributes : public DebugStringConvertible {
   // construction.
   std::optional<LayoutDirection> layoutDirection{};
   std::optional<AccessibilityRole> accessibilityRole{};
+  std::optional<Role> role{};
 
 #pragma mark - Operations
 
@@ -88,8 +89,8 @@ class TextAttributes : public DebugStringConvertible {
 
 #pragma mark - Operators
 
-  bool operator==(const TextAttributes &rhs) const;
-  bool operator!=(const TextAttributes &rhs) const;
+  bool operator==(const TextAttributes& rhs) const;
+  bool operator!=(const TextAttributes& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -98,15 +99,14 @@ class TextAttributes : public DebugStringConvertible {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 
 template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
-      const facebook::react::TextAttributes &textAttributes) const {
+      const facebook::react::TextAttributes& textAttributes) const {
     return folly::hash::hash_combine(
         0,
         textAttributes.foregroundColor,
@@ -133,7 +133,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
         textAttributes.layoutDirection,
-        textAttributes.accessibilityRole);
+        textAttributes.accessibilityRole,
+        textAttributes.role);
   }
 };
 } // namespace std

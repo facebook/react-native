@@ -10,17 +10,16 @@
 #include <folly/json.h>
 #include <stdexcept>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #define REQUEST_MODULE_IDS 0
 #define REQUEST_METHOD_IDS 1
 #define REQUEST_PARAMS 2
 #define REQUEST_CALLID 3
 
-static const char *errorPrefix = "Malformed calls from JS: ";
+static const char* errorPrefix = "Malformed calls from JS: ";
 
-std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
+std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
   if (jsonData.isNull()) {
     return {};
   }
@@ -35,9 +34,9 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
         folly::to<std::string>(errorPrefix, "size == ", jsonData.size()));
   }
 
-  auto &moduleIds = jsonData[REQUEST_MODULE_IDS];
-  auto &methodIds = jsonData[REQUEST_METHOD_IDS];
-  auto &params = jsonData[REQUEST_PARAMS];
+  auto& moduleIds = jsonData[REQUEST_MODULE_IDS];
+  auto& methodIds = jsonData[REQUEST_METHOD_IDS];
+  auto& params = jsonData[REQUEST_PARAMS];
   int callId = -1;
 
   if (!moduleIds.isArray() || !methodIds.isArray() || !params.isArray()) {
@@ -85,5 +84,4 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
   return methodCalls;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

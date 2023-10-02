@@ -14,8 +14,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/core/EventBeat.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventBeatManagerObserver {
  public:
@@ -30,7 +29,7 @@ class EventBeatManagerObserver {
 
 class EventBeatManager : public jni::HybridClass<EventBeatManager> {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/events/EventBeatManager;";
 
   static void registerNatives();
@@ -43,8 +42,8 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
    * `EventBeatManager` does not own/retain observers; observers must overlive
    * the manager or be properly removed before deallocation.
    */
-  void addObserver(EventBeatManagerObserver const &observer) const;
-  void removeObserver(EventBeatManagerObserver const &observer) const;
+  void addObserver(const EventBeatManagerObserver& observer) const;
+  void removeObserver(const EventBeatManagerObserver& observer) const;
 
  private:
   /*
@@ -54,7 +53,7 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject_;
 
-  mutable std::unordered_set<EventBeatManagerObserver const *>
+  mutable std::unordered_set<const EventBeatManagerObserver*>
       observers_{}; // Protected by `mutex_`
 
   mutable std::mutex mutex_;
@@ -63,5 +62,4 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
       jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

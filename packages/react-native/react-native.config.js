@@ -11,16 +11,27 @@
 
 const ios = require('@react-native-community/cli-platform-ios');
 const android = require('@react-native-community/cli-platform-android');
+const {
+  bundleCommand,
+  ramBundleCommand,
+  startCommand,
+} = require('@react-native/community-cli-plugin');
 
 // Remove commands so that react-native-macos can coexist with react-native in repos that depend on both.
-const path = require('path');
-const isReactNativeMacOS = path.basename(__dirname) === 'react-native-macos';
-const iosCommands = isReactNativeMacOS ? [] : ios.commands;
-const androidCommands = isReactNativeMacOS ? [] : android.commands;
-const macosCommands = [require('./local-cli/runMacOS/runMacOS')];
+// const path = require('path');
+const iosCommands = []; // [macOS]
+const androidCommands = []; // [macOS]
+const macosCommands = [require('./local-cli/runMacOS/runMacOS')]; // [macOS]
 
 module.exports = {
-  commands: [...iosCommands, ...androidCommands, ...macosCommands],
+  commands: [
+    ...iosCommands, // [macOS]
+    ...androidCommands, // [macOS]
+    ...macosCommands, // [macOS]
+    bundleCommand,
+    ramBundleCommand,
+    startCommand,
+  ],
   platforms: {
     ios: {
       projectConfig: ios.projectConfig,
@@ -62,21 +73,7 @@ module.exports = {
       },
       projectConfig: () => null,
       dependencyConfig: () => null,
-      npmPackageName: isReactNativeMacOS
-        ? 'react-native-macos'
-        : 'react-native',
-    },
-  },
-  /**
-   * Used when running RNTester (with React Native from source)
-   */
-  reactNativePath: '.',
-  project: {
-    ios: {
-      sourceDir: '../packages/rn-tester',
-    },
-    android: {
-      sourceDir: '../packages/rn-tester',
+      npmPackageName: 'react-native-macos', // [macOS]
     },
   },
 };

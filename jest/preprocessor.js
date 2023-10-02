@@ -12,25 +12,30 @@
 
 'use strict';
 
-const babelRegisterOnly = require('metro-babel-register');
+const metroBabelRegister = require('metro-babel-register');
+const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
 
-const {transformSync: babelTransformSync} = require('@babel/core');
+const {
+  transformSync: babelTransformSync,
+  transformFromAstSync: babelTransformFromAstSync,
+} = require('@babel/core');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = new RegExp(
-  [
-    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc.
-  ].join('|'),
-);
+// Files matching this pattern will be transformed with the Node JS Babel
+// transformer, rather than with the React Native Babel transformer. Scripts
+// intended to run through Node JS should be included here.
+const nodeFiles = /[\\/]metro(?:-[^/]*)[\\/]/;
 
-// Use metro-babel-register to build the Babel configuration we need for Node
-// files, but Jest takes care of hooking require so we don't actually register
-// Babel here.
-const nodeOptions = babelRegisterOnly.config([nodeFiles]);
+// Get Babel config from metro-babel-register, without registering a require
+// hook. This is used below to configure babelTransformSync under Jest.
+const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 
-const transformer = require('metro-react-native-babel-transformer');
+// Register Babel to allow the transformer itself to be loaded from source.
+require('../scripts/build/babel-register').registerForMonorepo();
+const transformer = require('@react-native/metro-babel-transformer');
+
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
     if (nodeFiles.test(file)) {
@@ -38,12 +43,12 @@ module.exports = {
       return babelTransformSync(src, {
         filename: file,
         sourceType: 'script',
-        ...nodeOptions,
+        ...nodeBabelOptions,
         ast: false,
       });
     }
 
-    const {ast} = transformer.transform({
+    let {ast} = transformer.transform({
       filename: file,
       options: {
         ast: true, // needed for open source (?) https://github.com/facebook/react-native/commit/f8d6b97140cffe8d18b2558f94570c8d1b410d5c#r28647044
@@ -51,7 +56,9 @@ module.exports = {
         enableBabelRuntime: false,
         experimentalImportSupport: false,
         globalPrefix: '',
+        hermesParser: true,
         hot: false,
+        // $FlowFixMe[incompatible-call] TODO: Remove when `inlineRequires` has been removed from metro-babel-transformer in OSS
         inlineRequires: true,
         minify: false,
         platform: '',
@@ -62,6 +69,17 @@ module.exports = {
       },
       src,
     });
+
+    const babelTransformResult = babelTransformFromAstSync(ast, src, {
+      ast: true,
+      retainLines: true,
+      plugins: [
+        // TODO(moti): Replace with require('metro-transform-plugins').inlineRequiresPlugin when available in OSS
+        require('babel-preset-fbjs/plugins/inline-requires'),
+      ],
+      sourceType: 'module',
+    });
+    ast = nullthrows(babelTransformResult.ast);
 
     return generate(
       ast,
@@ -79,9 +97,10 @@ module.exports = {
     );
   },
 
-  getCacheKey: (createCacheKeyFunction([
+  // $FlowFixMe[signature-verification-failure]
+  getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro-react-native-babel-transformer'),
+    require.resolve('@react-native/metro-babel-transformer'),
     require.resolve('@babel/core/package.json'),
-  ]) /*: any */),
+  ]),
 };

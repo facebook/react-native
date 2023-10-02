@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 import android.widget.EditText;
 import com.facebook.react.ReactRootView;
@@ -29,53 +30,39 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.mockito.MockedStatic;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests for TextInput. */
-@PrepareForTest({Arguments.class, ReactChoreographer.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T110934492
 public class TextInputTest {
 
-  @Rule public PowerMockRule rule = new PowerMockRule();
-
   private ArrayList<ChoreographerCompat.FrameCallback> mPendingChoreographerCallbacks;
+
+  private MockedStatic<Arguments> arguments;
+  private MockedStatic<ReactChoreographer> reactCoreographer;
 
   @Before
   public void setUp() {
-    PowerMockito.mockStatic(Arguments.class, ReactChoreographer.class);
+    arguments = mockStatic(Arguments.class);
+    arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
 
+    reactCoreographer = mockStatic(ReactChoreographer.class);
     ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
-    PowerMockito.when(Arguments.createMap())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyMap();
-              }
-            });
-    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
+    reactCoreographer
+        .when(ReactChoreographer::getInstance)
+        .thenAnswer(invocation -> choreographerMock);
 
     mPendingChoreographerCallbacks = new ArrayList<>();
     doAnswer(
-            new Answer() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                mPendingChoreographerCallbacks.add(
-                    (ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
-                return null;
-              }
+            invocation -> {
+              mPendingChoreographerCallbacks.add(
+                  (ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
+              return null;
             })
         .when(choreographerMock)
         .postFrameCallback(
@@ -87,7 +74,7 @@ public class TextInputTest {
   public void testPropsApplied() {
     UIManagerModule uiManager = getUIManagerModule();
 
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
     rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;
@@ -115,7 +102,7 @@ public class TextInputTest {
   public void testPropsUpdate() {
     UIManagerModule uiManager = getUIManagerModule();
 
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
     rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;

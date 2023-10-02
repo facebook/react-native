@@ -26,11 +26,7 @@ public class HermesExecutor extends JavaScriptExecutor {
       SoLoader.loadLibrary("hermes");
       SoLoader.loadLibrary("hermes_executor");
       // libhermes_executor is built differently for Debug & Release so we load the proper mode.
-      if (ReactBuildConfig.DEBUG == true) {
-        mode_ = "Debug";
-      } else {
-        mode_ = "Release";
-      }
+      mode_ = ReactBuildConfig.DEBUG ? "Debug" : "Release";
     }
   }
 
@@ -45,15 +41,6 @@ public class HermesExecutor extends JavaScriptExecutor {
   public String getName() {
     return "HermesExecutor" + mode_;
   }
-
-  /**
-   * Return whether this class can load a file at the given path, based on a binary compatibility
-   * check between the contents of the file and the Hermes VM.
-   *
-   * @param path the path containing the file to inspect.
-   * @return whether the given file is compatible with the Hermes VM.
-   */
-  public static native boolean canLoadFile(String path);
 
   private static native HybridData initHybridDefaultConfig(
       boolean enableDebugger, String debuggerName);

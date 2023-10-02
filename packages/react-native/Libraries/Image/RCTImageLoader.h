@@ -8,6 +8,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 #import <React/RCTImageCache.h>
 #import <React/RCTImageDataDecoder.h>
@@ -31,6 +32,12 @@
  * Instead use `[_bridge moduleForClass:[RCTImageLoader class]]`
  */
 @interface RCTBridge (RCTImageLoader)
+
+@property (nonatomic, readonly) RCTImageLoader *imageLoader;
+
+@end
+
+@interface RCTBridgeProxy (RCTImageLoader)
 
 @property (nonatomic, readonly) RCTImageLoader *imageLoader;
 

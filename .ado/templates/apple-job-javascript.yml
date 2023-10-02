@@ -21,14 +21,8 @@ steps:
     inputs:
       script: 'yarn test-ci'
   
-  - script: 'yarn flow-check-ios'
-    displayName: 'yarn flow-check-ios'
-
-  - script: 'yarn flow-check-macos'
-    displayName: 'yarn flow-check-macos'
-
-  - script: 'yarn flow-check-android'
-    displayName: 'yarn flow-check-android'
+  - script: 'yarn flow-check'
+    displayName: 'yarn flow-check'
 
   - script: 'yarn lint'
     displayName: 'yarn lint'

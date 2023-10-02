@@ -24,13 +24,12 @@
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-CoreComponentsRegistry::CoreComponentsRegistry(ComponentFactory *delegate)
+CoreComponentsRegistry::CoreComponentsRegistry(ComponentFactory* delegate)
     : delegate_(delegate) {}
 
-std::shared_ptr<ComponentDescriptorProviderRegistry const>
+std::shared_ptr<const ComponentDescriptorProviderRegistry>
 CoreComponentsRegistry::sharedProviderRegistry() {
   static auto providerRegistry =
       []() -> std::shared_ptr<ComponentDescriptorProviderRegistry> {
@@ -78,20 +77,19 @@ CoreComponentsRegistry::sharedProviderRegistry() {
 jni::local_ref<CoreComponentsRegistry::jhybriddata>
 CoreComponentsRegistry::initHybrid(
     jni::alias_ref<jclass>,
-    ComponentFactory *delegate) {
+    ComponentFactory* delegate) {
   auto instance = makeCxxInstance(delegate);
 
   // TODO T69453179: Codegen this file
   auto buildRegistryFunction =
-      [](EventDispatcher::Weak const &eventDispatcher,
-         ContextContainer::Shared const &contextContainer)
+      [](const EventDispatcher::Weak& eventDispatcher,
+         const ContextContainer::Shared& contextContainer)
       -> ComponentDescriptorRegistry::Shared {
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
-    auto mutableRegistry =
-        std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
-    mutableRegistry->setFallbackComponentDescriptor(
+    auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
+    mutableRegistry.setFallbackComponentDescriptor(
         std::make_shared<UnimplementedNativeViewComponentDescriptor>(
             ComponentDescriptorParameters{
                 eventDispatcher, contextContainer, nullptr}));
@@ -109,5 +107,4 @@ void CoreComponentsRegistry::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

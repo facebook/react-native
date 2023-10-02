@@ -17,8 +17,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
  public:
@@ -26,7 +25,7 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
   buildFactory();
 
   // Throws std::runtime_error on failure.
-  JSIndexedRAMBundle(const char *sourceURL);
+  JSIndexedRAMBundle(const char* sourceURL);
   JSIndexedRAMBundle(std::unique_ptr<const JSBigString> script);
 
   // Throws std::runtime_error on failure.
@@ -57,9 +56,9 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
 
   void init();
   std::string getModuleCode(const uint32_t id) const;
-  void readBundle(char *buffer, const std::streamsize bytes) const;
+  void readBundle(char* buffer, const std::streamsize bytes) const;
   void readBundle(
-      char *buffer,
+      char* buffer,
       const std::streamsize bytes,
       const std::istream::pos_type position) const;
 
@@ -69,5 +68,4 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
   std::unique_ptr<JSBigBufferString> m_startupCode;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

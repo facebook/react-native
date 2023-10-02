@@ -14,8 +14,7 @@
 #include <memory>
 #include <queue>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RuntimeScheduler final {
  public:
@@ -26,14 +25,14 @@ class RuntimeScheduler final {
   /*
    * Not copyable.
    */
-  RuntimeScheduler(RuntimeScheduler const &) = delete;
-  RuntimeScheduler &operator=(RuntimeScheduler const &) = delete;
+  RuntimeScheduler(const RuntimeScheduler&) = delete;
+  RuntimeScheduler& operator=(const RuntimeScheduler&) = delete;
 
   /*
    * Not movable.
    */
-  RuntimeScheduler(RuntimeScheduler &&) = delete;
-  RuntimeScheduler &operator=(RuntimeScheduler &&) = delete;
+  RuntimeScheduler(RuntimeScheduler&&) = delete;
+  RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
 
   void scheduleWork(RawCallback callback) const;
 
@@ -66,7 +65,7 @@ class RuntimeScheduler final {
    * Operates on JSI object.
    * Thread synchronization must be enforced externally.
    */
-  void cancelTask(Task &task) noexcept;
+  void cancelTask(Task& task) noexcept;
 
   /*
    * Return value indicates if host platform has a pending access to the
@@ -107,7 +106,7 @@ class RuntimeScheduler final {
    *
    * Thread synchronization must be enforced externally.
    */
-  void callExpiredTasks(jsi::Runtime &runtime);
+  void callExpiredTasks(jsi::Runtime& runtime);
 
  private:
   mutable std::priority_queue<
@@ -116,7 +115,7 @@ class RuntimeScheduler final {
       TaskPriorityComparer>
       taskQueue_;
 
-  RuntimeExecutor const runtimeExecutor_;
+  const RuntimeExecutor runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
   /*
@@ -126,13 +125,18 @@ class RuntimeScheduler final {
 
   mutable std::atomic_bool isSynchronous_{false};
 
-  void startWorkLoop(jsi::Runtime &runtime) const;
+  void startWorkLoop(jsi::Runtime& runtime) const;
 
   /*
    * Schedules a work loop unless it has been already scheduled
    * This is to avoid unnecessary calls to `runtimeExecutor`.
    */
   void scheduleWorkLoopIfNecessary() const;
+
+  void executeTask(
+      jsi::Runtime& runtime,
+      std::shared_ptr<Task> task,
+      bool didUserCallbackTimeout) const;
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -152,5 +156,4 @@ class RuntimeScheduler final {
   mutable std::atomic_bool isPerformingWork_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

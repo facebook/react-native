@@ -26,7 +26,7 @@ namespace facebook::react {
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
 void AndroidTextInputShadowNode::setContextContainer(
-    ContextContainer *contextContainer) {
+    ContextContainer* contextContainer) {
   ensureUnsealed();
   contextContainer_ = contextContainer;
 }
@@ -97,7 +97,7 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
     const {
-  auto const &state = getStateData();
+  const auto& state = getStateData();
 
   auto reactTreeAttributedString = getAttributedString();
 
@@ -118,7 +118,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto reactTreeAttributedString = getAttributedString();
-  auto const &state = getStateData();
+  const auto& state = getStateData();
 
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
@@ -131,14 +131,6 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
     return;
   }
-
-  // Store default TextAttributes in state.
-  // In the case where the TextInput is completely empty (no value, no
-  // defaultValue, no placeholder, no children) there are therefore no fragments
-  // in the AttributedString, and when State is updated, it needs some way to
-  // reconstruct a Fragment with default TextAttributes.
-  auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
-  defaultTextAttributes.apply(getConcreteProps().textAttributes);
 
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
@@ -156,8 +148,6 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       newAttributedString,
       reactTreeAttributedString,
       getConcreteProps().paragraphAttributes,
-      defaultTextAttributes,
-      ShadowView(*this),
       state.defaultThemePaddingStart,
       state.defaultThemePaddingEnd,
       state.defaultThemePaddingTop,
@@ -167,8 +157,8 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext& /*layoutContext*/,
+    const LayoutConstraints& layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
         ->measureCachedSpannableById(

@@ -9,8 +9,7 @@
 
 @class RCTBlobManager;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSI_EXPORT RCTBlobCollector : public jsi::HostObject {
  public:
@@ -24,5 +23,4 @@ class JSI_EXPORT RCTBlobCollector : public jsi::HostObject {
   RCTBlobManager *blobManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

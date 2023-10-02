@@ -235,6 +235,73 @@
 
 	self.frame = frame;
 #endif // macOS]
+
+  updateTransform(self);
+}
+
+#pragma mark - Transforms
+
+- (CATransform3D)reactTransform
+{
+  id obj = objc_getAssociatedObject(self, _cmd);
+  return obj != nil ? [obj CATransform3DValue] : CATransform3DIdentity;
+}
+
+- (void)setReactTransform:(CATransform3D)reactTransform
+{
+  objc_setAssociatedObject(self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  updateTransform(self);
+}
+
+- (RCTTransformOrigin)reactTransformOrigin
+{
+  id obj = objc_getAssociatedObject(self, _cmd);
+  if (obj != nil) {
+    RCTTransformOrigin transformOrigin;
+    [obj getValue:&transformOrigin];
+    return transformOrigin;
+  } else {
+    return (RCTTransformOrigin){(YGValue){50, YGUnitPercent}, (YGValue){50, YGUnitPercent}, 0};
+  }
+}
+
+- (void)setReactTransformOrigin:(RCTTransformOrigin)reactTransformOrigin
+{
+  id obj = [NSValue value:&reactTransformOrigin withObjCType:@encode(RCTTransformOrigin)];
+  objc_setAssociatedObject(self, @selector(reactTransformOrigin), obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  updateTransform(self);
+}
+
+static void updateTransform(RCTPlatformView *view) // [macOS]
+{
+  CGSize size = view.bounds.size;
+  RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
+
+  CGFloat anchorPointX = 0;
+  CGFloat anchorPointY = 0;
+  CGFloat anchorPointZ = 0;
+
+  if (transformOrigin.x.unit == YGUnitPoint) {
+    anchorPointX = transformOrigin.x.value - size.width * 0.5;
+  } else if (transformOrigin.x.unit == YGUnitPercent) {
+    anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+  }
+
+  if (transformOrigin.y.unit == YGUnitPoint) {
+    anchorPointY = transformOrigin.y.value - size.height * 0.5;
+  } else if (transformOrigin.y.unit == YGUnitPercent) {
+    anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
+  }
+
+  anchorPointZ = transformOrigin.z;
+
+  CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
+  transform = CATransform3DConcat(view.reactTransform, transform);
+  transform = CATransform3DTranslate(transform, -anchorPointX, -anchorPointY, -anchorPointZ);
+
+  view.layer.transform = transform;
+  // Enable edge antialiasing in rotation, skew, or perspective transforms
+  view.layer.allowsEdgeAntialiasing = transform.m12 != 0.0f || transform.m21 != 0.0f || transform.m34 != 0.0f;
 }
 
 - (UIViewController *)reactViewController
@@ -383,14 +450,36 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
       self, @selector(accessibilityLanguage), accessibilityLanguage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (NSString *)accessibilityRoleInternal // [macOS] renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+#if !TARGET_OS_OSX // [macOS]
+- (NSString *)accessibilityRole
+#else // [macOS renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+- (NSString *)accessibilityRoleInternal
+#endif // macOS]
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setAccessibilityRoleInternal:(NSString *)accessibilityRole // [macOS] renamed so it doesn't conflict with -[NSAccessibility setAccessibilityRole].
+#if !TARGET_OS_OSX // [macOS]
+- (void)setAccessibilityRole:(NSString *)accessibilityRole
+#else // [macOS renamed so it doesn't conflict with -[NSAccessibility accessibilityRole].
+- (void)setAccessibilityRoleInternal:(NSString *)accessibilityRole
+#endif // macOS]
 {
+#if !TARGET_OS_OSX // [macOS]
+  objc_setAssociatedObject(self, @selector(accessibilityRole), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+#else // [macOS
   objc_setAssociatedObject(self, @selector(accessibilityRoleInternal), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+#endif // macOS]
+}
+
+- (NSString *)role
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRole:(NSString *)role
+{
+  objc_setAssociatedObject(self, @selector(role), role, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSDictionary<NSString *, id> *)accessibilityState
@@ -413,14 +502,34 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
       self, @selector(accessibilityValueInternal), accessibilityValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-// [macOS
-#pragma mark - Hit testing
-#if TARGET_OS_OSX  
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+#if !TARGET_OS_OSX // [macOS]
+- (UIAccessibilityTraits)accessibilityRoleTraits
 {
-  return [self hitTest:point];
+  NSNumber *traitsAsNumber = objc_getAssociatedObject(self, _cmd);
+  return traitsAsNumber ? [traitsAsNumber unsignedLongLongValue] : UIAccessibilityTraitNone;
 }
-#endif // macOS]
+
+- (void)setAccessibilityRoleTraits:(UIAccessibilityTraits)accessibilityRoleTraits
+{
+  objc_setAssociatedObject(
+      self,
+      @selector(accessibilityRoleTraits),
+      [NSNumber numberWithUnsignedLongLong:accessibilityRoleTraits],
+      OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIAccessibilityTraits)roleTraits
+{
+  NSNumber *traitsAsNumber = objc_getAssociatedObject(self, _cmd);
+  return traitsAsNumber ? [traitsAsNumber unsignedLongLongValue] : UIAccessibilityTraitNone;
+}
+
+- (void)setRoleTraits:(UIAccessibilityTraits)roleTraits
+{
+  objc_setAssociatedObject(
+      self, @selector(roleTraits), [NSNumber numberWithUnsignedLongLong:roleTraits], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+#endif // [macOS]
 
 #pragma mark - Debug
 - (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
@@ -443,5 +552,14 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
   [self react_addRecursiveDescriptionToString:description atLevel:0];
   return description;
 }
+
+// [macOS
+#pragma mark - Hit testing
+#if TARGET_OS_OSX  
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  return [self hitTest:point];
+}
+#endif // macOS]
 
 @end

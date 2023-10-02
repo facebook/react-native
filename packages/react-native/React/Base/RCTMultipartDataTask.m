@@ -98,23 +98,17 @@
   [_data appendData:data];
 }
 
-#pragma clang diagnostic push // [macOS]
-#pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
                dataTask:(__unused NSURLSessionDataTask *)dataTask
     didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask
-#pragma clang diagnostic pop
 {
   [streamTask captureStreams];
 }
 
-#pragma clang diagnostic push // [macOS]
-#pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
               streamTask:(__unused NSURLSessionStreamTask *)streamTask
     didBecomeInputStream:(NSInputStream *)inputStream
             outputStream:(__unused NSOutputStream *)outputStream
-#pragma clang diagnostic pop
 {
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream
                                                                                   boundary:_boundary];

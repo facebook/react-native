@@ -31,6 +31,7 @@ export type SymbolicatedStackTrace = $ReadOnly<{
 
 async function symbolicateStackTrace(
   stack: Array<StackFrame>,
+  extraData?: mixed,
 ): Promise<SymbolicatedStackTrace> {
   const devServer = getDevServer();
   if (!devServer.bundleLoadedFromServer) {
@@ -41,7 +42,7 @@ async function symbolicateStackTrace(
   const fetch = global.fetch ?? require('../../Network/fetch');
   const response = await fetch(devServer.url + 'symbolicate', {
     method: 'POST',
-    body: JSON.stringify({stack}),
+    body: JSON.stringify({stack, extraData}),
   });
   return await response.json();
 }

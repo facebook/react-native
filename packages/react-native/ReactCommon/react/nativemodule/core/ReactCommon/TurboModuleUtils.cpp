@@ -7,10 +7,9 @@
 
 #include "TurboModuleUtils.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-static jsi::Value deepCopyJSIValue(jsi::Runtime &rt, const jsi::Value &value) {
+static jsi::Value deepCopyJSIValue(jsi::Runtime& rt, const jsi::Value& value) {
   if (value.isNull()) {
     return jsi::Value::null();
   }
@@ -41,7 +40,7 @@ static jsi::Value deepCopyJSIValue(jsi::Runtime &rt, const jsi::Value &value) {
   return jsi::Value::undefined();
 }
 
-jsi::Object deepCopyJSIObject(jsi::Runtime &rt, const jsi::Object &obj) {
+jsi::Object deepCopyJSIObject(jsi::Runtime& rt, const jsi::Object& obj) {
   jsi::Object copy(rt);
   jsi::Array propertyNames = obj.getPropertyNames(rt);
   size_t size = propertyNames.size(rt);
@@ -53,7 +52,7 @@ jsi::Object deepCopyJSIObject(jsi::Runtime &rt, const jsi::Object &obj) {
   return copy;
 }
 
-jsi::Array deepCopyJSIArray(jsi::Runtime &rt, const jsi::Array &arr) {
+jsi::Array deepCopyJSIArray(jsi::Runtime& rt, const jsi::Array& arr) {
   size_t size = arr.size(rt);
   jsi::Array copy(rt, size);
   for (size_t i = 0; i < size; i++) {
@@ -63,14 +62,14 @@ jsi::Array deepCopyJSIArray(jsi::Runtime &rt, const jsi::Array &arr) {
   return copy;
 }
 
-Promise::Promise(jsi::Runtime &rt, jsi::Function resolve, jsi::Function reject)
+Promise::Promise(jsi::Runtime& rt, jsi::Function resolve, jsi::Function reject)
     : runtime_(rt), resolve_(std::move(resolve)), reject_(std::move(reject)) {}
 
-void Promise::resolve(const jsi::Value &result) {
+void Promise::resolve(const jsi::Value& result) {
   resolve_.call(runtime_, result);
 }
 
-void Promise::reject(const std::string &message) {
+void Promise::reject(const std::string& message) {
   jsi::Object error(runtime_);
   error.setProperty(
       runtime_, "message", jsi::String::createFromUtf8(runtime_, message));
@@ -78,17 +77,17 @@ void Promise::reject(const std::string &message) {
 }
 
 jsi::Value createPromiseAsJSIValue(
-    jsi::Runtime &rt,
-    PromiseSetupFunctionType &&func) {
+    jsi::Runtime& rt,
+    PromiseSetupFunctionType&& func) {
   jsi::Function JSPromise = rt.global().getPropertyAsFunction(rt, "Promise");
   jsi::Function fn = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "fn"),
       2,
       [func = std::move(func)](
-          jsi::Runtime &rt2,
-          const jsi::Value &thisVal,
-          const jsi::Value *args,
+          jsi::Runtime& rt2,
+          const jsi::Value& thisVal,
+          const jsi::Value* args,
           size_t count) {
         jsi::Function resolve = args[0].getObject(rt2).getFunction(rt2);
         jsi::Function reject = args[1].getObject(rt2).getFunction(rt2);
@@ -101,5 +100,4 @@ jsi::Value createPromiseAsJSIValue(
   return JSPromise.callAsConstructor(rt, fn);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

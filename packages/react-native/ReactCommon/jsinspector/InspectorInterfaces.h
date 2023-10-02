@@ -24,8 +24,7 @@
 #endif // _MSC_VER
 #endif // !defined(JSINSPECTOR_EXPORT)
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class IDestructible {
  public:
@@ -64,8 +63,8 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
 
   /// addPage is called by the VM to add a page to the list of debuggable pages.
   virtual int addPage(
-      const std::string &title,
-      const std::string &vm,
+      const std::string& title,
+      const std::string& vm,
       ConnectFunc connectFunc) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
@@ -84,11 +83,10 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all
 /// debuggable pages in this process.
-extern IInspector &getInspectorInstance();
+extern IInspector& getInspectorInstance();
 
 /// makeTestInspectorInstance creates an independent inspector instance that
 /// should only be used in tests.
 extern std::unique_ptr<IInspector> makeTestInspectorInstance();
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

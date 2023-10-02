@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
@@ -21,4 +21,4 @@ add_library(react_bridging STATIC ${react_bridging_SRC})
 
 target_include_directories(react_bridging PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_bridging jsi)
+target_link_libraries(react_bridging jsi callinvoker)

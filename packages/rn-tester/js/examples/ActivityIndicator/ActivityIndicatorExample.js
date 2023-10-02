@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {Node} from 'React';
+import type {Node} from 'react';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
@@ -73,6 +73,8 @@ exports.examples = [
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
           color="white"
+          testID="default_activity_indicator"
+          accessibilityLabel="Wait for content to load!"
         />
       );
     },

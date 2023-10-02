@@ -13,8 +13,7 @@
 #include <jni.h>
 #include "OnLoad.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * This executor factory can only create a single executor instance because it
@@ -22,7 +21,7 @@ namespace react {
  */
 class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
  public:
-  ProxyExecutorOneTimeFactory(jni::global_ref<jobject> &&executorInstance)
+  ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance)
       : m_executor(std::move(executorInstance)) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
@@ -35,7 +34,7 @@ class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
 class ProxyExecutor : public JSExecutor {
  public:
   ProxyExecutor(
-      jni::global_ref<jobject> &&executorInstance,
+      jni::global_ref<jobject>&& executorInstance,
       std::shared_ptr<ExecutorDelegate> delegate);
   virtual ~ProxyExecutor() override;
   virtual void initializeRuntime() override;
@@ -44,15 +43,15 @@ class ProxyExecutor : public JSExecutor {
       std::string sourceURL) override;
   virtual void setBundleRegistry(
       std::unique_ptr<RAMBundleRegistry> bundle) override;
-  virtual void registerBundle(uint32_t bundleId, const std::string &bundlePath)
+  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
   virtual void callFunction(
-      const std::string &moduleId,
-      const std::string &methodId,
-      const folly::dynamic &arguments) override;
+      const std::string& moduleId,
+      const std::string& methodId,
+      const folly::dynamic& arguments) override;
   virtual void invokeCallback(
       const double callbackId,
-      const folly::dynamic &arguments) override;
+      const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue) override;
@@ -63,5 +62,4 @@ class ProxyExecutor : public JSExecutor {
   std::shared_ptr<ExecutorDelegate> m_delegate;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

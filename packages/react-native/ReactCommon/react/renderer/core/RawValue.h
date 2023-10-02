@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <butter/map.h>
+#include <unordered_map>
+
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -16,8 +17,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawPropsParser;
 
@@ -54,11 +54,11 @@ class RawValue {
   /*
    * Constructors.
    */
-  RawValue() noexcept : dynamic_(nullptr){};
+  RawValue() noexcept : dynamic_(nullptr) {}
 
-  RawValue(RawValue &&other) noexcept : dynamic_(std::move(other.dynamic_)) {}
+  RawValue(RawValue&& other) noexcept : dynamic_(std::move(other.dynamic_)) {}
 
-  RawValue &operator=(RawValue &&other) noexcept {
+  RawValue& operator=(RawValue&& other) noexcept {
     if (this != &other) {
       dynamic_ = std::move(other.dynamic_);
     }
@@ -73,18 +73,18 @@ class RawValue {
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.
    */
-  RawValue(const folly::dynamic &dynamic) noexcept : dynamic_(dynamic){};
+  RawValue(const folly::dynamic& dynamic) noexcept : dynamic_(dynamic) {}
 
-  RawValue(folly::dynamic &&dynamic) noexcept : dynamic_(std::move(dynamic)){};
+  RawValue(folly::dynamic&& dynamic) noexcept : dynamic_(std::move(dynamic)) {}
 
   /*
    * Copy constructor and copy assignment operator would be private and only for
    * internal use, but it's needed for user-code that does `auto val =
    * (butter::map<std::string, RawValue>)rawVal;`
    */
-  RawValue(RawValue const &other) noexcept : dynamic_(other.dynamic_) {}
+  RawValue(const RawValue& other) noexcept : dynamic_(other.dynamic_) {}
 
-  RawValue &operator=(const RawValue &other) noexcept {
+  RawValue& operator=(const RawValue& other) noexcept {
     if (this != &other) {
       dynamic_ = other.dynamic_;
     }
@@ -97,7 +97,7 @@ class RawValue {
    */
   template <typename T>
   explicit operator T() const {
-    return castValue(dynamic_, (T *)nullptr);
+    return castValue(dynamic_, (T*)nullptr);
   }
 
   inline explicit operator folly::dynamic() const noexcept {
@@ -109,8 +109,8 @@ class RawValue {
    */
   template <typename T>
   bool hasType() const noexcept {
-    return checkValueType(dynamic_, (T *)nullptr);
-  };
+    return checkValueType(dynamic_, (T*)nullptr);
+  }
 
   /*
    * Checks if the stored value is *not* `null`.
@@ -123,57 +123,57 @@ class RawValue {
   folly::dynamic dynamic_;
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      RawValue *type) noexcept {
+      const folly::dynamic& dynamic,
+      RawValue* type) noexcept {
     return true;
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      bool *type) noexcept {
+      const folly::dynamic& dynamic,
+      bool* type) noexcept {
     return dynamic.isBool();
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      int *type) noexcept {
+      const folly::dynamic& dynamic,
+      int* type) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      int64_t *type) noexcept {
+      const folly::dynamic& dynamic,
+      int64_t* type) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      float *type) noexcept {
+      const folly::dynamic& dynamic,
+      float* type) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      double *type) noexcept {
+      const folly::dynamic& dynamic,
+      double* type) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      std::string *type) noexcept {
+      const folly::dynamic& dynamic,
+      std::string* type) noexcept {
     return dynamic.isString();
   }
 
   template <typename T>
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      std::vector<T> *type) noexcept {
+      const folly::dynamic& dynamic,
+      std::vector<T>* type) noexcept {
     if (!dynamic.isArray()) {
       return false;
     }
 
-    for (const auto &item : dynamic) {
-      if (!checkValueType(item, (T *)nullptr)) {
+    for (const auto& item : dynamic) {
+      if (!checkValueType(item, (T*)nullptr)) {
         return false;
       }
 
@@ -186,15 +186,15 @@ class RawValue {
 
   template <typename T>
   static bool checkValueType(
-      const folly::dynamic &dynamic,
-      butter::map<std::string, T> *type) noexcept {
+      const folly::dynamic& dynamic,
+      std::unordered_map<std::string, T>* type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
 
-    for (const auto &item : dynamic.items()) {
+    for (const auto& item : dynamic.items()) {
       react_native_assert(item.first.isString());
-      if (!checkValueType(item.second, (T *)nullptr)) {
+      if (!checkValueType(item.second, (T*)nullptr)) {
         return false;
       }
 
@@ -207,76 +207,75 @@ class RawValue {
 
   // Casts
   static RawValue castValue(
-      const folly::dynamic &dynamic,
-      RawValue *type) noexcept {
+      const folly::dynamic& dynamic,
+      RawValue* type) noexcept {
     return RawValue(dynamic);
   }
 
-  static bool castValue(const folly::dynamic &dynamic, bool *type) {
+  static bool castValue(const folly::dynamic& dynamic, bool* type) {
     return dynamic.getBool();
   }
 
-  static int castValue(const folly::dynamic &dynamic, int *type) {
+  static int castValue(const folly::dynamic& dynamic, int* type) {
     return static_cast<int>(dynamic.asInt());
   }
 
-  static int64_t castValue(const folly::dynamic &dynamic, int64_t *type) {
+  static int64_t castValue(const folly::dynamic& dynamic, int64_t* type) {
     return dynamic.asInt();
   }
 
-  static float castValue(const folly::dynamic &dynamic, float *type) {
+  static float castValue(const folly::dynamic& dynamic, float* type) {
     return static_cast<float>(dynamic.asDouble());
   }
 
-  static double castValue(const folly::dynamic &dynamic, double *type) {
+  static double castValue(const folly::dynamic& dynamic, double* type) {
     return dynamic.asDouble();
   }
 
   static std::string castValue(
-      const folly::dynamic &dynamic,
-      std::string *type) {
+      const folly::dynamic& dynamic,
+      std::string* type) {
     return dynamic.getString();
   }
 
   template <typename T>
   static std::vector<T> castValue(
-      const folly::dynamic &dynamic,
-      std::vector<T> *type) {
+      const folly::dynamic& dynamic,
+      std::vector<T>* type) {
     react_native_assert(dynamic.isArray());
     auto result = std::vector<T>{};
     result.reserve(dynamic.size());
-    for (const auto &item : dynamic) {
-      result.push_back(castValue(item, (T *)nullptr));
+    for (const auto& item : dynamic) {
+      result.push_back(castValue(item, (T*)nullptr));
     }
     return result;
   }
 
   template <typename T>
   static std::vector<std::vector<T>> castValue(
-      const folly::dynamic &dynamic,
-      std::vector<std::vector<T>> *type) {
+      const folly::dynamic& dynamic,
+      std::vector<std::vector<T>>* type) {
     react_native_assert(dynamic.isArray());
     auto result = std::vector<std::vector<T>>{};
     result.reserve(dynamic.size());
-    for (const auto &item : dynamic) {
-      result.push_back(castValue(item, (std::vector<T> *)nullptr));
+    for (const auto& item : dynamic) {
+      result.push_back(castValue(item, (std::vector<T>*)nullptr));
     }
     return result;
   }
 
   template <typename T>
-  static butter::map<std::string, T> castValue(
-      const folly::dynamic &dynamic,
-      butter::map<std::string, T> *type) {
+  static std::unordered_map<std::string, T> castValue(
+      const folly::dynamic& dynamic,
+      std::unordered_map<std::string, T>* type) {
     react_native_assert(dynamic.isObject());
-    auto result = butter::map<std::string, T>{};
-    for (const auto &item : dynamic.items()) {
+    auto result = std::unordered_map<std::string, T>{};
+    for (const auto& item : dynamic.items()) {
       react_native_assert(item.first.isString());
-      result[item.first.getString()] = castValue(item.second, (T *)nullptr);
+      result[item.first.getString()] = castValue(item.second, (T*)nullptr);
     }
     return result;
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

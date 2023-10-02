@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
+#import <React/RCTConstants.h>
 #import <React/RCTLog.h>
 
 // Time to wait for an expected log statement to show before failing the test
@@ -31,15 +32,10 @@ const int64_t LOGGER_TIMEOUT = 10 * NSEC_PER_SEC;
 {
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
-    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
-    if (bundlePrefix == nil) { // [macOS There's a convoluted crash if the bundler prefix is null, meaning
-                               // the RN_BUNDLE_PREFIX wasn't set. New platforms won't have this set and don't need it
-                               // to run, so default to a reasonable fallback.
-      bundlePrefix = @"";
-    } // macOS]
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
-    scriptURL =
-        [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true",
+                                                                app,
+                                                                RCTPlatformName]];
   } else {
     scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }

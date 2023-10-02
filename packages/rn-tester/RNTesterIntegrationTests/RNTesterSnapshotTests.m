@@ -21,12 +21,12 @@
 - (void)setUp
 {
 #if !TARGET_OS_OSX // [macOS]
-  _runner = RCTInitRunnerForApp(@"js/RNTesterApp.ios", nil, nil);
+  _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.ios", nil, nil);
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = [NSString stringWithFormat:@"-iOS%d", UIDevice.currentDevice.systemVersion.intValue];
   }
 #else // [macOS
-  _runner = RCTInitRunnerForApp(@"js/RNTesterApp.macos", nil, nil);
+  _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.macos", nil, nil);
 #endif // macOS]
 
   // To update snapshots, set recordMode to YES and re-run RNTesterSnapshotTests.
@@ -40,12 +40,12 @@
     [_runner runTest:_cmd module:@ #name]; \
   }
 
-#if !TARGET_OS_OSX // [macOS] Github #1739: Disable these failing tests
+/* [macOS] Github #1739: These tests are disabled upstream in `scripts/objc-test.sh`
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ScrollViewExample)
 RCT_TEST(TextExample)
-#endif // [macOS]
+macOS] */
 
 - (void)testZZZNotInRecordMode
 {

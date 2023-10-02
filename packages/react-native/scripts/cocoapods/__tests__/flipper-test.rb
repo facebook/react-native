@@ -22,7 +22,7 @@ class FlipperTests < Test::Unit::TestCase
 
         # Assert
         assert_equal($podInvocationCount, 1)
-        assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../" )
+        assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../")
     end
 
     # ======================= #
@@ -77,12 +77,8 @@ class FlipperTests < Test::Unit::TestCase
         flipper_post_install(installer)
 
         # Assert
-        yoga_target = installer.target_with_name("YogaKit")
-        yoga_target.build_configurations.each do |config|
-            assert_equal(config.build_settings['SWIFT_VERSION'], '4.1')
-        end
 
-        reactCore_target = installer.target_with_name("React-Core")
+        reactCore_target = installer.target_with_name("React-RCTAppDelegate")
         reactCore_target.build_configurations.each do |config|
             if config.name == 'Debug' || config.name == 'CustomConfig' then
                 assert_equal(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'], ['$(inherited)', 'FB_SONARKIT_ENABLED=1'])
@@ -130,7 +126,7 @@ class FlipperTests < Test::Unit::TestCase
         return InstallerMock.new(
             PodsProjectMock.new([
                     TargetMock.new(
-                        "YogaKit",
+                        "React-Core",
                         [
                             BuildConfigurationMock.new("Debug", is_debug: true),
                             BuildConfigurationMock.new("Release", is_debug: false),
@@ -138,7 +134,7 @@ class FlipperTests < Test::Unit::TestCase
                         ]
                     ),
                     TargetMock.new(
-                        "React-Core",
+                        "React-RCTAppDelegate",
                         [
                             BuildConfigurationMock.new("Debug", is_debug: true),
                             BuildConfigurationMock.new("Release", is_debug: false),

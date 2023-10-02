@@ -11,8 +11,7 @@
 #include <react/renderer/timeline/TimelineFrame.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Timeline;
 
@@ -23,10 +22,10 @@ class TimelineHandler final {
   /*
    * Movable, not copyable.
    */
-  TimelineHandler(TimelineHandler &&other) noexcept;
-  TimelineHandler(TimelineHandler const &timelineHandler) = delete;
-  TimelineHandler &operator=(TimelineHandler &&other) noexcept;
-  TimelineHandler &operator=(TimelineHandler const &other) = delete;
+  TimelineHandler(TimelineHandler&& other) noexcept;
+  TimelineHandler(const TimelineHandler& timelineHandler) = delete;
+  TimelineHandler& operator=(TimelineHandler&& other) noexcept;
+  TimelineHandler& operator=(const TimelineHandler& other) = delete;
 
   /*
    * Stops (or resumes) mounting of new commits.
@@ -45,7 +44,7 @@ class TimelineHandler final {
   /*
    * Rewinds the UI to a given frame.
    */
-  void rewind(TimelineFrame const &frame) const noexcept;
+  void rewind(const TimelineFrame& frame) const noexcept;
 
   /*
    * Rewinds the UI for a given number of frames back or forward.
@@ -58,7 +57,7 @@ class TimelineHandler final {
   /*
    * Can only be constructed by `TimelineController`.
    */
-  TimelineHandler(Timeline const &timeline) noexcept;
+  TimelineHandler(const Timeline& timeline) noexcept;
 
   /*
    * Must be called before deallocation to make it not crash.
@@ -73,8 +72,7 @@ class TimelineHandler final {
 
   void ensureNotEmpty() const noexcept;
 
-  Timeline const *timeline_{};
+  const Timeline* timeline_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

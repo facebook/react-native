@@ -13,14 +13,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RCTImageResponseObserverProxy final : public ImageResponseObserver {
  public:
   RCTImageResponseObserverProxy(id<RCTImageResponseDelegate> delegate = nil);
 
-  void didReceiveImage(ImageResponse const &imageResponse) const override;
+  void didReceiveImage(const ImageResponse& imageResponse) const override;
   void didReceiveProgress(float progress) const override;
   void didReceiveFailure() const override;
 
@@ -28,7 +27,6 @@ class RCTImageResponseObserverProxy final : public ImageResponseObserver {
   __weak id<RCTImageResponseDelegate> delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

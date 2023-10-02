@@ -1346,6 +1346,15 @@ RCT_EXPORT_METHOD(queryCache
 
 @end
 
+@implementation RCTBridgeProxy (RCTImageLoader)
+
+- (RCTImageLoader *)imageLoader
+{
+  return [self moduleForClass:[RCTImageLoader class]];
+}
+
+@end
+
 Class RCTImageLoaderCls(void)
 {
   return RCTImageLoader.class;

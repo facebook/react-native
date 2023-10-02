@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <jsi/jsi.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum JSErrorHandlerKey : uint16_t {
   kFrameFileName = 0,
@@ -29,11 +30,10 @@ class JsErrorHandler {
   JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
   ~JsErrorHandler();
 
-  void handleJsError(const jsi::JSError &error, bool isFatal);
+  void handleJsError(const jsi::JSError& error, bool isFatal);
 
  private:
   JsErrorHandlingFunc _jsErrorHandlingFunc;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

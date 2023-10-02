@@ -10,7 +10,8 @@
 
 'use strict';
 
-import {isPublicInstance as isFabricPublicInstance} from '../Renderer/public/ReactFabricPublicInstanceUtils';
+import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
+import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
@@ -45,6 +46,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     () => new AnimatedProps(props, () => onUpdateRef.current?.()),
     [props],
   );
+  const useNativePropsInFabric =
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -66,13 +69,15 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);
 
-      // NOTE: This callback is only used by the JavaScript animation driver.
+      // NOTE: When using the JS animation driver, this callback is called on
+      // every animation frame. When using the native driver, this callback is
+      // called when the animation completes.
       onUpdateRef.current = () => {
         if (
           process.env.NODE_ENV === 'test' ||
           typeof instance !== 'object' ||
           typeof instance?.setNativeProps !== 'function' ||
-          isFabricInstance(instance)
+          (isFabricInstance(instance) && !useNativePropsInFabric)
         ) {
           // Schedule an update for this component to update `reducedProps`,
           // but do not compute it immediately. If a parent also updated, we
@@ -82,12 +87,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
-        } else {
-          throw new Error(
-            'Attempting to run JS driven animation on animated node ' +
-              'that has been moved to "native" earlier by starting an ' +
-              'animation with `useNativeDriver: true`',
-          );
         }
       };
 
@@ -110,7 +109,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [props, node],
+    [props, node, useNativePropsInFabric],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 

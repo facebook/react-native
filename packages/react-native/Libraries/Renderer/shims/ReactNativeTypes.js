@@ -6,9 +6,8 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<265b342f0d29323bebb711ba0bc882ec>>
- *
- * This file was sync'd from the facebook/react repository.
+ * @nolint
+ * @generated SignedSource<<652b117c94307244bcf5e4af18928903>>
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
@@ -98,7 +97,23 @@ export type PartialViewConfig = $ReadOnly<{
   validAttributes?: PartialAttributeConfiguration,
 }>;
 
-export type NativeMethods = $ReadOnly<{
+/**
+ * Current usages should migrate to this definition
+ */
+export interface INativeMethods {
+  blur(): void;
+  focus(): void;
+  measure(callback: MeasureOnSuccessCallback): void;
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
+  measureLayout(
+    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void,
+  ): void;
+  setNativeProps(nativeProps: {...}): void;
+}
+
+export type NativeMethods = $ReadOnly<{|
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
@@ -109,7 +124,11 @@ export type NativeMethods = $ReadOnly<{
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: {...}): void,
-}>;
+|}>;
+
+// This validates that INativeMethods and NativeMethods stay in sync using Flow!
+declare var ensureNativeMethodsAreSynced: NativeMethods;
+(ensureNativeMethodsAreSynced: INativeMethods);
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
 
@@ -195,6 +214,11 @@ export type ReactNativeType = {
   ...
 };
 
+export opaque type Node = mixed;
+export opaque type InternalInstanceHandle = mixed;
+type PublicInstance = mixed;
+type PublicTextInstance = mixed;
+
 export type ReactFabricType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
@@ -218,18 +242,12 @@ export type ReactFabricType = {
     concurrentRoot: ?boolean,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
-  ...
-};
-
-export type ReactNativeEventTarget = {
-  node: {...},
-  canonical: {
-    _nativeTag: number,
-    viewConfig: ViewConfig,
-    currentProps: {...},
-    _internalInstanceHandle: {...},
-    ...
-  },
+  getNodeFromInternalInstanceHandle(
+    internalInstanceHandle: InternalInstanceHandle,
+  ): ?Node,
+  getPublicInstanceFromInternalInstanceHandle(
+    internalInstanceHandle: InternalInstanceHandle,
+  ): PublicInstance | PublicTextInstance,
   ...
 };
 

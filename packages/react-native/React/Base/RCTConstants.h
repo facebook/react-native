@@ -7,8 +7,12 @@
 
 #import <React/RCTDefines.h>
 
+RCT_EXTERN NSString *const RCTPlatformName;
+
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotification;
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey;
+
+RCT_EXTERN NSString *const RCTRootViewFrameDidChangeNotification;
 
 /**
  * This notification fires when the bridge initializes.
@@ -39,25 +43,6 @@ RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
  */
 RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
-/**
- * This notification fires each time a module is setup after it is initialized. The
- * `RCTDidSetupModuleNotificationModuleNameKey` key will contain a reference to the module name and
- * `RCTDidSetupModuleNotificationSetupTimeKey` will contain the setup time in ms.
- */
-RCT_EXTERN NSString *const RCTDidSetupModuleNotification;
-
-/**
- * Key for the module name (NSString) in the
- * RCTDidSetupModuleNotification userInfo dictionary.
- */
-RCT_EXTERN NSString *const RCTDidSetupModuleNotificationModuleNameKey;
-
-/**
- * Key for the setup time (NSNumber) in the
- * RCTDidSetupModuleNotification userInfo dictionary.
- */
-RCT_EXTERN NSString *const RCTDidSetupModuleNotificationSetupTimeKey;
-
 /*
  * W3C Pointer Events
  */
@@ -73,7 +58,7 @@ RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
 /*
  * Memory Pressure Unloading Level
  */
-RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
+RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
 
 /*
@@ -81,3 +66,9 @@ RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
  */
 RCT_EXTERN BOOL RCTGetParseUnhandledJSErrorStackNatively(void);
 RCT_EXTERN void RCTSetParseUnhandledJSErrorStackNatively(BOOL value);
+
+/*
+ * Use native view configs in bridgeless mode
+ */
+RCT_EXTERN BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void);
+RCT_EXTERN void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value);

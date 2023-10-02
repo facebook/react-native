@@ -7,8 +7,7 @@
 
 #include "JRuntimeExecutor.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JRuntimeExecutor::JRuntimeExecutor(RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(runtimeExecutor) {}
@@ -17,5 +16,4 @@ RuntimeExecutor JRuntimeExecutor::get() {
   return runtimeExecutor_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -89,6 +89,9 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.IMPORTANT_FOR_ACCESSIBILITY:
         mViewManager.setImportantForAccessibility(view, (String) value);
         break;
+      case ViewProps.ROLE:
+        mViewManager.setRole(view, (String) value);
+        break;
       case ViewProps.NATIVE_ID:
         mViewManager.setNativeId(view, (String) value);
         break;
@@ -117,6 +120,9 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         break;
       case ViewProps.TRANSFORM:
         mViewManager.setTransform(view, (ReadableArray) value);
+        break;
+      case ViewProps.TRANSFORM_ORIGIN:
+        mViewManager.setTransformOrigin(view, (ReadableArray) value);
         break;
       case ViewProps.TRANSLATE_X:
         mViewManager.setTranslateX(view, value == null ? 0.0f : ((Double) value).floatValue());

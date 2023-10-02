@@ -9,16 +9,23 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB rrc_view_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB rrc_view_SRC CONFIGURE_DEPENDS
+        *.cpp
+        platform/android/react/renderer/components/view/*.cpp)
+
 add_library(rrc_view SHARED ${rrc_view_SRC})
 
-target_include_directories(rrc_view PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(rrc_view
+        PUBLIC
+          ${REACT_COMMON_DIR}
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+)
 
 target_link_libraries(rrc_view
         folly_runtime

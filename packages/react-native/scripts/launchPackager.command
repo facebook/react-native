@@ -4,6 +4,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# [macOS] Keep this file around to help Azure Pipelines run tests
+
 # Set terminal title
 echo -en "\\033]0;Metro\\a"
 clear

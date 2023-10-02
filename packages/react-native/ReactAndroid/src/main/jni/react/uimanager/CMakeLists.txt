@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++17 -Wall -DLOG_TAG=\"ReactNative\")
+add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
 
 file(GLOB uimanagerjni_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(uimanagerjni SHARED ${uimanagerjni_SRC})
@@ -19,6 +19,7 @@ target_link_libraries(uimanagerjni
         folly_runtime
         glog
         glog_init
+        bridgelessnativeviewconfig
         rrc_native
         yoga
         callinvokerholder

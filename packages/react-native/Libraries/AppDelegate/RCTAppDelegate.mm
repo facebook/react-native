@@ -6,34 +6,59 @@
  */
 
 #import "RCTAppDelegate.h"
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTRootView.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppSetupUtils.h"
+#import "RCTLegacyInteropComponents.h"
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
-#import <React/RCTCxxBridgeDelegate.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTComponentViewFactory.h>
+#import <React/RCTComponentViewProtocol.h>
+#import <React/RCTFabricSurface.h>
 #import <React/RCTLegacyViewManagerInteropComponentView.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTContextContainerHandling.h>
+#if USE_HERMES
+#import <ReactCommon/RCTHermesInstance.h>
+#else
+#import <ReactCommon/RCTJscInstance.h>
+#endif
+#import <ReactCommon/RCTHost+Internal.h>
+#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import "RCTLegacyInteropComponents.h"
+#import <react/runtime/JSEngineInstance.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
+@interface RCTAppDelegate () <
+    RCTTurboModuleManagerDelegate,
+    RCTComponentViewFactoryComponentProvider,
+    RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
-  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 @end
 
 #endif
 
-@implementation RCTAppDelegate
+@interface RCTAppDelegate () <RCTCxxBridgeDelegate> {
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
+}
+@end
+
+@implementation RCTAppDelegate {
+#if RCT_NEW_ARCH_ENABLED
+  RCTHost *_reactHost;
+#endif
+}
 
 #if RCT_NEW_ARCH_ENABLED
 - (instancetype)init
@@ -57,39 +82,60 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     NSDictionary *launchOptions = [notification userInfo];
 #endif // macOS]
   BOOL enableTM = NO;
+  BOOL enableBridgeless = NO;
 #if RCT_NEW_ARCH_ENABLED
   enableTM = self.turboModuleEnabled;
+  enableBridgeless = self.bridgelessEnabled;
 #endif
+
   RCTAppSetupPrepareApp(application, enableTM);
 
-  if (!self.bridge) {
-    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
-  }
+  RCTPlatformView *rootView; // [macOS]
+
+  if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
-  self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                               contextContainer:_contextContainer];
-  self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
+    [self createReactHost];
+    [self unstable_registerLegacyComponents];
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName
+                                                      initialProperties:launchOptions];
 
-  [self unstable_registerLegacyComponents];
+    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
+        initWithSurface:surface
+        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+
+    rootView = (RCTRootView *)surfaceHostingProxyRootView;
 #endif
+  } else {
+    if (!self.bridge) {
+      self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
+    }
+#if RCT_NEW_ARCH_ENABLED
+    self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                                 contextContainer:_contextContainer];
+    self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-  NSDictionary *initProps = [self prepareInitialProps];
-  RCTPlatformView *rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps]; // [macOS]
-
-#if !TARGET_OS_OSX // [macOS
+    [self unstable_registerLegacyComponents];
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+#endif
+    NSDictionary *initProps = [self prepareInitialProps];
+    rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
+  }
+#if !TARGET_OS_OSX // [macOS]
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
-  rootViewController.view = rootView;
+  [self setRootView:rootView toRootViewController:rootViewController];
   self.window.rootViewController = rootViewController;
+  self.window.windowScene.delegate = self;
   [self.window makeKeyAndVisible];
 
   return YES;
 #else // [macOS
   NSRect frame = NSMakeRect(0,0,1024,768);
   self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
-                                            styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
-                                              backing:NSBackingStoreBuffered
-                                                defer:NO];
+											styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
+											  backing:NSBackingStoreBuffered
+												defer:NO];
   self.window.title = self.moduleName;
   self.window.autorecalculatesKeyViewLoop = YES;
   NSViewController *rootViewController = [NSViewController new];
@@ -135,12 +181,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   enableFabric = self.fabricEnabled;
 #endif
   RCTPlatformView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric); // [macOS]
+
 #if !TARGET_OS_OSX // [macOS]
-  if (@available(iOS 13.0, *)) {
-    rootView.backgroundColor = [UIColor systemBackgroundColor];
-  } else {
-    rootView.backgroundColor = [UIColor whiteColor];
-  }
+  rootView.backgroundColor = [UIColor systemBackgroundColor];
 #else // [macOS
   rootView.layer.backgroundColor = [[NSColor windowBackgroundColor] CGColor];
 #endif // macOS]
@@ -160,21 +203,48 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 #endif // macOS]
 
-#if RCT_NEW_ARCH_ENABLED
+- (void)setRootView:(RCTPlatformView *)rootView toRootViewController:(UIViewController *)rootViewController // [macOS]
+{
+  rootViewController.view = rootView;
+}
+
+- (BOOL)runtimeSchedulerEnabled
+{
+  return YES;
+}
+
+#pragma mark - UISceneDelegate
+#if !TARGET_OS_OSX // [macOS]
+- (void)windowScene:(UIWindowScene *)windowScene
+    didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
+        interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
+             traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0))
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
+}
+#endif // [macOS]
+
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  _runtimeScheduler = _runtimeScheduler =
-      std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
+  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
+#if RCT_NEW_ARCH_ENABLED
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  self.turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, _turboModuleManager, _runtimeScheduler);
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
+#else
+  return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
+#endif
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#if RCT_NEW_ARCH_ENABLED
+
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -199,6 +269,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
 }
 
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{};
+}
+
 #pragma mark - New Arch Enabled settings
 
 - (BOOL)turboModuleEnabled
@@ -211,6 +288,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return YES;
 }
 
+- (BOOL)bridgelessEnabled
+{
+  return NO;
+}
+
 #pragma mark - New Arch Utilities
 
 - (void)unstable_registerLegacyComponents
@@ -218,6 +300,43 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   for (NSString *legacyComponent in [RCTLegacyInteropComponents legacyInteropComponents]) {
     [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:legacyComponent];
   }
+}
+
+- (void)createReactHost
+{
+  __weak __typeof(self) weakSelf = self;
+  _reactHost = [[RCTHost alloc] initWithBundleURL:[self getBundleURL]
+                                     hostDelegate:nil
+                       turboModuleManagerDelegate:self
+                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
+                                   return [weakSelf createJSEngineInstance];
+                                 }];
+  [_reactHost setBundleURLProvider:^NSURL *() {
+    return [weakSelf getBundleURL];
+  }];
+  [_reactHost setContextContainerHandler:self];
+  [_reactHost start];
+}
+
+- (std::shared_ptr<facebook::react::JSEngineInstance>)createJSEngineInstance
+{
+#if USE_HERMES
+  return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
+#else
+  return std::make_shared<facebook::react::RCTJscInstance>();
+#endif
+}
+
+- (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer
+{
+  contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+}
+
+- (NSURL *)getBundleURL
+{
+  [NSException raise:@"RCTAppDelegate::getBundleURL not implemented"
+              format:@"Subclasses must implement a valid getBundleURL method"];
+  return nullptr;
 }
 
 #endif

@@ -1027,21 +1027,17 @@ describe('Native Animated', () => {
       }).start();
       jest.runAllTimers();
 
-      Animated.timing(opacity, {
-        toValue: 4,
-        duration: 500,
-        useNativeDriver: false,
-      }).start();
-      try {
-        process.env.NODE_ENV = 'development';
-        expect(jest.runAllTimers).toThrow(
-          'Attempting to run JS driven animation on animated node that has ' +
-            'been moved to "native" earlier by starting an animation with ' +
-            '`useNativeDriver: true`',
-        );
-      } finally {
-        process.env.NODE_ENV = 'test';
-      }
+      expect(
+        Animated.timing(opacity, {
+          toValue: 4,
+          duration: 500,
+          useNativeDriver: false,
+        }).start,
+      ).toThrow(
+        'Attempting to run JS driven animation on animated node that has ' +
+          'been moved to "native" earlier by starting an animation with ' +
+          '`useNativeDriver: true`',
+      );
     });
 
     it('fails for unsupported styles', () => {

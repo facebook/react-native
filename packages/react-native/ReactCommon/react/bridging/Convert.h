@@ -33,6 +33,14 @@ struct is_optional<std::optional<T>> : std::true_type {};
 template <typename T>
 inline constexpr bool is_optional_v = is_optional<T>::value;
 
+template <typename T, typename = void>
+inline constexpr bool is_optional_jsi_v = false;
+
+template <typename T>
+inline constexpr bool
+    is_optional_jsi_v<T, typename std::enable_if_t<is_optional_v<T>>> =
+        is_jsi_v<typename T::value_type>;
+
 template <typename T>
 struct Converter;
 
@@ -40,7 +48,7 @@ template <typename T>
 struct ConverterBase {
   using BaseT = remove_cvref_t<T>;
 
-  ConverterBase(jsi::Runtime &rt, T &&value)
+  ConverterBase(jsi::Runtime& rt, T&& value)
       : rt_(rt), value_(std::forward<T>(value)) {}
 
   operator BaseT() && {
@@ -81,7 +89,7 @@ struct ConverterBase {
   operator U() && = delete; // Prevent unwanted upcasting of JSI values.
 
  protected:
-  jsi::Runtime &rt_;
+  jsi::Runtime& rt_;
   T value_;
 };
 
@@ -126,7 +134,7 @@ struct Converter<jsi::Object> : public ConverterBase<jsi::Object> {
 
 template <typename T>
 struct Converter<std::optional<T>> : public ConverterBase<jsi::Value> {
-  Converter(jsi::Runtime &rt, std::optional<T> value)
+  Converter(jsi::Runtime& rt, std::optional<T> value)
       : ConverterBase(rt, value ? std::move(*value) : jsi::Value::null()) {}
 
   operator std::optional<T>() && {
@@ -138,24 +146,24 @@ struct Converter<std::optional<T>> : public ConverterBase<jsi::Value> {
 };
 
 template <typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
-auto convert(jsi::Runtime &rt, T &&value) {
+auto convert(jsi::Runtime& rt, T&& value) {
   return Converter<T>(rt, std::forward<T>(value));
 }
 
 template <
     typename T,
     std::enable_if_t<is_jsi_v<T> || std::is_scalar_v<T>, int> = 0>
-auto convert(jsi::Runtime &rt, std::optional<T> value) {
+auto convert(jsi::Runtime& rt, std::optional<T> value) {
   return Converter<std::optional<T>>(rt, std::move(value));
 }
 
 template <typename T, std::enable_if_t<std::is_scalar_v<T>, int> = 0>
-auto convert(jsi::Runtime &rt, T &&value) {
+auto convert(jsi::Runtime& rt, T&& value) {
   return value;
 }
 
 template <typename T>
-auto convert(jsi::Runtime &rt, Converter<T> &&converter) {
+auto convert(jsi::Runtime& rt, Converter<T>&& converter) {
   return std::move(converter);
 }
 

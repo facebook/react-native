@@ -41,6 +41,22 @@ TEST(TransformTest, scalingRect) {
   EXPECT_EQ(transformedRect.size.height, 200);
 }
 
+TEST(TransformTest, scalingRectWithDifferentCenter) {
+  auto point = facebook::react::Point{100, 200};
+  auto size = facebook::react::Size{300, 400};
+  auto rect = facebook::react::Rect{point, size};
+
+  auto center = facebook::react::Point{0, 0};
+
+  auto transformedRect =
+      Transform::Scale(0.5, 0.5, 1).applyWithCenter(rect, center);
+
+  EXPECT_EQ(transformedRect.origin.x, 50);
+  EXPECT_EQ(transformedRect.origin.y, 100);
+  EXPECT_EQ(transformedRect.size.width, 150);
+  EXPECT_EQ(transformedRect.size.height, 200);
+}
+
 TEST(TransformTest, invertingSize) {
   auto size = facebook::react::Size{300, 400};
   auto transformedSize = size * Transform::VerticalInversion();

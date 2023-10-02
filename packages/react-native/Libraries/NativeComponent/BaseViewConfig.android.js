@@ -103,6 +103,12 @@ const bubblingEventTypes = {
       bubbled: 'onPointerOver',
     },
   },
+  topClick: {
+    phasedRegistrationNames: {
+      captured: 'onClickCapture',
+      bubbled: 'onClick',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -135,9 +141,6 @@ const directEventTypes = {
   topMomentumScrollEnd: {
     registrationName: 'onMomentumScrollEnd',
   },
-  topClick: {
-    registrationName: 'onClick',
-  },
   topLoadingStart: {
     registrationName: 'onLoadingStart',
   },
@@ -162,6 +165,7 @@ const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
+  transformOrigin: true,
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
@@ -179,6 +183,7 @@ const validAttributesForNonEventProps = {
   accessibilityActions: true,
   accessibilityValue: true,
   importantForAccessibility: true,
+  role: true,
   rotation: true,
   scaleX: true,
   scaleY: true,
@@ -269,6 +274,8 @@ const validAttributesForNonEventProps = {
   position: true,
 
   style: ReactNativeStyleAttributes,
+
+  experimental_layoutConformance: true,
 };
 
 // Props for bubbling and direct events

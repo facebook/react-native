@@ -11,6 +11,7 @@
 import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
 import NativeBlobModule from './NativeBlobModule';
+import {fromByteArray} from 'base64-js';
 import invariant from 'invariant';
 
 const Blob = require('./Blob');
@@ -59,22 +60,20 @@ class BlobManager {
    * Create blob from existing array of blobs.
    */
   static createFromParts(
-    parts: Array<Blob | string>,
+    parts: Array<$ArrayBufferView | ArrayBuffer | Blob | string>,
     options?: BlobOptions,
   ): Blob {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
 
     const blobId = uuidv4();
     const items = parts.map(part => {
-      if (
-        part instanceof ArrayBuffer ||
-        (global.ArrayBufferView && part instanceof global.ArrayBufferView)
-      ) {
-        throw new Error(
-          "Creating blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported",
-        );
-      }
-      if (part instanceof Blob) {
+      if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
+        return {
+          // $FlowFixMe[incompatible-cast]
+          data: fromByteArray(new Uint8Array((part: ArrayBuffer))),
+          type: 'string',
+        };
+      } else if (part instanceof Blob) {
         return {
           data: part.data,
           type: 'blob',

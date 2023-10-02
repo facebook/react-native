@@ -11,21 +11,19 @@
 
 #include <react/renderer/core/StateData.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowNodeFamily;
-using SharedShadowNodeFamily = std::shared_ptr<ShadowNodeFamily const>;
+using SharedShadowNodeFamily = std::shared_ptr<const ShadowNodeFamily>;
 
 class StateUpdate {
  public:
   using Callback =
-      std::function<StateData::Shared(StateData::Shared const &data)>;
+      std::function<StateData::Shared(const StateData::Shared& data)>;
   using FailureCallback = std::function<void()>;
 
   SharedShadowNodeFamily family;
   Callback callback;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

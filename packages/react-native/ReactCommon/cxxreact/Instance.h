@@ -23,8 +23,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSBigString;
 class JSExecutorFactory;
@@ -58,10 +57,10 @@ class RN_EXPORT Instance {
       bool loadSynchronously);
   void loadRAMBundleFromString(
       std::unique_ptr<const JSBigString> script,
-      const std::string &sourceURL);
+      const std::string& sourceURL);
   void loadRAMBundleFromFile(
-      const std::string &sourcePath,
-      const std::string &sourceURL,
+      const std::string& sourcePath,
+      const std::string& sourceURL,
       bool loadSynchronously);
   void loadRAMBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
@@ -72,20 +71,20 @@ class RN_EXPORT Instance {
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue);
-  void *getJavaScriptContext();
+  void* getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
   void callJSFunction(
-      std::string &&module,
-      std::string &&method,
-      folly::dynamic &&params);
-  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+      std::string&& module,
+      std::string&& method,
+      folly::dynamic&& params);
+  void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
 
   // This method is experimental, and may be modified or removed.
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
-  const ModuleRegistry &getModuleRegistry() const;
-  ModuleRegistry &getModuleRegistry();
+  const ModuleRegistry& getModuleRegistry() const;
+  ModuleRegistry& getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
 
@@ -102,10 +101,10 @@ class RN_EXPORT Instance {
   std::shared_ptr<CallInvoker> getJSCallInvoker();
 
   /**
-   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeMethodCallInvoker is used by TurboModules to schedule work on the
    * NativeModule thread(s).
    *
-   * Why is the bridge decorating native CallInvoker?
+   * Why is the bridge decorating NativeMethodCallInvoker?
    *
    * - The bridge must be informed of all TurboModule async method calls. Why?
    *   When all queued NativeModule method calls are flushed by a call from
@@ -117,16 +116,16 @@ class RN_EXPORT Instance {
    *   since the last time the bridge was flushed. If this number is non-zero,
    *   we fire onBatchComplete.
    *
-   * Why can't we just create and return a new native CallInvoker?
+   * Why can't we just create and return a new NativeMethodCallInvoker?
    *
    * - On Android, we have one NativeModule thread. That thread is created and
    *   managed outside of NativeToJsBridge. On iOS, we have one MethodQueue per
    *   module. Those MethodQueues are also created and managed outside of
-   *   NativeToJsBridge. Therefore, we need to pass in a CallInvoker that
-   *   schedules work on the respective thread.
+   *   NativeToJsBridge. Therefore, we need to pass in a
+   * NativeMethodCallInvoker that schedules work on the respective thread.
    */
-  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
-      std::shared_ptr<CallInvoker> nativeInvoker);
+  std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
+      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker);
 
   /**
    * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
@@ -134,7 +133,7 @@ class RN_EXPORT Instance {
   RuntimeExecutor getRuntimeExecutor();
 
  private:
-  void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
+  void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
   void loadBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
       std::unique_ptr<const JSBigString> startupScript,
@@ -159,18 +158,17 @@ class RN_EXPORT Instance {
     bool m_shouldBuffer = true;
     std::list<std::function<void()>> m_workBuffer;
 
-    void scheduleAsync(std::function<void()> &&work);
+    void scheduleAsync(std::function<void()>&& work);
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()> &&work) override;
-    void invokeSync(std::function<void()> &&work) override;
+    void invokeAsync(std::function<void()>&& work) override;
+    void invokeSync(std::function<void()>&& work) override;
   };
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -30,6 +30,9 @@ typedef enum UITextSpellCheckingType : NSInteger {
 + (UITextAutocorrectionType)UITextAutocorrectionType:(nullable id)json;
 + (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
 + (RCTTextTransform)RCTTextTransform:(nullable id)json;
+#if !TARGET_OS_OSX // [macOS]
++ (UITextSmartInsertDeleteType)UITextSmartInsertDeleteType:(nullable id)json;
+#endif // [macOS]
 
 @end
 

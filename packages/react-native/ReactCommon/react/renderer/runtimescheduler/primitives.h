@@ -7,22 +7,20 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <jsi/jsi.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/runtimescheduler/Task.h>
+#include <react/utils/CoreFeatures.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct TaskWrapper : public jsi::HostObject {
-  TaskWrapper(std::shared_ptr<Task> const &task) : task(task) {}
+  TaskWrapper(const std::shared_ptr<Task>& task) : task(task) {}
 
   std::shared_ptr<Task> task;
 };
 
 inline static jsi::Value valueFromTask(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::shared_ptr<Task> task) {
   if (CoreFeatures::useNativeState) {
     jsi::Object obj(runtime);
@@ -35,8 +33,8 @@ inline static jsi::Value valueFromTask(
 }
 
 inline static std::shared_ptr<Task> taskFromValue(
-    jsi::Runtime &runtime,
-    jsi::Value const &value) {
+    jsi::Runtime& runtime,
+    const jsi::Value& value) {
   if (value.isNull()) {
     return nullptr;
   }
@@ -48,5 +46,4 @@ inline static std::shared_ptr<Task> taskFromValue(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

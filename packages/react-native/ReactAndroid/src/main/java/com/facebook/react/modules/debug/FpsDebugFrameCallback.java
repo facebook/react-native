@@ -63,7 +63,6 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   private final UIManagerModule mUIManagerModule;
   private final DidJSUpdateUiDuringFrameDetector mDidJSUpdateUiDuringFrameDetector;
 
-  private boolean mShouldStop = false;
   private long mFirstFrameTime = -1;
   private long mLastFrameTime = -1;
   private int mNumFrameCallbacks = 0;
@@ -82,10 +81,6 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   @Override
   public void doFrame(long l) {
-    if (mShouldStop) {
-      return;
-    }
-
     if (mFirstFrameTime == -1) {
       mFirstFrameTime = l;
     }
@@ -124,7 +119,6 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   }
 
   public void start() {
-    mShouldStop = false;
     mReactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
@@ -147,11 +141,19 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   }
 
   public void stop() {
-    mShouldStop = true;
     mReactContext
         .getCatalystInstance()
         .removeBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
+    final FpsDebugFrameCallback fpsDebugFrameCallback = this;
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mChoreographer = ChoreographerCompat.getInstance();
+            mChoreographer.removeFrameCallback(fpsDebugFrameCallback);
+          }
+        });
   }
 
   public double getFPS() {

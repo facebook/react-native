@@ -12,6 +12,11 @@
 'use strict';
 
 const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../error-utils');
+
+const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfModuleInterfaceIsMisnamed,
@@ -28,6 +33,10 @@ const {
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
+  throwIfTypeAliasIsNotInterface,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -846,6 +855,188 @@ describe('throwIfMoreThanOneCodegenNativecommands', () => {
     ];
     expect(() => {
       throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfConfigNotfound', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).toThrowError('Could not find component config for native component');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfMoreThanOneConfig', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName1',
+        componentName: 'testComponentName1',
+      },
+      {
+        propsTypeName: 'testPropsTypeName2',
+        componentName: 'testComponentName2',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).toThrowError('Only one component is supported per file');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfEventHasNoName', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
+  it('throws an error if typeAnnotation of event have no name in Flow', () => {
+    const typeAnnotation = {};
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, flowParser);
+    }).toThrowError(`typeAnnotation of event doesn't have a name`);
+  });
+
+  it('does not throw an error if typeAnnotation of event have a name in Flow', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'BubblingEventHandler',
+      },
+    };
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, flowParser);
+    }).not.toThrow();
+  });
+
+  it('throws an error if typeAnnotation of event have no name in TypeScript', () => {
+    const typeAnnotation = {};
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, typescriptParser);
+    }).toThrowError(`typeAnnotation of event doesn't have a name`);
+  });
+
+  it('does not throw an error if typeAnnotation of event have a name in TypeScript', () => {
+    const typeAnnotation = {
+      typeName: {
+        name: 'BubblingEventHandler',
+      },
+    };
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, typescriptParser);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfBubblingTypeIsNull', () => {
+  it('throw an error if unable to determine event bubbling type', () => {
+    const bubblingType = null;
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfBubblingTypeIsNull(bubblingType, eventName);
+    }).toThrowError(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  });
+
+  it('does not throw an error if able to determine event bubbling type', () => {
+    const bubblingType = 'direct';
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfBubblingTypeIsNull(bubblingType, eventName);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfArgumentPropsAreNull', () => {
+  it('throws an error if unable to determine event arguments', () => {
+    const argumentProps = null;
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfArgumentPropsAreNull(argumentProps, eventName);
+    }).toThrowError(`Unable to determine event arguments for "${eventName}"`);
+  });
+
+  it('does not throw an error if able to determine event arguments', () => {
+    const argumentProps = [{}];
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfArgumentPropsAreNull(argumentProps, eventName);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfTypeAliasIsNotInterface', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
+  it('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
+    const typeAlias = {
+      type: '',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
+    }).toThrowError(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  });
+
+  it('does not throw an error if type argument for codegenNativeCommands is an interface in Flow', () => {
+    const typeAlias = {
+      type: 'InterfaceDeclaration',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
+    }).not.toThrow();
+  });
+
+  it('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
+    const typeAlias = {
+      type: '',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
+    }).toThrowError(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  });
+
+  it('does not throw an error if type argument for codegenNativeCommands is an interface in Typescript', () => {
+    const typeAlias = {
+      type: 'TSInterfaceDeclaration',
+    };
+    expect(() => {
+      throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
     }).not.toThrow();
   });
 });

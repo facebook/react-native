@@ -13,15 +13,15 @@
 
 namespace facebook::react {
 
-static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
+static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode& shadowNode) {
   auto layoutableShadowNode =
-      traitCast<LayoutableShadowNode const *>(&shadowNode);
+      traitCast<const LayoutableShadowNode*>(&shadowNode);
   return layoutableShadowNode != nullptr
       ? layoutableShadowNode->getLayoutMetrics()
       : EmptyLayoutMetrics;
 }
 
-ShadowView::ShadowView(const ShadowNode &shadowNode)
+ShadowView::ShadowView(const ShadowNode& shadowNode)
     : componentName(shadowNode.getComponentName()),
       componentHandle(shadowNode.getComponentHandle()),
       surfaceId(shadowNode.getSurfaceId()),
@@ -32,7 +32,7 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
       state(shadowNode.getState()) {}
 
-bool ShadowView::operator==(const ShadowView &rhs) const {
+bool ShadowView::operator==(const ShadowView& rhs) const {
   return std::tie(
              this->surfaceId,
              this->tag,
@@ -51,18 +51,18 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              rhs.state);
 }
 
-bool ShadowView::operator!=(const ShadowView &rhs) const {
+bool ShadowView::operator!=(const ShadowView& rhs) const {
   return !(*this == rhs);
 }
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(ShadowView const &object) {
+std::string getDebugName(const ShadowView& object) {
   return object.componentHandle == 0 ? "Invalid" : object.componentName;
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    ShadowView const &object,
+    const ShadowView& object,
     DebugStringConvertibleOptions options) {
   return {
       {"surfaceId", getDebugDescription(object.surfaceId, options)},
@@ -78,21 +78,21 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-bool ShadowViewNodePair::operator==(const ShadowViewNodePair &rhs) const {
+bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
   return this->shadowNode == rhs.shadowNode;
 }
 
-bool ShadowViewNodePair::operator!=(const ShadowViewNodePair &rhs) const {
+bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
   return !(*this == rhs);
 }
 
 bool ShadowViewNodePairLegacy::operator==(
-    const ShadowViewNodePairLegacy &rhs) const {
+    const ShadowViewNodePairLegacy& rhs) const {
   return this->shadowNode == rhs.shadowNode;
 }
 
 bool ShadowViewNodePairLegacy::operator!=(
-    const ShadowViewNodePairLegacy &rhs) const {
+    const ShadowViewNodePairLegacy& rhs) const {
   return !(*this == rhs);
 }
 

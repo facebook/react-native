@@ -9,6 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 
 extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; // posted when multiplier is changed
 
@@ -31,6 +32,12 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 @end
 
 @interface RCTBridge (RCTAccessibilityManager)
+
+@property (nonatomic, readonly) RCTAccessibilityManager *accessibilityManager;
+
+@end
+
+@interface RCTBridgeProxy (RCTAccessibilityManager)
 
 @property (nonatomic, readonly) RCTAccessibilityManager *accessibilityManager;
 

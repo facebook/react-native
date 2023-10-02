@@ -60,10 +60,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<SwitchComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(_props);
-  const auto &newSwitchProps = *std::static_pointer_cast<const SwitchProps>(props);
+  const auto &oldSwitchProps = static_cast<const SwitchProps &>(*_props);
+  const auto &newSwitchProps = static_cast<const SwitchProps &>(*props);
 
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
@@ -99,13 +99,13 @@ using namespace facebook::react;
 
 - (void)onChange:(RCTUISwitch *)sender // [macOS]
 {
-  const auto &props = *std::static_pointer_cast<const SwitchProps>(_props);
+  const auto &props = static_cast<const SwitchProps &>(*_props);
   if (props.value == sender.on) {
     return;
   }
 
-  std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
-      ->onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
+  static_cast<const SwitchEventEmitter &>(*_eventEmitter)
+      .onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
 }
 
 #pragma mark - Native Commands

@@ -44,12 +44,26 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
               | [number | AnimatedNode, number | AnimatedNode]
               | AnimatedNode,
           |}
-        | {|+skewX: string|}
-        | {|+skewY: string|}
+        | {|+skewX: string | AnimatedNode|}
+        | {|+skewY: string | AnimatedNode|}
         // TODO: what is the actual type it expects?
         | {|
             +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
           |},
       >
+    | string,
+  /**
+   * `transformOrigin` accepts an array with 3 elements - each element either being
+   * a number, or a string of a number ending with `%`. The last element cannot be
+   * a percentage, so must be a number.
+   *
+   * E.g. transformOrigin: ['30%', '80%', 15]
+   *
+   * Alternatively accepts a string of the CSS syntax. You must use `%` or `px`.
+   *
+   * E.g. transformOrigin: '30% 80% 15px'
+   */
+  transformOrigin?:
+    | [string | number, string | number, string | number]
     | string,
 |}>;

@@ -62,23 +62,28 @@ function PointerEventPrimaryTouchPointerTestCase(
         expectedOrder[Object.keys(detected_events).length];
       detected_events[pointerEventIdentifier] = true;
 
-      harness.test(({assert_equals}) => {
-        assert_equals(
-          boxLabel,
-          expectedBoxLabel,
-          'event should be coming from the correct box',
-        );
-        assert_equals(
-          eventType,
-          expectedEventType.toLowerCase(),
-          'event should have the right type',
-        );
-        assert_equals(
-          isPrimary,
-          expectedIsPrimary,
-          'event should be correctly primary',
-        );
-      }, `${expectedBoxLabel} box's ${expectedEventType} should${!expectedIsPrimary ? ' not' : ''} be marked as the primary pointer`);
+      harness.test(
+        ({assert_equals}) => {
+          assert_equals(
+            boxLabel,
+            expectedBoxLabel,
+            'event should be coming from the correct box',
+          );
+          assert_equals(
+            eventType,
+            expectedEventType.toLowerCase(),
+            'event should have the right type',
+          );
+          assert_equals(
+            isPrimary,
+            expectedIsPrimary,
+            'event should be correctly primary',
+          );
+        },
+        `${expectedBoxLabel} box's ${expectedEventType} should${
+          !expectedIsPrimary ? ' not' : ''
+        } be marked as the primary pointer`,
+      );
     },
     [harness],
   );

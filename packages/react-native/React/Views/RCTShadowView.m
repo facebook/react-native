@@ -55,7 +55,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
     float pixelsInPoint = 1; // Use 1x alignment for macOS until we can use backing resolution
 #endif // macOS]
     YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
-    YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
+    YGConfigSetErrata(yogaConfig, YGErrataAll);
   });
   return yogaConfig;
 }
@@ -65,7 +65,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 // YogaNode API
 
-static void RCTPrint(YGNodeRef node)
+static void RCTPrint(YGNodeConstRef node)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
   printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
@@ -393,7 +393,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return self.reactTag;
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   NSString *description = super.description;
@@ -404,7 +403,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
                               NSStringFromCGRect(self.layoutMetrics.frame)];
   return description;
 }
-#endif // macOS]
 
 - (void)addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {
@@ -580,7 +578,7 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 // IntrinsicContentSize
 
 static inline YGSize
-RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+RCTShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
 

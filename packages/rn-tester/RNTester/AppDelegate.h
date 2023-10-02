@@ -5,22 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <RCTAppDelegate.h>
 #import <React/RCTUIKit.h> // [macOS]
 
-@class RCTBridge;
-
-#if !TARGET_OS_OSX // [macOS]
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-#else // [macOS
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-#endif // macOS]
-
-#if !TARGET_OS_OSX // [macOS]
-@property (nonatomic, strong) UIWindow *window;
-#else // [macOS
-@property (nonatomic, strong) NSWindow *window;
-#endif // macOS]
-
-@property (nonatomic, readonly) RCTBridge *bridge;
+@interface AppDelegate : RCTAppDelegate
 
 @end

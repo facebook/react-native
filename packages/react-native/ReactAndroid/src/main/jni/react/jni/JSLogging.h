@@ -10,13 +10,11 @@
 #include <android/log.h>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void reactAndroidLoggingHook(
-    const std::string &message,
+    const std::string& message,
     android_LogPriority logLevel);
-void reactAndroidLoggingHook(const std::string &message, unsigned int logLevel);
+void reactAndroidLoggingHook(const std::string& message, unsigned int logLevel);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h> // [macOS]
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridgeProxy.h>
 
 /**
  * The threshold at which text inputs will start warning that the JS thread
@@ -128,6 +129,12 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
 @end
 
 @interface RCTBridge (RCTEventDispatcher)
+
+- (id<RCTEventDispatcherProtocol>)eventDispatcher;
+
+@end
+
+@interface RCTBridgeProxy (RCTEventDispatcher)
 
 - (id<RCTEventDispatcherProtocol>)eventDispatcher;
 

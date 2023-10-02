@@ -16,8 +16,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -47,14 +46,14 @@ constexpr MapBuffer::Key CORNER_START_END = 11;
 constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    std::optional<Float> const &value) {
+    const std::optional<Float>& value) {
   builder.putDouble(key, value.value_or(NAN));
 }
 
 inline std::optional<Float> optionalFromValue(
-    std::optional<BorderCurve> const &value) {
+    const std::optional<BorderCurve>& value) {
   if (!value) {
     return {};
   }
@@ -63,12 +62,12 @@ inline std::optional<Float> optionalFromValue(
 }
 
 inline std::optional<Float> optionalFromValue(
-    std::optional<Float> const &value) {
+    const std::optional<Float>& value) {
   return value;
 }
 
 inline std::optional<Float> optionalFromValue(
-    std::optional<BorderStyle> const &value) {
+    const std::optional<BorderStyle>& value) {
   if (!value) {
     return {};
   }
@@ -90,13 +89,13 @@ inline std::optional<Float> optionalFromValue(
 }
 
 inline void putOptionalColor(
-    MapBufferBuilder &builder,
+    MapBufferBuilder& builder,
     MapBuffer::Key key,
-    std::optional<SharedColor> const &color) {
+    const std::optional<SharedColor>& color) {
   builder.putInt(key, color.has_value() ? toAndroidRepr(color.value()) : -1);
 }
 
-inline MapBuffer convertBorderColors(CascadedBorderColors const &colors) {
+inline MapBuffer convertBorderColors(const CascadedBorderColors& colors) {
   MapBufferBuilder builder(7);
   putOptionalColor(builder, EDGE_TOP, colors.top);
   putOptionalColor(builder, EDGE_RIGHT, colors.right);
@@ -109,7 +108,7 @@ inline MapBuffer convertBorderColors(CascadedBorderColors const &colors) {
 }
 
 template <typename T>
-MapBuffer convertCascadedEdges(CascadedRectangleEdges<T> const &edges) {
+MapBuffer convertCascadedEdges(const CascadedRectangleEdges<T>& edges) {
   MapBufferBuilder builder(10);
   putOptionalFloat(builder, EDGE_TOP, optionalFromValue(edges.top));
   putOptionalFloat(builder, EDGE_RIGHT, optionalFromValue(edges.right));
@@ -126,7 +125,7 @@ MapBuffer convertCascadedEdges(CascadedRectangleEdges<T> const &edges) {
 }
 
 template <typename T>
-MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
+MapBuffer convertCascadedCorners(const CascadedRectangleCorners<T>& corners) {
   MapBufferBuilder builder(13);
   putOptionalFloat(
       builder, CORNER_TOP_LEFT, optionalFromValue(corners.topLeft));
@@ -154,7 +153,7 @@ MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
   return builder.build();
 }
 
-inline MapBuffer convertEdgeInsets(EdgeInsets const &insets) {
+inline MapBuffer convertEdgeInsets(const EdgeInsets& insets) {
   MapBufferBuilder builder(4);
   builder.putDouble(EDGE_TOP, insets.top);
   builder.putDouble(EDGE_RIGHT, insets.right);
@@ -172,12 +171,12 @@ constexpr MapBuffer::Key NATIVE_DRAWABLE_BORDERLESS = 3;
 constexpr MapBuffer::Key NATIVE_DRAWABLE_RIPPLE_RADIUS = 4;
 
 inline MapBuffer convertNativeBackground(
-    std::optional<NativeDrawable> const &value) {
+    const std::optional<NativeDrawable>& value) {
   if (!value.has_value()) {
     return MapBufferBuilder::EMPTY();
   }
 
-  auto const &drawable = value.value();
+  const auto& drawable = value.value();
   MapBufferBuilder builder(4);
   switch (drawable.kind) {
     case NativeDrawable::Kind::ThemeAttr:
@@ -203,7 +202,7 @@ inline MapBuffer convertNativeBackground(
 
 #endif
 
-inline MapBuffer convertTransform(Transform const &transform) {
+inline MapBuffer convertTransform(const Transform& transform) {
   MapBufferBuilder builder(16);
   for (int32_t i = 0; i < transform.matrix.size(); i++) {
     builder.putDouble(i, transform.matrix[i]);
@@ -212,5 +211,4 @@ inline MapBuffer convertTransform(Transform const &transform) {
 }
 } // namespace
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -28,21 +28,14 @@ import type {
 const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
-const {resolveTypeAnnotation} = require('../utils');
-
 const {parseObjectProperty} = require('../../parsers-commons');
 
 const {
   emitArrayType,
-  emitBoolean,
   emitFunction,
-  emitNumber,
-  emitGenericObject,
+  emitDictionary,
   emitPromise,
   emitRootTag,
-  emitVoid,
-  emitString,
-  emitMixed,
   emitUnion,
   emitCommonTypes,
   typeAliasResolution,
@@ -195,7 +188,9 @@ function translateTypeAnnotation(
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(typeScriptTypeAnnotation, types);
+    parser.getResolvedTypeAnnotation(typeScriptTypeAnnotation, types, parser);
+  const resolveTypeaAnnotationFn = parser.getResolveTypeAnnotationFN();
+  resolveTypeaAnnotationFn(typeScriptTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'TSArrayType': {
@@ -239,7 +234,7 @@ function translateTypeAnnotation(
     }
     case 'TSTypeReference': {
       return translateTypeReferenceAnnotation(
-        typeAnnotation.typeName.name,
+        parser.getTypeAnnotationName(typeAnnotation),
         nullable,
         typeAnnotation,
         hasteModuleName,
@@ -275,7 +270,7 @@ function translateTypeAnnotation(
       return translateObjectTypeAnnotation(
         hasteModuleName,
         nullable,
-        flattenProperties([typeAnnotation], types),
+        flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
         baseTypes,
         types,
@@ -293,6 +288,7 @@ function translateTypeAnnotation(
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
           types,
+          parser,
         ),
         typeResolutionStatus,
         [],
@@ -314,7 +310,7 @@ function translateTypeAnnotation(
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
           const propertyType = indexSignatures[0].typeAnnotation;
-          translateTypeAnnotation(
+          const valueType = translateTypeAnnotation(
             hasteModuleName,
             propertyType,
             types,
@@ -325,7 +321,7 @@ function translateTypeAnnotation(
             parser,
           );
           // no need to do further checking
-          return emitGenericObject(nullable);
+          return emitDictionary(nullable, valueType);
         }
       }
 
@@ -353,18 +349,6 @@ function translateTypeAnnotation(
         parser,
       );
     }
-    case 'TSBooleanKeyword': {
-      return emitBoolean(nullable);
-    }
-    case 'TSNumberKeyword': {
-      return emitNumber(nullable);
-    }
-    case 'TSVoidKeyword': {
-      return emitVoid(nullable);
-    }
-    case 'TSStringKeyword': {
-      return emitString(nullable);
-    }
     case 'TSFunctionType': {
       return emitFunction(
         nullable,
@@ -382,18 +366,27 @@ function translateTypeAnnotation(
     case 'TSUnionType': {
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
-    case 'TSUnknownKeyword': {
-      if (cxxOnly) {
-        return emitMixed(nullable);
-      }
-      // Fallthrough
-    }
     default: {
-      throw new UnsupportedTypeAnnotationParserError(
+      const commonType = emitCommonTypes(
         hasteModuleName,
+        types,
         typeAnnotation,
-        parser.language(),
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        nullable,
+        parser,
       );
+
+      if (!commonType) {
+        throw new UnsupportedTypeAnnotationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
+      return commonType;
     }
   }
 }

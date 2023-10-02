@@ -77,8 +77,8 @@ class LayoutTest : public ::testing::Test {
             auto &props = *sharedProps;
             props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.dimensions()[YGDimensionWidth] = YGValue{200, YGUnitPoint};
-            yogaStyle.dimensions()[YGDimensionHeight] = YGValue{200, YGUnitPoint};
+            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
             return sharedProps;
           })
           .children({
@@ -89,9 +89,9 @@ class LayoutTest : public ::testing::Test {
                 auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
-                yogaStyle.positionType() = YGPositionTypeAbsolute;
-                yogaStyle.dimensions()[YGDimensionWidth] = YGValue{50, YGUnitPoint};
-                yogaStyle.dimensions()[YGDimensionHeight] = YGValue{50, YGUnitPoint};
+                yogaStyle.positionType() = yoga::PositionType::Absolute;
+                yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(50));
+                yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
                 return sharedProps;
               })
               .children({
@@ -102,11 +102,11 @@ class LayoutTest : public ::testing::Test {
                     auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = YGPositionTypeAbsolute;
+                    yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionWidth] = YGValue{30, YGUnitPoint};
-                    yogaStyle.dimensions()[YGDimensionHeight] = YGValue{90, YGUnitPoint};
+                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(30));
+                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(90));
 
                     if (testCase == TRANSFORM_SCALE) {
                       props.transform = props.transform * Transform::Scale(2, 2, 1);
@@ -132,14 +132,14 @@ class LayoutTest : public ::testing::Test {
                         auto &yogaStyle = props.yogaStyle;
 
                         if (testCase == CLIPPING) {
-                          yogaStyle.overflow() = YGOverflowHidden;
+                          yogaStyle.overflow() = yoga::Overflow::Hidden;
                         }
 
-                        yogaStyle.positionType() = YGPositionTypeAbsolute;
+                        yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
-                        yogaStyle.dimensions()[YGDimensionWidth] = YGValue{110, YGUnitPoint};
-                        yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                        yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(110));
+                        yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
                         return sharedProps;
                       })
                       .children({
@@ -150,11 +150,11 @@ class LayoutTest : public ::testing::Test {
                             auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
-                            yogaStyle.positionType() = YGPositionTypeAbsolute;
+                            yogaStyle.positionType() = yoga::PositionType::Absolute;
                             yogaStyle.position()[YGEdgeLeft] = YGValue{70, YGUnitPoint};
                             yogaStyle.position()[YGEdgeTop] = YGValue{-50, YGUnitPoint};
-                            yogaStyle.dimensions()[YGDimensionWidth] = YGValue{30, YGUnitPoint};
-                            yogaStyle.dimensions()[YGDimensionHeight] = YGValue{60, YGUnitPoint};
+                            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(30));
+                            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(60));
                             return sharedProps;
                           })
                       }),
@@ -165,11 +165,11 @@ class LayoutTest : public ::testing::Test {
                         auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
-                        yogaStyle.positionType() = YGPositionTypeAbsolute;
+                        yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{-60, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{50, YGUnitPoint};
-                        yogaStyle.dimensions()[YGDimensionWidth] = YGValue{70, YGUnitPoint};
-                        yogaStyle.dimensions()[YGDimensionHeight] = YGValue{20, YGUnitPoint};
+                        yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(70));
+                        yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
                         return sharedProps;
                       })
                   })

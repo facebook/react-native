@@ -16,7 +16,7 @@ ShadowTreeRegistry::~ShadowTreeRegistry() {
       registry_.empty() && "Deallocation of non-empty `ShadowTreeRegistry`.");
 }
 
-void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree> &&shadowTree) const {
+void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree>&& shadowTree) const {
   std::unique_lock lock(mutex_);
 
   registry_.emplace(shadowTree->getSurfaceId(), std::move(shadowTree));
@@ -38,7 +38,7 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
 
 bool ShadowTreeRegistry::visit(
     SurfaceId surfaceId,
-    std::function<void(const ShadowTree &shadowTree)> const &callback) const {
+    const std::function<void(const ShadowTree& shadowTree)>& callback) const {
   std::shared_lock lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
@@ -52,11 +52,11 @@ bool ShadowTreeRegistry::visit(
 }
 
 void ShadowTreeRegistry::enumerate(
-    std::function<void(const ShadowTree &shadowTree, bool &stop)> const
-        &callback) const {
+    const std::function<void(const ShadowTree& shadowTree, bool& stop)>&
+        callback) const {
   std::shared_lock lock(mutex_);
   auto stop = false;
-  for (auto const &pair : registry_) {
+  for (const auto& pair : registry_) {
     callback(*pair.second, stop);
     if (stop) {
       return;

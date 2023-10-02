@@ -15,8 +15,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Scheduler;
 class ShadowTree;
@@ -62,16 +61,16 @@ class SurfaceHandler {
   /*
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
-  SurfaceHandler(std::string const &moduleName, SurfaceId surfaceId) noexcept;
+  SurfaceHandler(const std::string& moduleName, SurfaceId surfaceId) noexcept;
   virtual ~SurfaceHandler() noexcept;
 
   /*
    * Movable-only.
    */
-  SurfaceHandler(SurfaceHandler &&other) noexcept;
-  SurfaceHandler(SurfaceHandler const &SurfaceHandler) noexcept = delete;
-  SurfaceHandler &operator=(SurfaceHandler &&other) noexcept;
-  SurfaceHandler &operator=(SurfaceHandler const &other) noexcept = delete;
+  SurfaceHandler(SurfaceHandler&& other) noexcept;
+  SurfaceHandler(const SurfaceHandler& SurfaceHandler) noexcept = delete;
+  SurfaceHandler& operator=(SurfaceHandler&& other) noexcept;
+  SurfaceHandler& operator=(const SurfaceHandler& other) noexcept = delete;
 
 #pragma mark - Surface Life-Cycle Management
 
@@ -112,7 +111,7 @@ class SurfaceHandler {
    * Provides access for surface props.
    * Props can be changed anytime (even for `Unregistered` surface).
    */
-  void setProps(folly::dynamic const &props) const noexcept;
+  void setProps(const folly::dynamic& props) const noexcept;
   folly::dynamic getProps() const noexcept;
 
   /*
@@ -120,7 +119,7 @@ class SurfaceHandler {
    * Can be not be called when the status is `Unregistered`.
    * The returning value cannot be `nullptr`.
    */
-  std::shared_ptr<MountingCoordinator const> getMountingCoordinator()
+  std::shared_ptr<const MountingCoordinator> getMountingCoordinator()
       const noexcept;
 
 #pragma mark - Layout
@@ -130,15 +129,15 @@ class SurfaceHandler {
    * Returns zero size if called on the stopped or unregistered surface.
    */
   Size measure(
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const noexcept;
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext) const noexcept;
 
   /*
    * Sets layout constraints and layout context for the surface.
    */
   void constraintLayout(
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const noexcept;
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext) const noexcept;
 
   /*
    * Returns layout constraints and layout context associated with the surface.
@@ -152,7 +151,7 @@ class SurfaceHandler {
   /*
    * Must be called by `Scheduler` during registration process.
    */
-  void setUIManager(UIManager const *uiManager) const noexcept;
+  void setUIManager(const UIManager* uiManager) const noexcept;
 
   void applyDisplayMode(DisplayMode displayMode) const noexcept;
 
@@ -189,8 +188,8 @@ class SurfaceHandler {
    */
   struct Link {
     Status status{Status::Unregistered};
-    UIManager const *uiManager{};
-    ShadowTree const *shadowTree{};
+    const UIManager* uiManager{};
+    const ShadowTree* shadowTree{};
   };
 
   /*
@@ -206,5 +205,4 @@ class SurfaceHandler {
   mutable Parameters parameters_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

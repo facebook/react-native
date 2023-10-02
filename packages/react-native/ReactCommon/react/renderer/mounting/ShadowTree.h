@@ -20,11 +20,10 @@
 #include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode const &oldRootShadowNode)>;
+    const RootShadowNode& oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -56,6 +55,9 @@ class ShadowTree final {
   };
 
   struct CommitOptions {
+    // When set to true, Shadow Node state from current revision will be applied
+    // to the new revision. For more details see
+    // https://reactnative.dev/architecture/render-pipeline#react-native-renderer-state-updates
     bool enableStateReconciliation{false};
 
     // Indicates if mounting will be triggered synchronously and React will
@@ -75,10 +77,10 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate,
-      ContextContainer const &contextContainer);
+      const LayoutConstraints& layoutConstraints,
+      const LayoutContext& layoutContext,
+      const ShadowTreeDelegate& delegate,
+      const ContextContainer& contextContainer);
 
   ~ShadowTree();
 
@@ -101,15 +103,15 @@ class ShadowTree final {
    * The `transaction` function can cancel commit returning `nullptr`.
    */
   CommitStatus tryCommit(
-      const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions) const;
+      const ShadowTreeCommitTransaction& transaction,
+      const CommitOptions& commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
-      const ShadowTreeCommitTransaction &transaction,
-      const CommitOptions &commitOptions) const;
+      const ShadowTreeCommitTransaction& transaction,
+      const CommitOptions& commitOptions) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of
@@ -137,16 +139,17 @@ class ShadowTree final {
   void mount(ShadowTreeRevision revision, bool mountSynchronously) const;
 
   void emitLayoutEvents(
-      std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
+      std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const;
 
-  SurfaceId const surfaceId_;
-  ShadowTreeDelegate const &delegate_;
+  const SurfaceId surfaceId_;
+  const ShadowTreeDelegate& delegate_;
   mutable std::shared_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision::Number
+      lastRevisionNumberWithNewState_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

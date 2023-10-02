@@ -9,13 +9,11 @@
 
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Provides mapping from old view name format to the new format.
  */
 std::string componentNameByReactViewName(std::string viewName);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

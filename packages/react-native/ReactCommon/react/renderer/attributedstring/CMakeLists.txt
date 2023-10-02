@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
@@ -21,11 +21,11 @@ add_library(react_render_attributedstring SHARED ${react_render_attributedstring
 target_include_directories(react_render_attributedstring PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_attributedstring
-        butter
         folly_runtime
         glog
         glog_init
         react_debug
+        rrc_view
         react_render_core
         react_render_debug
         react_render_graphics

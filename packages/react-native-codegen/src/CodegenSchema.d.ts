@@ -50,6 +50,10 @@ export interface ObjectTypeAnnotation<T> {
   readonly baseTypes?: readonly string[] | undefined;
 }
 
+export interface MixedTypeAnnotation {
+  readonly type: 'MixedTypeAnnotation';
+}
+
 export interface FunctionTypeAnnotation<P, R> {
   readonly type: 'FunctionTypeAnnotation';
   readonly params: readonly NamedShape<P>[];
@@ -74,6 +78,7 @@ export interface ComponentShape extends OptionsShape {
   readonly events: readonly EventTypeShape[];
   readonly props: readonly NamedShape<PropTypeAnnotation>[];
   readonly commands: readonly NamedShape<CommandTypeAnnotation>[];
+  readonly deprecatedViewConfigName?: string | undefined;
 }
 
 export interface OptionsShape {
@@ -108,7 +113,11 @@ export type EventTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | StringEnumTypeAnnotation
-  | ObjectTypeAnnotation<EventTypeAnnotation>;
+  | ObjectTypeAnnotation<EventTypeAnnotation>
+  | {
+    readonly type: 'ArrayTypeAnnotation';
+    readonly elementType: EventTypeAnnotation
+  };
 
 export type PropTypeAnnotation =
   | {
@@ -168,7 +177,8 @@ export type PropTypeAnnotation =
             readonly type: 'ArrayTypeAnnotation';
             readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>;
           };
-    };
+    }
+  | MixedTypeAnnotation;
 
 export interface ReservedPropTypeAnnotation {
   readonly type: 'ReservedPropTypeAnnotation';
@@ -263,7 +273,7 @@ export interface NativeModuleBooleanTypeAnnotation {
 
 export type NativeModuleEnumMembers = readonly {
   readonly name: string;
-  readonly value: string;
+  readonly value: string | number;
 }[];
 
 export type NativeModuleEnumMemberType =
@@ -285,6 +295,7 @@ export interface NativeModuleEnumDeclarationWithMembers {
 
 export interface NativeModuleGenericObjectTypeAnnotation {
   readonly type: 'GenericObjectTypeAnnotation';
+  readonly dictionaryValueType?: Nullable<NativeModuleTypeAnnotation> | undefined;
 }
 
 export interface NativeModuleTypeAliasTypeAnnotation {
@@ -343,6 +354,6 @@ export type NativeModuleTypeAnnotation =
 export type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 
 export type NativeModuleReturnOnlyTypeAnnotation =
+  | NativeModuleFunctionTypeAnnotation
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
-

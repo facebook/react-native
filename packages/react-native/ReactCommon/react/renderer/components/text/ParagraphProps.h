@@ -16,8 +16,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Props of <Paragraph> component.
@@ -28,15 +27,15 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
  public:
   ParagraphProps() = default;
   ParagraphProps(
-      const PropsParserContext &context,
-      ParagraphProps const &sourceProps,
-      RawProps const &rawProps);
+      const PropsParserContext& context,
+      const ParagraphProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 
@@ -60,5 +59,4 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -9,7 +9,6 @@
  */
 
 import type {RootTag} from '../Types/RootTagTypes';
-import type {Spec as FabricUIManagerSpec} from './FabricUIManager';
 import type {Spec} from './NativeUIManager';
 
 import {getFabricUIManager} from './FabricUIManager';
@@ -172,6 +171,41 @@ const UIManager = {
         reactTag,
         errorCallback,
         callback,
+      );
+    }
+  },
+
+  dispatchViewManagerCommand(
+    reactTag: number,
+    commandName: number | string,
+    commandArgs: any[],
+  ) {
+    // Sometimes, libraries directly pass in the output of `findNodeHandle` to
+    // this function without checking if it's null. This guards against that
+    // case. We throw early here in Javascript so we can get a JS stacktrace
+    // instead of a harder-to-debug native Java or Objective-C stacktrace.
+    if (typeof reactTag !== 'number') {
+      throw new Error('dispatchViewManagerCommand: found null reactTag');
+    }
+
+    if (isFabricReactTag(reactTag)) {
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (shadowNode) {
+        // Transform the accidental CommandID into a CommandName which is the stringified number.
+        // The interop layer knows how to convert this number into the right method name.
+        // Stringify a string is a no-op, so it's safe.
+        commandName = `${commandName}`;
+        FabricUIManager.dispatchCommand(shadowNode, commandName, commandArgs);
+      }
+    } else {
+      UIManagerImpl.dispatchViewManagerCommand(
+        reactTag,
+        // We have some legacy components that are actually already using strings. ¯\_(ツ)_/¯
+        // $FlowFixMe[incompatible-call]
+        commandName,
+        commandArgs,
       );
     }
   },

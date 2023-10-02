@@ -12,7 +12,7 @@
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/scheduler/Scheduler.h>
 #import <react/renderer/scheduler/SchedulerDelegate.h>
-#include <react/utils/RunLoopObserver.h>
+#import <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -24,10 +24,10 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(MountingCoordinator::Shared mountingCoordinator) override
+  void schedulerDidFinishTransaction(const MountingCoordinator::Shared &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidFinishTransaction:std::move(mountingCoordinator)];
+    [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowNode &shadowNode) override
@@ -45,7 +45,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder, bool blockNativeResponder)
+  void schedulerDidSetIsJSResponder(const ShadowView &shadowView, bool isJSResponder, bool blockNativeResponder)
       override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
@@ -54,7 +54,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
                                        forShadowView:shadowView];
   }
 
-  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
+  void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, const std::string &eventType) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
@@ -84,7 +84,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     [scheduler onAllAnimationsComplete];
   }
 
-  void activityDidChange(RunLoopObserver::Delegate const *delegate, RunLoopObserver::Activity activity)
+  void activityDidChange(const RunLoopObserver::Delegate *delegate, RunLoopObserver::Activity activity)
       const noexcept override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
@@ -132,6 +132,11 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   _scheduler->animationTick();
 }
 
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId
+{
+  _scheduler->reportMount(surfaceId);
+}
+
 - (void)dealloc
 {
   if (_animationDriver) {
@@ -141,22 +146,22 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   _scheduler->setDelegate(nullptr);
 }
 
-- (void)registerSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)registerSurface:(const facebook::react::SurfaceHandler &)surfaceHandler
 {
   _scheduler->registerSurface(surfaceHandler);
 }
 
-- (void)unregisterSurface:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)unregisterSurface:(const facebook::react::SurfaceHandler &)surfaceHandler
 {
   _scheduler->unregisterSurface(surfaceHandler);
 }
 
-- (ComponentDescriptor const *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
+- (const ComponentDescriptor *)findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:(ComponentHandle)handle
 {
   return _scheduler->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(handle);
 }
 
-- (void)setupAnimationDriver:(facebook::react::SurfaceHandler const &)surfaceHandler
+- (void)setupAnimationDriver:(const facebook::react::SurfaceHandler &)surfaceHandler
 {
   surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(_animationDriver);
 }
@@ -175,17 +180,17 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   }
 }
 
-- (void)addEventListener:(std::shared_ptr<EventListener> const &)listener
+- (void)addEventListener:(const std::shared_ptr<EventListener> &)listener
 {
   return _scheduler->addEventListener(listener);
 }
 
-- (void)removeEventListener:(std::shared_ptr<EventListener> const &)listener
+- (void)removeEventListener:(const std::shared_ptr<EventListener> &)listener
 {
   return _scheduler->removeEventListener(listener);
 }
 
-- (std::shared_ptr<facebook::react::UIManager> const)uiManager
+- (const std::shared_ptr<facebook::react::UIManager>)uiManager
 {
   return _scheduler->getUIManager();
 }

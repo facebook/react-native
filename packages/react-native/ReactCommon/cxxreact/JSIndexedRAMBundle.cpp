@@ -12,17 +12,16 @@
 #include <memory>
 #include <sstream>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<std::unique_ptr<JSModulesUnbundle>(std::string)>
 JSIndexedRAMBundle::buildFactory() {
-  return [](const std::string &bundlePath) {
+  return [](const std::string& bundlePath) {
     return std::make_unique<JSIndexedRAMBundle>(bundlePath.c_str());
   };
 }
 
-JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) {
+JSIndexedRAMBundle::JSIndexedRAMBundle(const char* sourcePath) {
   m_bundle = std::make_unique<std::ifstream>(sourcePath, std::ifstream::binary);
   if (!m_bundle) {
     throw std::ios_base::failure(folly::to<std::string>(
@@ -53,7 +52,7 @@ void JSIndexedRAMBundle::init() {
       sizeof(header) == 12,
       "header size must exactly match the input file format");
 
-  readBundle(reinterpret_cast<char *>(header), sizeof(header));
+  readBundle(reinterpret_cast<char*>(header), sizeof(header));
   const size_t numTableEntries = folly::Endian::little(header[1]);
   const size_t startupCodeSize = folly::Endian::little(header[2]);
 
@@ -62,8 +61,7 @@ void JSIndexedRAMBundle::init() {
   m_baseOffset = sizeof(header) + m_table.byteLength();
 
   // read the lookup table from the file
-  readBundle(
-      reinterpret_cast<char *>(m_table.data.get()), m_table.byteLength());
+  readBundle(reinterpret_cast<char*>(m_table.data.get()), m_table.byteLength());
 
   // read the startup code
   m_startupCode = std::unique_ptr<JSBigBufferString>(
@@ -105,7 +103,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   return ret;
 }
 
-void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes)
+void JSIndexedRAMBundle::readBundle(char* buffer, const std::streamsize bytes)
     const {
   if (!m_bundle->read(buffer, bytes)) {
     if (m_bundle->rdstate() & std::ios::eofbit) {
@@ -117,7 +115,7 @@ void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes)
 }
 
 void JSIndexedRAMBundle::readBundle(
-    char *buffer,
+    char* buffer,
     const std::streamsize bytes,
     const std::ifstream::pos_type position) const {
   if (!m_bundle->seekg(position)) {
@@ -127,5 +125,4 @@ void JSIndexedRAMBundle::readBundle(
   readBundle(buffer, bytes);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

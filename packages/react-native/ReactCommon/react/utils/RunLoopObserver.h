@@ -11,15 +11,14 @@
 #include <functional>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A cross-platform abstraction for observing a run loop life cycle.
  */
 class RunLoopObserver {
  public:
-  using Unique = std::unique_ptr<RunLoopObserver const>;
+  using Unique = std::unique_ptr<const RunLoopObserver>;
 
   /*
    * The concept of an owner.
@@ -39,8 +38,8 @@ class RunLoopObserver {
    * `shared_ptr<X>(shared_ptr<Y> const &, X *)`) with the actual one (sharing
    * the control block).
    */
-  using Owner = std::shared_ptr<void const>;
-  using WeakOwner = std::weak_ptr<void const>;
+  using Owner = std::shared_ptr<const void>;
+  using WeakOwner = std::weak_ptr<const void>;
 
   /*
    * Run loop activity stages which run loop observers can be observe.
@@ -64,7 +63,7 @@ class RunLoopObserver {
      * is retained during this call.
      * Will be called on the thread associated with the run loop.
      */
-    virtual void activityDidChange(Delegate const *delegate, Activity activity)
+    virtual void activityDidChange(const Delegate* delegate, Activity activity)
         const noexcept = 0;
 
     virtual ~Delegate() noexcept = default;
@@ -72,19 +71,19 @@ class RunLoopObserver {
 
   using Factory = std::function<std::unique_ptr<RunLoopObserver>(
       Activity activities,
-      WeakOwner const &owner)>;
+      const WeakOwner& owner)>;
 
   /*
    * Constructs a run loop observer.
    */
-  RunLoopObserver(Activity activities, WeakOwner const &owner) noexcept;
+  RunLoopObserver(Activity activities, const WeakOwner& owner) noexcept;
   virtual ~RunLoopObserver() noexcept = default;
 
   /*
    * Sets the delegate.
    * Must be called just once.
    */
-  void setDelegate(Delegate const *delegate) const noexcept;
+  void setDelegate(const Delegate* delegate) const noexcept;
 
   /*
    * Enables or disables run loop observing.
@@ -119,11 +118,10 @@ class RunLoopObserver {
    */
   void activityDidChange(Activity activity) const noexcept;
 
-  Activity const activities_{};
-  WeakOwner const owner_;
-  mutable Delegate const *delegate_{nullptr};
+  const Activity activities_{};
+  const WeakOwner owner_;
+  mutable const Delegate* delegate_{nullptr};
   mutable std::atomic<bool> enabled_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

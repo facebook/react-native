@@ -14,6 +14,7 @@
 const combine = require('./combine-js-to-schema');
 const fs = require('fs');
 const glob = require('glob');
+const path = require('path');
 const {parseArgs, filterJSFile} = require('./combine-utils');
 
 const {platform, outfile, fileList} = parseArgs(process.argv);
@@ -21,9 +22,14 @@ const {platform, outfile, fileList} = parseArgs(process.argv);
 const allFiles = [];
 fileList.forEach(file => {
   if (fs.lstatSync(file).isDirectory()) {
+    const filePattern = path.sep === '\\' ? file.replace(/\\/g, '/') : file;
     const dirFiles = glob
-      .sync(`${file}/**/*.{js,ts,tsx}`, {
+      .sync(`${filePattern}/**/*.{js,ts,tsx}`, {
         nodir: true,
+        // TODO: This will remove the need of slash substitution above for Windows,
+        // but it requires glob@v9+; with the package currenlty relying on
+        // glob@7.1.1; and flow-typed repo not having definitions for glob@9+.
+        // windowsPathsNoEscape: true,
       })
       .filter(element => filterJSFile(element, platform));
     allFiles.push(...dirFiles);

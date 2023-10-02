@@ -20,7 +20,7 @@
  */
 
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
-const {execFileSync, spawn} = require('child_process'); // [macOS]
+const {execFileSync, spawn} = require('child_process');
 const argv = require('yargs').argv;
 const path = require('path');
 
@@ -64,7 +64,11 @@ try {
   }
 
   describe('Create react-native package');
-  if (exec('node ./scripts/set-rn-version.js --version 1000.0.0').code) {
+  if (
+    exec(
+      'node ./scripts/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
+    ).code
+  ) {
     echo('Failed to set version and update package.json ready for release');
     exitCode = 1;
     throw Error(exitCode);
@@ -84,7 +88,8 @@ try {
   describe('Set up Verdaccio');
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
-  describe('Publish packages');
+  describe('Build and publish packages');
+  exec('node ./scripts/build/build.js', {cwd: ROOT});
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {
@@ -99,7 +104,6 @@ try {
   );
 
   describe('Scaffold a basic React Native app from template');
-  // [macOS] use execFileSync to help keep shell commands clean
   execFileSync('rsync', [
     '-a',
     `${ROOT}/packages/react-native/template`,
@@ -111,10 +115,6 @@ try {
   mv('_eslintrc.js', '.eslintrc.js');
   mv('_prettierrc.js', '.prettierrc.js');
   mv('_watchmanconfig', '.watchmanconfig');
-
-  // [macOS
-  process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
-  // macOS]
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);

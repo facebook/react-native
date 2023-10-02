@@ -394,6 +394,13 @@ export const __INTERNAL_VIEW_CONFIG = {
       },
     },
 
+    topArrayEventType: {
+      phasedRegistrationNames: {
+        captured: 'onArrayEventTypeCapture',
+        bubbled: 'onArrayEventType',
+      },
+    },
+
     topEnd: {
       phasedRegistrationNames: {
         captured: 'onEndCapture',
@@ -410,6 +417,10 @@ export const __INTERNAL_VIEW_CONFIG = {
     topOrientationChange: {
       registrationName: 'onOrientationChange',
     },
+
+    topEventWithMixedPropAttribute: {
+      registrationName: 'onEventWithMixedPropAttribute',
+    },
   },
 
   validAttributes: {
@@ -417,9 +428,11 @@ export const __INTERNAL_VIEW_CONFIG = {
 
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
+      onArrayEventType: true,
       onEventDirect: true,
       onOrientationChange: true,
       onEnd: true,
+      onEventWithMixedPropAttribute: true,
     }),
   },
 };
@@ -465,14 +478,14 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   directEventTypes: {
     paperDirectChange: {
-      registrationName: 'onDire tChange',
+      registrationName: 'onDirectChange',
     },
   },
 
   validAttributes: {
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
-      onDire tChange: true,
+      onDirectChange: true,
     }),
   },
 };

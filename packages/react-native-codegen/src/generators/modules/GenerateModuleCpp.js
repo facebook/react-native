@@ -40,8 +40,8 @@ const HostFunctionTemplate = ({
 }>) => {
   const isNullable = returnTypeAnnotation.type === 'NullableTypeAnnotation';
   const isVoid = returnTypeAnnotation.type === 'VoidTypeAnnotation';
-  const methodCallArgs = ['rt', ...args].join(', ');
-  const methodCall = `static_cast<${hasteModuleName}CxxSpecJSI *>(&turboModule)->${methodName}(${methodCallArgs})`;
+  const methodCallArgs = ['    rt', ...args].join(',\n    ');
+  const methodCall = `static_cast<${hasteModuleName}CxxSpecJSI *>(&turboModule)->${methodName}(\n${methodCallArgs}\n  )`;
 
   return `static jsi::Value __hostFunction_${hasteModuleName}CxxSpecJSI_${methodName}(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {${
     isVoid
@@ -139,7 +139,7 @@ function serializeArg(
     } else {
       let condition = `${val}.isNull() || ${val}.isUndefined()`;
       if (optional) {
-        condition = `count < ${index} || ${condition}`;
+        condition = `count <= ${index} || ${condition}`;
       }
       return `${condition} ? std::nullopt : std::make_optional(${expression})`;
     }

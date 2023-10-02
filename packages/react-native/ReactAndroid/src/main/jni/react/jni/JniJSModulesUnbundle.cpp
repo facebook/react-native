@@ -17,15 +17,14 @@
 
 using magic_number_t = uint32_t;
 const magic_number_t MAGIC_FILE_HEADER = 0xFB0BD1E5;
-const char *MAGIC_FILE_NAME = "UNBUNDLE";
+const char* MAGIC_FILE_NAME = "UNBUNDLE";
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using asset_ptr =
     std::unique_ptr<AAsset, std::function<decltype(AAsset_close)>>;
 
-static std::string jsModulesDir(const std::string &entryFile) {
+static std::string jsModulesDir(const std::string& entryFile) {
   std::string dir = dirname(entryFile.c_str());
 
   // android's asset manager does not work with paths that start with a dot
@@ -33,28 +32,28 @@ static std::string jsModulesDir(const std::string &entryFile) {
 }
 
 static asset_ptr openAsset(
-    AAssetManager *manager,
-    const std::string &fileName,
+    AAssetManager* manager,
+    const std::string& fileName,
     int mode = AASSET_MODE_STREAMING) {
   return asset_ptr(
       AAssetManager_open(manager, fileName.c_str(), mode), AAsset_close);
 }
 
 std::unique_ptr<JniJSModulesUnbundle> JniJSModulesUnbundle::fromEntryFile(
-    AAssetManager *assetManager,
-    const std::string &entryFile) {
+    AAssetManager* assetManager,
+    const std::string& entryFile) {
   return std::make_unique<JniJSModulesUnbundle>(
       assetManager, jsModulesDir(entryFile));
 }
 
 JniJSModulesUnbundle::JniJSModulesUnbundle(
-    AAssetManager *assetManager,
-    const std::string &moduleDirectory)
+    AAssetManager* assetManager,
+    const std::string& moduleDirectory)
     : m_assetManager(assetManager), m_moduleDirectory(moduleDirectory) {}
 
 bool JniJSModulesUnbundle::isUnbundle(
-    AAssetManager *assetManager,
-    const std::string &assetName) {
+    AAssetManager* assetManager,
+    const std::string& assetName) {
   if (!assetManager) {
     return false;
   }
@@ -84,9 +83,9 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
   auto fileName = m_moduleDirectory + sourceUrl;
   auto asset = openAsset(m_assetManager, fileName, AASSET_MODE_BUFFER);
 
-  const char *buffer = nullptr;
+  const char* buffer = nullptr;
   if (asset != nullptr) {
-    buffer = static_cast<const char *>(AAsset_getBuffer(asset.get()));
+    buffer = static_cast<const char*>(AAsset_getBuffer(asset.get()));
   }
   if (buffer == nullptr) {
     throw ModuleNotFound(moduleId);
@@ -94,5 +93,4 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
   return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

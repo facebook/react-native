@@ -9,6 +9,20 @@
 
 'use strict';
 
+const {echo, exit} = require('shelljs');
+const {getNpmInfo} = require('./npm-utils'); // [macOS] Remove publishPackage as we don't use it for React Native macOS
+const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
+const setReactNativeVersion = require('./set-rn-version');
+/* [macOS We do not generate Android artifacts for React Native macOS
+const {
+  generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
+} = require('./release-utils');
+macOS] */
+const fs = require('fs');
+const path = require('path');
+const yargs = require('yargs');
+
 /**
  * This script prepares a release version of react-native and may publish to NPM.
  * It is supposed to run in CI environment, not on a developer's machine.
@@ -33,163 +47,87 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit} = require('shelljs');
-const {parseVersion} = require('./version-utils');
-const {
-  exitIfNotOnGit,
-  getCurrentCommit,
-  isTaggedLatest,
-} = require('./scm-utils');
-/* [macOS We do not generate Android artifacts for React Native macOS
-const {
-  generateAndroidArtifacts,
-  publishAndroidArtifactsToMaven,
-} = require('./release-utils');
-macOS] */
-const fs = require('fs');
-const path = require('path');
-const yargs = require('yargs');
+if (require.main === module) {
+  const argv = yargs
+    .option('n', {
+      alias: 'nightly',
+      type: 'boolean',
+      default: false,
+    })
+    .option('d', {
+      alias: 'dry-run',
+      type: 'boolean',
+      default: false,
+    })
+    .option('r', {
+      alias: 'release',
+      type: 'boolean',
+      default: false,
+    })
+    .strict().argv;
 
-// const buildTag = process.env.CIRCLE_TAG; // [macOS] We can't use the CircleCI build tag.
-const otp = process.env.NPM_CONFIG_OTP;
+  const buildType = argv.release
+    ? 'release'
+    : argv.nightly
+    ? 'nightly'
+    : 'dry-run';
 
-const argv = yargs
-  .option('n', {
-    alias: 'nightly',
-    type: 'boolean',
-    default: false,
-  })
-  .option('d', {
-    alias: 'dry-run',
-    type: 'boolean',
-    default: false,
-  })
-  .option('r', {
-    alias: 'release',
-    type: 'boolean',
-    default: false,
-  })
-  .strict().argv;
-const nightlyBuild = argv.nightly;
-const dryRunBuild = argv.dryRun;
-const releaseBuild = argv.release;
-const isCommitly = nightlyBuild || dryRunBuild;
-
-const buildType = releaseBuild
-  ? 'release'
-  : nightlyBuild
-  ? 'nightly'
-  : 'dry-run';
-
-// 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = getCurrentCommit();
-const shortCommit = currentCommit.slice(0, 9);
-
-// [macOS] Function to get our version from package.json instead of the CircleCI build tag.
-function getPkgJsonVersion() {
-  const pkgJsonPath = path.resolve(RN_PACKAGE_DIR, 'package.json');
-  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-  const pkgJsonVersion = pkgJson.version;
-  return pkgJsonVersion;
-}
-// macOS]
-
-const rawVersion =
-  // 0.0.0 triggers issues with cocoapods for codegen when building template project.
-  dryRunBuild
-    ? '1000.0.0'
-    : // For nightly we continue to use 0.0.0 for clarity for npm
-    nightlyBuild
-    ? '0.0.0'
-    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
-      getPkgJsonVersion(); // [macOS] We can't use the CircleCI build tag, so we use the version argument instead.
-
-let version,
-  major,
-  minor,
-  prerelease = null;
-try {
-  ({version, major, minor, prerelease} = parseVersion(rawVersion, buildType));
-} catch (e) {
-  echo(e.message);
-  exit(1);
+  publishNpm(buildType);
 }
 
-let releaseVersion;
-if (dryRunBuild) {
-  releaseVersion = `${version}-${shortCommit}`;
-} else if (nightlyBuild) {
-  // 2021-09-28T05:38:40.669Z -> 20210928-0538
-  const dateIdentifier = new Date()
-    .toISOString()
-    .slice(0, -8)
-    .replace(/[-:]/g, '')
-    .replace(/[T]/g, '-');
-  releaseVersion = `${version}-${dateIdentifier}-${shortCommit}`;
-} else {
-  releaseVersion = version;
-}
+function publishNpm(buildType) {
+  const {version, tag} = getNpmInfo(buildType);
 
-// Bump version number in various files (package.json, gradle.properties etc)
-// For stable, pre-release releases, we rely on CircleCI job `prepare_package_for_release` to handle this
-if (isCommitly) {
-  if (
-    exec(
-      `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
-    ).code
-  ) {
-    echo(`Failed to set version number to ${releaseVersion}`);
-    exit(1);
+  // Here we update the react-native package and template package with the right versions
+  // For releases, CircleCI job `prepare_package_for_release` handles this
+  if (buildType === 'nightly' || buildType === 'dry-run') {
+    // Publish monorepo nightlies if there are updates, returns nightly versions for each
+    const monorepoNightlyVersions =
+      buildType === 'nightly' ? getAndUpdateNightlies(version) : null;
+
+    try {
+      // Update the react-native and template packages with the react-native version
+      // and nightly versions of monorepo deps
+      setReactNativeVersion(version, monorepoNightlyVersions, buildType);
+    } catch (e) {
+      console.error(`Failed to set version number to ${version}`);
+      console.error(e);
+      return exit(1);
+    }
   }
+
+  /* [macOS Do not generate Android artifacts for React Native macOS
+  generateAndroidArtifacts(version);
+
+  // Write version number to the build folder
+  const versionFile = path.join('build', '.version');
+  fs.writeFileSync(versionFile, version);
+  macOS] */
+
+  if (buildType === 'dry-run') {
+    echo('Skipping `npm publish` because --dry-run is set.');
+    return exit(0);
+  }
+
+  // We first publish on Maven Central all the necessary artifacts.
+  // NPM publishing is done just after.
+  /* [macOS] Skip the Android Artifact and NPM Publish here as we do that in our Azure Pipeline
+  // publishAndroidArtifactsToMaven(version, buildType === 'nightly');
+
+  const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
+  const result = publishPackage(packagePath, {
+    tag,
+    otp: process.env.NPM_CONFIG_OTP,
+  });
+
+  if (result.code) {
+    echo('Failed to publish package to npm');
+    return exit(1);
+  } else {
+    echo(`Published to npm ${version}`);
+    return exit(0);
+  }
+  macOS] */
 }
 
-/* [macOS We do not generate Android artifacts for React Native macOS
-generateAndroidArtifacts(releaseVersion);
-
-// Write version number to the build folder
-const releaseVersionFile = path.join('build', '.version');
-fs.writeFileSync(releaseVersionFile, releaseVersion);
-macOS] */
-
-if (dryRunBuild) {
-  echo('Skipping `npm publish` because --dry-run is set.');
-  exit(0);
-}
-
-// Running to see if this commit has been git tagged as `latest`
-const isLatest = exitIfNotOnGit(
-  () => isTaggedLatest(currentCommit),
-  'Not in git. We do not want to publish anything',
-);
-
-/* [macOS We do not generate Android artifacts for React Native macOS
-// We first publish on Maven Central all the necessary artifacts.
-// NPM publishing is done just after.
-publishAndroidArtifactsToMaven(releaseVersion, nightlyBuild);
-macOS] */
-
-/* [macOS Comment the NPM publish out as we do this separately
-const releaseBranch = `${major}.${minor}-stable`;
-
-// Set the right tag for nightly and prerelease builds
-// If a release is not git-tagged as `latest` we use `releaseBranch` to prevent
-// npm from overriding the current `latest` version tag, which it will do if no tag is set.
-const tagFlag = nightlyBuild
-  ? '--tag nightly'
-  : prerelease != null
-  ? '--tag next'
-  : isLatest
-  ? '--tag latest'
-  : `--tag ${releaseBranch}`;
-
-// use otp from envvars if available
-const otpFlag = otp ? `--otp ${otp}` : '';
-
-if (exec(`npm publish ${tagFlag} ${otpFlag}`, {cwd: RN_PACKAGE_DIR}).code) {
-  echo('Failed to publish package to npm');
-  exit(1);
-} else {
-  echo(`Published to npm ${releaseVersion}`);
-  exit(0);
-}
-macOS] */
+module.exports = publishNpm;

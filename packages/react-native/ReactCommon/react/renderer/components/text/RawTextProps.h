@@ -13,8 +13,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawTextProps;
 
@@ -24,9 +23,9 @@ class RawTextProps : public Props {
  public:
   RawTextProps() = default;
   RawTextProps(
-      const PropsParserContext &context,
-      const RawTextProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const RawTextProps& sourceProps,
+      const RawProps& rawProps);
 
 #pragma mark - Props
 
@@ -39,5 +38,4 @@ class RawTextProps : public Props {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

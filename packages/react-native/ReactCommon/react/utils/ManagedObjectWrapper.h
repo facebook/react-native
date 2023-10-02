@@ -24,8 +24,7 @@
 @property (nonatomic, weak) id object;
 @end
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace detail {
 
@@ -56,7 +55,7 @@ inline std::shared_ptr<void> wrapManagedObject(id object) noexcept
   return std::shared_ptr<void>((__bridge_retained void *)object, detail::wrappedManagedObjectDeleter);
 }
 
-inline id unwrapManagedObject(std::shared_ptr<void> const &object) noexcept
+inline id unwrapManagedObject(const std::shared_ptr<void> &object) noexcept
 {
   return (__bridge id)object.get();
 }
@@ -68,15 +67,14 @@ inline std::shared_ptr<void> wrapManagedObjectWeakly(id object) noexcept
   return wrapManagedObject(weakWrapper);
 }
 
-inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object) noexcept
+inline id unwrapManagedObjectWeakly(const std::shared_ptr<void> &object) noexcept
 {
   RCTInternalGenericWeakWrapper *weakWrapper = (RCTInternalGenericWeakWrapper *)unwrapManagedObject(object);
   react_native_assert(weakWrapper && "`RCTInternalGenericWeakWrapper` instance must not be `nil`.");
   return weakWrapper.object;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif
 #endif

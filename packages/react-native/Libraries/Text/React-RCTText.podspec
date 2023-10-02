@@ -24,12 +24,15 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/text"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4", :osx => "10.15" } # [macOS]
+  s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{h,m}"
+  s.source_files           = "**/*.{h,m,mm}"
   s.ios.exclude_files      = "**/macOS/*" # [macOS]
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
+  s.ios.framework          = ["MobileCoreServices"] # [macOS] Restrict to iOS
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
+  s.dependency "Yoga"
   s.dependency "React-Core/RCTTextHeaders", version
 end

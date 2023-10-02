@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageEventEmitter : public ViewEventEmitter {
  public:
@@ -24,5 +23,4 @@ class ImageEventEmitter : public ViewEventEmitter {
   void onPartialLoad() const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

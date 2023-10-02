@@ -24,7 +24,7 @@ import {NativeEventSubscription} from '../EventEmitter/RCTNativeAppEventEmitter'
  * App States
  *      active - The app is running in the foreground
  *      background - The app is running in the background. The user is either in another app or on the home screen
- *      inactive [iOS] - This is a transition state that currently never happens for typical React Native apps.
+ *      inactive [iOS] - This is a transition state that happens when the app launches, is asking for permissions or when a call or SMS message is received.
  *      unknown [iOS] - Initial value until the current app state is determined
  *      extension [iOS] - The app is running as an app extension
  *

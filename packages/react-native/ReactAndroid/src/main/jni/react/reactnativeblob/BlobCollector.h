@@ -10,15 +10,14 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BlobCollector : public jni::HybridClass<BlobCollector>,
                       public jsi::HostObject {
  public:
   BlobCollector(
       jni::global_ref<jobject> blobManager,
-      const std::string &blobId);
+      const std::string& blobId);
   ~BlobCollector();
 
   static constexpr auto kJavaDescriptor =
@@ -38,5 +37,4 @@ class BlobCollector : public jni::HybridClass<BlobCollector>,
   const std::string blobId_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

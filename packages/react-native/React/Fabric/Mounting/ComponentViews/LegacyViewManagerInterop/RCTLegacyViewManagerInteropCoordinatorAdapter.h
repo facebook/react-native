@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithCoordinator:(RCTLegacyViewManagerInteropCoordinator *)coordinator reactTag:(NSInteger)tag;
 
-@property (strong, nonatomic) RCTUIView *paperView; // [macOS]
+@property (strong, nonatomic) RCTPlatformView *paperView; // [macOS]
 
 @property (nonatomic, copy, nullable) void (^eventInterceptor)(std::string eventName, folly::dynamic event);
 
-- (void)setProps:(folly::dynamic const &)props;
+- (void)setProps:(const folly::dynamic &)props;
 
 - (void)handleCommand:(NSString *)commandName args:(NSArray *)args;
 

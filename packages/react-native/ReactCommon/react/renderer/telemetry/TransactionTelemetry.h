@@ -13,8 +13,7 @@
 
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents telemetry data associated with a particular revision of
@@ -25,7 +24,7 @@ class TransactionTelemetry final {
   /*
    * Thread-local Telemetry instance
    */
-  static TransactionTelemetry *threadLocalTelemetry();
+  static TransactionTelemetry* threadLocalTelemetry();
 
   TransactionTelemetry();
   TransactionTelemetry(std::function<TelemetryTimePoint()> now);
@@ -44,6 +43,7 @@ class TransactionTelemetry final {
   void willMeasureText();
   void didMeasureText();
   void didLayout();
+  void didLayout(int affectedLayoutNodesCount);
   void willMount();
   void didMount();
 
@@ -65,6 +65,8 @@ class TransactionTelemetry final {
   int getNumberOfTextMeasurements() const;
   int getRevisionNumber() const;
 
+  int getAffectedLayoutNodesCount() const;
+
  private:
   TelemetryTimePoint diffStartTime_{kTelemetryUndefinedTimePoint};
   TelemetryTimePoint diffEndTime_{kTelemetryUndefinedTimePoint};
@@ -81,7 +83,8 @@ class TransactionTelemetry final {
   int numberOfTextMeasurements_{0};
   int revisionNumber_{0};
   std::function<TelemetryTimePoint()> now_;
+
+  int affectedLayoutNodesCount_{0};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

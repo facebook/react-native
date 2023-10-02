@@ -10,7 +10,6 @@ package com.facebook.react
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
-import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
@@ -18,7 +17,8 @@ import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
-import com.facebook.react.utils.DependencyUtils.readVersionString
+import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
+import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
@@ -28,6 +28,8 @@ import kotlin.system.exitProcess
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 import org.gradle.internal.jvm.Jvm
 
 class ReactPlugin : Plugin<Project> {
@@ -54,13 +56,15 @@ class ReactPlugin : Plugin<Project> {
       project.afterEvaluate {
         val reactNativeDir = extension.reactNativeDir.get().asFile
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
-        val versionString = readVersionString(propertiesFile)
-        configureDependencies(project, versionString)
+        val versionAndGroupStrings = readVersionAndGroupStrings(propertiesFile)
+        val versionString = versionAndGroupStrings.first
+        val groupString = versionAndGroupStrings.second
+        configureDependencies(project, versionString, groupString)
         configureRepositories(project, reactNativeDir)
       }
 
       configureReactNativeNdk(project, extension)
-      configureBuildConfigFields(project)
+      configureBuildConfigFields(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
 
@@ -76,17 +80,20 @@ class ReactPlugin : Plugin<Project> {
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
+
+    // Library and App Configurations
+    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
     val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
-    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 16) {
       project.logger.error(
           """
 
       ********************************************************************************
 
-      ERROR: requires JDK11 or higher.
+      ERROR: requires JDK17 or higher.
       Incompatible major version detected: '$jvmVersion'
 
       ********************************************************************************
@@ -106,7 +113,8 @@ class ReactPlugin : Plugin<Project> {
       isLibrary: Boolean
   ) {
     // First, we set up the output dir for the codegen.
-    val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
+    val generatedSrcDir: Provider<Directory> =
+        project.layout.buildDirectory.dir("generated/source/codegen")
 
     // We specify the default value (convention) for jsRootDir.
     // It's the root folder for apps (so ../../ from the Gradle project)
@@ -117,24 +125,10 @@ class ReactPlugin : Plugin<Project> {
       localExtension.jsRootDir.convention(localExtension.root)
     }
 
-    val buildCodegenTask =
-        project.tasks.register("buildCodegenCLI", BuildCodegenCLITask::class.java) {
-          it.codegenDir.set(rootExtension.codegenDir)
-          val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
-          it.bashWindowsHome.set(bashWindowsHome)
-
-          // Please note that appNeedsCodegen is triggering a read of the package.json at
-          // configuration time as we need to feed the onlyIf condition of this task.
-          // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
-          it.onlyIf { isLibrary || needsCodegenFromPackageJson }
-        }
-
     // We create the task to produce schema from JS files.
     val generateCodegenSchemaTask =
         project.tasks.register(
             "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
-              it.dependsOn(buildCodegenTask)
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
@@ -143,7 +137,7 @@ class ReactPlugin : Plugin<Project> {
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
               val packageJson = findPackageJsonFile(project, rootExtension.root)
-              val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
 
               val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
               if (jsSrcsDirInPackageJson != null) {
@@ -181,7 +175,7 @@ class ReactPlugin : Plugin<Project> {
     //
     // android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
     project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-      ext.sourceSets.getByName("main").java.srcDir(File(generatedSrcDir, "java"))
+      ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
     }
 
     // `preBuild` is one of the base tasks automatically registered by AGP.

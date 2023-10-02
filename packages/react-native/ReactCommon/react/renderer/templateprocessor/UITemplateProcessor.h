@@ -16,25 +16,24 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Temporary NativeModuleRegistry definition
 using NativeModuleCallFn =
-    std::function<folly::dynamic(const std::string &, const folly::dynamic &)>;
+    std::function<folly::dynamic(const std::string&, const folly::dynamic&)>;
 
 class NativeModuleRegistry {
  public:
   void registerModule(
-      const std::string &moduleName,
+      const std::string& moduleName,
       NativeModuleCallFn callFn) {
     modules_.emplace(moduleName, callFn);
   }
 
   folly::dynamic call(
-      const std::string &moduleName,
-      const std::string &methodName,
-      const folly::dynamic &args) const {
+      const std::string& moduleName,
+      const std::string& methodName,
+      const folly::dynamic& args) const {
     return modules_.at(moduleName)(methodName, args);
   }
 
@@ -45,22 +44,21 @@ class NativeModuleRegistry {
 class UITemplateProcessor {
  public:
   static ShadowNode::Shared buildShadowTree(
-      const std::string &jsonStr,
+      const std::string& jsonStr,
       int surfaceId,
-      const folly::dynamic &params,
-      const ComponentDescriptorRegistry &componentDescriptorRegistry,
-      const NativeModuleRegistry &nativeModuleRegistry,
-      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
+      const folly::dynamic& params,
+      const ComponentDescriptorRegistry& componentDescriptorRegistry,
+      const NativeModuleRegistry& nativeModuleRegistry,
+      const std::shared_ptr<const ReactNativeConfig>& reactNativeConfig);
 
  private:
   static ShadowNode::Shared runCommand(
-      const folly::dynamic &command,
+      const folly::dynamic& command,
       Tag surfaceId,
-      std::vector<ShadowNode::Shared> &nodes,
-      std::vector<folly::dynamic> &registers,
-      const ComponentDescriptorRegistry &componentDescriptorRegistry,
-      const NativeModuleRegistry &nativeModuleRegistry,
-      std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
+      std::vector<ShadowNode::Shared>& nodes,
+      std::vector<folly::dynamic>& registers,
+      const ComponentDescriptorRegistry& componentDescriptorRegistry,
+      const NativeModuleRegistry& nativeModuleRegistry,
+      const std::shared_ptr<const ReactNativeConfig>& reactNativeConfig);
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

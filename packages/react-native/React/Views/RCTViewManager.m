@@ -15,6 +15,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTTransformOrigin.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -25,72 +26,121 @@
 #import "RCTCursor.h"
 #endif  // macOS]
 
-#if !TARGET_OS_OSX // [macOS]
 @implementation RCTConvert (UIAccessibilityTraits)
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraits,
     (@{
-      @"none" : @(UIAccessibilityTraitNone),
+      @"adjustable" : @(UIAccessibilityTraitAdjustable),
+      @"alert" : @(UIAccessibilityTraitNone),
+      @"alertdialog" : @(UIAccessibilityTraitNone),
+      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
+      @"application" : @(UIAccessibilityTraitNone),
+      @"article" : @(UIAccessibilityTraitNone),
+      @"banner" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"cell" : @(UIAccessibilityTraitNone),
+      @"checkbox" : @(UIAccessibilityTraitNone),
+      @"columnheader" : @(UIAccessibilityTraitNone),
+      @"combobox" : @(UIAccessibilityTraitNone),
+      @"complementary" : @(UIAccessibilityTraitNone),
+      @"contentinfo" : @(UIAccessibilityTraitNone),
+      @"definition" : @(UIAccessibilityTraitNone),
+      @"dialog" : @(UIAccessibilityTraitNone),
+      @"directory" : @(UIAccessibilityTraitNone),
+      @"disabled" : @(UIAccessibilityTraitNotEnabled),
+      @"document" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
       @"dropdownlist" : @(UIAccessibilityTraitNone),
-      @"togglebutton" : @(UIAccessibilityTraitButton),
-      @"link" : @(UIAccessibilityTraitLink),
+      @"feed" : @(UIAccessibilityTraitNone),
+      @"figure" : @(UIAccessibilityTraitNone),
+      @"form" : @(UIAccessibilityTraitNone),
+      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"group" : @(UIAccessibilityTraitNone),
       @"header" : @(UIAccessibilityTraitHeader),
-      @"search" : @(UIAccessibilityTraitSearchField),
+      @"heading" : @(UIAccessibilityTraitHeader),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"image" : @(UIAccessibilityTraitImage),
       @"imagebutton" : @(UIAccessibilityTraitImage | UIAccessibilityTraitButton),
-      @"selected" : @(UIAccessibilityTraitSelected),
-      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"img" : @(UIAccessibilityTraitImage),
       @"key" : @(UIAccessibilityTraitKeyboardKey),
       @"keyboardkey" : @(UIAccessibilityTraitKeyboardKey),
-      @"text" : @(UIAccessibilityTraitStaticText),
-      @"summary" : @(UIAccessibilityTraitSummaryElement),
-      @"disabled" : @(UIAccessibilityTraitNotEnabled),
-      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
-      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
-      @"adjustable" : @(UIAccessibilityTraitAdjustable),
-      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
+      @"link" : @(UIAccessibilityTraitLink),
+      @"list" : @(UIAccessibilityTraitNone),
+      @"listitem" : @(UIAccessibilityTraitNone),
+      @"log" : @(UIAccessibilityTraitNone),
+      @"main" : @(UIAccessibilityTraitNone),
+      @"marquee" : @(UIAccessibilityTraitNone),
+      @"math" : @(UIAccessibilityTraitNone),
+      @"menu" : @(UIAccessibilityTraitNone),
+      @"menubar" : @(UIAccessibilityTraitNone),
+      @"menuitem" : @(UIAccessibilityTraitNone),
+      @"meter" : @(UIAccessibilityTraitNone),
+      @"navigation" : @(UIAccessibilityTraitNone),
+      @"none" : @(UIAccessibilityTraitNone),
+      @"note" : @(UIAccessibilityTraitNone),
+      @"option" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
       @"pageTurn" : @(UIAccessibilityTraitCausesPageTurn),
-      // [macOS
-      // a set of RN accessibilityTraits are macOS specific accessiblity roles and map to nothing on iOS:
+      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"presentation" : @(UIAccessibilityTraitNone),
+      @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
+      @"radio" : @(UIAccessibilityTraitNone),
+      @"radiogroup" : @(UIAccessibilityTraitNone),
+      @"region" : @(UIAccessibilityTraitNone),
+      @"row" : @(UIAccessibilityTraitNone),
+      @"rowgroup" : @(UIAccessibilityTraitNone),
+      @"rowheader" : @(UIAccessibilityTraitNone),
+      @"scrollbar" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"search" : @(UIAccessibilityTraitSearchField),
+      @"searchbox" : @(UIAccessibilityTraitSearchField),
+      @"selected" : @(UIAccessibilityTraitSelected),
+      @"separator" : @(UIAccessibilityTraitNone),
+      @"slider" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
+      @"spinbutton" : @(UIAccessibilityTraitNone),
+      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
+      @"status" : @(UIAccessibilityTraitNone),
+      @"summary" : @(UIAccessibilityTraitSummaryElement),
+      @"switch" : @(SwitchAccessibilityTrait),
+      @"tab" : @(UIAccessibilityTraitNone),
+      @"tabbar" : @(UIAccessibilityTraitTabBar),
+      @"table" : @(UIAccessibilityTraitNone),
+      @"tablist" : @(UIAccessibilityTraitNone),
+      @"tabpanel" : @(UIAccessibilityTraitNone),
+      @"term" : @(UIAccessibilityTraitNone),
+      @"text" : @(UIAccessibilityTraitStaticText),
+      @"timer" : @(UIAccessibilityTraitNone),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
+      @"toolbar" : @(UIAccessibilityTraitNone),
+      @"tooltip" : @(UIAccessibilityTraitNone),
+      @"tree" : @(UIAccessibilityTraitNone),
+      @"treegrid" : @(UIAccessibilityTraitNone),
+      @"treeitem" : @(UIAccessibilityTraitNone),
+      @"viewgroup" : @(UIAccessibilityTraitNone),
+      @"webview" : @(UIAccessibilityTraitNone),
+      // [macOS a set of RN accessibilityTraits are macOS specific accessiblity roles and map to nothing on iOS
       @"disclosure" : @(UIAccessibilityTraitNone),
       @"group" : @(UIAccessibilityTraitNone),
       @"table": @(UIAccessibilityTraitNone),
       // macOS]
-      @"alert" : @(UIAccessibilityTraitNone),
-      @"checkbox" : @(UIAccessibilityTraitNone),
-      @"combobox" : @(UIAccessibilityTraitNone),
-      @"menu" : @(UIAccessibilityTraitNone),
-      @"menubar" : @(UIAccessibilityTraitNone),
-      @"menuitem" : @(UIAccessibilityTraitNone),
-      @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
-      @"radio" : @(UIAccessibilityTraitNone),
-      @"radiogroup" : @(UIAccessibilityTraitNone),
-      @"scrollbar" : @(UIAccessibilityTraitNone),
-      @"spinbutton" : @(UIAccessibilityTraitNone),
-      @"switch" : @(SwitchAccessibilityTrait),
-      @"tab" : @(UIAccessibilityTraitNone),
-      @"tabbar" : @(UIAccessibilityTraitTabBar),
-      @"tablist" : @(UIAccessibilityTraitNone),
-      @"timer" : @(UIAccessibilityTraitNone),
-      @"toolbar" : @(UIAccessibilityTraitNone),
-      @"pager" : @(UIAccessibilityTraitNone),
-      @"scrollview" : @(UIAccessibilityTraitNone),
-      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
-      @"viewgroup" : @(UIAccessibilityTraitNone),
-      @"webview" : @(UIAccessibilityTraitNone),
-      @"drawerlayout" : @(UIAccessibilityTraitNone),
-      @"slidingdrawer" : @(UIAccessibilityTraitNone),
-      @"iconmenu" : @(UIAccessibilityTraitNone),
-      @"list" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
+#endif // [macOS]
+
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json
+{
+  RCTTransformOrigin transformOrigin = {
+      [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
+  return transformOrigin;
+}
 
 @end
-#endif // [macOS]
 
 @implementation RCTViewManager
 
@@ -239,46 +289,48 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 }
 #endif // [macOS]
 
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
-{
-#if !TARGET_OS_OSX // [macOS]
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in rotation, skew, or perspective transforms
-  view.layer.allowsEdgeAntialiasing =
-      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
-#else // [macOS
-  CATransform3D transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  [view setTransform3D:transform];
-  [view setNeedsDisplay];
-#endif // macOS]
-}
+RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
+RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-#if !TARGET_OS_OSX // [macOS]
+  UIAccessibilityTraits accessibilityRoleTraits =
+      json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.accessibilityRoleTraits != accessibilityRoleTraits) {
+    view.accessibilityRoleTraits = accessibilityRoleTraits;
+    view.reactAccessibilityElement.accessibilityRole = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
+{
+  UIAccessibilityTraits roleTraits = json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.roleTraits != roleTraits) {
+    view.roleTraits = roleTraits;
+    view.reactAccessibilityElement.role = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+- (void)updateAccessibilityTraitsForRole:(RCTView *)view withDefaultView:(RCTView *)defaultView
+{
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
       UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage |
       UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable |
       UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | UIAccessibilityTraitTabBar |
       UIAccessibilityTraitUpdatesFrequently | SwitchAccessibilityTrait;
-  view.reactAccessibilityElement.accessibilityTraits =
-      view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
-  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
-  if (newTraits != UIAccessibilityTraitNone) {
-    UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
-    view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
-  } else {
-    NSString *role = json ? [RCTConvert NSString:json] : @"";
-    view.reactAccessibilityElement.accessibilityRoleInternal = role; // [macOS] renamed prop so it doesn't conflict with -[NSAccessibility accessibilityRole].
-  }
-#else // [macOS
-  if (json) {
-    view.reactAccessibilityElement.accessibilityRole = [RCTConvert accessibilityRoleFromTraits:json];
-  } else {
-    view.reactAccessibilityElement.accessibilityRole = defaultView.accessibilityRole;
-  }
-#endif // macOS]
+
+  // Clear any existing traits set for AccessibilityRole
+  view.reactAccessibilityElement.accessibilityTraits &= ~(AccessibilityRolesMask);
+
+  view.reactAccessibilityElement.accessibilityTraits |= view.reactAccessibilityElement.role
+      ? view.reactAccessibilityElement.roleTraits
+      : view.reactAccessibilityElement.accessibilityRole ? view.reactAccessibilityElement.accessibilityRoleTraits
+                                                         : (defaultView.accessibilityTraits & AccessibilityRolesMask);                        
 }
+#endif // [macOS]
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
@@ -364,15 +416,13 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
 {
-  if (@available(iOS 13.0, *)) {
-    switch ([RCTConvert RCTBorderCurve:json]) {
-      case RCTBorderCurveContinuous:
-        view.layer.cornerCurve = kCACornerCurveContinuous;
-        break;
-      case RCTBorderCurveCircular:
-        view.layer.cornerCurve = kCACornerCurveCircular;
-        break;
-    }
+  switch ([RCTConvert RCTBorderCurve:json]) {
+    case RCTBorderCurveContinuous:
+      view.layer.cornerCurve = kCACornerCurveContinuous;
+      break;
+    case RCTBorderCurveCircular:
+      view.layer.cornerCurve = kCACornerCurveCircular;
+      break;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
@@ -460,6 +510,13 @@ RCT_CUSTOM_VIEW_PROPERTY(draggedTypes, NSArray<NSPasteboardType>*, RCTView)
 #endif // macOS]
 
 RCT_CUSTOM_VIEW_PROPERTY(collapsable, BOOL, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
 {
   // Property is only to be used in the new renderer.
   // It is necessary to add it here, otherwise it gets
@@ -631,6 +688,7 @@ RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
 
 // Experimental/WIP Pointer Events (not yet ready for use)
+RCT_EXPORT_VIEW_PROPERTY(onClick, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
@@ -639,5 +697,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onGotPointerCapture, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLostPointerCapture, RCTBubblingEventBlock)
 
 @end

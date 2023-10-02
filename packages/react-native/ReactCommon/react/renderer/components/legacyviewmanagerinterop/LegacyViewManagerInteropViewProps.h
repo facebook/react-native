@@ -10,21 +10,19 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LegacyViewManagerInteropViewProps final : public ViewProps {
  public:
   LegacyViewManagerInteropViewProps() = default;
   LegacyViewManagerInteropViewProps(
-      const PropsParserContext &context,
-      const LegacyViewManagerInteropViewProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const LegacyViewManagerInteropViewProps& sourceProps,
+      const RawProps& rawProps);
 
 #pragma mark - Props
 
   folly::dynamic const otherProps;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

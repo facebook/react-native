@@ -7,7 +7,7 @@
 
 #import "RCTSampleTurboModule.h"
 
-#import <React/RCTUIKit.h> // [macOS]
+#import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
 
 using namespace facebook::react;
@@ -148,6 +148,52 @@ RCT_EXPORT_METHOD(getValueWithPromise
   } else {
     resolve(@"result!");
   }
+}
+
+RCT_EXPORT_METHOD(voidFuncThrows)
+{
+  NSException *myException = [NSException exceptionWithName:@"Excepption"
+                                                     reason:@"Intentional exception from ObjC voidFuncThrows"
+                                                   userInfo:nil];
+  @throw myException;
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectThrows : (NSDictionary *)arg)
+{
+  NSException *myException = [NSException exceptionWithName:@"Excepption"
+                                                     reason:@"Intentional exception from ObjC getObjectThrows"
+                                                   userInfo:nil];
+  @throw myException;
+}
+
+RCT_EXPORT_METHOD(promiseThrows
+                  : (BOOL)error resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
+{
+  NSException *myException = [NSException exceptionWithName:@"Excepption"
+                                                     reason:@"Intentional exception from ObjC promiseThrows"
+                                                   userInfo:nil];
+  @throw myException;
+}
+
+RCT_EXPORT_METHOD(voidFuncAssert)
+{
+  RCTAssert(false, @"Intentional assert from ObjC voidFuncAssert");
+}
+
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectAssert : (NSDictionary *)arg)
+{
+  RCTAssert(false, @"Intentional assert from ObjC getObjectAssert");
+  return arg;
+}
+
+RCT_EXPORT_METHOD(promiseAssert
+                  : (BOOL)error resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
+{
+  RCTAssert(false, @"Intentional assert from ObjC promiseAssert");
 }
 
 @end

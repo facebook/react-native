@@ -28,6 +28,7 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 
   submit(uri: string) {
+    // $FlowFixMe[unused-promise]
     fetch(uri)
       .then(response => {
         this.responseURL = response.url;

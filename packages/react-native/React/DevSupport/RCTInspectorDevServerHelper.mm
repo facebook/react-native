@@ -93,6 +93,26 @@ static void sendEventToAllConnections(NSString *event)
         }] resume];
 }
 
++ (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
+{
+  NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
+      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+
+  NSURL *url = [NSURL
+      URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@", getServerHost(bundleURL), appId]];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  [request setHTTPMethod:@"POST"];
+
+  [[[NSURLSession sharedSession]
+      dataTaskWithRequest:request
+        completionHandler:^(
+            __unused NSData *_Nullable data, __unused NSURLResponse *_Nullable response, NSError *_Nullable error) {
+          if (error != nullptr) {
+            RCTLogWarn(@"%@", errorMessage);
+          }
+        }] resume];
+}
+
 + (void)disableDebugger
 {
   sendEventToAllConnections(kDebuggerMsgDisable);

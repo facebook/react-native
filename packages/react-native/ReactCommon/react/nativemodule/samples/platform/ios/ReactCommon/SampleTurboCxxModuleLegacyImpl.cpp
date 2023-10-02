@@ -11,8 +11,7 @@
 
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SampleTurboCxxModuleLegacyImpl::SampleTurboCxxModuleLegacyImpl() {}
 
@@ -128,22 +127,22 @@ double SampleTurboCxxModuleLegacyImpl::getNumber(double arg) {
   return arg;
 }
 
-std::string SampleTurboCxxModuleLegacyImpl::getString(const std::string &arg) {
+std::string SampleTurboCxxModuleLegacyImpl::getString(const std::string& arg) {
   return arg;
 }
 
 folly::dynamic SampleTurboCxxModuleLegacyImpl::getArray(
-    const folly::dynamic &arg) {
+    const folly::dynamic& arg) {
   return arg;
 }
 
 folly::dynamic SampleTurboCxxModuleLegacyImpl::getObject(
-    const folly::dynamic &arg) {
+    const folly::dynamic& arg) {
   return arg;
 }
 
 folly::dynamic SampleTurboCxxModuleLegacyImpl::getUnsafeObject(
-    const folly::dynamic &arg) {
+    const folly::dynamic& arg) {
   return arg;
 }
 
@@ -153,20 +152,20 @@ double SampleTurboCxxModuleLegacyImpl::getRootTag(double arg) {
 
 folly::dynamic SampleTurboCxxModuleLegacyImpl::getValue(
     double x,
-    const std::string &y,
-    const folly::dynamic &z) {
+    const std::string& y,
+    const folly::dynamic& z) {
   return folly::dynamic::object("x", x)("y", y)("z", z);
 }
 
 void SampleTurboCxxModuleLegacyImpl::getValueWithCallback(
-    const CxxModule::Callback &callback) {
+    const CxxModule::Callback& callback) {
   callback({"value from callback!"});
 }
 
 void SampleTurboCxxModuleLegacyImpl::getValueWithPromise(
     bool error,
-    const CxxModule::Callback &resolve,
-    const CxxModule::Callback &reject) {
+    const CxxModule::Callback& resolve,
+    const CxxModule::Callback& reject) {
   if (!error) {
     resolve({"result!"});
   } else {
@@ -175,5 +174,4 @@ void SampleTurboCxxModuleLegacyImpl::getValueWithPromise(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

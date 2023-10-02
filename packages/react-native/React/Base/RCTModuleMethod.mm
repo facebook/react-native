@@ -602,7 +602,6 @@ RCT_EXTERN_C_END
   return [NSString stringWithFormat:@"-[%@ %s]", _moduleClass, sel_getName(_selector)];
 }
 
-#if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; exports %@ as %s(); type: %s>",
@@ -612,6 +611,5 @@ RCT_EXTERN_C_END
                                     self.JSMethodName,
                                     RCTFunctionDescriptorFromType(self.functionType)];
 }
-#endif // macOS]
 
 @end

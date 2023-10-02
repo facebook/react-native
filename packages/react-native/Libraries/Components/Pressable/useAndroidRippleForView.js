@@ -71,7 +71,7 @@ export default function useAndroidRippleForView(
 
       return {
         viewProps:
-          foreground === true
+          foreground === true && Platform.Version >= 23
             ? {nativeForegroundAndroid: nativeRippleValue}
             : {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: PressEvent): void {

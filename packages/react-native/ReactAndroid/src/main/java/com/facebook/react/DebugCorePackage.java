@@ -73,17 +73,11 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
                 moduleClass.getName(),
                 reactModule.canOverrideExistingModule(),
                 reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
                 reactModule.isCxxModule(),
                 TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
+      return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);
@@ -99,18 +93,11 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
   }
 
   /** @return a map of view managers that should be registered with {@link UIManagerModule} */
-  private Map<String, ModuleSpec> getViewManagersMap(final ReactApplicationContext reactContext) {
+  private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
       appendMap(
-          viewManagers,
-          TraceUpdateOverlayManager.REACT_CLASS,
-          new Provider<NativeModule>() {
-            @Override
-            public NativeModule get() {
-              return new TraceUpdateOverlayManager();
-            }
-          });
+          viewManagers, TraceUpdateOverlayManager.REACT_CLASS, TraceUpdateOverlayManager::new);
 
       mViewManagers = viewManagers;
     }
@@ -119,18 +106,18 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
 
   @Override
   public List<ModuleSpec> getViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList<>(getViewManagersMap(reactContext).values());
+    return new ArrayList<>(getViewManagersMap().values());
   }
 
   @Override
   public Collection<String> getViewManagerNames(ReactApplicationContext reactContext) {
-    return getViewManagersMap(reactContext).keySet();
+    return getViewManagersMap().keySet();
   }
 
   @Override
   public @Nullable ViewManager createViewManager(
       ReactApplicationContext reactContext, String viewManagerName) {
-    ModuleSpec spec = getViewManagersMap(reactContext).get(viewManagerName);
+    ModuleSpec spec = getViewManagersMap().get(viewManagerName);
     return spec != null ? (ViewManager) spec.getProvider().get() : null;
   }
 }

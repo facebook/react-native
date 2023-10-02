@@ -8,11 +8,10 @@
 #pragma once
 
 #include <ReactCommon/CallInvoker.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
+class RuntimeScheduler;
 /*
  * Exposes RuntimeScheduler to native modules. All calls invoked on JavaScript
  * queue from native modules will be funneled through RuntimeScheduler.
@@ -21,9 +20,9 @@ class RuntimeSchedulerCallInvoker : public CallInvoker {
  public:
   RuntimeSchedulerCallInvoker(std::weak_ptr<RuntimeScheduler> runtimeScheduler);
 
-  void invokeAsync(CallFunc &&func) override;
-  void invokeSync(CallFunc &&func) override;
-  void invokeAsync(SchedulerPriority priority, CallFunc &&func) override;
+  void invokeAsync(CallFunc&& func) override;
+  void invokeSync(CallFunc&& func) override;
+  void invokeAsync(SchedulerPriority priority, CallFunc&& func) override;
 
  private:
   /*
@@ -33,5 +32,4 @@ class RuntimeSchedulerCallInvoker : public CallInvoker {
   std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

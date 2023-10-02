@@ -20,8 +20,7 @@
 // particular, the sync functions are only used for bridge setup and
 // teardown, and quitSynchronous is guaranteed to be called.
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RCTMessageThread::RCTMessageThread(NSRunLoop *runLoop, RCTJavaScriptCompleteBlock errorBlock)
     : m_cfRunLoop([runLoop getCFRunLoop]), m_errorBlock(errorBlock), m_shutdown(false)
@@ -110,5 +109,4 @@ void RCTMessageThread::setRunLoop(NSRunLoop *runLoop)
   CFRetain(m_cfRunLoop);
 }
 
-}
-}
+} // namespace facebook::react

@@ -80,14 +80,14 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (RCTUIView *)createPaperViewWithTag:(NSInteger)tag; // [macOS]
+- (RCTPlatformView *)createPaperViewWithTag:(NSInteger)tag; // [macOS]
 {
-  RCTUIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // [macOS]
+  RCTPlatformView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // [macOS]
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
   return view;
 }
 
-- (void)setProps:(folly::dynamic const &)props forView:(RCTUIView *)view // [macOS]
+- (void)setProps:(const folly::dynamic &)props forView:(RCTPlatformView *)view // [macOS]
 {
   if (props.isObject()) {
     NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
@@ -100,13 +100,23 @@ using namespace facebook::react;
   return RCTDropReactPrefixes(_componentData.name);
 }
 
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args reactTag:(NSInteger)tag
+- (void)handleCommand:(NSString *)commandName
+                 args:(NSArray *)args
+             reactTag:(NSInteger)tag
+            paperView:(nonnull RCTPlatformView *)paperView // [macOS]
 {
   Class managerClass = _componentData.managerClass;
   [self _lookupModuleMethodsIfNecessary];
   RCTModuleData *moduleData = [_bridge.batchedBridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
   id<RCTBridgeMethod> method;
-  if ([commandName isKindOfClass:[NSNumber class]]) {
+
+  // We can't use `[NSString intValue]` as "0" is a valid command,
+  // but also a falsy value. [NSNumberFormatter numberFromString] returns a
+  // `NSNumber *` which is NULL when it's to be NULL
+  // and it points to 0 when the string is @"0" (not a falsy value).
+  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+
+  if ([commandName isKindOfClass:[NSNumber class]] || [formatter numberFromString:commandName] != NULL) {
     method = moduleData ? moduleData.methods[[commandName intValue]] : _moduleMethods[[commandName intValue]];
   } else if ([commandName isKindOfClass:[NSString class]]) {
     method = moduleData ? moduleData.methodsByName[commandName] : _moduleMethodsByName[commandName];
@@ -133,7 +143,43 @@ using namespace facebook::react;
   }
 }
 
+- (void)addViewToRegistry:(RCTPlatformView *)view withTag:(NSInteger)tag // [macOS]
+{
+  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
+    if ([viewRegistry objectForKey:@(tag)] != NULL) {
+      return;
+    }
+    NSMutableDictionary<NSNumber *, RCTPlatformView *> *mutableViewRegistry = // [macOS]
+        (NSMutableDictionary<NSNumber *, RCTPlatformView *> *)viewRegistry; // [macOS]
+    [mutableViewRegistry setObject:view forKey:@(tag)];
+  }];
+}
+
+- (void)removeViewFromRegistryWithTag:(NSInteger)tag
+{
+  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
+    if ([viewRegistry objectForKey:@(tag)] == NULL) {
+      return;
+    }
+
+    NSMutableDictionary<NSNumber *, RCTPlatformView *> *mutableViewRegistry = // [macOS]
+        (NSMutableDictionary<NSNumber *, RCTPlatformView *> *)viewRegistry; // [macOS]
+    [mutableViewRegistry removeObjectForKey:@(tag)];
+  }];
+}
+
 #pragma mark - Private
+
+- (void)_addUIBlock:(RCTViewManagerUIBlock)block
+{
+  __weak __typeof__(self) weakSelf = self;
+  [_bridge.batchedBridge
+      dispatchBlock:^{
+        __typeof__(self) strongSelf = weakSelf;
+        [strongSelf->_bridge.uiManager addUIBlock:block];
+      }
+              queue:RCTGetUIManagerQueue()];
+}
 
 // This is copy-pasta from RCTModuleData.
 - (void)_lookupModuleMethodsIfNecessary

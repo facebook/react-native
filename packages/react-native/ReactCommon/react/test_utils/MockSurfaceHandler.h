@@ -11,8 +11,7 @@
 
 #include <react/renderer/scheduler/SurfaceHandler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MockSurfaceHandler : public SurfaceHandler {
  public:
@@ -22,5 +21,4 @@ class MockSurfaceHandler : public SurfaceHandler {
   MOCK_METHOD(SurfaceId, getSurfaceId, (), (const, noexcept));
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

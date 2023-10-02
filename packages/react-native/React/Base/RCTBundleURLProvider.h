@@ -22,8 +22,6 @@ RCT_EXTERN const NSUInteger kRCTBundleURLProviderDefaultPort;
 RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 #endif
 
-extern NSString *const kRCTPlatformName; // [macOS]
-
 @interface RCTBundleURLProvider : NSObject
 
 /**
@@ -103,6 +101,7 @@ extern NSString *const kRCTPlatformName; // [macOS]
 
 @property (nonatomic, assign) BOOL enableMinification;
 @property (nonatomic, assign) BOOL enableDev;
+@property (nonatomic, assign) BOOL inlineSourceMap;
 
 /**
  * The scheme/protocol used of the packager, the default is the http protocol
@@ -113,7 +112,7 @@ extern NSString *const kRCTPlatformName; // [macOS]
 
 /**
  * Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
- * instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
+ * instance method -jsBundleURLForBundleRoot:fallbackExtension: which includes logic to guess if the packager is running
  * and fall back to a pre-packaged bundle if it is not.
  *
  * The options here mirror some of Metro's Bundling Options:
@@ -127,13 +126,32 @@ extern NSString *const kRCTPlatformName; // [macOS]
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification;
+                 enableMinification:(BOOL)enableMinification
+    __deprecated_msg(
+        "Use `jsBundleURLForBundleRoot:packagerHost:enableDev:enableMinification:inlineSourceMap:` instead");
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                      packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule
+    __deprecated_msg(
+        "Use jsBundleURLForBundleRoot:packagerHost:enableDev:enableMinification:inlineSourceMap:modulesOnly:runModule:`  instead");
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                    inlineSourceMap:(BOOL)inlineSourceMap;
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                     packagerScheme:(NSString *)scheme
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                    inlineSourceMap:(BOOL)inlineSourceMap
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule;
 /**
@@ -144,6 +162,17 @@ extern NSString *const kRCTPlatformName; // [macOS]
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
                          packagerHost:(NSString *)packagerHost
                                scheme:(NSString *)scheme
-                                query:(NSString *)query;
+                                query:(NSString *)query
+    __deprecated_msg("Use version with queryItems parameter instead");
+
+/**
+ * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
+ * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
+ * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
+ */
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                               scheme:(NSString *)scheme
+                           queryItems:(NSArray<NSURLQueryItem *> *)queryItems;
 
 @end

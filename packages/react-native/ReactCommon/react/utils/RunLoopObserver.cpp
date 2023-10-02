@@ -9,15 +9,14 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RunLoopObserver::RunLoopObserver(
     Activity activities,
-    WeakOwner const &owner) noexcept
+    const WeakOwner& owner) noexcept
     : activities_(activities), owner_(owner) {}
 
-void RunLoopObserver::setDelegate(Delegate const *delegate) const noexcept {
+void RunLoopObserver::setDelegate(const Delegate* delegate) const noexcept {
   // We need these constraints to ensure basic thread-safety.
   react_native_assert(delegate && "A delegate must not be `nullptr`.");
   react_native_assert(
@@ -59,5 +58,4 @@ RunLoopObserver::WeakOwner RunLoopObserver::getOwner() const noexcept {
   return owner_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

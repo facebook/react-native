@@ -244,6 +244,10 @@ export default class SectionList<
     const stickySectionHeadersEnabled =
       _stickySectionHeadersEnabled ?? Platform.OS === 'ios';
     return (
+      /* $FlowFixMe[incompatible-type] Error revealed after improved builtin
+       * React utility types */
+      /* $FlowFixMe[incompatible-type] Error revealed after improved builtin
+       * React utility types */
       <VirtualizedSectionList
         {...restProps}
         stickySectionHeadersEnabled={stickySectionHeadersEnabled}

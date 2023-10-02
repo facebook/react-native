@@ -27,7 +27,7 @@ using namespace facebook::react;
 @interface RCTDevLoadingView () <NativeDevLoadingViewSpec>
 @end
 
-#if RCT_DEV | RCT_ENABLE_LOADING_VIEW
+#if RCT_DEV_MENU
 
 @implementation RCTDevLoadingView {
 #if !TARGET_OS_OSX // [macOS]
@@ -41,8 +41,6 @@ using namespace facebook::react;
   BOOL _hiding;
   dispatch_block_t _initialMessageBlock;
 }
-
-@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -73,15 +71,15 @@ RCT_EXPORT_MODULE()
 
 - (void)clearInitialMessageDelay
 {
-  if (self->_initialMessageBlock != nil) {
-    dispatch_block_cancel(self->_initialMessageBlock);
-    self->_initialMessageBlock = nil;
+  if (_initialMessageBlock != nil) {
+    dispatch_block_cancel(_initialMessageBlock);
+    _initialMessageBlock = nil;
   }
 }
 
 - (void)showInitialMessageDelayed:(void (^)())initialMessage
 {
-  self->_initialMessageBlock = dispatch_block_create(static_cast<dispatch_block_flags_t>(0), initialMessage);
+  _initialMessageBlock = dispatch_block_create(static_cast<dispatch_block_flags_t>(0), initialMessage);
 
   // We delay the initial loading message to prevent flashing it
   // when loading progress starts quickly. To do that, we
@@ -92,34 +90,17 @@ RCT_EXPORT_MODULE()
       dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), self->_initialMessageBlock);
 }
 
-#if 0 // [macOS
-// Blocked out because -[(NS|UI)Color getHue:saturation:brightness:alpha:] has
-// different return values on macOS and iOS.
-// The call to dimColor: was removed with f0dfd35108dd3f092d46b65e77560c35477bf6ba,
-// and we don't use it anywhere else, so we should probably remove this upstream too.
-- (RCTUIColor *)dimColor:(RCTUIColor *)c
+- (void)hideBannerAfter:(CGFloat)delay
 {
-  // Given a color, return a slightly lighter or darker color for dim effect.
-  CGFloat h, s, b, a;
-  if ([c getHue:&h saturation:&s brightness:&b alpha:&a])
-    return [RCTUIColor colorWithHue:h saturation:s brightness:b < 0.5 ? b * 1.25 : b * 0.75 alpha:a];
-  return nil;
-}
-#endif // macOS]
-
-- (NSString *)getTextForHost
-{
-  NSURL *bundleURL = _bundleManager.bundleURL;
-  if (bundleURL == nil || bundleURL.fileURL) {
-    return @"React Native";
-  }
-
-  return [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+  // Cancel previous hide call after the delay.
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hide) object:nil];
+  // Set new hide call after a delay.
+  [self performSelector:@selector(hide) withObject:nil afterDelay:delay];
 }
 
 - (void)showMessage:(NSString *)message color:(RCTUIColor *)color backgroundColor:(RCTUIColor *)backgroundColor // [macOS]
 {
-  if (!RCTDevLoadingViewGetEnabled() || self->_hiding) {
+  if (!RCTDevLoadingViewGetEnabled() || _hiding) {
     return;
   }
 
@@ -183,21 +164,18 @@ RCT_EXPORT_MODULE()
 
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
+
+    UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
+    self->_window.windowScene = scene;
 #else // [macOS
     self->_label.stringValue = message;
     self->_label.textColor = color;
     self->_label.backgroundColor = backgroundColor;
     [self->_window orderFront:nil];
 #endif // macOS]
-
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      UIWindowScene *scene = (UIWindowScene *)RCTSharedApplication().connectedScenes.anyObject;
-      self->_window.windowScene = scene;
-    }
-#endif
   });
+
+  [self hideBannerAfter:15.0];
 }
 
 RCT_EXPORT_METHOD(showMessage
@@ -218,7 +196,7 @@ RCT_EXPORT_METHOD(hide)
   [self clearInitialMessageDelay];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    self->_hiding = true;
+    self->_hiding = YES;
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
@@ -251,12 +229,12 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showProgressMessage:(NSString *)message
 {
-  if (self->_window != nil) {
+  if (_window != nil) {
     // This is an optimization. Since the progress can come in quickly,
     // we want to do the minimum amount of work to update the UI,
     // which is to only update the label text.
 #if !TARGET_OS_OSX // [macOS]
-    self->_label.text = message;
+    _label.text = message;
 #else // [macOS
     self->_label.stringValue = message;
 #endif // macOS]

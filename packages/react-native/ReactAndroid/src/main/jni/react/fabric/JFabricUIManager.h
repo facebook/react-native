@@ -9,16 +9,16 @@
 
 #include <fbjni/fbjni.h>
 
-#include "Binding.h"
-
 namespace facebook::react {
+
+class Binding;
 
 class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/fabric/FabricUIManager;";
 
-  Binding *getBinding();
+  Binding* getBinding();
 };
 
 } // namespace facebook::react

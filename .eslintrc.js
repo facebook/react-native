@@ -21,10 +21,10 @@ module.exports = {
   plugins: ['@react-native/eslint-plugin-specs', 'lint'],
 
   overrides: [
-    // overriding the JS config from eslint-config-react-native-community config to ensure
+    // overriding the JS config from @react-native/eslint-config to ensure
     // that we use hermes-eslint for all js files
     {
-      files: ['*.js'],
+      files: ['*.js', '*.js.flow'],
       parser: 'hermes-eslint',
       rules: {
         // These rules are not required with hermes-eslint
@@ -34,7 +34,24 @@ module.exports = {
         'no-undef': 0,
       },
     },
-
+    {
+      files: ['package.json'],
+      parser: 'jsonc-eslint-parser',
+    },
+    {
+      files: ['package.json'],
+      rules: {
+        'lint/react-native-manifest': 2,
+      },
+    },
+    {
+      files: ['flow-typed/**/*.js'],
+      rules: {
+        'lint/valid-flow-typed-signature': 2,
+        'no-unused-vars': 0,
+        quotes: 0,
+      },
+    },
     {
       files: ['packages/react-native/Libraries/**/*.js'],
       rules: {
@@ -44,14 +61,6 @@ module.exports = {
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
         'lint/sort-imports': 1,
-      },
-    },
-    {
-      files: ['packages/react-native/flow-typed/**/*.js'],
-      rules: {
-        'lint/valid-flow-typed-signature': 2,
-        'no-unused-vars': 0,
-        quotes: 0,
       },
     },
     {

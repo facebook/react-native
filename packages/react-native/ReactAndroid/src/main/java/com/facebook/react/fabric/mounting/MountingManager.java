@@ -23,15 +23,17 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.Queue;
@@ -280,12 +282,12 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
-   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
-   * from those calls over time.
+   * <p>Why accept {@ViewUtils.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
+   * UIManager.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will have
+   * to investigate and migrate away from those calls over time.
    *
-   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
-   *     compatibility.
+   * @param surfaceId {@link int} that identifies the surface or {@ViewUtils.NO_SURFACE_ID}(-1) to
+   *     temporarily support backward compatibility.
    * @param reactTag {@link int} that identifies the react Tag of the view.
    * @param eventType {@link int} that identifies Android eventType. see {@link
    *     View#sendAccessibilityEvent}
@@ -326,7 +328,9 @@ public class MountingManager {
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
     SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == -1 ? getSurfaceManagerForView(reactTag) : getSurfaceManager(surfaceId));
+        (surfaceId == ViewUtil.NO_SURFACE_ID
+            ? getSurfaceManagerForView(reactTag)
+            : getSurfaceManager(surfaceId));
     if (surfaceMountingManager == null) {
       return null;
     }
@@ -420,13 +424,18 @@ public class MountingManager {
             attachmentsPositions);
   }
 
-  public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
-    @Nullable SurfaceMountingManager smm = getSurfaceManagerForView(reactTag);
+  public void enqueuePendingEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
+    @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
     if (smm == null) {
       // Cannot queue event without valid surface mountng manager. Do nothing here.
       return;
     }
-
-    smm.enqueuePendingEvent(reactTag, viewEvent);
+    smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);
   }
 }

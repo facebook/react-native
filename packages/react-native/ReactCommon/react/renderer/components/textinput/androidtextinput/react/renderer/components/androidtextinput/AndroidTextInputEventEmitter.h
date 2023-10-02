@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // This emitter exists only as a placeholder and is not used for communication
 // with JS.
@@ -23,5 +22,4 @@ class AndroidTextInputEventEmitter : public ViewEventEmitter {
   using ViewEventEmitter::ViewEventEmitter;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

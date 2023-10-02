@@ -249,6 +249,15 @@ export type TextContentType =
   | 'addressState'
   | 'countryName'
   | 'creditCardNumber'
+  | 'creditCardExpiration'
+  | 'creditCardExpirationMonth'
+  | 'creditCardExpirationYear'
+  | 'creditCardSecurityCode'
+  | 'creditCardType'
+  | 'creditCardName'
+  | 'creditCardGivenName'
+  | 'creditCardMiddleName'
+  | 'creditCardFamilyName'
   | 'emailAddress'
   | 'familyName'
   | 'fullStreetAddress'
@@ -269,50 +278,27 @@ export type TextContentType =
   | 'username'
   | 'password'
   | 'newPassword'
-  | 'oneTimeCode';
+  | 'oneTimeCode'
+  | 'birthdate'
+  | 'birthdateDay'
+  | 'birthdateMonth'
+  | 'birthdateYear';
 
 export type enterKeyHintType =
-  | 'enter'
+  // Cross Platform
   | 'done'
   | 'go'
   | 'next'
-  | 'previous'
   | 'search'
-  | 'send';
+  | 'send'
+  // Android-only
+  | 'previous'
+  // iOS-only
+  | 'enter';
 
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
-  /**
-   * Give the keyboard and the system information about the
-   * expected semantic meaning for the content that users enter.
-   * @platform ios
-   */
-  autoComplete?: ?(
-    | 'address-line1'
-    | 'address-line2'
-    | 'cc-number'
-    | 'current-password'
-    | 'country'
-    | 'email'
-    | 'name'
-    | 'additional-name'
-    | 'family-name'
-    | 'given-name'
-    | 'nickname'
-    | 'honorific-prefix'
-    | 'honorific-suffix'
-    | 'new-password'
-    | 'off'
-    | 'one-time-code'
-    | 'organization'
-    | 'organization-title'
-    | 'postal-code'
-    | 'street-address'
-    | 'tel'
-    | 'url'
-    | 'username'
-  ),
   /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
@@ -415,6 +401,16 @@ type IOSProps = $ReadOnly<{|
    * @platform ios macos
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+
+  /**
+   * If `false`, the iOS system will not insert an extra space after a paste operation
+   * neither delete one or two spaces after a cut or delete operation.
+   *
+   * The default value is `true`.
+   *
+   * @platform ios
+   */
+  smartInsertDelete?: ?boolean,
 |}>;
 
 // [macOS
@@ -507,111 +503,6 @@ type MacOSProps = $ReadOnly<{|
 // macOS]
 
 type AndroidProps = $ReadOnly<{|
-  /**
-   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
-   * To disable autocomplete, set `autoComplete` to `off`.
-   *
-   * *Android Only*
-   *
-   * Possible values for `autoComplete` are:
-   *
-   * - `birthdate-day`
-   * - `birthdate-full`
-   * - `birthdate-month`
-   * - `birthdate-year`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-day`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
-   * - `cc-number`
-   * - `email`
-   * - `gender`
-   * - `name`
-   * - `name-family`
-   * - `name-given`
-   * - `name-middle`
-   * - `name-middle-initial`
-   * - `name-prefix`
-   * - `name-suffix`
-   * - `password`
-   * - `password-new`
-   * - `postal-address`
-   * - `postal-address-country`
-   * - `postal-address-extended`
-   * - `postal-address-extended-postal-code`
-   * - `postal-address-locality`
-   * - `postal-address-region`
-   * - `postal-code`
-   * - `street-address`
-   * - `sms-otp`
-   * - `tel`
-   * - `tel-country-code`
-   * - `tel-national`
-   * - `tel-device`
-   * - `username`
-   * - `username-new`
-   * - `off`
-   *
-   * @platform android
-   */
-  autoComplete?: ?(
-    | 'birthdate-day'
-    | 'birthdate-full'
-    | 'birthdate-month'
-    | 'birthdate-year'
-    | 'cc-csc'
-    | 'cc-exp'
-    | 'cc-exp-day'
-    | 'cc-exp-month'
-    | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'gender'
-    | 'name'
-    | 'name-family'
-    | 'name-given'
-    | 'name-middle'
-    | 'name-middle-initial'
-    | 'name-prefix'
-    | 'name-suffix'
-    | 'password'
-    | 'password-new'
-    | 'postal-address'
-    | 'postal-address-country'
-    | 'postal-address-extended'
-    | 'postal-address-extended-postal-code'
-    | 'postal-address-locality'
-    | 'postal-address-region'
-    | 'postal-code'
-    | 'street-address'
-    | 'sms-otp'
-    | 'tel'
-    | 'tel-country-code'
-    | 'tel-national'
-    | 'tel-device'
-    | 'username'
-    | 'username-new'
-    | 'off'
-    // additional HTML autocomplete values
-    | 'address-line1'
-    | 'address-line2'
-    | 'bday'
-    | 'bday-day'
-    | 'bday-month'
-    | 'bday-year'
-    | 'country'
-    | 'current-password'
-    | 'honorific-prefix'
-    | 'honorific-suffix'
-    | 'additional-name'
-    | 'family-name'
-    | 'given-name'
-    | 'new-password'
-    | 'one-time-code'
-    | 'sex'
-  ),
-
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -716,6 +607,137 @@ export type Props = $ReadOnly<{|
    * - `none`: don't auto capitalize anything.
    */
   autoCapitalize?: ?AutoCapitalize,
+
+  /**
+   * Specifies autocomplete hints for the system, so it can provide autofill.
+   * On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set autoComplete to off.
+   *
+   * The following values work across platforms:
+   *
+   * - `additional-name`
+   * - `address-line1`
+   * - `address-line2`
+   * - `birthdate-day` (iOS 17+)
+   * - `birthdate-full` (iOS 17+)
+   * - `birthdate-month` (iOS 17+)
+   * - `birthdate-year` (iOS 17+)
+   * - `cc-number`
+   * - `cc-csc` (iOS 17+)
+   * - `cc-exp` (iOS 17+)
+   * - `cc-exp-day` (iOS 17+)
+   * - `cc-exp-month` (iOS 17+)
+   * - `cc-exp-year` (iOS 17+)
+   * - `country`
+   * - `current-password`
+   * - `email`
+   * - `family-name`
+   * - `given-name`
+   * - `honorific-prefix`
+   * - `honorific-suffix`
+   * - `name`
+   * - `new-password`
+   * - `off`
+   * - `one-time-code`
+   * - `postal-code`
+   * - `street-address`
+   * - `tel`
+   * - `username`
+   *
+   * The following values work on iOS only:
+   *
+   * - `cc-name` (iOS 17+)
+   * - `cc-given-name` (iOS 17+)
+   * - `cc-middle-name` (iOS 17+)
+   * - `cc-family-name` (iOS 17+)
+   * - `cc-type` (iOS 17+)
+   * - `nickname`
+   * - `organization`
+   * - `organization-title`
+   * - `url`
+   *
+   * The following values work on Android only:
+   *
+   * - `gender`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `sms-otp`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username-new`
+   */
+  autoComplete?: ?(
+    | 'additional-name'
+    | 'address-line1'
+    | 'address-line2'
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-day'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-middle-name'
+    | 'cc-family-name'
+    | 'cc-type'
+    | 'country'
+    | 'current-password'
+    | 'email'
+    | 'family-name'
+    | 'gender'
+    | 'given-name'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
+    | 'new-password'
+    | 'nickname'
+    | 'one-time-code'
+    | 'organization'
+    | 'organization-title'
+    | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
+    | 'postal-code'
+    | 'street-address'
+    | 'sms-otp'
+    | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
+    | 'url'
+    | 'username'
+    | 'username-new'
+    | 'off'
+  ),
 
   /**
    * If `false`, disables auto-correct. The default value is `true`.
@@ -1236,27 +1258,19 @@ function InternalTextInput(props: Props): React.Node {
     accessibilityState,
     id,
     tabIndex,
+    selection: propsSelection,
     ...otherProps
   } = props;
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
-  // the same "most recent event count".
-  // For controlled selection, that means that immediately after text is updated,
-  // a controlled component will pass in the *previous* selection, even if the controlled
-  // component didn't mean to modify the selection at all.
-  // Therefore, we ignore selections and pass them through until the selection event has
-  // been sent.
-  // Note that this mitigation is NOT needed for Fabric.
-  // discovered when upgrading react-hooks
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  let selection: ?Selection =
-    props.selection == null
+  const selection: ?Selection =
+    propsSelection == null
       ? null
       : {
-          start: props.selection.start,
-          end: props.selection.end ?? props.selection.start,
+          start: propsSelection.start,
+          end: propsSelection.end ?? propsSelection.start,
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
@@ -1268,12 +1282,6 @@ function InternalTextInput(props: Props): React.Node {
   |}>({selection, mostRecentEventCount});
 
   const lastNativeSelection = lastNativeSelectionState.selection;
-  const lastNativeSelectionEventCount =
-    lastNativeSelectionState.mostRecentEventCount;
-
-  if (lastNativeSelectionEventCount < mostRecentEventCount) {
-    selection = null;
-  }
 
   let viewCommands;
   if (AndroidTextInputCommands) {
@@ -1535,6 +1543,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const config = React.useMemo(
     () => ({
+      hitSlop: props.hitSlop,
       onPress: (event: PressEvent) => {
         if (props.editable !== false) {
           if (inputRef.current != null) {
@@ -1551,6 +1560,7 @@ function InternalTextInput(props: Props): React.Node {
     }),
     [
       props.editable,
+      props.hitSlop,
       props.onPressIn,
       props.onPressOut,
       props.rejectResponderTermination,
@@ -1685,7 +1695,6 @@ function InternalTextInput(props: Props): React.Node {
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
-        selection={selection}
         style={style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}
@@ -1756,7 +1765,20 @@ const autoCompleteWebToAutoCompleteAndroidMap = {
 const autoCompleteWebToTextContentTypeMap = {
   'address-line1': 'streetAddressLine1',
   'address-line2': 'streetAddressLine2',
+  bday: 'birthdate',
+  'bday-day': 'birthdateDay',
+  'bday-month': 'birthdateMonth',
+  'bday-year': 'birthdateYear',
+  'cc-csc': 'creditCardSecurityCode',
+  'cc-exp-month': 'creditCardExpirationMonth',
+  'cc-exp-year': 'creditCardExpirationYear',
+  'cc-exp': 'creditCardExpiration',
+  'cc-given-name': 'creditCardGivenName',
+  'cc-additional-name': 'creditCardMiddleName',
+  'cc-family-name': 'creditCardFamilyName',
+  'cc-name': 'creditCardName',
   'cc-number': 'creditCardNumber',
+  'cc-type': 'creditCardType',
   'current-password': 'password',
   country: 'countryName',
   email: 'emailAddress',

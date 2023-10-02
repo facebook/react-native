@@ -16,6 +16,9 @@ class ReactNativePodsUtils
         end
     end
 
+    # deprecated. These checks are duplicated in the react_native_pods function
+    # and we don't really need them. Removing this function will make it easy to
+    # move forward.
     def self.get_default_flags
         flags = {
             :fabric_enabled => false,
@@ -39,6 +42,11 @@ class ReactNativePodsUtils
         installer.pods_project.pod_group(name) != nil
     end
 
+    def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
+    end
+
     def self.turn_off_resource_bundle_react_core(installer)
         # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
         # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
@@ -54,14 +62,37 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        projects = self.extract_projects(installer)
+        is_using_hermes = self.has_pod(installer, 'hermes-engine')
 
-        # Hermes does not support `i386` architecture
-        excluded_archs_default = self.has_pod(installer, 'hermes-engine') ? "i386" : ""
+        if is_using_hermes
+            key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
+
+            projects = self.extract_projects(installer)
+
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    current_setting = config.build_settings[key] || ""
+
+                    excluded_archs_includes_I386 = current_setting.include?("i386")
+
+                    if !excluded_archs_includes_I386
+                        # Hermes does not support `i386` architecture
+                        config.build_settings[key] = "#{current_setting} i386".strip
+                    end
+                end
+
+                project.save()
+            end
+        end
+    end
+
+    def self.set_use_hermes_build_setting(installer, hermes_enabled)
+        Pod::UI.puts("Setting USE_HERMES build settings")
+        projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+                config.build_settings["USE_HERMES"] = hermes_enabled
             end
 
             project.save()
@@ -121,6 +152,27 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
+        projects = self.extract_projects(installer)
+
+        other_ld_flags_key = 'OTHER_LDFLAGS'
+        xcode15_compatibility_flags = '-Wl -ld_classic '
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                # fix for weak linking
+                self.safe_init(config, other_ld_flags_key)
+                if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
+                    self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
+                else
+                    self.remove_value_to_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
+                end
+            end
+            project.save()
+        end
+
+    end
+
     def self.apply_flags_for_fabric(installer, fabric_enabled: false)
         fabric_flag = "-DRN_FABRIC_ENABLED"
         if fabric_enabled
@@ -132,6 +184,19 @@ class ReactNativePodsUtils
 
     private
 
+    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name.to_s == target_pod_name
+                target_installation_result.native_target.build_configurations.each do |config|
+                        if configuration == nil || (configuration != nil && configuration == config.name)
+                            config.build_settings[settings_name] ||= '$(inherited) '
+                            config.build_settings[settings_name] << settings_value
+                        end
+                    end
+                end
+            end
+    end
+
     def self.fix_library_search_path(config)
         lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
 
@@ -141,7 +206,7 @@ class ReactNativePodsUtils
         end
 
         if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
-            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple Silicon)
             # since the libraries there are only built for x86_64 and i386.
             lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
             lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
@@ -156,11 +221,15 @@ class ReactNativePodsUtils
     def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
         file_path = file_manager.join(relative_path, '.xcode.env')
-        if file_manager.exist?(file_path)
-            return
+
+        if !file_manager.exist?(file_path)
+            system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
         end
 
-        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+        if !file_manager.exist?("#{file_path}.local")
+            node_binary = `command -v node`
+            system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
+        end
     end
 
     # It examines the target_definition property and sets the appropriate value for
@@ -198,6 +267,7 @@ class ReactNativePodsUtils
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
 
@@ -220,11 +290,36 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.enable_hermes_profiler(installer, enable_hermes_profiler: false)
-        return if !enable_hermes_profiler
+    def self.updateOSDeploymentTarget(installer) # [macOS]
+        pod_to_update = Set.new([
+            "boost",
+            "CocoaAsyncSocket",
+            "Flipper",
+            "Flipper-DoubleConversion",
+            "Flipper-Fmt",
+            "Flipper-Boost-iOSX",
+            "Flipper-Folly",
+            "Flipper-Glog",
+            "Flipper-PeerTalk",
+            "FlipperKit",
+            "fmt",
+            "libevent",
+            "OpenSSL-Universal",
+            "RCT-Folly",
+            "SocketRocket",
+            "YogaKit"
+        ])
 
-        Pod::UI.puts "[Hermes Profiler] Enable Hermes Sample profiler"
-        self.add_compiler_flag_to_pods(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
+        installer.target_installation_results.pod_target_installation_results
+            .each do |pod_name, target_installation_result|
+                unless pod_to_update.include?(pod_name)
+                    next
+                end
+                target_installation_result.native_target.build_configurations.each do |config|
+                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
+                    config.build_settings["MACOSX_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported # [macOS]
+                end
+            end
     end
 
     # ========= #
@@ -236,6 +331,49 @@ class ReactNativePodsUtils
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
             .push(installer.pods_project)
+    end
+
+    def self.safe_init(config, setting_name)
+        old_config = config.build_settings[setting_name]
+        if old_config == nil
+            config.build_settings[setting_name] ||= '$(inherited) '
+        end
+    end
+
+    def self.add_value_to_setting_if_missing(config, setting_name, value)
+        old_config = config.build_settings[setting_name]
+        if !old_config.include?(value)
+            config.build_settings[setting_name] << value
+        end
+    end
+
+    def self.remove_value_to_setting_if_present(config, setting_name, value)
+        old_config = config.build_settings[setting_name]
+        if old_config.include?(value)
+            # Old config can be either an Array or a String
+            if old_config.is_a?(Array)
+                old_config = old_config.join(" ")
+            end
+            new_config = old_config.gsub(value,  "")
+            config.build_settings[setting_name] = new_config
+        end
+    end
+
+    def self.is_using_xcode15_or_greter(xcodebuild_manager: Xcodebuild)
+        xcodebuild_version = xcodebuild_manager.version
+
+        # The output of xcodebuild -version is something like
+        # Xcode 15.0
+        # or
+        # Xcode 14.3.1
+        # We want to capture the version digits
+        regex = /(\d+)\.(\d+)(?:\.(\d+))?/
+        if match_data = xcodebuild_version.match(regex)
+            major = match_data[1].to_i
+            return major >= 15
+        end
+
+        return false
     end
 
     def self.add_compiler_flag_to_project(installer, flag, configuration: nil)
@@ -339,6 +477,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "RCT-Folly", [
             "\"$(PODS_ROOT)/RCT-Folly\"",
             "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/fmt/include\"",
             "\"$(PODS_ROOT)/boost\""
         ])
     end
@@ -361,6 +500,8 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
         ])
@@ -370,6 +511,42 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
         ])
+    end
+
+    def self.get_plist_paths_from(user_project)
+        info_plists = user_project
+          .files
+          .select { |p|
+            p.name&.end_with?('Info.plist')
+          }
+        return info_plists
+      end
+
+    def self.update_ats_in_plist(plistPaths, parent)
+        plistPaths.each do |plistPath|
+            fullPlistPath = File.join(parent, plistPath.path)
+            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
+            ats_configs = {
+                "NSAllowsArbitraryLoads" => false,
+                "NSAllowsLocalNetworking" => true,
+            }
+            if plist.nil?
+                plist = {
+                    "NSAppTransportSecurity" => ats_configs
+                }
+            else
+                plist["NSAppTransportSecurity"] = ats_configs
+            end
+            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
+        end
+    end
+
+    def self.apply_ats_config(installer)
+        user_project = installer.aggregate_targets
+                    .map{ |t| t.user_project }
+                    .first
+        plistPaths = self.get_plist_paths_from(user_project)
+        self.update_ats_in_plist(plistPaths, user_project.path.parent)
     end
 
     def self.react_native_pods
@@ -384,6 +561,7 @@ class ReactNativePodsUtils
             "React-Core",
             "React-CoreModules",
             "React-Fabric",
+            "React-FabricImage",
             "React-ImageManager",
             "React-RCTActionSheet",
             "React-RCTAnimation",

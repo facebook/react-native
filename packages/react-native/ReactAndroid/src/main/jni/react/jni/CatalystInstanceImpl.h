@@ -9,6 +9,7 @@
 #include <string>
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
@@ -20,8 +21,7 @@
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class JavaScriptExecutorHolder;
@@ -53,7 +53,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
-      JavaScriptExecutorHolder *jseh,
+      JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
       jni::alias_ref<
@@ -61,10 +61,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
-
-  // When called from CatalystInstanceImpl.java, warnings will be logged when
-  // CxxNativeModules are used. Java NativeModule usages log error in Java.
-  void warnOnLegacyNativeModuleSystemUse();
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
@@ -75,32 +71,33 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
-  void jniSetSourceURL(const std::string &sourceURL);
+  void jniSetSourceURL(const std::string& sourceURL);
 
   /**
    * Registers the file path of an additional JS segment by its ID.
    *
    */
-  void jniRegisterSegment(int segmentId, const std::string &path);
+  void jniRegisterSegment(int segmentId, const std::string& path);
 
   void jniLoadScriptFromAssets(
       jni::alias_ref<JAssetManager::javaobject> assetManager,
-      const std::string &assetURL,
+      const std::string& assetURL,
       bool loadSynchronously);
   void jniLoadScriptFromFile(
-      const std::string &fileName,
-      const std::string &sourceURL,
+      const std::string& fileName,
+      const std::string& sourceURL,
       bool loadSynchronously);
   void jniCallJSFunction(
       std::string module,
       std::string method,
-      NativeArray *arguments);
-  void jniCallJSCallback(jint callbackId, NativeArray *arguments);
+      NativeArray* arguments);
+  void jniCallJSCallback(jint callbackId, NativeArray* arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
-  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+  getNativeMethodCallInvokerHolder();
   jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
   jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler();
-  void setGlobalVariable(std::string propName, std::string &&jsonValue);
+  void setGlobalVariable(std::string propName, std::string&& jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
 
@@ -112,10 +109,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
-  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<NativeMethodCallInvokerHolder::javaobject>
+      nativeMethodCallInvokerHolder_;
   jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

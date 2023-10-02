@@ -26,14 +26,14 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
   /* package */ static final String TAG = "FallbackJSBundleLoader";
 
   // Loaders to delegate to, with the preferred one at the top.
-  private Stack<JSBundleLoader> mLoaders;
+  private final Stack<JSBundleLoader> mLoaders;
 
   // Reasons why we fell-back on previous loaders, in order of occurrence.
   private final ArrayList<Exception> mRecoveredErrors = new ArrayList<>();
 
   /** @param loaders Loaders for the sources to try, in descending order of preference. */
   public FallbackJSBundleLoader(List<JSBundleLoader> loaders) {
-    mLoaders = new Stack();
+    mLoaders = new Stack<>();
     ListIterator<JSBundleLoader> it = loaders.listIterator(loaders.size());
     while (it.hasPrevious()) {
       mLoaders.push(it.previous());

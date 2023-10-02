@@ -28,11 +28,11 @@ double Sample::add(double a, double b) {
   return a + b;
 }
 
-std::string Sample::concat(const std::string &a, const std::string &b) {
+std::string Sample::concat(const std::string& a, const std::string& b) {
   return a + b;
 }
 
-std::string Sample::repeat(int count, const std::string &str) {
+std::string Sample::repeat(int count, const std::string& str) {
   std::string ret;
   for (int i = 0; i < count; i++) {
     ret += str;
@@ -155,7 +155,7 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
 
 void SampleCxxModule::save(folly::dynamic args) {
   std::map<std::string, std::string> m;
-  for (const auto &p : jsArgN(args, 0, &dynamic::items)) {
+  for (const auto& p : jsArgN(args, 0, &dynamic::items)) {
     m.emplace(
         jsArg(p.first, &dynamic::asString, "map key"),
         jsArg(p.second, &dynamic::asString, "map value"));
@@ -165,7 +165,7 @@ void SampleCxxModule::save(folly::dynamic args) {
 
 void SampleCxxModule::load([[maybe_unused]] folly::dynamic args, Callback cb) {
   dynamic d = dynamic::object;
-  for (const auto &p : sample_->load()) {
+  for (const auto& p : sample_->load()) {
     d.insert(p.first, p.second);
   }
   cb({d});
@@ -176,7 +176,7 @@ void SampleCxxModule::load([[maybe_unused]] folly::dynamic args, Callback cb) {
 } // namespace facebook
 
 // By convention, the function name should be the same as the class name.
-facebook::xplat::module::CxxModule *SampleCxxModule() {
+facebook::xplat::module::CxxModule* SampleCxxModule() {
   return new facebook::xplat::samples::SampleCxxModule(
       std::make_unique<facebook::xplat::samples::Sample>());
 }

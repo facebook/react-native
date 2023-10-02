@@ -12,14 +12,12 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/ElementFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Build `ShadowNode` trees with a given given `Element` trees.
@@ -32,10 +30,10 @@ class ComponentBuilder final {
   /*
    * Copyable and movable.
    */
-  ComponentBuilder(ComponentBuilder const &componentBuilder) = default;
-  ComponentBuilder(ComponentBuilder &&componentBuilder) noexcept = default;
-  ComponentBuilder &operator=(ComponentBuilder const &other) = default;
-  ComponentBuilder &operator=(ComponentBuilder &&other) = default;
+  ComponentBuilder(const ComponentBuilder& componentBuilder) = default;
+  ComponentBuilder(ComponentBuilder&& componentBuilder) noexcept = default;
+  ComponentBuilder& operator=(const ComponentBuilder& other) = default;
+  ComponentBuilder& operator=(ComponentBuilder&& other) = default;
 
   /*
    * Builds a `ShadowNode` tree with given `Element` tree using stored
@@ -50,10 +48,9 @@ class ComponentBuilder final {
   /*
    * Internal, type-erased version of `build`.
    */
-  ShadowNode::Unshared build(ElementFragment const &elementFragment) const;
+  ShadowNode::Unshared build(const ElementFragment& elementFragment) const;
 
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

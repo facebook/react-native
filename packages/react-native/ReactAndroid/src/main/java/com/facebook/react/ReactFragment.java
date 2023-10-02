@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -29,6 +30,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   protected static final String ARG_COMPONENT_NAME = "arg_component_name";
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
+  protected static final String ARG_FABRIC_ENABLED = "arg_fabric_enabled";
 
   private ReactDelegate mReactDelegate;
 
@@ -40,13 +42,16 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   /**
    * @param componentName The name of the react native component
+   * @param fabricEnabled Flag to enable Fabric for ReactFragment
    * @return A new instance of fragment ReactFragment.
    */
-  private static ReactFragment newInstance(String componentName, Bundle launchOptions) {
+  private static ReactFragment newInstance(
+      String componentName, Bundle launchOptions, Boolean fabricEnabled) {
     ReactFragment fragment = new ReactFragment();
     Bundle args = new Bundle();
     args.putString(ARG_COMPONENT_NAME, componentName);
     args.putBundle(ARG_LAUNCH_OPTIONS, launchOptions);
+    args.putBoolean(ARG_FABRIC_ENABLED, fabricEnabled);
     fragment.setArguments(args);
     return fragment;
   }
@@ -57,15 +62,18 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     super.onCreate(savedInstanceState);
     String mainComponentName = null;
     Bundle launchOptions = null;
+    Boolean fabricEnabled = null;
     if (getArguments() != null) {
       mainComponentName = getArguments().getString(ARG_COMPONENT_NAME);
       launchOptions = getArguments().getBundle(ARG_LAUNCH_OPTIONS);
+      fabricEnabled = getArguments().getBoolean(ARG_FABRIC_ENABLED);
     }
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
     mReactDelegate =
-        new ReactDelegate(getActivity(), getReactNativeHost(), mainComponentName, launchOptions);
+        new ReactDelegate(
+            getActivity(), getReactNativeHost(), mainComponentName, launchOptions, fabricEnabled);
   }
 
   /**
@@ -85,7 +93,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mReactDelegate.loadApp();
     return mReactDelegate.getReactRootView();
   }
@@ -140,7 +148,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   @Override
   public void onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (mPermissionListener != null
         && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
@@ -170,12 +178,14 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   /** Builder class to help instantiate a ReactFragment */
   public static class Builder {
 
-    String mComponentName;
-    Bundle mLaunchOptions;
+    @Nullable String mComponentName;
+    @Nullable Bundle mLaunchOptions;
+    @Nullable Boolean mFabricEnabled;
 
     public Builder() {
       mComponentName = null;
       mLaunchOptions = null;
+      mFabricEnabled = null;
     }
 
     /**
@@ -201,7 +211,12 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     }
 
     public ReactFragment build() {
-      return ReactFragment.newInstance(mComponentName, mLaunchOptions);
+      return ReactFragment.newInstance(mComponentName, mLaunchOptions, mFabricEnabled);
+    }
+
+    public Builder setFabricEnabled(boolean fabricEnabled) {
+      mFabricEnabled = fabricEnabled;
+      return this;
     }
   }
 }

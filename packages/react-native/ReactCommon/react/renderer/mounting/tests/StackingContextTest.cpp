@@ -152,11 +152,11 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void mutateViewShadowNodeProps_(
-      std::shared_ptr<ViewShadowNode> const &node,
-      std::function<void(ViewProps &props)> callback) {
+      const std::shared_ptr<ViewShadowNode>& node,
+      std::function<void(ViewProps& props)> callback) {
     rootShadowNode_ =
         std::static_pointer_cast<RootShadowNode>(rootShadowNode_->cloneTree(
-            node->getFamily(), [&](ShadowNode const &oldShadowNode) {
+            node->getFamily(), [&](const ShadowNode& oldShadowNode) {
               auto viewProps = std::make_shared<ViewShadowNodeProps>();
               callback(*viewProps);
               return oldShadowNode.clone(ShadowNodeFragment{viewProps});
@@ -164,7 +164,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void testViewTree_(
-      std::function<void(StubViewTree const &viewTree)> const &callback) {
+      const std::function<void(StubViewTree const& viewTree)>& callback) {
     rootShadowNode_->layoutIfNeeded();
 
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));
@@ -179,7 +179,7 @@ class StackingContextTest : public ::testing::Test {
 };
 
 TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
 
@@ -249,38 +249,38 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
   //  └────────────────────────────────────┘    └─────────────────────────────┘
 
-  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
+  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
     yogaStyle.padding()[YGEdgeAll] = YGValue{42, YGUnitPoint};
     yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
-    yogaStyle.positionType() = YGPositionTypeAbsolute;
+    yogaStyle.positionType() = yoga::PositionType::Absolute;
     props.shadowRadius = 42;
     props.shadowOffset = Size{42, 42};
     props.backgroundColor = clearColor();
   });
 
-  mutateViewShadowNodeProps_(nodeBA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
+  mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
     props.zIndex = 42;
     yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
     props.shadowColor = clearColor();
     props.shadowOpacity = 0.42;
   });
 
-  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
 
     props.borderRadii.all = 42;
     props.borderColors.all = blackColor();
   });
 
-  mutateViewShadowNodeProps_(nodeBD_, [](ViewProps &props) {
+  mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
     props.onLayout = true;
     props.hitSlop = EdgeInsets{42, 42, 42, 42};
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
 
@@ -351,15 +351,15 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   //  └────────────────────────────────────┘    └─────────────────────────────┘
 
   mutateViewShadowNodeProps_(
-      nodeAA_, [](ViewProps &props) { props.backgroundColor = blackColor(); });
+      nodeAA_, [](ViewProps& props) { props.backgroundColor = blackColor(); });
 
   mutateViewShadowNodeProps_(
-      nodeBA_, [](ViewProps &props) { props.backgroundColor = whiteColor(); });
+      nodeBA_, [](ViewProps& props) { props.backgroundColor = whiteColor(); });
 
   mutateViewShadowNodeProps_(
-      nodeBBA_, [](ViewProps &props) { props.shadowColor = blackColor(); });
+      nodeBBA_, [](ViewProps& props) { props.shadowColor = blackColor(); });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 4 views in total.
     EXPECT_EQ(viewTree.size(), 4);
 
@@ -402,7 +402,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
   //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
   //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │ ┃ #FormsView              ┃ │
-  //  │ ┃ ┃ foregroundColor: black;    ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃ backgroundColor: black;    ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
   //  │ ┃ ┃                            ┃ ┃ │━━━▶│ ┃                         ┃ │
   //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
   //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ BBB (tag: 8) ━━━━━━━━━━┓ │
@@ -435,38 +435,38 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   //  └────────────────────────────────────┘    └─────────────────────────────┘
 
   mutateViewShadowNodeProps_(
-      nodeA_, [](ViewProps &props) { props.backgroundColor = blackColor(); });
+      nodeA_, [](ViewProps& props) { props.backgroundColor = blackColor(); });
 
-  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps &props) {
+  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     props.pointerEvents = PointerEventsMode::None;
   });
 
   mutateViewShadowNodeProps_(
-      nodeB_, [](ViewProps &props) { props.testId = "42"; });
+      nodeB_, [](ViewProps& props) { props.testId = "42"; });
 
   mutateViewShadowNodeProps_(
-      nodeBA_, [](ViewProps &props) { props.nativeId = "42"; });
+      nodeBA_, [](ViewProps& props) { props.nativeId = "42"; });
 
   mutateViewShadowNodeProps_(
-      nodeBB_, [](ViewProps &props) { props.foregroundColor = blackColor(); });
+      nodeBB_, [](ViewProps& props) { props.backgroundColor = blackColor(); });
 
-  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
+  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     props.transform = Transform::Scale(2, 2, 2);
   });
 
-  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 42;
   });
 
   mutateViewShadowNodeProps_(
-      nodeBC_, [](ViewProps &props) { props.shadowColor = blackColor(); });
+      nodeBC_, [](ViewProps& props) { props.shadowColor = blackColor(); });
 
   mutateViewShadowNodeProps_(
-      nodeBD_, [](ViewProps &props) { props.opacity = 0.42; });
+      nodeBD_, [](ViewProps& props) { props.opacity = 0.42; });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 10 views in total.
     EXPECT_EQ(viewTree.size(), 10);
 
@@ -536,43 +536,43 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
   //  │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │    │                             │
   //  └────────────────────────────────────┘    └─────────────────────────────┘
 
-  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 9001;
   });
 
-  mutateViewShadowNodeProps_(nodeBA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 9000;
   });
 
-  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 8999;
   });
 
-  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 8998;
   });
 
-  mutateViewShadowNodeProps_(nodeBC_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBC_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 8997;
   });
 
-  mutateViewShadowNodeProps_(nodeBD_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 8996;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 7 views in total.
     EXPECT_EQ(viewTree.size(), 7);
 
@@ -650,13 +650,13 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
   //  │ └────────────────────────────────┘ │     │                            │
   //  └────────────────────────────────────┘     └────────────────────────────┘
 
-  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeRelative;
+  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Relative;
     props.zIndex = 42;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 8 views in total.
     EXPECT_EQ(viewTree.size(), 8);
 
@@ -670,7 +670,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 5);
     EXPECT_EQ(viewTree.getRootStubView().children.at(4)->tag, 3);
 
-    auto &view6 = viewTree.getStubView(6);
+    auto& view6 = viewTree.getStubView(6);
     EXPECT_EQ(view6.children.size(), 2);
     EXPECT_EQ(view6.children.at(0)->tag, 8);
     EXPECT_EQ(view6.children.at(1)->tag, 7);
@@ -678,13 +678,13 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   // And now, let's revert it back.
 
-  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = YGPositionTypeStatic;
+  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.positionType() = yoga::PositionType::Static;
     props.zIndex = {};
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
+  testViewTree_([](const StubViewTree& viewTree) {
     // 7 views in total.
     EXPECT_EQ(viewTree.size(), 7);
 
@@ -762,16 +762,19 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
   //  │ └────────────────────────────────┘ │     │                            │
   //  └────────────────────────────────────┘     └────────────────────────────┘
 
-  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps &props) {
-    auto &yogaStyle = props.yogaStyle;
-    yogaStyle.display() = YGDisplayNone;
+  mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
+    auto& yogaStyle = props.yogaStyle;
+    yogaStyle.display() = yoga::Display::None;
   });
 
-  testViewTree_([](StubViewTree const &viewTree) {
-    // 5 views in total.
+  testViewTree_([](const StubViewTree& viewTree) {
+#ifdef ANDROID
+    // T153547836: Android still mounts views with
+    // ShadowNodeTraits::Trait::Hidden
+
     EXPECT_EQ(viewTree.size(), 8);
 
-    // The root view has all 5 subviews.
+    // nodeBB_ forms a stacking context
     EXPECT_EQ(viewTree.getRootStubView().children.size(), 5);
 
     // The root view subviews are [6, 10, 9, 5].
@@ -779,6 +782,19 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 10);
     EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 9);
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(4)->tag, 3);
+#else
+    EXPECT_EQ(viewTree.size(), 5);
+
+    // The root view has all 4 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
+
+    // The root view subviews are [6, 10, 9, 5].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 10);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 3);
+#endif
   });
 }
 

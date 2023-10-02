@@ -8,18 +8,18 @@
 #include "ScrollViewProps.h"
 
 #include <react/renderer/components/scrollview/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <react/renderer/core/propsConversions.h>
 
 namespace facebook::react {
 
 ScrollViewProps::ScrollViewProps(
-    const PropsParserContext &context,
-    ScrollViewProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext& context,
+    const ScrollViewProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       alwaysBounceHorizontal(
           CoreFeatures::enablePropIteratorSetter
@@ -319,13 +319,22 @@ ScrollViewProps::ScrollViewProps(
                     rawProps,
                     "scrollToOverflowEnabled",
                     sourceProps.scrollToOverflowEnabled,
+                    {})),
+      isInvertedVirtualizedList(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.isInvertedVirtualizedList
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "isInvertedVirtualizedList",
+                    sourceProps.isInvertedVirtualizedList,
                     {})) {}
 
 void ScrollViewProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
@@ -368,6 +377,7 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(snapToEnd);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isInvertedVirtualizedList);
   }
 }
 
@@ -492,7 +502,11 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
           debugStringConvertibleItem(
               "snapToStart", snapToStart, defaultScrollViewProps.snapToStart),
           debugStringConvertibleItem(
-              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd)};
+              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd),
+          debugStringConvertibleItem(
+              "isInvertedVirtualizedList",
+              snapToEnd,
+              defaultScrollViewProps.isInvertedVirtualizedList)};
 }
 #endif
 

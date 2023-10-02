@@ -82,6 +82,7 @@ const PlatformBaseViewConfigMacOS: PartialViewConfigWithoutName = {
   validAttributes: {
     ...PlatformBaseViewConfigIos.validAttributes,
     ...validAttributesForNonEventProps,
+    // $FlowFixMe[exponential-spread]
     ...validAttributesForEventProps,
   },
 };

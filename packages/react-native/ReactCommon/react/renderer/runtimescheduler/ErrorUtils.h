@@ -7,12 +7,11 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline static void handleFatalError(
-    jsi::Runtime &runtime,
-    const jsi::JSError &error) {
+    jsi::Runtime& runtime,
+    const jsi::JSError& error) {
   auto reportFatalError = "reportFatalError";
   auto errorUtils = runtime.global().getProperty(runtime, "ErrorUtils");
   if (errorUtils.isUndefined() || !errorUtils.isObject() ||
@@ -32,5 +31,4 @@ inline static void handleFatalError(
   func.call(runtime, error.value());
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

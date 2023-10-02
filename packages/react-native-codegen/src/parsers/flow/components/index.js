@@ -10,174 +10,34 @@
 
 'use strict';
 import type {Parser} from '../../parser';
-import type {TypeDeclarationMap} from '../../utils';
-import type {CommandOptions} from '../../parsers-commons';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getProps} = require('./props');
-const {getProperties} = require('./componentsUtils.js');
-const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 const {
-  createComponentConfig,
-  findNativeComponentType,
-  getCommandOptions,
   getOptions,
+  findComponentConfig,
+  getCommandProperties,
 } = require('../../parsers-commons');
-
-// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
-function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
-  const foundConfigs: Array<{[string]: string}> = [];
-
-  const defaultExports = ast.body.filter(
-    node => node.type === 'ExportDefaultDeclaration',
-  );
-
-  defaultExports.forEach(statement => {
-    findNativeComponentType(statement, foundConfigs, parser);
-  });
-
-  if (foundConfigs.length === 0) {
-    throw new Error('Could not find component config for native component');
-  }
-  if (foundConfigs.length > 1) {
-    throw new Error('Only one component is supported per file');
-  }
-
-  const foundConfig = foundConfigs[0];
-
-  const namedExports = ast.body.filter(
-    node => node.type === 'ExportNamedDeclaration',
-  );
-
-  const commandsTypeNames = namedExports
-    .map(statement => {
-      let callExpression;
-      let calleeName;
-      try {
-        callExpression = statement.declaration.declarations[0].init;
-        calleeName = callExpression.callee.name;
-      } catch (e) {
-        return;
-      }
-
-      if (calleeName !== 'codegenNativeCommands') {
-        return;
-      }
-
-      // const statement.declaration.declarations[0].init
-      if (callExpression.arguments.length !== 1) {
-        throw new Error(
-          'codegenNativeCommands must be passed options including the supported commands',
-        );
-      }
-
-      const typeArgumentParam = callExpression.typeArguments.params[0];
-
-      if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
-        throw new Error(
-          "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
-        );
-      }
-
-      return {
-        commandTypeName: typeArgumentParam.id.name,
-        commandOptionsExpression: callExpression.arguments[0],
-      };
-    })
-    .filter(Boolean);
-
-  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
-
-  return createComponentConfig(foundConfig, commandsTypeNames);
-}
-
-function getCommandProperties(
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  commandTypeName,
-  types: TypeDeclarationMap,
-  commandOptions: ?CommandOptions,
-) {
-  if (commandTypeName == null) {
-    return [];
-  }
-
-  const typeAlias = types[commandTypeName];
-
-  if (typeAlias.type !== 'InterfaceDeclaration') {
-    throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
-    );
-  }
-
-  let properties;
-  try {
-    properties = typeAlias.body.properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-
-  const flowPropertyNames = properties
-    .map(property => property && property.key && property.key.name)
-    .filter(Boolean);
-
-  if (commandOptions == null || commandOptions.supportedCommands == null) {
-    throw new Error(
-      'codegenNativeCommands must be given an options object with supportedCommands array',
-    );
-  }
-
-  if (
-    commandOptions.supportedCommands.length !== flowPropertyNames.length ||
-    !commandOptions.supportedCommands.every(supportedCommand =>
-      flowPropertyNames.includes(supportedCommand),
-    )
-  ) {
-    throw new Error(
-      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${flowPropertyNames.join(
-        ', ',
-      )}`,
-    );
-  }
-
-  return properties;
-}
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function buildComponentSchema(
   ast: $FlowFixMe,
   parser: Parser,
 ): ComponentSchemaBuilderConfig {
-  const {
-    componentName,
-    propsTypeName,
-    commandTypeName,
-    commandOptionsExpression,
-    optionsExpression,
-  } = findComponentConfig(ast, parser);
+  const {componentName, propsTypeName, optionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
 
   const types = parser.getTypes(ast);
 
-  const propProperties = getProperties(propsTypeName, types);
-  const commandOptions = getCommandOptions(commandOptionsExpression);
+  const propProperties = parser.getProperties(propsTypeName, types);
+  const commandProperties = getCommandProperties(ast, parser);
+  const {extendsProps, props} = parser.getProps(propProperties, types);
 
-  const commandProperties = getCommandProperties(
-    commandTypeName,
-    types,
-    commandOptions,
-  );
-
-  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
-
-  const nonExtendsProps = removeKnownExtends(propProperties, types);
-  const props = getProps(nonExtendsProps, types);
-  const events = getEvents(propProperties, types);
+  const events = getEvents(propProperties, types, parser);
   const commands = getCommands(commandProperties, types);
 
   return {

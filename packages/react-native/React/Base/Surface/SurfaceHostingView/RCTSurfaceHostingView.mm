@@ -26,30 +26,9 @@
   RCTSurfaceStage _stage;
 }
 
-+ (id<RCTSurfaceProtocol>)createSurfaceWithBridge:(RCTBridge *)bridge
-                                       moduleName:(NSString *)moduleName
-                                initialProperties:(NSDictionary *)initialProperties
-{
-  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
-}
-
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
-{
-  id<RCTSurfaceProtocol> surface = [[self class] createSurfaceWithBridge:bridge
-                                                              moduleName:moduleName
-                                                       initialProperties:initialProperties];
-  if (self = [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
-    [surface start];
-  }
-  return self;
-}
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
                 sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
@@ -74,9 +53,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   [_surface stop];
 }
 
-- (void)setFrame:(CGRect)frame
+- (void)layoutSubviews
 {
-  [super setFrame:frame];
+  [super layoutSubviews];
 
   CGSize minimumSize;
   CGSize maximumSize;

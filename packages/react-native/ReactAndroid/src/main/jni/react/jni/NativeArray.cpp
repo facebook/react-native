@@ -11,8 +11,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void NativeArray::assertInternalType() {
   if (!array_.isArray()) {
@@ -44,5 +43,4 @@ void NativeArray::throwIfConsumed() {
   exceptions::throwIfObjectAlreadyConsumed(this, "Array already consumed");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,8 +12,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <deque>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class ReparentMode { Flatten, Unflatten };
 
@@ -46,8 +45,8 @@ using ViewNodePairScope = std::deque<ShadowViewNodePair>;
  * The list of mutations might be and might not be optimal.
  */
 ShadowViewMutation::List calculateShadowViewMutations(
-    ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode);
+    const ShadowNode& oldRootShadowNode,
+    const ShadowNode& newRootShadowNode);
 
 /**
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
@@ -55,8 +54,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
  * not form views and their children are flattened.
  */
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
-    ShadowNode const &shadowNode,
-    ViewNodePairScope &viewNodePairScope,
+    const ShadowNode& shadowNode,
+    ViewNodePairScope& viewNodePairScope,
     bool allowFlattened = false,
     Point layoutOffset = {0, 0});
 
@@ -65,7 +64,6 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
  * flattened view hierarchy. This is *only* used by unit tests currently.
  */
 ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
-    ShadowNode const &shadowNode);
+    const ShadowNode& shadowNode);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

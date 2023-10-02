@@ -18,11 +18,11 @@ template <
     typename... Args,
     typename... JSArgs>
 T callFromJs(
-    jsi::Runtime &rt,
-    R (C::*method)(jsi::Runtime &, Args...),
-    const std::shared_ptr<CallInvoker> &jsInvoker,
-    C *instance,
-    JSArgs &&...args) {
+    jsi::Runtime& rt,
+    R (C::*method)(jsi::Runtime&, Args...),
+    const std::shared_ptr<CallInvoker>& jsInvoker,
+    C* instance,
+    JSArgs&&... args) {
   static_assert(
       sizeof...(Args) == sizeof...(JSArgs), "Incorrect arguments length");
   static_assert(
@@ -50,7 +50,7 @@ T callFromJs(
             rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
         jsInvoker);
 
-  } else if constexpr (is_optional_v<T>) {
+  } else if constexpr (is_optional_jsi_v<T>) {
     static_assert(
         is_optional_v<R>
             ? supportsToJs<typename R::value_type, typename T::value_type>
@@ -70,10 +70,8 @@ T callFromJs(
     }
 
     return convert(rt, std::move(result));
-
   } else {
     static_assert(std::is_convertible_v<R, T>, "Incompatible return type");
-
     return (instance->*method)(
         rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
   }

@@ -10,8 +10,7 @@
 #include <functional>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class FontStyle { Normal, Italic, Oblique };
 
@@ -106,37 +105,6 @@ enum class TextDecorationLineType {
 
 enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 
-enum class AccessibilityRole {
-  None,
-  Button,
-  Link,
-  Search,
-  Image,
-  Imagebutton,
-  Keyboardkey,
-  Text,
-  Adjustable,
-  Summary,
-  Header,
-  Alert,
-  Checkbox,
-  Combobox,
-  Menu,
-  Menubar,
-  Menuitem,
-  Progressbar,
-  Radio,
-  Radiogroup,
-  Scrollbar,
-  Spinbutton,
-  Switch,
-  Tab,
-  TabBar,
-  Tablist,
-  Timer,
-  Toolbar,
-};
-
 enum class TextTransform {
   None,
   Uppercase,
@@ -151,97 +119,89 @@ enum class HyphenationFrequency {
   Full // Standard amount of hyphenation.
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>
 struct hash<facebook::react::FontVariant> {
-  size_t operator()(const facebook::react::FontVariant &v) const {
+  size_t operator()(const facebook::react::FontVariant& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::TextAlignment> {
-  size_t operator()(const facebook::react::TextAlignment &v) const {
+  size_t operator()(const facebook::react::TextAlignment& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::FontStyle> {
-  size_t operator()(const facebook::react::FontStyle &v) const {
+  size_t operator()(const facebook::react::FontStyle& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::TextDecorationLineType> {
-  size_t operator()(const facebook::react::TextDecorationLineType &v) const {
+  size_t operator()(const facebook::react::TextDecorationLineType& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::WritingDirection> {
-  size_t operator()(const facebook::react::WritingDirection &v) const {
+  size_t operator()(const facebook::react::WritingDirection& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::TextDecorationStyle> {
-  size_t operator()(const facebook::react::TextDecorationStyle &v) const {
+  size_t operator()(const facebook::react::TextDecorationStyle& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::FontWeight> {
-  size_t operator()(const facebook::react::FontWeight &v) const {
+  size_t operator()(const facebook::react::FontWeight& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::DynamicTypeRamp> {
-  size_t operator()(const facebook::react::DynamicTypeRamp &v) const {
+  size_t operator()(const facebook::react::DynamicTypeRamp& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::EllipsizeMode> {
-  size_t operator()(const facebook::react::EllipsizeMode &v) const {
+  size_t operator()(const facebook::react::EllipsizeMode& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::TextBreakStrategy> {
-  size_t operator()(const facebook::react::TextBreakStrategy &v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::AccessibilityRole> {
-  size_t operator()(const facebook::react::AccessibilityRole &v) const {
+  size_t operator()(const facebook::react::TextBreakStrategy& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::TextTransform> {
-  size_t operator()(const facebook::react::TextTransform &v) const {
+  size_t operator()(const facebook::react::TextTransform& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::HyphenationFrequency> {
-  size_t operator()(const facebook::react::HyphenationFrequency &v) const {
+  size_t operator()(const facebook::react::HyphenationFrequency& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

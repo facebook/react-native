@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {NativeColorValue} from './PlatformColorValueTypes';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -46,6 +45,7 @@ export type CursorValue = ?(
 );
 // macOS]
 
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
@@ -814,6 +814,14 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | 'oldstyle-nums'
   | 'lining-nums'
   | 'tabular-nums'
+  | 'common-ligatures'
+  | 'no-common-ligatures'
+  | 'discretionary-ligatures'
+  | 'no-discretionary-ligatures'
+  | 'historical-ligatures'
+  | 'no-historical-ligatures'
+  | 'contextual'
+  | 'no-contextual'
   | 'proportional-nums'
   | 'stylistic-one'
   | 'stylistic-two'
@@ -911,20 +919,22 @@ type GenericStyleProp<+T> =
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
 export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
-  $Shape<____DangerouslyImpreciseStyle_Internal>,
+  Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
 export type ____ViewStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____ViewStyle_Internal>>,
+  $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
 export type ____TextStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____TextStyle_Internal>>,
+  $ReadOnly<Partial<____TextStyle_Internal>>,
 >;
 export type ____ImageStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____ImageStyle_Internal>>,
+  $ReadOnly<Partial<____ImageStyle_Internal>>,
 >;
 
 export type ____Styles_Internal = {
-  +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
+  // $FlowFixMe[incompatible-exact]
+  // $FlowFixMe[incompatible-type]
+  +[key: string]: Partial<____DangerouslyImpreciseStyle_Internal>,
   ...
 };
 

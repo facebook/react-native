@@ -282,84 +282,27 @@ RCT_EXPORT_MODULE()
   if (!devSettings.isProfilingEnabled) {
 #if RCT_ENABLE_INSPECTOR
     if (devSettings.isDeviceDebuggingAvailable) {
-      // For on-device debugging we link out to Flipper.
-      // Since we're assuming Flipper is available, also include the DevTools.
-      // Note: For parity with the Android code.
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return @"Open Debugger";
-                           }
-                           handler:^{
-                             [RCTInspectorDevServerHelper
-                                          openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
-                                    withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
-                           }]];
-
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return @"Open React DevTools";
-                           }
-                           handler:^{
-                             [RCTInspectorDevServerHelper
-                                          openURL:@"flipper://null/React?device=React%20Native"
-                                    withBundleURL:bundleManager.bundleURL
-                                 withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
-                           }]];
-    } else if (devSettings.isRemoteDebuggingAvailable) {
-#else
-    if (devSettings.isRemoteDebuggingAvailable) {
-#endif
-      // For remote debugging, we open up Chrome running the app in a web worker.
-      // Note that this requires async communication, which will not work for Turbo Modules.
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug with Chrome";
-                           }
-                           handler:^{
-                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-                           }]];
-    } else {
-      // If neither are available, we're defaulting to a message that tells you about remote debugging.
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
       [items
-          addObject:[RCTDevMenuItem
-                        buttonItemWithTitle:@"Debugger Unavailable"
-                                    handler:^{
-                                      NSString *message = RCTTurboModuleEnabled()
-                                          ? @"Debugging with Chrome is not supported when TurboModules are enabled."
-                                          : @"Include the RCTWebSocket library to enable JavaScript debugging.";
-#if !TARGET_OS_OSX // [macOS]
-                                      UIAlertController *alertController =
-                                          [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
-                                                                              message:message
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
-                                      __weak __typeof__(alertController) weakAlertController = alertController;
-                                      [alertController
-                                          addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                             style:UIAlertActionStyleDefault
-                                                                           handler:^(__unused UIAlertAction *action) {
-                                                                             [weakAlertController
-                                                                                 dismissViewControllerAnimated:YES
-                                                                                                    completion:nil];
-                                                                           }]];
-                                      [RCTPresentedViewController() presentViewController:alertController
-                                                                                 animated:YES
-                                                                               completion:NULL];
-#else // [macOS
-                                      NSAlert *alert = [NSAlert new];
-                                      [alert setMessageText:@"Debugger Unavailable"];
-                                      [alert setInformativeText:message];
-                                      [alert addButtonWithTitle:@"OK"];
-                                      [alert setAlertStyle:NSAlertStyleWarning];
-                                      [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
-#endif // macOS]
-                                    }]];
+          addObject:
+              [RCTDevMenuItem
+                  buttonItemWithTitleBlock:^NSString * {
+                    return @"Open Debugger";
+                  }
+                  handler:^{
+                    [RCTInspectorDevServerHelper
+                            openDebugger:bundleManager.bundleURL
+                        withErrorMessage:
+                            @"Failed to open debugger. Please check that the dev server is running and reload the app."];
+                  }]];
     }
+#endif
   }
 
   [items addObject:[RCTDevMenuItem
                        buttonItemWithTitleBlock:^NSString * {
-                         return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
+                         return devSettings.isElementInspectorShown ? @"Hide Element Inspector"
+                                                                    : @"Show Element Inspector";
                        }
                        handler:^{
                          [devSettings toggleElementInspector];
@@ -469,10 +412,10 @@ RCT_EXPORT_METHOD(show)
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
-  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+  NSString *devMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
 
-  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
+  _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -685,6 +628,19 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #endif
 
 @implementation RCTBridge (RCTDevMenu)
+
+- (RCTDevMenu *)devMenu
+{
+#if RCT_DEV_MENU
+  return [self moduleForClass:[RCTDevMenu class]];
+#else
+  return nil;
+#endif
+}
+
+@end
+
+@implementation RCTBridgeProxy (RCTDevMenu)
 
 - (RCTDevMenu *)devMenu
 {

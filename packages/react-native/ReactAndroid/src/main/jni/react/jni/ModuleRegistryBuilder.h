@@ -14,8 +14,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MessageQueueThread;
 
@@ -26,7 +25,7 @@ class ModuleHolder : public jni::JavaClass<ModuleHolder> {
 
   std::string getName() const;
   xplat::module::CxxModule::Provider getProvider(
-      const std::string &moduleName) const;
+      const std::string& moduleName) const;
 };
 
 std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
@@ -36,5 +35,4 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules,
     std::shared_ptr<MessageQueueThread> moduleMessageQueue);
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
