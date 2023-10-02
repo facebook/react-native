@@ -201,7 +201,18 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
                     RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
                   }];
 }
-#endif // [macOS]
+#else // [macOS
+- (void)viewDidChangeEffectiveAppearance
+{
+  [super viewDidChangeEffectiveAppearance];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                    object:self
+                  userInfo:@{
+                    RCTUserInterfaceStyleDidChangeNotificationAppearanceKey : self.effectiveAppearance,
+                  }];
+}
+#endif // macOS]
 
 #pragma mark - Private stuff
 

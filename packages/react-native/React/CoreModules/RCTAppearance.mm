@@ -95,8 +95,13 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 - (instancetype)init
 {
   if ((self = [super init])) {
+#if !TARGET_OS_OSX // [macOS]
     UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
+#else // [macOS
+	NSAppearance *appearance = RCTSharedApplication().appearance;
+	_currentColorScheme = RCTColorSchemePreference(appearance);
+#endif // macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -122,16 +127,6 @@ RCT_EXPORT_MODULE(Appearance)
   return std::make_shared<NativeAppearanceSpecJSI>(params);
 }
 
-#if TARGET_OS_OSX // [macOS on macOS don't lazy init _currentColorScheme because [NSApp effectiveAppearance] cannot be executed on background thread.
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _currentColorScheme =  RCTColorSchemePreference(nil);
-  }
-  return self;
-}
-#endif // macOS]
-
 RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 {
 #if !TARGET_OS_OSX // [macOS]
@@ -143,13 +138,7 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
   }
 #else // [macOS
   NSAppearance *appearance = nil;
-  if ([style isEqualToString:@"unspecified"]) {
-    if (@available(macOS 11.0, *)) {
-      appearance = [NSAppearance currentDrawingAppearance];
-    } else {
-      appearance = [NSAppearance currentAppearance];
-    }
-  } else if ([style isEqualToString:@"light"]) {
+  if ([style isEqualToString:@"light"]) {
     appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
   } else if ([style isEqualToString:@"dark"]) {
     appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
@@ -163,26 +152,22 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   return _currentColorScheme;
 }
 
-#if !TARGET_OS_OSX // [macOS]
+
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];
+#if !TARGET_OS_OSX // [macOS]
   UITraitCollection *traitCollection = nil;
   if (userInfo) {
     traitCollection = userInfo[RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey];
   }
   NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
 #else // [macOS
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-  if (object != NSApp || ![keyPath isEqualToString:@"effectiveAppearance"]) {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    return;
+  NSAppearance *appearance = nil;
+  if (userInfo) {
+    appearance = userInfo[RCTUserInterfaceStyleDidChangeNotificationAppearanceKey];
   }
-  NSString *newColorScheme = RCTColorSchemePreference(nil);
+  NSString *newColorScheme = RCTColorSchemePreference(appearance);
 #endif // macOS]
   if (![_currentColorScheme isEqualToString:newColorScheme]) {
     _currentColorScheme = newColorScheme;
@@ -209,9 +194,6 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
   [super invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-#else // [macOS
-  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];
-#endif // macOS]
 }
 
 @end

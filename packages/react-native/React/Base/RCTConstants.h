@@ -10,7 +10,11 @@
 RCT_EXTERN NSString *const RCTPlatformName;
 
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotification;
+#if !TARGET_OS_OSX // [macOS]
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey;
+#else // [macOS
+RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationAppearanceKey;
+#endif // macOS]
 
 RCT_EXTERN NSString *const RCTRootViewFrameDidChangeNotification;
 
