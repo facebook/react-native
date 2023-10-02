@@ -10,7 +10,7 @@
 'use strict';
 
 const {echo, exit} = require('shelljs');
-const {publishPackage, getNpmInfo} = require('./npm-utils');
+const {getNpmInfo} = require('./npm-utils'); // [macOS] Remove publishPackage as we don't use it for React Native macOS
 const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
 const setReactNativeVersion = require('./set-rn-version');
 /* [macOS We do not generate Android artifacts for React Native macOS
@@ -96,11 +96,13 @@ function publishNpm(buildType) {
     }
   }
 
-  // generateAndroidArtifacts(version); // [macOS] We do not generate Android artifacts for React Native macOS
+  /* [macOS Do not generate Android artifacts for React Native macOS
+  generateAndroidArtifacts(version);
 
   // Write version number to the build folder
   const versionFile = path.join('build', '.version');
   fs.writeFileSync(versionFile, version);
+  macOS] */
 
   if (buildType === 'dry-run') {
     echo('Skipping `npm publish` because --dry-run is set.');
@@ -109,10 +111,9 @@ function publishNpm(buildType) {
 
   // We first publish on Maven Central all the necessary artifacts.
   // NPM publishing is done just after.
-  // [macOS] We do not generate Android artifacts for React Native macOS
+  /* [macOS] Skip the Android Artifact and NPM Publish here as we do that in our Azure Pipeline
   // publishAndroidArtifactsToMaven(version, buildType === 'nightly');
 
-  /* [macOS] Skip the NPM Publish here as we do that in our Azure Pipeline
   const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
   const result = publishPackage(packagePath, {
     tag,

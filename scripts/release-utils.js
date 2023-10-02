@@ -15,6 +15,10 @@ const {
 } = require('../packages/react-native/scripts/hermes/hermes-utils');
 
 function generateAndroidArtifacts(releaseVersion) {
+  // [macOS
+  echo('Skipping Android artifacts generation on React Native macOS');
+  exit(0);
+  // macOS]
   // -------- Generating Android Artifacts
   echo('Generating Android artifacts inside /tmp/maven-local');
   if (exec('./gradlew publishAllToMavenTempLocal').code) {
@@ -53,6 +57,10 @@ function generateAndroidArtifacts(releaseVersion) {
 }
 
 function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
+  // [macOS
+  echo('Skipping Android artifacts publish to Maven on React Native macOS');
+  exit(0);
+  // macOS]
   // -------- Publish every artifact to Maven Central
   // The GPG key is base64 encoded on CircleCI and then decoded here
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
