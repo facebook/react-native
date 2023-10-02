@@ -26,9 +26,9 @@
 #import "RCTCursor.h"
 #endif  // macOS]
 
-#if !TARGET_OS_OSX // [macOS]
 @implementation RCTConvert (UIAccessibilityTraits)
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraits,
     (@{
@@ -131,6 +131,7 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
+#endif // [macOS]
 
 + (RCTTransformOrigin)RCTTransformOrigin:(id)json
 {
@@ -140,7 +141,6 @@ RCT_MULTI_ENUM_CONVERTER(
 }
 
 @end
-#endif // [macOS]
 
 @implementation RCTViewManager
 
