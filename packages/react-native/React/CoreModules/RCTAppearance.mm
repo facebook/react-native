@@ -58,11 +58,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
   return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
-
-  // Default to light on older OS version - same behavior as Android.
-  return RCTAppearanceColorSchemeLight;
 }
 #else // [macOS
 NSString *RCTColorSchemePreference(NSAppearance *appearance)
@@ -94,6 +90,19 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 
 @implementation RCTAppearance {
   NSString *_currentColorScheme;
+}
+
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appearanceChanged:)
+                                                 name:RCTUserInterfaceStyleDidChangeNotification
+                                               object:nil];
+  }
+  return self;
 }
 
 RCT_EXPORT_MODULE(Appearance)
@@ -151,11 +160,6 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-#if !TARGET_OS_OSX // [macOS]
-  if (_currentColorScheme == nil) {
-    _currentColorScheme = RCTColorSchemePreference(nil);
-  }
-#endif // [macOS]
   return _currentColorScheme;
 }
 
@@ -195,22 +199,15 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-#if !TARGET_OS_OSX // [macOS]
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(appearanceChanged:)
-                                               name:RCTUserInterfaceStyleDidChangeNotification
-                                             object:nil];
-#else  // [macOS
-  [NSApp addObserver:self
-          forKeyPath:@"effectiveAppearance"
-             options:NSKeyValueObservingOptionNew
-             context:nil];
-#endif // macOS]
 }
 
 - (void)stopObserving
 {
-#if !TARGET_OS_OSX // [macOS]
+}
+
+- (void)invalidate
+{
+  [super invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #else // [macOS
   [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];

@@ -416,6 +416,14 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   return commands;
 }
 
++ (NSDictionary<NSString *, id> *)constantsForViewMangerClass:(Class)managerClass
+{
+  if ([managerClass instancesRespondToSelector:@selector(constantsToExport)]) {
+    return [[managerClass new] constantsToExport];
+  }
+  return @{};
+}
+
 + (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
@@ -500,6 +508,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
     @"Commands" : commands,
+    @"Constants" : [self constantsForViewMangerClass:managerClass],
   };
 }
 

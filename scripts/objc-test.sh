@@ -108,7 +108,6 @@ xcbeautifyFormat() {
 preloadBundlesRNIntegrationTests() {
   # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
 preloadBundlesRNTester() {

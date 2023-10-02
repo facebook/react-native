@@ -21,4 +21,5 @@ RCT_EXTERN NSString *RCTColorSchemePreference(NSAppearance *appearance);
 #endif // macOS]
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
+- (instancetype)init;
 @end

@@ -19,11 +19,7 @@ pluginManagement {
   }
 }
 
-dependencyResolutionManagement {
-  versionCatalogs { create("libs") { from(files("gradle/libs.versions.toml")) } }
-}
-
-rootProject.name = "react-native-github"
+rootProject.name = "react-native-build-from-source"
 
 include(":packages:react-native:ReactAndroid")
 
