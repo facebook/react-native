@@ -19,7 +19,6 @@ import type {DirectEventHandler} from '../../Types/CodegenTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
-import Platform from '../../Utilities/Platform';
 import StatusBar from '../StatusBar/StatusBar';
 import View from '../View/View';
 import AndroidDrawerLayoutNativeComponent, {
@@ -180,10 +179,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       onDrawerClose,
       ...props
     } = this.props;
-    const drawStatusBar =
-      Platform.OS === 'android' &&
-      Platform.Version >= 21 &&
-      this.props.statusBarBackgroundColor != null;
+    const drawStatusBar = this.props.statusBarBackgroundColor != null;
     const drawerViewWrapper = (
       <View
         style={[
