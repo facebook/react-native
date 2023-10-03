@@ -161,3 +161,9 @@ const _processColorObject = (
   }
   return color;
 };
+
+export const processColorObject: (
+  color: NativeColorValue,
+  /* $FlowExpectedError[incompatible-type]
+   * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
+) => ?NativeColorValue = _processColorObject;
