@@ -17,6 +17,15 @@ jobs:
           name: Run linters against modified files (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
 
+  print_job_running:
+    docker:
+      - image: cimg/node:current
+    resource_class: small
+    steps:
+      - run:
+          name: Echo running
+          command: echo "Running test tag only job"
+
   # -------------------------
   #    JOBS: Analyze Code
   # -------------------------

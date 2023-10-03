@@ -73,6 +73,11 @@ workflows:
           requires:
             -  build_and_publish_npm_package
 
+  test_tag:
+    jobs:
+      - print_job_running:
+          filters: *only_test_tags
+
   analysis:
     when:
       and:

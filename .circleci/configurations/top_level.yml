@@ -126,6 +126,14 @@ references:
     tags:
       only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
+  only_test_tags: &only_test_tags
+    # Both of the following conditions must be included!
+    # Ignore any commit on any branch by default.
+    branches:
+      ignore: /.*/
+    tags:
+      only: /test/
+
 # -------------------------
 #        PIPELINE PARAMETERS
 # -------------------------
