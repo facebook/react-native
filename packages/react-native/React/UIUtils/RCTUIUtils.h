@@ -25,7 +25,7 @@ extern __attribute__((visibility("default"))) RCTDimensions RCTGetDimensions(CGF
 
 // Get font size multiplier for font base size (Large) by content size category
 extern __attribute__((visibility("default"))) CGFloat RCTGetMultiplierForContentSizeCategory(
-    UIContentSizeCategory category);
+    UIContentSizeCategory category) __deprecated;
 
 #ifdef __cplusplus
 }
