@@ -244,26 +244,32 @@ static inline yoga::Style convertRawProp(
       sourceValue.padding(),
       yogaStyle.padding());
 
-  yogaStyle.gap()[YGGutterRow] = convertRawProp(
-      context,
-      rawProps,
-      "rowGap",
-      sourceValue.gap()[YGGutterRow],
-      yogaStyle.gap()[YGGutterRow]);
+  yogaStyle.setGap(
+      YGGutterRow,
+      convertRawProp(
+          context,
+          rawProps,
+          "rowGap",
+          sourceValue.gap(YGGutterRow),
+          yogaStyle.gap(YGGutterRow)));
 
-  yogaStyle.gap()[YGGutterColumn] = convertRawProp(
-      context,
-      rawProps,
-      "columnGap",
-      sourceValue.gap()[YGGutterColumn],
-      yogaStyle.gap()[YGGutterColumn]);
+  yogaStyle.setGap(
+      YGGutterColumn,
+      convertRawProp(
+          context,
+          rawProps,
+          "columnGap",
+          sourceValue.gap(YGGutterColumn),
+          yogaStyle.gap(YGGutterColumn)));
 
-  yogaStyle.gap()[YGGutterAll] = convertRawProp(
-      context,
-      rawProps,
-      "gap",
-      sourceValue.gap()[YGGutterAll],
-      yogaStyle.gap()[YGGutterAll]);
+  yogaStyle.setGap(
+      YGGutterAll,
+      convertRawProp(
+          context,
+          rawProps,
+          "gap",
+          sourceValue.gap(YGGutterAll),
+          yogaStyle.gap(YGGutterAll)));
 
   yogaStyle.border() = convertRawProp(
       context,

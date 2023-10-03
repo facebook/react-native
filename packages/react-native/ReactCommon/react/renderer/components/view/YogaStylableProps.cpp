@@ -195,10 +195,14 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
       field, setter, yoga::Dimension::Height, heightStr);
 
-#define REBUILD_FIELD_YG_GUTTER(field, rowGapStr, columnGapStr, gapStr)      \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterRow, rowGapStr);       \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterColumn, columnGapStr); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterAll, gapStr);
+#define REBUILD_FIELD_YG_GUTTER(                    \
+    field, setter, rowGapStr, columnGapStr, gapStr) \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
+      field, setter, YGGutterRow, rowGapStr);       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
+      field, setter, YGGutterColumn, columnGapStr); \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
+      field, setter, YGGutterAll, gapStr);
 
 #define REBUILD_FIELD_YG_EDGES(field, prefix, suffix)                          \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                        \
@@ -250,7 +254,7 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_SWITCH_CASE_YSP(flexShrink);
     REBUILD_FIELD_SWITCH_CASE_YSP(flexBasis);
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
-    REBUILD_FIELD_YG_GUTTER(gap, "rowGap", "columnGap", "gap");
+    REBUILD_FIELD_YG_GUTTER(gap, setGap, "rowGap", "columnGap", "gap");
     REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
     REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
     REBUILD_FIELD_YG_DIMENSION(
@@ -325,16 +329,14 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
           "flexGrow", yogaStyle.flexGrow(), defaultYogaStyle.flexGrow()),
       debugStringConvertibleItem(
           "rowGap",
-          yogaStyle.gap()[YGGutterRow],
-          defaultYogaStyle.gap()[YGGutterRow]),
+          yogaStyle.gap(YGGutterRow),
+          defaultYogaStyle.gap(YGGutterRow)),
       debugStringConvertibleItem(
           "columnGap",
-          yogaStyle.gap()[YGGutterColumn],
-          defaultYogaStyle.gap()[YGGutterColumn]),
+          yogaStyle.gap(YGGutterColumn),
+          defaultYogaStyle.gap(YGGutterColumn)),
       debugStringConvertibleItem(
-          "gap",
-          yogaStyle.gap()[YGGutterAll],
-          defaultYogaStyle.gap()[YGGutterAll]),
+          "gap", yogaStyle.gap(YGGutterAll), defaultYogaStyle.gap(YGGutterAll)),
       debugStringConvertibleItem(
           "flexShrink", yogaStyle.flexShrink(), defaultYogaStyle.flexShrink()),
       debugStringConvertibleItem(
