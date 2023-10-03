@@ -25,6 +25,10 @@ struct FloatOptional {
     return value_;
   }
 
+  constexpr float unwrapOrDefault(float defaultValue) const {
+    return isUndefined() ? defaultValue : value_;
+  }
+
   bool isUndefined() const {
     return std::isnan(value_);
   }

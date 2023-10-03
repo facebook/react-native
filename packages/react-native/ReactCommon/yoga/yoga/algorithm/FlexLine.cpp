@@ -53,7 +53,7 @@ FlexLine calculateFlexLine(
 
     child->setLineIndex(lineCount);
     const float childMarginMainAxis =
-        child->getMarginForAxis(mainAxis, availableInnerWidth).unwrap();
+        child->getMarginForAxis(mainAxis, availableInnerWidth);
     const float childLeadingGapMainAxis = isFirstElementInLine ? 0.0f : gap;
     const float flexBasisWithMinAndMaxConstraints =
         boundAxisWithinMinAndMax(
