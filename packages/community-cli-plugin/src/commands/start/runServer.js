@@ -137,7 +137,6 @@ async function runServer(
         attachKeyHandlers({
           cliConfig: ctx,
           devServerUrl,
-          serverInstance,
           messageSocket: messageSocketEndpoint,
         });
       }
