@@ -1215,7 +1215,7 @@ static void justifyMainAxis(
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth).unwrap();
   const float trailingPaddingAndBorderMain =
       node->getTrailingPaddingAndBorder(mainAxis, ownerWidth).unwrap();
-  const float gap = node->getGapForAxis(mainAxis, ownerWidth);
+  const float gap = node->getGapForAxis(mainAxis);
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == MeasureMode::AtMost &&
@@ -1666,8 +1666,8 @@ static void calculateLayoutImpl(
       generationCount);
 
   if (childCount > 1) {
-    totalMainDim += node->getGapForAxis(mainAxis, availableInnerCrossDim) *
-        static_cast<float>(childCount - 1);
+    totalMainDim +=
+        node->getGapForAxis(mainAxis) * static_cast<float>(childCount - 1);
   }
 
   const bool mainAxisOverflows =
@@ -1690,8 +1690,7 @@ static void calculateLayoutImpl(
   // Accumulated cross dimensions of all lines so far.
   float totalLineCrossDim = 0;
 
-  const float crossAxisGap =
-      node->getGapForAxis(crossAxis, availableInnerCrossDim);
+  const float crossAxisGap = node->getGapForAxis(crossAxis);
 
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;

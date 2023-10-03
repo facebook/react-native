@@ -191,14 +191,6 @@ class YG_EXPORT Node : public ::YGNode {
       YGEdge edge,
       CompactValue defaultValue);
 
-  static CompactValue computeRowGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
-
-  static CompactValue computeColumnGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
-
   // Methods related to positions, margin, padding and border
   FloatOptional getLeadingPosition(
       const FlexDirection axis,
@@ -231,7 +223,7 @@ class YG_EXPORT Node : public ::YGNode {
   FloatOptional getMarginForAxis(
       const FlexDirection axis,
       const float widthSize) const;
-  float getGapForAxis(const FlexDirection axis, const float widthSize) const;
+  float getGapForAxis(const FlexDirection axis) const;
   // Setters
 
   void setContext(void* context) {

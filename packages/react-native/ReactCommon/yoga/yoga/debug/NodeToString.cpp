@@ -180,17 +180,11 @@ void nodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (yoga::Node::computeColumnGap(
-            style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeColumnGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(
-          str, "column-gap", style.gap()[YGGutterColumn]);
-    }
-    if (yoga::Node::computeRowGap(style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeRowGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
+    if (!style.gap(YGGutterAll).isUndefined()) {
+      appendNumberIfNotUndefined(str, "gap", style.gap(YGGutterAll));
+    } else {
+      appendNumberIfNotUndefined(str, "column-gap", style.gap(YGGutterColumn));
+      appendNumberIfNotUndefined(str, "row-gap", style.gap(YGGutterRow));
     }
 
     appendNumberIfNotAuto(str, "width", style.dimension(Dimension::Width));

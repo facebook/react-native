@@ -89,30 +89,6 @@ CompactValue Node::computeEdgeValueForColumn(
   }
 }
 
-CompactValue Node::computeRowGap(
-    const Style::Gutters& gutters,
-    CompactValue defaultValue) {
-  if (!gutters[YGGutterRow].isUndefined()) {
-    return gutters[YGGutterRow];
-  } else if (!gutters[YGGutterAll].isUndefined()) {
-    return gutters[YGGutterAll];
-  } else {
-    return defaultValue;
-  }
-}
-
-CompactValue Node::computeColumnGap(
-    const Style::Gutters& gutters,
-    CompactValue defaultValue) {
-  if (!gutters[YGGutterColumn].isUndefined()) {
-    return gutters[YGGutterColumn];
-  } else if (!gutters[YGGutterAll].isUndefined()) {
-    return gutters[YGGutterAll];
-  } else {
-    return defaultValue;
-  }
-}
-
 FloatOptional Node::getLeadingPosition(
     const FlexDirection axis,
     const float axisSize) const {
@@ -202,13 +178,12 @@ FloatOptional Node::getMarginForAxis(
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
-float Node::getGapForAxis(const FlexDirection axis, const float widthSize)
-    const {
-  auto gap = isRow(axis)
-      ? computeColumnGap(style_.gap(), CompactValue::ofUndefined())
-      : computeRowGap(style_.gap(), CompactValue::ofUndefined());
-  auto resolvedGap = yoga::resolveValue(gap, widthSize);
-  return maxOrDefined(resolvedGap.unwrap(), 0);
+float Node::getGapForAxis(const FlexDirection axis) const {
+  auto gap = isRow(axis) ? style_.resolveColumnGap() : style_.resolveRowGap();
+  // TODO: Validate percentage gap, and expose ability to set percentage to
+  // public API
+  auto resolvedGap = yoga::resolveValue(gap, 0.0f /*ownerSize*/);
+  return maxOrDefined(resolvedGap.unwrap(), 0.0f);
 }
 
 YGSize Node::measure(
