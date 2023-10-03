@@ -44,6 +44,7 @@ function _formatVersion(
 ): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
-    (version.prerelease != null ? `-${version.prerelease}` : '')
+    // eslint-disable-next-line eqeqeq
+    (version.prerelease != undefined ? `-${version.prerelease}` : '')
   );
 }

@@ -34,7 +34,7 @@ const Platform: PlatformType = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?string,
+      prerelease: ?number,
     |},
     systemName: string,
   |} {
