@@ -91,9 +91,8 @@ static void appendEdges(
     const std::string& key,
     const Style::Edges& edges) {
   if (areFourValuesEqual(edges)) {
-    auto edgeValue = yoga::Node::computeEdgeValueForColumn(
-        edges, YGEdgeLeft, CompactValue::ofZero());
-    appendNumberIfNotZero(base, key, edgeValue);
+    auto edgeValue = yoga::Node::computeEdgeValueForColumn(edges, YGEdgeLeft);
+    appendNumberIfNotUndefined(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
@@ -109,10 +108,8 @@ static void appendEdgeIfNotUndefined(
     const YGEdge edge) {
   // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
   auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
-      ? yoga::Node::computeEdgeValueForRow(
-            edges, edge, edge, CompactValue::ofUndefined())
-      : yoga::Node::computeEdgeValueForColumn(
-            edges, edge, CompactValue::ofUndefined());
+      ? yoga::Node::computeEdgeValueForRow(edges, edge, edge)
+      : yoga::Node::computeEdgeValueForColumn(edges, edge);
   appendNumberIfNotUndefined(base, str, value);
 }
 
