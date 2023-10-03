@@ -680,6 +680,10 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
 
 bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
 {
+  if (returnType == VoidKind && shouldVoidMethodsExecuteSync_) {
+    return true;
+  }
+
   return isSyncModule_ || !(returnType == VoidKind || returnType == PromiseKind);
 }
 
@@ -687,7 +691,8 @@ ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
       nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
-      isSyncModule_(params.isSyncModule)
+      isSyncModule_(params.isSyncModule),
+      shouldVoidMethodsExecuteSync_(params.shouldVoidMethodsExecuteSync)
 {
 }
 
