@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.timing
 
+import android.view.Choreographer.FrameCallback
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
@@ -14,7 +15,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.modules.core.ChoreographerCompat.FrameCallback
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
