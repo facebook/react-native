@@ -75,28 +75,28 @@ public class ImageStoreManager extends NativeImageStoreAndroidSpec {
         mError.invoke(e.getMessage());
       }
     }
-  }
 
-  String convertInputStreamToBase64OutputStream(InputStream is) throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
-    byte[] buffer = new byte[BUFFER_SIZE];
-    int bytesRead;
-    try {
-      while ((bytesRead = is.read(buffer)) > -1) {
-        b64os.write(buffer, 0, bytesRead);
+    String convertInputStreamToBase64OutputStream(InputStream is) throws IOException {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
+      byte[] buffer = new byte[BUFFER_SIZE];
+      int bytesRead;
+      try {
+        while ((bytesRead = is.read(buffer)) > -1) {
+          b64os.write(buffer, 0, bytesRead);
+        }
+      } finally {
+        closeQuietly(b64os); // this also closes baos and flushes the final content to it
       }
-    } finally {
-      closeQuietly(b64os); // this also closes baos and flushes the final content to it
+      return baos.toString();
     }
-    return baos.toString();
-  }
 
-  private static void closeQuietly(Closeable closeable) {
-    try {
-      closeable.close();
-    } catch (IOException e) {
-      // shhh
+    private void closeQuietly(Closeable closeable) {
+      try {
+        closeable.close();
+      } catch (IOException e) {
+        // shhh
+      }
     }
   }
 }

@@ -30,7 +30,7 @@ public class ExceptionDataHelper {
       json.close();
       extraDataWriter.close();
       return extraDataWriter.toString();
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
     }
     return null;
   }
