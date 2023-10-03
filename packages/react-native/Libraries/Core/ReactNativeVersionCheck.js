@@ -40,7 +40,9 @@ exports.checkVersions = function checkVersions(): void {
 };
 
 function _formatVersion(
-  version: (typeof Platform)['constants']['reactNativeVersion'],
+  version:
+    | (typeof Platform)['constants']['reactNativeVersion']
+    | {major: number, minor: number, patch: number, prerelease: ?string},
 ): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
