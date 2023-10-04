@@ -124,11 +124,7 @@ class RNTesterApplication : Application(), ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      // TODO: initialize Flipper for Bridgeless
-    } else {
-      initializeFlipper(this, reactNativeHost.reactInstanceManager)
-    }
+    initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 
   @UnstableReactNativeAPI
