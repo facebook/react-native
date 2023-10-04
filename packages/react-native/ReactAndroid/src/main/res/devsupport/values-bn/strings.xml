@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- See fburl.com/140690840 for information about i18n on Android -->
-<!-- @generated -->
-<!-- FB Locale: bn_IN -->
-<resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">রিয়েকশন নেটিভ ডেভেলপার মেনু (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s চলছে</string>
-</resources>

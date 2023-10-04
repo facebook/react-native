@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- See fburl.com/140690840 for information about i18n on Android -->
-<!-- @generated -->
-<!-- FB Locale: ur_PK -->
-<resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">مقامی ڈویلپمنٹ مینیو (%1$s) پر رد عمل دیں</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s چل رہا ہے</string>
-</resources>
