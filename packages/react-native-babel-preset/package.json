@@ -55,7 +55,7 @@
     "@babel/template": "^7.0.0",
     "@react-native/babel-plugin-codegen": "*",
     "babel-plugin-transform-flow-enums": "^0.0.2",
-    "react-refresh": "^0.4.0"
+    "react-refresh": "^0.14.0"
   },
   "peerDependencies": {
     "@babel/core": "*"

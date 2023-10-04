@@ -392,6 +392,10 @@ task prepareKotlinBuildScriptModel {
 final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
     it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
     it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
+    it.onlyIf {
+        // For build from source scenario, we don't need to build the codegen at all.
+        rootProject.name != "react-native-build-from-source"
+    }
 }
 
 /**
@@ -788,6 +792,16 @@ react {
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
+}
+
+// For build from source, we need to override the privateReact extension.
+// This is neeeded as the build-from-source won't have a com.android.application
+// module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
+if (rootProject.name == "react-native-build-from-source") {
+    privateReact {
+        codegenDir = file("$rootDir/../@react-native/codegen")
+        reactNativeDir = file("$rootDir")
+    }
 }
 
 kotlin {

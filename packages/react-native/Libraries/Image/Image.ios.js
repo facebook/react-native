@@ -133,7 +133,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   const objectFit =
     // $FlowFixMe[prop-missing]
     style && style.objectFit
-      ? convertObjectFitToResizeMode(style.objectFit)
+      ? // $FlowFixMe[incompatible-call]
+        convertObjectFitToResizeMode(style.objectFit)
       : null;
   const resizeMode =
     // $FlowFixMe[prop-missing]
@@ -181,6 +182,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
             accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={forwardedRef}
             style={style}
+            // $FlowFixMe[incompatible-type]
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}

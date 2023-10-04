@@ -32,7 +32,7 @@ public abstract class TurboReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     throw new UnsupportedOperationException(
-        "In case of TurboModules, createNativeModules is not supported. NativeModuleRegistry should instead use getModuleList or getModule method");
+        "createNativeModules method is not supported. Use getModule() method instead.");
   }
 
   /**

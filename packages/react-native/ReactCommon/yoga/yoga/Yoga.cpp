@@ -523,12 +523,10 @@ YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
   return unscopedEnum(resolveRef(node)->getStyle().display());
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   updateStyle<MSVC_HINT(flex)>(node, &Style::flex, FloatOptional{flex});
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
   const auto node = resolveRef(nodeRef);
   return node->getStyle().flex().isUndefined()
@@ -536,13 +534,11 @@ float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
       : node->getStyle().flex().unwrap();
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
   updateStyle<MSVC_HINT(flexGrow)>(
       node, &Style::flexGrow, FloatOptional{flexGrow});
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
   updateStyle<MSVC_HINT(flexShrink)>(
       node, &Style::flexShrink, FloatOptional{flexShrink});
@@ -551,7 +547,6 @@ void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
 YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
   YGValue flexBasis = resolveRef(node)->getStyle().flexBasis();
   if (flexBasis.unit == YGUnitUndefined || flexBasis.unit == YGUnitAuto) {
-    // TODO(T26792433): Get rid off the use of YGUndefined at client side
     flexBasis.value = YGUndefined;
   }
   return flexBasis;
@@ -618,7 +613,6 @@ YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge) {
   return resolveRef(node)->getStyle().padding()[edge];
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 void YGNodeStyleSetBorder(
     const YGNodeRef node,
     const YGEdge edge,
@@ -630,8 +624,6 @@ void YGNodeStyleSetBorder(
 float YGNodeStyleGetBorder(const YGNodeConstRef node, const YGEdge edge) {
   auto border = resolveRef(node)->getStyle().border()[edge];
   if (border.isUndefined() || border.isAuto()) {
-    // TODO(T26792433): Rather than returning YGUndefined, change the api to
-    // return FloatOptional.
     return YGUndefined;
   }
 
@@ -649,8 +641,6 @@ void YGNodeStyleSetGap(
 float YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
   auto gapLength = resolveRef(node)->getStyle().gap()[gutter];
   if (gapLength.isUndefined() || gapLength.isAuto()) {
-    // TODO(T26792433): Rather than returning YGUndefined, change the api to
-    // return FloatOptional.
     return YGUndefined;
   }
 
@@ -659,13 +649,11 @@ float YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
 
 // Yoga specific properties, not compatible with flexbox specification
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {
   const FloatOptional op = resolveRef(node)->getStyle().aspectRatio();
   return op.isUndefined() ? YGUndefined : op.unwrap();
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
 void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
   updateStyle<MSVC_HINT(aspectRatio)>(
       node, &Style::aspectRatio, FloatOptional{aspectRatio});

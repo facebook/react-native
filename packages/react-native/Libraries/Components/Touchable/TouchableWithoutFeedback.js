@@ -221,6 +221,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
       }
     }
 
+    // $FlowFixMe[incompatible-call]
     return React.cloneElement(element, elementProps, ...children);
   }
 

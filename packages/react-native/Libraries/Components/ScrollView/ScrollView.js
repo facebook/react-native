@@ -1691,6 +1691,7 @@ class ScrollView extends React.Component<Props, State> {
       // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
+        // $FlowFixMe[incompatible-use]
         prop => style && style[prop] !== undefined,
       );
       invariant(
@@ -1872,6 +1873,7 @@ class ScrollView extends React.Component<Props, State> {
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
         // $FlowFixMe[underconstrained-implicit-instantiation]
+        // $FlowFixMe[incompatible-call]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,
@@ -1959,6 +1961,7 @@ function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';
+// $FlowFixMe[incompatible-call]
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
 // $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
