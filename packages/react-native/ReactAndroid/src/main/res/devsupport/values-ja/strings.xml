@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- See fburl.com/140690840 for information about i18n on Android -->
-<!-- @generated -->
-<!-- FB Locale: ja_JP -->
-<resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">React Native開発メニュー(%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$sの実行中</string>
-</resources>
