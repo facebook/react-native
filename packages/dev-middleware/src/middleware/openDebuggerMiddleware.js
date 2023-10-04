@@ -86,9 +86,19 @@ export default function openDebuggerMiddleware({
       if (!target) {
         res.writeHead(404);
         res.end('Unable to find Chrome DevTools inspector target');
-        logger?.warn(
-          'No compatible apps connected. JavaScript debugging can only be used with the Hermes engine.',
-        );
+        if (targets.length === 0) {
+          logger?.warn(
+            'You have no apps connected to Metro. Refresh your app and confirm Metro logs out the connection.',
+          );
+        } else {
+          const plural = targets.length > 1 ? 'apps' : 'app';
+          const apps = [...targets.entries()]
+            .map(([i, t]) => `${i}. ${t.description}`)
+            .join('\n');
+          logger?.warn(`I have ${targets.length} ${plural} connected to Metro:
+            ${apps}
+          JavaScript debugging can only be used with the Hermes engine.`);
+        }
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
           launchType,
