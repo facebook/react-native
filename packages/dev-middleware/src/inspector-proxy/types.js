@@ -72,12 +72,14 @@ export type MessageToDevice =
 
 // Page description object that is sent in response to /json HTTP request from debugger.
 export type PageDescription = {
-  id: string,
   description: string,
-  title: string,
-  faviconUrl: string,
+  deviceName: string,
   devtoolsFrontendUrl: string,
+  faviconUrl: string,
+  id: string,
+  title: string,
   type: string,
+  vm: string,
   webSocketDebuggerUrl: string,
   ...
 };
