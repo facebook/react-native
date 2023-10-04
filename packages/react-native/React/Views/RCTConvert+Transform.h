@@ -6,9 +6,12 @@
  */
 
 #import "RCTConvert.h"
+#import "UIView+React.h"
 
 @interface RCTConvert (Transform)
 
 + (CATransform3D)CATransform3D:(id)json;
+
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json;
 
 @end
