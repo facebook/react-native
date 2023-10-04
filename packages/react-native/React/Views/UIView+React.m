@@ -178,9 +178,7 @@
 
 - (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
 {
-  if ([changedProps containsObject:@"transform"] || [changedProps containsObject:@"transformOrigin"]) {
-    updateTransform(self);
-  }
+  // The default implementation does nothing.
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -222,6 +220,7 @@
 - (void)setReactTransform:(CATransform3D)reactTransform
 {
   objc_setAssociatedObject(self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  updateTransform(self);
 }
 
 - (RCTTransformOrigin)reactTransformOrigin
@@ -240,6 +239,7 @@
 {
   id obj = [NSValue value:&reactTransformOrigin withObjCType:@encode(RCTTransformOrigin)];
   objc_setAssociatedObject(self, @selector(reactTransformOrigin), obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  updateTransform(self);
 }
 
 static void updateTransform(UIView *view)
