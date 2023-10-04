@@ -202,13 +202,12 @@ const transform /*: BabelTransformer['transform'] */ = ({
       // You get this behavior by default when using Babel's `transform` method directly.
       cloneInputAst: false,
     };
-    const sourceAst /*: BabelNodeFile */ =
+    const sourceAst =
       isTypeScriptSource(filename) ||
       isTSXSource(filename) ||
       !options.hermesParser
         ? parseSync(src, babelConfig)
-        : // $FlowFixMe[incompatible-exact]
-          require('hermes-parser').parse(src, {
+        : require('hermes-parser').parse(src, {
             babel: true,
             sourceType: babelConfig.sourceType,
           });
