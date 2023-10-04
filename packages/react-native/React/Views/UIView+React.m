@@ -178,7 +178,9 @@
 
 - (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
 {
-  // The default implementation does nothing.
+  if ([changedProps containsObject:@"transform"] || [changedProps containsObject:@"transformOrigin"]) {
+    updateTransform(self);
+  }
 }
 
 - (void)reactSetFrame:(CGRect)frame
@@ -204,7 +206,9 @@
   self.center = position;
   self.bounds = bounds;
 
-  updateTransform(self);
+  if (!RCTTransformOriginIsDefault(self.reactTransformOrigin)) {
+    updateTransform(self);
+  }
 }
 
 #pragma mark - Transforms
@@ -218,7 +222,6 @@
 - (void)setReactTransform:(CATransform3D)reactTransform
 {
   objc_setAssociatedObject(self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  updateTransform(self);
 }
 
 - (RCTTransformOrigin)reactTransformOrigin
@@ -237,36 +240,37 @@
 {
   id obj = [NSValue value:&reactTransformOrigin withObjCType:@encode(RCTTransformOrigin)];
   objc_setAssociatedObject(self, @selector(reactTransformOrigin), obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  updateTransform(self);
 }
 
 static void updateTransform(UIView *view)
 {
-  CGSize size = view.bounds.size;
   RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
+  CATransform3D transform;
+  // Default origin is center of the view, so avoid additional matrix operations.
+  if (RCTTransformOriginIsDefault(transformOrigin)) {
+    transform = view.reactTransform;
+  } else {
+    CGSize size = view.bounds.size;
+    CGFloat anchorPointX = 0;
+    CGFloat anchorPointY = 0;
+    CGFloat anchorPointZ = 0;
 
-  CGFloat anchorPointX = 0;
-  CGFloat anchorPointY = 0;
-  CGFloat anchorPointZ = 0;
-
-  if (transformOrigin.x.unit == YGUnitPoint) {
-    anchorPointX = transformOrigin.x.value - size.width * 0.5;
-  } else if (transformOrigin.x.unit == YGUnitPercent) {
-    anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+    if (transformOrigin.x.unit == YGUnitPoint) {
+      anchorPointX = transformOrigin.x.value - size.width * 0.5;
+    } else if (transformOrigin.x.unit == YGUnitPercent) {
+      anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+    }
+    
+    if (transformOrigin.y.unit == YGUnitPoint) {
+      anchorPointY = transformOrigin.y.value - size.height * 0.5;
+    } else if (transformOrigin.y.unit == YGUnitPercent) {
+      anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
+    }
+    anchorPointZ = transformOrigin.z;
+    transform = CATransform3DConcat(view.reactTransform, CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ));
+    transform = CATransform3DConcat(CATransform3DMakeTranslation(-anchorPointX, -anchorPointY, -anchorPointZ), transform);
   }
-
-  if (transformOrigin.y.unit == YGUnitPoint) {
-    anchorPointY = transformOrigin.y.value - size.height * 0.5;
-  } else if (transformOrigin.y.unit == YGUnitPercent) {
-    anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
-  }
-
-  anchorPointZ = transformOrigin.z;
-
-  CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
-  transform = CATransform3DConcat(view.reactTransform, transform);
-  transform = CATransform3DTranslate(transform, -anchorPointX, -anchorPointY, -anchorPointZ);
-
+  
   view.layer.transform = transform;
   // Enable edge antialiasing in rotation, skew, or perspective transforms
   view.layer.allowsEdgeAntialiasing = transform.m12 != 0.0f || transform.m21 != 0.0f || transform.m34 != 0.0f;
