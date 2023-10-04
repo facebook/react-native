@@ -430,6 +430,55 @@ id ObjCTurboModule::performMethodInvocation(
   }
 }
 
+void ObjCTurboModule::performVoidMethodInvocation(
+    jsi::Runtime &runtime,
+    const char *methodName,
+    NSInvocation *inv,
+    NSMutableArray *retainedObjectsForInvocation)
+{
+  __weak id<RCTBridgeModule> weakModule = instance_;
+  const char *moduleName = name_.c_str();
+  std::string methodNameStr{methodName};
+  __block int32_t asyncCallCounter = 0;
+
+  void (^block)() = ^{
+    id<RCTBridgeModule> strongModule = weakModule;
+    if (!strongModule) {
+      return;
+    }
+
+    if (shouldVoidMethodsExecuteSync_) {
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+    } else {
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+    }
+
+    @try {
+      [inv invokeWithTarget:strongModule];
+    } @catch (NSException *exception) {
+      throw convertNSExceptionToJSError(runtime, exception);
+    } @finally {
+      [retainedObjectsForInvocation removeAllObjects];
+    }
+
+    if (shouldVoidMethodsExecuteSync_) {
+      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+    } else {
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+    }
+
+    return;
+  };
+
+  if (shouldVoidMethodsExecuteSync_) {
+    nativeMethodCallInvoker_->invokeSync(methodNameStr, [&]() -> void { block(); });
+  } else {
+    asyncCallCounter = getUniqueId();
+    TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
+  }
+}
+
 jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
     jsi::Runtime &runtime,
     const char *methodName,
@@ -741,11 +790,11 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       break;
     }
     case VoidKind: {
-      id result = performMethodInvocation(runtime, isSyncInvocation, methodName, inv, retainedObjectsForInvocation);
+      performVoidMethodInvocation(runtime, methodName, inv, retainedObjectsForInvocation);
       if (isSyncInvocation) {
         TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       }
-      returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);
+      returnValue = jsi::Value::undefined();
       if (isSyncInvocation) {
         TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
       }
