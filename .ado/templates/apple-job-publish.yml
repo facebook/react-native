@@ -38,4 +38,4 @@ steps:
     displayName: Run publish-npm.js
     inputs:
       script: |
-        node ./scripts/publish-npm.js --${{ parameters.build_type }}
+        node ./scripts/publish-npm.js -t ${{ parameters.build_type }}
