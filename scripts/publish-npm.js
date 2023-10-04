@@ -82,6 +82,9 @@ function publishNpm(buildType) {
   generateAndroidArtifacts(version);
 
   // Write version number to the build folder
+  if (!fs.existsSync('build')) {
+    fs.mkdirSync('build');
+  }
   const versionFile = path.join('build', '.version');
   fs.writeFileSync(versionFile, version);
 
