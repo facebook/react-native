@@ -21,6 +21,12 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
+#if BUNDLE_PATH
+NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterTestBundle.js";
+#else
+NSString *kBundlePath = @"js/RNTesterApp.ios";
+#endif
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -47,7 +53,7 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -126,7 +132,7 @@
 
 - (NSURL *)getBundleURL
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 #endif
 
