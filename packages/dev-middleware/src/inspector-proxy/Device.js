@@ -311,35 +311,27 @@ export default class Device {
           }
         }
       }
-    } else if (message.event === 'disconnect') {
+    }
+
+    // Everything after this needs a debugger connection to be useful.
+    if (!this._isDebuggerReady()) {
+      return;
+    }
+
+    if (message.event === 'disconnect') {
       // Device sends disconnect events only when page is reloaded or
       // if debugger socket was disconnected.
       const pageId = message.payload.pageId;
-      const debuggerSocket = this._debuggerConnection
-        ? this._debuggerConnection.socket
-        : null;
-      if (debuggerSocket && debuggerSocket.readyState === WS.OPEN) {
-        if (
-          this._debuggerConnection != null &&
-          this._debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID
-        ) {
-          debug(`Page ${pageId} is reloading.`);
-          debuggerSocket.send(JSON.stringify({method: 'reload'}));
-        }
+      if (
+        this._debuggerConnection != null &&
+        this._debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID
+      ) {
+        debug(`Page ${pageId} is reloading.`);
+        this._sendMessageToDebugger(JSON.stringify({method: 'reload'}));
       }
     } else if (message.event === 'wrappedEvent') {
-      if (this._debuggerConnection == null) {
-        return;
-      }
-
       // FIXME: Is it possible that we received message for pageID that does not
       // correspond to current debugger connection?
-
-      const debuggerSocket = this._debuggerConnection.socket;
-      if (debuggerSocket == null || debuggerSocket.readyState !== WS.OPEN) {
-        // TODO(hypuk): Send error back to device?
-        return;
-      }
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
       if ('id' in parsedPayload) {
@@ -357,10 +349,21 @@ export default class Device {
           this._debuggerConnection,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
-          debuggerSocket.send(messageToSend);
+          this._sendMessageToDebugger(messageToSend);
         });
       }
     }
+  }
+
+  _isDebuggerReady(): boolean {
+    return this._debuggerConnection?.socket.readyState === WS.OPEN;
+  }
+  // Sends single message to the Debugger
+  _sendMessageToDebugger(message: string) {
+    if (this._isDebuggerReady()) {
+      return;
+    }
+    this._debuggerConnection?.socket.send(message);
   }
 
   // Sends single message to device.
