@@ -64,3 +64,6 @@ yarn-error.log
 
 # testing
 /coverage
+
+# Generated asset catalog
+**/RNAssets.xcassets/*.imageset

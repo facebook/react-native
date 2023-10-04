@@ -135,6 +135,9 @@ RCT_EXTERN NSString *__nullable RCTLibraryPath(void);
 // (or nil, if the URL does not specify a path within the Library directory)
 RCT_EXTERN NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL);
 
+// Return the name of the asset in the catalog for a packager URL.
+RCT_EXTERN NSString *__nullable RCTAssetCatalogNameForURL(NSURL *__nullable URL);
+
 // Determines if a given image URL refers to a image in bundle
 RCT_EXTERN BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL);
 

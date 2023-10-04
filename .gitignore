@@ -122,6 +122,9 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
+# Generated asset catalog
+/packages/rn-tester/RNTester/RNAssets.xcassets/*.imageset
+
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
