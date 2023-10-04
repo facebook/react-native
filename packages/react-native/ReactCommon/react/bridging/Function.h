@@ -61,6 +61,7 @@ class AsyncCallback {
       const {
     auto wrapper = callback_->wrapper_.lock();
     if (wrapper) {
+      auto& jsInvoker = wrapper->jsInvoker();
       auto fn = [callback = callback_,
                  argsPtr = std::make_shared<std::tuple<Args...>>(
                      std::make_tuple(std::forward<Args>(args)...))] {
@@ -68,9 +69,9 @@ class AsyncCallback {
       };
 
       if (priority) {
-        wrapper->jsInvoker().invokeAsync(*priority, std::move(fn));
+        jsInvoker.invokeAsync(*priority, std::move(fn));
       } else {
-        wrapper->jsInvoker().invokeAsync(std::move(fn));
+        jsInvoker.invokeAsync(std::move(fn));
       }
     }
   }
@@ -80,15 +81,16 @@ class AsyncCallback {
       std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
     auto wrapper = callback_->wrapper_.lock();
     if (wrapper) {
+      auto& jsInvoker = wrapper->jsInvoker();
       auto fn = [wrapper = std::move(wrapper),
                  callImpl = std::move(callImpl)]() {
         callImpl(wrapper->runtime(), wrapper->callback());
       };
 
       if (priority) {
-        wrapper->jsInvoker().invokeAsync(*priority, std::move(fn));
+        jsInvoker.invokeAsync(*priority, std::move(fn));
       } else {
-        wrapper->jsInvoker().invokeAsync(std::move(fn));
+        jsInvoker.invokeAsync(std::move(fn));
       }
     }
   }
