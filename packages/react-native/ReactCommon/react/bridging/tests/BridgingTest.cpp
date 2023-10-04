@@ -276,8 +276,18 @@ TEST_F(BridgingTest, asyncCallbackTest) {
   cb(func, "hello");
 
   flushQueue(); // Run scheduled async work
-
   EXPECT_EQ("hello"s, output);
+
+  // Test with lambda invocation
+  cb.call([func, jsInvoker = invoker](jsi::Runtime& rt, jsi::Function& f) {
+    f.call(
+        rt,
+        bridging::toJs(rt, func, jsInvoker),
+        bridging::toJs(rt, "hello again", jsInvoker));
+  });
+
+  flushQueue();
+  EXPECT_EQ("hello again"s, output);
 }
 
 TEST_F(BridgingTest, asyncCallbackImplicitBridgingTest) {
