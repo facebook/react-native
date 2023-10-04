@@ -99,6 +99,9 @@ type DataDetectorTypesType =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
