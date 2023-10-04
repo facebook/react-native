@@ -276,7 +276,7 @@ void YogaLayoutableShadowNode::replaceChild(
   }
 
   bool suggestedIndexAccurate = suggestedIndex >= 0 &&
-      suggestedIndex < yogaLayoutableChildren_.size() &&
+      suggestedIndex < static_cast<int32_t>(yogaLayoutableChildren_.size()) &&
       yogaLayoutableChildren_[suggestedIndex].get() == layoutableOldChild;
 
   auto oldChildIter = suggestedIndexAccurate
