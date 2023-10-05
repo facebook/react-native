@@ -563,10 +563,10 @@ static void measureNodeWithMeasureFunc(
   // We want to make sure we don't call measure with negative size
   const float innerWidth = yoga::isUndefined(availableWidth)
       ? availableWidth
-      : yoga::maxOrDefined(0, availableWidth - paddingAndBorderAxisRow);
+      : yoga::maxOrDefined(0.0f, availableWidth - paddingAndBorderAxisRow);
   const float innerHeight = yoga::isUndefined(availableHeight)
       ? availableHeight
-      : yoga::maxOrDefined(0, availableHeight - paddingAndBorderAxisColumn);
+      : yoga::maxOrDefined(0.0f, availableHeight - paddingAndBorderAxisColumn);
 
   if (widthMeasureMode == MeasureMode::Exactly &&
       heightMeasureMode == MeasureMode::Exactly) {
@@ -1223,7 +1223,7 @@ static void justifyMainAxis(
       const float occupiedSpaceByChildNodes =
           availableInnerMainDim - flexLine.layout.remainingFreeSpace;
       flexLine.layout.remainingFreeSpace = yoga::maxOrDefined(
-          0, minAvailableMainDim - occupiedSpaceByChildNodes);
+          0.0f, minAvailableMainDim - occupiedSpaceByChildNodes);
     } else {
       flexLine.layout.remainingFreeSpace = 0;
     }
@@ -1260,7 +1260,7 @@ static void justifyMainAxis(
       case Justify::SpaceBetween:
         if (flexLine.itemsInFlow.size() > 1) {
           betweenMainDim +=
-              yoga::maxOrDefined(flexLine.layout.remainingFreeSpace, 0) /
+              yoga::maxOrDefined(flexLine.layout.remainingFreeSpace, 0.0f) /
               static_cast<float>(flexLine.itemsInFlow.size() - 1);
         }
         break;
