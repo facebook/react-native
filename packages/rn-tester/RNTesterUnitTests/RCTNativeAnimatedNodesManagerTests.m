@@ -315,7 +315,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
                           isCriticallyDamped:NO];
 }
 
-- (void)testCritcallyDampedSpringAnimation
+- (void)testCriticallyDampedSpringAnimation
 {
   [self performSpringAnimationTestWithConfig:@{
     @"type" : @"spring",
@@ -1040,17 +1040,17 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
   // we run several steps of animation until the value starts bouncing, has negative speed and
   // passes the final point (that is 1) while going backwards
-  BOOL isBoucingBack = NO;
+  BOOL isBouncingBack = NO;
   CGFloat previousValue = 0;
   for (int maxFrames = 500; maxFrames > 0; maxFrames--) {
     [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
     if (previousValue >= 1. && lastTranslateX < 1.) {
-      isBoucingBack = YES;
+      isBouncingBack = YES;
       break;
     }
     previousValue = lastTranslateX;
   }
-  XCTAssert(isBoucingBack);
+  XCTAssert(isBouncingBack);
 
   // we now update "toValue" to 1.5 but since the value have negative speed and has also pretty
   // low friction we expect it to keep going in the opposite direction for a few more frames
