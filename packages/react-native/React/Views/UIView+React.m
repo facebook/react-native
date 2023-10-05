@@ -252,8 +252,8 @@ static void updateTransform(UIView *view)
     CGFloat anchorPointX = 0;
     CGFloat anchorPointY = 0;
     CGFloat anchorPointZ = 0;
-    RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
-
+    RCTTransformOrigin transformOrigin;
+    [rawTansformOrigin getValue:&transformOrigin];
     if (transformOrigin.x.unit == YGUnitPoint) {
       anchorPointX = transformOrigin.x.value - size.width * 0.5;
     } else if (transformOrigin.x.unit == YGUnitPercent) {
