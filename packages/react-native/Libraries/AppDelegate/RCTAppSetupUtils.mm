@@ -13,7 +13,6 @@
 
 #if RCT_NEW_ARCH_ENABLED
 // Turbo Module
-#import <React/CoreModulesPlugins.h>
 #import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>

@@ -14,7 +14,11 @@
 #import "RCTLegacyInteropComponents.h"
 
 #if RCT_NEW_ARCH_ENABLED
+#if RN_DISABLE_OSS_PLUGIN_HEADER
+#import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
+#else
 #import <React/CoreModulesPlugins.h>
+#endif
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
@@ -219,7 +223,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (Class)getModuleClassFromName:(const char *)name
 {
+#if RN_DISABLE_OSS_PLUGIN_HEADER
+  return RCTTurboModulePluginClassProvider(name);
+#else
   return RCTCoreModulesClassProvider(name);
+#endif
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
