@@ -20,7 +20,7 @@ import com.facebook.react.util.RNLog;
  * The implementation of SurfaceDelegate with {@link Activity}. This is the default SurfaceDelegate
  * for Mobile.
  */
-public class LogBoxDialogSurfaceDelegate implements SurfaceDelegate {
+class LogBoxDialogSurfaceDelegate implements SurfaceDelegate {
 
   private @Nullable View mReactRootView;
   private @Nullable LogBoxDialog mDialog;
