@@ -176,9 +176,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: true,
-      // Don't crash on exceptionally large messages - assume the device is
-      // well-behaved and the debugger is prepared to handle large messages.
-      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
@@ -231,9 +228,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
-      // Don't crash on exceptionally large messages - assume the debugger is
-      // well-behaved and the device is prepared to handle large messages.
-      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
