@@ -172,10 +172,16 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
   public boolean onRequestPermissionsResult(
       int requestCode, String[] permissions, int[] grantResults) {
     try {
-      mCallbacks.get(requestCode).invoke(grantResults, getPermissionAwareActivity());
-      mCallbacks.remove(requestCode);
+      Callback callback = mCallbacks.get(requestCode);
+      if (callback != null) {
+        callback.invoke(grantResults, getPermissionAwareActivity());
+        mCallbacks.remove(requestCode);
+      } else {
+        String message = "Unable to find callback with requestCode:" + requestCode;
+        FLog.w("PermissionsModule", message);
+      }
       return mCallbacks.size() == 0;
-    } catch (IllegalStateException | NullPointerException e) {
+    } catch (IllegalStateException e) {
       FLog.e(
           "PermissionsModule",
           e,
