@@ -2098,7 +2098,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
 </RCTScrollView>
 `;
 
-exports[`discards intitial render if initialScrollIndex != 0 1`] = `
+exports[`discards initial render if initialScrollIndex != 0 1`] = `
 <RCTScrollView
   data={
     Array [
@@ -5937,7 +5937,7 @@ exports[`retains initial render region when an item is appended 1`] = `
 </RCTScrollView>
 `;
 
-exports[`retains intitial render if initialScrollIndex == 0 1`] = `
+exports[`retains initial render if initialScrollIndex == 0 1`] = `
 <RCTScrollView
   data={
     Array [

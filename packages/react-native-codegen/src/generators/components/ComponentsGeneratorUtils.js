@@ -133,7 +133,7 @@ function getNativeTypeFromAnnotation(
 }
 
 /// This function process some types if we need to customize them
-/// For example, the ImageSource and the reserved types could be trasformed into
+/// For example, the ImageSource and the reserved types could be transformed into
 /// const address instead of using them as plain types.
 function convertTypesToConstAddressIfNeeded(
   type: string,

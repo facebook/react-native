@@ -94,7 +94,7 @@ interface ReactHost {
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
    *
-   * @param reason describing why ReactHost is being destroyed (e.g. memmory pressure)
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
    *   be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.

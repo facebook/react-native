@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: '100%',
   },
-  lighblue: {
+  lightblue: {
     backgroundColor: 'lightblue',
   },
   item: {
@@ -44,7 +44,7 @@ function CompatibilityNativeGestureHandling(): React.Node {
                 onCancel
                 key={index}
                 name={`${index}`}
-                style={[styles.item, index % 2 === 0 ? styles.lighblue : null]}
+                style={[styles.item, index % 2 === 0 ? styles.lightblue : null]}
               />
             );
           })}

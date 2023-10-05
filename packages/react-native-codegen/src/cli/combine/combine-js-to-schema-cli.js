@@ -27,7 +27,7 @@ fileList.forEach(file => {
       .sync(`${filePattern}/**/*.{js,ts,tsx}`, {
         nodir: true,
         // TODO: This will remove the need of slash substitution above for Windows,
-        // but it requires glob@v9+; with the package currenlty relying on
+        // but it requires glob@v9+; with the package currently relying on
         // glob@7.1.1; and flow-typed repo not having definitions for glob@9+.
         // windowsPathsNoEscape: true,
       })

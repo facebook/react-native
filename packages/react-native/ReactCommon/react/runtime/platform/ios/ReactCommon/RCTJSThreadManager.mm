@@ -52,7 +52,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.runtime.JavaScript
 - (void)dealloc
 {
   // This avoids a race condition, where work can be executed on JS thread after
-  // other peices of infra are cleaned up.
+  // other pieces of infra are cleaned up.
   _jsMessageThread->quitSynchronous();
 }
 

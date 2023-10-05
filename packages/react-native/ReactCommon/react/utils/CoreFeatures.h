@@ -48,7 +48,7 @@ class CoreFeatures {
   static bool enableCleanParagraphYogaNode;
 
   // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
-  // props, and provide continuous `onScroll` upates like other platforms.
+  // props, and provide continuous `onScroll` updates like other platforms.
   static bool disableScrollEventThrottleRequirement;
 
   // When enabled, the renderer would only fail commits when they propagate

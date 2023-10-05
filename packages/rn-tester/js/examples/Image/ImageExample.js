@@ -1411,7 +1411,7 @@ exports.examples = [
   {
     title: 'Accessibility',
     description:
-      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessibility element.': string),
     render: function (): React.Node {
       return <Image accessible source={fullImage} style={styles.base} />;
     },
@@ -1419,7 +1419,7 @@ exports.examples = [
   {
     title: 'Accessibility Label',
     description:
-      ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+      ('When an element is marked as accessible (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
     render: function (): React.Node {
       return (
         <Image
@@ -1434,7 +1434,7 @@ exports.examples = [
   {
     title: 'Accessibility Label via alt prop',
     description:
-      'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
+      'Using the alt prop marks an element as being accessible, and passes the alt text to accessibilityLabel',
     render: function (): React.Node {
       return (
         <Image
@@ -1448,7 +1448,7 @@ exports.examples = [
   {
     title: 'Fade Duration',
     description:
-      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+      ('The time (in milliseconds) that an image will fade in for when it appears (default = 300).': string),
     render: function (): React.Node {
       return (
         <>

@@ -867,7 +867,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains extactly one 'callExpression'", () => {
+    it("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains exactly one 'callExpression'", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -1081,7 +1081,7 @@ describe('buildModuleSchema', () => {
   });
 
   describe('throwIfMoreThanOneModuleInterfaceParser', () => {
-    it('should throw an error if mulitple module interfaces are found', () => {
+    it('should throw an error if multiple module interfaces are found', () => {
       const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
         import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';

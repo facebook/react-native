@@ -1136,12 +1136,12 @@ it('does not over-render when there is less than initialNumToRender cells', () =
     />,
   );
 
-  // Check that the first render clamps to the last item when intialNumToRender
+  // Check that the first render clamps to the last item when initialNumToRender
   // goes over it.
   expect(component).toMatchSnapshot();
 });
 
-it('retains intitial render if initialScrollIndex == 0', () => {
+it('retains initial render if initialScrollIndex == 0', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1177,7 +1177,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('discards intitial render if initialScrollIndex != 0', () => {
+it('discards initial render if initialScrollIndex != 0', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1470,7 +1470,7 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   });
 
   // There should be no spacers present in an offset initial render with
-  // virtualiztion disabled. Only initialNumToRender items starting at
+  // virtualization disabled. Only initialNumToRender items starting at
   // initialScrollIndex.
   expect(component).toMatchSnapshot();
 });

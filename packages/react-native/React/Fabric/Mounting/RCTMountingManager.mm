@@ -231,12 +231,12 @@ static void RCTPerformMountInstructions(
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to allocate a block.
-    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
+    [self synchronouslyDispatchAccessibilityEventOnUIThread:reactTag eventType:eventType];
     return;
   }
 
   RCTExecuteOnMainQueue(^{
-    [self synchronouslyDispatchAccessbilityEventOnUIThread:reactTag eventType:eventType];
+    [self synchronouslyDispatchAccessibilityEventOnUIThread:reactTag eventType:eventType];
   });
 }
 
@@ -335,7 +335,7 @@ static void RCTPerformMountInstructions(
   [componentView handleCommand:commandName args:args];
 }
 
-- (void)synchronouslyDispatchAccessbilityEventOnUIThread:(ReactTag)reactTag eventType:(NSString *)eventType
+- (void)synchronouslyDispatchAccessibilityEventOnUIThread:(ReactTag)reactTag eventType:(NSString *)eventType
 {
   if ([@"focus" isEqualToString:eventType]) {
     UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];

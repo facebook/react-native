@@ -21,7 +21,7 @@ struct RawEvent;
 
 /*
  * Represents event-delivery infrastructure.
- * Particular `EventEmitter` clases use this for sending events.
+ * Particular `EventEmitter` classes use this for sending events.
  */
 class EventDispatcher {
  public:

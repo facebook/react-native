@@ -203,7 +203,7 @@ export default function PointerEventCaptureMouse(
         'Move your mouse over the purple rectangle. pointerover event should be logged in the purple rectangle',
         'Press and hold left mouse button over "Set Capture" button. "gotpointercapture" should be logged in the black rectangle',
         'Move your mouse anywhere. pointermove should be logged in the black rectangle',
-        'Move your mouse over the purple rectangle. Nothig should happen',
+        'Move your mouse over the purple rectangle. Nothing should happen',
         'Move your mouse over the black rectangle. pointermove should be logged in the black rectangle',
         'Release left mouse button. "lostpointercapture" should be logged in the black rectangle',
       ]}

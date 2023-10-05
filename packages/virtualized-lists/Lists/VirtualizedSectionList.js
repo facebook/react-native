@@ -508,7 +508,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     inverted,
   } = props;
 
-  const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
+  const [leadingSeparatorHighlighted, setLeadingSeparatorHighlighted] =
     React.useState(false);
 
   const [separatorHighlighted, setSeparatorHighlighted] = React.useState(false);
@@ -583,7 +583,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   });
   const leadingSeparator = LeadingSeparatorComponent != null && (
     <LeadingSeparatorComponent
-      highlighted={leadingSeparatorHiglighted}
+      highlighted={leadingSeparatorHighlighted}
       {...leadingSeparatorProps}
     />
   );

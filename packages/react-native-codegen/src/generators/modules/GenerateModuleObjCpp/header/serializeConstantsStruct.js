@@ -15,7 +15,7 @@ const {capitalize} = require('../../../Utils');
 
 import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, ConstantsStruct} from '../StructCollector';
-import type {StructSerilizationOutput} from './serializeStruct';
+import type {StructSerializationOutput} from './serializeStruct';
 
 const {unwrapNullable} = require('../../../../parsers/parsers-commons');
 
@@ -234,7 +234,7 @@ function toObjCValue(
 function serializeConstantsStruct(
   hasteModuleName: string,
   struct: ConstantsStruct,
-): StructSerilizationOutput {
+): StructSerializationOutput {
   const declaration = StructTemplate({
     hasteModuleName,
     structName: struct.name,

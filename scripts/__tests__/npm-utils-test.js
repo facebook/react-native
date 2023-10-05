@@ -95,7 +95,7 @@ describe('npm-utils', () => {
       publishPackage(
         'path/to/my-package',
         {tag: 'latest', otp: 'otp'},
-        {silent: true, cwd: 'i/expect/this/to/be/overriden'},
+        {silent: true, cwd: 'i/expect/this/to/be/overridden'},
       );
       expect(execMock).toHaveBeenCalledWith(
         'npm publish --tag latest --otp otp',

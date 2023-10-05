@@ -444,7 +444,7 @@ describe('onUpdate', function () {
 
   it('should account for imprecision on measurements of width of viewport and item', () => {
     // This test assures we round down the calculations of the item cell layout
-    // to avoid cases of imprecison when measuring layout
+    // to avoid cases of imprecision when measuring layout
     const helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
     const testProps = {
       getItemCount: () => 1,

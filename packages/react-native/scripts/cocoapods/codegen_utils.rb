@@ -257,7 +257,7 @@ class CodegenUtils
         relative_config_file_dir = Pathname.new(config_file_dir).relative_path_from(Pod::Config.instance.installation_root)
       end
 
-      # Generate input files for in-app libaraies which will be used to check if the script needs to be run.
+      # Generate input files for in-app libraries which will be used to check if the script needs to be run.
       # TODO: Ideally, we generate the input_files list from generate-codegen-artifacts.js and read the result here.
       #       Or, generate this podspec in generate-codegen-artifacts.js as well.
       app_package_path = file_manager.join(app_path, 'package.json')

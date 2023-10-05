@@ -44,7 +44,7 @@ TEST(hash_combineTests, testIntegerCombinationsHashing) {
   EXPECT_NE(hash_combine(1, 2), hash_combine(2, 1));
 }
 
-TEST(hash_combineTests, testContiniousIntegerHashing) {
+TEST(hash_combineTests, testContinuousIntegerHashing) {
   std::size_t seed = 0;
 
   for (int i = 1; i <= 200; ++i) {

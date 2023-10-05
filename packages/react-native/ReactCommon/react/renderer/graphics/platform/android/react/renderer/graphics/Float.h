@@ -12,7 +12,7 @@
 namespace facebook::react {
 
 /*
- * Exact type of float numbers which ideally should match a type behing
+ * Exact type of float numbers which ideally should match a type being
  * platform- and chip-architecture-specific float type.
  */
 using Float = float;

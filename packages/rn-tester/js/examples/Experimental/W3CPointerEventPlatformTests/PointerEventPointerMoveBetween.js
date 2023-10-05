@@ -127,7 +127,7 @@ export default function PointerEventPointerMoveBetween(
       description=""
       instructions={[
         'Move your cursor over the blue element, later over the green one, later back to the blue one.',
-        'Move the mosue from the blue element to the yellow one, later to the white background.',
+        'Move the mouse from the blue element to the yellow one, later to the white background.',
       ]}
       title="Pointermove handling between elements"
     />

@@ -1194,7 +1194,7 @@ class NativeAnimatedNodeTraversalTest {
 
     // we run several steps of animation until the value starts bouncing, has negative speed and
     // passes the final point (that is 1) while going backwards
-    var isBoucingBack: Boolean = false
+    var isBouncingBack: Boolean = false
     var previousValue: Double =
         (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value
     for (i in 500 downTo 0) {
@@ -1202,12 +1202,12 @@ class NativeAnimatedNodeTraversalTest {
       val currentValue: Double =
           (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value
       if (previousValue >= 1.0 && currentValue < 1.0) {
-        isBoucingBack = true
+        isBouncingBack = true
         break
       }
       previousValue = currentValue
     }
-    assertThat(isBoucingBack).isTrue
+    assertThat(isBouncingBack).isTrue
 
     // we now update "toValue" to 1.5 but since the value have negative speed and has also
     // pretty

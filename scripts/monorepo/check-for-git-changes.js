@@ -26,7 +26,7 @@ const checkForGitChanges = () => {
 
   if (stderr) {
     console.log(
-      '\u274c An error occured while running `git status --porcelain`:',
+      '\u274c An error occurred while running `git status --porcelain`:',
     );
     console.log(stderr);
 

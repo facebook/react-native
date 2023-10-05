@@ -150,7 +150,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   YGErrata resolveErrata(YGErrata defaultErrata) const;
 
   /**
-   * Replcaes a child with a mutable clone of itself, returning the clone.
+   * Replaces a child with a mutable clone of itself, returning the clone.
    */
   YogaLayoutableShadowNode& cloneChildInPlace(size_t layoutableChildIndex);
 
@@ -181,7 +181,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - borderBottom(Left|Right)Radius → borderBottom(Start|End)Radius
    * - border(Left|Right)Width → border(Start|End)Width
    * - border(Left|Right)Color → border(Start|End)Color
-   * This is neccesarry to be backwards compatible with old renderer, it swaps
+   * This is necessary to be backwards compatible with old renderer, it swaps
    * the values as well in https://fburl.com/diffusion/kl7bjr3h
    */
   void swapStyleLeftAndRight();

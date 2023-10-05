@@ -734,7 +734,7 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
 describe('throwIfPartialNotAnnotatingTypeParameter', () => {
   const flowParser = new FlowParser();
   const typescriptParser = new TypeScriptParser();
-  const typerscriptTypeAnnotation = {
+  const typescriptTypeAnnotation = {
     typeParameters: {
       params: [
         {
@@ -774,7 +774,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
 
     expect(() => {
       throwIfPartialNotAnnotatingTypeParameter(
-        typerscriptTypeAnnotation,
+        typescriptTypeAnnotation,
         types,
         typescriptParser,
       );
@@ -798,7 +798,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
 
     expect(() => {
       throwIfPartialNotAnnotatingTypeParameter(
-        typerscriptTypeAnnotation,
+        typescriptTypeAnnotation,
         types,
         typescriptParser,
       );

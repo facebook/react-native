@@ -510,7 +510,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)jsLoaded:(NSNotification *)notification
 {
   // In bridge mode, the bridge that sent the notif must be the same as the one stored in this module.
-  // In bridgless mode, we don't care about this.
+  // In bridgeless mode, we don't care about this.
   if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification] &&
       notification.userInfo[@"bridge"] != self.bridge) {
     return;

@@ -44,16 +44,16 @@ public class TextInputTest {
   private ArrayList<Choreographer.FrameCallback> mPendingChoreographerCallbacks;
 
   private MockedStatic<Arguments> arguments;
-  private MockedStatic<ReactChoreographer> reactCoreographer;
+  private MockedStatic<ReactChoreographer> reactChoreographer;
 
   @Before
   public void setUp() {
     arguments = mockStatic(Arguments.class);
     arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
 
-    reactCoreographer = mockStatic(ReactChoreographer.class);
+    reactChoreographer = mockStatic(ReactChoreographer.class);
     ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
-    reactCoreographer
+    reactChoreographer
         .when(ReactChoreographer::getInstance)
         .thenAnswer(invocation -> choreographerMock);
 

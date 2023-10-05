@@ -159,7 +159,7 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
           return 'double';
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return 'boolean';
@@ -173,7 +173,7 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       return 'String';
     default:
       (typeAnnotation.type: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      throw new Error('Received invalid typeAnnotation');
   }
 }
 

@@ -1031,7 +1031,7 @@ static float distributeFreeSpaceSecondPass(
 
 // It distributes the free space to the flexible items.For those flexible items
 // whose min and max constraints are triggered, those flex item's clamped size
-// is removed from the remaingfreespace.
+// is removed from the remainingfreespace.
 static void distributeFreeSpaceFirstPass(
     FlexLine& flexLine,
     const FlexDirection mainAxis,

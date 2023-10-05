@@ -47,9 +47,9 @@ Size AndroidProgressBarMeasurementsManager::measure(
 
   local_ref<JString> componentName = make_jstring("AndroidProgressBar");
 
-  auto serialiazedProps = toDynamic(props);
+  auto serializedProps = toDynamic(props);
   local_ref<ReadableNativeMap::javaobject> propsRNM =
-      ReadableNativeMap::newObjectCxxArgs(serialiazedProps);
+      ReadableNativeMap::newObjectCxxArgs(serializedProps);
   local_ref<ReadableMap::javaobject> propsRM =
       make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
 

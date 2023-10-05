@@ -35,7 +35,7 @@ class ComponentDescriptorProviderRegistry final {
   void add(const ComponentDescriptorProvider& provider) const;
 
   /*
-   * ComponenDescriptorRegistry will call the `request` in case if a component
+   * ComponentDescriptorRegistry will call the `request` in case if a component
    * with given name wasn't registered yet.
    * The request handler must register a ComponentDescriptor with requested name
    * synchronously during handling the request.

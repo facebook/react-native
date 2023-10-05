@@ -159,7 +159,7 @@ function getObjCParamType(param: Param): string {
           return 'double';
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return 'BOOL';
@@ -187,7 +187,7 @@ function getObjCExpectedKindParamType(param: Param): string {
           return '[NSNumber class]';
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return '[NSNumber class]';
@@ -215,7 +215,7 @@ function getReadableExpectedKindParamType(param: Param): string {
           return 'double';
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return 'boolean';
@@ -246,7 +246,7 @@ function getObjCRightHandAssignmentParamType(
           return `[(NSNumber *)arg${index} doubleValue]`;
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return `[(NSNumber *)arg${index} boolValue]`;

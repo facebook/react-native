@@ -57,7 +57,7 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
 /**
  * Set the available size (`availableSize` property) for a root view.
  * This might be used in response to changes in external layout constraints.
- * This value will be directly trasmitted to layout engine and defines how big viewport is;
+ * This value will be directly transmitted to layout engine and defines how big viewport is;
  * this value does not affect root node size style properties.
  * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
  */

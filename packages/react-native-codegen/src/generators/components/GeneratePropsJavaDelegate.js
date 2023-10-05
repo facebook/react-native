@@ -190,7 +190,7 @@ function getCommandArgJavaType(
           return `args.getDouble(${index})`;
         default:
           (typeAnnotation.name: empty);
-          throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
+          throw new Error(`Received invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
       return `args.getBoolean(${index})`;
@@ -204,7 +204,7 @@ function getCommandArgJavaType(
       return `args.getString(${index})`;
     default:
       (typeAnnotation.type: empty);
-      throw new Error(`Receieved invalid type: ${typeAnnotation.type}`);
+      throw new Error(`Received invalid type: ${typeAnnotation.type}`);
   }
 }
 

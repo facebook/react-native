@@ -94,11 +94,11 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     CGRect rect = [layoutManager usedRectForTextContainer:textContainer];
     static auto threshold = 1.0 / RCTScreenScale() + 0.01; // Size of a pixel plus some small threshold.
 
-    // `rect`'s width is stored in double precesion.
-    // `frame`'s width is also in double precesion but was stored as float in Yoga previously, precesion was lost.
+    // `rect`'s width is stored in double precision.
+    // `frame`'s width is also in double precision but was stored as float in Yoga previously, precision was lost.
     if (std::abs(RCTCeilPixelValue(rect.size.width) - frame.size.width) < threshold) {
       // `textStorage` passed to this method was used to calculate size of frame. If that's the case, it's
-      // width is the same as frame's width. Origin must be adjusted, otherwise glyhps will be painted in wrong
+      // width is the same as frame's width. Origin must be adjusted, otherwise glyphs will be painted in wrong
       // place.
       // We could create new `NSTextStorage` for the specific frame, but that is expensive.
       origin.x -= RCTCeilPixelValue(rect.origin.x);

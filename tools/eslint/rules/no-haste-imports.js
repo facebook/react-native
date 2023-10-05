@@ -18,7 +18,7 @@ module.exports = {
     },
     messages: {
       hasteImport:
-        "'{{importPath}}' seems to be a Haste module name; use path-based imports intead",
+        "'{{importPath}}' seems to be a Haste module name; use path-based imports instead",
     },
     schema: [],
   },

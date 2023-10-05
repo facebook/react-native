@@ -242,7 +242,7 @@ export default {
       },
     },
     {
-      name: 'pointerevent_caapture_mouse',
+      name: 'pointerevent_capture_mouse',
       title: 'WPT 12: Pointer Events capture test',
       render(): React.Node {
         return <PointerEventCaptureMouse />;

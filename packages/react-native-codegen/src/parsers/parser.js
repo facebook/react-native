@@ -220,7 +220,7 @@ export interface Parser {
   parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType;
 
   /**
-   * Throws if enum mebers are not supported
+   * Throws if enum members are not supported
    */
   validateEnumMembersSupported(
     typeAnnotation: $FlowFixMe,

@@ -178,7 +178,7 @@ TEST_F(ShadowNodeTest, handleShadowNodeCreation) {
   EXPECT_EQ(nodeZ_->getChildren().size(), 0);
 }
 
-TEST_F(ShadowNodeTest, handleSealRecusive) {
+TEST_F(ShadowNodeTest, handleSealRecursive) {
   nodeZ_->sealRecursive();
   EXPECT_TRUE(nodeZ_->getSealed());
   EXPECT_TRUE(nodeZ_->getProps()->getSealed());

@@ -19,7 +19,7 @@ namespace facebook::react {
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
  * Capitalizes the first letter of the event type and adds "top" prefix if
- * necessary (e.g. "layout" becames "topLayout").
+ * necessary (e.g. "layout" becomes "topLayout").
  */
 static std::string normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);

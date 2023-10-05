@@ -68,9 +68,9 @@ class UIManager final : public ShadowTreeDelegate {
   void animationTick() const;
 
   /*
-   * Provides access to a UIManagerBindging.
+   * Provides access to a UIManagerBinding.
    * The `callback` methods will not be called if the internal pointer to
-   * `UIManagerBindging` is `nullptr`.
+   * `UIManagerBinding` is `nullptr`.
    * The callback is called synchronously on the same thread.
    */
   void visitBinding(

@@ -476,7 +476,7 @@ public class ReactHostImpl implements ReactHost {
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
    *
-   * @param reason {@link String} describing why ReactHost is being destroyed (e.g. memmory
+   * @param reason {@link String} describing why ReactHost is being destroyed (e.g. memory
    *     pressure)
    * @param ex {@link Exception} exception that caused the trigger to destroy ReactHost (or null)
    *     This exception will be used to log properly the cause of destroy operation.
@@ -1219,7 +1219,7 @@ public class ReactHostImpl implements ReactHost {
     ReactInstance unwrap(Task<ReactInstance> task, String stage);
   }
 
-  private ReactInstanceTaskUnwrapper createReactInstanceUnwraper(
+  private ReactInstanceTaskUnwrapper createReactInstanceUnwrapper(
       String tag, String method, String reason) {
 
     return (task, stage) -> {
@@ -1287,7 +1287,7 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Reload", method, reason);
+        createReactInstanceUnwrapper("Reload", method, reason);
 
     if (mReloadTask == null) {
       mReloadTask =
@@ -1459,7 +1459,7 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason, ex);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Destroy", method, reason);
+        createReactInstanceUnwrapper("Destroy", method, reason);
 
     if (mDestroyTask == null) {
       mDestroyTask =

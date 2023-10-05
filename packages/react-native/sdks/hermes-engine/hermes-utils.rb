@@ -167,7 +167,7 @@ end
 
 def podspec_source_build_from_github_tag(react_native_path)
     tag = File.read(hermestag_file(react_native_path)).strip
-    hermes_log("Using tag difined in sdks/.hermesversion: #{tag}")
+    hermes_log("Using tag defined in sdks/.hermesversion: #{tag}")
     return {:git => HERMES_GITHUB_URL, :tag => tag}
 end
 
@@ -249,13 +249,13 @@ def hermes_log(message, level = :warning)
     if !Object.const_defined?("Pod::UI")
         return
     end
-    hermes_log_messgae = '[Hermes] ' + message
+    hermes_log_message = '[Hermes] ' + message
     case level
     when :info
-        Pod::UI.puts hermes_log_messgae.green
+        Pod::UI.puts hermes_log_message.green
     when :error
-        Pod::UI.puts hermes_log_messgae.red
+        Pod::UI.puts hermes_log_message.red
     else
-        Pod::UI.puts hermes_log_messgae.yellow
+        Pod::UI.puts hermes_log_message.yellow
     end
 end

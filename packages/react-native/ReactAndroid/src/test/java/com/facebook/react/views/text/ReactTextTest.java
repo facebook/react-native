@@ -56,7 +56,7 @@ import org.robolectric.RuntimeEnvironment;
 public class ReactTextTest {
 
   private MockedStatic<Arguments> arguments;
-  private MockedStatic<ReactChoreographer> reactCoreographer;
+  private MockedStatic<ReactChoreographer> reactChoreographer;
   private ArrayList<Choreographer.FrameCallback> mPendingFrameCallbacks;
 
   @Before
@@ -65,8 +65,8 @@ public class ReactTextTest {
     arguments = mockStatic(Arguments.class);
     arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
 
-    reactCoreographer = mockStatic(ReactChoreographer.class);
-    reactCoreographer.when(ReactChoreographer::getInstance).thenAnswer(invocation -> uiDriverMock);
+    reactChoreographer = mockStatic(ReactChoreographer.class);
+    reactChoreographer.when(ReactChoreographer::getInstance).thenAnswer(invocation -> uiDriverMock);
 
     mPendingFrameCallbacks = new ArrayList<>();
     doAnswer(

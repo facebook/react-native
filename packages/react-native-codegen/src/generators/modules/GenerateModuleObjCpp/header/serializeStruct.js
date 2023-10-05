@@ -15,7 +15,7 @@ import type {Struct} from '../StructCollector';
 const {serializeConstantsStruct} = require('./serializeConstantsStruct');
 const {serializeRegularStruct} = require('./serializeRegularStruct');
 
-export type StructSerilizationOutput = $ReadOnly<{
+export type StructSerializationOutput = $ReadOnly<{
   methods: string,
   declaration: string,
 }>;
@@ -23,7 +23,7 @@ export type StructSerilizationOutput = $ReadOnly<{
 function serializeStruct(
   hasteModuleName: string,
   struct: Struct,
-): StructSerilizationOutput {
+): StructSerializationOutput {
   if (struct.context === 'REGULAR') {
     return serializeRegularStruct(hasteModuleName, struct);
   }

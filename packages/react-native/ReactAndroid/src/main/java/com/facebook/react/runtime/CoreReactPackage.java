@@ -80,7 +80,7 @@ class CoreReactPackage extends TurboReactPackage {
           Class.forName("com.facebook.react.CoreModulesPackage$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
-      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+      // In OSS case, the annotation processor does not run. We fall back on creating this by hand
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AndroidInfoModule.class,

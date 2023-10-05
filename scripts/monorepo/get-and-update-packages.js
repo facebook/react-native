@@ -60,7 +60,7 @@ function getPackagesToPublish() /*: PackageMap */ {
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private || !isPublishedOnNPM(packageManifest.name)) {
         console.log(
-          `\u23F1 Skipping publishing for ${packageManifest.name}. It is either pivate or unpublished`,
+          `\u23F1 Skipping publishing for ${packageManifest.name}. It is either private or unpublished`,
         );
         return;
       }
@@ -85,7 +85,7 @@ function isPublishedOnNPM(packageName /*: string */) /*: boolean */ {
 
 /**
  * Update the dependencies in the packages to the passed version.
- * The function update the packages dependencies and devDepenencies if they contains other packages in the monorepo.
+ * The function update the packages dependencies and devDependencies if they contains other packages in the monorepo.
  * The function also writes the updated package.json to disk.
  */
 function updateDependencies(packages /*: PackageMap */, version /*: string */) {

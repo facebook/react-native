@@ -170,7 +170,7 @@ void CxxNativeModule::invoke(
   // This lets all the java and red box handling work ok, but the only info I
   // can capture about the C++ exception is the what() string, not the stack.
   // I can std::terminate() the app.  This causes the full, accurate C++
-  // stack trace to be added to logcat by debuggerd.  The java state is lost,
+  // stack trace to be added to logcat by debugger.  The java state is lost,
   // but in practice, the java stack is always the same in this case since
   // the javascript stack is not visible, and the crash is unfriendly to js
   // developers, but crucial to C++ developers.  The what() value is also

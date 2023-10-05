@@ -53,7 +53,7 @@ public class UIManagerModuleTest {
   private ArrayList<Choreographer.FrameCallback> mPendingFrameCallbacks;
 
   private MockedStatic<Arguments> arguments;
-  private MockedStatic<ReactChoreographer> reactCoreographer;
+  private MockedStatic<ReactChoreographer> reactChoreographer;
 
   @Before
   public void setUp() {
@@ -61,9 +61,9 @@ public class UIManagerModuleTest {
     arguments.when(Arguments::createArray).thenAnswer(invocation -> new JavaOnlyArray());
     arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
 
-    reactCoreographer = mockStatic(ReactChoreographer.class);
+    reactChoreographer = mockStatic(ReactChoreographer.class);
     ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
-    reactCoreographer
+    reactChoreographer
         .when(ReactChoreographer::getInstance)
         .thenAnswer(invocation -> choreographerMock);
 

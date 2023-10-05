@@ -1377,7 +1377,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void adjustPositionForContentChangeRTL(int left, int right, int oldLeft, int oldRight) {
-    // If we have any pending custon flings (e.g. from aninmated `scrollTo`, or flinging to a snap
+    // If we have any pending custom flings (e.g. from animated `scrollTo`, or flinging to a snap
     // point), finish them, commiting the final `scrollX`.
     // TODO: Can we be more graceful (like OverScroller flings)?
     if (getFlingAnimator().isRunning()) {
@@ -1393,8 +1393,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // (OverScroller is in `FLING_MODE`), we must cancel and recreate the existing fling animation
     // since it was calculated against outdated scroll offsets.
     if (mScroller != null && !mScroller.isFinished()) {
-      // Calculate the veliocity and position of the fling animation at the time of this layout
-      // event, which may be later than the last ScrollView tick. These values are not commited to
+      // Calculate the velocity and position of the fling animation at the time of this layout
+      // event, which may be later than the last ScrollView tick. These values are not committed to
       // the underlying ScrollView, which will recalculate positions on its next tick.
       int scrollerXBeforeTick = mScroller.getCurrX();
       boolean hasMoreTicks = mScroller.computeScrollOffset();

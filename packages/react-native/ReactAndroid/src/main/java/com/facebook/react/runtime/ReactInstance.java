@@ -243,12 +243,12 @@ final class ReactInstance {
           new UIConstantsProviderManager(
               // Use unbuffered RuntimeExecutor to install binding
               unbufferedRuntimeExecutor,
-              // Here we are construncting the return value for UIManager.getConstants call.
-              // The old architectre relied on the constatnts struct to contain:
+              // Here we are constructing the return value for UIManager.getConstants call.
+              // The old architecture relied on the constants struct to contain:
               // 1. Eagerly loaded view configs for all native components.
               // 2. genericBubblingEventTypes.
               // 3. genericDirectEventTypes.
-              // We want to match this beahavior.
+              // We want to match this behavior.
               (UIConstantsProvider)
                   () -> {
                     return getUIManagerConstants();

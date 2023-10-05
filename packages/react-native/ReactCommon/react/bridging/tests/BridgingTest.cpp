@@ -137,7 +137,7 @@ TEST_F(BridgingTest, hostObjectTest) {
       hostobject, bridging::fromJs<decltype(hostobject)>(rt, object, invoker));
 }
 
-TEST_F(BridgingTest, weakbjectTest) {
+TEST_F(BridgingTest, weakObjectTest) {
   auto object = jsi::Object(rt);
   auto weakobject = jsi::WeakObject(rt, object);
 

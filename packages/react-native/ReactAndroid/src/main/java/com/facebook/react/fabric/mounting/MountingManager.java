@@ -433,7 +433,7 @@ public class MountingManager {
       @EventCategoryDef int eventCategory) {
     @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
     if (smm == null) {
-      // Cannot queue event without valid surface mountng manager. Do nothing here.
+      // Cannot queue event without valid surface mounting manager. Do nothing here.
       return;
     }
     smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);

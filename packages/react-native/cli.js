@@ -41,7 +41,7 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
 }
 
 /**
- * npx react-native -> @react-native-comminity/cli
+ * npx react-native -> @react-native-community/cli
  *
  * Will perform a version check and warning if you're not running the latest community cli when executed using npx. If
  * you know what you're doing, you can skip this check:

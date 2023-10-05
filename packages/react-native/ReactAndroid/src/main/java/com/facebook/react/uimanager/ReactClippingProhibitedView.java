@@ -10,12 +10,12 @@ package com.facebook.react.uimanager;
 /**
  * Some Views may not function if added directly to a ViewGroup that clips them. For example, TTRC
  * markers may rely on `onDraw` functionality to work properly, and will break if they're clipped
- * out of the View hierarchy for any resaon.
+ * out of the View hierarchy for any reason.
  *
  * <p>This situation can occur more often in Fabric with View Flattening. We may prevent this sort
  * of View Flattening from occurring in the future, but the connection is not entirely certain.
  *
- * <p>This can occur either because ReactViewGroup clips them out, using the ordinarary subview
+ * <p>This can occur either because ReactViewGroup clips them out, using the ordinary subview
  * clipping feature. It is also possible if a View is added directly to a ReactRootView below the
  * fold of the screen.
  *

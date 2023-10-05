@@ -28,7 +28,7 @@ type Options = $ReadOnly<{
   projectRoot: string,
 
   /**
-   * The base URL to the dev server, as addressible from the local developer
+   * The base URL to the dev server, as addressable from the local developer
    * machine. This is used in responses which return URLs to other endpoints,
    * e.g. the debugger frontend and inspector proxy targets.
    *

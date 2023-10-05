@@ -290,7 +290,7 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
   EXPECT_EQ(scrollViewShadowNode->getState(), state3);
 
   if (GetParam()) {
-    // Checking that newlyClonedShadowNode was not cloned unnecessarly by state
+    // Checking that newlyClonedShadowNode was not cloned unnecessarily by state
     // progression. This fails with the old algorithm.
     EXPECT_EQ(scrollViewShadowNode, newlyClonedShadowNode.get());
   }

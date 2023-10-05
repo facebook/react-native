@@ -700,7 +700,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(5)->tag, 3);
   });
 
-  // And now, let's hide BB completety.
+  // And now, let's hide BB completely.
 
   //  ┌────────────── (Root) ──────────────┐     ┌────────── (Root) ──────────┐
   //  │ ┌─ A (tag: 2) ───────────────────┐ │     │ ┏━ BD (tag: 10) ━━━━━━━━━┓ │

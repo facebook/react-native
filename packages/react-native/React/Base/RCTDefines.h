@@ -92,7 +92,7 @@
 #endif
 
 /**
- * Controls for the core packgaer loading functionality
+ * Controls for the core packager loading functionality
  * By default, this inherits from RCT_DEV_MENU but it also gives the capability to
  * enable the packager functionality without the rest of the dev tools from RCT_DEV_MENU
  */

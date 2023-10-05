@@ -775,7 +775,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
 /**
  * Private method which is used for tracking the location of pointer events to manage the entering/leaving events.
- * The primary idea is that a pointer's presence & movement is dicated by a variety of underlying events such as down,
+ * The primary idea is that a pointer's presence & movement is dictated by a variety of underlying events such as down,
  * move, and up — and they should all be treated the same when it comes to tracking the entering & leaving of pointers
  * to views. This method accomplishes that by receiving the pointer event, the target view (can be null in cases when
  * the event indicates that the pointer has left the screen entirely), and a block/callback where the underlying event

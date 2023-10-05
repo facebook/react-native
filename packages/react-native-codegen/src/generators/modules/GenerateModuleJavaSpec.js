@@ -361,7 +361,7 @@ function buildGetConstantsMethod(
     unwrapNullable<NativeModuleFunctionTypeAnnotation>(method.typeAnnotation);
   let returnTypeAnnotation = methodTypeAnnotation.returnTypeAnnotation;
   if (returnTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
-    // The return type is an alias, resolve it to get the expected undelying object literal type
+    // The return type is an alias, resolve it to get the expected underlying object literal type
     returnTypeAnnotation = resolveAlias(returnTypeAnnotation.name);
   }
 

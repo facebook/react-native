@@ -400,7 +400,7 @@ export default class Device {
 
     // We already had a debugger connected to React Native page and a
     // new one appeared - in this case we need to emulate execution context
-    // detroy and resend Debugger.enable and Runtime.enable commands to new
+    // destroy and resend Debugger.enable and Runtime.enable commands to new
     // page.
 
     if (oldPageId != null) {

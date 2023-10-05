@@ -334,7 +334,7 @@ function getReturnObjCType(
       }
     case 'StringTypeAnnotation':
       // TODO: Can NSString * returns not be _Nullable?
-      // In the legacy codegen, we don't surround NSSTring * with _Nullable
+      // In the legacy codegen, we don't surround NSString * with _Nullable
       return wrapIntoNullableIfNeeded('NSString *');
     case 'NumberTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSNumber *');
@@ -462,7 +462,7 @@ function serializeConstantsProtocolMethods(
   let {returnTypeAnnotation} = propertyTypeAnnotation;
 
   if (returnTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
-    // The return type is an alias, resolve it to get the expected undelying object literal type
+    // The return type is an alias, resolve it to get the expected underlying object literal type
     returnTypeAnnotation = resolveAlias(returnTypeAnnotation.name);
   }
 

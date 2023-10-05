@@ -26,7 +26,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
     const facebook::react::TextAttributes &textAttributes);
 
 /*
- * Conversions amond `NSAttributedString`, `AttributedString` and `AttributedStringBox`.
+ * Conversions among `NSAttributedString`, `AttributedString` and `AttributedStringBox`.
  */
 NSAttributedString *RCTNSAttributedStringFromAttributedString(
     const facebook::react::AttributedString &attributedString);

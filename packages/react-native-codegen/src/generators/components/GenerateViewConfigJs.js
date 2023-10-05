@@ -141,7 +141,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL
 };
 
 // Check whether the native component exists in the app binary.
-// Old getViewManagerConfig() checks for the existance of the native Paper view manager. Not available in Bridgeless.
+// Old getViewManagerConfig() checks for the existence of the native Paper view manager. Not available in Bridgeless.
 // New hasViewManagerConfig() queries Fabric’s native component registry directly.
 const DeprecatedComponentNameCheckTemplate = ({
   componentName,

@@ -112,7 +112,7 @@ void MutationObserver::recordMutationsInTarget(
     bool observeSubtree,
     std::vector<const MutationRecord>& recordedMutations,
     SetOfShadowNodePointers& processedNodes) const {
-  // If the node isnt't present in the old tree, it's either:
+  // If the node isn't present in the old tree, it's either:
   // - A new node. In that case, the mutation happened in its parent, not in the
   //   node itself.
   // - A non-existent node. In that case, there are no new mutations.

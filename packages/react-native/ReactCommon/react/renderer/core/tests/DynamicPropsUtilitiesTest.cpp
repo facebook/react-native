@@ -14,7 +14,7 @@ using namespace facebook::react;
 /*
   Tests that verify expected behaviour from `folly::dynamic::merge_patch`.
   `merge_patch` is used for props forwarding on Android to enable Background
-  Executor and will be removed once JNI layer is reimplmeneted.
+  Executor and will be removed once JNI layer is reimplemented.
  */
 TEST(DynamicPropsUtilitiesTest, handleNestedObjects) {
   dynamic map1 = dynamic::object;

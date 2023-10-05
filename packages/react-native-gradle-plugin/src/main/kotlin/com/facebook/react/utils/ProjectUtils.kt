@@ -100,7 +100,7 @@ internal object ProjectUtils {
     // major is a number
     // minor is a number
     // patch is a number
-    // <prerelease>[-.]k is optional, but if present is preceeded by a `-`
+    // <prerelease>[-.]k is optional, but if present is preceded by a `-`
     // the <prerelease> tag is a string.
     // it can be followed by `-` or `.` and k is a number.
     val regex = """^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$""".toRegex()
