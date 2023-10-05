@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency 'fmt' , '~> 6.2.1'
+  s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-utils"
