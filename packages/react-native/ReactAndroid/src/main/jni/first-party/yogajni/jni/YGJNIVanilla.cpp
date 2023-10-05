@@ -6,6 +6,7 @@
  */
 
 #include "YGJNIVanilla.h"
+#include <bit>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -17,7 +18,6 @@
 #include "jni.h"
 
 #include <yoga/Yoga-internal.h>
-#include <yoga/bits/BitCast.h>
 
 using namespace facebook;
 using namespace facebook::yoga;
@@ -645,8 +645,8 @@ static YGSize YGJNIMeasureFunc(
     uint32_t wBits = 0xFFFFFFFF & (measureResult >> 32);
     uint32_t hBits = 0xFFFFFFFF & measureResult;
 
-    const float measuredWidth = yoga::bit_cast<float>(wBits);
-    const float measuredHeight = yoga::bit_cast<float>(hBits);
+    const float measuredWidth = std::bit_cast<float>(wBits);
+    const float measuredHeight = std::bit_cast<float>(hBits);
 
     return YGSize{measuredWidth, measuredHeight};
   } else {

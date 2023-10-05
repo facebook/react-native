@@ -7,14 +7,13 @@
 
 #pragma once
 
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 
 #include <yoga/YGMacros.h>
 #include <yoga/YGValue.h>
-
-#include <yoga/bits/BitCast.h>
 #include <yoga/numeric/Comparison.h>
 
 static_assert(
@@ -65,7 +64,7 @@ class YG_EXPORT CompactValue {
     }
 
     uint32_t unitBit = Unit == YGUnitPercent ? PERCENT_BIT : 0;
-    auto data = yoga::bit_cast<uint32_t>(value);
+    auto data = std::bit_cast<uint32_t>(value);
     data -= BIAS;
     data |= unitBit;
     return {data};
@@ -118,7 +117,7 @@ class YG_EXPORT CompactValue {
         return YGValue{0.0f, YGUnitPercent};
     }
 
-    if (std::isnan(yoga::bit_cast<float>(repr_))) {
+    if (std::isnan(std::bit_cast<float>(repr_))) {
       return YGValueUndefined;
     }
 
@@ -127,14 +126,14 @@ class YG_EXPORT CompactValue {
     data += BIAS;
 
     return YGValue{
-        yoga::bit_cast<float>(data),
+        std::bit_cast<float>(data),
         repr_ & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {
     return (
         repr_ != AUTO_BITS && repr_ != ZERO_BITS_POINT &&
-        repr_ != ZERO_BITS_PERCENT && std::isnan(yoga::bit_cast<float>(repr_)));
+        repr_ != ZERO_BITS_PERCENT && std::isnan(std::bit_cast<float>(repr_)));
   }
 
   bool isAuto() const noexcept {
