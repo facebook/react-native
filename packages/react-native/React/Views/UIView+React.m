@@ -245,16 +245,14 @@
 
 static void updateTransform(UIView *view)
 {
-  RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
   CATransform3D transform;
-  // Default origin is center of the view, so avoid additional matrix operations.
-  if (RCTTransformOriginIsDefault(transformOrigin)) {
-    transform = view.reactTransform;
-  } else {
+  id rawTansformOrigin = objc_getAssociatedObject(view, @selector(reactTransformOrigin));
+  if (rawTansformOrigin) {
     CGSize size = view.bounds.size;
     CGFloat anchorPointX = 0;
     CGFloat anchorPointY = 0;
     CGFloat anchorPointZ = 0;
+    RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
 
     if (transformOrigin.x.unit == YGUnitPoint) {
       anchorPointX = transformOrigin.x.value - size.width * 0.5;
@@ -270,6 +268,8 @@ static void updateTransform(UIView *view)
     anchorPointZ = transformOrigin.z;
     transform = CATransform3DConcat(view.reactTransform, CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ));
     transform = CATransform3DConcat(CATransform3DMakeTranslation(-anchorPointX, -anchorPointY, -anchorPointZ), transform);
+  } else {
+    transform = view.reactTransform;
   }
   
   view.layer.transform = transform;
