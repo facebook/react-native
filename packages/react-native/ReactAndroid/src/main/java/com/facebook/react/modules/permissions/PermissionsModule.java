@@ -177,8 +177,7 @@ public class PermissionsModule extends NativePermissionsAndroidSpec implements P
         callback.invoke(grantResults, getPermissionAwareActivity());
         mCallbacks.remove(requestCode);
       } else {
-        String message = "Unable to find callback with requestCode:" + requestCode;
-        FLog.w("PermissionsModule", message);
+        FLog.w("PermissionsModule", "Unable to find callback with requestCode %d", requestCode);
       }
       return mCallbacks.size() == 0;
     } catch (IllegalStateException e) {
