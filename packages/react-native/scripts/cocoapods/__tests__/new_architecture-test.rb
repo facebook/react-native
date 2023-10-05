@@ -104,15 +104,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, true)
 
         # Assert
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1")
+        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1")
+        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1")
+        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DNDEBUG")
         assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
@@ -128,18 +128,18 @@ class NewArchitectureTests < Test::Unit::TestCase
         spec = SpecMock.new
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, true, '2022.05.16.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, true, '2023.08.07.00')
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1")
+        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2022.05.16.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "React-Codegen" },
@@ -169,7 +169,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         }
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, false, '2022.05.16.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, false, '2023.08.07.00')
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
@@ -179,7 +179,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2022.05.16.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
                 { :dependency_name => "glog" }
             ]
         )

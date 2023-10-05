@@ -242,7 +242,7 @@ class CodegenTests < Test::Unit::TestCase
             :codegen_output_dir=>"build/generated/ios",
             :config_file_dir=>"",
             :fabric_enabled=>false,
-            :folly_version=>"2022.05.16.00",
+            :folly_version=>"2023.08.07.00",
             :react_native_path=>"../node_modules/react-native"
         }])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params, [])
@@ -270,7 +270,7 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(codegen_utils_mock.use_react_native_codegen_discovery_params, [])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params, [{
             :fabric_enabled => true,
-            :folly_version=>"2022.05.16.00",
+            :folly_version=>"2023.08.07.00",
             :package_json_file => "~/app/package.json",
             :script_phases => nil
         }])
