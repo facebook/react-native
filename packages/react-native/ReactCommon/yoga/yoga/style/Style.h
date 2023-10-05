@@ -20,6 +20,7 @@
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
 #include <yoga/enums/FlexDirection.h>
+#include <yoga/enums/Gutter.h>
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/Overflow.h>
 #include <yoga/enums/PositionType.h>
@@ -36,7 +37,7 @@ class YG_EXPORT Style {
  public:
   using Dimensions = Values<Dimension>;
   using Edges = Values<YGEdge>;
-  using Gutters = Values<YGGutter>;
+  using Gutters = Values<Gutter>;
 
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
@@ -274,11 +275,11 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  CompactValue gap(YGGutter gutter) const {
-    return gap_[gutter];
+  CompactValue gap(Gutter gutter) const {
+    return gap_[yoga::to_underlying(gutter)];
   }
-  void setGap(YGGutter gutter, CompactValue value) {
-    gap_[gutter] = value;
+  void setGap(Gutter gutter, CompactValue value) {
+    gap_[yoga::to_underlying(gutter)] = value;
   }
 
   CompactValue dimension(Dimension axis) const {
@@ -311,18 +312,18 @@ class YG_EXPORT Style {
   }
 
   CompactValue resolveColumnGap() const {
-    if (!gap_[YGGutterColumn].isUndefined()) {
-      return gap_[YGGutterColumn];
+    if (!gap_[yoga::to_underlying(Gutter::Column)].isUndefined()) {
+      return gap_[yoga::to_underlying(Gutter::Column)];
     } else {
-      return gap_[YGGutterAll];
+      return gap_[yoga::to_underlying(Gutter::All)];
     }
   }
 
   CompactValue resolveRowGap() const {
-    if (!gap_[YGGutterRow].isUndefined()) {
-      return gap_[YGGutterRow];
+    if (!gap_[yoga::to_underlying(Gutter::Row)].isUndefined()) {
+      return gap_[yoga::to_underlying(Gutter::Row)];
     } else {
-      return gap_[YGGutterAll];
+      return gap_[yoga::to_underlying(Gutter::All)];
     }
   }
 
