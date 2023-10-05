@@ -79,7 +79,7 @@ class NewArchitectureHelper
                 Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
                 end
             end
