@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.MountingManager;
 
-public class SendAccessibilityEvent implements MountItem {
+class SendAccessibilityEvent implements MountItem {
 
   private final String TAG = "Fabric.SendAccessibilityEvent";
 
