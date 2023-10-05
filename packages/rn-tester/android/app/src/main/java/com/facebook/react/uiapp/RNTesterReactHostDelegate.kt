@@ -14,6 +14,7 @@ import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.TurboReactPackage
+import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -108,7 +109,7 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
                 }
               }
         },
-        object : ReactPackage {
+        object : ViewManagerOnDemandReactPackage, ReactPackage {
           override fun createNativeModules(
               reactContext: ReactApplicationContext
           ): List<NativeModule> = emptyList()
@@ -117,6 +118,22 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
               reactContext: ReactApplicationContext
           ): List<ViewManager<*, *>> =
               listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+
+          override fun getViewManagerNames(
+              reactContext: ReactApplicationContext
+          ): Collection<String> =
+              listOf(MyNativeViewManager.REACT_CLASS, MyLegacyViewManager.REACT_CLASS)
+
+          override fun createViewManager(
+              reactContext: ReactApplicationContext,
+              viewManagerName: String
+          ): ViewManager<*, *>? {
+            return when (viewManagerName) {
+              MyNativeViewManager.REACT_CLASS -> MyNativeViewManager()
+              MyLegacyViewManager.REACT_CLASS -> MyLegacyViewManager(reactContext)
+              else -> null
+            }
+          }
         })
   }
 }
