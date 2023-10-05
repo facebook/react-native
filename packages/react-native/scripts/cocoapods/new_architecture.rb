@@ -14,6 +14,8 @@ class NewArchitectureHelper
 
     @@cplusplus_version = "c++20"
 
+    @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
+
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
 
@@ -189,6 +191,13 @@ class NewArchitectureHelper
             # We want to enforce the new architecture for 1.0.0 and greater,
             # but not for 1000 as version 1000 is currently main.
             if major > 0 && major < 1000
+                if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
+                    warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
+                                      "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
+                    Pod::UI.warn warning_message
+                    @@NewArchWarningEmitted = true
+                end
+
                 return "1"
             end
         end
