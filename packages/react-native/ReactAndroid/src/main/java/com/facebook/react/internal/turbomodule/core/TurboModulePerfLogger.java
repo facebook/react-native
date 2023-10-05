@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core;
+package com.facebook.react.internal.turbomodule.core;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.perflogger.NativeModulePerfLogger;

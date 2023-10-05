@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core;
+package com.facebook.react.internal.turbomodule.core;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
 
 /**
  * JSCallInvoker is created at a different time/place (i.e: in CatalystInstance) than

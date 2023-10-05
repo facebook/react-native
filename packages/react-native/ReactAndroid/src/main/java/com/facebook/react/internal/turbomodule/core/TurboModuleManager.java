@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core;
+package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -20,10 +20,10 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
-import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
+import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

@@ -13,6 +13,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -23,7 +24,6 @@ import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.Map;
 

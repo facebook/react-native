@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

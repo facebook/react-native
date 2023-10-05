@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core.interfaces
+package com.facebook.react.internal.turbomodule.core.interfaces
 /** All turbo modules should inherit from this interface */
 interface TurboModule {
   /** Initialize the TurboModule. */
