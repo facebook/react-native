@@ -69,12 +69,12 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: '2022.05.16.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
-        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
         boost_compiler_flags = '-Wno-documentation'
 
         header_search_paths = [
@@ -290,7 +290,7 @@ class CodegenUtils
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
-      folly_version: '2022.05.16.00',
+      folly_version: '2023.08.07.00',
       codegen_utils: CodegenUtils.new(),
       file_manager: File
       )
