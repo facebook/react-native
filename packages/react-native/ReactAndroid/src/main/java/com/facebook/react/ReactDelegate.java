@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
-import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
