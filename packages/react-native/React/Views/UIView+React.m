@@ -204,7 +204,8 @@
   self.center = position;
   self.bounds = bounds;
 
-  if (!RCTTransformOriginIsDefault(self.reactTransformOrigin)) {
+  id transformOrigin = objc_getAssociatedObject(self, @selector(reactTransformOrigin));
+  if (transformOrigin) {
     updateTransform(self);
   }
 }
