@@ -34,6 +34,7 @@ type DebuggerSessionIDs = {
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
+      launchType: 'launch' | 'redirect',
       ...
         | SuccessResult<{appId: string}>
         | ErrorResult<mixed>

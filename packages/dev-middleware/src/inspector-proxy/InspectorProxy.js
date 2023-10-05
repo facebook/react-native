@@ -33,12 +33,19 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 
 const INTERNAL_ERROR_CODE = 1011;
 
+export interface InspectorProxyQueries {
+  getPageDescriptions(): Array<PageDescription>;
+}
+
 /**
  * Main Inspector Proxy class that connects JavaScript VM inside Android/iOS apps and JS debugger.
  */
-export default class InspectorProxy {
+export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
   _projectRoot: string;
+
+  /** The base URL to the dev server from the developer machine. */
+  _serverBaseUrl: string;
 
   // Maps device ID to Device instance.
   _devices: Map<string, Device>;
@@ -46,24 +53,36 @@ export default class InspectorProxy {
   // Internal counter for device IDs -- just gets incremented for each new device.
   _deviceCounter: number = 0;
 
-  // We store server's address with port (like '127.0.0.1:8081') to be able to build URLs
-  // (devtoolsFrontendUrl and webSocketDebuggerUrl) for page descriptions. These URLs are used
-  // by debugger to know where to connect.
-  _serverBaseUrl: string = '';
-
   _eventReporter: ?EventReporter;
 
   _experiments: Experiments;
 
   constructor(
     projectRoot: string,
+    serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
   ) {
     this._projectRoot = projectRoot;
+    this._serverBaseUrl = serverBaseUrl;
     this._devices = new Map();
     this._eventReporter = eventReporter;
     this._experiments = experiments;
+  }
+
+  getPageDescriptions(): Array<PageDescription> {
+    // Build list of pages from all devices.
+    let result: Array<PageDescription> = [];
+    Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
+      result = result.concat(
+        device
+          .getPagesList()
+          .map((page: Page) =>
+            this._buildPageDescription(deviceId, device, page),
+          ),
+      );
+    });
+    return result;
   }
 
   // Process HTTP request sent to server. We only respond to 2 HTTP requests:
@@ -79,19 +98,7 @@ export default class InspectorProxy {
       request.url === PAGES_LIST_JSON_URL ||
       request.url === PAGES_LIST_JSON_URL_2
     ) {
-      // Build list of pages from all devices.
-      let result: Array<PageDescription> = [];
-      Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
-        result = result.concat(
-          device
-            .getPagesList()
-            .map((page: Page) =>
-              this._buildPageDescription(deviceId, device, page),
-            ),
-        );
-      });
-
-      this._sendJsonResponse(response, result);
+      this._sendJsonResponse(response, this.getPageDescriptions());
     } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
@@ -102,11 +109,9 @@ export default class InspectorProxy {
     }
   }
 
-  createWebSocketListeners(devServerBaseUrl: string): {
+  createWebSocketListeners(): {
     [path: string]: WS.Server,
   } {
-    this._serverBaseUrl = devServerBaseUrl;
-
     return {
       [WS_DEVICE_URL]: this._createDeviceConnectionWSServer(),
       [WS_DEBUGGER_URL]: this._createDebuggerConnectionWSServer(),
@@ -120,15 +125,18 @@ export default class InspectorProxy {
     device: Device,
     page: Page,
   ): PageDescription {
-    const debuggerUrl = `${this._serverBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
-    const webSocketDebuggerUrl = 'ws://' + debuggerUrl;
+    const {host, protocol} = new URL(this._serverBaseUrl);
+    const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
+
+    const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
+    const webSocketDebuggerUrl = `${webSocketScheme}://${webSocketUrlWithoutProtocol}`;
 
     // For now, `/json/list` returns the legacy built-in `devtools://` URL, to
     // preserve existing handling by Flipper. This may return a placeholder in
     // future -- please use the `/open-debugger` endpoint.
     const devtoolsFrontendUrl =
-      'devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=' +
-      encodeURIComponent(webSocketDebuggerUrl);
+      `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${webSocketScheme}=` +
+      encodeURIComponent(webSocketUrlWithoutProtocol);
 
     return {
       id: `${deviceId}-${page.id}`,
@@ -168,6 +176,9 @@ export default class InspectorProxy {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: true,
+      // Don't crash on exceptionally large messages - assume the device is
+      // well-behaved and the debugger is prepared to handle large messages.
+      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
@@ -220,6 +231,9 @@ export default class InspectorProxy {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
+      // Don't crash on exceptionally large messages - assume the debugger is
+      // well-behaved and the device is prepared to handle large messages.
+      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {

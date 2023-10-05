@@ -21,15 +21,16 @@ function isTSXSource(fileName) {
   return !!fileName && fileName.endsWith('.tsx');
 }
 
+// use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
+const loose = true;
+
 const defaultPlugins = [
   [require('@babel/plugin-syntax-flow')],
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-block-scoping')],
-  [
-    require('@babel/plugin-proposal-class-properties'),
-    // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-    {loose: true},
-  ],
+  [require('@babel/plugin-proposal-class-properties'), {loose}],
+  [require('@babel/plugin-transform-private-methods'), {loose}],
+  [require('@babel/plugin-transform-private-property-in-object'), {loose}],
   [require('@babel/plugin-syntax-dynamic-import')],
   [require('@babel/plugin-syntax-export-default-from')],
   ...passthroughSyntaxPlugins,
@@ -56,7 +57,7 @@ const getPreset = (src, options) => {
 
   if (
     !options.disableStaticViewConfigsCodegen &&
-    /\bcodegenNativeComponent</.test(src)
+    (src === null || /\bcodegenNativeComponent</.test(src))
   ) {
     extraPlugins.push([require('@react-native/babel-plugin-codegen')]);
   }

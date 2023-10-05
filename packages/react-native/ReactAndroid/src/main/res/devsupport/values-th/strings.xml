@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: th_TH -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">แสดงความรู้สึกต่อเมนูผู้พัฒนาแบบเนทีฟ (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">กำลังเผยแพร่ %1$s</string>
 </resources>

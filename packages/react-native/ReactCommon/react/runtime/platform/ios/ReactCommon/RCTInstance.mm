@@ -218,7 +218,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsEngineInstance->createJSRuntime(), _jsThreadManager.jsMessageThread, timerManager, jsErrorHandlingFunc);
+      _jsEngineInstance->createJSRuntime(_jsThreadManager.jsMessageThread),
+      _jsThreadManager.jsMessageThread,
+      timerManager,
+      jsErrorHandlingFunc);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();

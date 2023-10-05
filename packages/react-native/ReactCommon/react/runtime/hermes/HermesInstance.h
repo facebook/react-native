@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cxxreact/MessageQueueThread.h>
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/config/ReactNativeConfig.h>
@@ -15,12 +16,10 @@ namespace facebook::react {
 
 class HermesInstance {
  public:
-  // This is only needed for Android. Consider removing.
-  static std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept;
-
   static std::unique_ptr<jsi::Runtime> createJSRuntime(
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-      std::shared_ptr<::hermes::vm::CrashManager> cm) noexcept;
+      std::shared_ptr<::hermes::vm::CrashManager> cm,
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
 };
 
 } // namespace facebook::react

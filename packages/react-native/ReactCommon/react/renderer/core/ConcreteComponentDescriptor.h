@@ -69,7 +69,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
-    adopt(shadowNode);
+    adopt(*shadowNode);
 
     return shadowNode;
   }
@@ -79,7 +79,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
-    adopt(shadowNode);
+    adopt(*shadowNode);
     return shadowNode;
   }
 
@@ -169,22 +169,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
-  /*
-   * Called immediately after `ShadowNode` is created or cloned.
-   *
-   * Override this method to pass information from custom `ComponentDescriptor`
-   * to new instance of `ShadowNode`.
-   *
-   * Example usages:
-   *   - Inject image manager to `ImageShadowNode` in
-   * `ImageComponentDescriptor`.
-   *   - Set `ShadowNode`'s size from state in
-   * `ModalHostViewComponentDescriptor`.
-   */
-  virtual void adopt(const ShadowNode::Unshared& shadowNode) const {
+  virtual void adopt(ShadowNode& shadowNode) const override {
     // Default implementation does nothing.
     react_native_assert(
-        shadowNode->getComponentHandle() == getComponentHandle());
+        shadowNode.getComponentHandle() == getComponentHandle());
   }
 };
 

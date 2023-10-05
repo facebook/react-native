@@ -10,6 +10,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTScrollView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -19,12 +20,39 @@
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
 
+/** Native iOS text field bottom keyboard offset amount */
+static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
+
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
   __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
   BOOL _hasInputAccessoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
+}
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
+{
+  if (![self isDescendantOfView:scrollView]) {
+    // View is outside scroll view
+    return;
+  }
+
+  UITextRange *selectedTextRange = self.backedTextInputView.selectedTextRange;
+  UITextSelectionRect *selection = [self.backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  CGRect focusRect;
+  if (selection == nil) {
+    // No active selection or caret - fallback to entire input frame
+    focusRect = self.bounds;
+  } else {
+    // Focus on text selection frame
+    focusRect = selection.rect;
+    BOOL isMultiline = [self.backedTextInputView isKindOfClass:[UITextView class]];
+    if (!isMultiline) {
+      focusRect.size.height += kSingleLineKeyboardBottomOffset;
+    }
+  }
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge

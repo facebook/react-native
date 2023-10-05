@@ -74,18 +74,6 @@ tasks.register("build") {
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
 }
 
-tasks.register("downloadAll") {
-  description = "Download all the depedencies needed locally so they can be cached on CI."
-  dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":dependencies"))
-  dependsOn(":packages:react-native:ReactAndroid:downloadNdkBuildDependencies")
-  dependsOn(":packages:react-native:ReactAndroid:dependencies")
-  dependsOn(":packages:react-native:ReactAndroid:androidDependencies")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:dependencies")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:androidDependencies")
-  dependsOn(":packages:rn-tester:android:app:dependencies")
-  dependsOn(":packages:rn-tester:android:app:androidDependencies")
-}
-
 tasks.register("publishAllInsideNpmPackage") {
   description =
       "Publish all the artifacts to be available inside the NPM package in the `android` folder."

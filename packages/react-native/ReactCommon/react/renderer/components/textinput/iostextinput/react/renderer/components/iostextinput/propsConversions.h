@@ -155,8 +155,8 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     Selection& result) {
-  if (value.hasType<butter::map<std::string, int>>()) {
-    auto map = (butter::map<std::string, int>)value;
+  if (value.hasType<std::unordered_map<std::string, int>>()) {
+    auto map = (std::unordered_map<std::string, int>)value;
     for (const auto& pair : map) {
       if (pair.first == "start") {
         result.start = pair.second;

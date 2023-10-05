@@ -9,8 +9,7 @@
 
 #include <memory>
 #include <shared_mutex>
-
-#include <butter/map.h>
+#include <unordered_map>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -82,9 +81,10 @@ class ComponentDescriptorRegistry {
   void add(ComponentDescriptorProvider componentDescriptorProvider) const;
 
   mutable std::shared_mutex mutex_;
-  mutable butter::map<ComponentHandle, SharedComponentDescriptor>
+  mutable std::unordered_map<ComponentHandle, SharedComponentDescriptor>
       _registryByHandle;
-  mutable butter::map<std::string, SharedComponentDescriptor> _registryByName;
+  mutable std::unordered_map<std::string, SharedComponentDescriptor>
+      _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
   const ComponentDescriptorProviderRegistry& providerRegistry_;

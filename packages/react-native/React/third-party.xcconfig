@@ -8,5 +8,5 @@
 // LICENSE file in the root directory of this source tree.
 //
 
-HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_76_0 $(SRCROOT)/../third-party/folly-2021.07.22.00 $(SRCROOT)/../third-party/glog-0.3.5/src
-OTHER_CFLAGS = -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1
+HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_83_0 $(SRCROOT)/../third-party/folly-2022.05.16.00 $(SRCROOT)/../third-party/glog-0.3.5/src
+OTHER_CFLAGS = -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1

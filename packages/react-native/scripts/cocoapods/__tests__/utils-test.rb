@@ -15,6 +15,7 @@ require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
 require_relative "./test_utils/XcodeprojMock.rb"
+require_relative "./test_utils/XcodebuildMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -30,6 +31,7 @@ class UtilsTests < Test::Unit::TestCase
         SysctlChecker.reset()
         Environment.reset()
         Xcodeproj::Plist.reset()
+        XcodebuildMock.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
@@ -526,9 +528,9 @@ class UtilsTests < Test::Unit::TestCase
     # ================================= #
     # Test - Apply Xcode 15 Patch       #
     # ================================= #
-
-    def test_applyXcode15Patch_correctlyAppliesNecessaryPatch
+    def test_applyXcode15Patch_whenXcodebuild14_correctlyAppliesNecessaryPatch
         # Arrange
+        XcodebuildMock.set_version = "Xcode 14.3"
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = TargetMock.new("ThirdTarget", [
@@ -557,24 +559,114 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # Act
-        ReactNativePodsUtils.apply_xcode_15_patch(installer)
+        user_project_mock.build_configurations.each do |config|
+            assert_nil(config.build_settings["OTHER_LDFLAGS"])
+        end
+
+        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
 
         # Assert
-        first_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
-                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
-            )
+        user_project_mock.build_configurations.each do |config|
+            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
         end
-        second_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
-                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
-            )
+
+        # User project and Pods project
+        assert_equal(2, XcodebuildMock.version_invocation_count)
+    end
+
+    def test_applyXcode15Patch_whenXcodebuild15_correctlyAppliesNecessaryPatch
+        # Arrange
+        XcodebuildMock.set_version = "Xcode 15.0"
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        user_project_mock = UserProjectMock.new("/a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        user_project_mock.build_configurations.each do |config|
+            assert_nil(config.build_settings["OTHER_LDFLAGS"])
         end
-        third_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
-                '$(inherited) "SomeFlag=1" "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
-            )
+
+        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal("$(inherited) -Wl -ld_classic", config.build_settings["OTHER_LDFLAGS"])
         end
+
+        # User project and Pods project
+        assert_equal(2, XcodebuildMock.version_invocation_count)
+    end
+
+    def test_applyXcode15Patch_whenXcodebuild14ButProjectHasSettings_correctlyRemovesNecessaryPatch
+        # Arrange
+        XcodebuildMock.set_version = "Xcode 14.3"
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        debug_config = prepare_config("Debug", {"OTHER_LDFLAGS" => "$(inherited) -Wl -ld_classic "})
+        release_config = prepare_config("Release", {"OTHER_LDFLAGS" => "$(inherited) -Wl -ld_classic "})
+
+        user_project_mock = UserProjectMock.new("/a/path", [
+                debug_config,
+                release_config,
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([debug_config.clone, release_config.clone], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        user_project_mock.build_configurations.each do |config|
+            assert_equal("$(inherited) -Wl -ld_classic ", config.build_settings["OTHER_LDFLAGS"])
+        end
+
+        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal("$(inherited)", config.build_settings["OTHER_LDFLAGS"])
+        end
+
+        # User project and Pods project
+        assert_equal(2, XcodebuildMock.version_invocation_count)
     end
 
     # ==================================== #
@@ -750,7 +842,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -923,12 +1015,14 @@ def prepare_user_project_mock_with_plists
     ])
 end
 
-def prepare_config(config_name)
-    return BuildConfigurationMock.new(config_name, {"LIBRARY_SEARCH_PATHS" => [
+def prepare_config(config_name, extra_config = {})
+    config = {"LIBRARY_SEARCH_PATHS" => [
         "$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)",
         "\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
         "another/path",
-    ]})
+    ]}.merge(extra_config)
+
+    return BuildConfigurationMock.new(config_name, config)
 end
 
 def prepare_target(name, product_type = nil, dependencies = [])

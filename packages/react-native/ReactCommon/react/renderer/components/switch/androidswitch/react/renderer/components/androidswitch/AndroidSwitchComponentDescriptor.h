@@ -26,11 +26,11 @@ class AndroidSwitchComponentDescriptor final
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer_)) {}
 
-  void adopt(const ShadowNode::Unshared& shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto& androidSwitchShadowNode =
-        static_cast<AndroidSwitchShadowNode&>(*shadowNode);
+        static_cast<AndroidSwitchShadowNode&>(shadowNode);
 
     // `AndroidSwitchShadowNode` uses `AndroidSwitchMeasurementsManager` to
     // provide measurements to Yoga.

@@ -59,7 +59,7 @@ public class ReactPropForShadowNodeSetterTest {
     void onBoxedIntGroupPropSetterCalled(int index, Integer value);
   }
 
-  public static ReactStylesDiffMap buildStyles(Object... keysAndValues) {
+  private ReactStylesDiffMap buildStyles(Object... keysAndValues) {
     return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 

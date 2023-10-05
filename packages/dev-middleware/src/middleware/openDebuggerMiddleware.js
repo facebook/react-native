@@ -11,23 +11,24 @@
 
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
+import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
 
 import url from 'url';
-import getDevServerUrl from '../utils/getDevServerUrl';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
-import queryInspectorTargets from '../utils/queryInspectorTargets';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
-  browserLauncher: BrowserLauncher,
+  serverBaseUrl: string,
   logger?: Logger,
+  browserLauncher: BrowserLauncher,
   eventReporter?: EventReporter,
   experiments: Experiments,
+  inspectorProxy: InspectorProxyQueries,
 }>;
 
 /**
@@ -39,30 +40,46 @@ type Options = $ReadOnly<{
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
 export default function openDebuggerMiddleware({
+  serverBaseUrl,
+  logger,
   browserLauncher,
   eventReporter,
   experiments,
-  logger,
+  inspectorProxy,
 }: Options): NextHandleFunction {
   return async (
     req: IncomingMessage,
     res: ServerResponse,
     next: (err?: Error) => void,
   ) => {
-    if (req.method === 'POST') {
+    if (
+      req.method === 'POST' ||
+      (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
+    ) {
       const {query} = url.parse(req.url, true);
       const {appId} = query;
 
-      const targets = await queryInspectorTargets(
-        getDevServerUrl(req, 'local'),
+      const targets = inspectorProxy.getPageDescriptions().filter(
+        // Only use targets with better reloading support
+        app =>
+          app.title === 'React Native Experimental (Improved Chrome Reloads)',
       );
       let target;
 
+      const launchType: 'launch' | 'redirect' =
+        req.method === 'POST' ? 'launch' : 'redirect';
+
       if (typeof appId === 'string') {
-        logger?.info('Launching JS debugger...');
+        logger?.info(
+          (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
+            ' JS debugger...',
+        );
         target = targets.find(_target => _target.description === appId);
       } else {
-        logger?.info('Launching JS debugger for first available target...');
+        logger?.info(
+          (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
+            ' JS debugger for first available target...',
+        );
         target = targets[0];
       }
 
@@ -74,6 +91,7 @@ export default function openDebuggerMiddleware({
         );
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'coded_error',
           errorCode: 'NO_APPS_FOUND',
         });
@@ -81,20 +99,38 @@ export default function openDebuggerMiddleware({
       }
 
       try {
-        await debuggerInstances.get(appId)?.kill();
-        debuggerInstances.set(
-          appId,
-          await browserLauncher.launchDebuggerAppWindow(
-            getDevToolsFrontendUrl(
-              target.webSocketDebuggerUrl,
-              getDevServerUrl(req, 'public'),
-              experiments,
-            ),
-          ),
-        );
-        res.end();
+        switch (launchType) {
+          case 'launch':
+            await debuggerInstances.get(appId)?.kill();
+            debuggerInstances.set(
+              appId,
+              await browserLauncher.launchDebuggerAppWindow(
+                getDevToolsFrontendUrl(
+                  target.webSocketDebuggerUrl,
+                  serverBaseUrl,
+                  experiments,
+                ),
+              ),
+            );
+            res.end();
+            break;
+          case 'redirect':
+            res.writeHead(302, {
+              Location: getDevToolsFrontendUrl(
+                target.webSocketDebuggerUrl,
+                // Use a relative URL.
+                '',
+                experiments,
+              ),
+            });
+            res.end();
+            break;
+          default:
+            (launchType: empty);
+        }
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'success',
           appId,
         });
@@ -107,6 +143,7 @@ export default function openDebuggerMiddleware({
         res.end();
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
+          launchType,
           status: 'error',
           error: e,
         });

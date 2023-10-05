@@ -40,6 +40,8 @@
     "@babel/plugin-transform-modules-commonjs": "^7.0.0",
     "@babel/plugin-transform-named-capturing-groups-regex": "^7.0.0",
     "@babel/plugin-transform-parameters": "^7.0.0",
+    "@babel/plugin-transform-private-methods": "^7.22.5",
+    "@babel/plugin-transform-private-property-in-object": "^7.22.11",
     "@babel/plugin-transform-react-display-name": "^7.0.0",
     "@babel/plugin-transform-react-jsx": "^7.0.0",
     "@babel/plugin-transform-react-jsx-self": "^7.0.0",
@@ -53,7 +55,7 @@
     "@babel/template": "^7.0.0",
     "@react-native/babel-plugin-codegen": "*",
     "babel-plugin-transform-flow-enums": "^0.0.2",
-    "react-refresh": "^0.4.0"
+    "react-refresh": "^0.14.0"
   },
   "peerDependencies": {
     "@babel/core": "*"

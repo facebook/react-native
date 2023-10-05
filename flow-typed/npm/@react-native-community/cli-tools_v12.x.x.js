@@ -10,10 +10,6 @@
  */
 
 declare module '@react-native-community/cli-tools' {
-  declare export function addInteractionListener(
-    callback: (options: {pause: boolean, canEscape?: boolean}) => void,
-  ): void;
-
   declare export class CLIError extends Error {
     constructor(msg: string, originalError?: Error | mixed | string): this;
   }

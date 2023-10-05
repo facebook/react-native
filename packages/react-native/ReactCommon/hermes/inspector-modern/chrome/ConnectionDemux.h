@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include <memory>
 #include <mutex>
 #include <string>
@@ -14,9 +16,9 @@
 #include <unordered_set>
 
 #include <hermes/hermes.h>
-#include <hermes/inspector-modern/RuntimeAdapter.h>
-#include <hermes/inspector-modern/chrome/Connection.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
+#include <hermes/inspector/RuntimeAdapter.h>
+#include <hermes/inspector/chrome/CDPHandler.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
 
 namespace facebook {
@@ -44,13 +46,17 @@ class ConnectionDemux {
   void disableDebugging(DebugSessionToken session);
 
  private:
-  int addPage(std::shared_ptr<Connection> conn);
+  int addPage(
+      std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn);
   void removePage(int pageId);
 
   facebook::react::jsinspector_modern::IInspector &globalInspector_;
 
   std::mutex mutex_;
-  std::unordered_map<int, std::shared_ptr<Connection>> conns_;
+  std::unordered_map<
+      int,
+      std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler>>
+      conns_;
   std::shared_ptr<std::unordered_set<std::string>> inspectedContexts_;
 };
 
@@ -58,3 +64,5 @@ class ConnectionDemux {
 } // namespace inspector_modern
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_ENABLE_DEBUGGER

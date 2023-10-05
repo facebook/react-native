@@ -15,6 +15,7 @@
 #include <yoga/YGValue.h>
 
 #include <yoga/bits/BitCast.h>
+#include <yoga/numeric/Comparison.h>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -41,10 +42,10 @@ namespace facebook::yoga {
 //            0x40000000         0x7f7fffff
 // - Zero is supported, negative zero is not
 // - values outside of the representable range are clamped
-class YOGA_EXPORT CompactValue {
+class YG_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
-public:
+ public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
@@ -136,9 +137,11 @@ public:
         repr_ != ZERO_BITS_PERCENT && std::isnan(yoga::bit_cast<float>(repr_)));
   }
 
-  bool isAuto() const noexcept { return repr_ == AUTO_BITS; }
+  bool isAuto() const noexcept {
+    return repr_ == AUTO_BITS;
+  }
 
-private:
+ private:
   uint32_t repr_;
 
   static constexpr uint32_t BIAS = 0x20000000;
@@ -152,7 +155,9 @@ private:
 
   constexpr CompactValue(uint32_t data) noexcept : repr_(data) {}
 
-  VISIBLE_FOR_TESTING uint32_t repr() { return repr_; }
+  VISIBLE_FOR_TESTING uint32_t repr() {
+    return repr_;
+  }
 };
 
 template <>
@@ -170,6 +175,10 @@ constexpr bool operator==(CompactValue a, CompactValue b) noexcept {
 
 constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
   return !(a == b);
+}
+
+inline bool inexactEquals(CompactValue a, CompactValue b) {
+  return inexactEquals((YGValue)a, (YGValue)b);
 }
 
 } // namespace facebook::yoga

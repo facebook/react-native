@@ -11,9 +11,9 @@
 #import <React/RCTConversions.h>
 #import <React/RCTLog.h>
 
-#import <butter/map.h>
-#import <butter/set.h>
 #import <shared_mutex>
+#import <unordered_map>
+#import <unordered_set>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -59,8 +59,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 }
 
 @implementation RCTComponentViewFactory {
-  butter::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
-  butter::set<std::string> _registeredComponentsNames;
+  std::unordered_map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
+  std::unordered_set<std::string> _registeredComponentsNames;
   ComponentDescriptorProviderRegistry _providerRegistry;
   std::shared_mutex _mutex;
 }

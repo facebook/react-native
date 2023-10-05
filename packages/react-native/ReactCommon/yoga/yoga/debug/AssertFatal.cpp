@@ -22,43 +22,27 @@ namespace facebook::yoga {
 
 void assertFatal(const bool condition, const char* message) {
   if (!condition) {
-    yoga::log(
-        static_cast<yoga::Node*>(nullptr),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
+    yoga::log(LogLevel::Fatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }
 
 void assertFatalWithNode(
-    const YGNodeConstRef node,
+    const yoga::Node* const node,
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(
-        // TODO: Break log callbacks and make them const correct
-        static_cast<yoga::Node*>(const_cast<YGNodeRef>(node)),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
+    yoga::log(node, LogLevel::Fatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }
 
 void assertFatalWithConfig(
-    YGConfigRef config,
+    const yoga::Config* const config,
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(
-        static_cast<yoga::Config*>(config),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
+    yoga::log(config, LogLevel::Fatal, "%s\n", message);
     fatalWithMessage(message);
   }
 }

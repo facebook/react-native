@@ -90,7 +90,6 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
                               "SampleTurboModule",
                               false, // canOverrideExistingModule
                               false, // needsEagerInit
-                              true, // hasConstants
                               false, // isCxxModule
                               true // isTurboModule
                               ),
@@ -100,7 +99,6 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
                               "SampleLegacyModule",
                               false, // canOverrideExistingModule
                               false, // needsEagerInit
-                              true, // hasConstants
                               false, // isCxxModule
                               false // isTurboModule
                               ),

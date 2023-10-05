@@ -46,6 +46,7 @@ export type Permission =
   | 'android.permission.READ_MEDIA_IMAGES'
   | 'android.permission.READ_MEDIA_VIDEO'
   | 'android.permission.READ_MEDIA_AUDIO'
+  | 'android.permission.READ_MEDIA_VISUAL_USER_SELECTED'
   | 'android.permission.WRITE_EXTERNAL_STORAGE'
   | 'android.permission.BLUETOOTH_CONNECT'
   | 'android.permission.BLUETOOTH_SCAN'

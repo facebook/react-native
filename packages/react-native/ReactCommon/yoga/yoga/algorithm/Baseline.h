@@ -13,6 +13,9 @@
 namespace facebook::yoga {
 
 // Calculate baseline represented as an offset from the top edge of the node.
-float calculateBaseline(const yoga::Node* node, void* layoutContext);
+float calculateBaseline(const yoga::Node* node);
+
+// Whether any of the children of this node participate in baseline alignment
+bool isBaselineLayout(const yoga::Node* node);
 
 } // namespace facebook::yoga

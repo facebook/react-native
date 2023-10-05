@@ -945,7 +945,7 @@ public class NativeViewHierarchyManager {
   public void sendAccessibilityEvent(int tag, int eventType) {
     View view = mTagsToViews.get(tag);
     if (view == null) {
-      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
+      throw new RetryableMountingLayerException("Could not find view with tag " + tag);
     }
     view.sendAccessibilityEvent(eventType);
   }

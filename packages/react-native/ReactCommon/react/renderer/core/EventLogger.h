@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string_view>
+
 namespace facebook::react {
 
 using EventTag = unsigned int;
@@ -24,7 +26,7 @@ class EventLogger {
    * Called when an event is first created, returns and unique tag for this
    * event, which can be used to log further event processing stages.
    */
-  virtual EventTag onEventStart(const char* name) = 0;
+  virtual EventTag onEventStart(std::string_view name) = 0;
 
   /*
    * Called when event starts getting dispatched (processed by the handlers, if

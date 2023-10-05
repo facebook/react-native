@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2022.05.16.00'
 socket_rocket_version = '0.6.0'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -47,6 +47,7 @@ header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
@@ -77,7 +78,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths,
                                "DEFINES_MODULE" => "YES",
                                "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "FRAMEWORK_SEARCH_PATHS" => frameworks_search_paths.join(" ")
                              }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}

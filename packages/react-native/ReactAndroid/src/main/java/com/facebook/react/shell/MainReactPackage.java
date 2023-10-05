@@ -26,6 +26,7 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
+import com.facebook.react.modules.devloading.DevLoadingModule;
 import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
@@ -73,6 +74,7 @@ import javax.inject.Provider;
       AppearanceModule.class,
       AppStateModule.class,
       BlobModule.class,
+      DevLoadingModule.class,
       FileReaderModule.class,
       ClipboardModule.class,
       DialogModule.class,
@@ -114,6 +116,8 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
         return new AppStateModule(context);
       case BlobModule.NAME:
         return new BlobModule(context);
+      case DevLoadingModule.NAME:
+        return new DevLoadingModule(context);
       case FileReaderModule.NAME:
         return new FileReaderModule(context);
       case ClipboardModule.NAME:
@@ -260,6 +264,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
             AppearanceModule.class,
             AppStateModule.class,
             BlobModule.class,
+            DevLoadingModule.class,
             FileReaderModule.class,
             ClipboardModule.class,
             DialogModule.class,
@@ -283,19 +288,18 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
       for (Class<? extends NativeModule> moduleClass : moduleList) {
         ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
-
-        reactModuleInfoMap.put(
-            reactModule.name(),
-            new ReactModuleInfo(
-                reactModule.name(),
-                moduleClass.getName(),
-                reactModule.canOverrideExistingModule(),
-                reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
-                reactModule.isCxxModule(),
-                TurboModule.class.isAssignableFrom(moduleClass)));
+        if (reactModule != null) {
+          reactModuleInfoMap.put(
+              reactModule.name(),
+              new ReactModuleInfo(
+                  reactModule.name(),
+                  moduleClass.getName(),
+                  reactModule.canOverrideExistingModule(),
+                  reactModule.needsEagerInit(),
+                  reactModule.isCxxModule(),
+                  TurboModule.class.isAssignableFrom(moduleClass)));
+        }
       }
-
       return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
