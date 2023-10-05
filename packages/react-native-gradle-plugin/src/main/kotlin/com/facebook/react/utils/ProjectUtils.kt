@@ -28,9 +28,11 @@ internal object ProjectUtils {
   internal fun Project.isNewArchEnabled(extension: ReactExtension): Boolean {
     return (project.hasProperty(NEW_ARCH_ENABLED) &&
         project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
+
         (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
             project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean()) ||
         shouldEnableNewArchForReactNativeVersion(project.reactNativeDir(extension))
+
   }
 
   internal val Project.isHermesEnabled: Boolean
@@ -114,4 +116,21 @@ internal object ProjectUtils {
     val major = matchResult.groupValues[1].toInt()
     return major > 0 && major < 1000
   }
+
+  internal fun Project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension: ReactExtension): Boolean {
+
+    val propertySetToFalse =
+        (this.hasPropertySetToFalse(NEW_ARCH_ENABLED)) ||
+            (this.hasPropertySetToFalse(SCOPED_NEW_ARCH_ENABLED))
+
+
+    val shouldEnableNewArch =
+        shouldEnableNewArchForReactNativeVersion(this.reactNativeDir(extension))
+
+    return shouldEnableNewArch && propertySetToFalse
+  }
+
+  internal fun Project.hasPropertySetToFalse(property: String): Boolean =
+      this.hasProperty(property) && this.property(property).toString().toBoolean() == false
+
 }
