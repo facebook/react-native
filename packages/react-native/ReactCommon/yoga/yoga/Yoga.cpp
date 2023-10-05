@@ -635,11 +635,12 @@ void YGNodeStyleSetGap(
     const YGGutter gutter,
     const float gapLength) {
   auto length = CompactValue::ofMaybe<YGUnitPoint>(gapLength);
-  updateIndexedStyleProp<&Style::gap, &Style::setGap>(node, gutter, length);
+  updateIndexedStyleProp<&Style::gap, &Style::setGap>(
+      node, scopedEnum(gutter), length);
 }
 
 float YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
-  auto gapLength = resolveRef(node)->getStyle().gap(gutter);
+  auto gapLength = resolveRef(node)->getStyle().gap(scopedEnum(gutter));
   if (gapLength.isUndefined() || gapLength.isAuto()) {
     return YGUndefined;
   }

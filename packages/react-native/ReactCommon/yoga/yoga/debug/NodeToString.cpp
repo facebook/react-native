@@ -177,11 +177,11 @@ void nodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (!style.gap(YGGutterAll).isUndefined()) {
-      appendNumberIfNotUndefined(str, "gap", style.gap(YGGutterAll));
+    if (!style.gap(Gutter::All).isUndefined()) {
+      appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
     } else {
-      appendNumberIfNotUndefined(str, "column-gap", style.gap(YGGutterColumn));
-      appendNumberIfNotUndefined(str, "row-gap", style.gap(YGGutterRow));
+      appendNumberIfNotUndefined(str, "column-gap", style.gap(Gutter::Column));
+      appendNumberIfNotUndefined(str, "row-gap", style.gap(Gutter::Row));
     }
 
     appendNumberIfNotAuto(str, "width", style.dimension(Dimension::Width));

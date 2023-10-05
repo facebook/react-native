@@ -195,14 +195,14 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
       field, setter, yoga::Dimension::Height, heightStr);
 
-#define REBUILD_FIELD_YG_GUTTER(                    \
-    field, setter, rowGapStr, columnGapStr, gapStr) \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
-      field, setter, YGGutterRow, rowGapStr);       \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
-      field, setter, YGGutterColumn, columnGapStr); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(      \
-      field, setter, YGGutterAll, gapStr);
+#define REBUILD_FIELD_YG_GUTTER(                          \
+    field, setter, rowGapStr, columnGapStr, gapStr)       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::Row, rowGapStr);       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::Column, columnGapStr); \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::All, gapStr);
 
 #define REBUILD_FIELD_YG_EDGES(field, prefix, suffix)                          \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                        \
@@ -329,14 +329,16 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
           "flexGrow", yogaStyle.flexGrow(), defaultYogaStyle.flexGrow()),
       debugStringConvertibleItem(
           "rowGap",
-          yogaStyle.gap(YGGutterRow),
-          defaultYogaStyle.gap(YGGutterRow)),
+          yogaStyle.gap(yoga::Gutter::Row),
+          defaultYogaStyle.gap(yoga::Gutter::Row)),
       debugStringConvertibleItem(
           "columnGap",
-          yogaStyle.gap(YGGutterColumn),
-          defaultYogaStyle.gap(YGGutterColumn)),
+          yogaStyle.gap(yoga::Gutter::Column),
+          defaultYogaStyle.gap(yoga::Gutter::Column)),
       debugStringConvertibleItem(
-          "gap", yogaStyle.gap(YGGutterAll), defaultYogaStyle.gap(YGGutterAll)),
+          "gap",
+          yogaStyle.gap(yoga::Gutter::All),
+          defaultYogaStyle.gap(yoga::Gutter::All)),
       debugStringConvertibleItem(
           "flexShrink", yogaStyle.flexShrink(), defaultYogaStyle.flexShrink()),
       debugStringConvertibleItem(
