@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
 });
 
 type Props = $ReadOnly<{}>;
-export default function PoitnerEventPointerCancelTouch(
+export default function PointerEventPointerCancelTouch(
   props: Props,
 ): React.MixedElement {
   return (
