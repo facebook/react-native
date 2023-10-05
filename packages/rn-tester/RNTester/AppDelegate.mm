@@ -18,7 +18,9 @@
 
 #if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
+#endif
 #endif
 
 #if BUNDLE_PATH
@@ -125,10 +127,12 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 #if RCT_NEW_ARCH_ENABLED
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
   return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
 }
+#endif
 
 - (NSURL *)getBundleURL
 {
