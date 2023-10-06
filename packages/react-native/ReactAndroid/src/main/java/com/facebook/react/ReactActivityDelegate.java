@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**

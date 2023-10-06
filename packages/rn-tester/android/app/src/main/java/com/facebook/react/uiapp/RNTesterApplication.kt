@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uiapp
 
 import android.app.Application
@@ -11,6 +12,7 @@ import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
 import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.TurboReactPackage
@@ -25,7 +27,6 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.flipper.ReactNativeFlipper.initializeFlipper
-import com.facebook.react.interfaces.ReactHost
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider

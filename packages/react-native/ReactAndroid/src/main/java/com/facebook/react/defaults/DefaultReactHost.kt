@@ -8,11 +8,11 @@
 package com.facebook.react.defaults
 
 import android.content.Context
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.ReactHost
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
