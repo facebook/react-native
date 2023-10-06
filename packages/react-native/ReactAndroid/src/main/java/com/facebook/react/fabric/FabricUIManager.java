@@ -237,8 +237,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  public <T extends View> int addRootView(
-      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+  public <T extends View> int addRootView(final T rootView, final WritableMap initialProps) {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
@@ -256,9 +255,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
-    if (initialUITemplate != null) {
-      mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
-    }
     return rootTag;
   }
 
