@@ -629,8 +629,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, Integer color) {
-    mReactBackgroundManager.setBorderColor(position, color);
+  public void setBorderColor(int position, float color, float alpha) {
+    mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
   public void setBorderRadius(float borderRadius) {

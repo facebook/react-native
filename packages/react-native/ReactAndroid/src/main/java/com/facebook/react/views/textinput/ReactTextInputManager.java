@@ -979,7 +979,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       },
       customType = "Color")
   public void setBorderColor(ReactEditText view, int index, Integer color) {
-    view.setBorderColor(SPACING_TYPES[index], color);
+    float rgbComponent =
+        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @Override

@@ -181,7 +181,10 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       },
       customType = "Color")
   public void setBorderColor(ReactTextView view, int index, Integer color) {
-    view.setBorderColor(SPACING_TYPES[index], color);
+    float rgbComponent =
+        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)

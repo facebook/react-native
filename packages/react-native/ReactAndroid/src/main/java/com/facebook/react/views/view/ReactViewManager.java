@@ -253,7 +253,10 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       },
       customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, Integer color) {
-    view.setBorderColor(SPACING_TYPES[index], color);
+    float rgbComponent =
+        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
+    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
