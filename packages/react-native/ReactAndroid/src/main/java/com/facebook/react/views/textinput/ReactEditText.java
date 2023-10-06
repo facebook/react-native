@@ -1066,7 +1066,7 @@ public class ReactEditText extends AppCompatEditText {
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, int color) {
+  public void setBorderColor(int position, Integer color) {
     mReactBackgroundManager.setBorderColor(position, color);
   }
 

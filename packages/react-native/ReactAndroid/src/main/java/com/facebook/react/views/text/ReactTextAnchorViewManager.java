@@ -180,7 +180,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactTextView view, int index, int color) {
+  public void setBorderColor(ReactTextView view, int index, Integer color) {
     view.setBorderColor(SPACING_TYPES[index], color);
   }
 

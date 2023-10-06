@@ -291,7 +291,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactHorizontalScrollView view, int index, int color) {
+  public void setBorderColor(ReactHorizontalScrollView view, int index, Integer color) {
     view.setBorderColor(SPACING_TYPES[index], color);
   }
 

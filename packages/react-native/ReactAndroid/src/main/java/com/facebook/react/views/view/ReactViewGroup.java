@@ -310,7 +310,7 @@ public class ReactViewGroup extends ViewGroup
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, int color) {
+  public void setBorderColor(int position, Integer color) {
     getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 

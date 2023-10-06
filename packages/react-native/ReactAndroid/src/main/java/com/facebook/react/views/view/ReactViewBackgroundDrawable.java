@@ -224,11 +224,12 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
   }
 
-  public void setBorderColor(int position, int color) {
-    float rgb = (float) ((int) color & 0x00FFFFFF);
-    float alpha = (float) ((int) color >>> 24);
-    this.setBorderRGB(position, rgb);
-    this.setBorderAlpha(position, alpha);
+  public void setBorderColor(int position, Integer color) {
+    float rgbComponent =
+        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
+    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
+    this.setBorderRGB(position, rgbComponent);
+    this.setBorderAlpha(position, alphaComponent);
     mNeedUpdatePathForBorderRadius = true;
   }
 

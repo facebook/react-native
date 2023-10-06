@@ -272,7 +272,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactScrollView view, int index, int color) {
+  public void setBorderColor(ReactScrollView view, int index, Integer color) {
     view.setBorderColor(SPACING_TYPES[index], color);
   }
 

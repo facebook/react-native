@@ -978,7 +978,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactEditText view, int index, int color) {
+  public void setBorderColor(ReactEditText view, int index, Integer color) {
     view.setBorderColor(SPACING_TYPES[index], color);
   }
 
