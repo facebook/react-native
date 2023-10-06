@@ -16,7 +16,7 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, pushd, popd, pwd, cd} = require('shelljs');
+const {exec, pushd, popd, pwd, cd, sed} = require('shelljs');
 const updateTemplatePackage = require('./update-template-package');
 const yargs = require('yargs');
 const path = require('path');
