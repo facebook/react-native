@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * a {@link ReactBridge} and a {@link UIManagerModule}, {@link #getDidJSHitFrameAndCleanup} should
  * be called once per frame via a {@link Choreographer.FrameCallback}.
  */
-public class DidJSUpdateUiDuringFrameDetector
+class DidJSUpdateUiDuringFrameDetector
     implements NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
 
   private final LongArray mTransitionToIdleEvents = LongArray.createWithInitialCapacity(20);
