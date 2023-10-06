@@ -36,7 +36,7 @@
 namespace facebook::react {
 
 void registerComponents(
-    std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
+    std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
   // Custom Fabric Components go here. You can register custom
   // components coming from your App or from 3rd party libraries here.
   //
@@ -48,15 +48,15 @@ void registerComponents(
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
-    const std::string &name,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::string& name,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
   // Not implemented yet: provide pure-C++ NativeModules here.
   return nullptr;
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
-    const std::string &name,
-    const JavaTurboModule::InitParams &params) {
+    const std::string& name,
+    const JavaTurboModule::InitParams& params) {
   // Here you can provide your own module provider for TurboModules coming from
   // either your application or from external libraries. The approach to follow
   // is similar to the following (for a library called `samplelibrary`):
@@ -73,7 +73,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
 
 } // namespace facebook::react
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::DefaultTurboModuleManagerDelegate::cxxModuleProvider =
         &facebook::react::cxxModuleProvider;

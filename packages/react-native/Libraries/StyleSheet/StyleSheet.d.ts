@@ -35,7 +35,16 @@ export namespace StyleSheet {
    * Creates a StyleSheet style reference from the given object.
    */
   export function create<T extends NamedStyles<T> | NamedStyles<any>>(
-    styles: T | NamedStyles<T>,
+    // The extra & NamedStyles<any> here helps Typescript catch typos: e.g.,
+    // the following code would not error with `styles: T | NamedStyles<T>`,
+    // but would error with `styles: T & NamedStyles<any>`
+    //
+    // ```ts
+    // StyleSheet.create({
+    //   someComponent: { marginLeft: 1, magrinRight: 1 },
+    // });
+    // ```
+    styles: T & NamedStyles<any>,
   ): T;
 
   /**

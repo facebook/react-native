@@ -18,7 +18,7 @@ using namespace facebook::react;
 class ShadowNodeTest : public ::testing::Test {
  protected:
   ShadowNodeTest()
-      : eventDispatcher_(std::shared_ptr<EventDispatcher const>()),
+      : eventDispatcher_(std::shared_ptr<const EventDispatcher>()),
         componentDescriptor_(TestComponentDescriptor({eventDispatcher_})) {
     /*
      * The structure:
@@ -156,7 +156,7 @@ class ShadowNodeTest : public ::testing::Test {
         traits);
   }
 
-  std::shared_ptr<EventDispatcher const> eventDispatcher_;
+  std::shared_ptr<const EventDispatcher> eventDispatcher_;
   std::shared_ptr<TestShadowNode> nodeA_;
   std::shared_ptr<TestShadowNode> nodeAA_;
   std::shared_ptr<TestShadowNode> nodeABA_;
@@ -247,7 +247,7 @@ TEST_F(ShadowNodeTest, handleState) {
 
   auto props = std::make_shared<const TestProps>();
 
-  auto const initialState =
+  const auto initialState =
       componentDescriptor_.createInitialState(props, family);
 
   auto firstNode = std::make_shared<TestShadowNode>(

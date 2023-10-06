@@ -60,10 +60,4 @@ declare class NativeEventEmitter extends EventEmitter {
    * @param eventType  name of the event whose registered listeners to remove
    */
   removeAllListeners(eventType: string): void;
-
-  /**
-   * Removes a subscription created by the addListener, the EventSubscription#remove()
-   * function actually calls through to this.
-   */
-  removeSubscription(subscription: EmitterSubscription): void;
 }

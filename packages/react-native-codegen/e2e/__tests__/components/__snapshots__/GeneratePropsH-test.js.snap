@@ -87,7 +87,7 @@ struct ArrayPropsNativeComponentViewObjectStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewObjectStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_prop = map.find(\\"prop\\");
   if (tmp_prop != map.end()) {
@@ -115,7 +115,7 @@ struct ArrayPropsNativeComponentViewArrayOfObjectsStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewArrayOfObjectsStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_prop1 = map.find(\\"prop1\\");
   if (tmp_prop1 != map.end()) {
@@ -796,7 +796,7 @@ struct ObjectPropsNativeComponentObjectPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPropStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_stringProp = map.find(\\"stringProp\\");
   if (tmp_stringProp != map.end()) {
@@ -833,7 +833,7 @@ struct ObjectPropsNativeComponentObjectArrayPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectArrayPropStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_array = map.find(\\"array\\");
   if (tmp_array != map.end()) {
@@ -852,7 +852,7 @@ struct ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct {
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto tmp_image = map.find(\\"image\\");
   if (tmp_image != map.end()) {

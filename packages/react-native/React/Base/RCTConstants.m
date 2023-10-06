@@ -7,8 +7,12 @@
 
 #import "RCTConstants.h"
 
+NSString *const RCTPlatformName = @"ios";
+
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
+
+NSString *const RCTRootViewFrameDidChangeNotification = @"RCTRootViewFrameDidChangeNotification";
 
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
@@ -16,9 +20,6 @@ NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWil
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
-NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification";
-NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
-NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 
 /*
  * W3C Pointer Events

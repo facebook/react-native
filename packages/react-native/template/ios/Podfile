@@ -28,14 +28,8 @@ end
 target 'HelloWorld' do
   config = use_native_modules!
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -57,6 +51,5 @@ target 'HelloWorld' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __fix_double_definition_of_clockid_in_folly()
   end
 end

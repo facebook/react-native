@@ -19,6 +19,7 @@ import * as React from 'react';
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
 const SectionListWithEventThrottle = React.forwardRef(
+  // $FlowFixMe[incompatible-call]
   (
     props: React.ElementConfig<typeof SectionList>,
     ref:
@@ -27,7 +28,7 @@ const SectionListWithEventThrottle = React.forwardRef(
           current: null | SectionList<SectionBase<$FlowFixMe>>,
           ...
         },
-  ) => <SectionList scrollEventThrottle={0.0001} {...props} ref={ref} />,
+  ) => <SectionList {...props} ref={ref} />,
 );
 
 export default (createAnimatedComponent(

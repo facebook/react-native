@@ -35,7 +35,7 @@ struct TestState {
   TestState() = default;
 
 #ifdef ANDROID
-  TestState(TestState const &previousState, folly::dynamic &&data){};
+  TestState(const TestState& previousState, folly::dynamic&& data){};
 
   folly::dynamic getDynamic() const {
     return {};
@@ -54,9 +54,9 @@ class TestProps : public ViewProps {
   TestProps() = default;
 
   TestProps(
-      const PropsParserContext &context,
-      const TestProps &sourceProps,
-      const RawProps &rawProps)
+      const PropsParserContext& context,
+      const TestProps& sourceProps,
+      const RawProps& rawProps)
       : ViewProps(context, sourceProps, rawProps) {}
 };
 

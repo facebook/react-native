@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: nl_NL -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">Native ontwikkelaarsmenu (%1$s) opnieuw activeren</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s actief</string>
 </resources>

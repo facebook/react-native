@@ -14,7 +14,7 @@ import java.io.File
 object JsonUtils {
   private val gsonConverter = Gson()
 
-  fun fromCodegenJson(input: File): ModelPackageJson? =
+  fun fromPackageJson(input: File): ModelPackageJson? =
       input.bufferedReader().use {
         runCatching { gsonConverter.fromJson(it, ModelPackageJson::class.java) }.getOrNull()
       }

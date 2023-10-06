@@ -46,7 +46,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static auto const defaultProps = std::make_shared<ViewProps const>();
+    static const auto defaultProps = std::make_shared<const ViewProps>();
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
@@ -178,7 +178,7 @@ using namespace facebook::react;
   }
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   RCTAssert(props, @"`props` must not be `null`.");
 
@@ -193,8 +193,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  const auto &oldViewProps = static_cast<ViewProps const &>(*_props);
-  const auto &newViewProps = static_cast<ViewProps const &>(*props);
+  const auto &oldViewProps = static_cast<const ViewProps &>(*_props);
+  const auto &newViewProps = static_cast<const ViewProps &>(*props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -261,9 +261,11 @@ using namespace facebook::react;
   }
 
   // `transform`
-  if (oldViewProps.transform != newViewProps.transform &&
+  if ((oldViewProps.transform != newViewProps.transform ||
+       oldViewProps.transformOrigin != newViewProps.transformOrigin) &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
-    self.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+    auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
@@ -369,19 +371,24 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
+  // `zIndex`
+  if (oldViewProps.zIndex != newViewProps.zIndex) {
+    self.layer.zPosition = newViewProps.zIndex.value_or(0);
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
-  _props = std::static_pointer_cast<ViewProps const>(props);
+  _props = std::static_pointer_cast<const ViewProps>(props);
 }
 
-- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
+- (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
+  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
-           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
+- (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
 {
   // Using stored `_layoutMetrics` as `oldLayoutMetrics` here to avoid
   // re-applying individual sub-values which weren't changed.
@@ -396,6 +403,11 @@ using namespace facebook::react;
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
+
+  if (_props->transformOrigin.isSet()) {
+    auto newTransform = _props->resolveTransform(layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
 }
 
@@ -425,7 +437,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
 
   // If view was managed by animated, its props need to align with UIView's properties.
-  const auto &props = static_cast<ViewProps const &>(*_props);
+  const auto &props = static_cast<const ViewProps &>(*_props);
   if ([_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(props.transform);
   }
@@ -555,14 +567,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     return;
   }
 
-  auto const borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
 
   // Stage 1. Shadow Path
   BOOL const layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
   if (layerHasShadow) {
     if (CGColorGetAlpha(_backgroundColor.CGColor) > 0.999) {
       // If view has a solid background color, calculate shadow path from border.
-      RCTCornerInsets const cornerInsets =
+      const RCTCornerInsets cornerInsets =
           RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
       CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
       layer.shadowPath = shadowPath;
@@ -576,7 +588,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   }
 
   // Stage 2. Border Rendering
-  bool const useCoreAnimationBorderRendering =
+  const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
       borderMetrics.borderStyles.left == BorderStyle::Solid &&
@@ -712,7 +724,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSString *)accessibilityValue
 {
-  const auto &props = static_cast<ViewProps const &>(*_props);
+  const auto &props = static_cast<const ViewProps &>(*_props);
 
   // Handle Switch.
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
@@ -766,6 +778,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 
+  // Using super.accessibilityValue:
+  // 1. to access the value that is set to accessibilityValue in updateProps
+  // 2. can't access from self.accessibilityElement because it resolves to self
+  if (super.accessibilityValue) {
+    [valueComponents addObject:super.accessibilityValue];
+  }
+
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }
@@ -782,14 +801,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  auto const &accessibilityActions = _props->accessibilityActions;
+  const auto &accessibilityActions = _props->accessibilityActions;
 
   if (accessibilityActions.empty()) {
     return nil;
   }
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
-  for (auto const &accessibilityAction : accessibilityActions) {
+  for (const auto &accessibilityAction : accessibilityActions) {
     [customActions
         addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
                                                              target:self

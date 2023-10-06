@@ -32,19 +32,19 @@ public abstract class TurboReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     throw new UnsupportedOperationException(
-        "In case of TurboModules, createNativeModules is not supported. NativeModuleRegistry should instead use getModuleList or getModule method");
+        "createNativeModules method is not supported. Use getModule() method instead.");
   }
 
   /**
    * The API needed for TurboModules. Given a module name, it returns an instance of {@link
    * NativeModule} for the name
    *
-   * @param name
-   * @param reactContext
-   * @return
+   * @param name name of the Native Module
+   * @param reactContext {@link ReactApplicationContext} context for this
    */
+  @Override
   public abstract @Nullable NativeModule getModule(
-      String name, final ReactApplicationContext reactContext);
+      @NonNull String name, @NonNull ReactApplicationContext reactContext);
 
   /**
    * This is a temporary method till we implement TurboModules. Once we implement TurboModules, we
@@ -55,18 +55,15 @@ public abstract class TurboReactPackage implements ReactPackage {
    * @param reactContext
    * @return
    */
-  public Iterable<ModuleHolder> getNativeModuleIterator(
-      final ReactApplicationContext reactContext) {
+  /** package */
+  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
     final Set<Map.Entry<String, ReactModuleInfo>> entrySet =
         getReactModuleInfoProvider().getReactModuleInfos().entrySet();
     final Iterator<Map.Entry<String, ReactModuleInfo>> entrySetIterator = entrySet.iterator();
-    return new Iterable<ModuleHolder>() {
-      @NonNull
-      @Override
-      // This should ideally be an IteratorConvertor, but we don't have any internal library for it
-      public Iterator<ModuleHolder> iterator() {
-        return new Iterator<ModuleHolder>() {
-          Map.Entry<String, ReactModuleInfo> nextEntry = null;
+    // This should ideally be an IteratorConvertor, but we don't have any internal library for it
+    return () ->
+        new Iterator<ModuleHolder>() {
+          @Nullable Map.Entry<String, ReactModuleInfo> nextEntry = null;
 
           private void findNext() {
             while (entrySetIterator.hasNext()) {
@@ -118,8 +115,6 @@ public abstract class TurboReactPackage implements ReactPackage {
             throw new UnsupportedOperationException("Cannot remove native modules from the list");
           }
         };
-      }
-    };
   }
 
   /**

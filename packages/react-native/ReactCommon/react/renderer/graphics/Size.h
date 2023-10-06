@@ -9,9 +9,9 @@
 
 #include <tuple>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -22,24 +22,24 @@ struct Size {
   Float width{0};
   Float height{0};
 
-  Size &operator+=(Point const &point) noexcept {
+  Size& operator+=(const Point& point) noexcept {
     width += point.x;
     height += point.y;
     return *this;
   }
 
-  Size &operator*=(Point const &point) noexcept {
+  Size& operator*=(const Point& point) noexcept {
     width *= point.x;
     height *= point.y;
     return *this;
   }
 };
 
-inline bool operator==(Size const &rhs, Size const &lhs) noexcept {
+inline bool operator==(const Size& rhs, const Size& lhs) noexcept {
   return std::tie(lhs.width, lhs.height) == std::tie(rhs.width, rhs.height);
 }
 
-inline bool operator!=(Size const &rhs, Size const &lhs) noexcept {
+inline bool operator!=(const Size& rhs, const Size& lhs) noexcept {
   return !(lhs == rhs);
 }
 
@@ -49,8 +49,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::Size> {
-  size_t operator()(facebook::react::Size const &size) const {
-    return folly::hash::hash_combine(0, size.width, size.height);
+  size_t operator()(const facebook::react::Size& size) const {
+    return facebook::react::hash_combine(size.width, size.height);
   }
 };
 

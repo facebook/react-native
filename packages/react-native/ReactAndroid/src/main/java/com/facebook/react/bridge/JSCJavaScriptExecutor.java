@@ -10,7 +10,9 @@ package com.facebook.react.bridge;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
+/** @deprecated use {@link com.facebook.react.jscexecutor.JSCExecutor} instead. */
 @DoNotStrip
+@Deprecated
 /* package */ class JSCJavaScriptExecutor extends JavaScriptExecutor {
   static {
     ReactBridge.staticInit();

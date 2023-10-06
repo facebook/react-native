@@ -15,7 +15,8 @@ namespace facebook::react {
 class ValueFactoryEventPayload : public EventPayload {
  public:
   explicit ValueFactoryEventPayload(ValueFactory factory);
-  jsi::Value asJSIValue(jsi::Runtime &runtime) const override;
+  jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
+  EventPayloadType getType() const override;
 
  private:
   ValueFactory valueFactory_;

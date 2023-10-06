@@ -23,16 +23,17 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.Queue;
@@ -423,13 +424,18 @@ public class MountingManager {
             attachmentsPositions);
   }
 
-  public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
-    @Nullable SurfaceMountingManager smm = getSurfaceManagerForView(reactTag);
+  public void enqueuePendingEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
+    @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
     if (smm == null) {
       // Cannot queue event without valid surface mountng manager. Do nothing here.
       return;
     }
-
-    smm.enqueuePendingEvent(reactTag, viewEvent);
+    smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);
   }
 }

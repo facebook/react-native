@@ -31,3 +31,12 @@ const styles = StyleSheet.create({
     ],
   },
 });
+
+const styles2 = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    // Should error due to misspelled parameter name
+    // @ts-expect-error
+    magrinRight: 1,
+  },
+});

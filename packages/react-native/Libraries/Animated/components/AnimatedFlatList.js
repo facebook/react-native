@@ -18,12 +18,13 @@ import * as React from 'react';
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
 const FlatListWithEventThrottle = React.forwardRef(
+  // $FlowFixMe[incompatible-call]
   (
     props: React.ElementConfig<typeof FlatList>,
     ref:
       | ((null | FlatList<mixed>) => mixed)
       | {current: null | FlatList<mixed>, ...},
-  ) => <FlatList scrollEventThrottle={0.0001} {...props} ref={ref} />,
+  ) => <FlatList {...props} ref={ref} />,
 );
 
 export default (createAnimatedComponent(

@@ -32,21 +32,21 @@ NativePerformanceObserver::~NativePerformanceObserver() {
 }
 
 void NativePerformanceObserver::startReporting(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     int32_t entryType) {
   PerformanceEntryReporter::getInstance().startReporting(
       static_cast<PerformanceEntryType>(entryType));
 }
 
 void NativePerformanceObserver::stopReporting(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     int32_t entryType) {
   PerformanceEntryReporter::getInstance().stopReporting(
       static_cast<PerformanceEntryType>(entryType));
 }
 
 void NativePerformanceObserver::setIsBuffered(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     std::vector<int32_t> entryTypes,
     bool isBuffered) {
   for (const int32_t entryType : entryTypes) {
@@ -56,32 +56,32 @@ void NativePerformanceObserver::setIsBuffered(
 }
 
 GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
-    jsi::Runtime &rt) {
+    jsi::Runtime& rt) {
   return PerformanceEntryReporter::getInstance().popPendingEntries();
 }
 
 void NativePerformanceObserver::setOnPerformanceEntryCallback(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     std::optional<AsyncCallback<>> callback) {
   PerformanceEntryReporter::getInstance().setReportingCallback(callback);
 }
 
 void NativePerformanceObserver::logRawEntry(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     RawPerformanceEntry entry) {
   PerformanceEntryReporter::getInstance().logEntry(entry);
 }
 
 std::vector<std::pair<std::string, uint32_t>>
-NativePerformanceObserver::getEventCounts(jsi::Runtime &rt) {
-  const auto &eventCounts =
+NativePerformanceObserver::getEventCounts(jsi::Runtime& rt) {
+  const auto& eventCounts =
       PerformanceEntryReporter::getInstance().getEventCounts();
   return std::vector<std::pair<std::string, uint32_t>>(
       eventCounts.begin(), eventCounts.end());
 }
 
 void NativePerformanceObserver::setDurationThreshold(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     int32_t entryType,
     double durationThreshold) {
   PerformanceEntryReporter::getInstance().setDurationThreshold(
@@ -89,7 +89,7 @@ void NativePerformanceObserver::setDurationThreshold(
 }
 
 void NativePerformanceObserver::clearEntries(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     int32_t entryType,
     std::optional<std::string> entryName) {
   PerformanceEntryReporter::getInstance().clearEntries(
@@ -98,7 +98,7 @@ void NativePerformanceObserver::clearEntries(
 }
 
 std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     std::optional<int32_t> entryType,
     std::optional<std::string> entryName) {
   return PerformanceEntryReporter::getInstance().getEntries(

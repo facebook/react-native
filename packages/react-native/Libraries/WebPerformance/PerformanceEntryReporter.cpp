@@ -15,7 +15,7 @@
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
-PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
+PerformanceEntryReporter& PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
   return instance;
 }
@@ -37,7 +37,7 @@ double PerformanceEntryReporter::getCurrentTimeStamp() const {
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  auto &buffer = getBuffer(entryType);
+  auto& buffer = getBuffer(entryType);
   buffer.isReporting = true;
   buffer.durationThreshold = DEFAULT_DURATION_THRESHOLD;
 }
@@ -45,7 +45,7 @@ void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
 void PerformanceEntryReporter::setAlwaysLogged(
     PerformanceEntryType entryType,
     bool isAlwaysLogged) {
-  auto &buffer = getBuffer(entryType);
+  auto& buffer = getBuffer(entryType);
   buffer.isAlwaysLogged = isAlwaysLogged;
 }
 
@@ -60,16 +60,16 @@ void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
 }
 
 void PerformanceEntryReporter::stopReporting() {
-  for (auto &buffer : buffers_) {
+  for (auto& buffer : buffers_) {
     buffer.isReporting = false;
   }
 }
 
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
-  std::lock_guard<std::mutex> lock(entriesMutex_);
+  std::scoped_lock lock(entriesMutex_);
   GetPendingEntriesResult res = {
       std::vector<RawPerformanceEntry>(), droppedEntryCount_};
-  for (auto &buffer : buffers_) {
+  for (auto& buffer : buffers_) {
     buffer.entries.consume(res.entries);
   }
 
@@ -77,7 +77,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::stable_sort(
       res.entries.begin(),
       res.entries.end(),
-      [](const RawPerformanceEntry &lhs, const RawPerformanceEntry &rhs) {
+      [](const RawPerformanceEntry& lhs, const RawPerformanceEntry& rhs) {
         if (lhs.startTime != rhs.startTime) {
           return lhs.startTime < rhs.startTime;
         } else {
@@ -89,7 +89,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   return res;
 }
 
-void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
+void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   const auto entryType = static_cast<PerformanceEntryType>(entry.entryType);
   if (entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
@@ -99,9 +99,9 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(entriesMutex_);
+  std::scoped_lock lock(entriesMutex_);
 
-  auto &buffer = buffers_[entry.entryType];
+  auto& buffer = buffers_[entry.entryType];
 
   if (entry.duration < buffer.durationThreshold) {
     // The entries duration is lower than the desired reporting threshold, skip
@@ -111,6 +111,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
   if (buffer.hasNameLookup) {
     auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
     if (overwriteCandidate != nullptr) {
+      std::scoped_lock lock2(nameLookupMutex_);
       auto it = buffer.nameLookup.find(overwriteCandidate);
       if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
         buffer.nameLookup.erase(it);
@@ -128,6 +129,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
   }
 
   if (buffer.hasNameLookup) {
+    std::scoped_lock lock2(nameLookupMutex_);
     buffer.nameLookup.insert(&buffer.entries.back());
   }
 
@@ -139,8 +141,8 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
 }
 
 void PerformanceEntryReporter::mark(
-    const std::string &name,
-    const std::optional<double> &startTime) {
+    const std::string& name,
+    const std::optional<double>& startTime) {
   logEntry(RawPerformanceEntry{
       name,
       static_cast<int>(PerformanceEntryType::MARK),
@@ -153,18 +155,19 @@ void PerformanceEntryReporter::mark(
 
 void PerformanceEntryReporter::clearEntries(
     PerformanceEntryType entryType,
-    const char *entryName) {
+    std::string_view entryName) {
   if (entryType == PerformanceEntryType::UNDEFINED) {
     // Clear all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       clearEntries(static_cast<PerformanceEntryType>(i), entryName);
     }
   } else {
-    auto &buffer = getBuffer(entryType);
-    if (entryName != nullptr) {
+    auto& buffer = getBuffer(entryType);
+    if (!entryName.empty()) {
       if (buffer.hasNameLookup) {
+        std::scoped_lock lock2(nameLookupMutex_);
         RawPerformanceEntry entry{
-            entryName,
+            std::string(entryName),
             static_cast<int>(entryType),
             0.0,
             0.0,
@@ -173,32 +176,41 @@ void PerformanceEntryReporter::clearEntries(
             std::nullopt};
         buffer.nameLookup.erase(&entry);
       }
-      buffer.entries.clear([entryName](const RawPerformanceEntry &entry) {
-        return std::strcmp(entry.name.c_str(), entryName) == 0;
+
+      std::scoped_lock lock(entriesMutex_);
+      buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
+        return entry.name == entryName;
       });
     } else {
-      buffer.entries.clear();
-      buffer.nameLookup.clear();
+      {
+        std::scoped_lock lock(entriesMutex_);
+        buffer.entries.clear();
+      }
+      {
+        std::scoped_lock lock2(nameLookupMutex_);
+        buffer.nameLookup.clear();
+      }
     }
   }
 }
 
 void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    const char *entryName,
-    std::vector<RawPerformanceEntry> &res) const {
+    std::string_view entryName,
+    std::vector<RawPerformanceEntry>& res) const {
   if (entryType == PerformanceEntryType::UNDEFINED) {
     // Collect all entry types
     for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
-    const auto &entries = getBuffer(entryType).entries;
-    if (entryName == nullptr) {
+    std::scoped_lock lock(entriesMutex_);
+    const auto& entries = getBuffer(entryType).entries;
+    if (entryName.empty()) {
       entries.getEntries(res);
     } else {
-      entries.getEntries(res, [entryName](const RawPerformanceEntry &entry) {
-        return std::strcmp(entry.name.c_str(), entryName) == 0;
+      entries.getEntries(res, [entryName](const RawPerformanceEntry& entry) {
+        return entry.name == entryName;
       });
     }
   }
@@ -206,19 +218,19 @@ void PerformanceEntryReporter::getEntries(
 
 std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    const char *entryName) const {
+    std::string_view entryName) const {
   std::vector<RawPerformanceEntry> res;
   getEntries(entryType, entryName, res);
   return res;
 }
 
 void PerformanceEntryReporter::measure(
-    const std::string &name,
+    const std::string& name,
     double startTime,
     double endTime,
-    const std::optional<double> &duration,
-    const std::optional<std::string> &startMark,
-    const std::optional<std::string> &endMark) {
+    const std::optional<double>& duration,
+    const std::optional<std::string>& startMark,
+    const std::optional<std::string>& endMark) {
   double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
   double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
 
@@ -241,7 +253,7 @@ void PerformanceEntryReporter::measure(
 }
 
 double PerformanceEntryReporter::getMarkTime(
-    const std::string &markName) const {
+    const std::string& markName) const {
   RawPerformanceEntry mark{
       markName,
       static_cast<int>(PerformanceEntryType::MARK),
@@ -251,7 +263,8 @@ double PerformanceEntryReporter::getMarkTime(
       std::nullopt,
       std::nullopt};
 
-  const auto &marksBuffer = getBuffer(PerformanceEntryType::MARK);
+  std::scoped_lock lock(nameLookupMutex_);
+  const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
   auto it = marksBuffer.nameLookup.find(&mark);
   if (it != marksBuffer.nameLookup.end()) {
     return (*it)->startTime;
@@ -285,15 +298,16 @@ void PerformanceEntryReporter::scheduleFlushBuffer() {
 
 struct StrKey {
   uint32_t key;
-  StrKey(const char *s) : key(folly::hash::fnv32_buf(s, std::strlen(s))) {}
+  StrKey(std::string_view s)
+      : key(folly::hash::fnv32_buf(s.data(), s.length())) {}
 
-  bool operator==(const StrKey &rhs) const {
+  bool operator==(const StrKey& rhs) const {
     return key == rhs.key;
   }
 };
 
 struct StrKeyHash {
-  constexpr size_t operator()(const StrKey &strKey) const {
+  constexpr size_t operator()(const StrKey& strKey) const {
     return static_cast<size_t>(strKey.key);
   }
 };
@@ -303,61 +317,61 @@ struct StrKeyHash {
 // Not all of these are currently supported by RN, but we map them anyway for
 // future-proofing.
 using SupportedEventTypeRegistry =
-    std::unordered_map<StrKey, const char *, StrKeyHash>;
+    std::unordered_map<StrKey, std::string_view, StrKeyHash>;
 
-static const SupportedEventTypeRegistry &getSupportedEvents() {
+static const SupportedEventTypeRegistry& getSupportedEvents() {
   static SupportedEventTypeRegistry SUPPORTED_EVENTS = {
-      {"topAuxClick", "auxclick"},
-      {"topClick", "click"},
-      {"topContextMenu", "contextmenu"},
-      {"topDblClick", "dblclick"},
-      {"topMouseDown", "mousedown"},
-      {"topMouseEnter", "mouseenter"},
-      {"topMouseLeave", "mouseleave"},
-      {"topMouseOut", "mouseout"},
-      {"topMouseOver", "mouseover"},
-      {"topMouseUp", "mouseup"},
-      {"topPointerOver", "pointerover"},
-      {"topPointerEnter", "pointerenter"},
-      {"topPointerDown", "pointerdown"},
-      {"topPointerUp", "pointerup"},
-      {"topPointerCancel", "pointercancel"},
-      {"topPointerOut", "pointerout"},
-      {"topPointerLeave", "pointerleave"},
-      {"topGotPointerCapture", "gotpointercapture"},
-      {"topLostPointerCapture", "lostpointercapture"},
-      {"topTouchStart", "touchstart"},
-      {"topTouchEnd", "touchend"},
-      {"topTouchCancel", "touchcancel"},
-      {"topKeyDown", "keydown"},
-      {"topKeyPress", "keypress"},
-      {"topKeyUp", "keyup"},
-      {"topBeforeInput", "beforeinput"},
-      {"topInput", "input"},
-      {"topCompositionStart", "compositionstart"},
-      {"topCompositionUpdate", "compositionupdate"},
-      {"topCompositionEnd", "compositionend"},
-      {"topDragStart", "dragstart"},
-      {"topDragEnd", "dragend"},
-      {"topDragEnter", "dragenter"},
-      {"topDragLeave", "dragleave"},
-      {"topDragOver", "dragover"},
-      {"topDrop", "drop"},
+      {StrKey("topAuxClick"), "auxclick"},
+      {StrKey("topClick"), "click"},
+      {StrKey("topContextMenu"), "contextmenu"},
+      {StrKey("topDblClick"), "dblclick"},
+      {StrKey("topMouseDown"), "mousedown"},
+      {StrKey("topMouseEnter"), "mouseenter"},
+      {StrKey("topMouseLeave"), "mouseleave"},
+      {StrKey("topMouseOut"), "mouseout"},
+      {StrKey("topMouseOver"), "mouseover"},
+      {StrKey("topMouseUp"), "mouseup"},
+      {StrKey("topPointerOver"), "pointerover"},
+      {StrKey("topPointerEnter"), "pointerenter"},
+      {StrKey("topPointerDown"), "pointerdown"},
+      {StrKey("topPointerUp"), "pointerup"},
+      {StrKey("topPointerCancel"), "pointercancel"},
+      {StrKey("topPointerOut"), "pointerout"},
+      {StrKey("topPointerLeave"), "pointerleave"},
+      {StrKey("topGotPointerCapture"), "gotpointercapture"},
+      {StrKey("topLostPointerCapture"), "lostpointercapture"},
+      {StrKey("topTouchStart"), "touchstart"},
+      {StrKey("topTouchEnd"), "touchend"},
+      {StrKey("topTouchCancel"), "touchcancel"},
+      {StrKey("topKeyDown"), "keydown"},
+      {StrKey("topKeyPress"), "keypress"},
+      {StrKey("topKeyUp"), "keyup"},
+      {StrKey("topBeforeInput"), "beforeinput"},
+      {StrKey("topInput"), "input"},
+      {StrKey("topCompositionStart"), "compositionstart"},
+      {StrKey("topCompositionUpdate"), "compositionupdate"},
+      {StrKey("topCompositionEnd"), "compositionend"},
+      {StrKey("topDragStart"), "dragstart"},
+      {StrKey("topDragEnd"), "dragend"},
+      {StrKey("topDragEnter"), "dragenter"},
+      {StrKey("topDragLeave"), "dragleave"},
+      {StrKey("topDragOver"), "dragover"},
+      {StrKey("topDrop"), "drop"},
   };
   return SUPPORTED_EVENTS;
 }
 
-EventTag PerformanceEntryReporter::onEventStart(const char *name) {
+EventTag PerformanceEntryReporter::onEventStart(std::string_view name) {
   if (!isReporting(PerformanceEntryType::EVENT)) {
     return 0;
   }
-  const auto &supportedEvents = getSupportedEvents();
+  const auto& supportedEvents = getSupportedEvents();
   auto it = supportedEvents.find(name);
   if (it == supportedEvents.end()) {
     return 0;
   }
 
-  const char *reportedName = it->second;
+  auto reportedName = it->second;
 
   sCurrentEventTag_++;
   if (sCurrentEventTag_ == 0) {
@@ -367,7 +381,7 @@ EventTag PerformanceEntryReporter::onEventStart(const char *name) {
 
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(std::make_pair(
         sCurrentEventTag_, EventEntry{reportedName, timeStamp, 0.0}));
   }
@@ -380,7 +394,7 @@ void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it != eventsInFlight_.end()) {
       it->second.dispatchTime = timeStamp;
@@ -394,19 +408,19 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it == eventsInFlight_.end()) {
       return;
     }
-    auto &entry = it->second;
-    auto &name = entry.name;
+    auto& entry = it->second;
+    auto& name = entry.name;
 
     // TODO: Define the way to assign interaction IDs to the event chains
     // (T141358175)
     const uint32_t interactionId = 0;
     event(
-        name,
+        std::string(name),
         entry.startTime,
         timeStamp - entry.startTime,
         entry.dispatchTime,

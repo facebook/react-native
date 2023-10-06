@@ -9,10 +9,10 @@
 
 #include <limits>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -70,8 +70,8 @@ class ParagraphAttributes : public DebugStringConvertible {
   Float minimumFontSize{std::numeric_limits<Float>::quiet_NaN()};
   Float maximumFontSize{std::numeric_limits<Float>::quiet_NaN()};
 
-  bool operator==(const ParagraphAttributes &) const;
-  bool operator!=(const ParagraphAttributes &) const;
+  bool operator==(const ParagraphAttributes&) const;
+  bool operator!=(const ParagraphAttributes&) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -87,9 +87,8 @@ namespace std {
 template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
-      const facebook::react::ParagraphAttributes &attributes) const {
-    return folly::hash::hash_combine(
-        0,
+      const facebook::react::ParagraphAttributes& attributes) const {
+    return facebook::react::hash_combine(
         attributes.maximumNumberOfLines,
         attributes.ellipsizeMode,
         attributes.textBreakStrategy,

@@ -18,7 +18,7 @@ class WeakFamilyRegistry final {
  public:
   using WeakFamilies = std::vector<ShadowNodeFamily::Weak>;
 
-  void add(ShadowNodeFamily::Shared const &shadowNodeFamily) const;
+  void add(const ShadowNodeFamily::Shared& shadowNodeFamily) const;
   void removeFamiliesWithSurfaceId(SurfaceId surfaceId) const;
   WeakFamilies weakFamiliesForSurfaceId(SurfaceId surfaceId) const;
 

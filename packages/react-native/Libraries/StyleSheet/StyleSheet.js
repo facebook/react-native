@@ -27,6 +27,8 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const PixelRatio = require('../Utilities/PixelRatio').default;
 const flatten = require('./flattenStyle');
 
+export type {NativeColorValue} from './StyleSheetTypes';
+
 /**
  * This type should be used as the type for anything that is a color. It is
  * most useful when using DynamicColorIOS which can be a string or a dynamic
@@ -361,6 +363,7 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
+  // $FlowFixMe[unsupported-variance-annotation]
   create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this

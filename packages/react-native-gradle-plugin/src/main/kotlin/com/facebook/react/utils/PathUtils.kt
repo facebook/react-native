@@ -103,8 +103,8 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
   error(
       """
       Couldn't determine CLI location!
-      
-      Please set `react { cliFile = file(...) }` inside your 
+
+      Please set `react { cliFile = file(...) }` inside your
       build.gradle to the path of the react-native cli.js file.
       This file typically resides in `node_modules/react-native/cli.js`
     """
@@ -224,7 +224,7 @@ internal fun readPackageJsonFile(
     rootProperty: DirectoryProperty
 ): ModelPackageJson? {
   val packageJson = findPackageJsonFile(project, rootProperty)
-  return packageJson?.let { JsonUtils.fromCodegenJson(it) }
+  return packageJson?.let { JsonUtils.fromPackageJson(it) }
 }
 
 private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"

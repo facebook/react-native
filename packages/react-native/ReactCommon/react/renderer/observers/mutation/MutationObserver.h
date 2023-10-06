@@ -28,36 +28,36 @@ class MutationObserver {
   MutationObserver(MutationObserverId intersectionObserverId);
 
   void observe(ShadowNode::Shared targetShadowNode, bool observeSubtree);
-  void unobserve(ShadowNode const &targetShadowNode);
+  void unobserve(const ShadowNode& targetShadowNode);
 
   bool isObserving() const;
 
   void recordMutations(
-      RootShadowNode const &oldRootShadowNode,
-      RootShadowNode const &newRootShadowNode,
-      std::vector<const MutationRecord> &recordedMutations) const;
+      const RootShadowNode& oldRootShadowNode,
+      const RootShadowNode& newRootShadowNode,
+      std::vector<const MutationRecord>& recordedMutations) const;
 
  private:
   MutationObserverId mutationObserverId_;
   std::vector<ShadowNode::Shared> deeplyObservedShadowNodes_;
   std::vector<ShadowNode::Shared> shallowlyObservedShadowNodes_;
 
-  using SetOfShadowNodePointers = std::unordered_set<ShadowNode const *>;
+  using SetOfShadowNodePointers = std::unordered_set<const ShadowNode*>;
 
   void recordMutationsInTarget(
       ShadowNode::Shared targetShadowNode,
-      RootShadowNode const &oldRootShadowNode,
-      RootShadowNode const &newRootShadowNode,
+      const RootShadowNode& oldRootShadowNode,
+      const RootShadowNode& newRootShadowNode,
       bool observeSubtree,
-      std::vector<const MutationRecord> &recordedMutations,
-      SetOfShadowNodePointers &processedNodes) const;
+      std::vector<const MutationRecord>& recordedMutations,
+      SetOfShadowNodePointers& processedNodes) const;
 
   void recordMutationsInSubtrees(
       ShadowNode::Shared targetShadowNode,
-      ShadowNode const &oldNode,
-      ShadowNode const &newNode,
+      const ShadowNode& oldNode,
+      const ShadowNode& newNode,
       bool observeSubtree,
-      std::vector<const MutationRecord> &recordedMutations,
+      std::vector<const MutationRecord>& recordedMutations,
       SetOfShadowNodePointers processedNodes) const;
 };
 

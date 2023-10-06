@@ -29,7 +29,7 @@ class RuntimeSchedulerTest : public testing::Test {
 
     RuntimeExecutor runtimeExecutor =
         [this](
-            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
+            std::function<void(facebook::jsi::Runtime & runtime)>&& callback) {
           stubQueue_->runOnQueue([this, callback = std::move(callback)]() {
             callback(*runtime_);
           });
@@ -52,9 +52,9 @@ class RuntimeSchedulerTest : public testing::Test {
         jsi::PropNameID::forUtf8(*runtime_, ""),
         3,
         [this, callback = std::move(callback)](
-            jsi::Runtime & /*unused*/,
-            jsi::Value const & /*unused*/,
-            jsi::Value const *arguments,
+            jsi::Runtime& /*unused*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* arguments,
             size_t /*unused*/) -> jsi::Value {
           ++hostFunctionCallCount_;
           auto didUserCallbackTimeout = arguments[0].getBool();
@@ -253,9 +253,9 @@ TEST_F(RuntimeSchedulerTest, continuationTask) {
         *runtime_,
         jsi::PropNameID::forUtf8(*runtime_, ""),
         1,
-        [&](jsi::Runtime & /*runtime*/,
-            jsi::Value const & /*unused*/,
-            jsi::Value const * /*arguments*/,
+        [&](jsi::Runtime& /*runtime*/,
+            jsi::Value const& /*unused*/,
+            jsi::Value const* /*arguments*/,
             size_t /*unused*/) noexcept -> jsi::Value {
           didContinuationTask = true;
           return jsi::Value::undefined();
@@ -318,7 +318,7 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
-      [&](jsi::Runtime const & /*unused*/) { wasCalled = true; });
+      [&](const jsi::Runtime& /*unused*/) { wasCalled = true; });
 
   EXPECT_FALSE(wasCalled);
 
@@ -346,7 +346,7 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime& /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_FALSE(didRunJavaScriptTask);
     EXPECT_FALSE(runtimeScheduler_->getShouldYield());
@@ -373,7 +373,7 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime& /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_TRUE(didRunJavaScriptTask);
   });
@@ -401,7 +401,7 @@ TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::ImmediatePriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime& /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_TRUE(didRunJavaScriptTask);
   });
@@ -474,14 +474,14 @@ TEST_F(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this, &didRunSynchronousTask](jsi::Runtime & /*rt*/) {
+        [this, &didRunSynchronousTask](jsi::Runtime& /*rt*/) {
           EXPECT_TRUE(runtimeScheduler_->getIsSynchronous());
           didRunSynchronousTask = true;
         });
     EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -500,7 +500,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &runtime) {
+            jsi::Runtime& runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -517,7 +517,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
         });
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -538,7 +538,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
         [this, &didRunSynchronousTask, &didRunSubsequentTask](
-            jsi::Runtime &runtime) {
+            jsi::Runtime& runtime) {
           didRunSynchronousTask = true;
 
           auto callback = createHostFunctionFromLambda(
@@ -556,7 +556,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
         });
   });
 
-  auto hasTask = stubQueue_->waitForTask(1ms);
+  auto hasTask = stubQueue_->waitForTask();
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunSynchronousTask);
@@ -584,16 +584,16 @@ TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
   bool didRunWork = false;
 
   runtimeScheduler_->scheduleWork(
-      [&didRunWork](jsi::Runtime & /*unused*/) { didRunWork = true; });
+      [&didRunWork](jsi::Runtime& /*unused*/) { didRunWork = true; });
 
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [&didRunSynchronousTask](jsi::Runtime & /*runtime*/) {
+        [&didRunSynchronousTask](jsi::Runtime& /*runtime*/) {
           didRunSynchronousTask = true;
         });
   });
 
-  auto hasTask = stubQueue_->waitForTasks(2, 1ms);
+  auto hasTask = stubQueue_->waitForTasks(2);
 
   EXPECT_TRUE(hasTask);
   EXPECT_FALSE(didRunWork);

@@ -15,11 +15,13 @@ require_relative './cocoapods/codegen_utils.rb'
 require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
+require_relative './cocoapods/runtime.rb'
+require_relative './cocoapods/helpers.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2021.07.22.00'
+$FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
 
@@ -34,11 +36,16 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-# This function returns the min iOS version supported by React Native
+
+def min_ios_version_supported
+  return Helpers::Constants.min_ios_version_supported
+end
+
+# This function returns the min supported OS versions supported by React Native
 # By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
-def min_ios_version_supported
-  return '13.4'
+def min_supported_versions
+  return  { :ios => min_ios_version_supported }
 end
 
 # This function prepares the project for React Native, before processing
@@ -66,7 +73,7 @@ end
 def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
-  new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
+  new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
@@ -87,8 +94,11 @@ def use_react_native! (
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
-  ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? "1" : "0"
-  fabric_enabled = fabric_enabled || new_arch_enabled
+  relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
+  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
+
+  fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
@@ -98,7 +108,7 @@ def use_react_native! (
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec" if !new_arch_enabled
+  pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec" if !NewArchitectureHelper.new_arch_enabled
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
@@ -119,18 +129,22 @@ def use_react_native! (
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
+  pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
+  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
 
   if hermes_enabled
-    setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
+    setup_hermes!(:react_native_path => prefix)
   else
     setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
-  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
+  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
@@ -139,14 +153,15 @@ def use_react_native! (
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec", :modular_headers => true
+  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
+  pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   run_codegen!(
     app_path,
     config_file_dir,
-    :new_arch_enabled => new_arch_enabled,
+    :new_arch_enabled => NewArchitectureHelper.new_arch_enabled,
     :disable_codegen => ENV['DISABLE_CODEGEN'] == '1',
     :react_native_path => prefix,
     :fabric_enabled => fabric_enabled,
@@ -158,12 +173,19 @@ def use_react_native! (
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
-  if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
-    setup_fabric!(:react_native_path => prefix, new_arch_enabled: new_arch_enabled)
-  else
+  # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
+  # If the New Arch is turned off, we will use the Old Renderer, though.
+  # RNTester always installed Fabric, this change is required to make the template work.
+  setup_fabric!(:react_native_path => prefix)
+  checkAndGenerateEmptyThirdPartyProvider!(prefix, NewArchitectureHelper.new_arch_enabled)
+
+  if !fabric_enabled
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
     build_codegen!(prefix, relative_installation_root)
+  end
+
+  if NewArchitectureHelper.new_arch_enabled
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
   # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
@@ -195,12 +217,15 @@ end
 # Parameters:
 # - spec: The spec that has to be configured with the New Architecture code
 # - new_arch_enabled: Whether the module should install dependencies for the new architecture
-def install_modules_dependencies(spec, new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == "1")
+def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
 end
 
 # It returns the default flags.
+# deprecated.
 def get_default_flags()
+  warn 'get_default_flags is deprecated. Please remove the keys from the `use_react_native!` function'
+  warn 'if you are using the default already and pass the value you need in case you don\'t want the default'
   return ReactNativePodsUtils.get_default_flags()
 end
 
@@ -235,22 +260,25 @@ def react_native_post_install(
   end
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
+  hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
 
-  if ReactNativePodsUtils.has_pod(installer, "React-hermes")
+  if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
     ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
+  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
+  ReactNativePodsUtils.updateOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
-  is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
-  NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
+  NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
+
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
@@ -259,7 +287,7 @@ end
 # We need to keep this while we continue to support the old architecture.
 # =====================
 def use_react_native_codegen!(spec, options={})
-  return if ENV['RCT_NEW_ARCH_ENABLED'] == "1"
+  return if NewArchitectureHelper.new_arch_enabled
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
@@ -354,24 +382,4 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-end
-
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon machines.
-# Call this in the app's main Podfile's post_install hook.
-# See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
-# Actual fix was authored by https://github.com/mikehardy.
-# New app template will call this for now until the underlying issue is resolved.
-def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # NOTE: This fix is still required due to RCT-Folly
-  # creating a function with a better name but keeping the
-  # previous for backward compatibility
-  __fix_double_definition_of_clockid_in_folly()
-end
-
-def __fix_double_definition_of_clockid_in_folly()
-  # "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
-  # See https://github.com/facebook/flipper/issues/834 for more details.
-  time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' '#{time_header}'`
 end
