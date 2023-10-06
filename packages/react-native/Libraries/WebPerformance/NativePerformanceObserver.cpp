@@ -107,4 +107,13 @@ std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
       entryName ? entryName->c_str() : nullptr);
 }
 
+std::vector<RawPerformanceEntryType>
+NativePerformanceObserver::getSupportedPerformanceEntryTypes(jsi::Runtime& rt) {
+  return {
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MARK),
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MEASURE),
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::EVENT),
+  };
+}
+
 } // namespace facebook::react
