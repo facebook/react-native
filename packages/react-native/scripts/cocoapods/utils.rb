@@ -76,7 +76,7 @@ class ReactNativePodsUtils
                     excluded_archs_includes_I386 = current_setting.include?("i386")
 
                     if !excluded_archs_includes_I386
-                        # Hermes does not support `i386` architecture
+                        # Hermes does not support 'i386' architecture
                         config.build_settings[key] = "#{current_setting} i386".strip
                     end
                 end
@@ -162,10 +162,10 @@ class ReactNativePodsUtils
             project.build_configurations.each do |config|
                 # fix for weak linking
                 self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
+                if self.is_using_xcode15_or_greater(:xcodebuild_manager => xcodebuild_manager)
                     self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
                 else
-                    self.remove_value_to_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
+                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
                 end
             end
             project.save()
@@ -290,7 +290,7 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.updateIphoneOSDeploymentTarget(installer)
+    def self.updateOSDeploymentTarget(installer)
         pod_to_update = Set.new([
             "boost",
             "CocoaAsyncSocket",
@@ -341,24 +341,30 @@ class ReactNativePodsUtils
 
     def self.add_value_to_setting_if_missing(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if !old_config.include?(value)
-            config.build_settings[setting_name] << value
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if !old_config.include?(trimmed_value)
+            config.build_settings[setting_name] = "#{old_config.strip()} #{trimmed_value}".strip()
         end
     end
 
-    def self.remove_value_to_setting_if_present(config, setting_name, value)
+    def self.remove_value_from_setting_if_present(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if old_config.include?(value)
-            # Old config can be either an Array or a String
-            if old_config.is_a?(Array)
-                old_config = old_config.join(" ")
-            end
-            new_config = old_config.gsub(value,  "")
-            config.build_settings[setting_name] = new_config
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if old_config.include?(trimmed_value)
+            new_config = old_config.gsub(trimmed_value,  "")
+            config.build_settings[setting_name] = new_config.strip()
         end
     end
 
-    def self.is_using_xcode15_or_greter(xcodebuild_manager: Xcodebuild)
+    def self.is_using_xcode15_or_greater(xcodebuild_manager: Xcodebuild)
         xcodebuild_version = xcodebuild_manager.version
 
         # The output of xcodebuild -version is something like

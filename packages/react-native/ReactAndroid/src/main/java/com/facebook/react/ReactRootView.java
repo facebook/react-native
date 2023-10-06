@@ -94,7 +94,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mAppProperties;
-  private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag =
@@ -452,14 +451,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     startReactApplication(reactInstanceManager, moduleName, null);
   }
 
-  /** {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle, String)} */
-  public void startReactApplication(
-      ReactInstanceManager reactInstanceManager,
-      String moduleName,
-      @Nullable Bundle initialProperties) {
-    startReactApplication(reactInstanceManager, moduleName, initialProperties, null);
-  }
-
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
@@ -470,8 +461,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle initialProperties,
-      @Nullable String initialUITemplate) {
+      @Nullable Bundle initialProperties) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
     try {
       UiThreadUtil.assertOnUiThread();
@@ -486,7 +476,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
-      mInitialUITemplate = initialUITemplate;
 
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
@@ -649,11 +638,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   public @Nullable Bundle getAppProperties() {
     return mAppProperties;
-  }
-
-  @Override
-  public @Nullable String getInitialUITemplate() {
-    return mInitialUITemplate;
   }
 
   @ThreadConfined(UI)

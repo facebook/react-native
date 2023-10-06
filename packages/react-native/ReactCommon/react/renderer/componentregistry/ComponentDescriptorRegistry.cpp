@@ -121,33 +121,6 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
   return iterator != _registryByHandle.end();
 }
 
-ShadowNode::Shared ComponentDescriptorRegistry::createNode(
-    Tag tag,
-    const std::string& viewName,
-    SurfaceId surfaceId,
-    const folly::dynamic& propsDynamic,
-    const InstanceHandle::Shared& instanceHandle) const {
-  auto unifiedComponentName = componentNameByReactViewName(viewName);
-  const auto& componentDescriptor = this->at(unifiedComponentName);
-
-  const auto fragment =
-      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
-  auto family = componentDescriptor.createFamily(fragment);
-  const auto props = componentDescriptor.cloneProps(
-      PropsParserContext{surfaceId, *contextContainer_.get()},
-      nullptr,
-      RawProps(propsDynamic));
-  const auto state = componentDescriptor.createInitialState(props, family);
-
-  return componentDescriptor.createShadowNode(
-      {
-          /* .props = */ props,
-          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .state = */ state,
-      },
-      family);
-}
-
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
     const SharedComponentDescriptor& descriptor) {
   _fallbackComponentDescriptor = descriptor;

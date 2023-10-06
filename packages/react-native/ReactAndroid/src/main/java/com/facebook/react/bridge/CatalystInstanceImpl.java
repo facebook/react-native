@@ -103,7 +103,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
   private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
-  private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -369,8 +368,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       @Override
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
-                        if (mTurboModuleManagerJSIModule != null) {
-                          mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+                        if (mTurboModuleRegistry != null) {
+                          mTurboModuleRegistry.invalidate();
                         }
 
                         getReactQueueConfiguration()
@@ -586,7 +585,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public void setTurboModuleManager(JSIModule module) {
     mTurboModuleRegistry = (TurboModuleRegistry) module;
-    mTurboModuleManagerJSIModule = module;
   }
 
   private void decrementPendingJSCalls() {

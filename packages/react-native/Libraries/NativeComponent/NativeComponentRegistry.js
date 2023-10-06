@@ -54,17 +54,20 @@ export function get<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
-    let {native, strict, verify} = getRuntimeConfig?.(name) ?? {
-      native: false,
+    const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
+      native: !global.RN$Bridgeless,
       strict: false,
       verify: false,
     };
 
-    let viewConfig = createViewConfig(viewConfigProvider());
-    if (viewConfig == null) {
-      // Fallback to native view config.
-      native = true;
+    let viewConfig;
+    if (native) {
       viewConfig = getNativeComponentAttributes(name);
+    } else {
+      viewConfig = createViewConfig(viewConfigProvider());
+      if (viewConfig == null) {
+        viewConfig = getNativeComponentAttributes(name);
+      }
     }
 
     if (verify) {

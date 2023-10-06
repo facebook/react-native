@@ -8,7 +8,6 @@
 #include "NativeToJsBridge.h"
 
 #include <ReactCommon/CallInvoker.h>
-#include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -20,6 +19,7 @@
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
 #include "ModuleRegistry.h"
+#include "MoveWrapper.h"
 #include "RAMBundleRegistry.h"
 #include "SystraceSection.h"
 
@@ -132,8 +132,8 @@ void NativeToJsBridge::loadBundle(
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
       [this,
-       bundleRegistryWrap = folly::makeMoveWrapper(std::move(bundleRegistry)),
-       startupScript = folly::makeMoveWrapper(std::move(startupScript)),
+       bundleRegistryWrap = makeMoveWrapper(std::move(bundleRegistry)),
+       startupScript = makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL =
            std::move(startupScriptSourceURL)](JSExecutor* executor) mutable {
         auto bundleRegistry = bundleRegistryWrap.move();
@@ -249,7 +249,7 @@ void NativeToJsBridge::setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName = std::move(propName),
-                      jsonValue = folly::makeMoveWrapper(std::move(jsonValue))](
+                      jsonValue = makeMoveWrapper(std::move(jsonValue))](
                          JSExecutor* executor) mutable {
     executor->setGlobalVariable(propName, jsonValue.move());
   });

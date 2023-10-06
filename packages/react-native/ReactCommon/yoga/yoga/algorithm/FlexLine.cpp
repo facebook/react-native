@@ -28,26 +28,32 @@ FlexLine calculateFlexLine(
   float totalFlexGrowFactors = 0.0f;
   float totalFlexShrinkScaledFactors = 0.0f;
   size_t endOfLineIndex = startOfLineIndex;
+  size_t firstElementInLineIndex = startOfLineIndex;
 
   float sizeConsumedIncludingMinConstraint = 0;
   const FlexDirection mainAxis = resolveDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
-  const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
+  const float gap = node->getGapForAxis(mainAxis);
 
   // Add items to the current line until it's full or we run out of items.
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
     if (child->getStyle().display() == Display::None ||
         child->getStyle().positionType() == PositionType::Absolute) {
+      if (firstElementInLineIndex == endOfLineIndex) {
+        // We haven't found the first contributing element in the line yet.
+        firstElementInLineIndex++;
+      }
       continue;
     }
 
-    const bool isFirstElementInLine = (endOfLineIndex - startOfLineIndex) == 0;
+    const bool isFirstElementInLine =
+        (endOfLineIndex - firstElementInLineIndex) == 0;
 
     child->setLineIndex(lineCount);
     const float childMarginMainAxis =
-        child->getMarginForAxis(mainAxis, availableInnerWidth).unwrap();
+        child->getMarginForAxis(mainAxis, availableInnerWidth);
     const float childLeadingGapMainAxis = isFirstElementInLine ? 0.0f : gap;
     const float flexBasisWithMinAndMaxConstraints =
         boundAxisWithinMinAndMax(

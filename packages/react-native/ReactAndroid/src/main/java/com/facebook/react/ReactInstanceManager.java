@@ -1237,8 +1237,7 @@ public class ReactInstanceManager {
               reactRoot.getRootViewGroup(),
               initialProperties == null
                   ? new WritableNativeMap()
-                  : Arguments.fromBundle(initialProperties),
-              reactRoot.getInitialUITemplate());
+                  : Arguments.fromBundle(initialProperties));
       reactRoot.setRootViewTag(rootTag);
       reactRoot.runApplication();
     }

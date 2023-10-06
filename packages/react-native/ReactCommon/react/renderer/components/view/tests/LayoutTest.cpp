@@ -77,8 +77,8 @@ class LayoutTest : public ::testing::Test {
             auto &props = *sharedProps;
             props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(200));
-            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(200));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(200));
             return sharedProps;
           })
           .children({
@@ -90,8 +90,8 @@ class LayoutTest : public ::testing::Test {
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
                 yogaStyle.positionType() = yoga::PositionType::Absolute;
-                yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(50));
-                yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(50));
+                yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(50));
+                yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(50));
                 return sharedProps;
               })
               .children({
@@ -105,8 +105,8 @@ class LayoutTest : public ::testing::Test {
                     yogaStyle.positionType() = yoga::PositionType::Absolute;
                     yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                     yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
-                    yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(30));
-                    yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(90));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(30));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(90));
 
                     if (testCase == TRANSFORM_SCALE) {
                       props.transform = props.transform * Transform::Scale(2, 2, 1);
@@ -138,8 +138,8 @@ class LayoutTest : public ::testing::Test {
                         yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{10, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{10, YGUnitPoint};
-                        yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(110));
-                        yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
+                        yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(110));
+                        yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(20));
                         return sharedProps;
                       })
                       .children({
@@ -153,8 +153,8 @@ class LayoutTest : public ::testing::Test {
                             yogaStyle.positionType() = yoga::PositionType::Absolute;
                             yogaStyle.position()[YGEdgeLeft] = YGValue{70, YGUnitPoint};
                             yogaStyle.position()[YGEdgeTop] = YGValue{-50, YGUnitPoint};
-                            yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(30));
-                            yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(60));
+                            yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(30));
+                            yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(60));
                             return sharedProps;
                           })
                       }),
@@ -168,8 +168,8 @@ class LayoutTest : public ::testing::Test {
                         yogaStyle.positionType() = yoga::PositionType::Absolute;
                         yogaStyle.position()[YGEdgeLeft] = YGValue{-60, YGUnitPoint};
                         yogaStyle.position()[YGEdgeTop] = YGValue{50, YGUnitPoint};
-                        yogaStyle.setDimension(YGDimensionWidth, yoga::CompactValue::of<YGUnitPoint>(70));
-                        yogaStyle.setDimension(YGDimensionHeight, yoga::CompactValue::of<YGUnitPoint>(20));
+                        yogaStyle.setDimension(yoga::Dimension::Width, yoga::CompactValue::of<YGUnitPoint>(70));
+                        yogaStyle.setDimension(yoga::Dimension::Height, yoga::CompactValue::of<YGUnitPoint>(20));
                         return sharedProps;
                       })
                   })

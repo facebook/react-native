@@ -77,7 +77,6 @@ add_react_common_subdir(react/renderer/componentregistry)
 add_react_common_subdir(react/renderer/mounting)
 add_react_common_subdir(react/renderer/scheduler)
 add_react_common_subdir(react/renderer/telemetry)
-add_react_common_subdir(react/renderer/templateprocessor)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/element)
@@ -164,7 +163,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/SchedulerPriorityTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/telemetry/tests/TransactionTelemetryTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
 
@@ -209,7 +207,6 @@ add_executable(reactnative_unittest
   react_render_graphics
   react_render_mapbuffer
   react_render_mounting
-  react_render_templateprocessor
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils

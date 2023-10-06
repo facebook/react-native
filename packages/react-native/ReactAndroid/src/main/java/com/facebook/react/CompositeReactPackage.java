@@ -26,7 +26,12 @@ import java.util.Set;
 /**
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules
  * from several other packages.
+ *
+ * @deprecated
  */
+@Deprecated(
+    since = "CompositeReactPackage is deprecated and will be deleted, use ReactPackage instead",
+    forRemoval = true)
 public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, ReactPackage {
 
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();

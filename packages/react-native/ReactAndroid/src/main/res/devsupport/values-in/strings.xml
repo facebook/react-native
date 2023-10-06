@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: id_ID -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">Menanggapi Menu Dev Asli (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">Menjalankan %1$s</string>
 </resources>

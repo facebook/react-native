@@ -761,11 +761,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return null;
       }
       String headerName = HeaderUtil.stripHeaderName(header.getString(0));
-      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
+      String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;
       }
-      headersBuilder.add(headerName, headerValue);
+      headersBuilder.addUnsafeNonAscii(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
       headersBuilder.add(USER_AGENT_HEADER_NAME, mDefaultUserAgent);

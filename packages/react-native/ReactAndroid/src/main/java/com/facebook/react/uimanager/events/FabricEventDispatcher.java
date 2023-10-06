@@ -7,10 +7,10 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.Choreographer;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
@@ -125,7 +125,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
     mReactEventEmitter.unregister(uiManagerType);
   }
 
-  private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {
+  private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
     private volatile boolean mIsPosted = false;
     private boolean mShouldStop = false;
 

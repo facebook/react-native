@@ -15,6 +15,7 @@ import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import java.io.File
 import org.junit.Assert.*
 import org.junit.Rule
@@ -318,5 +319,215 @@ class ProjectUtilsTest {
     assertEquals("arm64-v8a", archs[1])
     assertEquals("x86", archs[2])
     assertEquals("x86_64", archs[3])
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToFalseAndOnMajor_returnTrue() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newArchEnabled", "false")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertTrue(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToFalseAndOnMajor_returnTrue() {
+    val project = createProject()
+    project.extensions.extraProperties.set("react.newArchEnabled", "false")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertTrue(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToFalseAndOnMajor_returnTrue() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newArchEnabled", "false")
+    project.extensions.extraProperties.set("react.newArchEnabled", "false")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertTrue(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("react.newArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newArchEnabled", "true")
+    project.extensions.extraProperties.set("react.newArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndOnMajor_returnFalse() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "1.2.3"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndNotOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newxArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "0.73.0"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndNotOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("react.newxArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "0.73.0"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndNotOnMajor_returnFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("newArchEnabled", "true")
+    project.extensions.extraProperties.set("react.newxArchEnabled", "true")
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "0.73.0"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
+  }
+
+  @Test
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndNotOnMajor_returnFalse() {
+    val project = createProject()
+    val extension = TestReactExtension(project)
+    File(tempFolder.root, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "version": "0.73.0"
+      }
+      """
+              .trimIndent())
+    }
+    extension.reactNativeDir.set(tempFolder.root)
+    assertFalse(project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension))
   }
 }

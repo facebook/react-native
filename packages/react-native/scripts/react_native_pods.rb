@@ -21,7 +21,7 @@ require_relative './cocoapods/helpers.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2022.05.16.00'
+$FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
 
@@ -109,7 +109,7 @@ def use_react_native! (
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec" if !NewArchitectureHelper.new_arch_enabled
-  pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
+  pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
@@ -155,6 +155,7 @@ def use_react_native! (
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
+  pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   run_codegen!(
@@ -273,7 +274,7 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
-  ReactNativePodsUtils.updateIphoneOSDeploymentTarget(installer)
+  ReactNativePodsUtils.updateOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
