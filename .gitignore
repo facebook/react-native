@@ -21,7 +21,6 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 **/.xcode.env.local
-/poackages/react-native/sdks/downloads/
 
 # Gradle
 /build/
@@ -135,6 +134,7 @@ package-lock.json
 
 # Additional SDKs
 /packages/react-native/sdks/download
+/packages/react-native/sdks/downloads
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
