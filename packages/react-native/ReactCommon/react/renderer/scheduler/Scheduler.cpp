@@ -18,7 +18,6 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
@@ -254,44 +253,6 @@ InspectorData Scheduler::getInspectorDataForInstance(
 void Scheduler::unregisterSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(nullptr);
-}
-
-void Scheduler::renderTemplateToSurface(
-    SurfaceId surfaceId,
-    const std::string& uiTemplate) {
-  SystraceSection s("Scheduler::renderTemplateToSurface");
-  try {
-    if (uiTemplate.empty()) {
-      return;
-    }
-    NativeModuleRegistry nMR;
-    auto tree = UITemplateProcessor::buildShadowTree(
-        uiTemplate,
-        surfaceId,
-        folly::dynamic::object(),
-        *componentDescriptorRegistry_,
-        nMR,
-        reactNativeConfig_);
-
-    uiManager_->getShadowTreeRegistry().visit(
-        surfaceId, [=](const ShadowTree& shadowTree) {
-          return shadowTree.tryCommit(
-              [&](RootShadowNode const& oldRootShadowNode) {
-                return std::make_shared<RootShadowNode>(
-                    oldRootShadowNode,
-                    ShadowNodeFragment{
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        std::make_shared<ShadowNode::ListOfShared>(
-                            ShadowNode::ListOfShared{tree}),
-                    });
-              },
-              {/* default commit options */});
-        });
-  } catch (const std::exception& e) {
-    LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
-               << "Scheduler::renderTemplateToSurface: " << e.what();
-  }
 }
 
 const ComponentDescriptor*
