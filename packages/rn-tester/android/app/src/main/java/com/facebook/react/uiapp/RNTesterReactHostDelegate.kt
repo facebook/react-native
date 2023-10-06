@@ -31,7 +31,6 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.shell.MainReactPackage
-import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uimanager.ViewManager
@@ -59,7 +58,7 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
 
   override fun handleInstanceException(error: Exception) {}
 
-  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig =
+  override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?): ReactNativeConfig =
       ReactNativeConfig.DEFAULT_CONFIG
 
   override val reactPackages: List<ReactPackage> by lazy {
