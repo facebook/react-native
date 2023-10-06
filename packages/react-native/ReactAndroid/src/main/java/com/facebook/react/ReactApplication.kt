@@ -8,7 +8,6 @@
 package com.facebook.react
 
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.interfaces.ReactHost
 
 @OptIn(UnstableReactNativeAPI::class)
 /** Interface that represents an instance of a React Native application */
