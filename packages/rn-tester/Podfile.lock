@@ -1170,7 +1170,7 @@ DEPENDENCIES:
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
-  - RCTRequired (from `../react-native/Libraries/RCTRequired`)
+  - RCTRequired (from `../react-native/Libraries/Required`)
   - RCTTypeSafety (from `../react-native/Libraries/TypeSafety`)
   - React (from `../react-native/`)
   - React-callinvoker (from `../react-native/ReactCommon/callinvoker`)
@@ -1253,7 +1253,7 @@ EXTERNAL SOURCES:
   RCT-Folly:
     :podspec: "../react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
-    :path: "../react-native/Libraries/RCTRequired"
+    :path: "../react-native/Libraries/Required"
   RCTTypeSafety:
     :path: "../react-native/Libraries/TypeSafety"
   React:
