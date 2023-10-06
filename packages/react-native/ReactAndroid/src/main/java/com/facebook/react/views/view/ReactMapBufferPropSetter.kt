@@ -364,7 +364,7 @@ object ReactMapBufferPropSetter {
             else -> throw IllegalArgumentException("Unknown key for border color: $key")
           }
       val colorValue = entry.intValue
-      setBorderColor(view, index, colorValue.takeIf { it != -1 })
+      setBorderColor(view, index, colorValue.takeIf { it != -1 } ?: 0)
     }
   }
 

@@ -224,7 +224,9 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
   }
 
-  public void setBorderColor(int position, float rgb, float alpha) {
+  public void setBorderColor(int position, int color) {
+    float rgb = (float) ((int) color & 0x00FFFFFF);
+    float alpha = (float) ((int) color >>> 24);
     this.setBorderRGB(position, rgb);
     this.setBorderAlpha(position, alpha);
     mNeedUpdatePathForBorderRadius = true;

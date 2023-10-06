@@ -204,6 +204,11 @@ import java.util.Map;
       mDefaultValue = defaultValue;
     }
 
+    public ColorPropSetter(ReactPropGroup prop, Method setter, int index, int defaultValue) {
+      super(prop, "mixed", setter, index);
+      mDefaultValue = defaultValue;
+    }
+
     @Override
     protected Object getValueOrDefault(Object value, Context context) {
       if (value == null) {
@@ -468,7 +473,11 @@ import java.util.Map;
       }
     } else if (propTypeClass == int.class) {
       for (int i = 0; i < names.length; i++) {
-        props.put(names[i], new IntPropSetter(annotation, method, i, annotation.defaultInt()));
+        if ("Color".equals(annotation.customType())) {
+          props.put(names[i], new ColorPropSetter(annotation, method, i, annotation.defaultInt()));
+        } else {
+          props.put(names[i], new IntPropSetter(annotation, method, i, annotation.defaultInt()));
+        }
       }
     } else if (propTypeClass == float.class) {
       for (int i = 0; i < names.length; i++) {
