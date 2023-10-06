@@ -30,7 +30,7 @@ version =
 group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "25.1.8937393")
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "26.0.10792818")
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
@@ -106,11 +106,11 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
       """
       ********************************************************************************
       INFO: You're using Hermes from nightly as you set
-      
+
       react.internal.useHermesNightly=true
-      
+
       in the ./gradle.properties file.
-      
+
       That's fine for local development, but you should not commit this change.
       ********************************************************************************
   """

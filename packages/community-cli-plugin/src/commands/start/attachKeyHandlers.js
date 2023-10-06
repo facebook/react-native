@@ -15,7 +15,6 @@ import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import readline from 'readline';
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
@@ -23,13 +22,11 @@ const CTRL_D = '\u0004';
 
 export default function attachKeyHandlers({
   cliConfig,
-  serverInstance,
   devServerUrl,
   messageSocket,
 }: {
   cliConfig: Config,
   devServerUrl: string,
-  serverInstance: http$Server | https$Server,
   messageSocket: $ReadOnly<{
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
@@ -39,10 +36,6 @@ export default function attachKeyHandlers({
     logger.debug('Interactive mode is not supported in this environment');
     return;
   }
-
-  readline.emitKeypressEvents(process.stdin);
-  // $FlowIgnore[prop-missing]
-  process.stdin.setRawMode(true);
 
   const execaOptions = {
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
@@ -88,16 +81,14 @@ export default function attachKeyHandlers({
       case CTRL_C:
       case CTRL_D:
         logger.info('Stopping server');
-        listener?.({pause: true});
-        serverInstance.close(() => {
-          process.emit('SIGINT');
-          process.exit();
-        });
+        keyPressHandler.stopInterceptingKeyStrokes();
+        process.emit('SIGINT');
+        process.exit();
     }
   };
 
   const keyPressHandler = new KeyPressHandler(onPress);
-  const listener = keyPressHandler.createInteractionListener();
+  keyPressHandler.createInteractionListener();
   keyPressHandler.startInterceptingKeyStrokes();
 
   logger.log(

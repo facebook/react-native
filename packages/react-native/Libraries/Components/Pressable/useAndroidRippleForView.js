@@ -53,7 +53,6 @@ export default function useAndroidRippleForView(
   return useMemo(() => {
     if (
       Platform.OS === 'android' &&
-      Platform.Version >= 21 &&
       (color != null || borderless != null || radius != null)
     ) {
       const processedColor = processColor(color);
@@ -71,7 +70,7 @@ export default function useAndroidRippleForView(
 
       return {
         viewProps:
-          foreground === true && Platform.Version >= 23
+          foreground === true
             ? {nativeForegroundAndroid: nativeRippleValue}
             : {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: PressEvent): void {

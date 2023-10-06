@@ -94,10 +94,12 @@ class AppContainer extends React.Component<Props, State> {
           this._reactDevToolsAgentListener = () =>
             this.mountReactDevToolsOverlays();
 
-          reactDevToolsHook.on(
-            'react-devtools',
-            this._reactDevToolsAgentListener,
-          );
+          if (reactDevToolsHook.on != null) {
+            reactDevToolsHook.on(
+              'react-devtools',
+              this._reactDevToolsAgentListener,
+            );
+          }
         }
       }
     }
@@ -108,7 +110,10 @@ class AppContainer extends React.Component<Props, State> {
       this._subscription.remove();
     }
 
-    if (reactDevToolsHook != null && this._reactDevToolsAgentListener != null) {
+    if (
+      reactDevToolsHook?.off != null &&
+      this._reactDevToolsAgentListener != null
+    ) {
       reactDevToolsHook.off('react-devtools', this._reactDevToolsAgentListener);
     }
   }

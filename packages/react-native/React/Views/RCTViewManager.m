@@ -15,7 +15,6 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
-#import "RCTTransformOrigin.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -121,13 +120,6 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
-
-+ (RCTTransformOrigin)RCTTransformOrigin:(id)json
-{
-  RCTTransformOrigin transformOrigin = {
-      [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
-  return transformOrigin;
-}
 
 @end
 

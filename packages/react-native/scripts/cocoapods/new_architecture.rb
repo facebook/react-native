@@ -6,13 +6,15 @@
 require 'json'
 
 class NewArchitectureHelper
-    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1"
+    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1"
 
     @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
 
     @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
     @@cplusplus_version = "c++20"
+
+    @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
         language_standard = nil
@@ -128,7 +130,7 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2022.05.16.00'
+        spec.dependency "RCT-Folly", '2023.08.07.00'
         spec.dependency "glog"
 
         if new_arch_enabled
@@ -189,6 +191,13 @@ class NewArchitectureHelper
             # We want to enforce the new architecture for 1.0.0 and greater,
             # but not for 1000 as version 1000 is currently main.
             if major > 0 && major < 1000
+                if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
+                    warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
+                                      "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
+                    Pod::UI.warn warning_message
+                    @@NewArchWarningEmitted = true
+                end
+
                 return "1"
             end
         end

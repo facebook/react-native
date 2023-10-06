@@ -51,10 +51,7 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
                                                          escapedDeviceName,
                                                          escapedAppName]];
 }
-static NSURL *getOpenUrlEndpoint(NSURL *bundleURL)
-{
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-url", getServerHost(bundleURL)]];
-}
+
 @implementation RCTInspectorDevServerHelper
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -66,27 +63,6 @@ static void sendEventToAllConnections(NSString *event)
   for (NSString *socketId in socketConnections) {
     [socketConnections[socketId] sendEventToAllConnections:event];
   }
-}
-
-+ (void)openURL:(NSString *)url withBundleURL:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
-{
-  NSURL *endpoint = getOpenUrlEndpoint(bundleURL);
-
-  NSDictionary *jsonBodyDict = @{@"url" : url};
-  NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:jsonBodyDict options:kNilOptions error:nil];
-
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:endpoint];
-  [request setHTTPMethod:@"POST"];
-  [request setHTTPBody:jsonBodyData];
-
-  [[[NSURLSession sharedSession]
-      dataTaskWithRequest:request
-        completionHandler:^(
-            __unused NSData *_Nullable data, __unused NSURLResponse *_Nullable response, NSError *_Nullable error) {
-          if (error != nullptr) {
-            RCTLogWarn(@"%@", errorMessage);
-          }
-        }] resume];
 }
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage

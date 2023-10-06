@@ -8,26 +8,30 @@
  */
 
 const getAndUpdateNightlies = require('../get-and-update-nightlies');
+const path = require('path');
+const {
+  mockPackages,
+  expectedPackages,
+} = require('./__fixtures__/get-and-update-nightlies-fixtures');
 
-const NPM_NIGHTLY_VERSION = 'published-nightly-version';
-const mockPackages = [
-  {
-    packageManifest: {name: '@react-native/packageA', version: 'local-version'},
-    packageAbsolutePath: '/some/place/packageA',
-    packageRelativePathFromRoot: './place/packageA',
-  },
-];
-
-const execMock = jest.fn();
 const writeFileSyncMock = jest.fn();
-const diffPackagesMock = jest.fn();
 const publishPackageMock = jest.fn();
+const getPackageVersionStrByTag = jest.fn();
+
+function forEachPackageThatShouldBePublished(callback) {
+  mockPackages.forEach(package => {
+    if (
+      package.packageManifest.name === 'react-native' ||
+      package.packageManifest.private ||
+      package.packageManifest.name === '@react-native/not_published'
+    ) {
+      return;
+    }
+    callback(package);
+  });
+}
 
 jest
-  .mock('shelljs', () => ({
-    exec: execMock,
-    rm: jest.fn(),
-  }))
   .mock('fs', () => ({
     writeFileSync: writeFileSyncMock,
   }))
@@ -41,97 +45,86 @@ jest
         ),
     );
   })
-  .mock('../../scm-utils', () => ({
-    restore: jest.fn(),
-  }))
   .mock('../../npm-utils', () => ({
-    getPackageVersionStrByTag: () => NPM_NIGHTLY_VERSION,
-    diffPackages: diffPackagesMock,
     publishPackage: publishPackageMock,
-    pack: jest.fn(),
+    getPackageVersionStrByTag: getPackageVersionStrByTag,
   }));
 
 describe('getAndUpdateNightlies', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    getPackageVersionStrByTag.mockImplementation(packageName => {
+      if (packageName === '@react-native/not_published') {
+        throw new Error(`Can't find package with name ${packageName}`);
+      }
+      return '';
+    });
   });
 
-  it('publishes because there are changes', () => {
+  it('Publishes the nightly version', () => {
     const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
-    publishPackageMock.mockImplementationOnce(() => ({code: 0}));
-    diffPackagesMock.mockImplementationOnce(() => 'some-file-name.js\n');
+    publishPackageMock.mockImplementation(() => ({code: 0}));
 
-    const latestNightlies = getAndUpdateNightlies(nightlyVersion);
+    const updatedPackages = getAndUpdateNightlies(nightlyVersion);
 
-    // ensure we set the version of the last published nightly (for diffing)
-    expect(writeFileSyncMock.mock.calls[0][1]).toBe(
-      '{\n  "name": "@react-native/packageA",\n  "version": "published-nightly-version"\n}\n',
-    );
-
-    expect(diffPackagesMock).toBeCalledWith(
-      '@react-native/packageA@nightly',
-      'react-native-packageA-published-nightly-version.tgz',
-      {
-        cwd: '/some/place/packageA',
-      },
-    );
-
-    // when determining that we DO want to publish, ensure we update the version to the provded nightly version we want to use
-    expect(writeFileSyncMock.mock.calls[1][1]).toBe(
-      `{\n  "name": "@react-native/packageA",\n  "version": "${nightlyVersion}"\n}\n`,
-    );
-
-    expect(publishPackageMock).toBeCalled();
-
-    // Expect the map returned to accurately list the latest nightly version
-    expect(latestNightlies).toEqual({
-      '@react-native/packageA': '0.73.0-nightly-202108-shortcommit',
-    });
-  });
-  describe('fails to publish', () => {
-    let consoleError;
-    beforeEach(() => {
-      consoleError = console.error;
-      console.error = jest.fn();
+    expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(writeFileSyncMock).toHaveBeenCalledWith(
+        path.join(package.packageAbsolutePath, 'package.json'),
+        JSON.stringify(
+          expectedPackages[package.packageManifest.name](nightlyVersion),
+          null,
+          2,
+        ) + '\n',
+        'utf-8',
+      );
     });
 
-    afterEach(() => {
-      console.error = consoleError;
+    expect(publishPackageMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(publishPackageMock).toHaveBeenCalledWith(
+        package.packageAbsolutePath,
+        {otp: undefined, tag: 'nightly'},
+      );
     });
 
-    it('doesnt update nightly version when fails to publish', () => {
-      const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
-      publishPackageMock.mockImplementationOnce(() => ({
-        code: 1,
-        stderr: 'Some error about it failing to publish',
-      }));
-      diffPackagesMock.mockImplementationOnce(() => 'some-file-name.js\n');
-
-      const latestNightlies = getAndUpdateNightlies(nightlyVersion);
-
-      // Expect the map returned to accurately list the latest nightly version
-      expect(latestNightlies).toEqual({});
+    let expectedResult = {};
+    forEachPackageThatShouldBePublished(package => {
+      expectedResult[package.packageManifest.name] =
+        package.packageManifest.version;
     });
+    expect(updatedPackages).toEqual(expectedResult);
   });
 
-  it('doesnt publish because no changes', () => {
+  it('Throws when a package fails to publish', () => {
     const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
-    diffPackagesMock.mockImplementationOnce(() => '\n');
-
-    const latestNightlies = getAndUpdateNightlies(nightlyVersion);
-
-    expect(writeFileSyncMock.mock.calls[0][1]).toBe(
-      '{\n  "name": "@react-native/packageA",\n  "version": "published-nightly-version"\n}\n',
-    );
-
-    // in this test, we expect there to be no differences between last published nightly and local
-    // so we never update the version and we don't publish
-    expect(writeFileSyncMock.mock.calls.length).toBe(1);
-    expect(publishPackageMock).not.toBeCalled();
-
-    // Since we don't update, we expect the map to list the latest nightly on npm
-    expect(latestNightlies).toEqual({
-      '@react-native/packageA': 'published-nightly-version',
+    let publishCalls = 0;
+    publishPackageMock.mockImplementation(() => {
+      publishCalls += 1;
+      if (publishCalls === 3) {
+        return {code: -1};
+      }
+      return {code: 0};
     });
+
+    expect(() => {
+      getAndUpdateNightlies(nightlyVersion);
+    }).toThrow();
+
+    expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(writeFileSyncMock).toHaveBeenCalledWith(
+        path.join(package.packageAbsolutePath, 'package.json'),
+        JSON.stringify(
+          expectedPackages[package.packageManifest.name](nightlyVersion),
+          null,
+          2,
+        ) + '\n',
+        'utf-8',
+      );
+    });
+
+    expect(publishPackageMock).toHaveBeenCalledTimes(3);
   });
 });

@@ -21,8 +21,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  <T extends View> int addRootView(
-      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+  <T extends View> int addRootView(final T rootView, WritableMap initialProps);
 
   /** Registers a new root view with width and height. */
   @AnyThread

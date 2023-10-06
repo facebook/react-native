@@ -25,9 +25,6 @@ public interface ReactRoot {
   @Nullable
   Bundle getAppProperties();
 
-  @Nullable
-  String getInitialUITemplate();
-
   String getJSModuleName();
 
   /** Fabric or Default UI Manager, see {@link UIManagerType} */

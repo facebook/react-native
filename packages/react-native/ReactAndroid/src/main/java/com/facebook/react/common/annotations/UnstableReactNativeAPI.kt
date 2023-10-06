@@ -8,7 +8,7 @@
 package com.facebook.react.common.annotations
 
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,
     message = "This API is experimental and is likely to change or to be removed in the future")

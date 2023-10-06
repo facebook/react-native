@@ -327,25 +327,28 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  // Semantic: Clones the node with *same* props and *empty* children.
+  // Semantic: Clones the node with *same* props and *given* children.
   if (methodName == "cloneNodeWithNewChildren") {
-    auto paramCount = 1;
+    auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         paramCount,
-        [uiManager, methodName, paramCount](
+        [uiManager, methodName](
             jsi::Runtime& runtime,
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
             size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+          // TODO: re-enable when passChildrenWhenCloningPersistedNodes is
+          // rolled out
+          // validateArgumentCount(runtime, methodName, paramCount, count);
 
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
-                  ShadowNode::emptySharedShadowNodeSharedList()));
+                  count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
+                            : ShadowNode::emptySharedShadowNodeSharedList()));
         });
   }
 
@@ -363,7 +366,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          const auto& rawProps = RawProps(runtime, arguments[1]);
+          RawProps rawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -373,26 +376,31 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  // Semantic: Clones the node with *given* props and *empty* children.
+  // Semantic: Clones the node with *given* props and *given* children.
   if (methodName == "cloneNodeWithNewChildrenAndProps") {
-    auto paramCount = 2;
+    auto paramCount = 3;
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         paramCount,
-        [uiManager, methodName, paramCount](
+        [uiManager, methodName](
             jsi::Runtime& runtime,
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
             size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+          // TODO: re-enable when passChildrenWhenCloningPersistedNodes is
+          // rolled out
+          // validateArgumentCount(runtime, methodName, paramCount, count);
 
-          const auto& rawProps = RawProps(runtime, arguments[1]);
+          bool hasChildrenArg = count == 3;
+          RawProps rawProps(runtime, arguments[hasChildrenArg ? 2 : 1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
-                  ShadowNode::emptySharedShadowNodeSharedList(),
+                  hasChildrenArg
+                      ? shadowNodeListFromValue(runtime, arguments[1])
+                      : ShadowNode::emptySharedShadowNodeSharedList(),
                   &rawProps));
         });
   }
@@ -417,6 +425,7 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  // TODO: remove when passChildrenWhenCloningPersistedNodes is rolled out
   if (methodName == "createChildSet") {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -432,6 +441,7 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  // TODO: remove when passChildrenWhenCloningPersistedNodes is rolled out
   if (methodName == "appendChildToSet") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
@@ -475,17 +485,13 @@ jsi::Value UIManagerBinding::get(
           if (!uiManager->backgroundExecutor_ ||
               (runtimeSchedulerBinding &&
                runtimeSchedulerBinding->getIsSynchronous())) {
-            auto weakShadowNodeList =
-                weakShadowNodeListFromValue(runtime, arguments[1]);
             auto shadowNodeList =
-                shadowNodeListFromWeakList(weakShadowNodeList);
-            if (shadowNodeList) {
-              uiManager->completeSurface(
-                  surfaceId,
-                  shadowNodeList,
-                  {/* .enableStateReconciliation = */ true,
-                   /* .mountSynchronously = */ false});
-            }
+                shadowNodeListFromValue(runtime, arguments[1]);
+            uiManager->completeSurface(
+                surfaceId,
+                shadowNodeList,
+                {/* .enableStateReconciliation = */ true,
+                 /* .mountSynchronously = */ false});
           } else {
             auto weakShadowNodeList =
                 weakShadowNodeListFromValue(runtime, arguments[1]);

@@ -19,6 +19,7 @@ import * as React from 'react';
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
 const SectionListWithEventThrottle = React.forwardRef(
+  // $FlowFixMe[incompatible-call]
   (
     props: React.ElementConfig<typeof SectionList>,
     ref:

@@ -81,10 +81,6 @@ function publishNpm(buildType) {
 
   generateAndroidArtifacts(version);
 
-  // Write version number to the build folder
-  const versionFile = path.join('build', '.version');
-  fs.writeFileSync(versionFile, version);
-
   if (buildType === 'dry-run') {
     echo('Skipping `npm publish` because --dry-run is set.');
     return exit(0);

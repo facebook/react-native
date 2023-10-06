@@ -10,7 +10,7 @@ package com.facebook.react.runtime.internal.bolts;
 import androidx.annotation.Nullable;
 
 /** Used to signify that a Task's error went unobserved. */
-public class UnobservedTaskException extends RuntimeException {
+class UnobservedTaskException extends RuntimeException {
   public UnobservedTaskException(@Nullable Throwable cause) {
     super(cause);
   }

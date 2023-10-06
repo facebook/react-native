@@ -21,7 +21,7 @@ require_relative './cocoapods/helpers.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2022.05.16.00'
+$FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
 
@@ -155,6 +155,7 @@ def use_react_native! (
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
+  pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
   run_codegen!(
