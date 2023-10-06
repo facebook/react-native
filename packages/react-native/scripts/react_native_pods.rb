@@ -109,7 +109,7 @@ def use_react_native! (
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec" if !NewArchitectureHelper.new_arch_enabled
-  pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
+  pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/"
