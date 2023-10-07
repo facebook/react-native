@@ -338,7 +338,7 @@ module.exports = {
   },
 
   /**
-   * Creates a StyleSheet style reference from the given object.
+   * An identity function for creating style sheets.
    */
   // $FlowFixMe[unsupported-variance-annotation]
   create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
