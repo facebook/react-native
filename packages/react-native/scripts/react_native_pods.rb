@@ -264,7 +264,6 @@ def react_native_post_install(
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
-    ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
