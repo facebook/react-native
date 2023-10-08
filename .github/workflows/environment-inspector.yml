@@ -4,7 +4,7 @@ name: Get Environment Info from Issue Template
 
 on:
   issues:
-    ['opened', 'edited']
+    types: ['opened', 'edited']
 
 jobs:
   inspector:
