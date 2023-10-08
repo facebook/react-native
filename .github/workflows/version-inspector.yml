@@ -1,6 +1,6 @@
 # This Workflow will get triggered when an issue opened or edited. This will check for React Native Info updates.
 
-name: Get Environment Info from Issue Template
+name: Get Version Info from Issue Template
 
 on:
   issues:
@@ -19,5 +19,5 @@ jobs:
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
             script: |
-              const environmentInspector = require('./.github/workflow-scripts/environmentInspector.js')
-              await environmentInspector(github, context)
+              const versionInspector = require('./.github/workflow-scripts/version.js')
+              await versionInspector(github, context)
