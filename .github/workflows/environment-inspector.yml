@@ -1,0 +1,23 @@
+# This Workflow will get triggered when an issue opened or edited. This will check for React Native Info updates.
+
+name: Get Environment Info from Issue Template
+
+on:
+  issues:
+    ['opened', 'edited']
+
+jobs:
+  inspector:
+    name: Inspect React Native Info 
+    runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v6
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const environmentInspector = require('./.github/workflow-scripts/environmentInspector.js')
+              await environmentInspector(github, context)
