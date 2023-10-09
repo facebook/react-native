@@ -33,11 +33,7 @@ public interface NativeModule {
   @Nonnull
   String getName();
 
-  /**
-   * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()} after
-   * the CatalystInstance has been created, in order to initialize NativeModules that require the
-   * CatalystInstance or JS modules.
-   */
+  /** This method is called after {@link ReactApplicationContext} has been created. */
   void initialize();
 
   /**
@@ -54,9 +50,9 @@ public interface NativeModule {
    *
    * @deprecated use {@link #invalidate()} instead.
    */
-  @Deprecated
+  @Deprecated(since = "Use invalidate method instead", forRemoval = true)
   void onCatalystInstanceDestroy();
 
-  /** Allow NativeModule to clean up. Called before {CatalystInstance#onHostDestroy} */
+  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
   void invalidate();
 }
