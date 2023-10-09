@@ -20,10 +20,8 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This is part of the glue which wraps a java BaseJavaModule in a C++ NativeModule. This could all
@@ -44,7 +42,6 @@ class JavaModuleWrapper {
   private final ModuleHolder mModuleHolder;
   private final ArrayList<NativeModule.NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
-  private static final String TAG = JavaModuleWrapper.class.getSimpleName();
 
   public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {
     mJSInstance = jsInstance;
@@ -66,7 +63,6 @@ class JavaModuleWrapper {
   @DoNotStrip
   private void findMethods() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
-    Set<String> methodNames = new HashSet<>();
 
     Class<? extends NativeModule> classForMethods = mModuleHolder.getModule().getClass();
     Class<? extends NativeModule> superClass =
@@ -83,12 +79,6 @@ class JavaModuleWrapper {
       ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
       if (annotation != null) {
         String methodName = targetMethod.getName();
-        if (methodNames.contains(methodName)) {
-          // We do not support method overloading since js sees a function as an object regardless
-          // of number of params.
-          throw new IllegalArgumentException(
-              "Java Module " + getName() + " method name already registered: " + methodName);
-        }
         MethodDescriptor md = new MethodDescriptor();
         JavaMethodWrapper method =
             new JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod());
