@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import javax.annotation.Nonnull;
 
 /**
@@ -45,6 +46,7 @@ public interface NativeModule {
    * this method is considered an error and will throw an exception during initialization. By
    * default all modules return false.
    */
+  @DeprecatedInNewArchitecture()
   boolean canOverrideExistingModule();
 
   /**
