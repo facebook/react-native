@@ -72,7 +72,7 @@ bool getFeatureFlagBoolValue(const char *name) {
     return reactFeatureFlagsClass->getStaticFieldValue(field);
 }
 
-bool isSavePromiseJSInvocationStackEnabled() {
+bool traceTurboModulePromiseRejections() {
   static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
   static bool isDebugMode = getReactBuildConfigBoolValue("DEBUG");
   return isDebugMode || savePromiseJSInvocationStack;
@@ -930,7 +930,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
             // JS Stack at the time when the promise is created.
             std::optional<std::string> jsInvocationStack;
-            if (isSavePromiseJSInvocationStackEnabled()) {
+            if (traceTurboModulePromiseRejections()) {
                 jsInvocationStack = createJSRuntimeError(runtime, "")
                   .asObject(runtime)
                   .getProperty(runtime, "stack")
