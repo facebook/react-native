@@ -97,12 +97,6 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
-static BOOL turboModuleEagerInitEnabled = NO;
-BOOL RCTTurboModuleEagerInitEnabled(void)
-{
-  return turboModuleEagerInitEnabled;
-}
-
 static BOOL traceTurboModulePromiseRejections = NO;
 BOOL RCTTraceTurboModulePromiseRejections(void)
 {
@@ -112,23 +106,6 @@ BOOL RCTTraceTurboModulePromiseRejections(void)
 void RCTEnableTraceTurboModulePromiseRejections(BOOL enabled)
 {
   traceTurboModulePromiseRejections = enabled;
-}
-
-void RCTEnableTurboModuleEagerInit(BOOL enabled)
-{
-  turboModuleEagerInitEnabled = enabled;
-}
-
-// Turn off TurboModule delegate locking
-static BOOL turboModuleManagerDelegateLockingDisabled = YES;
-BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
-{
-  return turboModuleManagerDelegateLockingDisabled;
-}
-
-void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
-{
-  turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
 static BOOL turboModuleInteropEnabled = NO;
