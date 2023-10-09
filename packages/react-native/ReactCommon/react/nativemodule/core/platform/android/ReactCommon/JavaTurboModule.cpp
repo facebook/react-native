@@ -56,17 +56,26 @@ JavaTurboModule::~JavaTurboModule() {
 
 namespace {
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
+constexpr auto kReactBuildConfigJavaDescriptor = "com/facebook/react/common/build/ReactBuildConfig";
 
-static bool getFeatureFlagBoolValue(const char *name) {
+bool getReactBuildConfigBoolValue(const char *name) {
+    static const auto reactBuildConfigClass = facebook::jni::findClassStatic(kReactBuildConfigJavaDescriptor);
+    const auto field = reactBuildConfigClass->getStaticField<jboolean>(name);
+    return reactBuildConfigClass->getStaticFieldValue(field);
+}
+
+constexpr auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
+
+bool getFeatureFlagBoolValue(const char *name) {
     static const auto reactFeatureFlagsClass = facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
     const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
     return reactFeatureFlagsClass->getStaticFieldValue(field);
 }
 
-static bool isSavePromiseJSInvocationStackEnabled() {
+bool isSavePromiseJSInvocationStackEnabled() {
   static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
-  return savePromiseJSInvocationStack;
+  static bool isDebugMode = getReactBuildConfigBoolValue("DEBUG");
+  return isDebugMode || savePromiseJSInvocationStack;
 }
 
 struct JNIArgs {
