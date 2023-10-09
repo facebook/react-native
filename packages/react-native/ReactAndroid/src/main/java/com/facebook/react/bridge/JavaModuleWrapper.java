@@ -33,7 +33,7 @@ import java.util.Set;
 @DoNotStrip
 class JavaModuleWrapper {
   @DoNotStrip
-  public class MethodDescriptor {
+  public static class MethodDescriptor {
     @DoNotStrip Method method;
     @DoNotStrip String signature;
     @DoNotStrip String name;
@@ -50,7 +50,7 @@ class JavaModuleWrapper {
     mJSInstance = jsInstance;
     mModuleHolder = moduleHolder;
     mMethods = new ArrayList<>();
-    mDescs = new ArrayList();
+    mDescs = new ArrayList<>();
   }
 
   @DoNotStrip
@@ -94,7 +94,7 @@ class JavaModuleWrapper {
             new JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod());
         md.name = methodName;
         md.type = method.getType();
-        if (md.type == BaseJavaModule.METHOD_TYPE_SYNC) {
+        if (BaseJavaModule.METHOD_TYPE_SYNC.equals(md.type)) {
           md.signature = method.getSignature();
           md.method = targetMethod;
         }
@@ -142,7 +142,7 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   public void invoke(int methodId, ReadableNativeArray parameters) {
-    if (mMethods == null || methodId >= mMethods.size()) {
+    if (methodId >= mMethods.size()) {
       return;
     }
 

@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
  */
 @DoNotStrip
 public interface NativeModule {
+
+  @DeprecatedInNewArchitecture
   interface NativeMethod {
     void invoke(JSInstance jsInstance, ReadableArray parameters);
 
