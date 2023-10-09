@@ -23,7 +23,7 @@ let capabilities: Capabilities;
 
 const android = {
   platformName: 'Android',
-  'appium:platformVersion': '13.0',
+  'appium:platformVersion': '14.0',
   'appium:deviceName': 'Android Emulator',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
   'appium:automationName': 'UiAutomator2',

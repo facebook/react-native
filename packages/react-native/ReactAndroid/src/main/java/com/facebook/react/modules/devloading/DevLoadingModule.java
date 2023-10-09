@@ -46,7 +46,9 @@ public class DevLoadingModule extends NativeDevLoadingViewSpec {
         new Runnable() {
           @Override
           public void run() {
-            mDevLoadingViewManager.showMessage(message);
+            if (mDevLoadingViewManager != null) {
+              mDevLoadingViewManager.showMessage(message);
+            }
           }
         });
   }

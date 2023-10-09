@@ -6,14 +6,15 @@
  */
 
 #include "BaseViewEventEmitter.h"
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 #pragma mark - Accessibility
 
 void BaseViewEventEmitter::onAccessibilityAction(
-    std::string const &name) const {
-  dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
+    const std::string& name) const {
+  dispatchEvent("accessibilityAction", [name](jsi::Runtime& runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "actionName", name);
     return payload;
@@ -34,7 +35,7 @@ void BaseViewEventEmitter::onAccessibilityEscape() const {
 
 #pragma mark - Layout
 
-void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
+void BaseViewEventEmitter::onLayout(const LayoutMetrics& layoutMetrics) const {
   // A copy of a shared pointer (`layoutEventState_`) establishes shared
   // ownership that will be captured by lambda.
   auto layoutEventState = layoutEventState_;
@@ -55,7 +56,7 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
   //  - Ordering is preserved.
 
   {
-    std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+    std::scoped_lock guard(layoutEventState->mutex);
 
     // If a *particular* `frame` was already dispatched to the JavaScript side,
     // no other work is required.
@@ -81,11 +82,11 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
 
   dispatchEvent(
       "layout",
-      [layoutEventState](jsi::Runtime &runtime) {
+      [layoutEventState](jsi::Runtime& runtime) {
         auto frame = Rect{};
 
         {
-          std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+          std::scoped_lock guard(layoutEventState->mutex);
 
           layoutEventState->isDispatching = false;
 
@@ -112,7 +113,9 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
         payload.setProperty(runtime, "layout", std::move(layout));
         return jsi::Value(std::move(payload));
       },
-      EventPriority::AsynchronousUnbatched);
+      CoreFeatures::enableDefaultAsyncBatchedPriority
+          ? EventPriority::AsynchronousBatched
+          : EventPriority::AsynchronousUnbatched);
 }
 
 } // namespace facebook::react

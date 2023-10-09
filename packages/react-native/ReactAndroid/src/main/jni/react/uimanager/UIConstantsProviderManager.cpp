@@ -12,7 +12,7 @@
 #include <jsi/jsi.h>
 #include <react/jni/NativeMap.h>
 
-#include <react/bridgeless/nativeviewconfig/LegacyUIManagerConstantsProviderBinding.h>
+#include <react/runtime/nativeviewconfig/LegacyUIManagerConstantsProviderBinding.h>
 #include "UIConstantsProviderManager.h"
 
 namespace facebook::react {
@@ -45,7 +45,7 @@ void UIConstantsProviderManager::registerNatives() {
 }
 
 void UIConstantsProviderManager::installJSIBindings() {
-  runtimeExecutor_([thizz = this](jsi::Runtime &runtime) {
+  runtimeExecutor_([thizz = this](jsi::Runtime& runtime) {
     auto uiConstantsProvider = [thizz, &runtime]() -> jsi::Value {
       static auto getConstants =
           jni::findClassStatic(

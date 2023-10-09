@@ -16,7 +16,7 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, pushd, popd, pwd, cd} = require('shelljs');
+const {exec, pushd, popd, pwd, cd, sed} = require('shelljs');
 const updateTemplatePackage = require('./update-template-package');
 const yargs = require('yargs');
 const path = require('path');
@@ -249,8 +249,18 @@ async function testRNTestProject(circleCIArtifacts) {
 
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "REACT_NATIVE_MAVEN_LOCAL_REPO=${mavenLocalPath}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
   );
+
+  // Update gradle properties to set Hermes as false
+  if (!argv.hermes) {
+    sed(
+      '-i',
+      'hermesEnabled=true',
+      'hermesEnabled=false',
+      'android/gradle.properties',
+    );
+  }
 
   // doing the pod install here so that it's easier to play around RNTestProject
   cd('ios');

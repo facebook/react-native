@@ -24,7 +24,7 @@ namespace facebook::react {
 class ComponentDescriptorParameters;
 class ComponentDescriptor;
 
-using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
+using SharedComponentDescriptor = std::shared_ptr<const ComponentDescriptor>;
 
 /*
  * Abstract class defining an interface of `ComponentDescriptor`.
@@ -34,8 +34,8 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
  */
 class ComponentDescriptor {
  public:
-  using Shared = std::shared_ptr<ComponentDescriptor const>;
-  using Unique = std::unique_ptr<ComponentDescriptor const>;
+  using Shared = std::shared_ptr<const ComponentDescriptor>;
+  using Unique = std::unique_ptr<const ComponentDescriptor>;
 
   /*
    * `Flavor` is a special concept designed to allow registering instances of
@@ -46,16 +46,16 @@ class ComponentDescriptor {
    * an interoperability layer with old renderer), we are thinking about
    * removing this feature completely after it's no longer needed.
    */
-  using Flavor = std::shared_ptr<void const>;
+  using Flavor = std::shared_ptr<const void>;
 
-  ComponentDescriptor(ComponentDescriptorParameters const &parameters);
+  ComponentDescriptor(const ComponentDescriptorParameters& parameters);
 
   virtual ~ComponentDescriptor() = default;
 
   /*
    * Returns stored instance of `ContextContainer`.
    */
-  ContextContainer::Shared const &getContextContainer() const;
+  const ContextContainer::Shared& getContextContainer() const;
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
@@ -79,22 +79,22 @@ class ComponentDescriptor {
    * Creates a new `ShadowNode` of a particular component type.
    */
   virtual ShadowNode::Shared createShadowNode(
-      const ShadowNodeFragment &fragment,
-      ShadowNodeFamily::Shared const &family) const = 0;
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
   virtual ShadowNode::Unshared cloneShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment) const = 0;
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const = 0;
 
   /*
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-      const ShadowNode::Shared &parentShadowNode,
-      const ShadowNode::Shared &childShadowNode) const = 0;
+      const ShadowNode::Shared& parentShadowNode,
+      const ShadowNode::Shared& childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from
@@ -104,43 +104,60 @@ class ComponentDescriptor {
    * Must return an object which is NOT pointer equal to `props`.
    */
   virtual Props::Shared cloneProps(
-      const PropsParserContext &context,
-      const Props::Shared &props,
-      const RawProps &rawProps) const = 0;
+      const PropsParserContext& context,
+      const Props::Shared& props,
+      const RawProps& rawProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      Props::Shared const &props,
-      ShadowNodeFamily::Shared const &family) const = 0;
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
    * State's data.
    */
   virtual State::Shared createState(
-      ShadowNodeFamily const &family,
-      const StateData::Shared &data) const = 0;
+      const ShadowNodeFamily& family,
+      const StateData::Shared& data) const = 0;
 
   /*
    * Creates a shadow node family for particular node.
    */
   virtual ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment) const = 0;
+      const ShadowNodeFamilyFragment& fragment) const = 0;
 
   /*
    * Creates an event emitter for particular node.
    */
   virtual SharedEventEmitter createEventEmitter(
-      InstanceHandle::Shared const &instanceHandle) const = 0;
+      const InstanceHandle::Shared& instanceHandle) const = 0;
 
  protected:
+  friend ShadowNode;
+
   EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
   Flavor flavor_;
+
+  /*
+   * Called immediately after `ShadowNode` is created, cloned or state is
+   * progressed using clonesless state progression (not fully shipped yet).
+   *
+   * Override this method to pass information from custom `ComponentDescriptor`
+   * to new instance of `ShadowNode`.
+   *
+   * Example usages:
+   *   - Inject image manager to `ImageShadowNode` in
+   * `ImageComponentDescriptor`.
+   *   - Set `ShadowNode`'s size from state in
+   * `ModalHostViewComponentDescriptor`.
+   */
+  virtual void adopt(ShadowNode& shadowNode) const = 0;
 };
 
 /*

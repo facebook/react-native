@@ -7,4 +7,4 @@
 
 package com.facebook.react.model
 
-data class ModelPackageJson(val codegenConfig: ModelCodegenConfig?)
+data class ModelPackageJson(val version: String, val codegenConfig: ModelCodegenConfig?)

@@ -8,6 +8,7 @@
 package com.facebook.react.utils
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import org.gradle.api.Action
@@ -17,13 +18,15 @@ import org.gradle.api.plugins.AppliedPlugin
 @Suppress("UnstableApiUsage")
 internal object AgpConfiguratorUtils {
 
-  fun configureBuildConfigFields(project: Project) {
+  fun configureBuildConfigFields(project: Project, extension: ReactExtension) {
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
             ext.buildFeatures.buildConfig = true
             ext.defaultConfig.buildConfigField(
-                "boolean", "IS_NEW_ARCHITECTURE_ENABLED", project.isNewArchEnabled.toString())
+                "boolean",
+                "IS_NEW_ARCHITECTURE_ENABLED",
+                project.isNewArchEnabled(extension).toString())
             ext.defaultConfig.buildConfigField(
                 "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
           }

@@ -24,6 +24,8 @@ const config = {
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
     path.resolve(__dirname, '../assets'),
+    path.resolve(__dirname, '../community-cli-plugin'),
+    path.resolve(__dirname, '../dev-middleware'),
     path.resolve(__dirname, '../normalize-color'),
     path.resolve(__dirname, '../polyfills'),
     path.resolve(__dirname, '../react-native'),

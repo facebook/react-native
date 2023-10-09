@@ -1,0 +1,10 @@
+@generated SignedSource<<7fdc9e65be03ba4c6654f14c6f23d645>>
+Git revision: 18f202a1ae468a01afb44ffd2f71d28023126989
+Built with --nohooks: false
+Is local checkout: false
+Remote URL: https://github.com/motiz88/rn-chrome-devtools-frontend
+Remote branch: rn-0.73-chromium-5845
+GN build args (overrides only): 
+  is_official_build = true
+Git status in checkout:
+  <no changes>

@@ -10,9 +10,9 @@
 namespace facebook::react {
 
 void setTouchPayloadOnObject(
-    jsi::Object &object,
-    jsi::Runtime &runtime,
-    BaseTouch const &touch) {
+    jsi::Object& object,
+    jsi::Runtime& runtime,
+    const BaseTouch& touch) {
   object.setProperty(runtime, "locationX", touch.offsetPoint.x);
   object.setProperty(runtime, "locationY", touch.offsetPoint.y);
   object.setProperty(runtime, "pageX", touch.pagePoint.x);
@@ -27,12 +27,12 @@ void setTouchPayloadOnObject(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(BaseTouch const & /*touch*/) {
+std::string getDebugName(const BaseTouch& /*touch*/) {
   return "Touch";
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    BaseTouch const &touch,
+    const BaseTouch& touch,
     DebugStringConvertibleOptions options) {
   return {
       {"pagePoint", getDebugDescription(touch.pagePoint, options)},

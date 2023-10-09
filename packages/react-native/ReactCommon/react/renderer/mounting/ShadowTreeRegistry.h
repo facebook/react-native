@@ -8,8 +8,7 @@
 #pragma once
 
 #include <shared_mutex>
-
-#include <butter/map.h>
+#include <unordered_map>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowTree.h>
@@ -29,7 +28,7 @@ class ShadowTreeRegistry final {
    * The ownership of the instance is also transferred to the registry.
    * Can be called from any thread.
    */
-  void add(std::unique_ptr<ShadowTree> &&shadowTree) const;
+  void add(std::unique_ptr<ShadowTree>&& shadowTree) const;
 
   /*
    * Removes a `ShadowTree` instance with given `surfaceId` from the registry
@@ -50,7 +49,7 @@ class ShadowTreeRegistry final {
    */
   bool visit(
       SurfaceId surfaceId,
-      std::function<void(const ShadowTree &shadowTree)> const &callback) const;
+      const std::function<void(const ShadowTree& shadowTree)>& callback) const;
 
   /*
    * Enumerates all stored shadow trees.
@@ -58,12 +57,12 @@ class ShadowTreeRegistry final {
    * Can be called from any thread.
    */
   void enumerate(
-      std::function<void(const ShadowTree &shadowTree, bool &stop)> const
-          &callback) const;
+      const std::function<void(const ShadowTree& shadowTree, bool& stop)>&
+          callback) const;
 
  private:
   mutable std::shared_mutex mutex_;
-  mutable butter::map<SurfaceId, std::unique_ptr<ShadowTree>>
+  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };
 

@@ -21,14 +21,8 @@ end
 #
 # @parameter react_native_path: relative path to react-native
 # @parameter fabric_enabled: whether Fabirc is enabled
-def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enabled: false)
-    # The following captures the output of prepare_hermes for use in tests
-    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
+def setup_hermes!(react_native_path: "../node_modules/react-native")
     react_native_dir = Pod::Config.instance.installation_root.join(react_native_path)
-    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
-    prep_output.split("\n").each { |line| Pod::UI.info line }
-    abort unless prep_status == 0
-
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
     # This `:tag => hermestag` below is only to tell CocoaPods to update hermes-engine when React Native version changes.
     # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*

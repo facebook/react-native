@@ -35,6 +35,16 @@ module.exports = {
       },
     },
     {
+      files: ['package.json'],
+      parser: 'jsonc-eslint-parser',
+    },
+    {
+      files: ['package.json'],
+      rules: {
+        'lint/react-native-manifest': 2,
+      },
+    },
+    {
       files: ['flow-typed/**/*.js'],
       rules: {
         'lint/valid-flow-typed-signature': 2,

@@ -32,11 +32,11 @@ export interface PixelRatioStatic {
           used to calculate the absolute font size, so any elements that
           heavily depend on that should use this to do calculations.
 
-          If a font scale is not set, this returns the device pixel ratio.
+          * on Android value reflects the user preference set in Settings > Display > Font size
+          * on iOS value reflects the user preference set in Settings > Display & Brightness > Text Size,
+            value can also be updated in Settings > Accessibility > Display & Text Size > Larger Text
 
-          Currently this is only implemented on Android and reflects the user
-          preference set in Settings > Display > Font size,
-          on iOS it will always return the default pixel ratio.
+          If a font scale is not set, this returns the device pixel ratio.
           */
   getFontScale(): number;
 

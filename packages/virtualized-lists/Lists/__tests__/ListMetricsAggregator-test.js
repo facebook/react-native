@@ -712,4 +712,395 @@ describe('ListMetricsAggregator', () => {
       offset: 30,
     });
   });
+
+  it('resolves metrics of unmounted cell after list shift when using bottom-up layout propagation', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: true};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 5,
+        width: 10,
+        x: 90,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 5,
+        width: 20,
+        x: 70,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: true,
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 2,
+      cellKey: '2',
+      orientation,
+      layout: {
+        height: 5,
+        width: 20,
+        x: 50,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 120, height: 5},
+      orientation,
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: true,
+    });
+
+    listMetrics.notifyCellUnmounted('1');
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: false,
+    });
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: false,
+    });
+  });
+
+  it('resolves metrics of unmounted cell after list shift when using top-down layout propagation', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: true};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 5,
+        width: 10,
+        x: 90,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 5,
+        width: 20,
+        x: 70,
+        y: 0,
+      },
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: true,
+    });
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 120, height: 5},
+      orientation,
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 2,
+      cellKey: '2',
+      orientation,
+      layout: {
+        height: 5,
+        width: 20,
+        x: 50,
+        y: 0,
+      },
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: true,
+    });
+
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: true,
+    });
+
+    listMetrics.notifyCellUnmounted('1');
+
+    expect(listMetrics.getCellMetrics(1, props)).toEqual({
+      index: 1,
+      length: 20,
+      offset: 10,
+      isMounted: false,
+    });
+  });
+
+  it('resolves integral offset of already measured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(1, props)).toEqual(10);
+  });
+
+  it('estimates integral offset of unmeasured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(2, props)).toEqual(30);
+  });
+
+  it('resolves fractional offset of already measured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(1.5, props)).toEqual(20);
+  });
+
+  it('estimates fractional offset of unmeasured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(2.5, props)).toEqual(37.5);
+  });
+
+  it('remembers most recent content length', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+
+    expect(listMetrics.hasContentLength()).toBe(false);
+    expect(listMetrics.getContentLength()).toBe(0);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 10, width: 20},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(10);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 15, width: 25},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(15);
+  });
+
+  it('remembers most recent horizontal content length', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: false};
+
+    expect(listMetrics.hasContentLength()).toBe(false);
+    expect(listMetrics.getContentLength()).toBe(0);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 10, width: 20},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(20);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 15, width: 25},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(25);
+  });
+
+  it('requires contentLength to resolve RTL metrics', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: true};
+
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    expect(() => listMetrics.getCellMetrics(0, props)).toThrow();
+  });
 });

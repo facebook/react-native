@@ -23,7 +23,7 @@ typedef void (*WarnOnUsageLogger)(std::string message);
 
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
-    const folly::dynamic &callbackId);
+    const folly::dynamic& callbackId);
 
 class RN_EXPORT CxxNativeModule : public NativeModule {
  public:
@@ -41,11 +41,11 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   std::string getSyncMethodName(unsigned int methodId) override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId)
       override;
   MethodCallResult callSerializableNativeHook(
       unsigned int hookId,
-      folly::dynamic &&args) override;
+      folly::dynamic&& args) override;
 
   static void setShouldWarnOnUse(bool value);
 
@@ -59,8 +59,8 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   std::unique_ptr<xplat::module::CxxModule> module_;
   std::vector<xplat::module::CxxModule::Method> methods_;
   void emitWarnIfWarnOnUsage(
-      const std::string &method_name,
-      const std::string &module_name);
+      const std::string& method_name,
+      const std::string& module_name);
 
   static bool shouldWarnOnUse_;
 };

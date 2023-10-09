@@ -99,10 +99,6 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
-  CxxNativeModule::setShouldWarnOnUse(true);
-}
-
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -140,13 +136,10 @@ void CatalystInstanceImpl::registerNatives() {
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
-      makeNativeMethod(
-          "warnOnLegacyNativeModuleSystemUse",
-          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 }
 
-void log(ReactNativeLogLevel level, const char *message) {
+void log(ReactNativeLogLevel level, const char* message) {
   switch (level) {
     case ReactNativeLogLevelInfo:
       LOG(INFO) << message;
@@ -169,7 +162,7 @@ void log(ReactNativeLogLevel level, const char *message) {
 void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<ReactCallback::javaobject> callback,
     // This executor is actually a factory holder.
-    JavaScriptExecutorHolder *jseh,
+    JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
@@ -226,39 +219,37 @@ void CatalystInstanceImpl::extendNativeModules(
       moduleMessageQueue_));
 }
 
-void CatalystInstanceImpl::jniSetSourceURL(const std::string &sourceURL) {
+void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->setSourceURL(sourceURL);
 }
 
 void CatalystInstanceImpl::jniRegisterSegment(
     int segmentId,
-    const std::string &path) {
+    const std::string& path) {
   instance_->registerBundle((uint32_t)segmentId, path);
 }
 
-static ScriptTag getScriptTagFromFile(const char *sourcePath) {
+static ScriptTag getScriptTagFromFile(const char* sourcePath) {
   std::ifstream bundle_stream(sourcePath, std::ios_base::in);
   BundleHeader header;
   if (bundle_stream &&
-      bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+      bundle_stream.read(reinterpret_cast<char*>(&header), sizeof(header))) {
     return parseTypeFromHeader(header);
   } else {
     return ScriptTag::String;
   }
 }
 
-static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
+static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
   BundleHeader header;
   strncpy(
-      reinterpret_cast<char *>(&header),
-      script->get()->c_str(),
-      sizeof(header));
+      reinterpret_cast<char*>(&header), script->get()->c_str(), sizeof(header));
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
-    const std::string &assetURL,
+    const std::string& assetURL,
     bool loadSynchronously) {
   const int kAssetsLength = 9; // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
@@ -280,8 +271,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromFile(
-    const std::string &fileName,
-    const std::string &sourceURL,
+    const std::string& fileName,
+    const std::string& sourceURL,
     bool loadSynchronously) {
   auto reactInstance = instance_;
   if (!reactInstance) {
@@ -308,7 +299,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
 void CatalystInstanceImpl::jniCallJSFunction(
     std::string module,
     std::string method,
-    NativeArray *arguments) {
+    NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -322,13 +313,13 @@ void CatalystInstanceImpl::jniCallJSFunction(
 
 void CatalystInstanceImpl::jniCallJSCallback(
     jint callbackId,
-    NativeArray *arguments) {
+    NativeArray* arguments) {
   instance_->callJSCallback(callbackId, arguments->consume());
 }
 
 void CatalystInstanceImpl::setGlobalVariable(
     std::string propName,
-    std::string &&jsonValue) {
+    std::string&& jsonValue) {
   // This is only ever called from Java with short strings, and only
   // for testing, so no need to try hard for zero-copy here.
 
@@ -370,13 +361,13 @@ CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
           std::shared_ptr<JMessageQueueThread> messageQueueThread)
           : messageQueueThread_(messageQueueThread) {}
       void invokeAsync(
-          const std::string &methodName,
-          std::function<void()> &&work) override {
+          const std::string& methodName,
+          std::function<void()>&& work) override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
       void invokeSync(
-          const std::string &methodName,
-          std::function<void()> &&work) override {
+          const std::string& methodName,
+          std::function<void()>&& work) override {
         messageQueueThread_->runOnQueueSync(std::move(work));
       }
     };
@@ -417,7 +408,7 @@ CatalystInstanceImpl::getRuntimeScheduler() {
       runtimeScheduler_ = jni::make_global(
           JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
       runtimeExecutor([scheduler =
-                           std::move(runtimeScheduler)](jsi::Runtime &runtime) {
+                           std::move(runtimeScheduler)](jsi::Runtime& runtime) {
         RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, scheduler);
       });
     }

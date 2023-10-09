@@ -15,8 +15,8 @@ TurboModule::TurboModule(
     : name_(std::move(name)), jsInvoker_(std::move(jsInvoker)) {}
 
 void TurboModule::emitDeviceEvent(
-    jsi::Runtime &runtime,
-    const std::string &eventName,
+    jsi::Runtime& runtime,
+    const std::string& eventName,
     ArgFactory argFactory) {
   jsInvoker_->invokeAsync([&runtime, eventName, argFactory]() {
     jsi::Value emitter =
@@ -33,7 +33,7 @@ void TurboModule::emitDeviceEvent(
         argFactory(runtime, args);
       }
       emitFunction.callWithThis(
-          runtime, emitterObject, (const jsi::Value *)args.data(), args.size());
+          runtime, emitterObject, (const jsi::Value*)args.data(), args.size());
     }
   });
 }

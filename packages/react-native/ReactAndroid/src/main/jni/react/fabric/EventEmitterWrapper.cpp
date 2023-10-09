@@ -14,7 +14,7 @@ namespace facebook::react {
 
 void EventEmitterWrapper::dispatchEvent(
     std::string eventName,
-    NativeMap *payload,
+    NativeMap* payload,
     int category) {
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
@@ -30,9 +30,7 @@ void EventEmitterWrapper::dispatchEvent(
 
 void EventEmitterWrapper::dispatchUniqueEvent(
     std::string eventName,
-    NativeMap *payload,
-    int customCoalesceKey) {
-  // TODO: customCoalesceKey currently unused
+    NativeMap* payload) {
   // It is marginal, but possible for this to be constructed without a valid
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
   // crashing.

@@ -1,0 +1,1 @@
+import*as o from"../../ui/legacy/legacy.js";let r;o.Toolbar.registerToolbarItem({loadItem:async()=>(await async function(){return r||(r=await import("./console_counters.js")),r}()).WarningErrorCounter.WarningErrorCounter.instance(),order:1,location:o.Toolbar.ToolbarItemLocation.MAIN_TOOLBAR_RIGHT,showLabel:void 0,condition:void 0,separator:void 0,actionId:void 0});

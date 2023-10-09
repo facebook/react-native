@@ -103,7 +103,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
   private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
-  private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -139,10 +138,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
-
-    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
-      warnOnLegacyNativeModuleSystemUse();
-    }
 
     initializeBridge(
         new BridgeCallback(this),
@@ -210,8 +205,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniExtendNativeModules(
       Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
-
-  private native void warnOnLegacyNativeModuleSystemUse();
 
   private native void initializeBridge(
       ReactCallback callback,
@@ -375,8 +368,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       @Override
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
-                        if (mTurboModuleManagerJSIModule != null) {
-                          mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+                        if (mTurboModuleRegistry != null) {
+                          mTurboModuleRegistry.invalidate();
                         }
 
                         getReactQueueConfiguration()
@@ -592,7 +585,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public void setTurboModuleManager(JSIModule module) {
     mTurboModuleRegistry = (TurboModuleRegistry) module;
-    mTurboModuleManagerJSIModule = module;
   }
 
   private void decrementPendingJSCalls() {

@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/mounting/ShadowView.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -49,10 +48,10 @@ class AttributedString : public Sealable, public DebugStringConvertible {
      * Returns whether the underlying text and attributes are equal,
      * disregarding layout or other information.
      */
-    bool isContentEqual(const Fragment &rhs) const;
+    bool isContentEqual(const Fragment& rhs) const;
 
-    bool operator==(const Fragment &rhs) const;
-    bool operator!=(const Fragment &rhs) const;
+    bool operator==(const Fragment& rhs) const;
+    bool operator!=(const Fragment& rhs) const;
   };
 
   class Range {
@@ -61,30 +60,30 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     int length{0};
   };
 
-  using Fragments = butter::small_vector<Fragment, 1>;
+  using Fragments = std::vector<Fragment>;
 
   /*
    * Appends and prepends a `fragment` to the string.
    */
-  void appendFragment(const Fragment &fragment);
-  void prependFragment(const Fragment &fragment);
+  void appendFragment(const Fragment& fragment);
+  void prependFragment(const Fragment& fragment);
 
   /*
    * Appends and prepends an `attributedString` (all its fragments) to
    * the string.
    */
-  void appendAttributedString(const AttributedString &attributedString);
-  void prependAttributedString(const AttributedString &attributedString);
+  void appendAttributedString(const AttributedString& attributedString);
+  void prependAttributedString(const AttributedString& attributedString);
 
   /*
    * Returns a read-only reference to a list of fragments.
    */
-  Fragments const &getFragments() const;
+  const Fragments& getFragments() const;
 
   /*
    * Returns a reference to a list of fragments.
    */
-  Fragments &getFragments();
+  Fragments& getFragments();
 
   /*
    * Returns a string constructed from all strings in all fragments.
@@ -99,12 +98,12 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   /**
    * Compares equality of TextAttributes of all Fragments on both sides.
    */
-  bool compareTextAttributesWithoutFrame(const AttributedString &rhs) const;
+  bool compareTextAttributesWithoutFrame(const AttributedString& rhs) const;
 
-  bool isContentEqual(const AttributedString &rhs) const;
+  bool isContentEqual(const AttributedString& rhs) const;
 
-  bool operator==(const AttributedString &rhs) const;
-  bool operator!=(const AttributedString &rhs) const;
+  bool operator==(const AttributedString& rhs) const;
+  bool operator!=(const AttributedString& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -122,9 +121,8 @@ namespace std {
 template <>
 struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
-      const facebook::react::AttributedString::Fragment &fragment) const {
-    return folly::hash::hash_combine(
-        0,
+      const facebook::react::AttributedString::Fragment& fragment) const {
+    return facebook::react::hash_combine(
         fragment.string,
         fragment.textAttributes,
         fragment.parentShadowView,
@@ -135,11 +133,11 @@ struct hash<facebook::react::AttributedString::Fragment> {
 template <>
 struct hash<facebook::react::AttributedString> {
   size_t operator()(
-      const facebook::react::AttributedString &attributedString) const {
+      const facebook::react::AttributedString& attributedString) const {
     auto seed = size_t{0};
 
-    for (const auto &fragment : attributedString.getFragments()) {
-      seed = folly::hash::hash_combine(seed, fragment);
+    for (const auto& fragment : attributedString.getFragments()) {
+      facebook::react::hash_combine(seed, fragment);
     }
 
     return seed;

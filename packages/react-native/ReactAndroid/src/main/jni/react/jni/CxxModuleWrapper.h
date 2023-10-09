@@ -14,7 +14,7 @@ namespace facebook::react {
 class CxxModuleWrapper
     : public jni::HybridClass<CxxModuleWrapper, CxxModuleWrapperBase> {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/bridge/CxxModuleWrapper;";
 
   static void registerNatives() {
@@ -24,8 +24,8 @@ class CxxModuleWrapper
 
   static jni::local_ref<CxxModuleWrapper::javaobject> makeDsoNative(
       jni::alias_ref<jclass>,
-      const std::string &soPath,
-      const std::string &fname);
+      const std::string& soPath,
+      const std::string& fname);
 
   std::string getName() override {
     return module_->getName();

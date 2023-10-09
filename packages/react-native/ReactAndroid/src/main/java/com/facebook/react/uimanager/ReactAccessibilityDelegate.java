@@ -630,7 +630,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         info.setCheckable(true);
         info.setChecked(boolValue);
         if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-          info.setText(
+          info.setStateDescription(
               context.getString(
                   boolValue ? R.string.state_on_description : R.string.state_off_description));
         }

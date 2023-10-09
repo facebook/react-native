@@ -50,7 +50,8 @@ TEST_P(JSITest, PropNameIDTest) {
       rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
   uint8_t utf8[] = {0xF0, 0x9F, 0x86, 0x97};
   PropNameID utf8PropNameID = PropNameID::forUtf8(rt, utf8, sizeof(utf8));
-  EXPECT_EQ(utf8PropNameID.utf8(rt), u8"\U0001F197");
+  EXPECT_EQ(
+      utf8PropNameID.utf8(rt), reinterpret_cast<const char*>(u8"\U0001F197"));
   EXPECT_TRUE(PropNameID::compare(
       rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
   PropNameID nonUtf8PropNameID = PropNameID::forUtf8(rt, "meow");
@@ -532,7 +533,7 @@ TEST_P(JSITest, FunctionTest) {
                    "s1",
                    String::createFromAscii(rt, "s2"),
                    std::string{"s3"},
-                   std::string{u8"s\u2600"},
+                   std::string{reinterpret_cast<const char*>(u8"s\u2600")},
                    // invalid UTF8 sequence due to unexpected continuation byte
                    std::string{"s\x80"},
                    Object(rt),
@@ -1437,6 +1438,18 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(ho, ho2);
   EXPECT_EQ(1, RD1::numGets);
   EXPECT_EQ(1, RD2::numGets);
+}
+
+TEST_P(JSITest, ArrayBufferSizeTest) {
+  auto ab =
+      eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
+  EXPECT_EQ(ab.size(rt), 10);
+  // Ensure we can safely write some data to the buffer.
+  memset(ab.data(rt), 0xab, 10);
+
+  // Ensure that setting the byteLength property does not change the length.
+  eval("Object.defineProperty(x, 'byteLength', {value: 20})");
+  EXPECT_EQ(ab.size(rt), 10);
 }
 
 INSTANTIATE_TEST_CASE_P(

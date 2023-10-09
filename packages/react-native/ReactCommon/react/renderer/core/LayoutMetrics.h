@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/RectangleEdges.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -53,7 +53,17 @@ struct LayoutMetrics {
             frame.size.height - contentInsets.top - contentInsets.bottom}};
   }
 
-  bool operator==(const LayoutMetrics &rhs) const {
+  // Origin: the outer border of the node.
+  // Size: includes content and padding (but no borders).
+  Rect getPaddingFrame() const {
+    return Rect{
+        Point{borderWidth.left, borderWidth.top},
+        Size{
+            frame.size.width - borderWidth.left - borderWidth.right,
+            frame.size.height - borderWidth.top - borderWidth.bottom}};
+  }
+
+  bool operator==(const LayoutMetrics& rhs) const {
     return std::tie(
                this->frame,
                this->contentInsets,
@@ -72,7 +82,7 @@ struct LayoutMetrics {
                rhs.overflowInset);
   }
 
-  bool operator!=(const LayoutMetrics &rhs) const {
+  bool operator!=(const LayoutMetrics& rhs) const {
     return !(*this == rhs);
   }
 };
@@ -82,14 +92,14 @@ struct LayoutMetrics {
  * `LayoutMetrics` type.
  * The value is comparable by equality with any other `LayoutMetrics` value.
  */
-static LayoutMetrics const EmptyLayoutMetrics = {
+static const LayoutMetrics EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(LayoutMetrics const &object);
+std::string getDebugName(const LayoutMetrics& object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    LayoutMetrics const &object,
+    const LayoutMetrics& object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -100,9 +110,8 @@ namespace std {
 
 template <>
 struct hash<facebook::react::LayoutMetrics> {
-  size_t operator()(const facebook::react::LayoutMetrics &layoutMetrics) const {
-    return folly::hash::hash_combine(
-        0,
+  size_t operator()(const facebook::react::LayoutMetrics& layoutMetrics) const {
+    return facebook::react::hash_combine(
         layoutMetrics.frame,
         layoutMetrics.contentInsets,
         layoutMetrics.borderWidth,

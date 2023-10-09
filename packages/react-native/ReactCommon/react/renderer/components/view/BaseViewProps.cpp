@@ -18,12 +18,41 @@
 
 namespace facebook::react {
 
+namespace {
+
+std::array<float, 3> getTranslateForTransformOrigin(
+    float viewWidth,
+    float viewHeight,
+    TransformOrigin transformOrigin) {
+  float viewCenterX = viewWidth / 2;
+  float viewCenterY = viewHeight / 2;
+
+  std::array<float, 3> origin = {viewCenterX, viewCenterY, transformOrigin.z};
+
+  for (size_t i = 0; i < transformOrigin.xy.size(); ++i) {
+    auto& currentOrigin = transformOrigin.xy[i];
+    if (currentOrigin.unit == UnitType::Point) {
+      origin[i] = currentOrigin.value;
+    } else if (currentOrigin.unit == UnitType::Percent) {
+      origin[i] =
+          ((i == 0) ? viewWidth : viewHeight) * currentOrigin.value / 100.0f;
+    }
+  }
+
+  float newTranslateX = -viewCenterX + origin[0];
+  float newTranslateY = -viewCenterY + origin[1];
+  float newTranslateZ = origin[2];
+
+  return std::array{newTranslateX, newTranslateY, newTranslateZ};
+}
+
+} // namespace
+
 BaseViewProps::BaseViewProps(
-    const PropsParserContext &context,
-    BaseViewProps const &sourceProps,
-    RawProps const &rawProps,
-    bool shouldSetRawProps)
-    : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
+    const PropsParserContext& context,
+    const BaseViewProps& sourceProps,
+    const RawProps& rawProps)
+    : YogaStylableProps(context, sourceProps, rawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.opacity
@@ -119,6 +148,15 @@ BaseViewProps::BaseViewProps(
                                                        "transform",
                                                        sourceProps.transform,
                                                        {})),
+      transformOrigin(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.transformOrigin
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "transformOrigin",
+                    sourceProps.transformOrigin,
+                    {})),
       backfaceVisibility(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.backfaceVisibility
@@ -214,10 +252,10 @@ BaseViewProps::BaseViewProps(
   }
 
 void BaseViewProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
@@ -278,7 +316,7 @@ void BaseViewProps::setProp(
 
 #pragma mark - Convenience Methods
 
-static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
+static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // "Corner curves must not overlap: When the sum of any two adjacent border
   // radii exceeds the size of the border box, UAs must proportionally reduce
   // the used values of all border radii until none of them overlap."
@@ -315,7 +353,7 @@ static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
 }
 
 BorderMetrics BaseViewProps::resolveBorderMetrics(
-    LayoutMetrics const &layoutMetrics) const {
+    const LayoutMetrics& layoutMetrics) const {
   auto isRTL =
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 
@@ -346,15 +384,34 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
   };
 }
 
+Transform BaseViewProps::resolveTransform(
+    LayoutMetrics const& layoutMetrics) const {
+  float viewWidth = layoutMetrics.frame.size.width;
+  float viewHeight = layoutMetrics.frame.size.height;
+  if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {
+    return transform;
+  }
+  std::array<float, 3> translateOffsets =
+      getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
+  auto newTransform = Transform::Translate(
+      translateOffsets[0], translateOffsets[1], translateOffsets[2]);
+  newTransform = newTransform * transform;
+  newTransform =
+      newTransform *
+      Transform::Translate(
+          -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
+  return newTransform;
+}
+
 bool BaseViewProps::getClipsContentToBounds() const {
-  return yogaStyle.overflow() != YGOverflowVisible;
+  return yogaStyle.overflow() != yoga::Overflow::Visible;
 }
 
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
-  const auto &defaultBaseViewProps = BaseViewProps();
+  const auto& defaultBaseViewProps = BaseViewProps();
 
   return AccessibilityProps::getDebugProps() +
       YogaStylableProps::getDebugProps() +

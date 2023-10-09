@@ -173,6 +173,17 @@ void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
   useTurboModuleInteropForAllTurboModules = enabled;
 }
 
+// Turn on TurboModule sync execution of void methods
+static BOOL gTurboModuleEnableSyncVoidMethods = NO;
+BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
+{
+  return gTurboModuleEnableSyncVoidMethods;
+}
+void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
+{
+  gTurboModuleEnableSyncVoidMethods = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -362,6 +373,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
 
   _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLInitReactRuntime];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
 

@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport;
 
-import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,15 +36,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Okio;
 import okio.Sink;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -240,38 +237,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void openUrl(final ReactContext context, final String url, final String errorMessage) {
-    new AsyncTask<Void, String, Boolean>() {
-      @Override
-      protected Boolean doInBackground(Void... ignore) {
-        return doSync();
-      }
-
-      public boolean doSync() {
-        try {
-          String openUrlEndpoint = getOpenUrlEndpoint(context);
-          String jsonString = new JSONObject().put("url", url).toString();
-          RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonString);
-
-          Request request = new Request.Builder().url(openUrlEndpoint).post(body).build();
-          OkHttpClient client = new OkHttpClient();
-          client.newCall(request).execute();
-          return true;
-        } catch (JSONException | IOException e) {
-          FLog.e(ReactConstants.TAG, "Failed to open URL" + url, e);
-          return false;
-        }
-      }
-
-      @Override
-      protected void onPostExecute(Boolean result) {
-        if (!result) {
-          RNLog.w(context, errorMessage);
-        }
-      }
-    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
-
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
@@ -294,11 +259,6 @@ public class DevServerHelper {
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
-  }
-
-  private String getOpenUrlEndpoint(Context context) {
-    return String.format(
-        Locale.US, "http://%s/open-url", AndroidInfoHelpers.getServerHost(context));
   }
 
   public void downloadBundleFromURL(
@@ -457,5 +417,31 @@ public class DevServerHelper {
           ex);
       return null;
     }
+  }
+
+  /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
+  public void openDebugger(final ReactContext context, final String errorMessage) {
+    // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
+    String requestUrl =
+        String.format(
+            Locale.US,
+            "http://%s/open-debugger?appId=%s",
+            mPackagerConnectionSettings.getInspectorServerHost(),
+            Uri.encode(mPackageName));
+    Request request =
+        new Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build();
+
+    mClient
+        .newCall(request)
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(@NonNull Call _call, @NonNull IOException _e) {
+                RNLog.w(context, errorMessage);
+              }
+
+              @Override
+              public void onResponse(@NonNull Call _call, @NonNull Response _response) {}
+            });
   }
 }

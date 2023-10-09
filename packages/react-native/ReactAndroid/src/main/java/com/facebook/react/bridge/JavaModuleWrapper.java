@@ -15,7 +15,6 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -116,21 +115,6 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   public @Nullable NativeMap getConstants() {
-    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Calling getConstants() on Java NativeModule (name = \""
-                  + mModuleHolder.getName()
-                  + "\", className = "
-                  + mModuleHolder.getClassName()
-                  + ")."));
-    }
-
-    if (!mModuleHolder.getHasConstants()) {
-      return null;
-    }
-
     final String moduleName = getName();
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
         .arg("moduleName", moduleName)
@@ -158,32 +142,8 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   public void invoke(int methodId, ReadableNativeArray parameters) {
-    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Calling method on Java NativeModule (name = \""
-                  + mModuleHolder.getName()
-                  + "\", className = "
-                  + mModuleHolder.getClassName()
-                  + ")."));
-    }
-
     if (mMethods == null || methodId >= mMethods.size()) {
       return;
-    }
-
-    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new ReactNoCrashSoftException(
-              "Calling "
-                  + mDescs.get(methodId).name
-                  + "() on Java NativeModule (name = \""
-                  + mModuleHolder.getName()
-                  + "\", className = "
-                  + mModuleHolder.getClassName()
-                  + ")."));
     }
 
     mMethods.get(methodId).invoke(mJSInstance, parameters);

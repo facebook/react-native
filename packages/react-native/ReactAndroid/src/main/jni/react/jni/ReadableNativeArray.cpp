@@ -16,7 +16,7 @@ namespace facebook::react {
 void ReadableNativeArray::mapException(std::exception_ptr ex) {
   try {
     std::rethrow_exception(ex);
-  } catch (const folly::TypeError &err) {
+  } catch (const folly::TypeError& err) {
     throwNewJavaException(
         exceptions::gUnexpectedNativeTypeExceptionClass, err.what());
   }

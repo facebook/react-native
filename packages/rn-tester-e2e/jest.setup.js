@@ -20,19 +20,30 @@ const config = {
   host: 'localhost',
   port: 4723,
   waitforTimeout: 60000,
-  logLevel: 'error',
   capabilities: {
     ...capabilities,
   },
 };
 
 beforeEach(async () => {
+  // $FlowFixMe
+  let testName: any = expect.getState().currentTestName;
+  console.info(
+    '------------------------------------------------------------ Test is starting... ------------------------------------------------------------',
+  );
+  console.info(
+    '------------------------------ Test name: ' +
+      testName +
+      ' ------------------------------',
+  );
   driver = await wdio.remote(config);
 });
 
 afterEach(async () => {
-  console.info('[afterAll] Done with testing!');
   await driver.deleteSession();
+  console.info(
+    '------------------------------------------------------------ Done with testing. ------------------------------------------------------------',
+  );
 });
 
 export {driver};

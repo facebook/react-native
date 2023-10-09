@@ -68,7 +68,7 @@ PenaltyBreakFirstLessLess: 120
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments:  true
 SortIncludes:    true
 SpaceAfterCStyleCast: false
@@ -88,4 +88,5 @@ UseTab:          Never
 Language: ObjC
 ColumnLimit:     120
 BreakBeforeBraces: WebKit
+PointerAlignment: Right
 ...

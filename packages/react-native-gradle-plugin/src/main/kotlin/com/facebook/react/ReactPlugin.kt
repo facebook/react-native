@@ -22,18 +22,22 @@ import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 import org.gradle.internal.jvm.Jvm
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
+    checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
     // like codegen config can be propagated from app project to libraries.
@@ -62,7 +66,7 @@ class ReactPlugin : Plugin<Project> {
       }
 
       configureReactNativeNdk(project, extension)
-      configureBuildConfigFields(project)
+      configureBuildConfigFields(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
 
@@ -102,6 +106,23 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
+  private fun checkIfNewArchFlagIsSet(project: Project, extension: ReactExtension) {
+    if (project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension)) {
+      project.logger.warn(
+          """
+
+      ********************************************************************************
+
+      WARNING: This version of React Native is ignoring the `newArchEnabled` flag you set. Please set it to true or remove it to suppress this warning.
+
+
+      ********************************************************************************
+
+      """
+              .trimIndent())
+    }
+  }
+
   /** This function sets up `react-native-codegen` in our Gradle plugin. */
   @Suppress("UnstableApiUsage")
   private fun configureCodegen(
@@ -111,7 +132,8 @@ class ReactPlugin : Plugin<Project> {
       isLibrary: Boolean
   ) {
     // First, we set up the output dir for the codegen.
-    val generatedSrcDir = File(project.buildDir, "generated/source/codegen")
+    val generatedSrcDir: Provider<Directory> =
+        project.layout.buildDirectory.dir("generated/source/codegen")
 
     // We specify the default value (convention) for jsRootDir.
     // It's the root folder for apps (so ../../ from the Gradle project)
@@ -134,7 +156,7 @@ class ReactPlugin : Plugin<Project> {
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
               // parsePackageJson should be invoked inside this lambda.
               val packageJson = findPackageJsonFile(project, rootExtension.root)
-              val parsedPackageJson = packageJson?.let { JsonUtils.fromCodegenJson(it) }
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
 
               val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
               if (jsSrcsDirInPackageJson != null) {
@@ -172,7 +194,7 @@ class ReactPlugin : Plugin<Project> {
     //
     // android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
     project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-      ext.sourceSets.getByName("main").java.srcDir(File(generatedSrcDir, "java"))
+      ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
     }
 
     // `preBuild` is one of the base tasks automatically registered by AGP.

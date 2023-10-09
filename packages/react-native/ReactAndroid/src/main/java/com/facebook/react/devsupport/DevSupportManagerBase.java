@@ -78,9 +78,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-  private static final String FLIPPER_DEBUGGER_URL =
-      "flipper://null/Hermesdebuggerrn?device=React%20Native";
-  private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
   private static final String EXOPACKAGE_LOCATION_FORMAT =
       "/data/local/tmp/exopackage/%s//secondary-dex";
 
@@ -369,8 +366,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     if (mDevSettings.isDeviceDebugEnabled()) {
-      // For on-device debugging we link out to Flipper.
-      // Since we're assuming Flipper is available, also include the DevTools.
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
 
       // Reset the old debugger setting so no one gets stuck.
       // TODO: Remove in a few weeks.
@@ -381,17 +377,9 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
           () ->
-              mDevServerHelper.openUrl(
+              mDevServerHelper.openDebugger(
                   mCurrentContext,
-                  FLIPPER_DEBUGGER_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
-      options.put(
-          mApplicationContext.getString(R.string.catalyst_devtools_open),
-          () ->
-              mDevServerHelper.openUrl(
-                  mCurrentContext,
-                  FLIPPER_DEVTOOLS_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
+                  mApplicationContext.getString(R.string.catalyst_open_debugger_error)));
     }
 
     options.put(
@@ -1138,7 +1126,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
    */
   private void compatRegisterReceiver(
       Context context, BroadcastReceiver receiver, IntentFilter filter, boolean exported) {
-    if (Build.VERSION.SDK_INT >= 34 && context.getApplicationInfo().targetSdkVersion >= 34) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       context.registerReceiver(
           receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
     } else {

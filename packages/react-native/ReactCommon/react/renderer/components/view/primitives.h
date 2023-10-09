@@ -62,6 +62,10 @@ struct ViewEvents {
     ClickCapture = 31,
     GotPointerCapture = 32,
     LostPointerCapture = 33,
+    PointerDown = 34,
+    PointerDownCapture = 35,
+    PointerUp = 36,
+    PointerUpCapture = 37,
   };
 
   constexpr bool operator[](const Offset offset) const {
@@ -73,11 +77,11 @@ struct ViewEvents {
   }
 };
 
-inline static bool operator==(ViewEvents const &lhs, ViewEvents const &rhs) {
+inline static bool operator==(const ViewEvents& lhs, const ViewEvents& rhs) {
   return lhs.bits == rhs.bits;
 }
 
-inline static bool operator!=(ViewEvents const &lhs, ViewEvents const &rhs) {
+inline static bool operator!=(const ViewEvents& lhs, const ViewEvents& rhs) {
   return lhs.bits != rhs.bits;
 }
 
@@ -129,7 +133,7 @@ struct CascadedRectangleEdges {
     };
   }
 
-  bool operator==(const CascadedRectangleEdges<T> &rhs) const {
+  bool operator==(const CascadedRectangleEdges<T>& rhs) const {
     return std::tie(
                this->left,
                this->top,
@@ -158,7 +162,7 @@ struct CascadedRectangleEdges {
                rhs.blockEnd);
   }
 
-  bool operator!=(const CascadedRectangleEdges<T> &rhs) const {
+  bool operator!=(const CascadedRectangleEdges<T>& rhs) const {
     return !(*this == rhs);
   }
 };
@@ -205,7 +209,7 @@ struct CascadedRectangleCorners {
     };
   }
 
-  bool operator==(const CascadedRectangleCorners<T> &rhs) const {
+  bool operator==(const CascadedRectangleCorners<T>& rhs) const {
     return std::tie(
                this->topLeft,
                this->topRight,
@@ -236,7 +240,7 @@ struct CascadedRectangleCorners {
                rhs.startStart);
   }
 
-  bool operator!=(const CascadedRectangleCorners<T> &rhs) const {
+  bool operator!=(const CascadedRectangleCorners<T>& rhs) const {
     return !(*this == rhs);
   }
 };
@@ -260,7 +264,7 @@ struct BorderMetrics {
   BorderCurves borderCurves{};
   BorderStyles borderStyles{};
 
-  bool operator==(const BorderMetrics &rhs) const {
+  bool operator==(const BorderMetrics& rhs) const {
     return std::tie(
                this->borderColors,
                this->borderWidths,
@@ -275,7 +279,7 @@ struct BorderMetrics {
                rhs.borderStyles);
   }
 
-  bool operator!=(const BorderMetrics &rhs) const {
+  bool operator!=(const BorderMetrics& rhs) const {
     return !(*this == rhs);
   }
 };

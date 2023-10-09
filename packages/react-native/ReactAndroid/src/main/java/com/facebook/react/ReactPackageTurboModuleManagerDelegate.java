@@ -34,14 +34,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
 
-  private static boolean shouldSupportLegacyPackages() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
-  }
+  private final boolean mShouldEnableLegacyModuleInterop =
+      ReactFeatureFlags.enableBridgelessArchitecture
+          && ReactFeatureFlags.unstable_useTurboModuleInterop;
 
-  private static boolean shouldCreateLegacyModules() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
+      mShouldEnableLegacyModuleInterop
+          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+
+  protected ReactPackageTurboModuleManagerDelegate() {
+    super();
   }
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -106,14 +108,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       true,
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       TurboModule.class.isAssignableFrom(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
-                      true,
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
                       TurboModule.class.isAssignableFrom(moduleClass));
@@ -128,6 +128,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
       }
     }
+  }
+
+  @Override
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return mShouldEnableLegacyModuleInterop;
+  }
+
+  @Override
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
   }
 
   @Nullable
@@ -191,7 +201,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
-    if (!shouldCreateLegacyModules()) {
+    if (!unstable_shouldEnableLegacyModuleInterop()) {
       return null;
     }
 
@@ -239,6 +249,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       }
     }
     return moduleNames;
+  }
+
+  private boolean shouldSupportLegacyPackages() {
+    return unstable_shouldEnableLegacyModuleInterop();
   }
 
   public abstract static class Builder {

@@ -79,7 +79,6 @@ public class ReactRootViewTest {
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       reactModule.needsEagerInit(),
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       false));
 

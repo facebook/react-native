@@ -24,7 +24,7 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
   BridgelessNativeModuleProxy(std::unique_ptr<TurboModuleBinding> binding)
       : binding_(std::move(binding)) {}
 
-  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
+  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override {
     /**
      * BatchedBridge/NativeModules.js contains this line:
      *
@@ -54,9 +54,9 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
   }
 
   void set(
-      jsi::Runtime &runtime,
-      const jsi::PropNameID & /*name*/,
-      const jsi::Value & /*value*/) override {
+      jsi::Runtime& runtime,
+      const jsi::PropNameID& /*name*/,
+      const jsi::Value& /*value*/) override {
     throw jsi::JSError(
         runtime,
         "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
@@ -65,9 +65,9 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
 
 // TODO(148359183): Merge this with the Bridgeless defineReadOnlyGlobal util
 static void defineReadOnlyGlobal(
-    jsi::Runtime &runtime,
+    jsi::Runtime& runtime,
     std::string propName,
-    jsi::Value &&value) {
+    jsi::Value&& value) {
   if (runtime.global().hasProperty(runtime, propName.c_str())) {
     throw jsi::JSError(
         runtime,
@@ -95,13 +95,13 @@ static void defineReadOnlyGlobal(
  */
 
 TurboModuleBinding::TurboModuleBinding(
-    TurboModuleProviderFunctionType &&moduleProvider)
+    TurboModuleProviderFunctionType&& moduleProvider)
     : moduleProvider_(std::move(moduleProvider)) {}
 
 void TurboModuleBinding::install(
-    jsi::Runtime &runtime,
-    TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleProviderFunctionType &&legacyModuleProvider) {
+    jsi::Runtime& runtime,
+    TurboModuleProviderFunctionType&& moduleProvider,
+    TurboModuleProviderFunctionType&& legacyModuleProvider) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -110,9 +110,9 @@ void TurboModuleBinding::install(
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
           [binding = TurboModuleBinding(std::move(moduleProvider))](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             if (count < 1) {
               throw std::invalid_argument(
@@ -148,8 +148,8 @@ TurboModuleBinding::~TurboModuleBinding() {
 }
 
 jsi::Value TurboModuleBinding::getModule(
-    jsi::Runtime &runtime,
-    const std::string &moduleName) const {
+    jsi::Runtime& runtime,
+    const std::string& moduleName) const {
   std::shared_ptr<TurboModule> module;
   {
     SystraceSection s(
@@ -164,7 +164,7 @@ jsi::Value TurboModuleBinding::getModule(
     //
     // Note: TurboModules are cached by name in TurboModuleManagers. Hence,
     // jsRepresentation is also cached by by name by the TurboModuleManager
-    auto &weakJsRepresentation = module->jsRepresentation_;
+    auto& weakJsRepresentation = module->jsRepresentation_;
     if (weakJsRepresentation) {
       auto jsRepresentation = weakJsRepresentation->lock(runtime);
       if (!jsRepresentation.isUndefined()) {

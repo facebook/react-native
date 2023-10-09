@@ -30,7 +30,7 @@ class JsErrorHandler {
   JsErrorHandler(JsErrorHandlingFunc jsErrorHandlingFunc);
   ~JsErrorHandler();
 
-  void handleJsError(const jsi::JSError &error, bool isFatal);
+  void handleJsError(const jsi::JSError& error, bool isFatal);
 
  private:
   JsErrorHandlingFunc _jsErrorHandlingFunc;

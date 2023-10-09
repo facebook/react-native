@@ -35,18 +35,19 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasStateWrapper;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -58,9 +59,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
-        FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowViewWithInset,
         HasScrollState,
+        HasStateWrapper,
         HasFlingAnimator,
         HasScrollEventThrottle,
         HasSmoothScroll {
@@ -106,7 +107,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private StateWrapper mStateWrapper = null;
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
@@ -142,6 +143,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public boolean getScrollEnabled() {
     return mScrollEnabled;
+  }
+
+  @Override
+  public boolean canScrollHorizontally(int direction) {
+    return mScrollEnabled && super.canScrollHorizontally(direction);
   }
 
   @Nullable
@@ -222,6 +228,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     if (mScroller != null) {
       mScroller.setFriction(1.0f - decelerationRate);
+    }
+  }
+
+  public void abortAnimation() {
+    if (mScroller != null && !mScroller.isFinished()) {
+      mScroller.abortAnimation();
     }
   }
 
@@ -465,9 +477,62 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  @Nullable
+  private static HorizontalScrollView findDeepestScrollViewForMotionEvent(
+      View view, MotionEvent ev) {
+    return findDeepestScrollViewForMotionEvent(view, ev, true);
+  }
+
+  @Nullable
+  private static HorizontalScrollView findDeepestScrollViewForMotionEvent(
+      View view, MotionEvent ev, boolean skipInitialView) {
+    if (view == null) {
+      return null;
+    }
+
+    Rect rectOnScreen = new Rect();
+    view.getGlobalVisibleRect(rectOnScreen);
+    if (!rectOnScreen.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+      return null;
+    }
+
+    // Only consider the current view if it's not the initial view. We check the
+    // current view first to bail out of recursion. Essentially if there's any
+    // nested horizontal scrollview with nested scrolling enabled, the parent
+    // scroll view shouldn't pick up the down event.
+    if (!skipInitialView
+        && view instanceof HorizontalScrollView
+        && ViewCompat.isNestedScrollingEnabled(view)
+        && (view instanceof ReactHorizontalScrollView
+            && ((ReactHorizontalScrollView) view).mScrollEnabled)) {
+      return (HorizontalScrollView) view;
+    }
+
+    // First, check child views recursively before considering this view.
+    if (view instanceof ViewGroup) {
+      for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+        HorizontalScrollView foundScrollView =
+            findDeepestScrollViewForMotionEvent(((ViewGroup) view).getChildAt(i), ev, false);
+
+        if (foundScrollView != null) {
+          // If a deeper HorizontalScrollView is found in child views, return it.
+          return foundScrollView;
+        }
+      }
+    }
+
+    // Return null if no matching view is found.
+    return null;
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
+      return false;
+    }
+
+    if ((ev.getAction() == MotionEvent.ACTION_DOWN)
+        && findDeepestScrollViewForMotionEvent(this, ev) != null) {
       return false;
     }
 
@@ -1355,9 +1420,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
-  @Override
-  public FabricViewStateManager getFabricViewStateManager() {
-    return mFabricViewStateManager;
+  @Nullable
+  public StateWrapper getStateWrapper() {
+    return mStateWrapper;
+  }
+
+  public void setStateWrapper(StateWrapper stateWrapper) {
+    mStateWrapper = stateWrapper;
   }
 
   @Override

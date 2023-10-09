@@ -18,14 +18,14 @@ namespace facebook::react {
  * is registered in the native platform.
  */
 using HasComponentProviderFunctionType =
-    std::function<bool(const std::string &name)>;
+    std::function<bool(const std::string& name)>;
 
 /*
  * Installs HasComponentProviderFunction into JavaScript runtime.
  * Thread synchronization must be enforced externally.
  */
 void bindHasComponentProvider(
-    jsi::Runtime &runtime,
-    HasComponentProviderFunctionType &&provider);
+    jsi::Runtime& runtime,
+    HasComponentProviderFunctionType&& provider);
 
 } // namespace facebook::react

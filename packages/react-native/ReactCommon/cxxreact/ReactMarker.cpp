@@ -27,7 +27,7 @@ void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
 
-void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarker(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerImpl(markerId, tag);
 }
 
@@ -35,7 +35,7 @@ void logMarkerBridgeless(const ReactMarkerId markerId) {
   logTaggedMarkerBridgeless(markerId, nullptr);
 }
 
-void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerBridgelessImpl(markerId, tag);
 }
 
@@ -43,7 +43,7 @@ void logMarkerDone(const ReactMarkerId markerId, double markerTime) {
   StartupLogger::getInstance().logStartupEvent(markerId, markerTime);
 }
 
-StartupLogger &StartupLogger::getInstance() {
+StartupLogger& StartupLogger::getInstance() {
   static StartupLogger instance;
   return instance;
 }
@@ -53,25 +53,37 @@ void StartupLogger::logStartupEvent(
     double markerTime) {
   switch (markerId) {
     case ReactMarkerId::APP_STARTUP_START:
-      if (appStartupStartTime == 0) {
+      if (std::isnan(appStartupStartTime)) {
         appStartupStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::APP_STARTUP_STOP:
-      if (appStartupEndTime == 0) {
+      if (std::isnan(appStartupEndTime)) {
         appStartupEndTime = markerTime;
       }
       return;
 
+    case ReactMarkerId::INIT_REACT_RUNTIME_START:
+      if (std::isnan(initReactRuntimeStartTime)) {
+        initReactRuntimeStartTime = markerTime;
+      }
+      return;
+
+    case ReactMarkerId::INIT_REACT_RUNTIME_STOP:
+      if (std::isnan(initReactRuntimeEndTime)) {
+        initReactRuntimeEndTime = markerTime;
+      }
+      return;
+
     case ReactMarkerId::RUN_JS_BUNDLE_START:
-      if (runJSBundleStartTime == 0) {
+      if (std::isnan(runJSBundleStartTime)) {
         runJSBundleStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::RUN_JS_BUNDLE_STOP:
-      if (runJSBundleEndTime == 0) {
+      if (std::isnan(runJSBundleEndTime)) {
         runJSBundleEndTime = markerTime;
       }
       return;
@@ -83,6 +95,14 @@ void StartupLogger::logStartupEvent(
 
 double StartupLogger::getAppStartupStartTime() {
   return appStartupStartTime;
+}
+
+double StartupLogger::getInitReactRuntimeStartTime() {
+  return initReactRuntimeStartTime;
+}
+
+double StartupLogger::getInitReactRuntimeEndTime() {
+  return initReactRuntimeEndTime;
 }
 
 double StartupLogger::getRunJSBundleStartTime() {

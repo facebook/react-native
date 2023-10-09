@@ -441,6 +441,18 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
   }
 
+  public @Nullable MessageQueueThread getJSMessageQueueThread() {
+    return mJSMessageQueueThread;
+  }
+
+  public @Nullable MessageQueueThread getNativeModulesMessageQueueThread() {
+    return mNativeModulesMessageQueueThread;
+  }
+
+  public @Nullable MessageQueueThread getUiMessageQueueThread() {
+    return mUiMessageQueueThread;
+  }
+
   /**
    * Passes the given exception to the current {@link JSExceptionHandler} if one exists, rethrowing
    * otherwise.
