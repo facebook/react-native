@@ -20,7 +20,12 @@ import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.systrace.Systrace;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents a batch of {@link MountItem}s, represented directly as int buffers to
@@ -117,71 +122,145 @@ final class IntBufferBatchMountItem implements BatchMountItem {
 
     beginMarkers("mountViews");
 
+    ArrayList<HashMap<String, Object>> mutationsArray = new ArrayList<>();
+
+    // we put views in the map also for basic operations since tags are only mapped to ViewState
+    // which are internal.
+    // In most cases we will need the view to perform an action in the listener
     int i = 0, j = 0;
     while (i < mIntBufferLen) {
       int rawType = mIntBuffer[i++];
       int type = rawType & ~INSTRUCTION_FLAG_MULTIPLE;
       int numInstructions = ((rawType & INSTRUCTION_FLAG_MULTIPLE) != 0 ? mIntBuffer[i++] : 1);
       for (int k = 0; k < numInstructions; k++) {
+        HashMap<String, Object> map = new HashMap<>();
         if (type == INSTRUCTION_CREATE) {
-          String componentName = getFabricComponentName((String) mObjBuffer[j++]);
-          surfaceMountingManager.createView(
-              componentName,
-              mIntBuffer[i++],
-              mObjBuffer[j++],
-              castToState(mObjBuffer[j++]),
-              castToEventEmitter(mObjBuffer[j++]),
-              mIntBuffer[i++] == 1);
+          map.put("type", "CREATE");
+          map.put("componentName", getFabricComponentName((String) mObjBuffer[j++]));
+          int reactTag = mIntBuffer[i++];
+          map.put("reactTag", reactTag);
+          View view = surfaceMountingManager.getView(reactTag);
+          map.put("view", view);
+          map.put("props", mObjBuffer[j++]);
+          map.put("stateWrapper", castToState(mObjBuffer[j++]));
+          map.put("eventEmitterWrapper", castToEventEmitter(mObjBuffer[j++]));
+          map.put("isLayoutable", mIntBuffer[i++] == 1);
         } else if (type == INSTRUCTION_DELETE) {
-          surfaceMountingManager.deleteView(mIntBuffer[i++]);
+          map.put("type", "DELETE");
+          int reactTag = mIntBuffer[i++];
+          map.put("reactTag", reactTag);
+          View view = surfaceMountingManager.getView(reactTag);
+          map.put("view", view);
         } else if (type == INSTRUCTION_INSERT) {
+          map.put("type", "INSERT");
           int tag = mIntBuffer[i++];
-          int parentTag = mIntBuffer[i++];
-          surfaceMountingManager.addViewAt(parentTag, tag, mIntBuffer[i++]);
+          map.put("tag", tag);
+          View view = surfaceMountingManager.getView(tag);
+          map.put("view", view);
+          map.put("parentTag", mIntBuffer[i++]);
+          map.put("index", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_REMOVE) {
-          surfaceMountingManager.removeViewAt(mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+          map.put("type", "REMOVE");
+          int tag = mIntBuffer[i++];
+          map.put("tag", tag);
+          View view = surfaceMountingManager.getView(tag);
+          map.put("view", view);
+          map.put("parentTag", mIntBuffer[i++]);
+          map.put("index", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_REMOVE_DELETE_TREE) {
-          surfaceMountingManager.removeDeleteTreeAt(
-              mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+          map.put("type", "REMOVE_DELETE_TREE");
+          int tag = mIntBuffer[i++];
+          map.put("tag", tag);
+          View view = surfaceMountingManager.getView(tag);
+          map.put("view", view);
+          map.put("parentTag", mIntBuffer[i++]);
+          map.put("index", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
-          surfaceMountingManager.updateProps(mIntBuffer[i++], mObjBuffer[j++]);
+          map.put("type", "UPDATE_PROPS");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("props", mObjBuffer[j++]);
         } else if (type == INSTRUCTION_UPDATE_STATE) {
-          surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
+          map.put("type", "UPDATE_STATE");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("stateWrapper", castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
-          int reactTag = mIntBuffer[i++];
-          int parentTag = mIntBuffer[i++];
-          int x = mIntBuffer[i++];
-          int y = mIntBuffer[i++];
-          int width = mIntBuffer[i++];
-          int height = mIntBuffer[i++];
-          int displayType = mIntBuffer[i++];
-
-          surfaceMountingManager.updateLayout(
-              reactTag, parentTag, x, y, width, height, displayType);
-
+          map.put("type", "UPDATE_LAYOUT");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("parentTag", mIntBuffer[i++]);
+          map.put("x", mIntBuffer[i++]);
+          map.put("y", mIntBuffer[i++]);
+          map.put("width", mIntBuffer[i++]);
+          map.put("height", mIntBuffer[i++]);
+          map.put("displayType", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
-          surfaceMountingManager.updatePadding(
-              mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+          map.put("type", "UPDATE_PADDING");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("left", mIntBuffer[i++]);
+          map.put("top", mIntBuffer[i++]);
+          map.put("right", mIntBuffer[i++]);
+          map.put("bottom", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_OVERFLOW_INSET) {
-          int reactTag = mIntBuffer[i++];
-          int overflowInsetLeft = mIntBuffer[i++];
-          int overflowInsetTop = mIntBuffer[i++];
-          int overflowInsetRight = mIntBuffer[i++];
-          int overflowInsetBottom = mIntBuffer[i++];
-
-          surfaceMountingManager.updateOverflowInset(
-              reactTag,
-              overflowInsetLeft,
-              overflowInsetTop,
-              overflowInsetRight,
-              overflowInsetBottom);
+          map.put("type", "UPDATE_OVERFLOW_INSET");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("overflowInsetLeft", mIntBuffer[i++]);
+          map.put("overflowInsetTop", mIntBuffer[i++]);
+          map.put("overflowInsetRight", mIntBuffer[i++]);
+          map.put("overflowInsetBottom", mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
-          surfaceMountingManager.updateEventEmitter(
-              mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
+          map.put("type", "UPDATE_EVENT_EMITTER");
+          map.put("reactTag", mIntBuffer[i++]);
+          map.put("eventEmitter", castToEventEmitter(mObjBuffer[j++]));
         } else {
           throw new IllegalArgumentException(
-              "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
+                  "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
         }
+        mutationsArray.add(map);
+      }
+    }
+
+    surfaceMountingManager.getContext().getNativeModule(UIManagerModule.class).viewMutationsWillMount(mutationsArray);
+
+    for (HashMap<String, Object> elem: mutationsArray) {
+      if ("CREATE".equals(elem.get("type"))) {
+        surfaceMountingManager.createView(
+                (String)elem.get("componentName"),
+                (int)elem.get("reactTag"),
+                elem.get("props"),
+                (StateWrapper)elem.get("stateWrapper"),
+                (EventEmitterWrapper)elem.get("eventEmitterWrapper"),
+                (boolean)elem.get("isLayoutable"));
+      } else if ("DELETE".equals(elem.get("type"))) {
+        surfaceMountingManager.deleteView((int)elem.get("reactTag"));
+      } else if ("INSERT".equals(elem.get("type"))) {
+        surfaceMountingManager.addViewAt((int)elem.get("parentTag"), (int)elem.get("tag"), (int)elem.get("index"));
+      } else if ("REMOVE".equals(elem.get("type"))) {
+        surfaceMountingManager.removeViewAt((int)elem.get("tag"), (int)elem.get("parentTag"), (int)elem.get("index"));
+      } else if ("REMOVE_DELETE_TREE".equals(elem.get("type"))) {
+        surfaceMountingManager.removeDeleteTreeAt(
+                (int)elem.get("tag"), (int)elem.get("parentTag"), (int)elem.get("index"));
+      } else if ("UPDATE_PROPS".equals(elem.get("type"))) {
+        surfaceMountingManager.updateProps((int)elem.get("reactTag"), elem.get("props"));
+      } else if ("UPDATE_STATE".equals(elem.get("type"))) {
+        surfaceMountingManager.updateState((int)elem.get("reactTag"), (StateWrapper) elem.get("stateWrapper"));
+      } else if ("UPDATE_LAYOUT".equals(elem.get("type"))) {
+        surfaceMountingManager.updateLayout(
+                (int)elem.get("reactTag"), (int)elem.get("parentTag"),
+                (int)elem.get("x"), (int)elem.get("y"), (int)elem.get("width"),
+                (int)elem.get("height"), (int)elem.get("displayType"));
+
+      } else if ("UPDATE_PADDING".equals(elem.get("type"))) {
+        surfaceMountingManager.updatePadding(
+                (int)elem.get("reactTag"), (int)elem.get("left"), (int)elem.get("top"), (int)elem.get("right"), (int)elem.get("bottom"));
+      } else if ("UPDATE_OVERFLOW_INSET".equals(elem.get("type"))) {
+        surfaceMountingManager.updateOverflowInset(
+                (int)elem.get("reactTag"), (int)elem.get("overflowInsetLeft"), (int)elem.get("overflowInsetTop")
+                , (int)elem.get("overflowInsetRight"), (int)elem.get("overflowInsetBottom"));
+      } else if ("UPDATE_EVENT_EMITTER".equals(elem.get("type"))) {
+        surfaceMountingManager.updateEventEmitter(
+                (int)elem.get("reactTag"), (EventEmitterWrapper) elem.get("eventEmitter"));
+      } else {
+        throw new IllegalArgumentException(
+                "Invalid type argument to IntBufferBatchMountItem: " + elem.get("type"));
       }
     }
 

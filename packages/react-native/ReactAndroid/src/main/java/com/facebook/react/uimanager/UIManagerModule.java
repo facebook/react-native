@@ -37,6 +37,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ViewMutationsListener;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -48,6 +49,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -105,6 +107,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<ViewMutationsListener> mViewMutationsListeners = new CopyOnWriteArrayList<>();
   private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
       new CopyOnWriteArrayList<>();
 
@@ -791,6 +794,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mUIManagerListeners.remove(listener);
+  }
+
+  public void addViewMutationsListener(ViewMutationsListener listener) {
+    mViewMutationsListeners.add(listener);
+  }
+
+  public void removeViewMutationsListener(ViewMutationsListener listener) {
+    mViewMutationsListeners.remove(listener);
+  }
+
+  public void viewMutationsWillMount(ArrayList<HashMap<String, Object>> mutations) {
+    for (ViewMutationsListener listener : mViewMutationsListeners) {
+      listener.willMountViewMutations(mutations);
+    }
   }
 
   /**
