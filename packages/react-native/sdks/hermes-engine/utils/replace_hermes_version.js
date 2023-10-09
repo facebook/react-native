@@ -52,8 +52,8 @@ function shouldReplaceHermesConfiguration(configuration) {
   return true;
 }
 
-function replaceHermesConfiguration(configuration, version, reactNativePath) {
-  const tarballURLPath = `${reactNativePath}/sdks/downloads/hermes-ios-${version}-${configuration}.tar.gz`;
+function replaceHermesConfiguration(configuration, version, podsRoot) {
+  const tarballURLPath = `${podsRoot}/hermes-engine-artifacts/hermes-ios-${version}-${configuration}.tar.gz`;
 
   const finalLocation = 'hermes-engine';
   console.log('Preparing the final location');
@@ -68,7 +68,7 @@ function updateLastBuildConfiguration(configuration) {
   fs.writeFileSync(LAST_BUILD_FILENAME, configuration);
 }
 
-function main(configuration, version, reactNativePath) {
+function main(configuration, version, podsRoot) {
   validateBuildConfiguration(configuration);
   validateVersion(version);
 
@@ -76,7 +76,7 @@ function main(configuration, version, reactNativePath) {
     return;
   }
 
-  replaceHermesConfiguration(configuration, version, reactNativePath);
+  replaceHermesConfiguration(configuration, version, podsRoot);
   updateLastBuildConfiguration(configuration);
   console.log('Done replacing hermes-engine');
 }
@@ -94,13 +94,13 @@ const argv = yargs
       'The Version of React Native associated with the Hermes tarball.',
   })
   .option('p', {
-    alias: 'reactNativePath',
-    description: 'The path to the React Native root folder',
+    alias: 'podsRoot',
+    description: 'The path to the Pods root folder',
   })
   .usage('Usage: $0 -c Debug -r <version> -p <path/to/react-native>').argv;
 
 const configuration = argv.configuration;
 const version = argv.reactNativeVersion;
-const reactNativePath = argv.reactNativePath;
+const podsRoot = argv.podsRoot;
 
-main(configuration, version, reactNativePath);
+main(configuration, version, podsRoot);
