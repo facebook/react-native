@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 
@@ -37,9 +38,9 @@ function generateRequestId() {
 function getSize(
   url: string,
   success: (width: number, height: number) => void,
-  failure?: (error: any) => void,
-): any {
-  return NativeImageLoaderAndroid.getSize(url)
+  failure?: (error: mixed) => void,
+): void {
+  NativeImageLoaderAndroid.getSize(url)
     .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
@@ -61,9 +62,9 @@ function getSizeWithHeaders(
   url: string,
   headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
-  failure?: (error: any) => void,
-): any {
-  return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
+  failure?: (error: mixed) => void,
+): void {
+  NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
     .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
@@ -79,19 +80,22 @@ function prefetchWithMetadata(
   url: string,
   queryRootName: string,
   rootTag?: ?RootTag,
-  callback: ?Function,
-): any {
+  callback: ?(requestId: number) => void,
+): Promise<boolean> {
   // TODO: T79192300 Log queryRootName and rootTag
-  prefetch(url, callback);
+  return prefetch(url, callback);
 }
 
-function prefetch(url: string, callback: ?Function): any {
+function prefetch(
+  url: string,
+  callback: ?(requestId: number) => void,
+): Promise<boolean> {
   const requestId = generateRequestId();
   callback && callback(requestId);
   return NativeImageLoaderAndroid.prefetchImage(url, requestId);
 }
 
-function abortPrefetch(requestId: number) {
+function abortPrefetch(requestId: number): void {
   NativeImageLoaderAndroid.abortRequest(requestId);
 }
 
@@ -103,7 +107,7 @@ function abortPrefetch(requestId: number) {
 async function queryCache(
   urls: Array<string>,
 ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
-  return await NativeImageLoaderAndroid.queryCache(urls);
+  return NativeImageLoaderAndroid.queryCache(urls);
 }
 
 /**
@@ -131,7 +135,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       );
     }
 
-    if (props.defaultSource && props.loadingIndicatorSource) {
+    if (props.defaultSource != null && props.loadingIndicatorSource != null) {
       throw new Error(
         'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
       );
@@ -140,14 +144,17 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
     let style;
     let sources;
     if (Array.isArray(source)) {
-      // $FlowFixMe[underconstrained-implicit-instantiation]
-      style = flattenStyle([styles.base, props.style]);
+      style = flattenStyle<ImageStyleProp>([styles.base, props.style]);
       sources = source;
     } else {
-      // $FlowFixMe[incompatible-type]
-      const {width = props.width, height = props.height, uri} = source;
-      // $FlowFixMe[underconstrained-implicit-instantiation]
-      style = flattenStyle([{width, height}, styles.base, props.style]);
+      const {uri} = source;
+      const width = source.width ?? props.width;
+      const height = source.height ?? props.height;
+      style = flattenStyle<ImageStyleProp>([
+        {width, height},
+        styles.base,
+        props.style,
+      ]);
       sources = [source];
       if (uri === '') {
         console.warn('source.uri should not be an empty string');
@@ -184,16 +191,11 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       },
     };
 
-    const objectFit =
-      // $FlowFixMe[prop-missing]
-      style && style.objectFit
-        ? // $FlowFixMe[incompatible-call]
-          convertObjectFitToResizeMode(style.objectFit)
-        : null;
-    // $FlowFixMe[prop-missing]
+    const objectFit = style?.objectFit
+      ? convertObjectFitToResizeMode(style.objectFit)
+      : null;
     const resizeMode =
-      // $FlowFixMe[prop-missing]
-      objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
+      objectFit || props.resizeMode || style?.resizeMode || 'cover';
 
     return (
       <ImageAnalyticsTagContext.Consumer>
@@ -213,7 +215,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                     <TextInlineImageNativeComponent
                       // $FlowFixMe[incompatible-type]
                       style={style}
-                      // $FlowFixMe[incompatible-type]
                       resizeMode={resizeMode}
                       headers={nativeProps.headers}
                       src={sources}
@@ -225,7 +226,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                 return (
                   <ImageViewNativeComponent
                     {...nativePropsWithAnalytics}
-                    // $FlowFixMe[incompatible-type]
                     resizeMode={resizeMode}
                   />
                 );
