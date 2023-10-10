@@ -84,13 +84,13 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-using CallbackWrapperExecutor = std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>;
+using CallbackExecutor = std::function<void(jsi::Runtime&, jsi::Function&, const std::vector<jsi::Value>&)>;
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    CallbackWrapperExecutor&& callbackWrapperExecutor) {
+    CallbackExecutor&& callbackExecutor) {
   auto weakWrapper =
       CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
@@ -107,7 +107,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
       [weakWrapper = std::move(weakWrapper),
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false,
-       callbackWrapperExecutor = std::move(callbackWrapperExecutor)](folly::dynamic responses) mutable {
+       callbackExecutor = std::move(callbackExecutor)](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           LOG(FATAL) << "callback arg cannot be called more than once";
         }
@@ -121,7 +121,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
             [weakWrapper = std::move(weakWrapper),
              callbackWrapperOwner = std::move(callbackWrapperOwner),
              responses = std::move(responses),
-             callbackWrapperExecutor = std::move(callbackWrapperExecutor)]() {
+             callbackExecutor = std::move(callbackExecutor)]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
@@ -134,7 +134,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
                     jsi::valueFromDynamic(strongWrapper2->runtime(), val));
               }
 
-              callbackWrapperExecutor(strongWrapper2, args);
+              callbackExecutor(strongWrapper2->runtime(), strongWrapper2->callback(), args);
             });
 
         wrapperWasCalled = true;
@@ -145,11 +145,12 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
-  auto executor = [](
-          const std::shared_ptr<CallbackWrapper>& wrapper,
+    CallbackExecutor executor = [](
+            jsi::Runtime& runtime,
+            jsi::Function& callback,
           const std::vector<jsi::Value>& args) {
-      wrapper->callback().call(
-              wrapper->runtime(),
+      callback.call(
+              runtime,
               (const jsi::Value *)args.data(),
               args.size());
   };
