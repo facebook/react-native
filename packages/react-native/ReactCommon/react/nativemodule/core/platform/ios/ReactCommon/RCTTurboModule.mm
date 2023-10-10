@@ -920,7 +920,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     case ObjectKind:
     case ArrayKind:
     case FunctionKind: {
-      id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation);
+      id result = performMethodInvocation(runtime, true, methodName, inv, retainedObjectsForInvocation, nil);
       TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
       returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);
       TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
