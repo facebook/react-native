@@ -1302,39 +1302,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       orientation: this._orientation(),
     });
 
-    // In RTL layout we need parent content length to calculate the offset of a
-    // cell from the start of the list. In Paper, layout events are bottom up,
-    // so we do not know this yet, and must defer calculation until after
-    // `onContentSizeChange` is called.
-    const deferCellMetricCalculation =
-      this._listMetrics.getLayoutEventDirection() === 'bottom-up' &&
-      this._listMetrics.needsContentLengthForCellMetrics();
-
-    // Note: In Paper RTL logical position may have changed when
-    // `layoutHasChanged` is false if a cell maintains same X/Y coordinates,
-    // but contentLength shifts. This will be corrected by
-    // `onContentSizeChange` triggering a cell update.
     if (layoutHasChanged) {
-      this._scheduleCellsToRenderUpdate({
-        allowImmediateExecution: !deferCellMetricCalculation,
-      });
+      this._scheduleCellsToRenderUpdate();
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
-
     this._computeBlankness();
-
-    if (deferCellMetricCalculation) {
-      if (!this._pendingViewabilityUpdate) {
-        this._pendingViewabilityUpdate = true;
-        setTimeout(() => {
-          this._updateViewableItems(this.props, this.state.cellsAroundViewport);
-          this._pendingViewabilityUpdate = false;
-        }, 0);
-      }
-    } else {
-      this._updateViewableItems(this.props, this.state.cellsAroundViewport);
-    }
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
 
   _onCellFocusCapture(cellKey: string) {
@@ -1765,9 +1739,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
-    const allowImmediateExecution = opts?.allowImmediateExecution ?? true;
-
+  _scheduleCellsToRenderUpdate() {
     // Only trigger high-priority updates if we've actually rendered cells,
     // and with that size estimate, accurately compute how many cells we should render.
     // Otherwise, it would just render as many cells as it can (of zero dimension),
@@ -1776,7 +1748,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
     if (
-      allowImmediateExecution &&
       this._shouldRenderWithPriority() &&
       (this._listMetrics.getAverageCellLength() || this.props.getItemLayout) &&
       !this._hiPriInProgress
