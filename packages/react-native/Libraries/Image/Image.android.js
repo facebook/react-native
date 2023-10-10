@@ -9,8 +9,7 @@
  */
 
 import type {RootTag} from '../Types/RootTagTypes';
-import type {ImageAndroid} from './Image.flow';
-import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -107,16 +106,6 @@ async function queryCache(
   return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
-export type ImageComponentStatics = $ReadOnly<{|
-  getSize: typeof getSize,
-  getSizeWithHeaders: typeof getSizeWithHeaders,
-  prefetch: typeof prefetch,
-  prefetchWithMetadata: typeof prefetchWithMetadata,
-  abortPrefetch?: typeof abortPrefetch,
-  queryCache: typeof queryCache,
-  resolveAssetSource: typeof resolveAssetSource,
-|}>;
-
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -124,140 +113,137 @@ export type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const BaseImage = (props: ImagePropsType, forwardedRef) => {
-  let source = getImageSourcesFromImageProps(props) || {
-    uri: undefined,
-    width: undefined,
-    height: undefined,
-  };
-  const defaultSource = resolveAssetSource(props.defaultSource);
-  const loadingIndicatorSource = resolveAssetSource(
-    props.loadingIndicatorSource,
-  );
-
-  if (props.children) {
-    throw new Error(
-      'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+let BaseImage: AbstractImageAndroid = React.forwardRef(
+  (props, forwardedRef) => {
+    let source = getImageSourcesFromImageProps(props) || {
+      uri: undefined,
+      width: undefined,
+      height: undefined,
+    };
+    const defaultSource = resolveAssetSource(props.defaultSource);
+    const loadingIndicatorSource = resolveAssetSource(
+      props.loadingIndicatorSource,
     );
-  }
 
-  if (props.defaultSource && props.loadingIndicatorSource) {
-    throw new Error(
-      'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
-    );
-  }
-
-  let style;
-  let sources;
-  if (Array.isArray(source)) {
-    // $FlowFixMe[underconstrained-implicit-instantiation]
-    style = flattenStyle([styles.base, props.style]);
-    sources = source;
-  } else {
-    // $FlowFixMe[incompatible-type]
-    const {width = props.width, height = props.height, uri} = source;
-    // $FlowFixMe[underconstrained-implicit-instantiation]
-    style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [source];
-    if (uri === '') {
-      console.warn('source.uri should not be an empty string');
+    if (props.children) {
+      throw new Error(
+        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+      );
     }
-  }
 
-  const {height, width, ...restProps} = props;
+    if (props.defaultSource && props.loadingIndicatorSource) {
+      throw new Error(
+        'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
+      );
+    }
 
-  const {onLoadStart, onLoad, onLoadEnd, onError} = props;
-  const nativeProps = {
-    ...restProps,
-    style,
-    shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
-    src: sources,
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
-    defaultSrc: defaultSource ? defaultSource.uri : null,
-    loadingIndicatorSrc: loadingIndicatorSource
-      ? loadingIndicatorSource.uri
-      : null,
-    ref: forwardedRef,
-    accessibilityLabel:
-      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
-    accessibilityLabelledBy:
-      props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
-    accessible: props.alt !== undefined ? true : props.accessible,
-    accessibilityState: {
-      busy: props['aria-busy'] ?? props.accessibilityState?.busy,
-      checked: props['aria-checked'] ?? props.accessibilityState?.checked,
-      disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
-      expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
-      selected: props['aria-selected'] ?? props.accessibilityState?.selected,
-    },
-  };
+    let style;
+    let sources;
+    if (Array.isArray(source)) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
+      style = flattenStyle([styles.base, props.style]);
+      sources = source;
+    } else {
+      // $FlowFixMe[incompatible-type]
+      const {width = props.width, height = props.height, uri} = source;
+      // $FlowFixMe[underconstrained-implicit-instantiation]
+      style = flattenStyle([{width, height}, styles.base, props.style]);
+      sources = [source];
+      if (uri === '') {
+        console.warn('source.uri should not be an empty string');
+      }
+    }
 
-  const objectFit =
+    const {height, width, ...restProps} = props;
+
+    const {onLoadStart, onLoad, onLoadEnd, onError} = props;
+    const nativeProps = {
+      ...restProps,
+      style,
+      shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+      src: sources,
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+      headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
+      defaultSrc: defaultSource ? defaultSource.uri : null,
+      loadingIndicatorSrc: loadingIndicatorSource
+        ? loadingIndicatorSource.uri
+        : null,
+      ref: forwardedRef,
+      accessibilityLabel:
+        props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
+      accessibilityLabelledBy:
+        props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
+      accessible: props.alt !== undefined ? true : props.accessible,
+      accessibilityState: {
+        busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+        checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+        disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+        expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+        selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+      },
+    };
+
+    const objectFit =
+      // $FlowFixMe[prop-missing]
+      style && style.objectFit
+        ? // $FlowFixMe[incompatible-call]
+          convertObjectFitToResizeMode(style.objectFit)
+        : null;
     // $FlowFixMe[prop-missing]
-    style && style.objectFit
-      ? // $FlowFixMe[incompatible-call]
-        convertObjectFitToResizeMode(style.objectFit)
-      : null;
-  // $FlowFixMe[prop-missing]
-  const resizeMode =
-    // $FlowFixMe[prop-missing]
-    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
+    const resizeMode =
+      // $FlowFixMe[prop-missing]
+      objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
 
-  return (
-    <ImageAnalyticsTagContext.Consumer>
-      {analyticTag => {
-        const nativePropsWithAnalytics =
-          analyticTag !== null
-            ? {
-                ...nativeProps,
-                internal_analyticTag: analyticTag,
-              }
-            : nativeProps;
-        return (
-          <TextAncestor.Consumer>
-            {hasTextAncestor => {
-              if (hasTextAncestor) {
+    return (
+      <ImageAnalyticsTagContext.Consumer>
+        {analyticTag => {
+          const nativePropsWithAnalytics =
+            analyticTag !== null
+              ? {
+                  ...nativeProps,
+                  internal_analyticTag: analyticTag,
+                }
+              : nativeProps;
+          return (
+            <TextAncestor.Consumer>
+              {hasTextAncestor => {
+                if (hasTextAncestor) {
+                  return (
+                    <TextInlineImageNativeComponent
+                      // $FlowFixMe[incompatible-type]
+                      style={style}
+                      // $FlowFixMe[incompatible-type]
+                      resizeMode={resizeMode}
+                      headers={nativeProps.headers}
+                      src={sources}
+                      ref={forwardedRef}
+                    />
+                  );
+                }
+
                 return (
-                  <TextInlineImageNativeComponent
-                    // $FlowFixMe[incompatible-type]
-                    style={style}
+                  <ImageViewNativeComponent
+                    {...nativePropsWithAnalytics}
                     // $FlowFixMe[incompatible-type]
                     resizeMode={resizeMode}
-                    headers={nativeProps.headers}
-                    src={sources}
-                    ref={forwardedRef}
                   />
                 );
-              }
-
-              return (
-                <ImageViewNativeComponent
-                  {...nativePropsWithAnalytics}
-                  // $FlowFixMe[incompatible-type]
-                  resizeMode={resizeMode}
-                />
-              );
-            }}
-          </TextAncestor.Consumer>
-        );
-      }}
-    </ImageAnalyticsTagContext.Consumer>
-  );
-};
-
-let Image = React.forwardRef<
-  ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
->(BaseImage);
+              }}
+            </TextAncestor.Consumer>
+          );
+        }}
+      </ImageAnalyticsTagContext.Consumer>
+    );
+  },
+);
 
 if (ImageInjection.unstable_createImageComponent != null) {
-  Image = ImageInjection.unstable_createImageComponent(Image);
+  BaseImage = ImageInjection.unstable_createImageComponent(BaseImage);
 }
+
+// $FlowExpectedError[incompatible-type] Eventually we need to move these functions from statics of the component to exports in the module.
+const Image: ImageAndroid = BaseImage;
 
 Image.displayName = 'Image';
 
@@ -266,9 +252,7 @@ Image.displayName = 'Image';
  *
  * See https://reactnative.dev/docs/image#getsize
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.getSize = getSize;
 
 /**
@@ -277,9 +261,7 @@ Image.getSize = getSize;
  *
  * See https://reactnative.dev/docs/image#getsizewithheaders
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.getSizeWithHeaders = getSizeWithHeaders;
 
 /**
@@ -288,9 +270,7 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  *
  * See https://reactnative.dev/docs/image#prefetch
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.prefetch = prefetch;
 
 /**
@@ -299,9 +279,7 @@ Image.prefetch = prefetch;
  *
  * See https://reactnative.dev/docs/image#prefetch
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
@@ -309,9 +287,7 @@ Image.prefetchWithMetadata = prefetchWithMetadata;
  *
  * See https://reactnative.dev/docs/image#abortprefetch
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.abortPrefetch = abortPrefetch;
 
 /**
@@ -319,9 +295,7 @@ Image.abortPrefetch = abortPrefetch;
  *
  * See https://reactnative.dev/docs/image#querycache
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.queryCache = queryCache;
 
 /**
@@ -329,9 +303,7 @@ Image.queryCache = queryCache;
  *
  * See https://reactnative.dev/docs/image#resolveassetsource
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
 
 /**
@@ -346,4 +318,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): ImageAndroid);
+module.exports = Image;
