@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 // Resolves an asset into a `source` for `Image`.
@@ -13,6 +13,7 @@
 'use strict';
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
+import type {ImageSource} from './ImageSource';
 
 const AssetSourceResolver = require('./AssetSourceResolver');
 const {pickScale} = require('./AssetUtils');
@@ -22,7 +23,7 @@ let _customSourceTransformer, _serverURL, _scriptURL;
 
 let _sourceCodeScriptURL: ?string;
 function getSourceCodeScriptURL(): ?string {
-  if (_sourceCodeScriptURL) {
+  if (_sourceCodeScriptURL != null) {
     return _sourceCodeScriptURL;
   }
 
@@ -38,8 +39,7 @@ function getSourceCodeScriptURL(): ?string {
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
     const sourceCodeScriptURL = getSourceCodeScriptURL();
-    const match =
-      sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
+    const match = sourceCodeScriptURL?.match(/^https?:\/\/.*?\//);
     if (match) {
       // jsBundle was loaded from network
       _serverURL = match[0];
@@ -52,19 +52,25 @@ function getDevServerURL(): ?string {
 }
 
 function _coerceLocalScriptURL(scriptURL: ?string): ?string {
-  if (scriptURL) {
-    if (scriptURL.startsWith('assets://')) {
+  let normalizedScriptURL = scriptURL;
+
+  if (normalizedScriptURL != null) {
+    if (normalizedScriptURL.startsWith('assets://')) {
       // android: running from within assets, no offline path to use
       return null;
     }
-    scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
-    if (!scriptURL.includes('://')) {
+    normalizedScriptURL = normalizedScriptURL.substring(
+      0,
+      normalizedScriptURL.lastIndexOf('/') + 1,
+    );
+    if (!normalizedScriptURL.includes('://')) {
       // Add file protocol in case we have an absolute file path and not a URL.
       // This shouldn't really be necessary. scriptURL should be a URL.
-      scriptURL = 'file://' + scriptURL;
+      normalizedScriptURL = 'file://' + normalizedScriptURL;
     }
   }
-  return scriptURL;
+
+  return normalizedScriptURL;
 }
 
 function getScriptURL(): ?string {
@@ -84,8 +90,10 @@ function setCustomSourceTransformer(
  * `source` is either a number (opaque type returned by require('./foo.png'))
  * or an `ImageSource` like { uri: '<http location || file path>' }
  */
-function resolveAssetSource(source: any): ?ResolvedAssetSource {
-  if (typeof source === 'object') {
+function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
+  if (source == null || typeof source === 'object') {
+    // $FlowFixMe[incompatible-exact] `source` doesn't exactly match `ResolvedAssetSource`
+    // $FlowFixMe[incompatible-return] `source` doesn't exactly match `ResolvedAssetSource`
     return source;
   }
 
