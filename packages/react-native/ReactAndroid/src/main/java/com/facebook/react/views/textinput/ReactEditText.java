@@ -129,7 +129,8 @@ public class ReactEditText extends AppCompatEditText {
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
   private @Nullable EventDispatcher mEventDispatcher;
-
+  public boolean isInitialRender = true;
+  
   public ReactEditText(Context context) {
     super(context);
     setFocusableInTouchMode(false);
@@ -671,6 +672,12 @@ public class ReactEditText extends AppCompatEditText {
     // text so, we have to set text to null, which will clear the currently composing text.
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
+      // When we call Editable#replace() Android moves the cursor to the end of the replaced text.
+      // To ensure that the cursor position remains at the beginning of the text on the initial render
+      // we call Editable#setText()
+    } else if (isInitialRender && !hasFocus()) {
+      setText(spannableStringBuilder);
+      isInitialRender = false;
     } else {
       // When we update text, we trigger onChangeText code that will
       // try to update state if the wrapper is available. Temporarily disable
