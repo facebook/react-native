@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
@@ -32,7 +32,6 @@ target_link_libraries(react_render_scheduler
         react_render_graphics
         react_render_mounting
         react_render_runtimescheduler
-        react_render_templateprocessor
         react_render_uimanager
         react_utils
         rrc_root

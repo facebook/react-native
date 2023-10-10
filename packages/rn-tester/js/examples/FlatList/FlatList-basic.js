@@ -158,6 +158,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <View style={styles.searchRow}>
             <View style={styles.options}>
               <PlainInput
+                testID="search_bar_flat_list"
                 onChangeText={this._onChangeFilterText}
                 placeholder="Search..."
                 value={this.state.filterText}
@@ -248,7 +249,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <SeparatorComponent />
           <Animated.FlatList
             fadingEdgeLength={this.state.fadingEdgeLength}
-            ItemSeparatorComponent={ItemSeparatorComponent}
+            ItemSeparatorComponent={
+              this.state.horizontal ? null : ItemSeparatorComponent
+            }
             ListHeaderComponent={
               this.state.previousLoading ? LoadingComponent : HeaderComponent
             }
@@ -280,6 +283,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onScroll={
               this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
             }
+            onScrollToIndexFailed={this._onScrollToIndexFailed}
             onViewableItemsChanged={this._onViewableItemsChanged}
             ref={this._captureRef}
             refreshing={false}
@@ -369,6 +373,19 @@ class FlatListExample extends React.PureComponent<Props, State> {
         }
       : {renderItem: renderProp};
   };
+
+  _onScrollToIndexFailed = ({
+    index,
+    highestMeasuredFrameIndex,
+  }: {
+    index: number,
+    highestMeasuredFrameIndex: number,
+  }) => {
+    console.warn(
+      `failed to scroll to index: ${index} (measured up to ${highestMeasuredFrameIndex})`,
+    );
+  };
+
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.
   _onViewableItemsChanged = (info: {

@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 @ReactModule(name = NativeAppStateSpec.NAME)
 public class AppStateModule extends NativeAppStateSpec
     implements LifecycleEventListener, WindowFocusChangeListener {
-  public static final String TAG = AppStateModule.class.getSimpleName();
 
   public static final String APP_STATE_ACTIVE = "active";
   public static final String APP_STATE_BACKGROUND = "background";

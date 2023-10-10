@@ -9,7 +9,8 @@
   "overrides": [
     {
       "files": [
-        "*.js"
+        "*.js",
+        "*.js.flow"
       ],
       "options": {
         "parser": "hermes"

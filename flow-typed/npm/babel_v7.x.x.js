@@ -734,6 +734,8 @@ declare module '@babel/core' {
      */
     only?: MatchPattern | Array<MatchPattern>,
 
+    extensions?: Array<string>,
+
     // Source Map options
 
     /**
@@ -1221,6 +1223,12 @@ declare module '@babel/generator' {
     options?: Options,
     code?: string | {|[filename: string]: string|},
   ) => GeneratorResult;
+}
+
+declare module '@babel/register' {
+  import type {BabelCoreOptions} from '@babel/core';
+
+  declare module.exports: (options?: BabelCoreOptions) => void;
 }
 
 declare module '@babel/template' {

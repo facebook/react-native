@@ -41,7 +41,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled
 
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
-    output_dir = "#{react_native_path}/React/Fabric"
+    output_dir = "#{relative_installation_root}/#{react_native_path}/React/Fabric"
 
     provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
     provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.mm"
@@ -81,7 +81,7 @@ def run_codegen!(
   codegen_output_dir: 'build/generated/ios',
   config_key: 'codegenConfig',
   package_json_file: '~/app/package.json',
-  folly_version: '2021.07.22.00',
+  folly_version: '2023.08.07.00',
   codegen_utils: CodegenUtils.new()
   )
 

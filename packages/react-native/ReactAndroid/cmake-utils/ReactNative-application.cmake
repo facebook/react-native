@@ -54,10 +54,10 @@ target_compile_options(${CMAKE_PROJECT_NAME}
                 # due to use migrating away from
                 # #include <react/renderer/graphics/conversions.h>
                 # This can be removed for React Native 0.73
-                -Wno-error=cpp 
+                -Wno-error=cpp
                 -fexceptions
                 -frtti
-                -std=c++17
+                -std=c++20
                 -DWITH_INSPECTOR=1
                 -DLOG_TAG=\"ReactNative\")
 

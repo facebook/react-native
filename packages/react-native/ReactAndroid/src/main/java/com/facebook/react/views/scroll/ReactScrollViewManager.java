@@ -213,6 +213,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public void scrollTo(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
@@ -295,6 +296,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
     // ScrollView always has one child - the scrollable area
     int bottom = child.getHeight() + scrollView.getPaddingBottom();
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
@@ -336,7 +338,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
+    view.setStateWrapper(stateWrapper);
     return null;
   }
 

@@ -28,23 +28,8 @@ class HeaderUtilTest {
   }
 
   @Test
-  fun valueStripKeepsLetters() {
-    assertEquals(ALPHABET_TEST, HeaderUtil.stripHeaderValue(ALPHABET_TEST))
-  }
-
-  @Test
   fun nameStripKeepsNumbers() {
     assertEquals(NUMBERS_TEST, HeaderUtil.stripHeaderName(NUMBERS_TEST))
-  }
-
-  @Test
-  fun valueStripKeepsNumbers() {
-    assertEquals(NUMBERS_TEST, HeaderUtil.stripHeaderValue(NUMBERS_TEST))
-  }
-
-  @Test
-  fun valueStripKeepsSpecials() {
-    assertEquals(SPECIALS_TEST, HeaderUtil.stripHeaderValue(SPECIALS_TEST))
   }
 
   @Test
@@ -53,18 +38,8 @@ class HeaderUtilTest {
   }
 
   @Test
-  fun valueStripKeepsTabs() {
-    assertEquals(TABULATION_TEST, HeaderUtil.stripHeaderValue(TABULATION_TEST))
-  }
-
-  @Test
   fun nameStripDeletesTabs() {
     assertEquals(TABULATION_STRIP_EXPECTED, HeaderUtil.stripHeaderName(TABULATION_TEST))
-  }
-
-  @Test
-  fun valueStripRemovesExtraSymbols() {
-    assertEquals(BANNED_TEST_EXPECTED, HeaderUtil.stripHeaderValue(VALUE_BANNED_SYMBOLS_TEST))
   }
 
   @Test

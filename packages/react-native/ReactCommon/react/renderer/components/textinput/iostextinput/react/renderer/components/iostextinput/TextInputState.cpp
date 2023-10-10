@@ -11,8 +11,8 @@ namespace facebook::react {
 
 #ifdef ANDROID
 TextInputState::TextInputState(
-    TextInputState const & /*previousState*/,
-    folly::dynamic const & /*data*/){};
+    const TextInputState& /*previousState*/,
+    const folly::dynamic& /*data*/){};
 
 /*
  * Empty implementation for Android because it doesn't use this class.

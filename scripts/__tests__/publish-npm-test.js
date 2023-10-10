@@ -45,11 +45,7 @@ let consoleError;
 
 describe('publish-npm', () => {
   beforeAll(() => {
-    jest.useFakeTimers({legacyFakeTimers: false});
     jest.setSystemTime(date);
-  });
-  afterAll(() => {
-    jest.useRealTimers();
   });
   beforeEach(() => {
     consoleError = console.error;
@@ -64,6 +60,14 @@ describe('publish-npm', () => {
   afterEach(() => {
     jest.resetModules();
     jest.resetAllMocks();
+  });
+
+  describe('publish-npm.js', () => {
+    it('Fails when invalid build type is passed', () => {
+      expect(() => publishNpm('invalid')).toThrowError(
+        'Unsupported build type: invalid',
+      );
+    });
   });
 
   describe('dry-run', () => {

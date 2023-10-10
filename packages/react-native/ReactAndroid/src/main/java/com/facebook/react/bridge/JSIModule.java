@@ -18,5 +18,5 @@ public interface JSIModule {
   void initialize();
 
   /** Called before {CatalystInstance#onHostDestroy} */
-  void onCatalystInstanceDestroy();
+  void invalidate();
 }

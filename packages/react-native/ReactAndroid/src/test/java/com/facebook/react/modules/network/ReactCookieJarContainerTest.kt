@@ -16,14 +16,10 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as whenever
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
 import org.robolectric.RobolectricTestRunner
 
 /** Tests for {@link NetworkingModule}. */
 @RunWith(RobolectricTestRunner::class)
-@PrepareForTest(ReactCookieJarContainer::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactCookieJarContainerTest {
   private val httpUrl: HttpUrl = HttpUrl.Builder().host("example.com").scheme("http").build()
 

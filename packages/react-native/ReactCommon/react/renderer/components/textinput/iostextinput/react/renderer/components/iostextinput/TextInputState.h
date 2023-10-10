@@ -51,14 +51,14 @@ class TextInputState final {
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  std::shared_ptr<TextLayoutManager const> layoutManager;
+  std::shared_ptr<const TextLayoutManager> layoutManager;
 
   size_t mostRecentEventCount{0};
 
 #ifdef ANDROID
   TextInputState(
-      TextInputState const &previousState,
-      folly::dynamic const &data);
+      const TextInputState& previousState,
+      const folly::dynamic& data);
 
   folly::dynamic getDynamic() const;
 

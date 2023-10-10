@@ -51,7 +51,7 @@ class BoundedConsumableBuffer {
    * operation, which will depend on whether the buffer reached the max allowed
    * size and how many are there unconsumed elements.
    */
-  PushStatus add(const T &&el) {
+  PushStatus add(const T&& el) {
     if (entries_.size() < maxSize_) {
       // Haven't reached max buffer size yet, just add and grow the buffer
       entries_.emplace_back(el);
@@ -79,7 +79,7 @@ class BoundedConsumableBuffer {
    * Returns pointer to next entry which would be overwritten or dropped if
    * added a new element. Null if no entry will be dropped.
    */
-  const T *getNextOverwriteCandidate() const {
+  const T* getNextOverwriteCandidate() const {
     if (entries_.size() < maxSize_) {
       return nullptr;
     } else {
@@ -87,14 +87,14 @@ class BoundedConsumableBuffer {
     }
   }
 
-  T &operator[](size_t idx) {
+  T& operator[](size_t idx) {
     return entries_[(position_ + idx) % entries_.size()];
   }
 
   /**
    * Returns reference to the last unconsumed element
    */
-  T &back() {
+  T& back() {
     return entries_[(cursorEnd_ - 1 + entries_.size()) % entries_.size()];
   }
 
@@ -117,7 +117,7 @@ class BoundedConsumableBuffer {
   /**
    * Clears buffer entries by predicate
    */
-  void clear(std::function<bool(const T &)> predicate) {
+  void clear(std::function<bool(const T&)> predicate) {
     int pos = cursorStart_;
     std::vector<T> entries;
     int numToConsume = 0;
@@ -157,13 +157,13 @@ class BoundedConsumableBuffer {
   /**
    * Retrieves buffer entries, whether consumed or not, with predicate
    */
-  std::vector<T> getEntries(std::function<bool(const T &)> predicate) const {
+  std::vector<T> getEntries(std::function<bool(const T&)> predicate) const {
     std::vector<T> res;
     getEntries(res, predicate);
     return res;
   }
 
-  void getEntries(std::vector<T> &res) const {
+  void getEntries(std::vector<T>& res) const {
     const size_t oldSize = res.size();
     res.resize(oldSize + entries_.size());
     std::copy(
@@ -174,10 +174,10 @@ class BoundedConsumableBuffer {
         res.begin() + oldSize + entries_.size() - position_);
   }
 
-  void getEntries(std::vector<T> &res, std::function<bool(const T &)> predicate)
+  void getEntries(std::vector<T>& res, std::function<bool(const T&)> predicate)
       const {
     for (int i = 0; i < entries_.size(); i++) {
-      const T &el = entries_[(i + position_) % entries_.size()];
+      const T& el = entries_[(i + position_) % entries_.size()];
       if (predicate(el)) {
         res.push_back(el);
       }
@@ -196,7 +196,7 @@ class BoundedConsumableBuffer {
     return res;
   }
 
-  void consume(std::vector<T> &res) {
+  void consume(std::vector<T>& res) {
     if (numToConsume_ == 0) {
       return;
     }

@@ -112,7 +112,7 @@ export type ImageComponentStatics = $ReadOnly<{|
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
   prefetchWithMetadata: typeof prefetchWithMetadata,
-  abortPrefetch: typeof abortPrefetch,
+  abortPrefetch?: typeof abortPrefetch,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
 |}>;
@@ -197,11 +197,14 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
 
   const objectFit =
+    // $FlowFixMe[prop-missing]
     style && style.objectFit
-      ? convertObjectFitToResizeMode(style.objectFit)
+      ? // $FlowFixMe[incompatible-call]
+        convertObjectFitToResizeMode(style.objectFit)
       : null;
   // $FlowFixMe[prop-missing]
   const resizeMode =
+    // $FlowFixMe[prop-missing]
     objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
 
   return (
@@ -220,7 +223,9 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
               if (hasTextAncestor) {
                 return (
                   <TextInlineImageNativeComponent
+                    // $FlowFixMe[incompatible-type]
                     style={style}
+                    // $FlowFixMe[incompatible-type]
                     resizeMode={resizeMode}
                     headers={nativeProps.headers}
                     src={sources}
@@ -232,6 +237,7 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
               return (
                 <ImageViewNativeComponent
                   {...nativePropsWithAnalytics}
+                  // $FlowFixMe[incompatible-type]
                   resizeMode={resizeMode}
                 />
               );

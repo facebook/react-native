@@ -21,7 +21,6 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 **/.xcode.env.local
-/poackages/react-native/sdks/downloads/
 
 # Gradle
 /build/
@@ -52,6 +51,7 @@ buck-out
 /.lsp-buck-out
 /packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/
 /packages/react-native/ReactAndroid/src/main/gen
+/.cpplsp.buckd
 
 # Android Studio
 .project
@@ -99,7 +99,7 @@ package-lock.json
 
 # Libs that shouldn't have Xcode project
 /packages/react-native/Libraries/FBLazyVector/**/*.xcodeproj
-/packages/react-native/Libraries/RCTRequired/**/*.xcodeproj
+/packages/react-native/Libraries/Required/**/*.xcodeproj
 /packages/react-native/React/CoreModules/**/*.xcodeproj
 /packages/react-native/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
@@ -136,6 +136,7 @@ package-lock.json
 /packages/react-native/sdks/download
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
+/packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
 # Visual studio
 .vscode
@@ -146,3 +147,10 @@ package-lock.json
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+
+# E2E files
+/packages/rn-tester-e2e/apps/*.apk
+/packages/rn-tester-e2e/apps/*.app
+
+# CircleCI
+.circleci/generated_config.yml

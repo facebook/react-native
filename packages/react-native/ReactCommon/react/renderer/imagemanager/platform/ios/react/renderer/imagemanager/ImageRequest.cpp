@@ -23,22 +23,22 @@ void ImageRequest::cancel() const {
   cancelRequest_();
 }
 
-const ImageSource &ImageRequest::getImageSource() const {
+const ImageSource& ImageRequest::getImageSource() const {
   return imageSource_;
 }
 
-const std::shared_ptr<const ImageTelemetry> &ImageRequest::getSharedTelemetry()
+const std::shared_ptr<const ImageTelemetry>& ImageRequest::getSharedTelemetry()
     const {
   return telemetry_;
 }
 
-const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator& ImageRequest::getObserverCoordinator()
     const {
   return *coordinator_;
 }
 
-const std::shared_ptr<const ImageResponseObserverCoordinator>
-    &ImageRequest::getSharedObserverCoordinator() const {
+const std::shared_ptr<const ImageResponseObserverCoordinator>&
+ImageRequest::getSharedObserverCoordinator() const {
   return coordinator_;
 }
 

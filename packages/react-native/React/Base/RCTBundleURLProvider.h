@@ -112,7 +112,7 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 
 /**
  * Given a hostname for the packager and a bundle root, returns the URL to the js bundle. Generally you should use the
- * instance method -jsBundleURLForBundleRoot:fallbackResource: which includes logic to guess if the packager is running
+ * instance method -jsBundleURLForBundleRoot:fallbackExtension: which includes logic to guess if the packager is running
  * and fall back to a pre-packaged bundle if it is not.
  *
  * The options here mirror some of Metro's Bundling Options:

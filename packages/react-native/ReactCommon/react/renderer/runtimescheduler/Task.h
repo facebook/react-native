@@ -19,7 +19,7 @@ namespace facebook::react {
 class RuntimeScheduler;
 class TaskPriorityComparer;
 
-using RawCallback = std::function<void(jsi::Runtime &)>;
+using RawCallback = std::function<void(jsi::Runtime&)>;
 
 struct Task final : public jsi::NativeState {
   Task(
@@ -40,14 +40,14 @@ struct Task final : public jsi::NativeState {
   std::optional<std::variant<jsi::Function, RawCallback>> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
-  jsi::Value execute(jsi::Runtime &runtime, bool didUserCallbackTimeout);
+  jsi::Value execute(jsi::Runtime& runtime, bool didUserCallbackTimeout);
 };
 
 class TaskPriorityComparer {
  public:
   inline bool operator()(
-      std::shared_ptr<Task> const &lhs,
-      std::shared_ptr<Task> const &rhs) {
+      const std::shared_ptr<Task>& lhs,
+      const std::shared_ptr<Task>& rhs) {
     return lhs->expirationTime > rhs->expirationTime;
   }
 };

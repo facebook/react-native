@@ -56,7 +56,7 @@ class ScopedGlobalRef {
           std::is_same<T, jbooleanArray>(),
       "ScopedGlobalRef instantiated for invalid type");
 
-public:
+ public:
   /**
    * Constructs a ScopedGlobalRef with a JNI global reference.
    *
@@ -82,7 +82,9 @@ public:
     return *this;
   }
 
-  ~ScopedGlobalRef() { reset(); }
+  ~ScopedGlobalRef() {
+    reset();
+  }
 
   /**
    * Deletes the currently held reference and reassigns a new one to the
@@ -111,17 +113,21 @@ public:
   /**
    * Returns the underlying JNI global reference.
    */
-  T get() const { return mGlobalRef; }
+  T get() const {
+    return mGlobalRef;
+  }
 
   /**
    * Returns true if the underlying JNI reference is not NULL.
    */
-  operator bool() const { return mGlobalRef != NULL; }
+  operator bool() const {
+    return mGlobalRef != NULL;
+  }
 
   ScopedGlobalRef(const ScopedGlobalRef& ref) = delete;
   ScopedGlobalRef& operator=(const ScopedGlobalRef& other) = delete;
 
-private:
+ private:
   T mGlobalRef;
 };
 

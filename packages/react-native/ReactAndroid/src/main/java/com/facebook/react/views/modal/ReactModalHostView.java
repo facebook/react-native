@@ -36,11 +36,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -63,8 +63,7 @@ import java.util.ArrayList;
  *       around addition and removal of views to the DialogRootViewGroup.
  * </ol>
  */
-public class ReactModalHostView extends ViewGroup
-    implements LifecycleEventListener, FabricViewStateManager.HasFabricViewStateManager {
+public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 
   private static final String TAG = "ReactModalHost";
 
@@ -395,10 +394,14 @@ public class ReactModalHostView extends ViewGroup
     }
   }
 
-  @Override
-  public FabricViewStateManager getFabricViewStateManager() {
-    return mHostView.getFabricViewStateManager();
+  @Nullable
+  public StateWrapper getStateWrapper() {
+    return mHostView.getStateWrapper();
   }
+
+  public void setStateWrapper(StateWrapper stateWrapper) {
+    mHostView.setStateWrapper(stateWrapper);
+  };
 
   public void updateState(final int width, final int height) {
     mHostView.updateState(width, height);
@@ -415,14 +418,13 @@ public class ReactModalHostView extends ViewGroup
    * styleHeight on the LayoutShadowNode to be the window size. This is done through the
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
-  static class DialogRootViewGroup extends ReactViewGroup
-      implements RootView, FabricViewStateManager.HasFabricViewStateManager {
+  static class DialogRootViewGroup extends ReactViewGroup implements RootView {
     private boolean hasAdjustedSize = false;
     private int viewWidth;
     private int viewHeight;
     private EventDispatcher mEventDispatcher;
 
-    private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+    private StateWrapper mStateWrapper = null;
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
     @Nullable private JSPointerDispatcher mJSPointerDispatcher;
@@ -450,7 +452,7 @@ public class ReactModalHostView extends ViewGroup
       if (getChildCount() > 0) {
         hasAdjustedSize = false;
         final int viewTag = getChildAt(0).getId();
-        if (mFabricViewStateManager.hasStateWrapper()) {
+        if (mStateWrapper != null) {
           // This will only be called under Fabric
           updateState(viewWidth, viewHeight);
         } else {
@@ -485,7 +487,7 @@ public class ReactModalHostView extends ViewGroup
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      ReadableMap currentState = getFabricViewStateManager().getStateData();
+      ReadableMap currentState = mStateWrapper.getStateData();
       if (currentState != null) {
         float delta = (float) 0.9;
         float stateScreenHeight =
@@ -501,16 +503,12 @@ public class ReactModalHostView extends ViewGroup
         }
       }
 
-      mFabricViewStateManager.setState(
-          new FabricViewStateManager.StateUpdateCallback() {
-            @Override
-            public WritableMap getStateUpdate() {
-              WritableMap map = new WritableNativeMap();
-              map.putDouble("screenWidth", realWidth);
-              map.putDouble("screenHeight", realHeight);
-              return map;
-            }
-          });
+      if (mStateWrapper != null) {
+        WritableMap newStateData = new WritableNativeMap();
+        newStateData.putDouble("screenWidth", realWidth);
+        newStateData.putDouble("screenHeight", realHeight);
+        mStateWrapper.updateState(newStateData);
+      }
     }
 
     @Override
@@ -568,11 +566,6 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
-    public void onChildStartedNativeGesture(MotionEvent ev) {
-      this.onChildStartedNativeGesture(null, ev);
-    }
-
-    @Override
     public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
       if (mJSPointerDispatcher != null) {
@@ -594,9 +587,13 @@ public class ReactModalHostView extends ViewGroup
       // even when some other view disallow that
     }
 
-    @Override
-    public FabricViewStateManager getFabricViewStateManager() {
-      return mFabricViewStateManager;
+    @Nullable
+    public StateWrapper getStateWrapper() {
+      return mStateWrapper;
+    }
+
+    public void setStateWrapper(StateWrapper stateWrapper) {
+      mStateWrapper = stateWrapper;
     }
   }
 }

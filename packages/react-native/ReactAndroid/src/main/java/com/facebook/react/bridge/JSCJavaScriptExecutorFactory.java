@@ -7,7 +7,9 @@
 
 package com.facebook.react.bridge;
 
-public class JSCJavaScriptExecutorFactory implements JavaScriptExecutorFactory {
+/** @deprecated use {@link com.facebook.react.jscexecutor.JSCExecutorFactory} instead. */
+@Deprecated
+class JSCJavaScriptExecutorFactory implements JavaScriptExecutorFactory {
   private final String mAppName;
   private final String mDeviceName;
 

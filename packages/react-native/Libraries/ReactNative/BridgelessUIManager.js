@@ -14,26 +14,47 @@ import type {RootTag} from '../Types/RootTagTypes';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 
+let cachedConstants = null;
+
 const errorMessageForMethod = (methodName: string): string =>
   "[ReactNative Architecture][JS] '" +
   methodName +
   "' is not available in the new React Native architecture.";
 
-module.exports = {
+function nativeViewConfigsInBridgelessModeEnabled(): boolean {
+  return global.RN$LegacyInterop_UIManager_getConstants !== undefined;
+}
+
+function getCachedConstants(): Object {
+  if (!cachedConstants) {
+    cachedConstants = global.RN$LegacyInterop_UIManager_getConstants();
+  }
+  return cachedConstants;
+}
+
+const UIManagerJS: {[string]: $FlowFixMe} = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
-    console.error(
-      errorMessageForMethod('getViewManagerConfig') +
-        'Use hasViewManagerConfig instead. viewManagerName: ' +
-        viewManagerName,
-    );
-    return null;
+    if (nativeViewConfigsInBridgelessModeEnabled()) {
+      return getCachedConstants()[viewManagerName];
+    } else {
+      console.error(
+        errorMessageForMethod('getViewManagerConfig') +
+          'Use hasViewManagerConfig instead. viewManagerName: ' +
+          viewManagerName,
+      );
+      return null;
+    }
   },
   hasViewManagerConfig: (viewManagerName: string): boolean => {
     return unstable_hasComponent(viewManagerName);
   },
   getConstants: (): Object => {
-    console.error(errorMessageForMethod('getConstants'));
-    return {};
+    if (nativeViewConfigsInBridgelessModeEnabled()) {
+      return getCachedConstants();
+    } else {
+      console.error(errorMessageForMethod('getConstants'));
+      return null;
+    }
   },
   getConstantsForViewManager: (viewManagerName: string): Object => {
     console.error(errorMessageForMethod('getConstantsForViewManager'));
@@ -160,3 +181,11 @@ module.exports = {
   dismissPopupMenu: (): void =>
     console.error(errorMessageForMethod('dismissPopupMenu')),
 };
+
+if (nativeViewConfigsInBridgelessModeEnabled()) {
+  Object.keys(getCachedConstants()).forEach(viewConfigName => {
+    UIManagerJS[viewConfigName] = getCachedConstants()[viewConfigName];
+  });
+}
+
+module.exports = UIManagerJS;

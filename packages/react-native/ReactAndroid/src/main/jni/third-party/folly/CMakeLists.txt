@@ -10,6 +10,7 @@ SET(folly_FLAGS
         -DFOLLY_NO_CONFIG=1
         -DFOLLY_HAVE_CLOCK_GETTIME=1
         -DFOLLY_USE_LIBCPP=1
+        -DFOLLY_CFG_NO_COROUTINES=1
         -DFOLLY_MOBILE=1
         -DFOLLY_HAVE_RECVMMSG=1
         -DFOLLY_HAVE_PTHREAD=1
@@ -23,35 +24,35 @@ SET(folly_FLAGS
 ##################
 
 SET(folly_runtime_SRC
-        folly/SharedMutex.cpp
-        folly/concurrency/CacheLocality.cpp
-        folly/detail/Futex.cpp
-        folly/lang/SafeAssert.cpp
-        folly/lang/ToAscii.cpp
-        folly/synchronization/ParkingLot.cpp
-        folly/system/ThreadId.cpp
-        folly/system/ThreadName.cpp
-        folly/json.cpp
-        folly/Unicode.cpp
         folly/Conv.cpp
         folly/Demangle.cpp
-        folly/memory/detail/MallocImpl.cpp
-        folly/String.cpp
         folly/dynamic.cpp
         folly/FileUtil.cpp
         folly/Format.cpp
-        folly/net/NetOps.cpp
         folly/json_pointer.cpp
-        folly/lang/CString.cpp
+        folly/json.cpp
+        folly/ScopeGuard.cpp
+        folly/SharedMutex.cpp
+        folly/String.cpp
+        folly/Unicode.cpp
+        folly/concurrency/CacheLocality.cpp
+        folly/container/detail/F14Table.cpp
+        folly/detail/FileUtilDetail.cpp
+        folly/detail/Futex.cpp
+        folly/detail/SplitStringSimd.cpp
         folly/detail/UniqueInstance.cpp
         folly/hash/SpookyHashV2.cpp
-        folly/container/detail/F14Table.cpp
-        folly/ScopeGuard.cpp
-        folly/portability/SysUio.cpp)
-
-IF (CMAKE_BUILD_TYPE MATCHES Debug)
-  list(APPEND folly_runtime_SRC folly/lang/Assume.cpp)
-ENDIF ()
+        folly/lang/CString.cpp
+        folly/lang/SafeAssert.cpp
+        folly/lang/ToAscii.cpp
+        folly/memory/detail/MallocImpl.cpp
+        folly/net/NetOps.cpp
+        folly/portability/SysUio.cpp
+        folly/synchronization/SanitizeThread.cpp
+        folly/synchronization/ParkingLot.cpp
+        folly/system/AtFork.cpp
+        folly/system/ThreadId.cpp
+        folly/system/ThreadName.cpp)
 
 add_library(folly_runtime SHARED ${folly_runtime_SRC})
 
@@ -73,17 +74,16 @@ target_link_libraries(folly_runtime glog double-conversion boost fmt)
 #####################
 
 add_library(folly_futures STATIC
+        folly/CancellationToken.cpp
         folly/ExceptionWrapper.cpp
         folly/ExceptionString.cpp
         folly/Executor.cpp
         folly/Singleton.cpp
+        folly/SingletonThreadLocal.cpp
         folly/Try.cpp
         folly/concurrency/CacheLocality.cpp
         folly/detail/AsyncTrace.cpp
-        folly/detail/AtFork.cpp
         folly/detail/MemoryIdler.cpp
-        folly/detail/SingletonStackTrace.cpp
-        folly/detail/StaticSingletonManager.cpp
         folly/detail/ThreadLocalDetail.cpp
         folly/fibers/Baton.cpp
         folly/fibers/FiberManager.cpp
@@ -106,9 +106,11 @@ add_library(folly_futures STATIC
         folly/io/async/TimeoutManager.cpp
         folly/io/async/VirtualEventBase.cpp
         folly/lang/Exception.cpp
+        folly/lang/UncaughtExceptions.cpp
         folly/memory/MallctlHelper.cpp
+        folly/memory/ReentrantAllocator.cpp
         folly/portability/SysMembarrier.cpp
-        folly/synchronization/AsymmetricMemoryBarrier.cpp
+        folly/synchronization/AsymmetricThreadFence.cpp
         folly/synchronization/Hazptr.cpp
         folly/synchronization/WaitOptions.cpp
         folly/synchronization/detail/Sleeper.cpp
