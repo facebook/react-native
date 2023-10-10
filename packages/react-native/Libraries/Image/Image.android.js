@@ -16,7 +16,7 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import ImageInjection from './ImageInjection';
+import {unstable_getImageComponentDecorator} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -238,8 +238,9 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
   },
 );
 
-if (ImageInjection.unstable_createImageComponent != null) {
-  BaseImage = ImageInjection.unstable_createImageComponent(BaseImage);
+const imageComponentDecorator = unstable_getImageComponentDecorator();
+if (imageComponentDecorator != null) {
+  BaseImage = imageComponentDecorator(BaseImage);
 }
 
 // $FlowExpectedError[incompatible-type] Eventually we need to move these functions from statics of the component to exports in the module.
