@@ -161,7 +161,7 @@ jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &messag
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
     const std::weak_ptr<CallbackWrapper> &function,
-    std::optional<std::reference_wrapper<jsi::Value>> jsInvocationStack) {
+    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
   auto executor = [jsInvocationStack](
           const std::shared_ptr<CallbackWrapper>& reject,
           const std::vector<jsi::Value>& args) {
@@ -180,7 +180,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
           error.asObject(rt2).setProperty(rt2, "cause", args[0]);
       }
       if (jsInvocationStack.has_value()) {
-          error.asObject(rt2).setProperty(rt2, "stack", jsInvocationStack.value().get());
+          error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack.value());
       }
       reject->callback().call(rt2, error);
   };
@@ -547,7 +547,7 @@ jsi::JSError convertThrowableToJSError(
 void rejectWithException(
     std::weak_ptr<CallbackWrapper> &rejectWeak,
     std::exception_ptr &exception,
-    std::optional<std::reference_wrapper<jsi::Value>> jsInvocationStack) {
+    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
   auto reject = rejectWeak.lock();
   if (reject) {
     reject->jsInvoker().invokeAsync([
@@ -561,7 +561,7 @@ void rejectWithException(
         auto throwable = jni::getJavaExceptionForCppException(exception);
         auto jsError = convertThrowableToJSError(runtime, throwable);
         if (jsInvocationStack.has_value()) {
-          jsError.value().asObject(runtime).setProperty(runtime, "stack", jsInvocationStack.value().get());
+          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack.value());
         }
         reject2->callback().call(
           runtime,
@@ -933,12 +933,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             }
 
             // JS Stack at the time when the promise is created.
-            std::optional<std::reference_wrapper<jsi::Value>> jsInvocationStack = std::nullopt;
+            std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
             if (traceTurboModulePromiseRejections()) {
                 auto stack = createJSRuntimeError(runtime, "")
-                  .asObject(runtime)
-                  .getProperty(runtime, "stack");
-                jsInvocationStack = std::ref(stack);
+                        .asObject(runtime)
+                        .getProperty(runtime, "stack");
+                jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
             }
 
             jsi::Function resolveJSIFn =
