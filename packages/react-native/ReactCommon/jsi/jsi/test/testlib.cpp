@@ -1452,6 +1452,74 @@ TEST_P(JSITest, ArrayBufferSizeTest) {
   EXPECT_EQ(ab.size(rt), 10);
 }
 
+namespace {
+
+struct IntState : public NativeState {
+  explicit IntState(int value) : value(value) {}
+  int value;
+};
+
+} // namespace
+
+TEST_P(JSITest, NativeState) {
+  Object holder(rt);
+  EXPECT_FALSE(holder.hasNativeState(rt));
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
+
+  stateValue = std::make_shared<IntState>(21);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      21);
+
+  // There's currently way to "delete" the native state of a component fully
+  // Even when reset with nullptr, hasNativeState will still return true
+  holder.setNativeState(rt, nullptr);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_TRUE(holder.getNativeState(rt) == nullptr);
+}
+
+TEST_P(JSITest, NativeStateSymbolOverrides) {
+  Object holder(rt);
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+
+  // Attempting to change configurable attribute of unconfigurable property
+  try {
+    function(
+        "function (obj) {"
+        "  var mySymbol = Symbol();"
+        "  obj[mySymbol] = 'foo';"
+        "  var allSymbols = Object.getOwnPropertySymbols(obj);"
+        "  for (var sym of allSymbols) {"
+        "    Object.defineProperty(obj, sym, {configurable: true, writable: true});"
+        "    obj[sym] = 'bar';"
+        "  }"
+        "}")
+        .call(rt, holder);
+  } catch (const JSError& ex) {
+    // On JSC this throws, but it doesn't on Hermes
+    std::string exc = ex.what();
+    EXPECT_NE(
+        exc.find(
+            "Attempting to change configurable attribute of unconfigurable property"),
+        std::string::npos);
+  }
+
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
