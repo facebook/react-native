@@ -23,12 +23,6 @@
   ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
 
-/**
- * Block used to reject the JS promise waiting for a result
- * in cases when the native method throws an exception.
- */
-typedef void (^RCTNSDictionaryPromiseRejectBlock)(NSDictionary *exception);
-
 namespace facebook::react {
 
 class CallbackWrapper;
@@ -147,15 +141,14 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       bool isSync,
       const char *methodName,
       NSInvocation *inv,
-      NSMutableArray *retainedObjectsForInvocation,
-      RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock);
+      NSMutableArray *retainedObjectsForInvocation);
   void performVoidMethodInvocation(
       jsi::Runtime &runtime,
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);
 
-  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper, RCTNSDictionaryPromiseRejectBlock internalRejectWrapper);
+  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
   jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
 };
 
