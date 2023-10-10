@@ -933,6 +933,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             }
 
             // JS Stack at the time when the promise is created.
+            // This has to be shared pointer to hold jsi::Value
             std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
             if (traceTurboModulePromiseRejections()) {
                 auto stack = createJSRuntimeError(runtime, "")
