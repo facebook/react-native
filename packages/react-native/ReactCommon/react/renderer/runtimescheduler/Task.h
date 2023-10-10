@@ -24,12 +24,12 @@ using RawCallback = std::function<void(jsi::Runtime&)>;
 struct Task final : public jsi::NativeState {
   Task(
       SchedulerPriority priority,
-      jsi::Function callback,
+      jsi::Function&& callback,
       std::chrono::steady_clock::time_point expirationTime);
 
   Task(
       SchedulerPriority priority,
-      RawCallback callback,
+      RawCallback&& callback,
       std::chrono::steady_clock::time_point expirationTime);
 
  private:
