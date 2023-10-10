@@ -362,7 +362,7 @@ CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
           : messageQueueThread_(messageQueueThread) {}
       void invokeAsync(
           const std::string& methodName,
-          std::function<void()>&& work) override {
+          std::function<void()>&& work) noexcept override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
       void invokeSync(

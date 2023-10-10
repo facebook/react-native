@@ -112,7 +112,7 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
  public:
   ModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
-  void invokeAsync(const std::string &methodName, std::function<void()> &&work) override
+  void invokeAsync(const std::string &methodName, std::function<void()> &&work) noexcept override
   {
     if (methodQueue_ == RCTJSThread) {
       work();

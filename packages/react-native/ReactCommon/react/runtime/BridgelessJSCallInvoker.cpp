@@ -15,7 +15,8 @@ BridgelessJSCallInvoker::BridgelessJSCallInvoker(
     RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
-void BridgelessJSCallInvoker::invokeAsync(std::function<void()>&& func) {
+void BridgelessJSCallInvoker::invokeAsync(
+    std::function<void()>&& func) noexcept {
   runtimeExecutor_([func = std::move(func)](jsi::Runtime& runtime) { func(); });
 }
 

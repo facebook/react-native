@@ -29,26 +29,28 @@ class AsyncCallback {
             std::move(function),
             std::move(jsInvoker))) {}
 
-  void operator()(Args... args) const {
+  void operator()(Args... args) const noexcept {
     call(std::forward<Args>(args)...);
   }
 
-  void call(Args... args) const {
+  void call(Args... args) const noexcept {
     callWithArgs(std::nullopt, std::forward<Args>(args)...);
   }
 
-  void callWithPriority(SchedulerPriority priority, Args... args) const {
+  void callWithPriority(SchedulerPriority priority, Args... args)
+      const noexcept {
     callWithArgs(priority, std::forward<Args>(args)...);
   }
 
-  void call(
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
+  void call(std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
     callWithFunction(std::nullopt, std::move(callImpl));
   }
 
   void callWithPriority(
       SchedulerPriority priority,
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
     callWithFunction(priority, std::move(callImpl));
   }
 
@@ -58,7 +60,7 @@ class AsyncCallback {
   std::shared_ptr<SyncCallback<void(Args...)>> callback_;
 
   void callWithArgs(std::optional<SchedulerPriority> priority, Args... args)
-      const {
+      const noexcept {
     auto wrapper = callback_->wrapper_.lock();
     if (wrapper) {
       auto& jsInvoker = wrapper->jsInvoker();
@@ -78,7 +80,8 @@ class AsyncCallback {
 
   void callWithFunction(
       std::optional<SchedulerPriority> priority,
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
     auto wrapper = callback_->wrapper_.lock();
     if (wrapper) {
       auto& jsInvoker = wrapper->jsInvoker();
