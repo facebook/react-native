@@ -437,6 +437,11 @@ describe('ListMetricsAggregator', () => {
       getItem: (i: number) => nullthrows(props.data)[i],
     };
 
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
     listMetrics.notifyCellLayout({
       cellIndex: 0,
       cellKey: '0',
@@ -459,11 +464,6 @@ describe('ListMetricsAggregator', () => {
         x: 70,
         y: 0,
       },
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 100, height: 5},
-      orientation,
     });
 
     expect(listMetrics.getCellMetrics(1, props)).toEqual({
@@ -489,6 +489,11 @@ describe('ListMetricsAggregator', () => {
       getItem: (i: number) => nullthrows(props.data)[i],
     };
 
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
     listMetrics.notifyCellLayout({
       cellIndex: 0,
       cellKey: '0',
@@ -511,11 +516,6 @@ describe('ListMetricsAggregator', () => {
         x: 70,
         y: 0,
       },
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 100, height: 5},
-      orientation,
     });
 
     expect(listMetrics.getCellMetrics(2, props)).toBeNull();
@@ -537,6 +537,11 @@ describe('ListMetricsAggregator', () => {
       getItemLayout: () => ({index: 2, length: 40, offset: 30}),
     };
 
+    listMetrics.notifyListContentLayout({
+      layout: {width: 100, height: 5},
+      orientation,
+    });
+
     listMetrics.notifyCellLayout({
       cellIndex: 0,
       cellKey: '0',
@@ -559,11 +564,6 @@ describe('ListMetricsAggregator', () => {
         x: 70,
         y: 0,
       },
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 100, height: 5},
-      orientation,
     });
 
     expect(listMetrics.getCellMetrics(2, props)).toMatchObject({
@@ -713,98 +713,7 @@ describe('ListMetricsAggregator', () => {
     });
   });
 
-  it('resolves metrics of unmounted cell after list shift when using bottom-up layout propagation', () => {
-    const listMetrics = new ListMetricsAggregator();
-    const orientation = {horizontal: true, rtl: true};
-    const props: CellMetricProps = {
-      data: [1, 2, 3, 4, 5],
-      getItemCount: () => nullthrows(props.data).length,
-      getItem: (i: number) => nullthrows(props.data)[i],
-    };
-
-    listMetrics.notifyCellLayout({
-      cellIndex: 0,
-      cellKey: '0',
-      orientation,
-      layout: {
-        height: 5,
-        width: 10,
-        x: 90,
-        y: 0,
-      },
-    });
-
-    listMetrics.notifyCellLayout({
-      cellIndex: 1,
-      cellKey: '1',
-      orientation,
-      layout: {
-        height: 5,
-        width: 20,
-        x: 70,
-        y: 0,
-      },
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 100, height: 5},
-      orientation,
-    });
-
-    expect(listMetrics.getCellMetrics(1, props)).toEqual({
-      index: 1,
-      length: 20,
-      offset: 10,
-      isMounted: true,
-    });
-
-    listMetrics.notifyCellLayout({
-      cellIndex: 2,
-      cellKey: '2',
-      orientation,
-      layout: {
-        height: 5,
-        width: 20,
-        x: 50,
-        y: 0,
-      },
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 120, height: 5},
-      orientation,
-    });
-
-    expect(listMetrics.getCellMetrics(1, props)).toEqual({
-      index: 1,
-      length: 20,
-      offset: 10,
-      isMounted: true,
-    });
-
-    listMetrics.notifyCellUnmounted('1');
-
-    expect(listMetrics.getCellMetrics(1, props)).toEqual({
-      index: 1,
-      length: 20,
-      offset: 10,
-      isMounted: false,
-    });
-
-    listMetrics.notifyListContentLayout({
-      layout: {width: 100, height: 5},
-      orientation,
-    });
-
-    expect(listMetrics.getCellMetrics(1, props)).toEqual({
-      index: 1,
-      length: 20,
-      offset: 10,
-      isMounted: false,
-    });
-  });
-
-  it('resolves metrics of unmounted cell after list shift when using top-down layout propagation', () => {
+  it('resolves metrics of unmounted cell after list shift', () => {
     const listMetrics = new ListMetricsAggregator();
     const orientation = {horizontal: true, rtl: true};
     const props: CellMetricProps = {
@@ -1089,18 +998,18 @@ describe('ListMetricsAggregator', () => {
       getItem: (i: number) => nullthrows(props.data)[i],
     };
 
-    listMetrics.notifyCellLayout({
-      cellIndex: 0,
-      cellKey: '0',
-      orientation,
-      layout: {
-        height: 10,
-        width: 5,
-        x: 0,
-        y: 0,
-      },
-    });
-
-    expect(() => listMetrics.getCellMetrics(0, props)).toThrow();
+    expect(() =>
+      listMetrics.notifyCellLayout({
+        cellIndex: 0,
+        cellKey: '0',
+        orientation,
+        layout: {
+          height: 10,
+          width: 5,
+          x: 0,
+          y: 0,
+        },
+      }),
+    ).toThrow();
   });
 });

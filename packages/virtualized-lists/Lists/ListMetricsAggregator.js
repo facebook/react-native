@@ -14,8 +14,6 @@ import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 
 import invariant from 'invariant';
 
-type LayoutEventDirection = 'top-down' | 'bottom-up';
-
 export type CellMetrics = {
   /**
    * Index of the item in the list
@@ -55,25 +53,12 @@ export type CellMetricProps = {
   ...
 };
 
-type UnresolvedCellMetrics = {
-  index: number,
-  layout: Layout,
-  isMounted: boolean,
-
-  // The length of list content at the time of layout is needed to correctly
-  // resolve flow relative offset in RTL. We are lazily notified of this after
-  // the layout of the cell, unless the cell relayout does not cause a length
-  // change. To keep stability, we use content length at time of query, or
-  // unmount if never queried.
-  listContentLength?: ?number,
-};
-
 /**
  * Provides an interface to query information about the metrics of a list and its cells.
  */
 export default class ListMetricsAggregator {
   _averageCellLength = 0;
-  _cellMetrics: Map<string, UnresolvedCellMetrics> = new Map();
+  _cellMetrics: Map<string, CellMetrics> = new Map();
   _contentLength: ?number;
   _highestMeasuredCellIndex = 0;
   _measuredCellsLength = 0;
@@ -82,10 +67,6 @@ export default class ListMetricsAggregator {
     horizontal: false,
     rtl: false,
   };
-
-  // Fabric and Paper may call onLayout in different orders. We can tell which
-  // direction layout events happen on the first layout.
-  _onLayoutDirection: LayoutEventDirection = 'top-down';
 
   /**
    * Notify the ListMetricsAggregator that a cell has been laid out.
@@ -103,39 +84,22 @@ export default class ListMetricsAggregator {
     orientation: ListOrientation,
     layout: Layout,
   }): boolean {
-    if (this._contentLength == null) {
-      this._onLayoutDirection = 'bottom-up';
-    }
-
     this._invalidateIfOrientationChanged(orientation);
 
-    // If layout is top-down, our most recently cached content length
-    // corresponds to this cell. Otherwise, we need to resolve when events fire
-    // up the tree to the new length.
-    const listContentLength =
-      this._onLayoutDirection === 'top-down' ? this._contentLength : null;
-
-    const next: UnresolvedCellMetrics = {
+    const next: CellMetrics = {
       index: cellIndex,
-      layout: layout,
+      length: this._selectLength(layout),
       isMounted: true,
-      listContentLength,
+      offset: this.flowRelativeOffset(layout),
     };
     const curr = this._cellMetrics.get(cellKey);
 
-    if (
-      !curr ||
-      this._selectOffset(next.layout) !== this._selectOffset(curr.layout) ||
-      this._selectLength(next.layout) !== this._selectLength(curr.layout) ||
-      (curr.listContentLength != null &&
-        curr.listContentLength !== this._contentLength)
-    ) {
+    if (!curr || next.offset !== curr.offset || next.length !== curr.length) {
       if (curr) {
-        const dLength =
-          this._selectLength(next.layout) - this._selectLength(curr.layout);
+        const dLength = next.length - curr.length;
         this._measuredCellsLength += dLength;
       } else {
-        this._measuredCellsLength += this._selectLength(next.layout);
+        this._measuredCellsLength += next.length;
         this._measuredCellsCount += 1;
       }
 
@@ -174,21 +138,7 @@ export default class ListMetricsAggregator {
     layout: $ReadOnly<{width: number, height: number}>,
   }): void {
     this._invalidateIfOrientationChanged(orientation);
-    const newLength = this._selectLength(layout);
-
-    // Fill in any just-measured cells which did not have this length available.
-    // This logic assumes that cell relayout will always change list content
-    // size, which isn't strictly correct, but issues should be rare and only
-    // on Paper.
-    if (this._onLayoutDirection === 'bottom-up') {
-      for (const cellMetric of this._cellMetrics.values()) {
-        if (cellMetric.listContentLength == null) {
-          cellMetric.listContentLength = newLength;
-        }
-      }
-    }
-
-    this._contentLength = newLength;
+    this._contentLength = this._selectLength(layout);
   }
 
   /**
@@ -245,7 +195,7 @@ export default class ListMetricsAggregator {
       keyExtractor(getItem(data, index), index),
     );
     if (frame && frame.index === index) {
-      return this._resolveCellMetrics(frame);
+      return frame;
     }
 
     if (getItemLayout) {
@@ -284,26 +234,6 @@ export default class ListMetricsAggregator {
    */
   hasContentLength(): boolean {
     return this._contentLength != null;
-  }
-
-  /**
-   * Whether the ListMetricsAggregator is notified of cell metrics before
-   * ScrollView metrics (bottom-up) or ScrollView metrics before cell metrics
-   * (top-down).
-   *
-   * Must be queried after cell layout
-   */
-  getLayoutEventDirection(): LayoutEventDirection {
-    return this._onLayoutDirection;
-  }
-
-  /**
-   * Whether the ListMetricsAggregator must be aware of the current length of
-   * ScrollView content to be able to correctly resolve the (flow-relative)
-   * metrics of a cell.
-   */
-  needsContentLengthForCellMetrics(): boolean {
-    return this._orientation.horizontal && this._orientation.rtl;
   }
 
   /**
@@ -352,7 +282,6 @@ export default class ListMetricsAggregator {
 
     if (orientation.horizontal !== this._orientation.horizontal) {
       this._averageCellLength = 0;
-      this._contentLength = null;
       this._highestMeasuredCellIndex = 0;
       this._measuredCellsLength = 0;
       this._measuredCellsCount = 0;
@@ -370,16 +299,5 @@ export default class ListMetricsAggregator {
 
   _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
     return this._orientation.horizontal ? x : y;
-  }
-
-  _resolveCellMetrics(metrics: UnresolvedCellMetrics): CellMetrics {
-    const {index, layout, isMounted, listContentLength} = metrics;
-
-    return {
-      index,
-      length: this._selectLength(layout),
-      isMounted,
-      offset: this.flowRelativeOffset(layout, listContentLength),
-    };
   }
 }
