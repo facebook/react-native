@@ -20,6 +20,7 @@ import connect from 'connect';
 import path from 'path';
 // $FlowFixMe[untyped-import] TODO: type serve-static
 import serveStaticMiddleware from 'serve-static';
+import deprecated_openFlipperMiddleware from './middleware/deprecated_openFlipperMiddleware';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
 import InspectorProxy from './inspector-proxy/InspectorProxy';
 import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
@@ -86,14 +87,18 @@ export default function createDevMiddleware({
   const middleware = connect()
     .use(
       '/open-debugger',
-      openDebuggerMiddleware({
-        serverBaseUrl,
-        inspectorProxy,
-        browserLauncher: unstable_browserLauncher,
-        eventReporter: unstable_eventReporter,
-        experiments,
-        logger,
-      }),
+      experiments.enableNewDebugger
+        ? openDebuggerMiddleware({
+            serverBaseUrl,
+            inspectorProxy,
+            browserLauncher: unstable_browserLauncher,
+            eventReporter: unstable_eventReporter,
+            experiments,
+            logger,
+          })
+        : deprecated_openFlipperMiddleware({
+            logger,
+          }),
     )
     .use(
       '/debugger-frontend',
@@ -111,7 +116,7 @@ export default function createDevMiddleware({
 
 function getExperiments(config: ExperimentsConfig): Experiments {
   return {
-    enableCustomDebuggerFrontend: config.enableCustomDebuggerFrontend ?? false,
+    enableNewDebugger: config.enableNewDebugger ?? false,
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
   };
 }
