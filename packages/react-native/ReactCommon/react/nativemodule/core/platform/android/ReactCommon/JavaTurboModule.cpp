@@ -167,17 +167,20 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
   auto executor = [jsInvocationStack = std::move(jsInvocationStack)](
           const std::shared_ptr<CallbackWrapper>& reject,
           const std::vector<jsi::Value>& args) {
-      std::string message;
+      std::optional<std::string> message = std::nullopt;
       jsi::Runtime &rt2 = reject->runtime();
-      const jsi::Value* cause = args.data();
-      if (cause->isObject() && cause->asObject(rt2).getProperty(rt2, "message").isString()) {
-          message = cause->asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
-      } else {
-          message = "<unknown>";
+
+      if (!args.empty()) {
+          const jsi::Value &cause = args[0];
+          if (cause.isObject() && cause.asObject(rt2).getProperty(rt2, "message").isString()) {
+              message = cause.asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
+          }
       }
 
-      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + message);
-      error.asObject(rt2).setProperty(rt2, "cause", *cause);
+      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + (message.has_value() ? message.value() : "<unknown>"));
+      if (!args.empty()) {
+          error.asObject(rt2).setProperty(rt2, "cause", args[0]);
+      }
       error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack);
       reject->callback().call(rt2, error);
   };
