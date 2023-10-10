@@ -416,20 +416,19 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   return Promise.callAsConstructor(runtime, fn);
 }
 
-static void handleCause(
+static std::optional<jsi::JSError> handleCause(
     jsi::Runtime &runtime,
     bool isSync,
     NSDictionary *cause,
     NSMutableArray *retainedObjectsForInvocation,
     RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock)
 {
-  [retainedObjectsForInvocation removeAllObjects];
   if (isSync) {
     NSString *message = cause[@"message"];
     if (message) {
-      throw convertNSDictionaryToJSError(runtime, std::string([message UTF8String]), cause);
+      return convertNSDictionaryToJSError(runtime, std::string([message UTF8String]), cause);
     } else {
-      throw convertNSDictionaryToJSError(runtime, "<unknown>", cause);
+      return convertNSDictionaryToJSError(runtime, "<unknown>", cause);
     }
   } else {
     if (optionalInternalRejectBlock != nil) {
@@ -440,6 +439,7 @@ static void handleCause(
       throw;
     }
   }
+  return std::nullopt;
 }
 
 /**
@@ -477,47 +477,77 @@ id ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
+    std::optional<jsi::JSError> handledCatch = std::nullopt;
     try {
-      [inv invokeWithTarget:strongModule];
-    } catch (NSException *exception) {
-      NSDictionary *cause = @{
-        @"name": exception.name,
-        @"message": exception.reason,
-        @"stackSymbols": exception.callStackSymbols,
-        @"stackReturnAddresses": exception.callStackReturnAddresses,
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
-    } catch (NSError *error) {
-      NSDictionary *cause = @{
-        @"userInfo": error.userInfo,
-        @"domain": error.domain,
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
-    } catch (NSString *errorMessage) {
-      NSDictionary *cause = @{
-        @"message": errorMessage,
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
-    } catch (id e) {
-      NSDictionary *cause = @{
-        @"message": @"Unknown Objective-C Object thrown.",
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+      @try {
+        [inv invokeWithTarget:strongModule];
+       } @catch (NSException *exception) {
+         handledCatch = handleCause(runtime,
+                     isSync,
+                     @{
+                       @"name": exception.name,
+                       @"message": exception.reason,
+                       @"stackSymbols": exception.callStackSymbols,
+                       @"stackReturnAddresses": exception.callStackReturnAddresses,
+                     },
+                     retainedObjectsForInvocation,
+                     optionalInternalRejectBlock);
+       } @catch (NSError *error) {
+         handledCatch = handleCause(runtime,
+                     isSync,
+                     @{
+                       @"userInfo": error.userInfo,
+                       @"domain": error.domain,
+                     },
+                     retainedObjectsForInvocation,
+                     optionalInternalRejectBlock);
+       } @catch (NSString *errorMessage) {
+         handledCatch = handleCause(runtime,
+                     isSync,
+                     @{
+                       @"message": errorMessage,
+                     },
+                     retainedObjectsForInvocation,
+                     optionalInternalRejectBlock);
+       } @catch (id e) {
+         handledCatch = handleCause(runtime,
+                     isSync,
+                     @{
+                       @"message": @"Unknown Objective-C Object thrown.",
+                     },
+                     retainedObjectsForInvocation,
+                     optionalInternalRejectBlock);
+       } @finally {
+         [retainedObjectsForInvocation removeAllObjects];
+       }
     } catch (const std::exception &exception) {
-      NSDictionary *cause = @{
-        @"message": [NSString stringWithUTF8String:exception.what()],
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+      handledCatch = handleCause(runtime,
+                  isSync,
+                  @{
+                    @"message": [NSString stringWithUTF8String:exception.what()],
+                  },
+                  retainedObjectsForInvocation,
+                  optionalInternalRejectBlock);
     } catch (const std::string &errorMessage) {
-      NSDictionary *cause = @{
-        @"message": [NSString stringWithUTF8String:errorMessage.c_str()],
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+      handledCatch = handleCause(runtime,
+                  isSync,
+                  @{
+                    @"message": [NSString stringWithUTF8String:errorMessage.c_str()],
+                  },
+                  retainedObjectsForInvocation,
+                  optionalInternalRejectBlock);
     } catch (...) {
-      NSDictionary *cause = @{
-        @"message": @"Unknown C++ exception thrown.",
-      };
-      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+      handledCatch = handleCause(runtime,
+                  isSync,
+                  @{
+                    @"message": @"Unknown C++ exception thrown.",
+                  },
+                  retainedObjectsForInvocation,
+                  optionalInternalRejectBlock);
+    }
+
+    if (handledCatch.has_value()) {
+      throw handledCatch.value();
     }
 
     if (!isSync) {
