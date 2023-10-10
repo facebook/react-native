@@ -18,7 +18,6 @@ import type {Logger} from './types/Logger';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
 import connect from 'connect';
 import path from 'path';
-// $FlowFixMe[untyped-import] TODO: type serve-static
 import serveStaticMiddleware from 'serve-static';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
 import InspectorProxy from './inspector-proxy/InspectorProxy';
