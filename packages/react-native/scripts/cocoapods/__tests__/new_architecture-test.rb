@@ -284,7 +284,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = true
         ENV['RCT_NEW_ARCH_ENABLED'] = nil
 
@@ -295,7 +295,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnv1_returnTrueWithWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = true
         ENV['RCT_NEW_ARCH_ENABLED'] = "1"
 
@@ -308,7 +308,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
 
     def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalseAndEnv0_returnTrueWithWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = false
         ENV['RCT_NEW_ARCH_ENABLED'] = "0"
 
@@ -320,7 +320,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
-        version = '1.0.0-prealpha-0'
+        version = '0.0.0-prealpha-0'
         new_arch_enabled = false
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
@@ -329,7 +329,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
-        version = '1.0.0-prealpha0'
+        version = '0.0.0-prealpha0'
         new_arch_enabled = false
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
@@ -343,7 +343,8 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
-        assert_equal("1", isEnabled)
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns);
     end
 
     # =================================== #

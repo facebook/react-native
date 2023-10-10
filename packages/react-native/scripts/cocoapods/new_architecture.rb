@@ -186,11 +186,11 @@ class NewArchitectureHelper
 
         if match_data = react_native_version.match(version_regex)
 
-            major = match_data[1].to_i
+            prerelease = match_data[4].to_s
 
             # We want to enforce the new architecture for 1.0.0 and greater,
             # but not for 1000 as version 1000 is currently main.
-            if major > 0 && major < 1000
+            if prerelease.include?("prealpha")
                 if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
                     warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
                                       "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
