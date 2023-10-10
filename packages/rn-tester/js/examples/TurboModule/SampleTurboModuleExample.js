@@ -54,7 +54,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     rejectPromise: () =>
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
-        .catch(e => this._setResult('rejectPromise', e.message)),
+        .catch(e => {
+          this._setResult('rejectPromise', e.message);
+          console.error(e, e.stack, e.cause);
+        }),
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
@@ -81,6 +84,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.voidFuncThrows?.();
       } catch (e) {
+        console.error(e, e.stack, e.cause);
         return e.message;
       }
     },
@@ -88,18 +92,23 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectThrows?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e, e.stack, e.cause);
         return e.message;
       }
     },
     promiseThrows: () => {
       NativeSampleTurboModule.promiseThrows?.()
         .then(() => {})
-        .catch(e => this._setResult('promiseThrows', e.message));
+        .catch(e => {
+          this._setResult('promiseThrows', e.message);
+          console.error(e, e.stack, e.cause);
+        });
     },
     voidFuncAssert: () => {
       try {
         NativeSampleTurboModule.voidFuncAssert?.();
       } catch (e) {
+        console.error(e, e.stack, e.cause);
         return e.message;
       }
     },
@@ -107,17 +116,17 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectAssert?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e, e.stack, e.cause);
         return e.message;
       }
     },
     promiseAssert: () => {
-      try {
-        NativeSampleTurboModule.promiseAssert?.()
-          .then(() => {})
-          .catch(e => this._setResult('promiseAssert', e.message));
-      } catch (e) {
-        return e.message;
-      }
+      NativeSampleTurboModule.promiseAssert?.()
+        .then(() => {})
+        .catch(e => {
+          this._setResult('promiseAssert', e.message);
+          console.error(e, e.stack, e.cause);
+        });
     },
   };
 
