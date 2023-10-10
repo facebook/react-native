@@ -122,7 +122,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
 
     beginMarkers("mountViews");
 
-    ArrayList<HashMap<String, Object>> mutationsArray = new ArrayList<>();
+    ArrayList<IntBufferMountItem> mutationsArray = new ArrayList<>();
 
     // we put views in the map also for basic operations since tags are only mapped to ViewState
     // which are internal.
@@ -133,134 +133,216 @@ final class IntBufferBatchMountItem implements BatchMountItem {
       int type = rawType & ~INSTRUCTION_FLAG_MULTIPLE;
       int numInstructions = ((rawType & INSTRUCTION_FLAG_MULTIPLE) != 0 ? mIntBuffer[i++] : 1);
       for (int k = 0; k < numInstructions; k++) {
-        HashMap<String, Object> map = new HashMap<>();
+        IntBufferMountItem item;
         if (type == INSTRUCTION_CREATE) {
-          map.put("type", "CREATE");
-          map.put("componentName", getFabricComponentName((String) mObjBuffer[j++]));
+          String componentName = getFabricComponentName((String) mObjBuffer[j++]);
           int reactTag = mIntBuffer[i++];
-          map.put("reactTag", reactTag);
-          View view = surfaceMountingManager.getView(reactTag);
-          map.put("view", view);
-          map.put("props", mObjBuffer[j++]);
-          map.put("stateWrapper", castToState(mObjBuffer[j++]));
-          map.put("eventEmitterWrapper", castToEventEmitter(mObjBuffer[j++]));
-          map.put("isLayoutable", mIntBuffer[i++] == 1);
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          Object props = mObjBuffer[j++];
+          StateWrapper stateWrapper = castToState(mObjBuffer[j++]);
+          EventEmitterWrapper eventEmitterWrapper = castToEventEmitter(mObjBuffer[j++]);
+          boolean isLayoutable = mIntBuffer[i++] == 1;
+          item = new IntBufferMountItemCreate(reactTag,
+                  view, componentName, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+
         } else if (type == INSTRUCTION_DELETE) {
-          map.put("type", "DELETE");
           int reactTag = mIntBuffer[i++];
-          map.put("reactTag", reactTag);
-          View view = surfaceMountingManager.getView(reactTag);
-          map.put("view", view);
+          item = new IntBufferMountItemDelete(reactTag, null);
         } else if (type == INSTRUCTION_INSERT) {
-          map.put("type", "INSERT");
           int tag = mIntBuffer[i++];
-          map.put("tag", tag);
-          View view = surfaceMountingManager.getView(tag);
-          map.put("view", view);
-          map.put("parentTag", mIntBuffer[i++]);
-          map.put("index", mIntBuffer[i++]);
+          View view = null;
+          if (surfaceMountingManager.getViewExists(tag)) {
+            view = surfaceMountingManager.getView(tag);
+          }
+          int parentTag = mIntBuffer[i++];
+          View parentView = null;
+          if (surfaceMountingManager.getViewExists(parentTag)) {
+            parentView = surfaceMountingManager.getView(parentTag);
+          }
+          int index = mIntBuffer[i++];
+          item = new IntBufferMountItemInsert(tag, view, parentTag, parentView, index);
         } else if (type == INSTRUCTION_REMOVE) {
-          map.put("type", "REMOVE");
           int tag = mIntBuffer[i++];
-          map.put("tag", tag);
-          View view = surfaceMountingManager.getView(tag);
-          map.put("view", view);
-          map.put("parentTag", mIntBuffer[i++]);
-          map.put("index", mIntBuffer[i++]);
+          View view = null;
+          if (surfaceMountingManager.getViewExists(tag)) {
+            view = surfaceMountingManager.getView(tag);
+          }
+          int parentTag = mIntBuffer[i++];
+          View parentView = null;
+          if (surfaceMountingManager.getViewExists(parentTag)) {
+            parentView = surfaceMountingManager.getView(parentTag);
+          }
+          int index = mIntBuffer[i++];
+          item = new IntBufferMountItemRemove(tag, view, parentTag, parentView, index);
         } else if (type == INSTRUCTION_REMOVE_DELETE_TREE) {
-          map.put("type", "REMOVE_DELETE_TREE");
           int tag = mIntBuffer[i++];
-          map.put("tag", tag);
-          View view = surfaceMountingManager.getView(tag);
-          map.put("view", view);
-          map.put("parentTag", mIntBuffer[i++]);
-          map.put("index", mIntBuffer[i++]);
+          View view = null;
+          if (surfaceMountingManager.getViewExists(tag)) {
+            view = surfaceMountingManager.getView(tag);
+          }
+          int parentTag = mIntBuffer[i++];
+          View parentView = null;
+          if (surfaceMountingManager.getViewExists(parentTag)) {
+            parentView = surfaceMountingManager.getView(parentTag);
+          }
+          int index = mIntBuffer[i++];
+          item = new IntBufferMountItemRemoveDeleteTree(tag, view, parentTag, parentView, index);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
-          map.put("type", "UPDATE_PROPS");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("props", mObjBuffer[j++]);
+          int reactTag = mIntBuffer[i++];
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          Object props = mObjBuffer[j++];
+          item = new IntBufferMountItemUpdateProps(reactTag, view, props);
         } else if (type == INSTRUCTION_UPDATE_STATE) {
-          map.put("type", "UPDATE_STATE");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("stateWrapper", castToState(mObjBuffer[j++]));
+          int reactTag = mIntBuffer[i++];
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          StateWrapper stateWrapper = castToState(mObjBuffer[j++]);
+          item = new IntBufferMountItemUpdateState(reactTag, view, stateWrapper);
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
-          map.put("type", "UPDATE_LAYOUT");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("parentTag", mIntBuffer[i++]);
-          map.put("x", mIntBuffer[i++]);
-          map.put("y", mIntBuffer[i++]);
-          map.put("width", mIntBuffer[i++]);
-          map.put("height", mIntBuffer[i++]);
-          map.put("displayType", mIntBuffer[i++]);
+          int reactTag = mIntBuffer[i++];
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          int parentTag = mIntBuffer[i++];
+          View parentView = null;
+          if (surfaceMountingManager.getViewExists(parentTag)) {
+            parentView = surfaceMountingManager.getView(parentTag);
+          }
+          int x = mIntBuffer[i++];
+          int y = mIntBuffer[i++];
+          int width = mIntBuffer[i++];
+          int height = mIntBuffer[i++];
+          int displayType = mIntBuffer[i++];
+          item = new IntBufferMountItemUpdateLayout(reactTag, view, parentTag, parentView, x, y,
+                  width, height, displayType);
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
-          map.put("type", "UPDATE_PADDING");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("left", mIntBuffer[i++]);
-          map.put("top", mIntBuffer[i++]);
-          map.put("right", mIntBuffer[i++]);
-          map.put("bottom", mIntBuffer[i++]);
+          int reactTag = mIntBuffer[i++];
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          int left = mIntBuffer[i++];
+          int top = mIntBuffer[i++];
+          int right = mIntBuffer[i++];
+          int bottom = mIntBuffer[i++];
+          item = new IntBufferMountItemUpdatePadding(reactTag, view, left, top, right, bottom);
         } else if (type == INSTRUCTION_UPDATE_OVERFLOW_INSET) {
-          map.put("type", "UPDATE_OVERFLOW_INSET");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("overflowInsetLeft", mIntBuffer[i++]);
-          map.put("overflowInsetTop", mIntBuffer[i++]);
-          map.put("overflowInsetRight", mIntBuffer[i++]);
-          map.put("overflowInsetBottom", mIntBuffer[i++]);
+          int reactTag = mIntBuffer[i++];
+          View view = null;
+          if (surfaceMountingManager.getViewExists(reactTag)) {
+            view = surfaceMountingManager.getView(reactTag);
+          }
+          int overflowInsetLeft = mIntBuffer[i++];
+          int overflowInsetTop = mIntBuffer[i++];
+          int overflowInsetRight = mIntBuffer[i++];
+          int overflowInsetBottom = mIntBuffer[i++];
+          item = new IntBufferMountItemUpdateOverflowInset(reactTag, view, overflowInsetLeft,
+                  overflowInsetTop, overflowInsetRight, overflowInsetBottom);
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
-          map.put("type", "UPDATE_EVENT_EMITTER");
-          map.put("reactTag", mIntBuffer[i++]);
-          map.put("eventEmitter", castToEventEmitter(mObjBuffer[j++]));
+          int reactTag = mIntBuffer[i++];
+          EventEmitterWrapper eventEmitterWrapper = castToEventEmitter(mObjBuffer[j++]);
+          item = new IntBufferMountItemUpdateEventEmitter(reactTag, null, eventEmitterWrapper);
         } else {
           throw new IllegalArgumentException(
                   "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
         }
-        mutationsArray.add(map);
+        mutationsArray.add(item);
       }
     }
 
     surfaceMountingManager.getContext().getNativeModule(UIManagerModule.class).viewMutationsWillMount(mutationsArray);
 
-    for (HashMap<String, Object> elem: mutationsArray) {
-      if ("CREATE".equals(elem.get("type"))) {
-        surfaceMountingManager.createView(
-                (String)elem.get("componentName"),
-                (int)elem.get("reactTag"),
-                elem.get("props"),
-                (StateWrapper)elem.get("stateWrapper"),
-                (EventEmitterWrapper)elem.get("eventEmitterWrapper"),
-                (boolean)elem.get("isLayoutable"));
-      } else if ("DELETE".equals(elem.get("type"))) {
-        surfaceMountingManager.deleteView((int)elem.get("reactTag"));
-      } else if ("INSERT".equals(elem.get("type"))) {
-        surfaceMountingManager.addViewAt((int)elem.get("parentTag"), (int)elem.get("tag"), (int)elem.get("index"));
-      } else if ("REMOVE".equals(elem.get("type"))) {
-        surfaceMountingManager.removeViewAt((int)elem.get("tag"), (int)elem.get("parentTag"), (int)elem.get("index"));
-      } else if ("REMOVE_DELETE_TREE".equals(elem.get("type"))) {
-        surfaceMountingManager.removeDeleteTreeAt(
-                (int)elem.get("tag"), (int)elem.get("parentTag"), (int)elem.get("index"));
-      } else if ("UPDATE_PROPS".equals(elem.get("type"))) {
-        surfaceMountingManager.updateProps((int)elem.get("reactTag"), elem.get("props"));
-      } else if ("UPDATE_STATE".equals(elem.get("type"))) {
-        surfaceMountingManager.updateState((int)elem.get("reactTag"), (StateWrapper) elem.get("stateWrapper"));
-      } else if ("UPDATE_LAYOUT".equals(elem.get("type"))) {
-        surfaceMountingManager.updateLayout(
-                (int)elem.get("reactTag"), (int)elem.get("parentTag"),
-                (int)elem.get("x"), (int)elem.get("y"), (int)elem.get("width"),
-                (int)elem.get("height"), (int)elem.get("displayType"));
-
-      } else if ("UPDATE_PADDING".equals(elem.get("type"))) {
-        surfaceMountingManager.updatePadding(
-                (int)elem.get("reactTag"), (int)elem.get("left"), (int)elem.get("top"), (int)elem.get("right"), (int)elem.get("bottom"));
-      } else if ("UPDATE_OVERFLOW_INSET".equals(elem.get("type"))) {
-        surfaceMountingManager.updateOverflowInset(
-                (int)elem.get("reactTag"), (int)elem.get("overflowInsetLeft"), (int)elem.get("overflowInsetTop")
-                , (int)elem.get("overflowInsetRight"), (int)elem.get("overflowInsetBottom"));
-      } else if ("UPDATE_EVENT_EMITTER".equals(elem.get("type"))) {
-        surfaceMountingManager.updateEventEmitter(
-                (int)elem.get("reactTag"), (EventEmitterWrapper) elem.get("eventEmitter"));
-      } else {
-        throw new IllegalArgumentException(
-                "Invalid type argument to IntBufferBatchMountItem: " + elem.get("type"));
+    for (IntBufferMountItem elem: mutationsArray) {
+      switch (elem.getInstructionType()) {
+        case CREATE: {
+          IntBufferMountItemCreate createElem = (IntBufferMountItemCreate) elem;
+          surfaceMountingManager.createView(
+                  createElem.getComponentName(),
+                  createElem.getReactTag(),
+                  createElem.getProps(),
+                  createElem.getStateWrapper(),
+                  createElem.getEventEmitterWrapper(),
+                  createElem.isLayoutable());
+          break;
+        }
+        case DELETE: {
+          IntBufferMountItemDelete deleteElem = (IntBufferMountItemDelete) elem;
+          surfaceMountingManager.deleteView(deleteElem.getReactTag());
+          break;
+        }
+        case INSERT: {
+          IntBufferMountItemInsert insertElem = (IntBufferMountItemInsert) elem;
+          surfaceMountingManager.addViewAt(insertElem.getParentTag(), insertElem.getReactTag(), insertElem.getIndex());
+          break;
+        }
+        case REMOVE: {
+          IntBufferMountItemRemove removeElem = (IntBufferMountItemRemove) elem;
+          surfaceMountingManager.removeViewAt(removeElem.getReactTag(), removeElem.getParentTag(), removeElem.getIndex());
+          break;
+        }
+        case REMOVE_DELETE_TREE: {
+          IntBufferMountItemRemoveDeleteTree removeDeleteTreeElem = (IntBufferMountItemRemoveDeleteTree) elem;
+          surfaceMountingManager.removeDeleteTreeAt(removeDeleteTreeElem.getReactTag(),
+                  removeDeleteTreeElem.getParentTag(), removeDeleteTreeElem.getIndex());
+          break;
+        }
+        case UPDATE_PROPS: {
+          IntBufferMountItemUpdateProps updatePropsElem = (IntBufferMountItemUpdateProps) elem;
+          surfaceMountingManager.updateProps(updatePropsElem.getReactTag(),
+                  updatePropsElem.getProps());
+          break;
+        }
+        case UPDATE_STATE: {
+          IntBufferMountItemUpdateState updateStateElem = (IntBufferMountItemUpdateState) elem;
+          surfaceMountingManager.updateState(updateStateElem.getReactTag(),
+                  updateStateElem.getStateWrapper());
+          break;
+        }
+        case UPDATE_LAYOUT: {
+          IntBufferMountItemUpdateLayout updateLayoutElem = (IntBufferMountItemUpdateLayout) elem;
+          surfaceMountingManager.updateLayout(updateLayoutElem.getReactTag(),
+                  updateLayoutElem.getParentTag(), updateLayoutElem.getX(), updateLayoutElem.getY(),
+                  updateLayoutElem.getWidth(), updateLayoutElem.getHeight(),
+                  updateLayoutElem.getDisplayType());
+          break;
+        }
+        case UPDATE_PADDING: {
+          IntBufferMountItemUpdatePadding updatePaddingElem = (IntBufferMountItemUpdatePadding) elem;
+          surfaceMountingManager.updatePadding(updatePaddingElem.getReactTag(),
+                  updatePaddingElem.getLeft(), updatePaddingElem.getTop(),
+                  updatePaddingElem.getRight(), updatePaddingElem.getBottom());
+          break;
+        }
+        case UPDATE_OVERFLOW_INSET: {
+          IntBufferMountItemUpdateOverflowInset updateOverflowInsetElem =
+                  (IntBufferMountItemUpdateOverflowInset) elem;
+          surfaceMountingManager.updateOverflowInset(updateOverflowInsetElem.getReactTag(),
+                  updateOverflowInsetElem.getOverflowInsetLeft(),
+                  updateOverflowInsetElem.getOverflowInsetTop(),
+                  updateOverflowInsetElem.getOverflowInsetRight(),
+                  updateOverflowInsetElem.getOverflowInsetBottom());
+          break;
+        }
+        case UPDATE_EVENT_EMITTER: {
+          IntBufferMountItemUpdateEventEmitter updateEventEmitterElem =
+                  (IntBufferMountItemUpdateEventEmitter) elem;
+          surfaceMountingManager.updateEventEmitter(updateEventEmitterElem.getReactTag(),
+                  updateEventEmitterElem.getEventEmitterWrapper());
+          break;
+        }
+        default: {
+          throw new IllegalArgumentException(
+                  "Invalid type argument to IntBufferBatchMountItem: " + elem.getInstructionType());
+        }
       }
     }
 

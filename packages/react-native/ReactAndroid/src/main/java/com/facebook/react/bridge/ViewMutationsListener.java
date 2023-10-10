@@ -7,13 +7,14 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.fabric.mounting.mountitems.IntBufferMountItem;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public interface ViewMutationsListener {
     /**
      * Called right before view mutations are dispatched. This is useful if a
      * module needs to do something before the views are created/removed.
      */
-    void willMountViewMutations(ArrayList<HashMap<String, Object>> mutations);
+    void willMountViewMutations(ArrayList<IntBufferMountItem> mutations);
 }

@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.fabric.mounting.mountitems.IntBufferMountItem;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -804,7 +805,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mViewMutationsListeners.remove(listener);
   }
 
-  public void viewMutationsWillMount(ArrayList<HashMap<String, Object>> mutations) {
+  public void viewMutationsWillMount(ArrayList<IntBufferMountItem> mutations) {
     for (ViewMutationsListener listener : mViewMutationsListeners) {
       listener.willMountViewMutations(mutations);
     }
