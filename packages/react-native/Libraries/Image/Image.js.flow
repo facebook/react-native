@@ -8,33 +8,6 @@
  * @format
  */
 
-import type {RootTag} from '../Types/RootTagTypes';
-import type {ResolvedAssetSource} from './AssetSourceResolver';
-import type {ImageIOS, ImageAndroid} from './Image.flow';
+import type {Image} from './ImageTypes.flow';
 
-export type ImageComponentStatics = $ReadOnly<{
-  getSize: (
-    uri: string,
-    success: (width: number, height: number) => void,
-    failure?: (error: any) => void,
-  ) => void,
-  getSizeWithHeaders: (
-    uri: string,
-    headers: {[string]: string},
-    success: (width: number, height: number) => void,
-    failure?: (error: any) => void,
-  ) => any,
-  prefetch: (url: string) => any,
-  abortPrefetch?: number => void,
-  prefetchWithMetadata: (
-    url: string,
-    queryRootName: string,
-    rootTag?: ?RootTag,
-  ) => any,
-  queryCache: (
-    urls: Array<string>,
-  ) => Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}>,
-  resolveAssetSource: (source: any) => ?ResolvedAssetSource,
-}>;
-
-declare module.exports: ImageIOS | ImageAndroid;
+declare module.exports: Image;

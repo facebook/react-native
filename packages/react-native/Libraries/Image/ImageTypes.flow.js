@@ -11,12 +11,12 @@
 import type {RootTag} from '../Types/RootTagTypes';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps as ImagePropsType} from './ImageProps';
+import typeof ImageViewNativeComponent from './ImageViewNativeComponent';
+import typeof TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 import * as React from 'react';
 
-type ImageComponentStaticsIOS = $ReadOnly<{|
+type ImageComponentStaticsIOS = $ReadOnly<{
   getSize: (
     uri: string,
     success: (width: number, height: number) => void,
@@ -43,22 +43,28 @@ type ImageComponentStaticsIOS = $ReadOnly<{|
   ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}>,
 
   resolveAssetSource(source: any): ?ResolvedAssetSource,
-|}>;
+}>;
 
-type ImageComponentStaticsAndroid = {
+type ImageComponentStaticsAndroid = $ReadOnly<{
   ...ImageComponentStaticsIOS,
   abortPrefetch(requestId: number): void,
-};
+}>;
 
-export type ImageAndroid = React.AbstractComponent<
+export type AbstractImageAndroid = React.AbstractComponent<
   ImagePropsType,
-  | React.ElementRef<typeof TextInlineImageNativeComponent>
-  | React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStaticsAndroid;
+  | React.ElementRef<TextInlineImageNativeComponent>
+  | React.ElementRef<ImageViewNativeComponent>,
+>;
 
-export type ImageIOS = React.AbstractComponent<
+export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
+
+export type AbstractImageIOS = React.AbstractComponent<
   ImagePropsType,
-  React.ElementRef<typeof ImageViewNativeComponent>,
-> &
-  ImageComponentStaticsIOS;
+  React.ElementRef<ImageViewNativeComponent>,
+>;
+
+export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
+
+export type Image = ImageIOS | ImageAndroid;
+
+export type {ImageProps} from './ImageProps';
