@@ -121,7 +121,7 @@ export interface ShadowStyleIOS {
   shadowRadius?: number | undefined;
 }
 
-interface PerpectiveTransform {
+interface PerspectiveTransform {
   perspective: AnimatableNumericValue;
 }
 
@@ -180,7 +180,7 @@ type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
 export interface TransformsStyle {
   transform?:
     | MaximumOneOf<
-        PerpectiveTransform &
+        PerspectiveTransform &
           RotateTransform &
           RotateXTransform &
           RotateYTransform &
