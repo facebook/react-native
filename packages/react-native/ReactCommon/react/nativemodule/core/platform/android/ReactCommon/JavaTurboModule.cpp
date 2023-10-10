@@ -10,12 +10,12 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
-#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <ReactCommon/TurboModuleUtils.h>
+#include <butter/function.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
@@ -28,10 +28,10 @@ namespace facebook::react {
 
 namespace TMPL = TurboModulePerfLogger;
 
-JavaTurboModule::JavaTurboModule(const InitParams& params)
+JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
+      nativeInvoker_(params.nativeInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -42,46 +42,18 @@ JavaTurboModule::~JavaTurboModule() {
     return;
   }
 
-  nativeMethodCallInvoker_->invokeAsync(
-      "~" + name_, [instance = std::move(instance_)]() mutable {
-        /**
-         * Reset the global NativeModule ref on the NativeModules thread. Why:
-         *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset
-         * the global ref in ~JavaTurboModule(), we might access the JVM from a
-         *     non-JVM thread, which will crash the app.
-         */
-        instance.reset();
-      });
+  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
+    /**
+     * Reset the global NativeModule ref on the NativeModules thread. Why:
+     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
+     *     global ref in ~JavaTurboModule(), we might access the JVM from a
+     *     non-JVM thread, which will crash the app.
+     */
+    instance.reset();
+  });
 }
 
 namespace {
-
-constexpr auto kReactBuildConfigJavaDescriptor = "com/facebook/react/common/build/ReactBuildConfig";
-
-bool getReactBuildConfigBoolValue(const char *name) {
-    static const auto reactBuildConfigClass = facebook::jni::findClassStatic(kReactBuildConfigJavaDescriptor);
-    const auto field = reactBuildConfigClass->getStaticField<jboolean>(name);
-    return reactBuildConfigClass->getStaticFieldValue(field);
-}
-
-constexpr auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
-
-bool getFeatureFlagBoolValue(const char *name) {
-    static const auto reactFeatureFlagsClass = facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-    const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-    return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
-bool traceTurboModulePromiseRejections() {
-  static bool traceRejections = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
-  static bool isDebugMode = getReactBuildConfigBoolValue("DEBUG");
-  return isDebugMode || traceRejections;
-}
-
-bool rejectTurboModulePromiseOnNativeError() {
-    static bool rejectOnError = getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
-    return rejectOnError;
-}
 
 struct JNIArgs {
   JNIArgs(size_t count) : args_(count) {}
@@ -89,13 +61,10 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-using CallbackExecutor = std::function<void(jsi::Runtime&, jsi::Function&, const std::vector<jsi::Value>&)>;
-
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
-    const std::shared_ptr<CallInvoker> &jsInvoker,
-    CallbackExecutor&& callbackExecutor) {
+    const std::shared_ptr<CallInvoker> &jsInvoker) {
   auto weakWrapper =
       CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
@@ -111,10 +80,10 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   return JCxxCallbackImpl::newObjectCxxArgs(
       [weakWrapper = std::move(weakWrapper),
        callbackWrapperOwner = std::move(callbackWrapperOwner),
-       wrapperWasCalled = false,
-       callbackExecutor = std::move(callbackExecutor)](folly::dynamic responses) mutable {
+       wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          LOG(FATAL) << "callback arg cannot be called more than once";
+          throw std::runtime_error(
+              "Callback arg cannot be called more than once");
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -125,8 +94,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
         strongWrapper->jsInvoker().invokeAsync(
             [weakWrapper = std::move(weakWrapper),
              callbackWrapperOwner = std::move(callbackWrapperOwner),
-             responses = std::move(responses),
-             callbackExecutor = std::move(callbackExecutor)]() {
+             responses = std::move(responses)]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
@@ -134,99 +102,23 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
 
               std::vector<jsi::Value> args;
               args.reserve(responses.size());
-              for (const auto& val : responses) {
+              for (const auto &val : responses) {
                 args.emplace_back(
                     jsi::valueFromDynamic(strongWrapper2->runtime(), val));
               }
 
-              callbackExecutor(strongWrapper2->runtime(), strongWrapper2->callback(), args);
+              strongWrapper2->callback().call(
+                  strongWrapper2->runtime(),
+                  (const jsi::Value *)args.data(),
+                  args.size());
             });
 
         wrapperWasCalled = true;
       });
 }
 
-jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
-    jsi::Function &&function,
-    jsi::Runtime &rt,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-    CallbackExecutor executor = [](
-            jsi::Runtime& runtime,
-            jsi::Function& callback,
-          const std::vector<jsi::Value>& args) {
-      callback.call(
-              runtime,
-              (const jsi::Value *)args.data(),
-              args.size());
-  };
-  return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
-}
-
-jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message);
-
-jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
-    const std::weak_ptr<CallbackWrapper> &function,
-    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
-  auto executor = [jsInvocationStack](
-          const std::shared_ptr<CallbackWrapper>& reject,
-          const std::vector<jsi::Value>& args) {
-      std::optional<std::string> message = std::nullopt;
-      jsi::Runtime &rt2 = reject->runtime();
-
-      if (!args.empty()) {
-          const jsi::Value &cause = args[0];
-          if (cause.isObject() && cause.asObject(rt2).getProperty(rt2, "message").isString()) {
-              message = cause.asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
-          }
-      }
-
-      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + (message.has_value() ? message.value() : "<unknown>"));
-      if (!args.empty()) {
-          error.asObject(rt2).setProperty(rt2, "cause", args[0]);
-      }
-      if (jsInvocationStack.has_value()) {
-          error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack.value());
-      }
-      reject->callback().call(rt2, error);
-  };
-  return JCxxCallbackImpl::newObjectCxxArgs(
-          [function,
-                  wrapperWasCalled = false,
-                  executor = std::move(executor)](folly::dynamic responses) mutable {
-              if (wrapperWasCalled) {
-                  LOG(FATAL) << "callback arg cannot be called more than once";
-              }
-
-              auto strongWrapper = function.lock();
-              if (!strongWrapper) {
-                  return;
-              }
-
-              strongWrapper->jsInvoker().invokeAsync(
-                      [function,
-                              responses = std::move(responses),
-                              executor = std::move(executor)]() {
-                          auto strongWrapper2 = function.lock();
-                          if (!strongWrapper2) {
-                              return;
-                          }
-
-                          std::vector<jsi::Value> args;
-                          args.reserve(responses.size());
-                          for (const auto &val : responses) {
-                              args.emplace_back(
-                                      jsi::valueFromDynamic(strongWrapper2->runtime(), val));
-                          }
-
-                          executor(strongWrapper2, args);
-                      });
-
-              wrapperWasCalled = true;
-          });
-}
-
 // This is used for generating short exception strings.
-std::string stringifyJSIValue(const jsi::Value& v, jsi::Runtime* rt = nullptr) {
+std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
   if (v.isUndefined()) {
     return "undefined";
   }
@@ -255,11 +147,11 @@ std::string stringifyJSIValue(const jsi::Value& v, jsi::Runtime* rt = nullptr) {
 class JavaTurboModuleArgumentConversionException : public std::runtime_error {
  public:
   JavaTurboModuleArgumentConversionException(
-      const std::string& expectedType,
+      const std::string &expectedType,
       int index,
-      const std::string& methodName,
-      const jsi::Value* arg,
-      jsi::Runtime* rt)
+      const std::string &methodName,
+      const jsi::Value *arg,
+      jsi::Runtime *rt)
       : std::runtime_error(
             "Expected argument " + std::to_string(index) + " of method \"" +
             methodName + "\" to be a " + expectedType + ", but got " +
@@ -269,9 +161,9 @@ class JavaTurboModuleArgumentConversionException : public std::runtime_error {
 class JavaTurboModuleInvalidArgumentTypeException : public std::runtime_error {
  public:
   JavaTurboModuleInvalidArgumentTypeException(
-      const std::string& actualType,
+      const std::string &actualType,
       int argIndex,
-      const std::string& methodName)
+      const std::string &methodName)
       : std::runtime_error(
             "Called method \"" + methodName + "\" with unsupported type " +
             actualType + " at argument " + std::to_string(argIndex)) {}
@@ -280,7 +172,7 @@ class JavaTurboModuleInvalidArgumentTypeException : public std::runtime_error {
 class JavaTurboModuleInvalidArgumentCountException : public std::runtime_error {
  public:
   JavaTurboModuleInvalidArgumentCountException(
-      const std::string& methodName,
+      const std::string &methodName,
       int actualArgCount,
       int expectedArgCount)
       : std::runtime_error(
@@ -296,7 +188,7 @@ class JavaTurboModuleInvalidArgumentCountException : public std::runtime_error {
  * for a description of Java method signature structure.
  */
 std::vector<std::string> getMethodArgTypesFromSignature(
-    const std::string& methodSignature) {
+    const std::string &methodSignature) {
   std::vector<std::string> methodArgs;
 
   for (auto it = methodSignature.begin(); it != methodSignature.end();
@@ -344,13 +236,13 @@ int32_t getUniqueId() {
 // TODO (axe) Reuse existing implementation as needed - the exist in
 // MethodInvoker.cpp
 JNIArgs convertJSIArgsToJNIArgs(
-    JNIEnv* env,
-    jsi::Runtime& rt,
-    const std::string& methodName,
-    const std::vector<std::string>& methodArgTypes,
-    const jsi::Value* args,
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const std::string &methodName,
+    const std::vector<std::string> &methodArgTypes,
+    const jsi::Value *args,
     size_t count,
-    const std::shared_ptr<CallInvoker>& jsInvoker,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
     TurboModuleMethodValueKind valueKind) {
   unsigned int expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1
@@ -362,8 +254,8 @@ JNIArgs convertJSIArgsToJNIArgs(
   }
 
   JNIArgs jniArgs(valueKind == PromiseKind ? count + 1 : count);
-  auto& jargs = jniArgs.args_;
-  auto& globalRefs = jniArgs.globalRefs_;
+  auto &jargs = jniArgs.args_;
+  auto &globalRefs = jniArgs.globalRefs_;
 
   auto makeGlobalIfNecessary =
       [&globalRefs, env, valueKind](jobject obj) -> jobject {
@@ -378,10 +270,10 @@ JNIArgs convertJSIArgsToJNIArgs(
   };
 
   for (unsigned int argIndex = 0; argIndex < count; argIndex += 1) {
-    const std::string& type = methodArgTypes.at(argIndex);
+    const std::string &type = methodArgTypes.at(argIndex);
 
-    const jsi::Value* arg = &args[argIndex];
-    jvalue* jarg = &jargs[argIndex];
+    const jsi::Value *arg = &args[argIndex];
+    jvalue *jarg = &jargs[argIndex];
 
     if (type == "D") {
       if (!arg->isNumber()) {
@@ -492,7 +384,7 @@ JNIArgs convertJSIArgsToJNIArgs(
   return jniArgs;
 }
 
-jsi::Value convertFromJMapToValue(JNIEnv* env, jsi::Runtime& rt, jobject arg) {
+jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   // We currently use Java Argument.makeNativeMap() method to do this conversion
   // This could also be done purely in C++, but iterative over map methods
   // but those may end up calling reflection methods anyway
@@ -509,8 +401,8 @@ jsi::Value convertFromJMapToValue(JNIEnv* env, jsi::Runtime& rt, jobject arg) {
 }
 
 jsi::Value createJSRuntimeError(
-    jsi::Runtime& runtime,
-    const std::string& message) {
+    jsi::Runtime &runtime,
+    const std::string &message) {
   return runtime.global()
       .getPropertyAsFunction(runtime, "Error")
       .call(runtime, message);
@@ -520,7 +412,7 @@ jsi::Value createJSRuntimeError(
  * Creates JSError with current JS runtime stack and Throwable stack trace.
  */
 jsi::JSError convertThrowableToJSError(
-    jsi::Runtime& runtime,
+    jsi::Runtime &runtime,
     jni::local_ref<jni::JThrowable> throwable) {
   auto stackTrace = throwable->getStackTrace();
 
@@ -537,9 +429,15 @@ jsi::JSError convertThrowableToJSError(
   }
 
   jsi::Object cause(runtime);
-  auto name = throwable->getClass()->getCanonicalName()->toStdString();
-  auto message = throwable->getMessage()->toStdString();
-  cause.setProperty(runtime, "name", name);
+  auto getName = throwable->getClass()
+                     ->getClass()
+                     ->getMethod<jni::local_ref<jni::JString>()>("getName");
+  auto getMessage =
+      throwable->getClass()->getMethod<jni::local_ref<jni::JString>()>(
+          "getMessage");
+  auto message = getMessage(throwable)->toStdString();
+  cause.setProperty(
+      runtime, "name", getName(throwable->getClass())->toStdString());
   cause.setProperty(runtime, "message", message);
   cause.setProperty(runtime, "stackElements", std::move(stackElements));
 
@@ -549,47 +447,18 @@ jsi::JSError convertThrowableToJSError(
   return {runtime, std::move(error)};
 }
 
-void rejectWithException(
-    std::weak_ptr<CallbackWrapper> &rejectWeak,
-    std::exception_ptr &exception,
-    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
-  auto reject = rejectWeak.lock();
-  if (reject) {
-    reject->jsInvoker().invokeAsync([
-      rejectWeak = std::move(rejectWeak),
-      jsInvocationStack = std::move(jsInvocationStack),
-      exception
-    ]() {
-      auto reject2 = rejectWeak.lock();
-      if (reject2) {
-        jsi::Runtime &runtime = reject2->runtime();
-        auto throwable = jni::getJavaExceptionForCppException(exception);
-        auto jsError = convertThrowableToJSError(runtime, throwable);
-        if (jsInvocationStack.has_value()) {
-          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack.value());
-        }
-        reject2->callback().call(
-          runtime,
-          jsError.value());
-      }
-    });
-  } else {
-    throw;
-  }
-}
-
 } // namespace
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
-    jsi::Runtime& runtime,
+    jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
-    const std::string& methodNameStr,
-    const std::string& methodSignature,
-    const jsi::Value* args,
+    const std::string &methodNameStr,
+    const std::string &methodSignature,
+    const jsi::Value *args,
     size_t argCount,
-    jmethodID& methodID) {
-  const char* methodName = methodNameStr.c_str();
-  const char* moduleName = name_.c_str();
+    jmethodID &methodID) {
+  const char *methodName = methodNameStr.c_str();
+  const char *moduleName = name_.c_str();
 
   bool isMethodSync = !(valueKind == VoidKind || valueKind == PromiseKind);
 
@@ -601,7 +470,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     TMPL::asyncMethodCallArgConversionStart(moduleName, methodName);
   }
 
-  JNIEnv* env = jni::Environment::current();
+  JNIEnv *env = jni::Environment::current();
   auto instance = instance_.get();
 
   /**
@@ -698,8 +567,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     TMPL::syncMethodCallExecutionStart(moduleName, methodName);
   }
 
-  auto& jargs = jniArgs.args_;
-  auto& globalRefs = jniArgs.globalRefs_;
+  auto &jargs = jniArgs.args_;
+  auto &globalRefs = jniArgs.globalRefs_;
 
   switch (valueKind) {
     case BooleanKind: {
@@ -818,7 +687,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
       jsi::Value returnValue = jsi::Value::null();
       if (returnString != nullptr) {
-        const char* js = env->GetStringUTFChars(returnString, nullptr);
+        const char *js = env->GetStringUTFChars(returnString, nullptr);
         std::string result = js;
         env->ReleaseStringUTFChars(returnString, js);
         returnValue =
@@ -873,8 +742,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-      nativeMethodCallInvoker_->invokeAsync(
-          methodName,
+      nativeInvoker_->invokeAsync(
           [jargs,
            globalRefs,
            methodID,
@@ -891,9 +759,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
              * again? Why does JNI crash when we use the env from the upper
              * scope?
              */
-            JNIEnv* env = jni::Environment::current();
-            const char* moduleName = moduleNameStr.c_str();
-            const char* methodName = methodNameStr.c_str();
+            JNIEnv *env = jni::Environment::current();
+            const char *moduleName = moduleNameStr.c_str();
+            const char *methodName = methodNameStr.c_str();
 
             TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
             env->CallVoidMethodA(instance.get(), methodID, jargs.data());
@@ -929,22 +797,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            env](
-              jsi::Runtime& runtime,
-              const jsi::Value& thisVal,
-              const jsi::Value* promiseConstructorArgs,
+              jsi::Runtime &runtime,
+              const jsi::Value &thisVal,
+              const jsi::Value *promiseConstructorArgs,
               size_t promiseConstructorArgCount) {
             if (promiseConstructorArgCount != 2) {
               throw std::invalid_argument("Promise fn arg count must be 2");
-            }
-
-            // JS Stack at the time when the promise is created.
-            // This has to be shared pointer to hold jsi::Value
-            std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
-            if (traceTurboModulePromiseRejections()) {
-                auto stack = createJSRuntimeError(runtime, "")
-                        .asObject(runtime)
-                        .getProperty(runtime, "stack");
-                jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
             }
 
             jsi::Function resolveJSIFn =
@@ -953,14 +811,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             jsi::Function rejectJSIFn =
                 promiseConstructorArgs[1].getObject(runtime).getFunction(
                     runtime);
-            auto rejectJSIFunctionWeakWrapper =
-                CallbackWrapper::createWeak(std::move(rejectJSIFn), runtime, jsInvoker_);
 
             auto resolve = createJavaCallbackFromJSIFunction(
-                                std::move(resolveJSIFn), runtime, jsInvoker_)
-                                .release();
-            auto reject = createPromiseRejectJavaCallbackFromJSIFunction(
-                              rejectJSIFunctionWeakWrapper, jsInvocationStack)
+                               std::move(resolveJSIFn), runtime, jsInvoker_)
+                               .release();
+            auto reject = createJavaCallbackFromJSIFunction(
+                              std::move(rejectJSIFn), runtime, jsInvoker_)
                               .release();
 
             jclass jPromiseImpl =
@@ -973,8 +829,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             jobject promise = env->NewObject(
                 jPromiseImpl, jPromiseImplConstructor, resolve, reject);
 
-            const char* moduleName = moduleNameStr.c_str();
-            const char* methodName = methodNameStr.c_str();
+            const char *moduleName = moduleNameStr.c_str();
+            const char *methodName = methodNameStr.c_str();
 
             jobject globalPromise = env->NewGlobalRef(promise);
 
@@ -985,11 +841,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
             TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-            nativeMethodCallInvoker_->invokeAsync(
-                methodName,
+            nativeInvoker_->invokeAsync(
                 [jargs,
-                 rejectJSIFunctionWeakWrapper,
-                 jsInvocationStack = std::move(jsInvocationStack),
                  globalRefs,
                  methodID,
                  instance_ = jni::make_weak(instance_),
@@ -1006,9 +859,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                    * environment again? Why does JNI crash when we use the env
                    * from the upper scope?
                    */
-                  JNIEnv* env = jni::Environment::current();
-                  const char* moduleName = moduleNameStr.c_str();
-                  const char* methodName = methodNameStr.c_str();
+                  JNIEnv *env = jni::Environment::current();
+                  const char *moduleName = moduleNameStr.c_str();
+                  const char *methodName = methodNameStr.c_str();
 
                   TMPL::asyncMethodCallExecutionStart(
                       moduleName, methodName, id);
@@ -1018,12 +871,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   } catch (...) {
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                    if (rejectTurboModulePromiseOnNativeError()) {
-                        auto exception = std::current_exception();
-                        rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
-                    } else {
-                        throw;
-                    }
+                    throw;
                   }
 
                   for (auto globalRef : globalRefs) {

@@ -165,17 +165,4 @@ public class ReactFeatureFlags {
 
   /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
   public static boolean enableTurboModuleStableAPI = false;
-
-  /**
-   * Enables storing js caller stack when creating promise in native module.
-   * This is useful in case of Promise rejection and tracing the cause.
-   */
-  public static boolean traceTurboModulePromiseRejections = false;
-
-  /**
-   * Enables auto rejecting promises from Turbo Modules
-   * method calls. If native error occurs Promise in JS
-   * will be rejected (The JS error will include native stack)
-   */
-  public static boolean rejectTurboModulePromiseOnNativeError = true;
 }
