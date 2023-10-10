@@ -119,9 +119,6 @@ class RNTesterApplication : Application(), ReactApplication {
   }
 
   override fun onCreate() {
-    if (BuildConfig.DEBUG) {
-      ReactFeatureFlags.traceTurboModulePromiseRejections = true;
-    }
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)

@@ -56,17 +56,31 @@ JavaTurboModule::~JavaTurboModule() {
 
 namespace {
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
+constexpr auto kReactBuildConfigJavaDescriptor = "com/facebook/react/common/build/ReactBuildConfig";
 
-static bool getFeatureFlagBoolValue(const char *name) {
+bool getReactBuildConfigBoolValue(const char *name) {
+    static const auto reactBuildConfigClass = facebook::jni::findClassStatic(kReactBuildConfigJavaDescriptor);
+    const auto field = reactBuildConfigClass->getStaticField<jboolean>(name);
+    return reactBuildConfigClass->getStaticFieldValue(field);
+}
+
+constexpr auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
+
+bool getFeatureFlagBoolValue(const char *name) {
     static const auto reactFeatureFlagsClass = facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
     const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
     return reactFeatureFlagsClass->getStaticFieldValue(field);
 }
 
-static bool isSavePromiseJSInvocationStackEnabled() {
-  static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
-  return savePromiseJSInvocationStack;
+bool traceTurboModulePromiseRejections() {
+  static bool traceRejections = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
+  static bool isDebugMode = getReactBuildConfigBoolValue("DEBUG");
+  return isDebugMode || traceRejections;
+}
+
+bool rejectTurboModulePromiseOnNativeError() {
+    static bool rejectOnError = getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
+    return rejectOnError;
 }
 
 struct JNIArgs {
@@ -75,13 +89,13 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-using CallbackWrapperExecutor = std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>;
+using CallbackExecutor = std::function<void(jsi::Runtime&, jsi::Function&, const std::vector<jsi::Value>&)>;
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    CallbackWrapperExecutor&& callbackWrapperExecutor) {
+    CallbackExecutor&& callbackExecutor) {
   auto weakWrapper =
       CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
@@ -98,7 +112,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
       [weakWrapper = std::move(weakWrapper),
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false,
-       callbackWrapperExecutor = std::move(callbackWrapperExecutor)](folly::dynamic responses) mutable {
+       callbackExecutor = std::move(callbackExecutor)](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           LOG(FATAL) << "callback arg cannot be called more than once";
         }
@@ -112,7 +126,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
             [weakWrapper = std::move(weakWrapper),
              callbackWrapperOwner = std::move(callbackWrapperOwner),
              responses = std::move(responses),
-             callbackWrapperExecutor = std::move(callbackWrapperExecutor)]() {
+             callbackExecutor = std::move(callbackExecutor)]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
@@ -125,7 +139,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
                     jsi::valueFromDynamic(strongWrapper2->runtime(), val));
               }
 
-              callbackWrapperExecutor(strongWrapper2, args);
+              callbackExecutor(strongWrapper2->runtime(), strongWrapper2->callback(), args);
             });
 
         wrapperWasCalled = true;
@@ -136,11 +150,12 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
-  auto executor = [](
-          const std::shared_ptr<CallbackWrapper>& wrapper,
+    CallbackExecutor executor = [](
+            jsi::Runtime& runtime,
+            jsi::Function& callback,
           const std::vector<jsi::Value>& args) {
-      wrapper->callback().call(
-              wrapper->runtime(),
+      callback.call(
+              runtime,
               (const jsi::Value *)args.data(),
               args.size());
   };
@@ -151,24 +166,27 @@ jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &messag
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
     const std::weak_ptr<CallbackWrapper> &function,
-    jsi::Runtime &rt,
-    const std::shared_ptr<CallInvoker> &jsInvoker,
-    std::optional<std::string> jsInvocationStack) {
-  auto executor = [jsInvocationStack = std::move(jsInvocationStack)](
+    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
+  auto executor = [jsInvocationStack](
           const std::shared_ptr<CallbackWrapper>& reject,
           const std::vector<jsi::Value>& args) {
-      std::string message;
+      std::optional<std::string> message = std::nullopt;
       jsi::Runtime &rt2 = reject->runtime();
-      const jsi::Value* cause = args.data();
-      if (cause->isObject() && cause->asObject(rt2).getProperty(rt2, "message").isString()) {
-          message = cause->asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
-      } else {
-          message = "<unknown>";
+
+      if (!args.empty()) {
+          const jsi::Value &cause = args[0];
+          if (cause.isObject() && cause.asObject(rt2).getProperty(rt2, "message").isString()) {
+              message = cause.asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
+          }
       }
 
-      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + message);
-      error.asObject(rt2).setProperty(rt2, "cause", *cause);
-      error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack);
+      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + (message.has_value() ? message.value() : "<unknown>"));
+      if (!args.empty()) {
+          error.asObject(rt2).setProperty(rt2, "cause", args[0]);
+      }
+      if (jsInvocationStack.has_value()) {
+          error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack.value());
+      }
       reject->callback().call(rt2, error);
   };
   return JCxxCallbackImpl::newObjectCxxArgs(
@@ -534,7 +552,7 @@ jsi::JSError convertThrowableToJSError(
 void rejectWithException(
     std::weak_ptr<CallbackWrapper> &rejectWeak,
     std::exception_ptr &exception,
-    std::optional<std::string> jsInvocationStack) {
+    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
   auto reject = rejectWeak.lock();
   if (reject) {
     reject->jsInvoker().invokeAsync([
@@ -548,7 +566,7 @@ void rejectWithException(
         auto throwable = jni::getJavaExceptionForCppException(exception);
         auto jsError = convertThrowableToJSError(runtime, throwable);
         if (jsInvocationStack.has_value()) {
-          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
+          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack.value());
         }
         reject2->callback().call(
           runtime,
@@ -920,13 +938,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             }
 
             // JS Stack at the time when the promise is created.
-            std::optional<std::string> jsInvocationStack;
-            if (isSavePromiseJSInvocationStackEnabled()) {
-                jsInvocationStack = createJSRuntimeError(runtime, "")
-                  .asObject(runtime)
-                  .getProperty(runtime, "stack")
-                  .asString(runtime)
-                  .utf8(runtime);
+            // This has to be shared pointer to hold jsi::Value
+            std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
+            if (traceTurboModulePromiseRejections()) {
+                auto stack = createJSRuntimeError(runtime, "")
+                        .asObject(runtime)
+                        .getProperty(runtime, "stack");
+                jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
             }
 
             jsi::Function resolveJSIFn =
@@ -942,7 +960,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                                 std::move(resolveJSIFn), runtime, jsInvoker_)
                                 .release();
             auto reject = createPromiseRejectJavaCallbackFromJSIFunction(
-                              rejectJSIFunctionWeakWrapper, runtime, jsInvoker_, jsInvocationStack)
+                              rejectJSIFunctionWeakWrapper, jsInvocationStack)
                               .release();
 
             jclass jPromiseImpl =
@@ -1000,8 +1018,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   } catch (...) {
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                      auto exception = std::current_exception();
-                    rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+                    if (rejectTurboModulePromiseOnNativeError()) {
+                        auto exception = std::current_exception();
+                        rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+                    } else {
+                        throw;
+                    }
                   }
 
                   for (auto globalRef : globalRefs) {
