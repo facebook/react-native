@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -68,7 +68,7 @@ class AssetSourceResolver {
   }
 
   isLoadedFromFileSystem(): boolean {
-    return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
+    return this.jsbundleUrl != null && this.jsbundleUrl?.startsWith('file://');
   }
 
   defaultAsset(): ResolvedAssetSource {
@@ -90,7 +90,7 @@ class AssetSourceResolver {
    * from the devserver
    */
   assetServerURL(): ResolvedAssetSource {
-    invariant(!!this.serverUrl, 'need server to load from');
+    invariant(this.serverUrl != null, 'need server to load from');
     return this.fromSource(
       this.serverUrl +
         getScaledAssetPath(this.asset) +
@@ -114,7 +114,7 @@ class AssetSourceResolver {
    * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
    */
   scaledAssetURLNearBundle(): ResolvedAssetSource {
-    const path = this.jsbundleUrl || 'file://';
+    const path = this.jsbundleUrl ?? 'file://';
     return this.fromSource(
       // Assets can have relative paths outside of the project root.
       // When bundling them we replace `../` with `_` to make sure they
@@ -143,7 +143,7 @@ class AssetSourceResolver {
    * E.g. 'file:///sdcard/AwesomeModule/drawable-mdpi/icon.png'
    */
   drawableFolderInBundle(): ResolvedAssetSource {
-    const path = this.jsbundleUrl || 'file://';
+    const path = this.jsbundleUrl ?? 'file://';
     return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
   }
 
