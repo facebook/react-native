@@ -277,19 +277,22 @@ void Node::setLayoutDirection(Direction direction) {
 
 void Node::setLayoutMargin(float margin, YGEdge edge) {
   assertFatal(
-      edge < layout_.margin.size(), "Edge must be top/left/bottom/right");
+      edge < static_cast<int>(layout_.margin.size()),
+      "Edge must be top/left/bottom/right");
   layout_.margin[edge] = margin;
 }
 
 void Node::setLayoutBorder(float border, YGEdge edge) {
   assertFatal(
-      edge < layout_.border.size(), "Edge must be top/left/bottom/right");
+      edge < static_cast<int>(layout_.border.size()),
+      "Edge must be top/left/bottom/right");
   layout_.border[edge] = border;
 }
 
 void Node::setLayoutPadding(float padding, YGEdge edge) {
   assertFatal(
-      edge < layout_.padding.size(), "Edge must be top/left/bottom/right");
+      edge < static_cast<int>(layout_.padding.size()),
+      "Edge must be top/left/bottom/right");
   layout_.padding[edge] = padding;
 }
 
@@ -303,7 +306,8 @@ void Node::setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis) {
 
 void Node::setLayoutPosition(float position, YGEdge edge) {
   assertFatal(
-      edge < layout_.position.size(), "Edge must be top/left/bottom/right");
+      edge < static_cast<int>(layout_.position.size()),
+      "Edge must be top/left/bottom/right");
   layout_.position[edge] = position;
 }
 

@@ -20,8 +20,8 @@ import com.facebook.proguard.annotations.DoNotStripAny;
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
-   * CatalystInstanceImpl
+   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
+   * C++ CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
