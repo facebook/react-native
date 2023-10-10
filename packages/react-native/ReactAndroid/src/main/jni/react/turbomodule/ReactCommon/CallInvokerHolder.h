@@ -16,7 +16,7 @@ namespace facebook::react {
 class CallInvokerHolder : public jni::HybridClass<CallInvokerHolder> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/CallInvokerHolderImpl;";
+      "Lcom/facebook/react/internal/turbomodule/core/CallInvokerHolderImpl;";
 
   static void registerNatives();
   std::shared_ptr<CallInvoker> getCallInvoker();

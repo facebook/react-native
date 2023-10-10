@@ -26,7 +26,7 @@ namespace {
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
 
   JavaInteropTurboModule::MethodDescriptor toMethodDescriptor() {
     return JavaInteropTurboModule::MethodDescriptor{
