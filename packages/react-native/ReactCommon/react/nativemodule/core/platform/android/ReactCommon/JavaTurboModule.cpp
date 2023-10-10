@@ -73,9 +73,14 @@ bool getFeatureFlagBoolValue(const char *name) {
 }
 
 bool traceTurboModulePromiseRejections() {
-  static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
+  static bool traceRejections = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
   static bool isDebugMode = getReactBuildConfigBoolValue("DEBUG");
-  return isDebugMode || savePromiseJSInvocationStack;
+  return isDebugMode || traceRejections;
+}
+
+bool rejectTurboModulePromiseOnNativeError() {
+    static bool rejectOnError = getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
+    return rejectOnError;
 }
 
 struct JNIArgs {
@@ -1013,8 +1018,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   } catch (...) {
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                      auto exception = std::current_exception();
-                    rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+                    if (rejectTurboModulePromiseOnNativeError()) {
+                        auto exception = std::current_exception();
+                        rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+                    } else {
+                        throw;
+                    }
                   }
 
                   for (auto globalRef : globalRefs) {
