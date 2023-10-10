@@ -200,6 +200,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_promis
       .invokeObjCMethod(rt, PromiseKind, "promiseAssert", @selector(promiseAssert:resolve:reject:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectCppThrows(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, ObjectKind, "getObjectCppThrows", @selector(getObjectCppThrows:), args, count);
+}
+
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params)
 {
@@ -223,6 +233,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["voidFuncAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert};
   methodMap_["getObjectAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
   methodMap_["promiseAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+  methodMap_["getObjectCppThrows"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectCppThrows};
   methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
 }
 

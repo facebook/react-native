@@ -347,6 +347,9 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
   methodMap_["promiseAssert"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
 
+  methodMap_["getObjectCppThrows"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectCppThrows};
+
   methodMap_["getConstants"] = MethodMetadata{
       0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
 }

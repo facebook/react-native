@@ -200,6 +200,11 @@ RCT_EXPORT_METHOD(promiseThrows
   @throw myException;
 }
 
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectCppThrows : (NSDictionary *)arg)
+{
+  throw std::runtime_error("Intentional error from Cpp getObjectCppThrows");
+}
+
 RCT_EXPORT_METHOD(voidFuncAssert)
 {
   RCTAssert(false, @"Intentional assert from ObjC voidFuncAssert");
