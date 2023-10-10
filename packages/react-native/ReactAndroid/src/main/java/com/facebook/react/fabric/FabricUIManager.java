@@ -232,7 +232,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
-  // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
   @Override
   @UiThread
   @ThreadConfined(UI)
