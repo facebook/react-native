@@ -124,8 +124,8 @@ final class IntBufferBatchMountItem implements BatchMountItem {
 
     ArrayList<IntBufferMountItem> mutationsArray = new ArrayList<>();
 
-    // we put views in the map also for basic operations since tags are only mapped to ViewState
-    // which are internal.
+    // we put views in the mount item objects also for some operations since tags
+    // are only mapped to ViewState which are internal.
     // In most cases we will need the view to perform an action in the listener
     int i = 0, j = 0;
     while (i < mIntBufferLen) {
