@@ -95,6 +95,16 @@ const startCommand: Command = {
       name: '--no-interactive',
       description: 'Disables interactive mode',
     },
+    {
+      name: '--experimental-debugger [bool]',
+      description:
+        "[Experimental] Enable the new debugger experience and 'j' to " +
+        'debug. This enables the new frontend experience only: connection ' +
+        'reliability and some basic features are unstable in this release.',
+      parse: (val: ?string): boolean =>
+        val !== undefined && val !== 'false' && val !== '0',
+      default: true,
+    },
   ],
 };
 
