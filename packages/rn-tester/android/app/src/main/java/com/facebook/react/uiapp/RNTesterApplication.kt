@@ -39,9 +39,6 @@ import com.facebook.soloader.SoLoader
 
 class RNTesterApplication : Application(), ReactApplication {
   override val reactNativeHost: ReactNativeHost by lazy {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
-    }
     object : DefaultReactNativeHost(this) {
       public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
 
