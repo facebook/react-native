@@ -36,6 +36,8 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
 
+  public static volatile boolean unstable_enableTurboModuleSyncVoidMethods = false;
+
   /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
