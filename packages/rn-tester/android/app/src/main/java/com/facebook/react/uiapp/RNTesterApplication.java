@@ -170,9 +170,6 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      throw new RuntimeException("Should not use ReactNativeHost when Bridgeless enabled");
-    }
     return mReactNativeHost;
   }
 
