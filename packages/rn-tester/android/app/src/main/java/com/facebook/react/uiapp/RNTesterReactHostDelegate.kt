@@ -40,10 +40,10 @@ import com.facebook.react.uimanager.ViewManager
 class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHostDelegate {
   var reactHost: ReactHostImpl? = null
 
-  override val jsMainModulePath: String = "js/RNTesterApp.android"
+  override val jsMainModulePath: String = BuildConfig.JS_MAIN_MODULE_NAME
 
   override val jsBundleLoader: JSBundleLoader =
-      JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
+      JSBundleLoader.createAssetLoader(context, "assets:" + BuildConfig.BUNDLE_ASSET_NAME, true)
 
   @get:Synchronized override val bindingsInstaller: BindingsInstaller? = null
 
