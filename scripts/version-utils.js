@@ -21,6 +21,7 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  * - e2e-test: X.Y.Z-20221116-2018
  * - nightly: X.Y.Z-20221116-0bc4547fc
  * - dryrun: 1000.0.0
+ * - prealpha: 0.0.0-prealpha-20221116
  *
  * Parameters:
  * - @versionStr the string representing a version
@@ -39,11 +40,7 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  *
  */
 function parseVersion(versionStr, buildType) {
-  try {
-    validateBuildType(buildType);
-  } catch (e) {
-    throw e;
-  }
+  validateBuildType(buildType);
 
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
@@ -56,17 +53,18 @@ function parseVersion(versionStr, buildType) {
     prerelease,
   };
 
-  try {
-    validateVersion(versionObject, buildType);
-  } catch (e) {
-    throw e;
-  }
+  validateVersion(versionObject, buildType);
 
   return versionObject;
 }
 
 function validateBuildType(buildType) {
-  const validBuildTypes = new Set(['release', 'dry-run', 'nightly']);
+  const validBuildTypes = new Set([
+    'release',
+    'dry-run',
+    'nightly',
+    'prealpha',
+  ]);
   if (!validBuildTypes.has(buildType)) {
     throw new Error(`Unsupported build type: ${buildType}`);
   }
@@ -87,6 +85,7 @@ function validateVersion(versionObject, buildType) {
     release: validateRelease,
     'dry-run': validateDryRun,
     nightly: validateNightly,
+    prealpha: validatePrealpha,
   };
 
   const validationFunction = map[buildType];
@@ -118,6 +117,12 @@ function validateNightly(version) {
   // a valid nightly is a prerelease
   if (!isNightly(version)) {
     throw new Error(`Version ${version.version} is not valid for nightlies`);
+  }
+}
+
+function validatePrealpha(version) {
+  if (!isValidPrealpha(version)) {
+    throw new Error(`Version ${version.version} is not valid for prealphas`);
   }
 }
 
@@ -156,6 +161,16 @@ function isMain(version) {
 
 function isReleaseBranch(branch) {
   return branch.endsWith('-stable');
+}
+
+function isValidPrealpha(version) {
+  return (
+    version.major === '0' &&
+    version.minor === '0' &&
+    version.patch === '0' &&
+    version.prerelease != null &&
+    version.prerelease.match(/^prealpha-(\d{10})$/)
+  );
 }
 
 module.exports = {
