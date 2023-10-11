@@ -43,9 +43,9 @@ class RNTesterApplication : Application(), ReactApplication {
       throw RuntimeException("Should not use ReactNativeHost when Bridgeless enabled")
     }
     object : DefaultReactNativeHost(this) {
-      public override fun getJSMainModuleName(): String = "js/RNTesterApp.android"
+      public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
 
-      public override fun getBundleAssetName(): String = "RNTesterApp.android.bundle"
+      public override fun getBundleAssetName(): String = BuildConfig.BUNDLE_ASSET_NAME
 
       override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 

@@ -45,19 +45,19 @@ class CallbackWrapper : public LongLivedObject {
     allowRelease();
   }
 
-  jsi::Function& callback() {
+  jsi::Function& callback() noexcept {
     return callback_;
   }
 
-  jsi::Runtime& runtime() {
+  jsi::Runtime& runtime() noexcept {
     return runtime_;
   }
 
-  CallInvoker& jsInvoker() {
+  CallInvoker& jsInvoker() noexcept {
     return *(jsInvoker_);
   }
 
-  std::shared_ptr<CallInvoker> jsInvokerPtr() {
+  std::shared_ptr<CallInvoker> jsInvokerPtr() noexcept {
     return jsInvoker_;
   }
 };

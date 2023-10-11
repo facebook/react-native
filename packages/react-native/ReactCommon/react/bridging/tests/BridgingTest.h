@@ -17,7 +17,7 @@ namespace facebook::react {
 
 class TestCallInvoker : public CallInvoker {
  public:
-  void invokeAsync(std::function<void()>&& fn) override {
+  void invokeAsync(std::function<void()>&& fn) noexcept override {
     queue_.push_back(std::move(fn));
   }
 

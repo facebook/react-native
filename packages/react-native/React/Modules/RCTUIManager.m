@@ -534,7 +534,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertUIManagerQueue();
 
-  NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+  NSPointerArray *affectedShadowViews = [NSPointerArray weakObjectsPointerArray];
   [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
   if (!affectedShadowViews.count) {

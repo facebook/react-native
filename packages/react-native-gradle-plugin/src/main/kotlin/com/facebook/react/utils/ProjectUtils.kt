@@ -113,8 +113,8 @@ internal object ProjectUtils {
       return false
     }
 
-    val major = matchResult.groupValues[1].toInt()
-    return major > 0 && major < 1000
+    val prerelease = matchResult.groupValues[4].toString()
+    return prerelease.contains("prealpha")
   }
 
   internal fun Project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension: ReactExtension): Boolean {
