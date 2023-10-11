@@ -196,7 +196,8 @@ TurboModuleManager::createTurboModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -270,7 +271,8 @@ TurboModuleManager::createLegacyModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       static auto getMethodDescriptorsFromModule =
           javaPart->getClass()
