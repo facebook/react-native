@@ -7,12 +7,12 @@
  * @format
  */
 
-const getAndUpdateNightlies = require('../get-and-update-nightlies');
+const getAndUpdatePackages = require('../get-and-update-packages');
 const path = require('path');
 const {
   mockPackages,
   expectedPackages,
-} = require('./__fixtures__/get-and-update-nightlies-fixtures');
+} = require('./__fixtures__/get-and-update-packages-fixtures');
 
 const writeFileSyncMock = jest.fn();
 const publishPackageMock = jest.fn();
@@ -50,7 +50,7 @@ jest
     getPackageVersionStrByTag: getPackageVersionStrByTag,
   }));
 
-describe('getAndUpdateNightlies', () => {
+describe('getAndUpdatePackages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -66,7 +66,7 @@ describe('getAndUpdateNightlies', () => {
     const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
     publishPackageMock.mockImplementation(() => ({code: 0}));
 
-    const updatedPackages = getAndUpdateNightlies(nightlyVersion);
+    const updatedPackages = getAndUpdatePackages(nightlyVersion, 'nightly');
 
     expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
     forEachPackageThatShouldBePublished(package => {
@@ -109,7 +109,7 @@ describe('getAndUpdateNightlies', () => {
     });
 
     expect(() => {
-      getAndUpdateNightlies(nightlyVersion);
+      getAndUpdatePackages(nightlyVersion, 'nightly');
     }).toThrow();
 
     expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
@@ -118,6 +118,72 @@ describe('getAndUpdateNightlies', () => {
         path.join(package.packageAbsolutePath, 'package.json'),
         JSON.stringify(
           expectedPackages[package.packageManifest.name](nightlyVersion),
+          null,
+          2,
+        ) + '\n',
+        'utf-8',
+      );
+    });
+
+    expect(publishPackageMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('Publishes the prealpha versions', () => {
+    const version = '0.0.0-prealpha-2023100416';
+    publishPackageMock.mockImplementation(() => ({code: 0}));
+
+    const updatedPackages = getAndUpdatePackages(version, 'prealpha');
+
+    expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(writeFileSyncMock).toHaveBeenCalledWith(
+        path.join(package.packageAbsolutePath, 'package.json'),
+        JSON.stringify(
+          expectedPackages[package.packageManifest.name](version),
+          null,
+          2,
+        ) + '\n',
+        'utf-8',
+      );
+    });
+
+    expect(publishPackageMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(publishPackageMock).toHaveBeenCalledWith(
+        package.packageAbsolutePath,
+        {otp: undefined, tag: 'prealpha'},
+      );
+    });
+
+    let expectedResult = {};
+    forEachPackageThatShouldBePublished(package => {
+      expectedResult[package.packageManifest.name] =
+        package.packageManifest.version;
+    });
+    expect(updatedPackages).toEqual(expectedResult);
+  });
+
+  it('Throws when a package fails to publish with prealpha', () => {
+    const version = '0.0.0-prealpha-2023100416';
+    let publishCalls = 0;
+    publishPackageMock.mockImplementation(() => {
+      publishCalls += 1;
+      if (publishCalls === 3) {
+        return {code: -1};
+      }
+      return {code: 0};
+    });
+
+    expect(() => {
+      getAndUpdatePackages(version, 'prealpha');
+    }).toThrow();
+
+    expect(writeFileSyncMock).toHaveBeenCalledTimes(6);
+    forEachPackageThatShouldBePublished(package => {
+      expect(writeFileSyncMock).toHaveBeenCalledWith(
+        path.join(package.packageAbsolutePath, 'package.json'),
+        JSON.stringify(
+          expectedPackages[package.packageManifest.name](version),
           null,
           2,
         ) + '\n',
