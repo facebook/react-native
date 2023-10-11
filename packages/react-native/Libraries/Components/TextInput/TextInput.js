@@ -169,6 +169,7 @@ export type SubmitKeyEvent = $ReadOnly<{|
 |}>;
 // macOS]
 
+// [macOS
 type DataDetectorTypesType =
   // iOS+macOS
   | 'phoneNumber'
@@ -176,6 +177,9 @@ type DataDetectorTypesType =
   | 'address'
   | 'calendarEvent'
   // iOS-only
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all'
   // [macOS macOS-only
@@ -187,7 +191,8 @@ type DataDetectorTypesType =
   | 'replacement'
   | 'correction'
   | 'regularExpression'
-  | 'transitInformation'; // macOS]
+  | 'transitInformation'; 
+  // macOS]
 
 export type KeyboardType =
   // Cross Platform
@@ -952,6 +957,11 @@ export type Props = $ReadOnly<{|
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
+
+  /**
    * Called when a touch is engaged.
    */
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -1541,29 +1551,41 @@ function InternalTextInput(props: Props): React.Node {
   const accessible = props.accessible !== false;
   const focusable = props.focusable !== false;
 
+  const {
+    editable,
+    hitSlop,
+    onPress,
+    onPressIn,
+    onPressOut,
+    rejectResponderTermination,
+  } = props;
+
   const config = React.useMemo(
     () => ({
-      hitSlop: props.hitSlop,
+      hitSlop,
       onPress: (event: PressEvent) => {
-        if (props.editable !== false) {
+        onPress?.(event);
+        if (editable !== false) {
           if (inputRef.current != null) {
             inputRef.current.focus();
           }
         }
       },
-      onPressIn: props.onPressIn,
-      onPressOut: props.onPressOut,
+      onPressIn: onPressIn,
+      onPressOut: onPressOut,
+      // [macOS]
       cancelable:
-        Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */
-          ? !props.rejectResponderTermination
-          : null,
+        Platform.OS === 'ios' || Platform.OS === 'macos' 
+          ? !rejectResponderTermination
+          : null, 
     }),
     [
-      props.editable,
-      props.hitSlop,
-      props.onPressIn,
-      props.onPressOut,
-      props.rejectResponderTermination,
+      editable,
+      hitSlop,
+      onPress,
+      onPressIn,
+      onPressOut,
+      rejectResponderTermination,
     ],
   );
 

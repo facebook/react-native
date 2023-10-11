@@ -7,7 +7,7 @@
 
 package com.facebook.react.jstasks;
 
-public class NoRetryPolicy implements HeadlessJsTaskRetryPolicy {
+class NoRetryPolicy implements HeadlessJsTaskRetryPolicy {
 
   public static final NoRetryPolicy INSTANCE = new NoRetryPolicy();
 

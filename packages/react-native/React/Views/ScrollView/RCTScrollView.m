@@ -1445,7 +1445,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   }
 
   CGPoint offset = scrollView.contentOffset;
-  if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
     offset.x = scrollView.contentSize.width - scrollView.frame.size.width - offset.x;
   }
 

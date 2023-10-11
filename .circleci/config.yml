@@ -91,4 +91,7 @@ jobs:
 workflows:
   always-run:
     jobs:
-      - choose_ci_jobs
+      - choose_ci_jobs:
+          filters:
+            tags:
+              only: /.*/

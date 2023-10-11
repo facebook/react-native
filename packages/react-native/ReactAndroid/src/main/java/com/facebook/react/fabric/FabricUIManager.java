@@ -232,13 +232,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
   }
 
-  // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
   @Override
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  public <T extends View> int addRootView(
-      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+  public <T extends View> int addRootView(final T rootView, final WritableMap initialProps) {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
@@ -256,9 +254,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
-    if (initialUITemplate != null) {
-      mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
-    }
     return rootTag;
   }
 
@@ -411,7 +406,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   @AnyThread
   @ThreadConfined(ANY)
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDevToolsReactPerfLogger != null) {

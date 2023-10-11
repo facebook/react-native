@@ -28,12 +28,6 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale);
 RCTDimensions RCTGetDimensions(RCTPlatformView *rootView);
 #endif // macOS]
 
-#if !TARGET_OS_OSX // [macOS]
-// Get font size multiplier for font base size (Large) by content size category
-extern __attribute__((visibility("default"))) CGFloat RCTGetMultiplierForContentSizeCategory(
-    UIContentSizeCategory category);
-#endif // [macOS]
-
 #ifdef __cplusplus
 }
 #endif

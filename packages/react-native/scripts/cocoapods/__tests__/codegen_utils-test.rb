@@ -391,7 +391,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
             :fabric_enabled => false,
-            :folly_version=>"2022.05.16.00",
+            :folly_version=>"2023.08.07.00",
             :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
@@ -541,7 +541,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'homepage' => 'https://facebook.com/',
           'license' => 'Unlicense',
           'authors' => 'Facebook',
-          'compiler_flags'  => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -Wno-nullability-completeness -std=c++20",
+          'compiler_flags'  => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -Wno-nullability-completeness -std=c++20",
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {

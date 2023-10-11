@@ -112,7 +112,7 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
  public:
   ModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
-  void invokeAsync(const std::string &methodName, std::function<void()> &&work) override
+  void invokeAsync(const std::string &methodName, std::function<void()> &&work) noexcept override
   {
     if (methodQueue_ == RCTJSThread) {
       work();
@@ -375,6 +375,7 @@ static Class getFallbackClassFromName(const char *name)
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
+        .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
     };
 
     auto turboModule = [(id<RCTTurboModule>)module getTurboModule:params];
@@ -437,6 +438,7 @@ static Class getFallbackClassFromName(const char *name)
       .jsInvoker = _jsInvoker,
       .nativeMethodCallInvoker = std::move(nativeMethodCallInvoker),
       .isSyncModule = methodQueue == RCTJSThread,
+      .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
   };
 
   auto turboModule = std::make_shared<ObjCInteropTurboModule>(params);

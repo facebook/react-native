@@ -86,17 +86,39 @@ inline static jsi::Value valueFromShadowNode(
   }
 }
 
+// TODO: once we no longer need to mutate the return value (appendChildToSet)
+// make this a SharedListOfShared
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& value) {
-  if (CoreFeatures::useNativeState) {
-    return value.getObject(runtime)
-        .getNativeState<ShadowNodeListWrapper>(runtime)
-        ->shadowNodeList;
+  // TODO: cleanup when passChildrenWhenCloningPersistedNodes is rolled out
+  jsi::Object object = value.asObject(runtime);
+  if (object.isArray(runtime)) {
+    auto jsArray = std::move(object).asArray(runtime);
+    size_t jsArrayLen = jsArray.length(runtime);
+    if (jsArrayLen > 0) {
+      auto shadowNodeArray = std::make_shared<ShadowNode::ListOfShared>();
+      shadowNodeArray->reserve(jsArrayLen);
+
+      for (size_t i = 0; i < jsArrayLen; i++) {
+        shadowNodeArray->push_back(
+            shadowNodeFromValue(runtime, jsArray.getValueAtIndex(runtime, i)));
+      }
+      return shadowNodeArray;
+    } else {
+      // TODO: return ShadowNode::emptySharedShadowNodeSharedList()
+      return std::make_shared<ShadowNode::ListOfShared>(
+          ShadowNode::ListOfShared({}));
+      ;
+    }
   } else {
-    return value.getObject(runtime)
-        .getHostObject<ShadowNodeListWrapper>(runtime)
-        ->shadowNodeList;
+    if (CoreFeatures::useNativeState) {
+      return object.getNativeState<ShadowNodeListWrapper>(runtime)
+          ->shadowNodeList;
+    } else {
+      return object.getHostObject<ShadowNodeListWrapper>(runtime)
+          ->shadowNodeList;
+    }
   }
 }
 

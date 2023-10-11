@@ -4,26 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format strict-local
- * @flow
+ * @format
+ * @flow strict-local
  */
 
-import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {AbstractImageAndroid, AbstractImageIOS} from './ImageTypes.flow';
 
-import ImageViewNativeComponent from './ImageViewNativeComponent';
-import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
-import * as React from 'react';
+type ImageComponentDecorator = (AbstractImageAndroid => AbstractImageAndroid) &
+  (AbstractImageIOS => AbstractImageIOS);
 
-export default {
-  unstable_createImageComponent: (null: ?(
-    Image: React.AbstractComponent<
-      ImagePropsType,
-      | React.ElementRef<typeof TextInlineImageNativeComponent>
-      | React.ElementRef<typeof ImageViewNativeComponent>,
-    >,
-  ) => React.AbstractComponent<
-    ImagePropsType,
-    | React.ElementRef<typeof TextInlineImageNativeComponent>
-    | React.ElementRef<typeof ImageViewNativeComponent>,
-  >),
-};
+let injectedImageComponentDecorator: ?ImageComponentDecorator;
+
+export function unstable_setImageComponentDecorator(
+  imageComponentDecorator: ?ImageComponentDecorator,
+): void {
+  injectedImageComponentDecorator = imageComponentDecorator;
+}
+
+export function unstable_getImageComponentDecorator(): ?ImageComponentDecorator {
+  return injectedImageComponentDecorator;
+}

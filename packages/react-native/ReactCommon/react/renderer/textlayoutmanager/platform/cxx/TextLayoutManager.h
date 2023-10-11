@@ -29,10 +29,12 @@ class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared& contextContainer) {}
 
+  virtual ~TextLayoutManager() = default;
+
   /*
    * Measures `attributedStringBox` using native text rendering infrastructure.
    */
-  TextMeasurement measure(
+  virtual TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints,
@@ -42,7 +44,7 @@ class TextLayoutManager {
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
-  LinesMeasurements measureLines(
+  virtual LinesMeasurements measureLines(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       Size size) const;
@@ -53,7 +55,7 @@ class TextLayoutManager {
    */
   void* getNativeTextLayoutManager() const;
 
-  std::shared_ptr<void> getHostTextStorage(
+  virtual std::shared_ptr<void> getHostTextStorage(
       AttributedString attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

@@ -71,7 +71,7 @@ static SEL selectorForType(NSString *type)
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager ?: _bridgelessViewManager;
+  return _manager ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -482,11 +482,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
   }
 
-  NSDictionary<NSString *, NSNumber *> *commands = [self commandsForViewMangerClass:managerClass
-                                                                            methods:methods
-                                                                        methodCount:count];
-  free(methods);
-
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
     if ([directEvents containsObject:event]) {
@@ -501,15 +496,22 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
   Class superClass = [managerClass superclass];
 
-  return @{
+  NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
     @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
-    @"Commands" : commands,
-    @"Constants" : [self constantsForViewMangerClass:managerClass],
-  };
+  }];
+
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    result[@"Commands"] = [self commandsForViewMangerClass:managerClass methods:methods methodCount:count];
+    result[@"Constants"] = [self constantsForViewMangerClass:managerClass];
+  }
+
+  free(methods);
+
+  return result;
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig

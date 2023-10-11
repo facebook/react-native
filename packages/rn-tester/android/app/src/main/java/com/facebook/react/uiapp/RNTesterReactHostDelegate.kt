@@ -14,6 +14,7 @@ import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.TurboReactPackage
+import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -30,7 +31,6 @@ import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.shell.MainReactPackage
-import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uimanager.ViewManager
@@ -39,10 +39,10 @@ import com.facebook.react.uimanager.ViewManager
 class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHostDelegate {
   var reactHost: ReactHostImpl? = null
 
-  override val jsMainModulePath: String = "js/RNTesterApp.android"
+  override val jsMainModulePath: String = BuildConfig.JS_MAIN_MODULE_NAME
 
   override val jsBundleLoader: JSBundleLoader =
-      JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
+      JSBundleLoader.createAssetLoader(context, "assets:" + BuildConfig.BUNDLE_ASSET_NAME, true)
 
   @get:Synchronized override val bindingsInstaller: BindingsInstaller? = null
 
@@ -58,7 +58,7 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
 
   override fun handleInstanceException(error: Exception) {}
 
-  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig =
+  override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?): ReactNativeConfig =
       ReactNativeConfig.DEFAULT_CONFIG
 
   override val reactPackages: List<ReactPackage> by lazy {
@@ -108,7 +108,7 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
                 }
               }
         },
-        object : ReactPackage {
+        object : ViewManagerOnDemandReactPackage, ReactPackage {
           override fun createNativeModules(
               reactContext: ReactApplicationContext
           ): List<NativeModule> = emptyList()
@@ -117,6 +117,22 @@ class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHo
               reactContext: ReactApplicationContext
           ): List<ViewManager<*, *>> =
               listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+
+          override fun getViewManagerNames(
+              reactContext: ReactApplicationContext
+          ): Collection<String> =
+              listOf(MyNativeViewManager.REACT_CLASS, MyLegacyViewManager.REACT_CLASS)
+
+          override fun createViewManager(
+              reactContext: ReactApplicationContext,
+              viewManagerName: String
+          ): ViewManager<*, *>? {
+            return when (viewManagerName) {
+              MyNativeViewManager.REACT_CLASS -> MyNativeViewManager()
+              MyLegacyViewManager.REACT_CLASS -> MyLegacyViewManager(reactContext)
+              else -> null
+            }
+          }
         })
   }
 }

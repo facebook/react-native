@@ -16,6 +16,7 @@ import {PerformanceEntry} from './PerformanceEntry';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
+  rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
@@ -127,6 +128,21 @@ function applyDurationThresholds() {
       durationThreshold ?? 0,
     );
   }
+}
+
+function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
+  if (!NativePerformanceObserver) {
+    return Object.freeze([]);
+  }
+  if (!NativePerformanceObserver.getSupportedPerformanceEntryTypes) {
+    // fallback if getSupportedPerformanceEntryTypes is not defined on native side
+    return Object.freeze(['mark', 'measure', 'event']);
+  }
+  return Object.freeze(
+    NativePerformanceObserver.getSupportedPerformanceEntryTypes().map(
+      rawToPerformanceEntryType,
+    ),
+  );
 }
 
 /**
@@ -294,7 +310,7 @@ export default class PerformanceObserver {
   }
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
-    Object.freeze(['mark', 'measure', 'event']);
+    getSupportedPerformanceEntryTypes();
 }
 
 // As a Set union, except if value exists in both, we take minimum

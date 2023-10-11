@@ -31,6 +31,6 @@ class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
       SoLoader.loadLibrary("jscexecutor")
     }
 
-    private external fun initHybrid(jscConfig: ReadableNativeMap): HybridData?
+    @JvmStatic private external fun initHybrid(jscConfig: ReadableNativeMap): HybridData?
   }
 }

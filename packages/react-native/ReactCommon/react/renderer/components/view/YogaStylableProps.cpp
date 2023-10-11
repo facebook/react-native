@@ -191,14 +191,18 @@ static inline T const getFieldValue(
 
 #define REBUILD_FIELD_YG_DIMENSION(field, setter, widthStr, heightStr) \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
-      field, setter, YGDimensionWidth, widthStr);                      \
+      field, setter, yoga::Dimension::Width, widthStr);                \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(                         \
-      field, setter, YGDimensionHeight, heightStr);
+      field, setter, yoga::Dimension::Height, heightStr);
 
-#define REBUILD_FIELD_YG_GUTTER(field, rowGapStr, columnGapStr, gapStr)      \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterRow, rowGapStr);       \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterColumn, columnGapStr); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, YGGutterAll, gapStr);
+#define REBUILD_FIELD_YG_GUTTER(                          \
+    field, setter, rowGapStr, columnGapStr, gapStr)       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::Row, rowGapStr);       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::Column, columnGapStr); \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED_SETTER(            \
+      field, setter, yoga::Gutter::All, gapStr);
 
 #define REBUILD_FIELD_YG_EDGES(field, prefix, suffix)                          \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                        \
@@ -250,7 +254,7 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_SWITCH_CASE_YSP(flexShrink);
     REBUILD_FIELD_SWITCH_CASE_YSP(flexBasis);
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
-    REBUILD_FIELD_YG_GUTTER(gap, "rowGap", "columnGap", "gap");
+    REBUILD_FIELD_YG_GUTTER(gap, setGap, "rowGap", "columnGap", "gap");
     REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
     REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
     REBUILD_FIELD_YG_DIMENSION(
@@ -325,16 +329,16 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
           "flexGrow", yogaStyle.flexGrow(), defaultYogaStyle.flexGrow()),
       debugStringConvertibleItem(
           "rowGap",
-          yogaStyle.gap()[YGGutterRow],
-          defaultYogaStyle.gap()[YGGutterRow]),
+          yogaStyle.gap(yoga::Gutter::Row),
+          defaultYogaStyle.gap(yoga::Gutter::Row)),
       debugStringConvertibleItem(
           "columnGap",
-          yogaStyle.gap()[YGGutterColumn],
-          defaultYogaStyle.gap()[YGGutterColumn]),
+          yogaStyle.gap(yoga::Gutter::Column),
+          defaultYogaStyle.gap(yoga::Gutter::Column)),
       debugStringConvertibleItem(
           "gap",
-          yogaStyle.gap()[YGGutterAll],
-          defaultYogaStyle.gap()[YGGutterAll]),
+          yogaStyle.gap(yoga::Gutter::All),
+          defaultYogaStyle.gap(yoga::Gutter::All)),
       debugStringConvertibleItem(
           "flexShrink", yogaStyle.flexShrink(), defaultYogaStyle.flexShrink()),
       debugStringConvertibleItem(
@@ -349,28 +353,28 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
           "border", yogaStyle.border(), defaultYogaStyle.border()),
       debugStringConvertibleItem(
           "width",
-          yogaStyle.dimension(YGDimensionWidth),
-          defaultYogaStyle.dimension(YGDimensionWidth)),
+          yogaStyle.dimension(yoga::Dimension::Width),
+          defaultYogaStyle.dimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "height",
-          yogaStyle.dimension(YGDimensionHeight),
-          defaultYogaStyle.dimension(YGDimensionHeight)),
+          yogaStyle.dimension(yoga::Dimension::Height),
+          defaultYogaStyle.dimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
           "minWidth",
-          yogaStyle.minDimension(YGDimensionWidth),
-          defaultYogaStyle.minDimension(YGDimensionWidth)),
+          yogaStyle.minDimension(yoga::Dimension::Width),
+          defaultYogaStyle.minDimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "minHeight",
-          yogaStyle.minDimension(YGDimensionHeight),
-          defaultYogaStyle.minDimension(YGDimensionHeight)),
+          yogaStyle.minDimension(yoga::Dimension::Height),
+          defaultYogaStyle.minDimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
           "maxWidth",
-          yogaStyle.maxDimension(YGDimensionWidth),
-          defaultYogaStyle.maxDimension(YGDimensionWidth)),
+          yogaStyle.maxDimension(yoga::Dimension::Width),
+          defaultYogaStyle.maxDimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "maxHeight",
-          yogaStyle.maxDimension(YGDimensionHeight),
-          defaultYogaStyle.maxDimension(YGDimensionHeight)),
+          yogaStyle.maxDimension(yoga::Dimension::Height),
+          defaultYogaStyle.maxDimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
           "aspectRatio",
           yogaStyle.aspectRatio(),

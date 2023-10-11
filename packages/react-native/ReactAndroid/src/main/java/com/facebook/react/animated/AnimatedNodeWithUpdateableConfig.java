@@ -10,6 +10,6 @@ package com.facebook.react.animated;
 import com.facebook.react.bridge.ReadableMap;
 
 /** Indicates that AnimatedNode is able to receive native config updates. */
-public interface AnimatedNodeWithUpdateableConfig {
+interface AnimatedNodeWithUpdateableConfig {
   void onUpdateConfig(ReadableMap config);
 }

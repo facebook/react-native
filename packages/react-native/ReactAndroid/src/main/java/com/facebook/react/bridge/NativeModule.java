@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import javax.annotation.Nonnull;
 
 /**
@@ -19,6 +20,8 @@ import javax.annotation.Nonnull;
  */
 @DoNotStrip
 public interface NativeModule {
+
+  @DeprecatedInNewArchitecture
   interface NativeMethod {
     void invoke(JSInstance jsInstance, ReadableArray parameters);
 
@@ -32,11 +35,7 @@ public interface NativeModule {
   @Nonnull
   String getName();
 
-  /**
-   * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()} after
-   * the CatalystInstance has been created, in order to initialize NativeModules that require the
-   * CatalystInstance or JS modules.
-   */
+  /** This method is called after {@link ReactApplicationContext} has been created. */
   void initialize();
 
   /**
@@ -45,6 +44,7 @@ public interface NativeModule {
    * this method is considered an error and will throw an exception during initialization. By
    * default all modules return false.
    */
+  @DeprecatedInNewArchitecture()
   boolean canOverrideExistingModule();
 
   /**
@@ -52,9 +52,9 @@ public interface NativeModule {
    *
    * @deprecated use {@link #invalidate()} instead.
    */
-  @Deprecated
+  @DeprecatedInNewArchitecture(message = "Use invalidate method instead")
   void onCatalystInstanceDestroy();
 
-  /** Allow NativeModule to clean up. Called before {CatalystInstance#onHostDestroy} */
+  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
   void invalidate();
 }

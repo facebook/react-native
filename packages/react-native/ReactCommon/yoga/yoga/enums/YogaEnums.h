@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace facebook::yoga {
 
 template <typename EnumT>
@@ -14,5 +16,11 @@ constexpr inline int32_t ordinalCount();
 
 template <typename EnumT>
 constexpr inline int32_t bitCount();
+
+// Polyfill of C++ 23 to_underlying()
+// https://en.cppreference.com/w/cpp/utility/to_underlying
+constexpr auto to_underlying(auto e) noexcept {
+  return static_cast<std::underlying_type_t<decltype(e)>>(e);
+}
 
 } // namespace facebook::yoga

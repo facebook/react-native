@@ -10,6 +10,7 @@
 #include <array>
 
 #include <yoga/bits/NumericBitfield.h>
+#include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/node/CachedMeasurement.h>
 #include <yoga/numeric/FloatOptional.h>
@@ -63,20 +64,20 @@ struct LayoutResults {
     hadOverflow_ = hadOverflow;
   }
 
-  float dimension(YGDimension axis) const {
-    return dimensions_[axis];
+  float dimension(Dimension axis) const {
+    return dimensions_[yoga::to_underlying(axis)];
   }
 
-  void setDimension(YGDimension axis, float dimension) {
-    dimensions_[axis] = dimension;
+  void setDimension(Dimension axis, float dimension) {
+    dimensions_[yoga::to_underlying(axis)] = dimension;
   }
 
-  float measuredDimension(YGDimension axis) const {
-    return measuredDimensions_[axis];
+  float measuredDimension(Dimension axis) const {
+    return measuredDimensions_[yoga::to_underlying(axis)];
   }
 
-  void setMeasuredDimension(YGDimension axis, float dimension) {
-    measuredDimensions_[axis] = dimension;
+  void setMeasuredDimension(Dimension axis, float dimension) {
+    measuredDimensions_[yoga::to_underlying(axis)] = dimension;
   }
 
   bool operator==(LayoutResults layout) const;

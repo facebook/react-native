@@ -21,7 +21,7 @@ RuntimeScheduler::RuntimeScheduler(
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
-void RuntimeScheduler::scheduleWork(RawCallback callback) const {
+void RuntimeScheduler::scheduleWork(RawCallback&& callback) const noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
 
   runtimeAccessRequests_ += 1;
@@ -37,7 +37,7 @@ void RuntimeScheduler::scheduleWork(RawCallback callback) const {
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function callback) {
+    jsi::Function&& callback) noexcept {
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -50,7 +50,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    RawCallback callback) {
+    RawCallback&& callback) noexcept {
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -81,7 +81,7 @@ RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
-void RuntimeScheduler::executeNowOnTheSameThread(RawCallback callback) {
+void RuntimeScheduler::executeNowOnTheSameThread(RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
   runtimeAccessRequests_ += 1;
@@ -166,7 +166,7 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime& runtime) const {
 
 void RuntimeScheduler::executeTask(
     jsi::Runtime& runtime,
-    std::shared_ptr<Task> task,
+    const std::shared_ptr<Task>& task,
     bool didUserCallbackTimeout) const {
   SystraceSection s(
       "RuntimeScheduler::executeTask",

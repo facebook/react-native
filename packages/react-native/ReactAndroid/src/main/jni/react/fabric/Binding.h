@@ -88,8 +88,6 @@ class Binding : public jni::HybridClass<Binding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
-  void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
-
   void stopSurface(jint surfaceId);
 
   void registerSurface(SurfaceHandlerBinding* surfaceHandler);

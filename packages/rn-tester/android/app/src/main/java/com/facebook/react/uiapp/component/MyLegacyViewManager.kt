@@ -26,8 +26,8 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
-      MyNativeView(reactContext).apply { setBackgroundColor(Color.RED) }
+  override fun createViewInstance(themedReactContext: ThemedReactContext): MyNativeView =
+      MyNativeView(themedReactContext).apply { setBackgroundColor(Color.RED) }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {

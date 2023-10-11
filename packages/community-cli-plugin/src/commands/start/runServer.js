@@ -33,6 +33,7 @@ export type StartCommandArgs = {
   assetPlugins?: string[],
   cert?: string,
   customLogReporterPath?: string,
+  experimentalDebugger: boolean,
   host?: string,
   https?: boolean,
   maxWorkers?: number,
@@ -118,7 +119,7 @@ async function runServer(
     logger,
     unstable_experiments: {
       // NOTE: Only affects the /open-debugger endpoint
-      enableCustomDebuggerFrontend: true,
+      enableNewDebugger: args.experimentalDebugger,
     },
   });
 
@@ -137,8 +138,8 @@ async function runServer(
         attachKeyHandlers({
           cliConfig: ctx,
           devServerUrl,
-          serverInstance,
           messageSocket: messageSocketEndpoint,
+          experimentalDebuggerFrontend: args.experimentalDebugger,
         });
       }
     },

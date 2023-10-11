@@ -55,10 +55,6 @@ export type FeatureFlags = {|
    */
   shouldUseSetNativePropsInFabric: () => boolean,
   /**
-   * Enables native view configs in brdgeless mode.
-   */
-  enableNativeViewConfigsInBridgelessMode: () => boolean,
-  /**
    * Enables a hotfix for forcing materialization of views with elevation set.
    */
   shouldForceUnflattenForElevation: () => boolean,
@@ -74,7 +70,6 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
   shouldUseSetNativePropsInFabric: () => false,
-  enableNativeViewConfigsInBridgelessMode: () => false,
   shouldForceUnflattenForElevation: () => false,
 };
 

@@ -11,6 +11,7 @@ add_compile_options(
         -O2
         -Wno-unused-function
         -Wno-unneeded-internal-declaration
+        -Wno-array-parameter # Fixed in 2.2.1 (not yet released)
         -std=c11)
 
 add_library(event

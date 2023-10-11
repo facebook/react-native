@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
@@ -75,16 +74,6 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     view.setAdjustFontSizeToFit(adjustsFontSizeToFit);
   }
 
-  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
-  public void setAllowFontScaling(ReactTextView view, boolean allowFontScaling) {
-    view.setAllowFontScaling(allowFontScaling);
-  }
-
-  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
-  public void setMaxFontSizeMultiplier(ReactTextView view, float maxFontSizeMultiplier) {
-    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
-  }
-
   @ReactProp(name = ViewProps.FONT_SIZE)
   public void setFontSize(ReactTextView view, float fontSize) {
     view.setFontSize(fontSize);
@@ -128,10 +117,6 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = "android_hyphenationFrequency")
   public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      FLog.w(TAG, "android_hyphenationFrequency only available since android 23");
-      return;
-    }
     if (frequency == null || frequency.equals("none")) {
       view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     } else if (frequency.equals("full")) {
