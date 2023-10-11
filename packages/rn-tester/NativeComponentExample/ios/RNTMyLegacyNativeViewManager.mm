@@ -39,7 +39,7 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, CGFloat, RNTLegacyView)
 
 RCT_EXPORT_METHOD(changeBackgroundColor : (nonnull NSNumber *)reactTag color : (NSString *)color)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     RCTUIView *view = viewRegistry[reactTag]; // [macOS]
     if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
       RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
