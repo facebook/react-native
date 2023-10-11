@@ -91,8 +91,8 @@ references:
     hermes_dsym_release_cache_key: &hermes_dsym_release_cache_key v1-hermes-release-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     # Cocoapods - RNTester
     pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    cocoapods_cache_key: &cocoapods_cache_key v8-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v6-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    cocoapods_cache_key: &cocoapods_cache_key v9-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v7-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
 
     # Cocoapods - Template
     template_cocoapods_cache_key: &template_cocoapods_cache_key v4-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock }}
