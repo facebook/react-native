@@ -13,6 +13,7 @@ const {echo, exit} = require('shelljs');
 const {publishPackage, getNpmInfo} = require('./npm-utils');
 const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
 const setReactNativeVersion = require('./set-rn-version');
+const removeNewArchFlags = require('./releases/remove-new-arch-flags');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -59,6 +60,10 @@ if (require.main === module) {
 
 function publishNpm(buildType) {
   const {version, tag} = getNpmInfo(buildType);
+
+  if (buildType === 'prealpha') {
+    removeNewArchFlags();
+  }
 
   // Here we update the react-native package and template package with the right versions
   // For releases, CircleCI job `prepare_package_for_release` handles this
