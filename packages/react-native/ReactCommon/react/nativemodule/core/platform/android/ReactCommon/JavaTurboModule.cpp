@@ -738,13 +738,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case VoidKind: {
       if (shouldVoidMethodsExecuteSync_) {
         env->CallVoidMethodA(instance, methodID, jargs.data());
+        checkJNIErrorForMethodCall();
+
         TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
         TMPL::syncMethodCallEnd(moduleName, methodName);
-        try {
-          FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
-        } catch (...) {
-          throw;
-        }
         return jsi::Value::undefined();
       }
 
