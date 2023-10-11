@@ -70,5 +70,9 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
+  public boolean unstable_enableSyncVoidMethods() {
+    return false;
+  }
+
   protected synchronized void maybeLoadOtherSoLibraries() {}
 }

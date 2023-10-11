@@ -128,8 +128,8 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createTurboModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
+    bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
@@ -209,8 +209,8 @@ TurboModuleManager::createTurboModuleProvider() {
   };
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createLegacyModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+    bool enableSyncVoidMethods) {
   return [legacyModuleCache_ = std::weak_ptr<ModuleCache>(legacyModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
@@ -302,21 +302,27 @@ TurboModuleManager::createLegacyModuleProvider() {
   };
 }
 
-void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
+void TurboModuleManager::installJSIBindings(
+    bool shouldCreateLegacyModules,
+    bool enableSyncVoidMethods) {
   if (!jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
   bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
-  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime& runtime) {
+  runtimeExecutor_([this, isInteropLayerDisabled, enableSyncVoidMethods](
+                       jsi::Runtime& runtime) {
     if (isInteropLayerDisabled) {
-      TurboModuleBinding::install(runtime, createTurboModuleProvider());
+      TurboModuleBinding::install(
+          runtime, createTurboModuleProvider(enableSyncVoidMethods));
       return;
     }
 
     TurboModuleBinding::install(
-        runtime, createTurboModuleProvider(), createLegacyModuleProvider());
+        runtime,
+        createTurboModuleProvider(enableSyncVoidMethods),
+        createLegacyModuleProvider(enableSyncVoidMethods));
   });
 }
 
