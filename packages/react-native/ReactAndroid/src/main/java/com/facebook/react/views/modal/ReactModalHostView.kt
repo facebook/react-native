@@ -560,10 +560,21 @@ public class ReactModalHostView(context: ThemedReactContext) :
       updateState(viewWidth, viewHeight)
     }
 
+    /**
+     * Updates the shadow tree via the local fabric view state manager. Can noop if the same values
+     * are passed multiple times. Can also ignore params if the local variables for viewWidth &
+     * viewHeight are non-zero.
+     *
+     * @param width target width of the container as pixels. Will be converted to DIP.
+     * @param height target height of the container as pixels. Will be converted to DIP.
+     */
     @UiThread
     public fun updateState(width: Int, height: Int) {
-      val realWidth: Float = width.toFloat().pxToDp()
-      val realHeight: Float = height.toFloat().pxToDp()
+      // Once viewWidth & viewHeight are set by an onSizeChanged callback they become our source
+      // of truth. This makes the fabric renderer function like the paper renderer is currently
+      // functioning.
+      val realWidth = (if ((viewWidth > 0)) viewWidth else width).toFloat().pxToDp()
+      val realHeight = (if ((viewHeight > 0)) viewHeight else height).toFloat().pxToDp()
 
       val sw = stateWrapper
       if (sw != null) {
