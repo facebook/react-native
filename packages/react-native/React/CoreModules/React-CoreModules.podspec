@@ -18,7 +18,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2022.05.16.00'
-socket_rocket_version = '0.6.0'
+socket_rocket_version = '0.6.1'
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
