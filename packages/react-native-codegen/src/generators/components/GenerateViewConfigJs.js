@@ -69,7 +69,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
             .expression`{ process: require('react-native/Libraries/StyleSheet/processColor').default }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
+            .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource').default }`;
         case 'ImageRequestPrimitive':
           throw new Error('ImageRequest should not be used in props');
         case 'PointPrimitive':
