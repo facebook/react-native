@@ -16,20 +16,21 @@ const {writeFileSync} = require('fs');
 const {getPackageVersionStrByTag} = require('../npm-utils');
 
 /**
- * Get the latest nightly version of each monorepo package and publishes a new nightly if there have been updates.
- * Returns a map of monorepo packages and its latest nightly version.
+ * Get the latest version of each monorepo package and publishes a new package if there have been updates.
+ * Returns a map of monorepo packages and their latest version.
  *
- * This is called by `react-native`'s nightly job.
- * Note: This does not publish `package/react-native`'s nightly. That is handled in `publish-npm`.
+ * This is called by `react-native`'s nightly and prealpha job.
+ * Note: This does not publish `package/react-native`'s nightly/prealpha. That is handled in `publish-npm`.
  */
-function getAndUpdateNightlies(
-  nightlyVersion /*: string */,
+function getAndUpdatePackages(
+  version /*: string */,
+  tag /*: 'nightly' | 'prealpha' */,
 ) /*: {| [string]: string|}*/ {
   const packages = getPackagesToPublish();
 
-  updateDependencies(packages, nightlyVersion);
+  updateDependencies(packages, version);
 
-  publishPackages(packages);
+  publishPackages(packages, tag);
 
   return reducePackagesToNameVersion(packages);
 }
@@ -59,7 +60,7 @@ function getPackagesToPublish() /*: PackageMap */ {
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private || !isPublishedOnNPM(packageManifest.name)) {
         console.log(
-          `\u23F1 Skipping nightly for ${packageManifest.name}. It is either pivate or unpublished`,
+          `\u23F1 Skipping publishing for ${packageManifest.name}. It is either pivate or unpublished`,
         );
         return;
       }
@@ -83,14 +84,11 @@ function isPublishedOnNPM(packageName /*: string */) /*: boolean */ {
 }
 
 /**
- * Update the dependencies in the packages to the passed nightlyVersion.
+ * Update the dependencies in the packages to the passed version.
  * The function update the packages dependencies and devDepenencies if they contains other packages in the monorepo.
  * The function also writes the updated package.json to disk.
  */
-function updateDependencies(
-  packages /*: PackageMap */,
-  nightlyVersion /*: string */,
-) {
+function updateDependencies(packages /*: PackageMap */, version /*: string */) {
   Object.keys(packages).forEach(packageName => {
     const package = packages[packageName];
     const packageManifest = package.packageJson;
@@ -99,8 +97,7 @@ function updateDependencies(
       for (const dependency of Object.keys(packageManifest.dependencies)) {
         if (packages[dependency]) {
           // the dependency is in the monorepo
-          packages[packageName].packageJson.dependencies[dependency] =
-            nightlyVersion;
+          packages[packageName].packageJson.dependencies[dependency] = version;
         }
       }
     }
@@ -110,12 +107,12 @@ function updateDependencies(
         if (packages[dependency]) {
           // the dependency is in the monorepo
           packages[packageName].packageJson.devDependencies[dependency] =
-            nightlyVersion;
+            version;
         }
       }
     }
 
-    packages[packageName].packageJson.version = nightlyVersion;
+    packages[packageName].packageJson.version = version;
 
     writeFileSync(
       path.join(packages[packageName].path, 'package.json'),
@@ -126,22 +123,25 @@ function updateDependencies(
 }
 
 /**
- * Publish the passed set of packages to npm with the `nightly` tag.
+ * Publish the passed set of packages to npm with the passed tag.
  * In case a package fails to be published, it throws an error, stopping the nightly publishing completely
  */
-function publishPackages(packages /*: PackageMap */) {
+function publishPackages(
+  packages /*: PackageMap */,
+  tag /*: 'nightly' | 'prealpha' */,
+) {
   for (const [packageName, packageMetadata] of Object.entries(packages)) {
     const packageAbsolutePath = packageMetadata.path;
-    const nightlyVersion = packageMetadata.packageJson.version;
+    const version = packageMetadata.packageJson.version;
 
     const result = publishPackage(packageAbsolutePath, {
-      tag: 'nightly',
+      tag: tag,
       otp: process.env.NPM_CONFIG_OTP,
     });
 
     if (result.code !== 0) {
       throw new Error(
-        `\u274c Failed to publish version ${nightlyVersion} of ${packageName}. npm publish exited with code ${result.code}:`,
+        `\u274c Failed to publish version ${version} of ${packageName}. npm publish exited with code ${result.code}:`,
       );
     }
 
@@ -167,4 +167,4 @@ function reducePackagesToNameVersion(
   );
 }
 
-module.exports = getAndUpdateNightlies;
+module.exports = getAndUpdatePackages;
