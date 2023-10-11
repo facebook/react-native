@@ -11,13 +11,12 @@
 
 const {echo, exit} = require('shelljs');
 const {publishPackage, getNpmInfo} = require('./npm-utils');
-const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
+const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
 const setReactNativeVersion = require('./set-rn-version');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
-const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
@@ -63,15 +62,15 @@ function publishNpm(buildType) {
 
   // Here we update the react-native package and template package with the right versions
   // For releases, CircleCI job `prepare_package_for_release` handles this
-  if (buildType === 'nightly' || buildType === 'dry-run') {
-    // Publish monorepo nightlies if there are updates, returns nightly versions for each
-    const monorepoNightlyVersions =
-      buildType === 'nightly' ? getAndUpdateNightlies(version) : null;
+  if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
+    // Publish monorepo nightlies and prealphas if there are updates, returns the new version for each package
+    const monorepoVersions =
+      buildType === 'dry-run' ? null : getAndUpdatePackages(version, buildType);
 
     try {
       // Update the react-native and template packages with the react-native version
       // and nightly versions of monorepo deps
-      setReactNativeVersion(version, monorepoNightlyVersions, buildType);
+      setReactNativeVersion(version, monorepoVersions, buildType);
     } catch (e) {
       console.error(`Failed to set version number to ${version}`);
       console.error(e);

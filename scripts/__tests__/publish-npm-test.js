@@ -36,7 +36,7 @@ jest
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
   .mock('./../set-rn-version', () => setReactNativeVersionMock)
-  .mock('../monorepo/get-and-update-nightlies');
+  .mock('../monorepo/get-and-update-packages');
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
