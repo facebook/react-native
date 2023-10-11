@@ -858,6 +858,15 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private Activity getActivity() {
       Context context = getContext();
+      if (context instanceof ReactApplicationContext) {
+        View viewParent = ReactRootView.this;
+        while (!(viewParent.getContext() instanceof Activity)
+                && viewParent.getParent() instanceof View) {
+          viewParent = (View) viewParent.getParent();
+        }
+        context = viewParent.getContext();
+      }
+
       while (!(context instanceof Activity) && context instanceof ContextWrapper) {
         context = ((ContextWrapper) context).getBaseContext();
       }
