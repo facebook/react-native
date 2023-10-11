@@ -405,9 +405,13 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           handlePromiseRejection(reason);
         };
 
-        RCTNSDictionaryPromiseRejectBlock internalRejectBlock = ^(NSDictionary *dict) {
-          handlePromiseRejection(dict);
-        };
+        RCTNSDictionaryPromiseRejectBlock internalRejectBlock = nil;
+
+        if (RCTRejectTurboModulePromiseOnNativeError()) {
+          internalRejectBlock = ^(NSDictionary *dict) {
+            handlePromiseRejection(dict);
+          };
+        }
 
         invokeCopy(resolveBlock, rejectBlock, internalRejectBlock);
         return jsi::Value::undefined();
@@ -922,7 +926,10 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
           runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTNSDictionaryPromiseRejectBlock internalRejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTNSDictionaryPromiseRejectBlock internalRejectCopy = [internalRejectBlock copy];
+          RCTNSDictionaryPromiseRejectBlock internalRejectCopy = nil;
+          if (internalRejectBlock != nil) {
+            internalRejectCopy = [internalRejectBlock copy];
+          }
 
           [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
           [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
