@@ -33,6 +33,13 @@ internal object AgpConfiguratorUtils {
         }
     project.pluginManager.withPlugin("com.android.application", action)
     project.pluginManager.withPlugin("com.android.library", action)
+    project.rootProject.allprojects { subproject ->
+      subproject.pluginManager.withPlugin("com.android.library") {
+        subproject.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+          ext.buildFeatures.buildConfig = true
+        }
+      }
+    }
   }
 
   fun configureDevPorts(project: Project) {
