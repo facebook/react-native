@@ -98,7 +98,7 @@ describe('publish-npm', () => {
 
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        true,
+        'nightly',
       );
       expect(execMock.mock.calls[0][0]).toBe(
         `npm view react-native@next version`,
@@ -150,7 +150,7 @@ describe('publish-npm', () => {
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag 0.81-stable --otp otp`,
@@ -174,7 +174,7 @@ describe('publish-npm', () => {
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
@@ -198,7 +198,7 @@ describe('publish-npm', () => {
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
@@ -220,7 +220,7 @@ describe('publish-npm', () => {
       const expectedVersion = '0.81.0-rc.4';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag next --otp ${process.env.NPM_CONFIG_OTP}`,

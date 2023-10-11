@@ -88,7 +88,7 @@ function publishNpm(buildType) {
 
   // We first publish on Maven Central all the necessary artifacts.
   // NPM publishing is done just after.
-  publishAndroidArtifactsToMaven(version, buildType === 'nightly');
+  publishAndroidArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
   const result = publishPackage(packagePath, {
