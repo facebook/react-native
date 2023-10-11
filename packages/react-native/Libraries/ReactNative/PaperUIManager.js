@@ -9,6 +9,7 @@
  */
 
 import type {RootTag} from '../Types/RootTagTypes';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import NativeUIManager from './NativeUIManager';
 
@@ -77,10 +78,8 @@ function getViewManagerConfig(viewManagerName: string): any {
   return viewManagerConfigs[viewManagerName];
 }
 
-/* $FlowFixMe[cannot-spread-interface] (>=0.123.0 site=react_native_fb) This
- * comment suppresses an error found when Flow v0.123.0 was deployed. To see
- * the error, delete this comment and run Flow. */
-const UIManagerJS = {
+// $FlowFixMe[cannot-spread-interface]
+const UIManagerJS: UIManagerJSInterface = {
   ...NativeUIManager,
   createView(
     reactTag: ?number,

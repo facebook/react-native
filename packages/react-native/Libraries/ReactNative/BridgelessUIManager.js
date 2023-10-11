@@ -11,6 +11,7 @@
 'use strict';
 
 import type {RootTag} from '../Types/RootTagTypes';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 
@@ -32,7 +33,7 @@ function getCachedConstants(): Object {
   return cachedConstants;
 }
 
-const UIManagerJS: {[string]: $FlowFixMe} = {
+const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (nativeViewConfigsInBridgelessModeEnabled()) {
       return getCachedConstants()[viewManagerName];

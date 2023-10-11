@@ -135,7 +135,7 @@ export default function MyNativeView(props: {}): React.Node {
       </Text>
       <Text style={{color: 'green', textAlign: 'center'}}>
         Constants From Interop Layer:{' '}
-        {UIManager.RNTMyLegacyNativeView.Constants.PI}
+        {UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Constants.PI}
       </Text>
       <Button
         title="Change Background"
