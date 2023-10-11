@@ -495,10 +495,21 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       }
     }
 
+    /**
+     * Updates the shadow tree via the local fabric view state manager. Can noop if the same values
+     * are passed multiple times. Can also ignore params if the local variables for viewWidth &
+     * viewHeight are non-zero.
+     *
+     * @param width target width of the container as pixels. Will be converted to DIP.
+     * @param height target height of the container as pixels. Will be converted to DIP.
+     */
     @UiThread
     public void updateState(final int width, final int height) {
-      final float realWidth = PixelUtil.toDIPFromPixel(width);
-      final float realHeight = PixelUtil.toDIPFromPixel(height);
+      // Once viewWidth & viewHeight are set by an onSizeChanged callback they become our source
+      // of truth. This makes the fabric renderer function like the paper renderer is currently
+      // functioning.
+      final float realWidth = PixelUtil.toDIPFromPixel((viewWidth > 0) ? viewWidth : width);
+      final float realHeight = PixelUtil.toDIPFromPixel((viewHeight > 0) ? viewHeight : height);
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
