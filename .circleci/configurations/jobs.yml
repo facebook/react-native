@@ -250,9 +250,9 @@ jobs:
     executor: reactnativeandroid-xlarge
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     steps:
       - checkout
@@ -1159,9 +1159,9 @@ jobs:
   build_npm_package:
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", or "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     executor: reactnativeandroid-xlarge
     environment:
@@ -1201,16 +1201,17 @@ jobs:
       - attach_workspace:
           at: .
 
-      # START: Stables and nightlies
+      # START: Stables, nightlies and prealphas
       # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
             or:
               - equal: [ "release", << parameters.release_type >> ]
               - equal: [ "nightly", << parameters.release_type >> ]
+              - equal: [ "prealpha", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      # END: Stables and nightlies
+      # END: Stables, prealpha and nightlies
 
       - with_gradle_cache:
           steps:
@@ -1287,19 +1288,6 @@ jobs:
           name: Poll Maven for Artifacts
           command: |
             node scripts/circleci/poll-maven.js
-
-
-  # -------------------------
-  #    JOBS: Nightly
-  # -------------------------
-  nightly_job:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - run:
-          name: Nightly
-          command: |
-            echo "Nightly build run"
 
   find_and_publish_bumped_packages:
     executor: nodelts
