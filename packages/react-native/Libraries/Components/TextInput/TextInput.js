@@ -191,8 +191,8 @@ type DataDetectorTypesType =
   | 'replacement'
   | 'correction'
   | 'regularExpression'
-  | 'transitInformation'; 
-  // macOS]
+  | 'transitInformation';
+// macOS]
 
 export type KeyboardType =
   // Cross Platform
@@ -1575,9 +1575,9 @@ function InternalTextInput(props: Props): React.Node {
       onPressOut: onPressOut,
       // [macOS]
       cancelable:
-        Platform.OS === 'ios' || Platform.OS === 'macos' 
+        Platform.OS === 'ios' || Platform.OS === 'macos'
           ? !rejectResponderTermination
-          : null, 
+          : null,
     }),
     [
       editable,

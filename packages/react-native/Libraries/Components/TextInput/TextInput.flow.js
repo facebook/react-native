@@ -152,8 +152,8 @@ type DataDetectorTypesType =
   | 'replacement'
   | 'correction'
   | 'regularExpression'
-  | 'transitInformation'; 
-  // macOS]
+  | 'transitInformation';
+// macOS]
 
 export type KeyboardType =
   // Cross Platform
