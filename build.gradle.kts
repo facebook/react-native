@@ -20,8 +20,8 @@ File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStrea
 }
 
 version =
-    if (project.hasProperty("isNightly") &&
-        (project.property("isNightly") as? String).toBoolean()) {
+    if (project.hasProperty("isSnapshot") &&
+        (project.property("isSnapshot") as? String).toBoolean()) {
       "${reactAndroidProperties.getProperty("VERSION_NAME")}-SNAPSHOT"
     } else {
       reactAndroidProperties.getProperty("VERSION_NAME")
