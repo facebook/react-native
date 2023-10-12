@@ -69,9 +69,9 @@ jobs:
                 command: |
                   if [[ -z "$CIRCLE_PULL_REQUEST" ]]; then
                     echo "Not in a PR. Can't filter properly outside a PR. Please open a PR so that we can run the proper CI tests."
-                    echo "Skipping!"
+                    echo "For safety, we run all the tests!"
                     mkdir -p /tmp/circleci/
-                    echo '{}' > /tmp/circleci/pipeline_config.json
+                    echo '{ "run_all": true }' > /tmp/circleci/pipeline_config.json
                   else
                     PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}"
                     node ./scripts/circleci/pipeline_selection.js filter-jobs
