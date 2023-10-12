@@ -829,6 +829,15 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.14
+
+### Fixed
+
+#### iOS specific
+
+- Set the max version of Active support to 7.0.8 ([ce39931bc2](https://github.com/facebook/react-native/commit/ce39931bc2b02f13cbc5751ba4d4a6dbc07bc91a) by [@cipolleschi](https://github.com/cipolleschi))
+- Xcode 15 patch ([287482e57f](https://github.com/facebook/react-native/commit/287482e57ffd221227e6fffb6852113d330260a1) by [@fortmarek](https://github.com/fortmarek))
+
 ## v0.71.13
 
 ### Added
