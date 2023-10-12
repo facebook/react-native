@@ -65,6 +65,11 @@ public class ViewGroupDrawingOrderHelper {
    * ViewGroup#getChildDrawingOrder}.
    */
   public int getChildDrawingOrder(int childCount, int index) {
+    if (mDrawingOrderIndices != null
+      && (index >= mDrawingOrderIndices.length || mDrawingOrderIndices[index] >= childCount)) {
+      update();
+    }
+
     if (mDrawingOrderIndices == null) {
       ArrayList<View> viewsToSort = new ArrayList<>();
       for (int i = 0; i < childCount; i++) {
