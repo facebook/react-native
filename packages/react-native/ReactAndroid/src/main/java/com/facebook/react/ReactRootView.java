@@ -40,7 +40,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -859,19 +858,24 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private Activity getActivity() {
       Context context = getContext();
-      if (context instanceof ReactApplicationContext) {
-        View viewParent = ReactRootView.this;
-        while (!(viewParent.getContext() instanceof Activity)
-                && viewParent.getParent() instanceof View) {
-          viewParent = (View) viewParent.getParent();
-        }
-        context = viewParent.getContext();
-      }
-
       while (!(context instanceof Activity) && context instanceof ContextWrapper) {
         context = ((ContextWrapper) context).getBaseContext();
       }
       return context instanceof Activity ? (Activity) context : null;
+    }
+
+    private @Nullable WindowManager.LayoutParams getWindowLayoutParams() {
+      View view = ReactRootView.this;
+      if (view.getLayoutParams() instanceof WindowManager.LayoutParams) {
+        return (WindowManager.LayoutParams) view.getLayoutParams();
+      }
+      while (view.getParent() instanceof View) {
+        view = (View) view.getParent();
+        if (view.getLayoutParams() instanceof WindowManager.LayoutParams) {
+          return (WindowManager.LayoutParams) view.getLayoutParams();
+        }
+      }
+      return null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -891,11 +895,19 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
+          int softInputMode;
           Activity activity = getActivity();
-          if (activity == null) {
-            return;
+          if (activity != null) {
+            softInputMode = activity.getWindow().getAttributes().softInputMode;
+          } else {
+            WindowManager.LayoutParams windowLayoutParams = getWindowLayoutParams();
+            if (windowLayoutParams != null) {
+              softInputMode = windowLayoutParams.softInputMode;
+            } else {
+              return;
+            }
           }
-          int softInputMode = activity.getWindow().getAttributes().softInputMode;
+
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height
