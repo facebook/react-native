@@ -14,7 +14,9 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
  */
-@DeprecatedInNewArchitecture
+@DeprecatedInNewArchitecture(
+    message =
+        "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use BaseJavaModule instead")
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   public ReactContextBaseJavaModule() {
