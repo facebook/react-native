@@ -856,7 +856,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private Activity getActivity() {
+    private @Nullable Activity getActivity() {
       Context context = getContext();
       while (!(context instanceof Activity) && context instanceof ContextWrapper) {
         context = ((ContextWrapper) context).getBaseContext();
