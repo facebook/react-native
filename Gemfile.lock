@@ -93,7 +93,7 @@ DEPENDENCIES
   cocoapods (>= 1.11.3)
 
 RUBY VERSION
-   ruby 3.2.0p0
+   ruby 2.7.6p219
 
 BUNDLED WITH
-   2.4.12
+   2.3.22
