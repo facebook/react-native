@@ -57,7 +57,7 @@ GEM
     escape (0.0.4)
     ethon (0.16.0)
       ffi (>= 1.15.0)
-    ffi (1.16.1)
+    ffi (1.16.3)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
     gh_inspector (1.1.3)
