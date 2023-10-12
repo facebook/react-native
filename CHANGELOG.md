@@ -353,6 +353,15 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Fix RCTImageBlurUtils.m Greyscale Crash ([d6c4f2786c](https://github.com/facebook/react-native/commit/d6c4f2786c1dd8285dbabb7fe872a7d1bddcbe14) by [@OskarEichler](https://github.com/OskarEichler))
 - Logbox footer buttons respect safe area ([6d6b1fdc75](https://github.com/facebook/react-native/commit/6d6b1fdc75d870fa73abc6ee9bf0099f3f15e658) by [@philipheinser](https://github.com/philipheinser))
 
+## v0.72.6
+
+### Fixed
+
+- Fix a potential bug in `EventEmitter` when used with certain Babel configurations that incorrectly polyfill the spread operator for iterables ([9b3bd63723](https://github.com/facebook/react-native/commit/9b3bd637231e5e9e7d8b729c71842f3b7a2da373) by [@yungsters](https://github.com/yungsters))
+
+#### iOS specific
+
+- Set the max version of Active support to 7.0.8 ([785f91b67a](https://github.com/facebook/react-native/commit/785f91b67a5d97e4e54d341279c878483a3d9a11) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.72.5
 
