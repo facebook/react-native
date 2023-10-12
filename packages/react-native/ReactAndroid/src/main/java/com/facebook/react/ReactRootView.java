@@ -12,9 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Point;
@@ -856,14 +854,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private @Nullable Activity getActivity() {
-      Context context = getContext();
-      while (!(context instanceof Activity) && context instanceof ContextWrapper) {
-        context = ((ContextWrapper) context).getBaseContext();
-      }
-      return context instanceof Activity ? (Activity) context : null;
-    }
-
     private @Nullable WindowManager.LayoutParams getWindowLayoutParams() {
       View view = ReactRootView.this;
       if (view.getLayoutParams() instanceof WindowManager.LayoutParams) {
@@ -896,18 +886,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           int height = imeInsets.bottom - barInsets.bottom;
 
           int softInputMode;
-          Activity activity = getActivity();
-          if (activity != null) {
-            softInputMode = activity.getWindow().getAttributes().softInputMode;
+          WindowManager.LayoutParams windowLayoutParams = getWindowLayoutParams();
+          if (windowLayoutParams != null) {
+            softInputMode = windowLayoutParams.softInputMode;
           } else {
-            WindowManager.LayoutParams windowLayoutParams = getWindowLayoutParams();
-            if (windowLayoutParams != null) {
-              softInputMode = windowLayoutParams.softInputMode;
-            } else {
-              return;
-            }
+            return;
           }
-
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height
