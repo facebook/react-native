@@ -103,6 +103,7 @@ package-lock.json
 /packages/react-native/React/CoreModules/**/*.xcodeproj
 /packages/react-native/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
+/packages/rn-tester/**/*.xcodeproj
 
 # Ruby Gems (Bundler)
 /packages/react-native/vendor
