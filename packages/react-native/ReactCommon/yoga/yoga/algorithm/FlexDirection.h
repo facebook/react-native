@@ -77,6 +77,26 @@ inline YGEdge trailingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
+inline YGEdge leadingLayoutEdge(
+    const FlexDirection flexDirection,
+    const Direction direction) {
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? YGEdgeRight : YGEdgeLeft;
+  }
+
+  return YGEdgeTop;
+}
+
+inline YGEdge trailingLayoutEdge(
+    const FlexDirection flexDirection,
+    const Direction direction) {
+  if (isRow(flexDirection)) {
+    return direction == Direction::RTL ? YGEdgeLeft : YGEdgeRight;
+  }
+
+  return YGEdgeBottom;
+}
+
 inline Dimension dimension(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
