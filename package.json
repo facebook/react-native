@@ -129,7 +129,7 @@
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4",
-    "react-native-codegen": "^0.70.6"
+    "react-native-codegen": "^0.70.7"
   },
   "devDependencies": {
     "flow-bin": "^0.182.0",
