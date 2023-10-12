@@ -140,7 +140,7 @@ class ReactNativePodsUtils
                 if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
                     self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
                 else
-                    self.remove_value_to_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
+                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
                 end
             end
             project.save()
@@ -308,7 +308,7 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.remove_value_to_setting_if_present(config, setting_name, value)
+    def self.remove_value_from_setting_if_present(config, setting_name, value)
         old_config = config.build_settings[setting_name]
         if old_config.is_a?(Array)
             old_config = old_config.join(" ")

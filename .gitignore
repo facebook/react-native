@@ -107,6 +107,8 @@ package-lock.json
 /packages/react-native/template/vendor
 .ruby-version
 /**/.ruby-version
+./vendor/
+vendor/
 
 # iOS / CocoaPods
 /packages/react-native/template/ios/build/
