@@ -15,6 +15,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ import java.util.Map;
  * <p>Please note that it is not allowed to have multiple methods annotated with {@link ReactMethod}
  * with the same name.
  */
+@StableReactNativeAPI
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
   public static final String METHOD_TYPE_ASYNC = "async";
