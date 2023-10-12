@@ -52,7 +52,7 @@ public interface NativeModule {
    *
    * @deprecated use {@link #invalidate()} instead.
    */
-  @DeprecatedInNewArchitecture(message = "Use invalidate method instead")
+  @Deprecated(since = "Use invalidate method instead", forRemoval = true)
   void onCatalystInstanceDestroy();
 
   /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
