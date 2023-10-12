@@ -83,6 +83,22 @@ CompactValue Node::computeEdgeValueForColumn(
   }
 }
 
+YGEdge Node::getLeadingLayoutEdgeUsingErrata(
+    FlexDirection flexDirection,
+    Direction direction) const {
+  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? leadingEdge(flexDirection)
+      : leadingLayoutEdge(flexDirection, direction);
+}
+
+YGEdge Node::getTrailingLayoutEdgeUsingErrata(
+    FlexDirection flexDirection,
+    Direction direction) const {
+  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? trailingEdge(flexDirection)
+      : trailingLayoutEdge(flexDirection, direction);
+}
+
 bool Node::isLeadingPositionDefined(FlexDirection axis) const {
   auto leadingPosition = isRow(axis)
       ? computeEdgeValueForRow(
@@ -117,18 +133,26 @@ float Node::getTrailingPosition(FlexDirection axis, float axisSize) const {
   return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
-float Node::getLeadingMargin(FlexDirection axis, float widthSize) const {
+float Node::getLeadingMargin(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  const YGEdge startEdge = getLeadingLayoutEdgeUsingErrata(axis, direction);
   auto leadingMargin = isRow(axis)
-      ? computeEdgeValueForRow(style_.margin(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.margin(), leadingEdge(axis));
+      ? computeEdgeValueForRow(style_.margin(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.margin(), startEdge);
 
   return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
 }
 
-float Node::getTrailingMargin(FlexDirection axis, float widthSize) const {
+float Node::getTrailingMargin(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  const YGEdge endEdge = getTrailingLayoutEdgeUsingErrata(axis, direction);
   auto trailingMargin = isRow(axis)
-      ? computeEdgeValueForRow(style_.margin(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.margin(), trailingEdge(axis));
+      ? computeEdgeValueForRow(style_.margin(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.margin(), endEdge);
 
   return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
 }
@@ -176,7 +200,10 @@ float Node::getTrailingPaddingAndBorder(FlexDirection axis, float widthSize)
 }
 
 float Node::getMarginForAxis(FlexDirection axis, float widthSize) const {
-  return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
+  // The total margin for a given axis does not depend on the direction
+  // so hardcoding LTR here to avoid piping direction to this function
+  return getLeadingMargin(axis, Direction::LTR, widthSize) +
+      getTrailingMargin(axis, Direction::LTR, widthSize);
 }
 
 float Node::getGapForAxis(FlexDirection axis) const {
@@ -360,18 +387,31 @@ void Node::setPosition(
   const float relativePositionMain = relativePosition(mainAxis, mainSize);
   const float relativePositionCross = relativePosition(crossAxis, crossSize);
 
+  const YGEdge mainAxisLeadingEdge =
+      getLeadingLayoutEdgeUsingErrata(mainAxis, direction);
+  const YGEdge mainAxisTrailingEdge =
+      getTrailingLayoutEdgeUsingErrata(mainAxis, direction);
+  const YGEdge crossAxisLeadingEdge =
+      getLeadingLayoutEdgeUsingErrata(crossAxis, direction);
+  const YGEdge crossAxisTrailingEdge =
+      getTrailingLayoutEdgeUsingErrata(crossAxis, direction);
+
   setLayoutPosition(
-      (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
-      leadingEdge(mainAxis));
+      (getLeadingMargin(mainAxis, direction, ownerWidth) +
+       relativePositionMain),
+      mainAxisLeadingEdge);
   setLayoutPosition(
-      (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain),
-      trailingEdge(mainAxis));
+      (getTrailingMargin(mainAxis, direction, ownerWidth) +
+       relativePositionMain),
+      mainAxisTrailingEdge);
   setLayoutPosition(
-      (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
-      leadingEdge(crossAxis));
+      (getLeadingMargin(crossAxis, direction, ownerWidth) +
+       relativePositionCross),
+      crossAxisLeadingEdge);
   setLayoutPosition(
-      (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross),
-      trailingEdge(crossAxis));
+      (getTrailingMargin(crossAxis, direction, ownerWidth) +
+       relativePositionCross),
+      crossAxisTrailingEdge);
 }
 
 YGValue Node::marginLeadingValue(FlexDirection axis) const {

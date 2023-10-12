@@ -50,6 +50,13 @@ class YG_EXPORT Node : public ::YGNode {
 
   float relativePosition(FlexDirection axis, const float axisSize) const;
 
+  YGEdge getLeadingLayoutEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  YGEdge getTrailingLayoutEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+
   void useWebDefaults() {
     style_.flexDirection() = FlexDirection::Row;
     style_.alignContent() = Align::Stretch;
@@ -193,8 +200,14 @@ class YG_EXPORT Node : public ::YGNode {
   bool isTrailingPosDefined(FlexDirection axis) const;
   float getLeadingPosition(FlexDirection axis, float axisSize) const;
   float getTrailingPosition(FlexDirection axis, float axisSize) const;
-  float getLeadingMargin(FlexDirection axis, float widthSize) const;
-  float getTrailingMargin(FlexDirection axis, float widthSize) const;
+  float getLeadingMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getTrailingMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
   float getLeadingBorder(FlexDirection flexDirection) const;
   float getTrailingBorder(FlexDirection flexDirection) const;
   float getLeadingPadding(FlexDirection axis, float widthSize) const;
