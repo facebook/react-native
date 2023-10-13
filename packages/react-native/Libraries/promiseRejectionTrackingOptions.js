@@ -14,7 +14,7 @@ type ExtractOptionsType = <P>(((options?: ?P) => void)) => P;
 
 let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
   allRejections: true,
-  onUnhandled: async (id, rejection = {}) => {
+  onUnhandled: (id, rejection = {}) => {
     let message: string;
     let stack: ?string;
 
@@ -31,29 +31,43 @@ let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
         const symbolicateStackTrace = require('./Core/Devtools/symbolicateStackTrace');
         const LogBox = require('./LogBox/LogBox').default;
 
-        stack = parseErrorStack(error.stack);
-        stack = await symbolicateStackTrace(stack);
-        if (stack) {
-          const warning =
-            `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-            `${message ?? ''}\n` +
-            `at File: ${stack.codeFrame.fileName}, row: ${stack.codeFrame.location.row}, column: ${stack.codeFrame.location.column}`;
+        const parsedStack = parseErrorStack(error.stack);
 
-          console.log(stack.codeFrame.content);
+        symbolicateStackTrace(parsedStack)
+          .then(prettyStack => {
+            let warning =
+              `Possible Unhandled Promise Rejection (id: ${id}):\n` +
+              `${message ?? ''}\n`;
 
-          LogBox.addLog({
-            level: 'warn',
-            message: {content: warning, substitutions: []},
-            isComponentError: false,
-            codeFrame: stack.codeFrame,
-            stack: error.stack,
-            category: `${stack.codeFrame.fileName}-${stack.codeFrame.location.row}-${stack.codeFrame.location.column}`,
+            if (prettyStack.codeFrame != null) {
+              warning += `at File: ${prettyStack.codeFrame.fileName}, row: ${
+                prettyStack.codeFrame.location?.row ?? 'Unknown'
+              }, column: ${
+                prettyStack.codeFrame.location?.column ?? 'Unknown'
+              }`;
+
+              LogBox.addLog({
+                level: 'warn',
+                message: {content: warning, substitutions: []},
+                componentStack: [],
+                codeFrame: prettyStack.codeFrame,
+                category: `${prettyStack.codeFrame.fileName}-${
+                  prettyStack.codeFrame.location?.row ?? 'unknown'
+                }-${prettyStack.codeFrame.location?.column ?? 'unknown'}`,
+              });
+            } else {
+              console.warn(warning);
+            }
+          })
+          .catch(() => {
+            const warning =
+              `Possible Unhandled Promise Rejection (id: ${id}):\n` +
+              `${message ?? ''}\n` +
+              (stack == null ? '' : stack);
+            console.warn(warning);
           });
-          return;
-        }
+        return;
       }
-
-      stack = error.stack;
     } else {
       try {
         message = require('pretty-format')(rejection);

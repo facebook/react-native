@@ -9,7 +9,7 @@
  */
 
 ('use strict');
-
+import type {CodeFrame} from '../../Core/Devtools/symbolicateStackTrace';
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
@@ -30,7 +30,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
-  codeFrame?: string,
+  codeFrame?: ?CodeFrame,
 |}>;
 
 export type Observer = (
