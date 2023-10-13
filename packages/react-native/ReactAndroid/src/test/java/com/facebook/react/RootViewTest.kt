@@ -213,10 +213,10 @@ class RootViewTest {
                   .build()
         }
     val rootViewSpy = spy(rootView)
-    whenever(rootView.getWindowLayoutParams()).thenReturn(WindowManager.LayoutParams())
+    whenever(rootViewSpy.getWindowLayoutParams()).thenReturn(WindowManager.LayoutParams())
 
-    rootView.startReactApplication(instanceManager, "")
-    rootView.simulateCheckForKeyboardForTesting()
+    rootViewSpy.startReactApplication(instanceManager, "")
+    rootViewSpy.simulateCheckForKeyboardForTesting()
 
     val params = Arguments.createMap()
     val endCoordinates = Arguments.createMap()
