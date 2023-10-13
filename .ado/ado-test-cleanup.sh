@@ -22,10 +22,6 @@ lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 # clear packager cache
 rm -fr "$TMPDIR/react-*"
 
-# clear watchman state
-rm -rf /usr/local/var/run/watchman/*
-watchman watch-del-all
-
 # dump the log files created by launchPackager.command and launchWebSocketServer.command
 THIS_DIR=$(dirname "$0")
 PACKAGER_LOG="${THIS_DIR}/launchPackager.log"

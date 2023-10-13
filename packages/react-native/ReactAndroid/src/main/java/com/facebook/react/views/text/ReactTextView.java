@@ -58,18 +58,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
+  private float mFontSize = Float.NaN;
+  private float mLetterSpacing = Float.NaN;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
-
-  /**
-   * Used to collect some text size affecting attributes to fix some text cut-off issues when users
-   * adjust text size and font weight to the max value in system font settings.
-   */
-  private TextAttributes mTextAttributes;
 
   public ReactTextView(Context context) {
     super(context);
@@ -102,7 +98,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mEllipsizeLocation = TextUtils.TruncateAt.END;
 
     mSpanned = null;
-    mTextAttributes = new TextAttributes();
   }
 
   /* package */ void recycleView() {
@@ -111,9 +106,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     // Defaults for these fields:
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
-    }
+    setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
     setMovementMethod(getDefaultMovementMethod());
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
@@ -150,10 +143,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setFocusable(View.FOCUSABLE_AUTO);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
-    }
-
+    setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
     updateView(); // call after changing ellipsizeLocation in particular
   }
 
@@ -404,10 +394,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (nextTextAlign != getGravityHorizontal()) {
       setGravityHorizontal(nextTextAlign);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (getBreakStrategy() != update.getTextBreakStrategy()) {
-        setBreakStrategy(update.getTextBreakStrategy());
-      }
+    if (getBreakStrategy() != update.getTextBreakStrategy()) {
+      setBreakStrategy(update.getTextBreakStrategy());
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       if (getJustificationMode() != update.getJustificationMode()) {
@@ -592,6 +580,29 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mAdjustsFontSizeToFit = adjustsFontSizeToFit;
   }
 
+  public void setFontSize(float fontSize) {
+    mFontSize =
+        mAdjustsFontSizeToFit
+            ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+            : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+
+    applyTextAttributes();
+  }
+
+  public void setLetterSpacing(float letterSpacing) {
+    if (Float.isNaN(letterSpacing)) {
+      return;
+    }
+
+    float letterSpacingPixels = PixelUtil.toPixelFromDIP(letterSpacing);
+
+    // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
+    // yielding an accurate em value.
+    mLetterSpacing = letterSpacingPixels / mFontSize;
+
+    applyTextAttributes();
+  }
+
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
   }
@@ -607,8 +618,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             ? null
             : mEllipsizeLocation;
     setEllipsize(ellipsizeLocation);
-
-    applyTextAttributes();
   }
 
   @Override
@@ -664,37 +673,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return super.dispatchHoverEvent(event);
   }
 
-  public void setLetterSpacing(float letterSpacing) {
-    mTextAttributes.setLetterSpacing(letterSpacing);
-  }
-
-  public void setAllowFontScaling(boolean allowFontScaling) {
-    if (mTextAttributes.getAllowFontScaling() != allowFontScaling) {
-      mTextAttributes.setAllowFontScaling(allowFontScaling);
-    }
-  }
-
-  public void setFontSize(float fontSize) {
-    mTextAttributes.setFontSize(fontSize);
-  }
-
-  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
-    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
-      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
-    }
-  }
-
   private void applyTextAttributes() {
-    // In general, the `getEffective*` functions return `Float.NaN` if the
-    // property hasn't been set.
+    // Workaround for an issue where text can be cut off with an ellipsis when
+    // using certain font sizes and padding. Sets the provided text size and
+    // letter spacing to ensure consistent rendering and prevent cut-off.
+    if (!Float.isNaN(mFontSize)) {
+      setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
+    }
 
-    // `getEffectiveFontSize` always returns a value so don't need to check for anything like
-    // `Float.NaN`.
-    setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
-
-    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-    if (!Float.isNaN(effectiveLetterSpacing)) {
-      super.setLetterSpacing(effectiveLetterSpacing);
+    if (!Float.isNaN(mLetterSpacing)) {
+      super.setLetterSpacing(mLetterSpacing);
     }
   }
 }

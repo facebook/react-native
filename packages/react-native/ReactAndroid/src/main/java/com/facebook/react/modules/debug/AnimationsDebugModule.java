@@ -23,7 +23,7 @@ import java.util.Locale;
  * going from one screen to another).
  */
 @ReactModule(name = NativeAnimationsDebugModuleSpec.NAME)
-public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
+class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
   private @Nullable final DeveloperSettings mCatalystSettings;

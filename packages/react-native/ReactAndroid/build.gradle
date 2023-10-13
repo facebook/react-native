@@ -525,7 +525,6 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21",
                     // Due to https://github.com/android/ndk/issues/1693 we're losing Android
                     // specific compilation flags. This can be removed once we moved to NDK 25/26
                     "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
@@ -617,6 +616,7 @@ android {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
             srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
+            exclude("com/facebook/annotationprocessors")
             exclude("com/facebook/react/processing")
             exclude("com/facebook/react/module/processing")
         }
@@ -770,6 +770,7 @@ dependencies {
     api(libs.okhttp3.urlconnection)
     api(libs.okhttp3)
     api(libs.okio)
+    compileOnly(libs.javax.annotation.api)
     api(libs.javax.inject)
 
     // It's up to the consumer to decide if hermes should be included or not.

@@ -34,7 +34,7 @@ class RuntimeScheduler final {
   RuntimeScheduler(RuntimeScheduler&&) = delete;
   RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
 
-  void scheduleWork(RawCallback callback) const;
+  void scheduleWork(RawCallback&& callback) const noexcept;
 
   /*
    * Grants access to the runtime synchronously on the caller's thread.
@@ -43,7 +43,7 @@ class RuntimeScheduler final {
    * by dispatching a synchronous event via event emitter in your native
    * component.
    */
-  void executeNowOnTheSameThread(RawCallback callback);
+  void executeNowOnTheSameThread(RawCallback&& callback);
 
   /*
    * Adds a JavaScript callback to priority queue with given priority.
@@ -53,11 +53,11 @@ class RuntimeScheduler final {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function callback);
+      jsi::Function&& callback) noexcept;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback callback);
+      RawCallback&& callback) noexcept;
 
   /*
    * Cancelled task will never be executed.
@@ -135,7 +135,7 @@ class RuntimeScheduler final {
 
   void executeTask(
       jsi::Runtime& runtime,
-      std::shared_ptr<Task> task,
+      const std::shared_ptr<Task>& task,
       bool didUserCallbackTimeout) const;
 
   /*

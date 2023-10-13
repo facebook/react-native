@@ -14,4 +14,5 @@ module.exports = {
   setupFilesAfterEnv: ['./jest.setup.js'],
   testMatch: ['**/specs/**/*.js'],
   maxWorkers: 1,
+  verbose: true,
 };

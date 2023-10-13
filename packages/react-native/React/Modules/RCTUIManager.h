@@ -7,6 +7,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUIKit.h> // [macOS]
@@ -169,6 +170,12 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * need to access the RCTUIManager.
  */
 @interface RCTBridge (RCTUIManager)
+
+@property (nonatomic, readonly) RCTUIManager *uiManager;
+
+@end
+
+@interface RCTBridgeProxy (RCTUIManager)
 
 @property (nonatomic, readonly) RCTUIManager *uiManager;
 

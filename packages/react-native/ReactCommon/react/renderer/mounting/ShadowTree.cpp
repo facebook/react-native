@@ -352,7 +352,7 @@ CommitStatus ShadowTree::commit(
     const CommitOptions& commitOptions) const {
   SystraceSection s("ShadowTree::commit");
 
-  int attempts = 0;
+  [[maybe_unused]] int attempts = 0;
 
   while (true) {
     attempts++;

@@ -91,9 +91,8 @@ static void appendEdges(
     const std::string& key,
     const Style::Edges& edges) {
   if (areFourValuesEqual(edges)) {
-    auto edgeValue = yoga::Node::computeEdgeValueForColumn(
-        edges, YGEdgeLeft, CompactValue::ofZero());
-    appendNumberIfNotZero(base, key, edgeValue);
+    auto edgeValue = yoga::Node::computeEdgeValueForColumn(edges, YGEdgeLeft);
+    appendNumberIfNotUndefined(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
@@ -109,10 +108,8 @@ static void appendEdgeIfNotUndefined(
     const YGEdge edge) {
   // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
   auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
-      ? yoga::Node::computeEdgeValueForRow(
-            edges, edge, edge, CompactValue::ofUndefined())
-      : yoga::Node::computeEdgeValueForColumn(
-            edges, edge, CompactValue::ofUndefined());
+      ? yoga::Node::computeEdgeValueForRow(edges, edge, edge)
+      : yoga::Node::computeEdgeValueForColumn(edges, edge);
   appendNumberIfNotUndefined(base, str, value);
 }
 
@@ -127,9 +124,9 @@ void nodeToString(
   if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
     appendFormattedString(str, "layout=\"");
     appendFormattedString(
-        str, "width: %g; ", node->getLayout().dimension(YGDimensionWidth));
+        str, "width: %g; ", node->getLayout().dimension(Dimension::Width));
     appendFormattedString(
-        str, "height: %g; ", node->getLayout().dimension(YGDimensionHeight));
+        str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
         str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
     appendFormattedString(
@@ -180,29 +177,23 @@ void nodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (yoga::Node::computeColumnGap(
-            style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeColumnGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(
-          str, "column-gap", style.gap()[YGGutterColumn]);
-    }
-    if (yoga::Node::computeRowGap(style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeRowGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
+    if (!style.gap(Gutter::All).isUndefined()) {
+      appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
+    } else {
+      appendNumberIfNotUndefined(str, "column-gap", style.gap(Gutter::Column));
+      appendNumberIfNotUndefined(str, "row-gap", style.gap(Gutter::Row));
     }
 
-    appendNumberIfNotAuto(str, "width", style.dimension(YGDimensionWidth));
-    appendNumberIfNotAuto(str, "height", style.dimension(YGDimensionHeight));
+    appendNumberIfNotAuto(str, "width", style.dimension(Dimension::Width));
+    appendNumberIfNotAuto(str, "height", style.dimension(Dimension::Height));
     appendNumberIfNotAuto(
-        str, "max-width", style.maxDimension(YGDimensionWidth));
+        str, "max-width", style.maxDimension(Dimension::Width));
     appendNumberIfNotAuto(
-        str, "max-height", style.maxDimension(YGDimensionHeight));
+        str, "max-height", style.maxDimension(Dimension::Height));
     appendNumberIfNotAuto(
-        str, "min-width", style.minDimension(YGDimensionWidth));
+        str, "min-width", style.minDimension(Dimension::Width));
     appendNumberIfNotAuto(
-        str, "min-height", style.minDimension(YGDimensionHeight));
+        str, "min-height", style.minDimension(Dimension::Height));
 
     if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
       appendFormattedString(

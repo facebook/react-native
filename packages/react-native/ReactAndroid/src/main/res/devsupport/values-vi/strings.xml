@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: vi_VN -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">Menu phát triển React Native (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">Đang chạy %1$s</string>
 </resources>

@@ -866,7 +866,7 @@ inline std::string toString(const yoga::Style::Edges& value) {
   auto result = std::string{};
   auto separator = std::string{", "};
 
-  for (auto i = 0; i < names.size(); i++) {
+  for (size_t i = 0; i < names.size(); i++) {
     YGValue v = value[i];
     if (v.unit == YGUnitUndefined) {
       continue;

@@ -60,7 +60,7 @@ Pod::Spec.new do |spec|
         :execution_position => :before_compile,
         :script => <<-EOS
         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$REACT_NATIVE_PATH"
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$PODS_ROOT"
         EOS
       }
     end

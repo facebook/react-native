@@ -71,8 +71,8 @@ void roundLayoutResultsToPixelGrid(
   const double nodeLeft = node->getLayout().position[YGEdgeLeft];
   const double nodeTop = node->getLayout().position[YGEdgeTop];
 
-  const double nodeWidth = node->getLayout().dimension(YGDimensionWidth);
-  const double nodeHeight = node->getLayout().dimension(YGDimensionHeight);
+  const double nodeWidth = node->getLayout().dimension(Dimension::Width);
+  const double nodeHeight = node->getLayout().dimension(Dimension::Height);
 
   const double absoluteNodeLeft = absoluteLeft + nodeLeft;
   const double absoluteNodeTop = absoluteTop + nodeTop;
@@ -111,7 +111,7 @@ void roundLayoutResultsToPixelGrid(
             (textRounding && !hasFractionalWidth)) -
             roundValueToPixelGrid(
                 absoluteNodeLeft, pointScaleFactor, false, textRounding),
-        YGDimensionWidth);
+        Dimension::Width);
 
     node->setLayoutDimension(
         roundValueToPixelGrid(
@@ -121,7 +121,7 @@ void roundLayoutResultsToPixelGrid(
             (textRounding && !hasFractionalHeight)) -
             roundValueToPixelGrid(
                 absoluteNodeTop, pointScaleFactor, false, textRounding),
-        YGDimensionHeight);
+        Dimension::Height);
   }
 
   for (yoga::Node* child : node->getChildren()) {

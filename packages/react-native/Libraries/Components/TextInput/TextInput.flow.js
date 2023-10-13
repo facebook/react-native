@@ -130,13 +130,30 @@ export type SubmitKeyEvent = $ReadOnly<{|
 |}>;
 // macOS]
 
+// [macOS
 type DataDetectorTypesType =
+  // iOS+macOS
   | 'phoneNumber'
   | 'link'
   | 'address'
   | 'calendarEvent'
+  // iOS-only
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
-  | 'all';
+  | 'all'
+  // [macOS macOS-only
+  | 'ortography'
+  | 'spelling'
+  | 'grammar'
+  | 'quote'
+  | 'dash'
+  | 'replacement'
+  | 'correction'
+  | 'regularExpression'
+  | 'transitInformation';
+// macOS]
 
 export type KeyboardType =
   // Cross Platform
@@ -894,6 +911,11 @@ export type Props = $ReadOnly<{|
    * @platform ios
    */
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a touch is engaged.

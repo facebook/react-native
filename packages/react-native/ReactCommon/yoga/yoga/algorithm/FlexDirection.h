@@ -10,6 +10,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/debug/AssertFatal.h>
+#include <yoga/enums/Dimension.h>
 #include <yoga/enums/FlexDirection.h>
 
 namespace facebook::yoga {
@@ -76,16 +77,16 @@ inline YGEdge trailingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGDimension dimension(const FlexDirection flexDirection) {
+inline Dimension dimension(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
-      return YGDimensionHeight;
+      return Dimension::Height;
     case FlexDirection::ColumnReverse:
-      return YGDimensionHeight;
+      return Dimension::Height;
     case FlexDirection::Row:
-      return YGDimensionWidth;
+      return Dimension::Width;
     case FlexDirection::RowReverse:
-      return YGDimensionWidth;
+      return Dimension::Width;
   }
 
   fatalWithMessage("Invalid FlexDirection");

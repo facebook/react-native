@@ -131,7 +131,7 @@ RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, RCTUIView) // [macOS]
 
 RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     RCTUIView *view = viewRegistry[viewTag]; // [macOS]
     [view reactFocus];
   }];
@@ -139,7 +139,7 @@ RCT_EXPORT_METHOD(focus : (nonnull NSNumber *)viewTag)
 
 RCT_EXPORT_METHOD(blur : (nonnull NSNumber *)viewTag)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     RCTUIView *view = viewRegistry[viewTag]; // [macOS]
     [view reactBlur];
   }];
@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(setTextAndSelection
                   : (NSInteger)start end
                   : (NSInteger)end)
 {
-  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     RCTBaseTextInputView *view = (RCTBaseTextInputView *)viewRegistry[viewTag];
     NSInteger eventLag = view.nativeEventCount - mostRecentEventCount;
     if (eventLag != 0) {

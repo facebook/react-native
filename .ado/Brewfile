@@ -1,4 +1,1 @@
-brew "watchman"
 brew "xcbeautify"
-# macOS 12 doesn't have `realpath` but macOS 13 does. Remove this line when Azure Pipelines supports macOS 13 images.
-brew "coreutils"

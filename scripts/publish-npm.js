@@ -83,13 +83,8 @@ function publishNpm(buildType) {
     }
   }
 
-  /* [macOS Do not generate Android artifacts for React Native macOS
-  generateAndroidArtifacts(version);
-
-  // Write version number to the build folder
-  const versionFile = path.join('build', '.version');
-  fs.writeFileSync(versionFile, version);
-  macOS] */
+  // [macOS] Do not generate Android artifacts for React Native macOS
+  // generateAndroidArtifacts(version);
 
   if (buildType === 'dry-run') {
     echo('Skipping `npm publish` because --dry-run is set.');

@@ -96,7 +96,7 @@
                          [descendantViewTags addObject:shadowView.reactTag];
                        }];
 
-  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // [macOS]
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
     RCTTextView *textView = (RCTTextView *)viewRegistry[tag];
     if (!textView) {
       return;

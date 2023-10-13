@@ -43,6 +43,7 @@ workflows:
           requires:
             - prepare_hermes_workspace
       - build_apple_slices_hermes:
+          filters: *only_release_tags
           requires:
             - build_hermesc_apple
           matrix:
@@ -54,6 +55,7 @@ workflows:
           requires:
             - prepare_hermes_workspace
       - build_hermes_macos:
+          filters: *only_release_tags
           requires:
             - build_apple_slices_hermes
           matrix:

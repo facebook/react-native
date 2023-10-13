@@ -7,9 +7,7 @@
 
 package com.facebook.react.views.view;
 
-import android.annotation.TargetApi;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -203,7 +201,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
             : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "nativeForegroundAndroid")
   public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
     view.setForeground(

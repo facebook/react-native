@@ -21,7 +21,6 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 **/.xcode.env.local
-/poackages/react-native/sdks/downloads/
 
 # Gradle
 /build/
@@ -100,7 +99,7 @@ package-lock.json
 
 # Libs that shouldn't have Xcode project
 /packages/react-native/Libraries/FBLazyVector/**/*.xcodeproj
-/packages/react-native/Libraries/RCTRequired/**/*.xcodeproj
+/packages/react-native/Libraries/Required/**/*.xcodeproj
 /packages/react-native/React/CoreModules/**/*.xcodeproj
 /packages/react-native/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj

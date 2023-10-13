@@ -30,7 +30,6 @@
 
   if ((self = [super initWithNibName:nil bundle:nil])) {
     _contentView = contentView;
-    self.automaticallyAdjustsScrollViewInsets = NO;
   }
   return self;
 }

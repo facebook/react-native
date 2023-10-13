@@ -18,7 +18,19 @@
 
 #if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
+#endif
+#endif
+
+#if BUNDLE_PATH
+NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterTestBundle.js";
+#else
+#if TARGET_OS_OSX // [macOS]
+NSString *kBundlePath = @"js/RNTesterApp.ios";
+#else // [macOS
+NSString *kBundlePath = @"js/RNTesterApp.macos";
+#endif // macOS]
 #endif
 
 @implementation AppDelegate
@@ -55,11 +67,7 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#if !TARGET_OS_OSX // [macOS]
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
-#else // [macOS
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.macos"];
-#endif
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 
 #if !TARGET_OS_OSX // [macOS]
@@ -154,18 +162,16 @@
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 #if RCT_NEW_ARCH_ENABLED
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
   return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
 }
+#endif
 
 - (NSURL *)getBundleURL
 {
-#if !TARGET_OS_OSX // [macOS]
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
-#else // [macOS
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.macos"];
-#endif // macOS]
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 #endif
 

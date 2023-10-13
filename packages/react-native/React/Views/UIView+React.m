@@ -236,7 +236,10 @@
 	self.frame = frame;
 #endif // macOS]
 
-  updateTransform(self);
+  id transformOrigin = objc_getAssociatedObject(self, @selector(reactTransformOrigin));
+  if (transformOrigin) {
+    updateTransform(self);
+  }
 }
 
 #pragma mark - Transforms
@@ -274,30 +277,34 @@
 
 static void updateTransform(RCTPlatformView *view) // [macOS]
 {
-  CGSize size = view.bounds.size;
-  RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
+  CATransform3D transform;
+  id rawTansformOrigin = objc_getAssociatedObject(view, @selector(reactTransformOrigin));
+  if (rawTansformOrigin) {
+    CGSize size = view.bounds.size;
+    CGFloat anchorPointX = 0;
+    CGFloat anchorPointY = 0;
+    CGFloat anchorPointZ = 0;
+    RCTTransformOrigin transformOrigin;
+    [rawTansformOrigin getValue:&transformOrigin];
+    if (transformOrigin.x.unit == YGUnitPoint) {
+      anchorPointX = transformOrigin.x.value - size.width * 0.5;
+    } else if (transformOrigin.x.unit == YGUnitPercent) {
+      anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+    }
 
-  CGFloat anchorPointX = 0;
-  CGFloat anchorPointY = 0;
-  CGFloat anchorPointZ = 0;
-
-  if (transformOrigin.x.unit == YGUnitPoint) {
-    anchorPointX = transformOrigin.x.value - size.width * 0.5;
-  } else if (transformOrigin.x.unit == YGUnitPercent) {
-    anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+    if (transformOrigin.y.unit == YGUnitPoint) {
+      anchorPointY = transformOrigin.y.value - size.height * 0.5;
+    } else if (transformOrigin.y.unit == YGUnitPercent) {
+      anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
+    }
+    anchorPointZ = transformOrigin.z;
+    transform = CATransform3DConcat(
+        view.reactTransform, CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ));
+    transform =
+        CATransform3DConcat(CATransform3DMakeTranslation(-anchorPointX, -anchorPointY, -anchorPointZ), transform);
+  } else {
+    transform = view.reactTransform;
   }
-
-  if (transformOrigin.y.unit == YGUnitPoint) {
-    anchorPointY = transformOrigin.y.value - size.height * 0.5;
-  } else if (transformOrigin.y.unit == YGUnitPercent) {
-    anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
-  }
-
-  anchorPointZ = transformOrigin.z;
-
-  CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
-  transform = CATransform3DConcat(view.reactTransform, transform);
-  transform = CATransform3DTranslate(transform, -anchorPointX, -anchorPointY, -anchorPointZ);
 
   view.layer.transform = transform;
   // Enable edge antialiasing in rotation, skew, or perspective transforms
