@@ -18,7 +18,7 @@ import org.gradle.api.plugins.AppliedPlugin
 @Suppress("UnstableApiUsage")
 internal object AgpConfiguratorUtils {
 
-  fun configureBuildConfigFields(project: Project, extension: ReactExtension) {
+  fun configureBuildConfigFieldsForApp(project: Project, extension: ReactExtension) {
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
@@ -33,6 +33,16 @@ internal object AgpConfiguratorUtils {
         }
     project.pluginManager.withPlugin("com.android.application", action)
     project.pluginManager.withPlugin("com.android.library", action)
+  }
+
+  fun configureBuildConfigFieldsForLibraries(appProject: Project) {
+    appProject.rootProject.allprojects { subproject ->
+      subproject.pluginManager.withPlugin("com.android.library") {
+        subproject.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+          ext.buildFeatures.buildConfig = true
+        }
+      }
+    }
   }
 
   fun configureDevPorts(project: Project) {
