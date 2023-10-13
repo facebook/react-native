@@ -30,6 +30,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  codeFrame?: string,
 |}>;
 
 export type Observer = (
@@ -208,6 +209,7 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
+          codeFrame: log.codeFrame,
         }),
       );
     } catch (error) {

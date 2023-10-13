@@ -10,9 +10,11 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
+type ExtractOptionsType = <P>(((options?: ?P) => void)) => P;
+
+let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
   allRejections: true,
-  onUnhandled: (id, rejection = {}) => {
+  onUnhandled: async (id, rejection = {}) => {
     let message: string;
     let stack: ?string;
 
@@ -22,6 +24,35 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       message = Error.prototype.toString.call(rejection);
       const error: Error = (rejection: $FlowFixMe);
+
+      // Print pretty unhandled rejections while on DEV
+      if (__DEV__) {
+        const parseErrorStack = require('react-native/Libraries/Core/Devtools/parseErrorStack');
+        const symbolicateStackTrace = require('react-native/Libraries/Core/Devtools/symbolicateStackTrace');
+        const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
+
+        stack = parseErrorStack(error.stack);
+        stack = await symbolicateStackTrace(stack);
+        if (stack) {
+          const warning =
+            `Possible Unhandled Promise Rejection (id: ${id}):\n` +
+            `${message ?? ''}\n` +
+            `at File: ${stack.codeFrame.fileName}, row: ${stack.codeFrame.location.row}, column: ${stack.codeFrame.location.column}`;
+
+          console.log(stack.codeFrame.content)
+
+          LogBox.addLog({
+            level: 'warn',
+            message: {content: warning, substitutions: []},
+            isComponentError: false,
+            codeFrame: stack.codeFrame,
+            stack: error.stack,
+            category: `${stack.codeFrame.fileName}-${stack.codeFrame.location.row}-${stack.codeFrame.location.column}`,
+          });
+          return;
+        }
+      }
+
       stack = error.stack;
     } else {
       try {
