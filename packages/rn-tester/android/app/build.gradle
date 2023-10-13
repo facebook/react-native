@@ -106,6 +106,15 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+/**
+ * Allows to toggle bridgeless for RN Tester by specifying -Preact.internal.bridgelessEnabled=true
+ * in the command line.
+ */
+def bridgelessEnabledByProperty() {
+    def value = project.getProperties().get("react.internal.bridgelessEnabled")
+    return value ? value.toBoolean().toString() : "false"
+}
+
 repositories {
     maven {
         url rootProject.file("node_modules/jsc-android/dist")
@@ -148,6 +157,7 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
         buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
+        buildConfigField("Boolean", "IS_BRIDGELESS_ENABLED", bridgelessEnabledByProperty())
     }
     externalNativeBuild {
         cmake {
