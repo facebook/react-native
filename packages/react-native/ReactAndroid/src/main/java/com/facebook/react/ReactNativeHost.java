@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import android.app.Application;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModulePackage;
@@ -187,7 +188,7 @@ public abstract class ReactNativeHost {
    * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will always
    * try to load the JS bundle from Metro. e.g. "index.android.bundle"
    */
-  protected @Nullable String getBundleAssetName() {
+  protected @NonNull String getBundleAssetName() {
     return "index.android.bundle";
   }
 
