@@ -9,7 +9,6 @@
  */
 
 ('use strict');
-import type {CodeFrame} from '../../Core/Devtools/symbolicateStackTrace';
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
@@ -31,7 +30,6 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
-  codeFrame?: ?CodeFrame,
   stack?: Stack,
 |}>;
 
@@ -211,7 +209,6 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
-          codeFrame: log.codeFrame,
         }),
       );
     } catch (error) {
