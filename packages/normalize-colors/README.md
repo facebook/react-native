@@ -18,4 +18,4 @@ yarn add --dev @react-native/normalize-colors
 To run the tests in this package, run the following commands from the React Native root folder:
 
 1. `yarn` to install the dependencies. You just need to run this once
-2. `yarn jest packages/normalize-color`.
+2. `yarn jest packages/normalize-colors`.
