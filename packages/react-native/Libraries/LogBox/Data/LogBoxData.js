@@ -201,14 +201,14 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const defaultStack = parseErrorStack(errorForStackTrace?.stack);
+      const stack = log.stack ?? parseErrorStack(errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({
           level: log.level,
           message: log.message,
           isComponentError: false,
-          stack: log.stack ?? defaultStack,
+          stack,
           category: log.category,
           componentStack: log.componentStack,
           codeFrame: log.codeFrame,
