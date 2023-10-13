@@ -12,6 +12,7 @@
 import type {CodeFrame} from '../../Core/Devtools/symbolicateStackTrace';
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
+import type {Stack} from './LogBoxSymbolication';
 import type {
   Category,
   ComponentStack,
@@ -31,6 +32,7 @@ export type LogData = $ReadOnly<{|
   category: Category,
   componentStack: ComponentStack,
   codeFrame?: ?CodeFrame,
+  stack?: Stack,
 |}>;
 
 export type Observer = (
@@ -199,14 +201,14 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const stack = parseErrorStack(errorForStackTrace?.stack);
+      const defaultStack = parseErrorStack(errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({
           level: log.level,
           message: log.message,
           isComponentError: false,
-          stack,
+          stack: log.stack ?? defaultStack,
           category: log.category,
           componentStack: log.componentStack,
           codeFrame: log.codeFrame,
