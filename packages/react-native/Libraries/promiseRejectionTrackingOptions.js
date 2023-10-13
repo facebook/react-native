@@ -27,9 +27,9 @@ let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
 
       // Print pretty unhandled rejections while on DEV
       if (__DEV__) {
-        const parseErrorStack = require('react-native/Libraries/Core/Devtools/parseErrorStack');
-        const symbolicateStackTrace = require('react-native/Libraries/Core/Devtools/symbolicateStackTrace');
-        const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
+        const parseErrorStack = require('./Core/Devtools/parseErrorStack');
+        const symbolicateStackTrace = require('./Core/Devtools/symbolicateStackTrace');
+        const LogBox = require('./LogBox/LogBox').default;
 
         stack = parseErrorStack(error.stack);
         stack = await symbolicateStackTrace(stack);
