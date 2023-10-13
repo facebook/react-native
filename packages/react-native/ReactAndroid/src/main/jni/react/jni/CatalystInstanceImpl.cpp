@@ -7,12 +7,8 @@
 
 #include "CatalystInstanceImpl.h"
 
-#include <condition_variable>
 #include <fstream>
 #include <memory>
-#include <mutex>
-#include <sstream>
-#include <vector>
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <cxxreact/CxxNativeModule.h>
@@ -34,7 +30,6 @@
 
 #include <logger/react_native_log.h>
 
-#include "CxxModuleWrapper.h"
 #include "JReactCxxErrorHandler.h"
 #include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
@@ -47,24 +42,16 @@ namespace facebook::react {
 
 namespace {
 
-class Exception : public jni::JavaClass<Exception> {
- public:
-};
-
 class JInstanceCallback : public InstanceCallback {
  public:
-  explicit JInstanceCallback(
-      alias_ref<ReactCallback::javaobject> jobj,
-      std::shared_ptr<JMessageQueueThread> messageQueueThread)
-      : jobj_(make_global(jobj)),
-        messageQueueThread_(std::move(messageQueueThread)) {}
+  explicit JInstanceCallback(alias_ref<ReactCallback::javaobject> jobj)
+      : jobj_(make_global(jobj)) {}
 
   void onBatchComplete() override {
-    messageQueueThread_->runOnQueue([this] {
-      static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-          "onBatchComplete");
-      method(jobj_);
-    });
+    jni::ThreadScope guard;
+    static auto method =
+        ReactCallback::javaClassStatic()->getMethod<void()>("onBatchComplete");
+    method(jobj_);
   }
 
   void incrementPendingJSCalls() override {
@@ -86,7 +73,6 @@ class JInstanceCallback : public InstanceCallback {
 
  private:
   global_ref<ReactCallback::javaobject> jobj_;
-  std::shared_ptr<JMessageQueueThread> messageQueueThread_;
 };
 
 } // namespace
@@ -201,7 +187,7 @@ void CatalystInstanceImpl::initializeBridge(
       moduleMessageQueue_));
 
   instance_->initializeBridge(
-      std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
+      std::make_unique<JInstanceCallback>(callback),
       jseh->getExecutorFactory(),
       std::make_unique<JMessageQueueThread>(jsQueue),
       moduleRegistry_);

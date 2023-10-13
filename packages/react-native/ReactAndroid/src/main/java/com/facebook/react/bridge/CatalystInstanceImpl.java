@@ -152,6 +152,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
 
+  @DoNotStrip
   private static class BridgeCallback implements ReactCallback {
     // We do this so the callback doesn't keep the CatalystInstanceImpl alive.
     // In this case, the callback is held in C++ code, so the GC can't see it
@@ -166,7 +167,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     public void onBatchComplete() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
-        impl.mNativeModuleRegistry.onBatchComplete();
+        impl.mNativeModulesQueueThread.runOnQueue(
+            () -> {
+              impl.mNativeModuleRegistry.onBatchComplete();
+            });
       }
     }
 
