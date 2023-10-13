@@ -167,7 +167,7 @@ function isOnAReactNativeReleaseBranch() {
     let currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
       .toString()
       .trim();
-    let currentRemote = execSync('git config --get remote.origin.url')
+    let currentRemote = execSync('git ls-remote --get-url')
       .toString()
       .trim();
     return (
@@ -188,7 +188,7 @@ function isOnAReactNativeReleaseTag() {
   } catch (error) {
     return false;
   }
-  let currentRemote = execSync('git config --get remote.origin.url')
+  let currentRemote = execSync('git ls-remote --get-url')
     .toString()
     .trim();
   return currentRemote.endsWith('facebook/react-native.git');
