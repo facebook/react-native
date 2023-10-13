@@ -22,7 +22,7 @@ const config = {
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
     path.resolve(__dirname, '../assets'),
-    path.resolve(__dirname, '../normalize-colors'),
+    path.resolve(__dirname, '../normalize-color'),
     path.resolve(__dirname, '../polyfills'),
     path.resolve(__dirname, '../virtualized-lists'),
   ],
