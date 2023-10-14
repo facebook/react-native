@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -395,12 +396,15 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
       int activityAppearance =
         currentActivity.getWindow().getInsetsController().getSystemBarsAppearance();
-      int dialogAppearance = mDialog.getWindow().getInsetsController().getSystemBarsAppearance();
-      int appearanceMask = activityAppearance ^ dialogAppearance;
+      int activityLightStatusBars =
+        activityAppearance & WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
       mDialog
         .getWindow()
         .getInsetsController()
-        .setSystemBarsAppearance(activityAppearance, appearanceMask);
+        .setSystemBarsAppearance(
+          activityLightStatusBars,
+          WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+        );
     } else {
       mDialog
         .getWindow()
