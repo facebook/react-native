@@ -12,6 +12,7 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
@@ -94,6 +95,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
   protected int mLayoutDirection = UNSET;
 
+  @NonNull
   protected TextTransform mTextTransform = TextTransform.NONE;
 
   protected float mTextShadowOffsetDx = 0;
@@ -373,6 +375,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   }
 
   @Override
+  @NonNull
   public TextTransform getTextTransform() {
     return mTextTransform;
   }
@@ -692,6 +695,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     return androidHyphenationFrequency;
   }
 
+  @Nullable
   @Override
   public Role getRole() {
     return mRole;

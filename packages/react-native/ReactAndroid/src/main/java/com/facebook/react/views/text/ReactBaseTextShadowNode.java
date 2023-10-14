@@ -14,6 +14,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.Gravity;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -69,10 +70,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     @Override
+    @NonNull
     public TextTransform getTextTransform() {
       return textAttributes.getTextTransform();
     }
 
+    @Nullable
     @Override
     public Role getRole() {
       return textShadowNode.mRole;

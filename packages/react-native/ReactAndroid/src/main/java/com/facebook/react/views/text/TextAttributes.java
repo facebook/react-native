@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.PixelUtil;
@@ -29,6 +30,8 @@ public class TextAttributes {
   private float mLetterSpacing = Float.NaN;
   private float mMaxFontSizeMultiplier = Float.NaN;
   private float mHeightOfTallestInlineViewOrImage = Float.NaN;
+
+  @NonNull
   private TextTransform mTextTransform = TextTransform.UNSET;
 
   public TextAttributes() {}
@@ -118,7 +121,7 @@ public class TextAttributes {
     return mTextTransform;
   }
 
-  public void setTextTransform(TextTransform textTransform) {
+  public void setTextTransform(@NonNull TextTransform textTransform) {
     mTextTransform = textTransform;
   }
 

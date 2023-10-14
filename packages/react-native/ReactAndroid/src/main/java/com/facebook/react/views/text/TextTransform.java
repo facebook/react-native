@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import java.text.BreakIterator;
+import androidx.annotation.Nullable;
 
 /** Types of text transforms for CustomTextTransformSpan */
 public enum TextTransform {
@@ -17,7 +18,7 @@ public enum TextTransform {
   CAPITALIZE,
   UNSET;
 
-  public static String apply(String text, TextTransform textTransform) {
+  public static String apply(@Nullable String text, TextTransform textTransform) {
     if (text == null) {
       return null;
     }
