@@ -6,9 +6,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/react-native.git",
-    "directory": "packages/normalize-colors"
+    "directory": "packages/normalize-color"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/normalize-colors#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/normalize-color#readme",
   "keywords": [
     "color",
     "normalization",
