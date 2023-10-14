@@ -14,7 +14,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.Gravity;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -22,6 +21,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.assets.ReactFontManager;
+import com.facebook.react.internal.views.text.BasicTextAttributeProvider;
+import com.facebook.react.internal.views.text.HierarchicTextAttributeProvider;
+import com.facebook.react.internal.views.text.TextLayoutUtils;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -49,152 +51,7 @@ import java.util.Map;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
-public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
-  /**
-   * Implementation of {@link EffectiveTextAttributeProvider} that provides effective text
-   * attributes based on a {@link ReactBaseTextShadowNode} instance and its parent.
-   */
-  private static class HierarchicTextAttributeProvider implements EffectiveTextAttributeProvider {
-    final private ReactBaseTextShadowNode textShadowNode;
-    final private TextAttributes parentTextAttributes;
-    final private TextAttributes textAttributes;
-
-    private HierarchicTextAttributeProvider(
-      ReactBaseTextShadowNode textShadowNode,
-      TextAttributes parentTextAttributes,
-      TextAttributes textAttributes
-    ) {
-      this.textShadowNode = textShadowNode;
-      this.parentTextAttributes = parentTextAttributes;
-      this.textAttributes = textAttributes;
-    }
-
-    @Override
-    @NonNull
-    public TextTransform getTextTransform() {
-      return textAttributes.getTextTransform();
-    }
-
-    @Nullable
-    @Override
-    public Role getRole() {
-      return textShadowNode.mRole;
-    }
-
-    @Override
-    public AccessibilityRole getAccessibilityRole() {
-      return textShadowNode.mAccessibilityRole;
-    }
-
-    @Override
-    public boolean isBackgroundColorSet() {
-      return textShadowNode.mIsBackgroundColorSet;
-    }
-
-    @Override
-    public int getBackgroundColor() {
-      return textShadowNode.mBackgroundColor;
-    }
-
-    @Override
-    public boolean isColorSet() {
-      return textShadowNode.mIsColorSet;
-    }
-
-    @Override
-    public int getColor() {
-      return textShadowNode.mColor;
-    }
-
-    @Override
-    public int getFontStyle() {
-      return textShadowNode.mFontStyle;
-    }
-
-    @Override
-    public int getFontWeight() {
-      return textShadowNode.mFontWeight;
-    }
-
-    @Override
-    public String getFontFamily() {
-      return textShadowNode.mFontFamily;
-    }
-
-    @Override
-    public String getFontFeatureSettings() {
-      return textShadowNode.mFontFeatureSettings;
-    }
-
-    @Override
-    public boolean isUnderlineTextDecorationSet() {
-      return textShadowNode.mIsUnderlineTextDecorationSet;
-    }
-
-    @Override
-    public boolean isLineThroughTextDecorationSet() {
-      return textShadowNode.mIsLineThroughTextDecorationSet;
-    }
-
-    @Override
-    public float getTextShadowOffsetDx() {
-      return textShadowNode.mTextShadowOffsetDx;
-    }
-
-    @Override
-    public float getTextShadowOffsetDy() {
-      return textShadowNode.mTextShadowOffsetDy;
-    }
-
-    @Override
-    public float getTextShadowRadius() {
-      return textShadowNode.mTextShadowRadius;
-    }
-
-    @Override
-    public int getTextShadowColor() {
-      return textShadowNode.mTextShadowColor;
-    }
-
-    @Override
-    public float getEffectiveLetterSpacing() {
-      final float letterSpacing = textAttributes.getEffectiveLetterSpacing();
-
-      if (!Float.isNaN(letterSpacing)
-        && (parentTextAttributes == null
-        || parentTextAttributes.getEffectiveLetterSpacing() != letterSpacing)) {
-        return letterSpacing;
-      } else {
-        return Float.NaN;
-      }
-    }
-
-    @Override
-    public int getEffectiveFontSize() {
-      final int fontSize = textAttributes.getEffectiveFontSize();
-
-      if (
-        // `getEffectiveFontSize` always returns a value so don't need to check for anything like `Float.NaN`.
-        parentTextAttributes == null
-          || parentTextAttributes.getEffectiveFontSize() != fontSize) {
-        return fontSize;
-      } else {
-        return UNSET;
-      }
-    }
-
-    @Override
-    public float getEffectiveLineHeight() {
-      final float lineHeight = textAttributes.getEffectiveLineHeight();
-      if (!Float.isNaN(lineHeight)
-        && (parentTextAttributes == null
-        || parentTextAttributes.getEffectiveLineHeight() != lineHeight)) {
-        return  lineHeight;
-      } else {
-        return Float.NaN;
-      }
-    }
-  }
+public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implements BasicTextAttributeProvider {
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous
   // character.
@@ -546,6 +403,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @Override
+  public int getColor() {
+    return mColor;
+  }
+
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
@@ -553,6 +415,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       mColor = color;
     }
     markUpdated();
+  }
+
+  @Override
+  public boolean isColorSet() {
+    return mIsColorSet;
+  }
+
+  @Override
+  public int getBackgroundColor() {
+    return mBackgroundColor;
   }
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
@@ -570,12 +442,27 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  @Override
+  public boolean isBackgroundColorSet() {
+    return mIsBackgroundColorSet;
+  }
+
+  @Override
+  public @Nullable AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (isVirtual()) {
       mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
       markUpdated();
     }
+  }
+
+  @Override
+  public @Nullable Role getRole() {
+    return mRole;
   }
 
   @ReactProp(name = ViewProps.ROLE)
@@ -586,10 +473,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  @Override
+  public String getFontFamily() {
+    return mFontFamily;
+  }
+
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
     markUpdated();
+  }
+
+  @Override
+  public int getFontWeight() {
+    return mFontWeight;
   }
 
   @ReactProp(name = ViewProps.FONT_WEIGHT)
@@ -609,6 +506,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       mFontFeatureSettings = fontFeatureSettings;
       markUpdated();
     }
+  }
+
+  @Override
+  public String getFontFeatureSettings() {
+    return mFontFeatureSettings;
+  }
+
+  @Override
+  public int getFontStyle() {
+    return mFontStyle;
   }
 
   @ReactProp(name = ViewProps.FONT_STYLE)
@@ -639,6 +546,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
     }
     markUpdated();
+  }
+
+  @Override
+  public boolean isUnderlineTextDecorationSet() {
+    return mIsUnderlineTextDecorationSet;
+  }
+
+  @Override
+  public boolean isLineThroughTextDecorationSet() {
+    return mIsLineThroughTextDecorationSet;
   }
 
   @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
@@ -678,12 +595,32 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @Override
+  public float getTextShadowOffsetDx() {
+    return mTextShadowOffsetDx;
+  }
+
+  @Override
+  public float getTextShadowOffsetDy() {
+    return mTextShadowOffsetDy;
+  }
+
+  @Override
+  public float getTextShadowRadius() {
+    return mTextShadowRadius;
+  }
+
   @ReactProp(name = PROP_SHADOW_RADIUS, defaultInt = 1)
   public void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
       markUpdated();
     }
+  }
+
+  @Override
+  public int getTextShadowColor() {
+    return mTextShadowColor;
   }
 
   @ReactProp(name = PROP_SHADOW_COLOR, defaultInt = DEFAULT_TEXT_SHADOW_COLOR, customType = "Color")
