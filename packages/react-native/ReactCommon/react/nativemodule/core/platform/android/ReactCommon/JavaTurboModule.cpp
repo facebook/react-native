@@ -17,7 +17,6 @@
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
-#include <react/bridging/Bridging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
@@ -64,42 +63,60 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-auto createJavaCallback(
-    jsi::Runtime& rt,
+jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function&& function,
-    std::shared_ptr<CallInvoker> jsInvoker) {
-  std::optional<AsyncCallback<>> callback(
-      {rt, std::move(function), std::move(jsInvoker)});
+    jsi::Runtime& rt,
+    const std::shared_ptr<CallInvoker>& jsInvoker) {
+  auto weakWrapper =
+      CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
+
+  // This needs to be a shared_ptr because:
+  // 1. It cannot be unique_ptr. std::function is copyable but unique_ptr is
+  // not.
+  // 2. It cannot be weak_ptr since we need this object to live on.
+  // 3. It cannot be a value, because that would be deleted as soon as this
+  // function returns.
+  auto callbackWrapperOwner =
+      std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper);
+
   return JCxxCallbackImpl::newObjectCxxArgs(
-      [callback = std::move(callback)](folly::dynamic args) mutable {
-        if (!callback) {
-          LOG(FATAL) << "Callback arg cannot be called more than once";
+      [weakWrapper = std::move(weakWrapper),
+       callbackWrapperOwner = std::move(callbackWrapperOwner),
+       wrapperWasCalled = false](folly::dynamic responses) mutable {
+        if (wrapperWasCalled) {
+          LOG(FATAL) << "callback arg cannot be called more than once";
+        }
+
+        auto strongWrapper = weakWrapper.lock();
+        if (!strongWrapper) {
           return;
         }
 
-        callback->call([args = std::move(args)](
-                           jsi::Runtime& rt, jsi::Function& jsFunction) {
-          std::vector<jsi::Value> jsArgs;
-          jsArgs.reserve(args.size());
-          for (const auto& val : args) {
-            jsArgs.emplace_back(jsi::valueFromDynamic(rt, val));
-          }
-          jsFunction.call(rt, (const jsi::Value*)jsArgs.data(), jsArgs.size());
-        });
-        callback = std::nullopt;
+        strongWrapper->jsInvoker().invokeAsync(
+            [weakWrapper = std::move(weakWrapper),
+             callbackWrapperOwner = std::move(callbackWrapperOwner),
+             responses = std::move(responses)]() {
+              auto strongWrapper2 = weakWrapper.lock();
+              if (!strongWrapper2) {
+                return;
+              }
+
+              std::vector<jsi::Value> args;
+              args.reserve(responses.size());
+              for (const auto& val : responses) {
+                args.emplace_back(
+                    jsi::valueFromDynamic(strongWrapper2->runtime(), val));
+              }
+
+              strongWrapper2->callback().call(
+                  strongWrapper2->runtime(),
+                  (const jsi::Value*)args.data(),
+                  args.size());
+            });
+
+        wrapperWasCalled = true;
       });
 }
-
-struct JPromiseImpl : public jni::JavaClass<JPromiseImpl> {
-  constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/PromiseImpl;";
-
-  static jni::local_ref<javaobject> create(
-      jni::local_ref<JCallback::javaobject> resolve,
-      jni::local_ref<JCallback::javaobject> reject) {
-    return newInstance(resolve, reject);
-  }
-};
 
 // This is used for generating short exception strings.
 std::string stringifyJSIValue(const jsi::Value& v, jsi::Runtime* rt = nullptr) {
@@ -339,7 +356,8 @@ JNIArgs convertJSIArgsToJNIArgs(
       }
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
       jarg->l = makeGlobalIfNecessary(
-          createJavaCallback(rt, std::move(fn), jsInvoker).release());
+          createJavaCallbackFromJSIFunction(std::move(fn), rt, jsInvoker)
+              .release());
     } else if (type == "Lcom/facebook/react/bridge/ReadableArray;") {
       if (!(arg->isObject() && arg->getObject(rt).isArray(rt))) {
         throw JavaTurboModuleArgumentConversionException(
@@ -738,14 +756,16 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
            methodNameStr,
-           id = getUniqueId()]() mutable {
+           id = getUniqueId()]() mutable -> void {
             auto instance = instance_.lockLocal();
             if (!instance) {
               return;
             }
-
-            // Require the env from the current scope, which may be
-            // different from the original invocation's scope
+            /**
+             * TODO(ramanpreet): Why do we have to require the environment
+             * again? Why does JNI crash when we use the env from the upper
+             * scope?
+             */
             JNIEnv* env = jni::Environment::current();
             const char* moduleName = moduleNameStr.c_str();
             const char* methodName = methodNameStr.c_str();
@@ -769,85 +789,115 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       return jsi::Value::undefined();
     }
     case PromiseKind: {
-      // We could use AsyncPromise here, but this avoids the overhead of
-      // the shared_ptr for PromiseHolder
       jsi::Function Promise =
           runtime.global().getPropertyAsFunction(runtime, "Promise");
 
-      // The promise constructor runs its arg immediately, so this is safe
-      jobject javaPromise;
-      jsi::Value jsPromise = Promise.callAsConstructor(
+      jsi::Function promiseConstructorArg = jsi::Function::createFromHostFunction(
           runtime,
-          jsi::Function::createFromHostFunction(
-              runtime,
-              jsi::PropNameID::forAscii(runtime, "fn"),
-              2,
-              [&](jsi::Runtime& runtime,
-                  const jsi::Value&,
-                  const jsi::Value* args,
-                  size_t argCount) {
-                if (argCount != 2) {
-                  throw jsi::JSError(runtime, "Incorrect number of arguments");
-                }
-
-                auto resolve = createJavaCallback(
-                    runtime,
-                    args[0].getObject(runtime).getFunction(runtime),
-                    jsInvoker_);
-                auto reject = createJavaCallback(
-                    runtime,
-                    args[1].getObject(runtime).getFunction(runtime),
-                    jsInvoker_);
-                javaPromise = JPromiseImpl::create(resolve, reject).release();
-
-                return jsi::Value::undefined();
-              }));
-
-      jobject globalPromise = env->NewGlobalRef(javaPromise);
-      globalRefs.push_back(globalPromise);
-      env->DeleteLocalRef(javaPromise);
-      jargs[argCount].l = globalPromise;
-
-      const char* moduleName = name_.c_str();
-      const char* methodName = methodNameStr.c_str();
-      TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
-
-      TMPL::asyncMethodCallDispatch(moduleName, methodName);
-      nativeMethodCallInvoker_->invokeAsync(
-          methodName,
-          [jargs,
-           globalRefs,
+          jsi::PropNameID::forAscii(runtime, "fn"),
+          2,
+          [this,
+           &jargs,
+           &globalRefs,
+           argCount,
            methodID,
-           instance_ = jni::make_weak(instance_),
            moduleNameStr = name_,
            methodNameStr,
-           id = getUniqueId()]() mutable {
-            auto instance = instance_.lockLocal();
-            if (!instance) {
-              return;
+           env](
+              jsi::Runtime& runtime,
+              const jsi::Value& thisVal,
+              const jsi::Value* promiseConstructorArgs,
+              size_t promiseConstructorArgCount) {
+            if (promiseConstructorArgCount != 2) {
+              throw std::invalid_argument("Promise fn arg count must be 2");
             }
 
-            // Require the env from the current scope, which may be
-            // different from the original invocation's scope
-            JNIEnv* env = jni::Environment::current();
+            jsi::Function resolveJSIFn =
+                promiseConstructorArgs[0].getObject(runtime).getFunction(
+                    runtime);
+            jsi::Function rejectJSIFn =
+                promiseConstructorArgs[1].getObject(runtime).getFunction(
+                    runtime);
+
+            auto resolve = createJavaCallbackFromJSIFunction(
+                               std::move(resolveJSIFn), runtime, jsInvoker_)
+                               .release();
+            auto reject = createJavaCallbackFromJSIFunction(
+                              std::move(rejectJSIFn), runtime, jsInvoker_)
+                              .release();
+
+            jclass jPromiseImpl =
+                env->FindClass("com/facebook/react/bridge/PromiseImpl");
+            jmethodID jPromiseImplConstructor = env->GetMethodID(
+                jPromiseImpl,
+                "<init>",
+                "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V");
+
+            jobject promise = env->NewObject(
+                jPromiseImpl, jPromiseImplConstructor, resolve, reject);
+
             const char* moduleName = moduleNameStr.c_str();
             const char* methodName = methodNameStr.c_str();
-            TMPL::asyncMethodCallExecutionStart(moduleName, methodName, id);
-            env->CallVoidMethodA(instance.get(), methodID, jargs.data());
-            try {
-              FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
-            } catch (...) {
-              TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
-              throw;
-            }
 
-            for (auto globalRef : globalRefs) {
-              env->DeleteGlobalRef(globalRef);
-            }
-            TMPL::asyncMethodCallExecutionEnd(moduleName, methodName, id);
+            jobject globalPromise = env->NewGlobalRef(promise);
+
+            globalRefs.push_back(globalPromise);
+            env->DeleteLocalRef(promise);
+
+            jargs[argCount].l = globalPromise;
+            TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
+            TMPL::asyncMethodCallDispatch(moduleName, methodName);
+
+            nativeMethodCallInvoker_->invokeAsync(
+                methodName,
+                [jargs,
+                 globalRefs,
+                 methodID,
+                 instance_ = jni::make_weak(instance_),
+                 moduleNameStr,
+                 methodNameStr,
+                 id = getUniqueId()]() mutable -> void {
+                  auto instance = instance_.lockLocal();
+
+                  if (!instance) {
+                    return;
+                  }
+                  /**
+                   * TODO(ramanpreet): Why do we have to require the
+                   * environment again? Why does JNI crash when we use the env
+                   * from the upper scope?
+                   */
+                  JNIEnv* env = jni::Environment::current();
+                  const char* moduleName = moduleNameStr.c_str();
+                  const char* methodName = methodNameStr.c_str();
+
+                  TMPL::asyncMethodCallExecutionStart(
+                      moduleName, methodName, id);
+                  env->CallVoidMethodA(instance.get(), methodID, jargs.data());
+                  try {
+                    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+                  } catch (...) {
+                    TMPL::asyncMethodCallExecutionFail(
+                        moduleName, methodName, id);
+                    throw;
+                  }
+
+                  for (auto globalRef : globalRefs) {
+                    env->DeleteGlobalRef(globalRef);
+                  }
+                  TMPL::asyncMethodCallExecutionEnd(moduleName, methodName, id);
+                });
+
+            return jsi::Value::undefined();
           });
+
+      jsi::Value promise =
+          Promise.callAsConstructor(runtime, promiseConstructorArg);
+      checkJNIErrorForMethodCall();
+
       TMPL::asyncMethodCallEnd(moduleName, methodName);
-      return jsPromise;
+
+      return promise;
     }
     default:
       throw std::runtime_error(
