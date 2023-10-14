@@ -11,8 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 
 /** Helper to handle implementing ViewGroups with custom drawing order based on z-index. */
 public class ViewGroupDrawingOrderHelper {
@@ -67,6 +71,15 @@ public class ViewGroupDrawingOrderHelper {
   public int getChildDrawingOrder(int childCount, int index) {
     if (mDrawingOrderIndices != null
       && (index >= mDrawingOrderIndices.length || mDrawingOrderIndices[index] >= childCount)) {
+      FLog.w(ReactConstants.TAG,
+        "getChildDrawingOrder index out of bounds! please check your operations of addding and " +
+          "removing subview.Force updates here to prevent crash."
+          + " viewId:" + mViewGroup.getId()
+          + " childCount:" + childCount
+          + " index:" + index
+          + " mDrawingOrderIndices:" + Arrays.toString(mDrawingOrderIndices)
+          + " mNumberOfChildrenWithZIndex:" + mNumberOfChildrenWithZIndex
+      );
       update();
     }
 
