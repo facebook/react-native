@@ -18,7 +18,7 @@ packages:
   # Get @react-native/normalize-colors from npm registry, since its used in deprecated-react-native-prop-types package
   '@react-native/normalize-colors':
     access: $all
-    publish: $authenticated
+    publish: $all
     proxy: npmjs
   # Group and isolate all local packages, avoid being proxy from outside
   '@react-native/*':
