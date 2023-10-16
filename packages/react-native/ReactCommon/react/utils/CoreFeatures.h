@@ -19,12 +19,6 @@ class CoreFeatures {
   // Specifies whether the iterator-style prop parsing is enabled.
   static bool enablePropIteratorSetter;
 
-  // This is used as a feature flag for *all* PropsX structs.
-  // For MapBuffer to be used for a particular component instance,
-  // its ShadowNode traits must set the MapBuffer trait; and this
-  // must be set to "true" globally.
-  static bool enableMapBuffer;
-
   // When enabled, Fabric will block paint to allow for state updates in
   // useLayoutEffect hooks to be processed. This changes affects scheduling of
   // when a transaction is mounted.
@@ -44,17 +38,35 @@ class CoreFeatures {
   // from view hierarchy. This feature flag enables this feature.
   static bool cancelImageDownloadsOnRecycle;
 
-  // On iOS, every transaction is wrapperd in [CATransaction begin] and
-  // [CATransaction end] This feature flag disables it to measure its impact in
-  // production.
-  static bool disableTransactionCommit;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
 
   // Report mount operations from the host platform to notify mount hooks.
   static bool enableMountHooks;
+
+  // Only swap left and right on Android in RTL scripts.
+  static bool doNotSwapLeftAndRightOnAndroidInLTR;
+
+  // Clean yoga node when <Text /> does not change.
+  static bool enableCleanParagraphYogaNode;
+
+  // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
+  // props, and provide continuous `onScroll` upates like other platforms.
+  static bool disableScrollEventThrottleRequirement;
+
+  // When enabled, the renderer would only fail commits when they propagate
+  // state and the last commit that updated state changed before committing.
+  static bool enableGranularShadowTreeStateReconciliation;
+
+  // Default state updates and events to async batched priority.
+  static bool enableDefaultAsyncBatchedPriority;
+
+  // When enabled, Fabric will avoid cloning notes to perform state progression.
+  static bool enableClonelessStateProgression;
+
+  // When enabled, rawProps in Props will not include Yoga specific props.
+  static bool excludeYogaFromRawProps;
 };
 
 } // namespace facebook::react

@@ -7,39 +7,36 @@
 
 package com.facebook.react.modules.timing
 
+import android.view.Choreographer.FrameCallback
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.modules.core.ChoreographerCompat.FrameCallback
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
 import com.facebook.react.modules.core.TimingModule
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
+import org.mockito.MockedStatic
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.Mockito.`when` as whenever
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 
-@PrepareForTest(Arguments::class, SystemClock::class, ReactChoreographer::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 @RunWith(RobolectricTestRunner::class)
 class TimingModuleTest {
   companion object {
@@ -52,30 +49,37 @@ class TimingModuleTest {
   private lateinit var idlePostFrameCallbackHandler: PostFrameCallbackHandler
   private var currentTimeNs = 0L
   private lateinit var jSTimersMock: JSTimers
-
-  @get:Rule val powerMockRule = PowerMockRule()
+  private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var systemClock: MockedStatic<SystemClock>
+  private lateinit var reactChoreographer: MockedStatic<ReactChoreographer>
 
   @Before
   fun prepareModules() {
-    PowerMockito.mockStatic(Arguments::class.java)
-    whenever(Arguments.createArray()).thenAnswer {
-      return@thenAnswer JavaOnlyArray()
-    }
+    arguments = mockStatic(Arguments::class.java)
+    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
 
-    PowerMockito.mockStatic(SystemClock::class.java)
-    whenever(SystemClock.uptimeMillis()).thenAnswer {
-      return@thenAnswer currentTimeNs / 1000000
-    }
-    whenever(SystemClock.currentTimeMillis()).thenAnswer {
-      return@thenAnswer currentTimeNs / 1000000
-    }
-    whenever(SystemClock.nanoTime()).thenAnswer {
-      return@thenAnswer currentTimeNs
-    }
+    systemClock = mockStatic(SystemClock::class.java)
+    systemClock
+        .`when`<Long> { SystemClock.uptimeMillis() }
+        .thenAnswer {
+          return@thenAnswer currentTimeNs / 1000000
+        }
+    systemClock
+        .`when`<Long> { SystemClock.currentTimeMillis() }
+        .thenAnswer {
+          return@thenAnswer currentTimeNs / 1000000
+        }
+    systemClock
+        .`when`<Long> { SystemClock.nanoTime() }
+        .thenAnswer {
+          return@thenAnswer currentTimeNs
+        }
 
     reactChoreographerMock = mock(ReactChoreographer::class.java)
-    PowerMockito.mockStatic(ReactChoreographer::class.java)
-    whenever(ReactChoreographer.getInstance()).thenAnswer { reactChoreographerMock }
+    reactChoreographer = mockStatic(ReactChoreographer::class.java)
+    reactChoreographer
+        .`when`<ReactChoreographer> { ReactChoreographer.getInstance() }
+        .thenAnswer { reactChoreographerMock }
 
     val reactInstance = mock(CatalystInstance::class.java)
     val reactContext = mock(ReactApplicationContext::class.java)
@@ -108,6 +112,13 @@ class TimingModuleTest {
     }
 
     timingModule.initialize()
+  }
+
+  @After
+  fun tearDown() {
+    systemClock.close()
+    arguments.close()
+    reactChoreographer.close()
   }
 
   private fun stepChoreographerFrame() {

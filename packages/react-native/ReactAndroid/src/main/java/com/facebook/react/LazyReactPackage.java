@@ -37,6 +37,7 @@ public abstract class LazyReactPackage implements ReactPackage {
       LazyReactPackage lazyReactPackage) {
     return Collections::emptyMap;
   }
+
   /**
    * We return an iterable
    *
@@ -44,8 +45,8 @@ public abstract class LazyReactPackage implements ReactPackage {
    * @return {@link Iterable<ModuleHolder>} that contains all native modules registered for the
    *     context
    */
-  public Iterable<ModuleHolder> getNativeModuleIterator(
-      final ReactApplicationContext reactContext) {
+  /** package */
+  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);
@@ -94,11 +95,8 @@ public abstract class LazyReactPackage implements ReactPackage {
   protected abstract List<ModuleSpec> getNativeModules(ReactApplicationContext reactContext);
 
   /**
-   * This is only used when a LazyReactPackage is a part of {@link CompositeReactPackage} Once we
-   * deprecate {@link CompositeReactPackage}, this can be removed too
-   *
    * @param reactContext react application context that can be used to create modules
-   * @return
+   * @return {@link List<NativeModule>} to register
    */
   @Override
   public final List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {

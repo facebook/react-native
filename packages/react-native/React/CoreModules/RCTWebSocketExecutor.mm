@@ -165,7 +165,10 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Metro is running."), nil);
+      callback(
+          RCTErrorWithMessage(
+              @"Runtime is not ready for debugging. Make sure Metro is running and the Remote Debugging browser window is open."),
+          nil);
       return;
     }
 

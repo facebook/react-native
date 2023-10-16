@@ -19,7 +19,7 @@ namespace facebook::react {
  * Return `true` to interrupt default dispatch to JS event emitter, `false` to
  * pass through to default handlers.
  */
-using EventListener = std::function<bool(const RawEvent &event)>;
+using EventListener = std::function<bool(const RawEvent& event)>;
 
 class EventListenerContainer {
  public:
@@ -28,14 +28,14 @@ class EventListenerContainer {
    * Returns true if event was handled by the listener, false to continue
    * default dispatch.
    */
-  bool willDispatchEvent(const RawEvent &event);
+  bool willDispatchEvent(const RawEvent& event);
 
-  void addListener(const std::shared_ptr<EventListener const> &listener);
-  void removeListener(const std::shared_ptr<EventListener const> &listener);
+  void addListener(const std::shared_ptr<const EventListener>& listener);
+  void removeListener(const std::shared_ptr<const EventListener>& listener);
 
  private:
   std::shared_mutex mutex_;
-  std::vector<std::shared_ptr<EventListener const>> eventListeners_;
+  std::vector<std::shared_ptr<const EventListener>> eventListeners_;
 };
 
 } // namespace facebook::react

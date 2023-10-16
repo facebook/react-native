@@ -9,9 +9,7 @@
 #include "ScopedGlobalRef.h"
 #include "ScopedLocalRef.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 /**
  * Registers a set of methods for a JNI class. Aborts if registration fails.
@@ -61,11 +59,8 @@ DEFINE_CALL_METHOD_FOR_PRIMITIVE_INTERFACE(void, Void);
 DEFINE_CALL_METHOD_FOR_PRIMITIVE_INTERFACE(jlong, Long);
 DEFINE_CALL_METHOD_FOR_PRIMITIVE_INTERFACE(jfloat, Float);
 
-ScopedLocalRef<jobject> callStaticObjectMethod(
-    JNIEnv* env,
-    jclass clazz,
-    jmethodID methodId,
-    ...);
+ScopedLocalRef<jobject>
+callStaticObjectMethod(JNIEnv* env, jclass clazz, jmethodID methodId, ...);
 
 /**
  * Given a local or a global reference, this method creates a new global
@@ -74,6 +69,5 @@ ScopedLocalRef<jobject> callStaticObjectMethod(
 ScopedGlobalRef<jobject> newGlobalRef(JNIEnv* env, jobject obj);
 
 ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj);
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::vanillajni

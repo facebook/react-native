@@ -26,6 +26,7 @@ import type {
   PropTypeAnnotation,
   EventTypeAnnotation,
   ObjectTypeAnnotation,
+  EventTypeShape,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -87,6 +88,12 @@ type ExtendedPropResult = {
   knownTypeName: 'ReactNativeCoreViewProps',
 } | null;
 
+export type EventArgumentReturnType = {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+};
+
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
   hasteModuleName: string,
@@ -98,6 +105,7 @@ function wrapModuleSchema(
   };
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   x: Nullable<T>,
 ): [T, boolean] {
@@ -108,6 +116,7 @@ function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   return [x, false];
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function wrapNullable<+T: NativeModuleTypeAnnotation>(
   nullable: boolean,
   typeAnnotation: T,
@@ -818,7 +827,7 @@ function getCommandTypeNameAndOptionsExpression(
   }
 
   return {
-    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandTypeName: parser.getTypeAnnotationName(typeArgumentParam),
     commandOptionsExpression: callExpression.arguments[0],
   };
 }
@@ -998,7 +1007,7 @@ function getTypeResolutionStatus(
   return {
     successful: true,
     type,
-    name: parser.nameForGenericTypeAnnotation(typeAnnotation),
+    name: parser.getTypeAnnotationName(typeAnnotation),
   };
 }
 
@@ -1083,6 +1092,73 @@ function verifyPropNotAlreadyDefined(
   }
 }
 
+function handleEventHandler(
+  name: 'BubblingEventHandler' | 'DirectEventHandler',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  findEventArgumentsAndType: (
+    parser: Parser,
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+    bubblingType: void | 'direct' | 'bubble',
+    paperName: ?$FlowFixMe,
+  ) => EventArgumentReturnType,
+): EventArgumentReturnType {
+  const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
+  const paperTopLevelNameDeprecated =
+    parser.getPaperTopLevelNameDeprecated(typeAnnotation);
+
+  switch (typeAnnotation.typeParameters.params[0].type) {
+    case parser.nullLiteralTypeAnnotation:
+    case parser.undefinedLiteralTypeAnnotation:
+      return {
+        argumentProps: [],
+        bubblingType: eventType,
+        paperTopLevelNameDeprecated,
+      };
+    default:
+      return findEventArgumentsAndType(
+        parser,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        eventType,
+        paperTopLevelNameDeprecated,
+      );
+  }
+}
+
+function emitBuildEventSchema(
+  paperTopLevelNameDeprecated: $FlowFixMe,
+  name: $FlowFixMe,
+  optional: $FlowFixMe,
+  nonNullableBubblingType: 'direct' | 'bubble',
+  argument: ObjectTypeAnnotation<EventTypeAnnotation>,
+): ?EventTypeShape {
+  if (paperTopLevelNameDeprecated != null) {
+    return {
+      name,
+      optional,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
+      typeAnnotation: {
+        type: 'EventTypeAnnotation',
+        argument: argument,
+      },
+    };
+  }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: argument,
+    },
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1111,4 +1187,6 @@ module.exports = {
   getTypeResolutionStatus,
   buildPropertiesForEvent,
   verifyPropNotAlreadyDefined,
+  handleEventHandler,
+  emitBuildEventSchema,
 };

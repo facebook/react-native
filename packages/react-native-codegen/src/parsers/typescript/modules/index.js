@@ -234,7 +234,7 @@ function translateTypeAnnotation(
     }
     case 'TSTypeReference': {
       return translateTypeReferenceAnnotation(
-        typeAnnotation.typeName.name,
+        parser.getTypeAnnotationName(typeAnnotation),
         nullable,
         typeAnnotation,
         hasteModuleName,

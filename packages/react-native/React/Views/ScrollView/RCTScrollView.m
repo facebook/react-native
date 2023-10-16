@@ -307,6 +307,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
@@ -324,7 +325,24 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
-  CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  self.firstResponderFocus = CGRectNull;
+
+  CGFloat contentDiff = 0;
+  if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:)
+                                                 to:nil
+                                               from:self
+                                           forEvent:nil]) {
+    // Inner text field focused
+    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+    BOOL didFocusExternalTextField = focusEnd == INFINITY;
+    if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
+      // Text field active region is below visible area with keyboard - update diff to bring into view
+      contentDiff = endFrame.origin.y - focusEnd;
+    }
+  } else if (endFrame.origin.y <= beginFrame.origin.y) {
+    // Keyboard opened for other reason
+    contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  }
   if (self.inverted) {
     newContentOffset.y += contentDiff;
   } else {
@@ -1038,9 +1056,15 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
     _coalescingKey++;
     _lastEmittedEventName = [eventName copy];
   }
+
+  CGPoint offset = scrollView.contentOffset;
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = scrollView.contentSize.width - scrollView.frame.size.width - offset.x;
+  }
+
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:self.reactTag
-                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                  scrollViewContentOffset:offset
                                                    scrollViewContentInset:scrollView.contentInset
                                                     scrollViewContentSize:scrollView.contentSize
                                                           scrollViewFrame:scrollView.frame

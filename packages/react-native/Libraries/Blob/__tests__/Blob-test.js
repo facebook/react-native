@@ -15,6 +15,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 });
 
 const Blob = require('../Blob');
+const {fromByteArray} = require('base64-js');
 
 describe('Blob', function () {
   it('should create empty blob', () => {
@@ -26,7 +27,7 @@ describe('Blob', function () {
     expect(blob.type).toBe('');
   });
 
-  it('should create blob from other blobs and strings', () => {
+  it('should create blob from ArrayBuffer, other blobs, strings', () => {
     const blobA = new Blob();
     const blobB = new Blob();
     const textA = 'i \u2665 dogs';
@@ -43,14 +44,20 @@ describe('Blob', function () {
     blobA.data.size = 34540;
     blobB.data.size = 65452;
 
-    const blob = new Blob([blobA, blobB, textA, textB, textC]);
+    const buffer = new ArrayBuffer(4);
+
+    const blob = new Blob([blobA, blobB, textA, textB, textC, buffer]);
 
     expect(blob.size).toBe(
       blobA.size +
         blobB.size +
         global.Buffer.byteLength(textA, 'UTF-8') +
         global.Buffer.byteLength(textB, 'UTF-8') +
-        global.Buffer.byteLength(textC, 'UTF-8'),
+        global.Buffer.byteLength(textC, 'UTF-8') +
+        global.Buffer.byteLength(
+          fromByteArray(new Uint8Array(buffer)),
+          'UTF-8',
+        ),
     );
     expect(blob.type).toBe('');
   });

@@ -13,7 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
-public class RefreshEvent extends Event<RefreshEvent> {
+class RefreshEvent extends Event<RefreshEvent> {
 
   @Deprecated
   protected RefreshEvent(int viewTag) {

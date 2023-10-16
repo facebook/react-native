@@ -28,20 +28,20 @@ namespace facebook::react {
 
 Sealable::Sealable() : sealed_(false) {}
 
-Sealable::Sealable(const Sealable & /*other*/) : sealed_(false){};
+Sealable::Sealable(const Sealable& /*other*/) : sealed_(false){};
 
-Sealable::Sealable(Sealable &&other) noexcept : sealed_(false) {
+Sealable::Sealable(Sealable&& other) noexcept : sealed_(false) {
   other.ensureUnsealed();
 };
 
 Sealable::~Sealable() noexcept = default;
 
-Sealable &Sealable::operator=(const Sealable & /*other*/) {
+Sealable& Sealable::operator=(const Sealable& /*other*/) {
   ensureUnsealed();
   return *this;
 }
 
-Sealable &Sealable::operator=(Sealable &&other) noexcept {
+Sealable& Sealable::operator=(Sealable&& other) noexcept {
   ensureUnsealed();
   other.ensureUnsealed();
   return *this;

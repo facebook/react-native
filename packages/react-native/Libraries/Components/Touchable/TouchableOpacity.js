@@ -207,6 +207,7 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   _getChildStyleOpacityWithDefault(): number {
     // $FlowFixMe[underconstrained-implicit-instantiation]
+    // $FlowFixMe[prop-missing]
     const opacity = flattenStyle(this.props.style)?.opacity;
     return typeof opacity === 'number' ? opacity : 1;
   }
@@ -275,7 +276,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props['aria-hidden'] ?? this.props.accessibilityElementsHidden
         }
         style={[this.props.style, {opacity: this.state.anim}]}
-        nativeID={this.props.nativeID}
+        nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
         nextFocusDown={this.props.nextFocusDown}
@@ -303,8 +304,10 @@ class TouchableOpacity extends React.Component<Props, State> {
     if (
       this.props.disabled !== prevProps.disabled ||
       // $FlowFixMe[underconstrained-implicit-instantiation]
+      // $FlowFixMe[prop-missing]
       flattenStyle(prevProps.style)?.opacity !==
         // $FlowFixMe[underconstrained-implicit-instantiation]
+        // $FlowFixMe[prop-missing]
         flattenStyle(this.props.style)?.opacity
     ) {
       this._opacityInactive(250);

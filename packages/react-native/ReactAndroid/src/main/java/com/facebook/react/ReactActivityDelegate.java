@@ -7,20 +7,16 @@
 
 package com.facebook.react;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
@@ -58,7 +54,7 @@ public class ReactActivityDelegate {
     return null;
   }
 
-  protected @NonNull Bundle composeLaunchOptions() {
+  protected @Nullable Bundle composeLaunchOptions() {
     Bundle composedLaunchOptions = getLaunchOptions();
     if (isFabricEnabled()) {
       if (composedLaunchOptions == null) {
@@ -88,8 +84,8 @@ public class ReactActivityDelegate {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
 
-  public ReactHostInterface getReactHost() {
-    return ((ReactApplication) getPlainActivity().getApplication()).getReactHostInterface();
+  public ReactHost getReactHost() {
+    return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
 
   public ReactInstanceManager getReactInstanceManager() {
@@ -205,7 +201,6 @@ public class ReactActivityDelegate {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
     mPermissionListener = listener;

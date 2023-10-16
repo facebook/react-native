@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <shared_mutex>
+#include <unordered_map>
 
 #include <fbjni/fbjni.h>
 #include <react/jni/JRuntimeExecutor.h>
@@ -37,7 +38,7 @@ class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
-  constexpr static const char *const kJavaDescriptor =
+  constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/fabric/BindingImpl;";
 
   static void registerNatives();
@@ -65,19 +66,19 @@ class Binding : public jni::HybridClass<Binding>,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
-      EventBeatManager *eventBeatManager,
-      ComponentFactory *componentsRegistry,
+      EventBeatManager* eventBeatManager,
+      ComponentFactory* componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps);
+      NativeMap* initialProps);
 
   void startSurfaceWithConstraints(
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps,
+      NativeMap* initialProps,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
@@ -87,32 +88,30 @@ class Binding : public jni::HybridClass<Binding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
-  void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
-
   void stopSurface(jint surfaceId);
 
-  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+  void registerSurface(SurfaceHandlerBinding* surfaceHandler);
 
-  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
+  void unregisterSurface(SurfaceHandlerBinding* surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared &mountingCoordinator) override;
+      const MountingCoordinator::Shared& mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowNode &shadowNode) override;
+      const ShadowNode& shadowNode) override;
 
   void schedulerDidDispatchCommand(
-      const ShadowView &shadowView,
-      std::string const &commandName,
-      folly::dynamic const &args) override;
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args) override;
 
   void schedulerDidSendAccessibilityEvent(
-      const ShadowView &shadowView,
-      std::string const &eventType) override;
+      const ShadowView& shadowView,
+      const std::string& eventType) override;
 
   void schedulerDidSetIsJSResponder(
-      ShadowView const &shadowView,
+      const ShadowView& shadowView,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
@@ -129,7 +128,7 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<Scheduler> scheduler_;
 
   std::shared_ptr<FabricMountingManager> getMountingManager(
-      const char *locationHint);
+      const char* locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;
@@ -139,7 +138,7 @@ class Binding : public jni::HybridClass<Binding>,
 
   BackgroundExecutor backgroundExecutor_;
 
-  butter::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  std::unordered_map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
   std::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 

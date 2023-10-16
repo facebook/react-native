@@ -52,8 +52,8 @@ class TextShadowNode : public ConcreteShadowNode<
       TextEventEmitter>;
 
   TextShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
       ShadowNodeTraits traits)
       : BaseShadowNode(fragment, family, traits), BaseTextShadowNode() {
     orderIndex_ = std::numeric_limits<decltype(orderIndex_)>::max();

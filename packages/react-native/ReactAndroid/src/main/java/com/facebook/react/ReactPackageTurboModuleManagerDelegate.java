@@ -14,10 +14,10 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,14 +34,19 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
 
-  private static boolean shouldSupportLegacyPackages() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
-  }
+  private final boolean mShouldEnableLegacyModuleInterop =
+      ReactFeatureFlags.enableBridgelessArchitecture
+          && ReactFeatureFlags.unstable_useTurboModuleInterop;
 
-  private static boolean shouldCreateLegacyModules() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
+      mShouldEnableLegacyModuleInterop
+          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+
+  private final boolean mEnableTurboModuleSyncVoidMethods =
+      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
+
+  protected ReactPackageTurboModuleManagerDelegate() {
+    super();
   }
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -82,13 +87,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
       if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
         // TODO(T145105887): Output error that ReactPackage was used
-
         continue;
       }
 
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
-
         final List<NativeModule> nativeModules =
             reactPackage.createNativeModules(reactApplicationContext);
 
@@ -108,14 +111,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       true,
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       TurboModule.class.isAssignableFrom(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
-                      true,
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
                       TurboModule.class.isAssignableFrom(moduleClass));
@@ -130,6 +131,20 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
       }
     }
+  }
+
+  @Override
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return mShouldEnableLegacyModuleInterop;
+  }
+
+  @Override
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
+  }
+
+  public boolean unstable_enableSyncVoidMethods() {
+    return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable
@@ -151,11 +166,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
-         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         * provide the module.
-         */
+        /*
+         TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+         this happens, it's safe to ignore the exception because a later TurboReactPackage could
+         provide the module.
+        */
       }
     }
 
@@ -168,6 +183,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return (TurboModule) resolvedModule;
   }
 
+  @Override
   public boolean unstable_isModuleRegistered(String moduleName) {
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
@@ -178,6 +194,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return false;
   }
 
+  @Override
   public boolean unstable_isLegacyModuleRegistered(String moduleName) {
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
@@ -191,7 +208,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
-    if (!shouldCreateLegacyModules()) {
+    if (!unstable_shouldEnableLegacyModuleInterop()) {
       return null;
     }
 
@@ -211,7 +228,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
+        /*
          * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
          * this happens, it's safe to ignore the exception because a later TurboReactPackage could
          * provide the module.
@@ -239,6 +256,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       }
     }
     return moduleNames;
+  }
+
+  private boolean shouldSupportLegacyPackages() {
+    return unstable_shouldEnableLegacyModuleInterop();
   }
 
   public abstract static class Builder {

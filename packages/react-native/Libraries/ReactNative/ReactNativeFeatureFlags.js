@@ -38,9 +38,10 @@ export type FeatureFlags = {|
   animatedShouldUseSingleOp: () => boolean,
   /**
    * Enables GlobalPerformanceLogger replacement with a WebPerformance API based
-   * implementation
+   * implementation. Tri-state due to being sensitive to initialization order
+   * vs the platform-specific ReactNativeFeatureFlags implementation.
    */
-  isGlobalWebPerformanceLoggerEnabled: () => boolean,
+  isGlobalWebPerformanceLoggerEnabled: () => ?boolean,
   /**
    * Enables access to the host tree in Fabric using DOM-compatible APIs.
    */
@@ -49,6 +50,10 @@ export type FeatureFlags = {|
    * Enables use of AnimatedObject for animating transform values.
    */
   shouldUseAnimatedObjectForTransform: () => boolean,
+  /**
+   * Enables use of setNativeProps in JS driven animations.
+   */
+  shouldUseSetNativePropsInFabric: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -57,9 +62,10 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
-  isGlobalWebPerformanceLoggerEnabled: () => false,
+  isGlobalWebPerformanceLoggerEnabled: () => undefined,
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
+  shouldUseSetNativePropsInFabric: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

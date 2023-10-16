@@ -20,8 +20,8 @@ import com.facebook.proguard.annotations.DoNotStripAny;
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
-   * CatalystInstanceImpl
+   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
+   * C++ CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
@@ -35,6 +35,8 @@ public class ReactFeatureFlags {
    * (i.e: the JavaInteropTurboModule method dispatch path).
    */
   public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
+
+  public static volatile boolean unstable_enableTurboModuleSyncVoidMethods = false;
 
   /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
@@ -74,24 +76,11 @@ public class ReactFeatureFlags {
   /** Does the bridgeless architecture use the new create/reload/destroy routines */
   public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
 
-  /**
-   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
-   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
-   * is used.
-   */
-  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
-
-  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
-  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
-
-  /* Enables or disables MapBuffer use in Props infrastructure. */
-  public static boolean useMapBufferProps = false;
 
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
@@ -103,17 +92,6 @@ public class ReactFeatureFlags {
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
-
-  /**
-   * Feature flag that controls how turbo modules are exposed to JS
-   *
-   * <ul>
-   *   <li>0 = as a HostObject
-   *   <li>1 = as a plain object, backed with a HostObject as prototype
-   *   <li>2 = as a plain object, with all methods eagerly configured
-   * </ul>
-   */
-  public static int turboModuleBindingMode = 0;
 
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
@@ -162,4 +140,31 @@ public class ReactFeatureFlags {
 
   /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
   public static boolean fixStoppedSurfaceTagSetLeak = true;
+
+  /** Disable the background executor for layout in Fabric */
+  public static boolean enableBackgroundExecutor = false;
+
+  /** Use native view configs in bridgeless mode. */
+  public static boolean useNativeViewConfigsInBridgelessMode = false;
+
+  /** Only swap left and right on Android in RTL scripts. */
+  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
+
+  /** Clean yoga node when <Text /> does not change. */
+  public static boolean enableCleanParagraphYogaNode = false;
+
+  /** Default state updates and events to async batched priority. */
+  public static boolean enableDefaultAsyncBatchedPriority = false;
+
+  /** Utilize shared Event C++ pipeline with fabric's renderer */
+  public static boolean enableFabricSharedEventPipeline = false;
+
+  /** When enabled, Fabric will avoid cloning notes to perform state progression. */
+  public static boolean enableClonelessStateProgression = false;
+
+  /** When enabled, rawProps in Props will not include Yoga specific props. */
+  public static boolean excludeYogaFromRawProps = false;
+
+  /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
+  public static boolean enableTurboModuleStableAPI = false;
 }

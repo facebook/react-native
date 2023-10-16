@@ -17,9 +17,9 @@ typedef struct YGValue {
   YGUnit unit;
 } YGValue;
 
-YOGA_EXPORT extern const YGValue YGValueAuto;
-YOGA_EXPORT extern const YGValue YGValueUndefined;
-YOGA_EXPORT extern const YGValue YGValueZero;
+YG_EXPORT extern const YGValue YGValueAuto;
+YG_EXPORT extern const YGValue YGValueUndefined;
+YG_EXPORT extern const YGValue YGValueZero;
 
 YG_EXTERN_C_END
 

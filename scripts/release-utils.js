@@ -52,7 +52,7 @@ function generateAndroidArtifacts(releaseVersion) {
   });
 }
 
-function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
+function publishAndroidArtifactsToMaven(releaseVersion, buildType) {
   // -------- Publish every artifact to Maven Central
   // The GPG key is base64 encoded on CircleCI and then decoded here
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
@@ -60,7 +60,7 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
 
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
   // maven central which will break the semver for our artifacts.
-  if (!isNightly && releaseVersion.startsWith('0.')) {
+  if (buildType === 'release' && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
     if (
       exec(
@@ -73,8 +73,11 @@ function publishAndroidArtifactsToMaven(releaseVersion, isNightly) {
       exit(1);
     }
   } else {
+    const isSnapshot = buildType === 'nightly' || buildType === 'prealpha';
     // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
-    if (exec('./gradlew publishAllToSonatype -PisNightly=' + isNightly).code) {
+    if (
+      exec('./gradlew publishAllToSonatype -PisSnapshot=' + isSnapshot).code
+    ) {
       echo('Failed to publish artifacts to Sonatype (Maven Central)');
       exit(1);
     }
@@ -90,11 +93,6 @@ function generateiOSArtifacts(
   targetFolder,
 ) {
   pushd(`${hermesCoreSourceFolder}`);
-
-  //Need to generate hermesc
-  exec(
-    `${hermesCoreSourceFolder}/utils/build-hermesc-xcode.sh ${hermesCoreSourceFolder}/build_host_hermesc`,
-  );
 
   //Generating iOS Artifacts
   exec(

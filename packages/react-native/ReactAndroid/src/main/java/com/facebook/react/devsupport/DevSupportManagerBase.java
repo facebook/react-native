@@ -19,6 +19,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
@@ -77,9 +78,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
-  private static final String FLIPPER_DEBUGGER_URL =
-      "flipper://null/Hermesdebuggerrn?device=React%20Native";
-  private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
   private static final String EXOPACKAGE_LOCATION_FORMAT =
       "/data/local/tmp/exopackage/%s//secondary-dex";
 
@@ -368,8 +366,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     if (mDevSettings.isDeviceDebugEnabled()) {
-      // For on-device debugging we link out to Flipper.
-      // Since we're assuming Flipper is available, also include the DevTools.
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
 
       // Reset the old debugger setting so no one gets stuck.
       // TODO: Remove in a few weeks.
@@ -380,17 +377,9 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
           () ->
-              mDevServerHelper.openUrl(
+              mDevServerHelper.openDebugger(
                   mCurrentContext,
-                  FLIPPER_DEBUGGER_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
-      options.put(
-          mApplicationContext.getString(R.string.catalyst_devtools_open),
-          () ->
-              mDevServerHelper.openUrl(
-                  mCurrentContext,
-                  FLIPPER_DEVTOOLS_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
+                  mApplicationContext.getString(R.string.catalyst_open_debugger_error)));
     }
 
     options.put(
@@ -509,16 +498,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     title.setGravity(Gravity.CENTER);
     title.setTextSize(16);
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
-
-    final TextView jsExecutorLabel = new TextView(context);
-    jsExecutorLabel.setText(
-        context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
-    jsExecutorLabel.setPadding(0, 20, 0, 0);
-    jsExecutorLabel.setGravity(Gravity.CENTER);
-    jsExecutorLabel.setTextSize(14);
-
     header.addView(title);
-    header.addView(jsExecutorLabel);
+
+    String jsExecutorDescription = getJSExecutorDescription();
+
+    if (jsExecutorDescription != null) {
+      final TextView jsExecutorLabel = new TextView(context);
+      jsExecutorLabel.setText(
+          context.getString(R.string.catalyst_dev_menu_sub_header, jsExecutorDescription));
+      jsExecutorLabel.setPadding(0, 20, 0, 0);
+      jsExecutorLabel.setGravity(Gravity.CENTER);
+      jsExecutorLabel.setTextSize(14);
+      header.addView(jsExecutorLabel);
+    }
 
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
@@ -538,7 +530,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private String getJSExecutorDescription() {
-    return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    try {
+      return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    } catch (IllegalStateException e) {
+      return null;
+    }
   }
 
   /**
@@ -1022,7 +1018,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       if (!mIsReceiverRegistered) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(getReloadAppAction(mApplicationContext));
-        mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
+        compatRegisterReceiver(mApplicationContext, mReloadAppBroadcastReceiver, filter, true);
         mIsReceiverRegistered = true;
       }
 
@@ -1119,5 +1115,23 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
 
     return mSurfaceDelegateFactory.createSurfaceDelegate(moduleName);
+  }
+
+  /**
+   * Starting with Android 14, apps and services that target Android 14 and use context-registered
+   * receivers are required to specify a flag to indicate whether or not the receiver should be
+   * exported to all other apps on the device: either RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
+   *
+   * <p>https://developer.android.com/about/versions/14/behavior-changes-14#runtime-receivers-exported
+   */
+  private void compatRegisterReceiver(
+      Context context, BroadcastReceiver receiver, IntentFilter filter, boolean exported) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      context.registerReceiver(
+          receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
+    } else {
+      context.registerReceiver(receiver, filter);
+    }
   }
 }

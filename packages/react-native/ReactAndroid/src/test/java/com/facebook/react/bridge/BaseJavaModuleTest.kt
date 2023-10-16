@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.turbomodule.core.interfaces.TurboModule
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test
@@ -77,6 +77,7 @@ class BaseJavaModuleTest {
     generatedModuleWrapper.invoke(methodId, arguments)
   }
 
+  @Suppress("UNUSED_PARAMETER")
   private class MethodsModule : BaseJavaModule() {
     override fun getName(): String = "Methods"
 

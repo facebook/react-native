@@ -40,14 +40,14 @@ class IntersectionObserver {
   // Partially equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   std::optional<IntersectionObserverEntry> updateIntersectionObservation(
-      RootShadowNode const &rootShadowNode,
+      const RootShadowNode& rootShadowNode,
       double mountTime);
 
   IntersectionObserverObserverId getIntersectionObserverId() const {
     return intersectionObserverId_;
   }
 
-  ShadowNode const &getTargetShadowNode() const {
+  const ShadowNode& getTargetShadowNode() const {
     return *targetShadowNode_;
   }
 
@@ -59,15 +59,15 @@ class IntersectionObserver {
   Float getHighestThresholdCrossed(Float intersectionRatio);
 
   std::optional<IntersectionObserverEntry> setIntersectingState(
-      Rect const &rootBoundingRect,
-      Rect const &targetBoundingRect,
-      Rect const &intersectionRect,
+      const Rect& rootBoundingRect,
+      const Rect& targetBoundingRect,
+      const Rect& intersectionRect,
       Float threshold,
       double mountTime);
 
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
-      Rect const &rootBoundingRect,
-      Rect const &targetBoundingRect,
+      const Rect& rootBoundingRect,
+      const Rect& targetBoundingRect,
       double mountTime);
 
   IntersectionObserverObserverId intersectionObserverId_;

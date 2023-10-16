@@ -7,8 +7,10 @@
     <string name="image_description" gender="unknown">Slika</string>
     <string name="imagebutton_description" gender="unknown">Gumb, slika</string>
     <string name="header_description" gender="unknown">Naslov</string>
+    <string name="alert_description" gender="unknown">Opozorilo</string>
     <string name="combobox_description" gender="unknown">Kombinirano polje</string>
     <string name="menu_description" gender="unknown">Meni</string>
+    <string name="menubar_description" gender="unknown">Meni</string>
     <string name="menuitem_description" gender="unknown">Element v meniju</string>
     <string name="progressbar_description" gender="unknown">Črta napredka</string>
     <string name="radiogroup_description" gender="unknown">Radio skupina</string>
@@ -18,6 +20,7 @@
     <string name="tablist_description" gender="unknown">Seznam z zavihki</string>
     <string name="timer_description" gender="unknown">Časovnik</string>
     <string name="toolbar_description" gender="unknown">Vrstica z orodji</string>
+    <string name="summary_description" gender="unknown">Povzetek</string>
     <string name="state_busy_description" gender="unknown">zasedeno</string>
     <string name="state_expanded_description" gender="unknown">razširjen</string>
     <string name="state_collapsed_description" gender="unknown">strnjeno</string>

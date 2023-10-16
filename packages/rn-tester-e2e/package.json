@@ -1,0 +1,25 @@
+{
+  "name": "@react-native/tester-e2e",
+  "private": true,
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "React Native E2E tester app.",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester-e2e",
+  "repository": {
+  "type": "git",
+  "url": "git@github.com:facebook/react-native.git",
+  "directory": "packages/rn-tester-e2e"
+  },
+  "scripts": {
+    "test-e2e": "node ./../../scripts/e2e/run-e2e-tests.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "jest": "^29.6.3",
+    "webdriverio": "^7.32.0",
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.20.0",
+    "@types/jest": "^29.5.3"
+  }
+}

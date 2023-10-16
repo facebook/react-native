@@ -13,6 +13,7 @@
 #include <functional>
 #include <mutex>
 #include <optional>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include "BoundedConsumableBuffer.h"
@@ -21,21 +22,21 @@
 namespace facebook::react {
 
 struct PerformanceEntryHash {
-  size_t operator()(const RawPerformanceEntry *entry) const {
+  size_t operator()(const RawPerformanceEntry* entry) const {
     return std::hash<std::string>()(entry->name);
   }
 };
 
 struct PerformanceEntryEqual {
   bool operator()(
-      const RawPerformanceEntry *lhs,
-      const RawPerformanceEntry *rhs) const {
+      const RawPerformanceEntry* lhs,
+      const RawPerformanceEntry* rhs) const {
     return lhs->name == rhs->name;
   }
 };
 
 using PerformanceEntryRegistryType = std::unordered_set<
-    const RawPerformanceEntry *,
+    const RawPerformanceEntry*,
     PerformanceEntryHash,
     PerformanceEntryEqual>;
 
@@ -68,14 +69,14 @@ constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
 
 class PerformanceEntryReporter : public EventLogger {
  public:
-  PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
-  void operator=(PerformanceEntryReporter const &) = delete;
+  PerformanceEntryReporter(const PerformanceEntryReporter&) = delete;
+  void operator=(const PerformanceEntryReporter&) = delete;
 
   // NOTE: This class is not thread safe, make sure that the calls are made from
   // the same thread.
   // TODO: Consider passing it as a parameter to the corresponding modules at
   // creation time instead of having the singleton.
-  static PerformanceEntryReporter &getInstance();
+  static PerformanceEntryReporter& getInstance();
 
   void setReportingCallback(std::optional<AsyncCallback<>> callback);
   void startReporting(PerformanceEntryType entryType);
@@ -88,13 +89,13 @@ class PerformanceEntryReporter : public EventLogger {
 
   GetPendingEntriesResult popPendingEntries();
 
-  void logEntry(const RawPerformanceEntry &entry);
+  void logEntry(const RawPerformanceEntry& entry);
 
-  PerformanceEntryBuffer &getBuffer(PerformanceEntryType entryType) {
+  PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) {
     return buffers_[static_cast<int>(entryType)];
   }
 
-  const PerformanceEntryBuffer &getBuffer(
+  const PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
     return buffers_[static_cast<int>(entryType)];
   }
@@ -112,24 +113,24 @@ class PerformanceEntryReporter : public EventLogger {
   }
 
   void mark(
-      const std::string &name,
-      const std::optional<double> &startTime = std::nullopt);
+      const std::string& name,
+      const std::optional<double>& startTime = std::nullopt);
 
   void measure(
-      const std::string &name,
+      const std::string& name,
       double startTime,
       double endTime,
-      const std::optional<double> &duration = std::nullopt,
-      const std::optional<std::string> &startMark = std::nullopt,
-      const std::optional<std::string> &endMark = std::nullopt);
+      const std::optional<double>& duration = std::nullopt,
+      const std::optional<std::string>& startMark = std::nullopt,
+      const std::optional<std::string>& endMark = std::nullopt);
 
   void clearEntries(
       PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
-      const char *entryName = nullptr);
+      std::string_view entryName = {});
 
   std::vector<RawPerformanceEntry> getEntries(
       PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
-      const char *entryName = nullptr) const;
+      std::string_view entryName = {}) const;
 
   void event(
       std::string name,
@@ -139,11 +140,11 @@ class PerformanceEntryReporter : public EventLogger {
       double processingEnd,
       uint32_t interactionId);
 
-  EventTag onEventStart(const char *name) override;
+  EventTag onEventStart(std::string_view name) override;
   void onEventDispatch(EventTag tag) override;
   void onEventEnd(EventTag tag) override;
 
-  const std::unordered_map<std::string, uint32_t> &getEventCounts() const {
+  const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
 
@@ -154,16 +155,14 @@ class PerformanceEntryReporter : public EventLogger {
  private:
   std::optional<AsyncCallback<>> callback_;
 
-  std::mutex entriesMutex_;
+  mutable std::mutex entriesMutex_;
   std::array<PerformanceEntryBuffer, NUM_PERFORMANCE_ENTRY_TYPES> buffers_;
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  // Mark registry for "measure" lookup
-  PerformanceEntryRegistryType marksRegistry_;
   uint32_t droppedEntryCount_{0};
 
   struct EventEntry {
-    const char *name;
+    std::string_view name;
     double startTime{0.0};
     double dispatchTime{0.0};
   };
@@ -173,21 +172,23 @@ class PerformanceEntryReporter : public EventLogger {
   // but since we only report discrete events, the volume is normally low,
   // so a hash map should be just fine.
   std::unordered_map<EventTag, EventEntry> eventsInFlight_;
-  std::mutex eventsInFlightMutex_;
+  mutable std::mutex eventsInFlightMutex_;
 
   std::function<double()> timeStampProvider_ = nullptr;
+
+  mutable std::mutex nameLookupMutex_;
 
   static EventTag sCurrentEventTag_;
 
   PerformanceEntryReporter();
 
-  double getMarkTime(const std::string &markName) const;
+  double getMarkTime(const std::string& markName) const;
   void scheduleFlushBuffer();
 
   void getEntries(
       PerformanceEntryType entryType,
-      const char *entryName,
-      std::vector<RawPerformanceEntry> &res) const;
+      std::string_view entryName,
+      std::vector<RawPerformanceEntry>& res) const;
 
   double getCurrentTimeStamp() const;
 };

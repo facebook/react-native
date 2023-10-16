@@ -105,7 +105,13 @@ const Text: React.AbstractComponent<
             onLongPress,
             onPress,
             onPressIn(event: PressEvent) {
-              setHighlighted(!suppressHighlighting);
+              // Updating isHighlighted causes unnecessary re-renders for platforms that don't use it
+              // in the best case, and cause issues with text selection in the worst case. Forcing
+              // the isHighlighted prop to false on all platforms except iOS.
+              setHighlighted(
+                (suppressHighlighting == null || !suppressHighlighting) &&
+                  Platform.OS === 'ios',
+              );
               onPressIn?.(event);
             },
             onPressOut(event: PressEvent) {
@@ -208,18 +214,28 @@ const Text: React.AbstractComponent<
   style = flattenStyle(style);
 
   if (typeof style?.fontWeight === 'number') {
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     style.fontWeight = style?.fontWeight.toString();
   }
 
   let _selectable = restProps.selectable;
   if (style?.userSelect != null) {
+    // $FlowFixMe[invalid-computed-prop]
     _selectable = userSelectToSelectableMap[style.userSelect];
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     delete style.userSelect;
   }
 
   if (style?.verticalAlign != null) {
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     style.textAlignVertical =
+      // $FlowFixMe[invalid-computed-prop]
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     delete style.verticalAlign;
   }
 

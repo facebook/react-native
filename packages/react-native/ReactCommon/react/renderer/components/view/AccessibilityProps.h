@@ -19,25 +19,25 @@ class AccessibilityProps {
  public:
   AccessibilityProps() = default;
   AccessibilityProps(
-      const PropsParserContext &context,
-      AccessibilityProps const &sourceProps,
-      RawProps const &rawProps);
+      const PropsParserContext& context,
+      const AccessibilityProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #ifdef ANDROID
-  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
       const;
 #endif
 
 #pragma mark - Props
 
   bool accessible{false};
-  AccessibilityState accessibilityState;
+  std::optional<AccessibilityState> accessibilityState{std::nullopt};
   std::string accessibilityLabel{""};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{

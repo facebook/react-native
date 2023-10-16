@@ -21,13 +21,13 @@ class InputAccessoryComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    auto &layoutableShadowNode =
-        static_cast<YogaLayoutableShadowNode &>(*shadowNode);
+  void adopt(ShadowNode& shadowNode) const override {
+    auto& layoutableShadowNode =
+        static_cast<YogaLayoutableShadowNode&>(shadowNode);
 
-    auto &stateData =
-        static_cast<const InputAccessoryShadowNode::ConcreteState &>(
-            *shadowNode->getState())
+    auto& stateData =
+        static_cast<const InputAccessoryShadowNode::ConcreteState&>(
+            *shadowNode.getState())
             .getData();
 
     layoutableShadowNode.setSize(

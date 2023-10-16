@@ -156,6 +156,12 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
         });
   }
 
+  @DoNotStrip
+  @Override
+  public boolean isIdle() {
+    return mLooper.getQueue().isIdle();
+  }
+
   private static void assignToPerfStats(MessageQueueThreadPerfStats stats, long wall, long cpu) {
     stats.wallTime = wall;
     stats.cpuTime = cpu;

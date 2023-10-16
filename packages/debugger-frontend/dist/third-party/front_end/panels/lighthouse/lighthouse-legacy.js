@@ -1,0 +1,1 @@
+import*as e from"./lighthouse.js";self.Lighthouse=self.Lighthouse||{},Lighthouse=Lighthouse||{},Lighthouse.ReportGenerator,Lighthouse.LighthousePanel=e.LighthousePanel.LighthousePanel,Lighthouse.ReportSelector=e.LighthouseReportSelector.ReportSelector,Lighthouse.StatusView=e.LighthouseStatusView.StatusView;

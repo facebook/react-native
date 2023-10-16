@@ -24,7 +24,7 @@ object ReactTestHelper {
    */
   @JvmStatic
   fun createCatalystContextForTest(): ReactApplicationContext =
-      ReactApplicationContext(RuntimeEnvironment.application).apply {
+      ReactApplicationContext(RuntimeEnvironment.getApplication()).apply {
         initializeWithInstance(createMockCatalystInstance())
       }
 

@@ -441,4 +441,29 @@ describe('onUpdate', function () {
       viewableItems: [{isViewable: true, key: 'c'}],
     });
   });
+
+  it('should account for imprecision on measurements of width of viewport and item', () => {
+    // This test assures we round down the calculations of the item cell layout
+    // to avoid cases of imprecison when measuring layout
+    const helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
+    const testProps = {
+      getItemCount: () => 1,
+      data: ['Item'],
+    };
+    const listMetrics = {
+      getCellMetrics: () => ({
+        index: 0,
+        length: 147.4285888671875,
+        offset: 1767.6190185546875,
+        isMounted: true,
+      }),
+    };
+    const viewableIndices = helper.computeViewableItems(
+      testProps,
+      1503.61901855, // scrollOffset
+      411.4285583496094, // viewportHeight (viewportWidth depending on scrolling axis)
+      listMetrics,
+    );
+    expect(viewableIndices).toEqual([0]);
+  });
 });

@@ -12,8 +12,6 @@
 
 #include <ReactCommon/SchedulerPriority.h>
 
-#include <butter/function.h>
-
 namespace facebook::react {
 
 template <typename F>
@@ -23,7 +21,7 @@ template <typename... Args>
 class AsyncCallback {
  public:
   AsyncCallback(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       jsi::Function function,
       std::shared_ptr<CallInvoker> jsInvoker)
       : callback_(std::make_shared<SyncCallback<void(Args...)>>(
@@ -31,19 +29,29 @@ class AsyncCallback {
             std::move(function),
             std::move(jsInvoker))) {}
 
-  AsyncCallback(const AsyncCallback &) = default;
-  AsyncCallback &operator=(const AsyncCallback &) = default;
-
-  void operator()(Args... args) const {
+  void operator()(Args... args) const noexcept {
     call(std::forward<Args>(args)...);
   }
 
-  void call(Args... args) const {
-    callInternal(std::nullopt, std::forward<Args>(args)...);
+  void call(Args... args) const noexcept {
+    callWithArgs(std::nullopt, std::forward<Args>(args)...);
   }
 
-  void callWithPriority(SchedulerPriority priority, Args... args) const {
-    callInternal(priority, std::forward<Args>(args)...);
+  void callWithPriority(SchedulerPriority priority, Args... args)
+      const noexcept {
+    callWithArgs(priority, std::forward<Args>(args)...);
+  }
+
+  void call(std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
+    callWithFunction(std::nullopt, std::move(callImpl));
+  }
+
+  void callWithPriority(
+      SchedulerPriority priority,
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
+    callWithFunction(priority, std::move(callImpl));
   }
 
  private:
@@ -51,22 +59,42 @@ class AsyncCallback {
 
   std::shared_ptr<SyncCallback<void(Args...)>> callback_;
 
-  void callInternal(std::optional<SchedulerPriority> priority, Args... args)
-      const {
+  void callWithArgs(std::optional<SchedulerPriority> priority, Args... args)
+      const noexcept {
     auto wrapper = callback_->wrapper_.lock();
-    if (!wrapper) {
-      throw std::runtime_error("Failed to call invalidated async callback");
-    }
-    auto fn = [callback = callback_,
-               argsPtr = std::make_shared<std::tuple<Args...>>(
-                   std::make_tuple(std::forward<Args>(args)...))] {
-      callback->apply(std::move(*argsPtr));
-    };
+    if (wrapper) {
+      auto& jsInvoker = wrapper->jsInvoker();
+      auto fn = [callback = callback_,
+                 argsPtr = std::make_shared<std::tuple<Args...>>(
+                     std::make_tuple(std::forward<Args>(args)...))] {
+        callback->apply(std::move(*argsPtr));
+      };
 
-    if (priority) {
-      wrapper->jsInvoker().invokeAsync(*priority, std::move(fn));
-    } else {
-      wrapper->jsInvoker().invokeAsync(std::move(fn));
+      if (priority) {
+        jsInvoker.invokeAsync(*priority, std::move(fn));
+      } else {
+        jsInvoker.invokeAsync(std::move(fn));
+      }
+    }
+  }
+
+  void callWithFunction(
+      std::optional<SchedulerPriority> priority,
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
+    auto wrapper = callback_->wrapper_.lock();
+    if (wrapper) {
+      auto& jsInvoker = wrapper->jsInvoker();
+      auto fn = [wrapper = std::move(wrapper),
+                 callImpl = std::move(callImpl)]() {
+        callImpl(wrapper->runtime(), wrapper->callback());
+      };
+
+      if (priority) {
+        jsInvoker.invokeAsync(*priority, std::move(fn));
+      } else {
+        jsInvoker.invokeAsync(std::move(fn));
+      }
     }
   }
 };
@@ -75,7 +103,7 @@ template <typename R, typename... Args>
 class SyncCallback<R(Args...)> {
  public:
   SyncCallback(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       jsi::Function function,
       std::shared_ptr<CallInvoker> jsInvoker)
       : wrapper_(CallbackWrapper::createWeak(
@@ -84,8 +112,8 @@ class SyncCallback<R(Args...)> {
             std::move(jsInvoker))) {}
 
   // Disallow moving to prevent function from get called on another thread.
-  SyncCallback(SyncCallback &&) = delete;
-  SyncCallback &operator=(SyncCallback &&) = delete;
+  SyncCallback(SyncCallback&&) = delete;
+  SyncCallback& operator=(SyncCallback&&) = delete;
 
   ~SyncCallback() {
     if (auto wrapper = wrapper_.lock()) {
@@ -99,12 +127,19 @@ class SyncCallback<R(Args...)> {
 
   R call(Args... args) const {
     auto wrapper = wrapper_.lock();
+
+    // If the wrapper has been deallocated, we can no longer provide a return
+    // value consistently, so our only option is to throw
     if (!wrapper) {
-      throw std::runtime_error("Failed to call invalidated sync callback");
+      if constexpr (std::is_void_v<R>) {
+        return;
+      } else {
+        throw std::runtime_error("Failed to call invalidated sync callback");
+      }
     }
 
-    auto &callback = wrapper->callback();
-    auto &rt = wrapper->runtime();
+    auto& callback = wrapper->callback();
+    auto& rt = wrapper->runtime();
     auto jsInvoker = wrapper->jsInvokerPtr();
 
     if constexpr (std::is_void_v<R>) {
@@ -123,12 +158,12 @@ class SyncCallback<R(Args...)> {
   friend AsyncCallback<Args...>;
   friend Bridging<SyncCallback>;
 
-  R apply(std::tuple<Args...> &&args) const {
+  R apply(std::tuple<Args...>&& args) const {
     return apply(std::move(args), std::index_sequence_for<Args...>{});
   }
 
   template <size_t... Index>
-  R apply(std::tuple<Args...> &&args, std::index_sequence<Index...>) const {
+  R apply(std::tuple<Args...>&& args, std::index_sequence<Index...>) const {
     return call(std::move(std::get<Index>(args))...);
   }
 
@@ -139,15 +174,15 @@ class SyncCallback<R(Args...)> {
 template <typename... Args>
 struct Bridging<AsyncCallback<Args...>> {
   static AsyncCallback<Args...> fromJs(
-      jsi::Runtime &rt,
-      jsi::Function &&value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
+      jsi::Runtime& rt,
+      jsi::Function&& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
     return AsyncCallback<Args...>(rt, std::move(value), jsInvoker);
   }
 
   static jsi::Function toJs(
-      jsi::Runtime &rt,
-      const AsyncCallback<Args...> &value) {
+      jsi::Runtime& rt,
+      const AsyncCallback<Args...>& value) {
     return value.callback_->function_.getFunction(rt);
   }
 };
@@ -155,38 +190,38 @@ struct Bridging<AsyncCallback<Args...>> {
 template <typename R, typename... Args>
 struct Bridging<SyncCallback<R(Args...)>> {
   static SyncCallback<R(Args...)> fromJs(
-      jsi::Runtime &rt,
-      jsi::Function &&value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
+      jsi::Runtime& rt,
+      jsi::Function&& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
     return SyncCallback<R(Args...)>(rt, std::move(value), jsInvoker);
   }
 
   static jsi::Function toJs(
-      jsi::Runtime &rt,
-      const SyncCallback<R(Args...)> &value) {
+      jsi::Runtime& rt,
+      const SyncCallback<R(Args...)>& value) {
     return value.function_.getFunction(rt);
   }
 };
 
 template <typename R, typename... Args>
-struct Bridging<butter::function<R(Args...)>> {
-  using Func = butter::function<R(Args...)>;
+struct Bridging<std::function<R(Args...)>> {
+  using Func = std::function<R(Args...)>;
   using IndexSequence = std::index_sequence_for<Args...>;
 
   static constexpr size_t kArgumentCount = sizeof...(Args);
 
   static jsi::Function toJs(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       Func fn,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
     return jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "BridgedFunction"),
         kArgumentCount,
         [fn = std::make_shared<Func>(std::move(fn)), jsInvoker](
-            jsi::Runtime &rt,
-            const jsi::Value &,
-            const jsi::Value *args,
+            jsi::Runtime& rt,
+            const jsi::Value&,
+            const jsi::Value* args,
             size_t count) -> jsi::Value {
           if (count < kArgumentCount) {
             throw jsi::JSError(rt, "Incorrect number of arguments");
@@ -207,10 +242,10 @@ struct Bridging<butter::function<R(Args...)>> {
  private:
   template <size_t... Index>
   static R callFromJs(
-      Func &fn,
-      jsi::Runtime &rt,
-      const jsi::Value *args,
-      const std::shared_ptr<CallInvoker> &jsInvoker,
+      Func& fn,
+      jsi::Runtime& rt,
+      const jsi::Value* args,
+      const std::shared_ptr<CallInvoker>& jsInvoker,
       std::index_sequence<Index...>) {
     return fn(bridging::fromJs<Args>(rt, args[Index], jsInvoker)...);
   }
@@ -219,15 +254,14 @@ struct Bridging<butter::function<R(Args...)>> {
 template <typename R, typename... Args>
 struct Bridging<
     std::function<R(Args...)>,
-    std::enable_if_t<!std::is_same_v<
-        std::function<R(Args...)>,
-        butter::function<R(Args...)>>>>
-    : Bridging<butter::function<R(Args...)>> {};
+    std::enable_if_t<
+        !std::is_same_v<std::function<R(Args...)>, std::function<R(Args...)>>>>
+    : Bridging<std::function<R(Args...)>> {};
 
 template <typename R, typename... Args>
-struct Bridging<R(Args...)> : Bridging<butter::function<R(Args...)>> {};
+struct Bridging<R(Args...)> : Bridging<std::function<R(Args...)>> {};
 
 template <typename R, typename... Args>
-struct Bridging<R (*)(Args...)> : Bridging<butter::function<R(Args...)>> {};
+struct Bridging<R (*)(Args...)> : Bridging<std::function<R(Args...)>> {};
 
 } // namespace facebook::react

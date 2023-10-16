@@ -19,7 +19,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 
-public class ReactEventEmitter implements RCTModernEventEmitter {
+class ReactEventEmitter implements RCTModernEventEmitter {
 
   private static final String TAG = "ReactEventEmitter";
 
@@ -62,8 +62,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
   @Override
   public void receiveEvent(
       int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
-    // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
-    // meaning outside of Fabric.
+    // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
     receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED);
   }
 

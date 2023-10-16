@@ -28,14 +28,14 @@ class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
   };
 
   JavaInteropTurboModule(
-      const JavaTurboModule::InitParams &params,
+      const JavaTurboModule::InitParams& params,
       std::vector<MethodDescriptor> methodDescriptors);
 
   std::vector<facebook::jsi::PropNameID> getPropertyNames(
-      facebook::jsi::Runtime &runtime) override;
+      facebook::jsi::Runtime& runtime) override;
 
  protected:
-  jsi::Value create(jsi::Runtime &runtime, const jsi::PropNameID &propName)
+  jsi::Value create(jsi::Runtime& runtime, const jsi::PropNameID& propName)
       override;
 
  private:
@@ -43,7 +43,7 @@ class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
   std::vector<jmethodID> methodIDs_;
   jsi::Value constantsCache_;
 
-  const jsi::Value &getConstants(jsi::Runtime &runtime);
+  const jsi::Value& getConstants(jsi::Runtime& runtime);
   bool exportsConstants();
 };
 

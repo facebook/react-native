@@ -132,8 +132,16 @@ export type PressabilityConfig = $ReadOnly<{|
   onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
+   * Whether to prevent any other native components from becoming responder
+   * while this pressable is responder.
+   */
+  blockNativeResponder?: ?boolean,
+
+  /**
    * Returns whether a long press gesture should cancel the press gesture.
    * Defaults to true.
+   *
+   * @deprecated
    */
   onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
 
@@ -142,6 +150,8 @@ export type PressabilityConfig = $ReadOnly<{|
    *
    * Returns whether to yield to a lock termination request (e.g. if a native
    * scroll gesture attempts to steal the responder lock).
+   *
+   * @deprecated
    */
   onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
 
@@ -163,7 +173,7 @@ export type EventHandlers = $ReadOnly<{|
   onMouseLeave?: (event: MouseEvent) => void,
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
-  onResponderGrant: (event: PressEvent) => void,
+  onResponderGrant: (event: PressEvent) => void | boolean,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
   onResponderTerminate: (event: PressEvent) => void,
@@ -464,7 +474,7 @@ export default class Pressability {
         return !disabled;
       },
 
-      onResponderGrant: (event: PressEvent): void => {
+      onResponderGrant: (event: PressEvent): void | boolean => {
         event.persist();
 
         this._cancelPressOutDelayTimeout();
@@ -490,6 +500,8 @@ export default class Pressability {
         this._longPressDelayTimeout = setTimeout(() => {
           this._handleLongPress(event);
         }, delayLongPress + delayPressIn);
+
+        return this._config.blockNativeResponder === true;
       },
 
       onResponderMove: (event: PressEvent): void => {

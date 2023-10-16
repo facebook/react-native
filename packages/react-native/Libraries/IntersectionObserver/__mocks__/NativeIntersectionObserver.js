@@ -97,8 +97,12 @@ const NativeIntersectionObserverMock = {
     );
     observations.splice(observationIndex, 1);
   },
-  connect: (notifyIntersectionObserversCallback?: () => void): void => {
+  connect: (notifyIntersectionObserversCallback: () => void): void => {
     invariant(callback == null, 'unexpected call to connect');
+    invariant(
+      notifyIntersectionObserversCallback != null,
+      'unexpected null notify intersection observers callback',
+    );
     callback = notifyIntersectionObserversCallback;
   },
   disconnect: (): void => {

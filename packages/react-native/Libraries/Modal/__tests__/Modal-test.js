@@ -26,13 +26,13 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should not render its children when mocked with visible=false', () => {
+  it('should not render <Modal> when mocked with visible=false', () => {
     const instance = render.create(
       <Modal visible={false}>
         <View testID="child" />
       </Modal>,
     );
-    expect(instance.root.findAllByProps({testID: 'child'})).toHaveLength(0);
+    expect(instance.toJSON()).toBeNull();
   });
 
   it('should shallow render as <Modal> when mocked', () => {
@@ -64,5 +64,16 @@ describe('<Modal />', () => {
       </Modal>,
     );
     expect(instance).toMatchSnapshot();
+  });
+
+  it('should not render <RCTModalHostView> when not mocked with visible=false', () => {
+    jest.dontMock('../Modal');
+
+    const instance = render.create(
+      <Modal visible={false}>
+        <View />
+      </Modal>,
+    );
+    expect(instance.toJSON()).toBeNull();
   });
 });

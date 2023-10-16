@@ -20,7 +20,7 @@ internal object NdkConfiguratorUtils {
   fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     project.pluginManager.withPlugin("com.android.application") {
       project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-        if (!project.isNewArchEnabled) {
+        if (!project.isNewArchEnabled(extension)) {
           // For Old Arch, we don't need to setup the NDK
           return@finalizeDsl
         }
@@ -41,7 +41,7 @@ internal object NdkConfiguratorUtils {
         // the user provided, but allow for sensible defaults).
         val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
         if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
-          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
+          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
         }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
@@ -74,11 +74,12 @@ internal object NdkConfiguratorUtils {
    */
   fun configureNewArchPackagingOptions(
       project: Project,
-      variant: Variant,
+      extension: ReactExtension,
+      variant: Variant
   ) {
-    if (!project.isNewArchEnabled) {
+    if (!project.isNewArchEnabled(extension)) {
       // For Old Arch, we set a pickFirst only on libraries that we know are
-      // clashing with our direct dependencies (FBJNI, Flipper and Hermes).
+      // clashing with our direct dependencies (mainly FBJNI and Hermes).
       variant.packaging.jniLibs.pickFirsts.addAll(
           listOf(
               "**/libfbjni.so",
@@ -107,6 +108,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_render_graphics.so",
               "**/libreact_render_imagemanager.so",
               "**/libreact_render_mapbuffer.so",
+              "**/libreact_utils.so",
               "**/librrc_image.so",
               "**/librrc_legacyviewmanagerinterop.so",
               "**/librrc_view.so",

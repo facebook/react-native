@@ -44,7 +44,8 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   @SuppressWarnings("unused")
   @Override
   public boolean getBool(boolean arg) {
-    throw new RuntimeException("getBool is not implemented");
+    log("getBool", arg, arg);
+    return arg;
   }
 
   @DoNotStrip

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
 package com.facebook.react
 
 import android.app.Activity
@@ -12,6 +13,7 @@ import android.graphics.Insets
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.WindowInsets
+import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
@@ -20,6 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.SystemClock
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.UIManagerModule
@@ -28,48 +31,53 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.util.Date
 import org.assertj.core.api.Assertions.*
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.Mockito.*
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.rule.PowerMockRule
+import org.mockito.Mockito.`when` as whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-@PrepareForTest(Arguments::class, SystemClock::class)
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class RootViewTest {
-  @get:Rule var rule = PowerMockRule()
 
   private lateinit var reactContext: ReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
 
+  private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var systemClock: MockedStatic<SystemClock>
+
   @Before
   fun setUp() {
+    arguments = Mockito.mockStatic(Arguments::class.java)
+    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
+    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
+
     val ts = SystemClock.uptimeMillis()
-    mockStatic(SystemClock::class.java)
-    mockStatic(Arguments::class.java)
-    whenever(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
-    whenever(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
-    whenever(SystemClock.uptimeMillis()).thenAnswer { ts }
+    systemClock = Mockito.mockStatic(SystemClock::class.java)
+    systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.application))
+    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
     reactContext.initializeWithInstance(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)
     val uiManagerModuleMock = mock(UIManagerModule::class.java)
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManagerModuleMock)
+  }
+
+  @After
+  fun tearDown() {
+    systemClock.close()
+    arguments.close()
   }
 
   @Test
@@ -204,9 +212,11 @@ class RootViewTest {
                   .setVisible(WindowInsets.Type.ime(), true)
                   .build()
         }
+    val rootViewSpy = spy(rootView)
+    whenever(rootViewSpy.getLayoutParams()).thenReturn(WindowManager.LayoutParams())
 
-    rootView.startReactApplication(instanceManager, "")
-    rootView.simulateCheckForKeyboardForTesting()
+    rootViewSpy.startReactApplication(instanceManager, "")
+    rootViewSpy.simulateCheckForKeyboardForTesting()
 
     val params = Arguments.createMap()
     val endCoordinates = Arguments.createMap()

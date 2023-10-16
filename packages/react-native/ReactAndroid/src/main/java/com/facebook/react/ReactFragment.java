@@ -7,10 +7,8 @@
 
 package com.facebook.react;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -161,13 +159,11 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     return getActivity().checkPermission(permission, pid, uid);
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   @Override
   public int checkSelfPermission(String permission) {
     return getActivity().checkSelfPermission(permission);
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   @Override
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
