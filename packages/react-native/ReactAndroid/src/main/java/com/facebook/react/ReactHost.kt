@@ -13,7 +13,6 @@ import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.LifecycleState
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.interfaces.fabric.ReactSurface
@@ -26,7 +25,6 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
  *
  * The implementation of this interface should be Thread Safe
  */
-@UnstableReactNativeAPI
 interface ReactHost {
 
   /** The current [LifecycleState] for React Host */
