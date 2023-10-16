@@ -12,7 +12,6 @@
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/text/RawTextShadowNode.h>
-#include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
@@ -22,13 +21,6 @@ namespace facebook::react {
 
 using BackgroundExecutor =
     std::function<void(std::function<void()>&& callback)>;
-
-struct EventHandlerWrapper : public EventHandler {
-  EventHandlerWrapper(jsi::Function eventHandler)
-      : callback(std::move(eventHandler)) {}
-
-  jsi::Function callback;
-};
 
 struct ShadowNodeListWrapper : public jsi::NativeState {
   ShadowNodeListWrapper(ShadowNode::UnsharedListOfShared shadowNodeList)
