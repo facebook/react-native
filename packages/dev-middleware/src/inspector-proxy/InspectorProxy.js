@@ -94,12 +94,13 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response: ServerResponse,
     next: (?Error) => mixed,
   ) {
+    const path = url.parse(request.url).pathname;
     if (
-      request.url === PAGES_LIST_JSON_URL ||
-      request.url === PAGES_LIST_JSON_URL_2
+      path === PAGES_LIST_JSON_URL ||
+      path === PAGES_LIST_JSON_URL_2
     ) {
       this._sendJsonResponse(response, this.getPageDescriptions());
-    } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
+    } else if (path === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
         'Protocol-Version': '1.1',
