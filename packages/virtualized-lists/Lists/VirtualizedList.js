@@ -1258,7 +1258,17 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
+      return (
+        <View
+          onLayout={(event: LayoutEvent) => {
+            const {width, height} = event.nativeEvent.layout;
+            props.onLayout && props.onLayout(event);
+            props.onContentSizeChange &&
+              props.onContentSizeChange(width, height);
+          }}
+          {...props}
+        />
+      );
     } else if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
