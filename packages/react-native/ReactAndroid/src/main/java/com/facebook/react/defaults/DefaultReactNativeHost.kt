@@ -8,7 +8,9 @@
 package com.facebook.react.defaults
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.JSEngineResolutionAlgorithm
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSIModulePackage
@@ -68,4 +70,18 @@ protected constructor(
    */
   protected open val isHermesEnabled: Boolean?
     get() = null
+
+  /**
+   * Converts this [ReactNativeHost] (bridge-mode) to a [ReactHost] (bridgeless-mode).
+   *
+   * @param context the Android [Context] to use for creating the [ReactHost]
+   */
+  fun toReactHost(context: Context): ReactHost =
+      DefaultReactHost.getDefaultReactHost(
+          context,
+          packages,
+          jsMainModuleName,
+          bundleAssetName ?: "index",
+          isHermesEnabled ?: true,
+      )
 }

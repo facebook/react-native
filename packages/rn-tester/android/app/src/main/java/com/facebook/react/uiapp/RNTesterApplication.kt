@@ -10,29 +10,25 @@ package com.facebook.react.uiapp
 import android.app.Application
 import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.TurboReactPackage
+import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.assets.ReactFontManager
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.defaults.DefaultComponentsRegistry.Companion.register
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
-import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
+import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
@@ -95,17 +91,28 @@ class RNTesterApplication : Application(), ReactApplication {
                     }
                   }
             },
-            object : ReactPackage {
+            object : ReactPackage, ViewManagerOnDemandReactPackage {
               override fun createNativeModules(
                   reactContext: ReactApplicationContext
-              ): List<NativeModule> {
-                return emptyList()
-              }
+              ): List<NativeModule> = emptyList()
+
+              override fun getViewManagerNames(reactContext: ReactApplicationContext) =
+                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView")
 
               override fun createViewManagers(
                   reactContext: ReactApplicationContext
               ): List<ViewManager<*, *>> =
                   listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+
+              override fun createViewManager(
+                  reactContext: ReactApplicationContext,
+                  viewManagerName: String
+              ): ViewManager<*, out ReactShadowNode<*>> =
+                  if (viewManagerName == "RNTMyNativeView") {
+                    MyNativeViewManager()
+                  } else {
+                    MyLegacyViewManager(reactContext)
+                  }
             })
       }
 
@@ -114,43 +121,15 @@ class RNTesterApplication : Application(), ReactApplication {
     }
   }
 
+  override val reactHost: ReactHost
+    get() = DefaultReactHost.getDefaultReactHost(this.applicationContext, reactNativeHost)
+
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      load()
+      load(bridgelessEnabled = true)
     }
-  }
-
-  @UnstableReactNativeAPI
-  override val reactHost: ReactHost by lazy {
-    // Create an instance of ReactHost to manager the instance of ReactInstance,
-    // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
-    val reactHostDelegate = RNTesterReactHostDelegate(applicationContext)
-    val reactJsExceptionHandler = RNTesterReactJsExceptionHandler()
-    val componentFactory = ComponentFactory()
-    register(componentFactory)
-    ReactHostImpl(
-            this.applicationContext,
-            reactHostDelegate,
-            componentFactory,
-            true,
-            reactJsExceptionHandler,
-            true)
-        .apply {
-          jsEngineResolutionAlgorithm =
-              if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
-                JSEngineResolutionAlgorithm.HERMES
-              } else {
-                JSEngineResolutionAlgorithm.JSC
-              }
-          reactHostDelegate.reactHost = this
-        }
-  }
-
-  @UnstableReactNativeAPI
-  class RNTesterReactJsExceptionHandler : ReactJsExceptionHandler {
-    override fun reportJsException(errorMap: ReadableMapBuffer?) {}
   }
 }
