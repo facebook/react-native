@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 class MyNativeView(context: ThemedReactContext) : View(context) {
   private var currentColor = 0
   private var background: GradientDrawable = GradientDrawable()
-  private var reactContext: ReactContext = context.getReactApplicationContext()
+  private var reactContext: ReactContext = context.reactApplicationContext
 
   override fun setBackgroundColor(color: Int) {
     if (color != currentColor) {
@@ -34,13 +34,14 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
   }
 
   fun setCornerRadius(cornerRadius: Float) {
-    background.setCornerRadius(cornerRadius)
+    background.cornerRadius = cornerRadius
     setBackground(background)
   }
 
   private fun emitNativeEvent(color: Int) {
     val event = Arguments.createMap()
     val hsv = FloatArray(3)
+    Color.colorToHSV(color, hsv)
     val backgroundColor =
         Arguments.createMap().apply {
           putDouble("hue", hsv[0].toDouble())
@@ -49,7 +50,6 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
           putDouble("alpha", Color.alpha(color).toDouble())
         }
 
-    Color.colorToHSV(color, hsv)
     event.putMap("backgroundColor", backgroundColor)
 
     reactContext.getJSModule(RCTEventEmitter::class.java).receiveEvent(id, "onColorChanged", event)
