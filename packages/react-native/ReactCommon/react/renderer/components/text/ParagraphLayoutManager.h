@@ -84,7 +84,7 @@ class ParagraphLayoutManager {
    * text measurement result. Returns true if inputs have changed and measure is
    * needed.
    */
-  bool shoudMeasureString(
+  bool shouldMeasureString(
       const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
