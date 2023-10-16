@@ -11,7 +11,6 @@
 ('use strict');
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
-import type {Stack} from './LogBoxSymbolication';
 import type {
   Category,
   ComponentStack,
@@ -30,7 +29,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
-  stack?: Stack,
+  stack?: string,
 |}>;
 
 export type Observer = (
@@ -199,7 +198,7 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const stack = log.stack ?? parseErrorStack(errorForStackTrace?.stack);
+      const stack = parseErrorStack(log.stack ?? errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({

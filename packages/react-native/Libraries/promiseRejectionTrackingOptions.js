@@ -10,7 +10,6 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-const parseErrorStack = require('./Core/Devtools/parseErrorStack');
 const LogBox = require('./LogBox/LogBox').default;
 
 let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
@@ -33,13 +32,11 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
 
       // Print pretty unhandled rejections while on DEV
       if (__DEV__) {
-        const parsedStack = parseErrorStack(error.stack);
-
         LogBox.addLog({
           level: 'warn',
           message: {content: warning, substitutions: []},
           componentStack: [],
-          stack: parsedStack,
+          stack: error.stack,
           category: 'possible_unhandled_promise_rejection',
         });
 
