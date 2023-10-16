@@ -16,7 +16,7 @@ TextMeasurement ParagraphLayoutManager::measure(
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   if (CoreFeatures::cacheLastTextMeasurement) {
-    bool shouldMeasure = shoudMeasureString(
+    bool shouldMeasure = shouldMeasureString(
         attributedString, paragraphAttributes, layoutConstraints);
 
     if (shouldMeasure) {
@@ -38,7 +38,7 @@ TextMeasurement ParagraphLayoutManager::measure(
   }
 }
 
-bool ParagraphLayoutManager::shoudMeasureString(
+bool ParagraphLayoutManager::shouldMeasureString(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
