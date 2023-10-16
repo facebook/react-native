@@ -10,7 +10,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
 
 @UnstableReactNativeAPI
@@ -47,6 +46,5 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
   }
 }

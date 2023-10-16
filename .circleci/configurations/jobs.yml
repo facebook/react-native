@@ -286,7 +286,6 @@ jobs:
             - packages/react-native/ReactAndroid/build/
             - packages/react-native/ReactAndroid/hermes-engine/.cxx/
             - packages/react-native/ReactAndroid/hermes-engine/build/
-            - packages/react-native/ReactAndroid/flipper-integration/build/
             - packages/react-native/ReactAndroid/src/main/jni/prebuilt/
             - packages/react-native-gradle-plugin/.gradle/
             - packages/react-native-gradle-plugin/build/
