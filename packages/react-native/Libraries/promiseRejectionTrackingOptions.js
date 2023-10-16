@@ -10,7 +10,7 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-const LogBox = require('./LogBox/LogBox').default;
+import LogBox from './LogBox/LogBox';
 
 let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
   allRejections: true,
@@ -25,16 +25,16 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       message = Error.prototype.toString.call(rejection);
       const error: Error = (rejection: $FlowFixMe);
 
-      const warning =
-        `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-        `${message ?? ''}\n` +
-        (stack == null ? '' : stack);
-
-      // Print pretty unhandled rejections while on DEV
+      // Print correct unhandled rejections stack while on DEV
       if (__DEV__) {
         LogBox.addLog({
           level: 'warn',
-          message: {content: warning, substitutions: []},
+          message: {
+            content:
+              `Possible Unhandled Promise Rejection (id: ${id}):\n` +
+              `${message ?? ''}\n`,
+            substitutions: [],
+          },
           componentStack: [],
           stack: error.stack,
           category: 'possible_unhandled_promise_rejection',
@@ -42,7 +42,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
 
         return;
       } else {
-        console.warn(warning);
+        stack = error.stack;
       }
     } else {
       try {
