@@ -129,12 +129,6 @@ public class ReactFeatureFlags {
    */
   public static boolean reduceDeleteCreateMutation = false;
 
-  /**
-   * Use JSI NativeState API to store references to native objects rather than the more expensive
-   * HostObject pattern
-   */
-  public static boolean useNativeState = false;
-
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 

@@ -24,10 +24,6 @@ class CoreFeatures {
   // when a transaction is mounted.
   static bool blockPaintForUseLayoutEffect;
 
-  // Whether to use Hermes' NativeState instead of HostObject
-  // in simple data passing scenarios with JS
-  static bool useNativeState;
-
   // Yoga might measure multiple times the same Text with the same constraints
   // This flag enables a caching mechanism to avoid subsequents measurements
   // of the same Text with the same constrainst.
