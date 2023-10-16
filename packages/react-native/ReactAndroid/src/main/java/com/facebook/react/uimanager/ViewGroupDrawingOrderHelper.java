@@ -72,14 +72,8 @@ public class ViewGroupDrawingOrderHelper {
     if (mDrawingOrderIndices != null
       && (index >= mDrawingOrderIndices.length || mDrawingOrderIndices[index] >= childCount)) {
       FLog.w(ReactConstants.TAG,
-        "getChildDrawingOrder index out of bounds! please check your operations of addding and " +
-          "removing subview.Force updates here to prevent crash."
-          + " viewId:" + mViewGroup.getId()
-          + " childCount:" + childCount
-          + " index:" + index
-          + " mDrawingOrderIndices:" + Arrays.toString(mDrawingOrderIndices)
-          + " mNumberOfChildrenWithZIndex:" + mNumberOfChildrenWithZIndex
-      );
+        "getChildDrawingOrder index out of bounds! Please check any custom view manipulations you" +
+          " may have done. childCount = %d, index = %d", childCount, index);
       update();
     }
 
