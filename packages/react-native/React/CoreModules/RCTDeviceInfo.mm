@@ -82,7 +82,7 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
-                                               name:RCTRootViewFrameDidChangeNotification
+                                               name:RCTWindowFrameDidChangeNotification
                                              object:nil];
 }
 
