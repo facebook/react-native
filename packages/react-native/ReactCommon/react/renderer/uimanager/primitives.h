@@ -17,7 +17,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/Rect.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -31,19 +30,7 @@ struct EventHandlerWrapper : public EventHandler {
   jsi::Function callback;
 };
 
-struct ShadowNodeWrapper : public jsi::HostObject {
-  ShadowNodeWrapper(ShadowNode::Shared shadowNode)
-      : shadowNode(std::move(shadowNode)) {}
-
-  // The below method needs to be implemented out-of-line in order for the class
-  // to have at least one "key function" (see
-  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
-  ~ShadowNodeWrapper() override;
-
-  ShadowNode::Shared shadowNode;
-};
-
-struct ShadowNodeListWrapper : public jsi::HostObject, public jsi::NativeState {
+struct ShadowNodeListWrapper : public jsi::NativeState {
   ShadowNodeListWrapper(ShadowNode::UnsharedListOfShared shadowNodeList)
       : shadowNodeList(std::move(shadowNodeList)) {}
 
@@ -62,28 +49,17 @@ inline static ShadowNode::Shared shadowNodeFromValue(
     return nullptr;
   }
 
-  if (CoreFeatures::useNativeState) {
-    return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
-  } else {
-    return value.getObject(runtime)
-        .getHostObject<ShadowNodeWrapper>(runtime)
-        ->shadowNode;
-  }
+  return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
 }
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
     ShadowNode::Shared shadowNode) {
-  if (CoreFeatures::useNativeState) {
-    jsi::Object obj(runtime);
-    // Need to const_cast since JSI only allows non-const pointees
-    obj.setNativeState(
-        runtime, std::const_pointer_cast<ShadowNode>(std::move(shadowNode)));
-    return obj;
-  } else {
-    return jsi::Object::createFromHostObject(
-        runtime, std::make_shared<ShadowNodeWrapper>(std::move(shadowNode)));
-  }
+  jsi::Object obj(runtime);
+  // Need to const_cast since JSI only allows non-const pointees
+  obj.setNativeState(
+      runtime, std::const_pointer_cast<ShadowNode>(std::move(shadowNode)));
+  return obj;
 }
 
 // TODO: once we no longer need to mutate the return value (appendChildToSet)
@@ -112,13 +88,8 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
       ;
     }
   } else {
-    if (CoreFeatures::useNativeState) {
-      return object.getNativeState<ShadowNodeListWrapper>(runtime)
-          ->shadowNodeList;
-    } else {
-      return object.getHostObject<ShadowNodeListWrapper>(runtime)
-          ->shadowNodeList;
-    }
+    return object.getNativeState<ShadowNodeListWrapper>(runtime)
+        ->shadowNodeList;
   }
 }
 
@@ -127,15 +98,11 @@ inline static jsi::Value valueFromShadowNodeList(
     ShadowNode::UnsharedListOfShared shadowNodeList) {
   auto wrapper =
       std::make_shared<ShadowNodeListWrapper>(std::move(shadowNodeList));
-  if (CoreFeatures::useNativeState) {
-    // Use the wrapper for NativeState too, otherwise we can't implement
-    // the marker interface. Could be simplified to a simple struct wrapper.
-    jsi::Object obj(runtime);
-    obj.setNativeState(runtime, std::move(wrapper));
-    return obj;
-  } else {
-    return jsi::Object::createFromHostObject(runtime, std::move(wrapper));
-  }
+  // Use the wrapper for NativeState too, otherwise we can't implement
+  // the marker interface. Could be simplified to a simple struct wrapper.
+  jsi::Object obj(runtime);
+  obj.setNativeState(runtime, std::move(wrapper));
+  return obj;
 }
 
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
