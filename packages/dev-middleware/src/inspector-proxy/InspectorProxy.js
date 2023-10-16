@@ -94,13 +94,21 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response: ServerResponse,
     next: (?Error) => mixed,
   ) {
-    const path = url.parse(request.url).pathname;
+    // When request.url is a relative path, the WHATWG URL constructor will require
+    // the second "base" param otherwise an exception will be thrown.
+    // We could use `http://${request.headers.host}` here instead however:
+    //  - We are forced to make an assumption about the scheme so if someone is running
+    //    Metro over https it could cause confusion.
+    //
+    //  - We are only extracting pathname from the parsed URL so the host portion is
+    //    irrelevant.
+    const pathname = new URL(request.url, 'http://example').pathname;
     if (
-      path === PAGES_LIST_JSON_URL ||
-      path === PAGES_LIST_JSON_URL_2
+      pathname === PAGES_LIST_JSON_URL ||
+      pathname === PAGES_LIST_JSON_URL_2
     ) {
       this._sendJsonResponse(response, this.getPageDescriptions());
-    } else if (path === PAGES_LIST_JSON_VERSION_URL) {
+    } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
         'Protocol-Version': '1.1',
