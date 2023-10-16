@@ -9,6 +9,7 @@
  */
 
 ('use strict');
+
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
