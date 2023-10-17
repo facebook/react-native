@@ -83,6 +83,14 @@ function isCodegenDeclaration(declaration) {
     declaration.expression.callee.name === 'codegenNativeComponent'
   ) {
     return true;
+  } else if (
+    declaration.type === 'TSAsExpression' &&
+    declaration.expression &&
+    declaration.expression.callee &&
+    declaration.expression.callee.name &&
+    declaration.expression.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
   }
 
   return false;

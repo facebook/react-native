@@ -17,7 +17,7 @@ namespace chrome {
 
 namespace {
 
-ConnectionDemux &demux() {
+ConnectionDemux& demux() {
   static ConnectionDemux instance{
       facebook::react::jsinspector_modern::getInspectorInstance()};
   return instance;
@@ -27,7 +27,7 @@ ConnectionDemux &demux() {
 
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
-    const std::string &title) {
+    const std::string& title) {
   return demux().enableDebugging(std::move(adapter), title);
 }
 

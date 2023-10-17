@@ -106,14 +106,20 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
                     .yogaNode_) {
-  // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-  // dirty flag, measure function, and other properties being set originally in
-  // the `YogaLayoutableShadowNode` constructor above.
+// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
+// dirty flag, measure function, and other properties being set originally in
+// the `YogaLayoutableShadowNode` constructor above.
 
+// There is a known race condition when background executor is enabled, where
+// a tree may be laid out on the Fabric background thread concurrently with
+// the ShadowTree being created on the JS thread. This assert can be
+// re-enabled after disabling background executor everywhere.
+#if 0
   react_native_assert(
       static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
+#endif
 
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     for (auto& child : getChildren()) {
@@ -276,7 +282,7 @@ void YogaLayoutableShadowNode::replaceChild(
   }
 
   bool suggestedIndexAccurate = suggestedIndex >= 0 &&
-      suggestedIndex < yogaLayoutableChildren_.size() &&
+      suggestedIndex < static_cast<int32_t>(yogaLayoutableChildren_.size()) &&
       yogaLayoutableChildren_[suggestedIndex].get() == layoutableOldChild;
 
   auto oldChildIter = suggestedIndexAccurate
@@ -368,7 +374,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
-  auto props = static_cast<const YogaStylableProps&>(*props_);
+  auto& props = static_cast<const YogaStylableProps&>(*props_);
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
@@ -533,9 +539,11 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 
   auto style = yogaNode_.getStyle();
   style.setDimension(
-      YGDimensionWidth, yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
+      yoga::Dimension::Width,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
   style.setDimension(
-      YGDimensionHeight, yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
+      yoga::Dimension::Height,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -631,19 +639,19 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      YGDimensionWidth,
+      yoga::Dimension::Width,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      YGDimensionHeight,
+      yoga::Dimension::Height,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      YGDimensionWidth,
+      yoga::Dimension::Width,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      YGDimensionHeight,
+      yoga::Dimension::Height,
       yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.height));
 
   auto direction =

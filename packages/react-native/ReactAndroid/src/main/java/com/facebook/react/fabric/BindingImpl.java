@@ -64,9 +64,6 @@ public class BindingImpl implements Binding {
       boolean doLeftAndRightSwapInRTL);
 
   @Override
-  public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
-
-  @Override
   public native void stopSurface(int surfaceId);
 
   @Override

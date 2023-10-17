@@ -18,6 +18,7 @@ import chalk from 'chalk';
 import Metro from 'metro';
 import {Terminal} from 'metro-core';
 import path from 'path';
+import url from 'url';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import {
   createDevServerMiddleware,
@@ -33,6 +34,7 @@ export type StartCommandArgs = {
   assetPlugins?: string[],
   cert?: string,
   customLogReporterPath?: string,
+  experimentalDebugger: boolean,
   host?: string,
   https?: boolean,
   maxWorkers?: number,
@@ -62,23 +64,18 @@ async function runServer(
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
-  const host = args.host?.length ? args.host : 'localhost';
+  const hostname = args.host?.length ? args.host : 'localhost';
   const {
     projectRoot,
     server: {port},
     watchFolders,
   } = metroConfig;
-  const scheme = args.https === true ? 'https' : 'http';
-  const devServerUrl = `${scheme}://${host}:${port}`;
+  const protocol = args.https === true ? 'https' : 'http';
+  const devServerUrl = url.format({protocol, hostname, port});
 
   logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
 
-  const serverStatus = await isDevServerRunning(
-    scheme,
-    host,
-    port,
-    projectRoot,
-  );
+  const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
 
   if (serverStatus === 'matched_server_running') {
     logger.info(
@@ -108,7 +105,7 @@ async function runServer(
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host,
+    host: hostname,
     port,
     watchFolders,
   });
@@ -118,7 +115,7 @@ async function runServer(
     logger,
     unstable_experiments: {
       // NOTE: Only affects the /open-debugger endpoint
-      enableCustomDebuggerFrontend: true,
+      enableNewDebugger: args.experimentalDebugger,
     },
   });
 
@@ -137,8 +134,8 @@ async function runServer(
         attachKeyHandlers({
           cliConfig: ctx,
           devServerUrl,
-          serverInstance,
           messageSocket: messageSocketEndpoint,
+          experimentalDebuggerFrontend: args.experimentalDebugger,
         });
       }
     },

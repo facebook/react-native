@@ -8,6 +8,7 @@
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
+#include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
@@ -86,6 +87,12 @@ static const std::shared_ptr<void> constructCoordinator(
     bridge = unwrapManagedObjectWeakly(optionalBridge.value());
   }
 
+  RCTBridgeProxy *bridgeProxy;
+  auto optionalBridgeProxy = contextContainer->find<std::shared_ptr<void>>("RCTBridgeProxy");
+  if (optionalBridgeProxy) {
+    bridgeProxy = unwrapManagedObjectWeakly(optionalBridgeProxy.value());
+  }
+
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
   RCTEventDispatcher *eventDispatcher;
   if (optionalEventDispatcher) {
@@ -104,6 +111,7 @@ static const std::shared_ptr<void> constructCoordinator(
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
       initWithComponentData:componentData
                      bridge:bridge
+                bridgeProxy:bridgeProxy
       bridgelessInteropData:bridgeModuleDecorator]);
 }
 

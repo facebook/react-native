@@ -125,7 +125,7 @@ def podspec_source_build_from_local_source_dir(react_native_path)
     source_dir_path = ENV['REACT_NATIVE_OVERRIDE_HERMES_DIR']
     if Dir.exist?(source_dir_path)
         hermes_log("Using source code from local path: #{source_dir_path}")
-        tarball_path = File.join(react_native_path, "sdks", "hermes-engine", "hermes-engine-from-local-source-dir.tar.gz")
+        tarball_path = File.join(artifacts_dir(), "hermes-engine-from-local-source-dir.tar.gz")
         exclude_paths = [
             "__tests__",
             "./external/flowtest",
@@ -192,6 +192,10 @@ end
 
 # HELPERS
 
+def artifacts_dir()
+    return File.join(Pod::Config.instance.project_pods_root, "hermes-engine-artifacts")
+end
+
 def hermestag_file(react_native_path)
     return File.join(react_native_path, "sdks", ".hermesversion")
 end
@@ -208,15 +212,14 @@ def download_stable_hermes(react_native_path, version, configuration)
 end
 
 def download_hermes_tarball(react_native_path, tarball_url, version, configuration)
-    destination_folder = "#{react_native_path}/sdks/downloads"
     destination_path = configuration == nil ?
-        "#{destination_folder}/hermes-ios-#{version}.tar.gz" :
-        "#{destination_folder}/hermes-ios-#{version}-#{configuration}.tar.gz"
+        "#{artifacts_dir()}/hermes-ios-#{version}.tar.gz" :
+        "#{artifacts_dir()}/hermes-ios-#{version}-#{configuration}.tar.gz"
 
     unless File.exist?(destination_path)
       # Download to a temporary file first so we don't cache incomplete downloads.
-      tmp_file = "#{destination_folder}/hermes-ios.download"
-      `mkdir -p "#{destination_folder}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+      tmp_file = "#{artifacts_dir()}/hermes-ios.download"
+      `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
     end
     return destination_path
 end

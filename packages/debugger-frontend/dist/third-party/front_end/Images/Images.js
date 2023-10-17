@@ -13,6 +13,7 @@ style.setProperty('--image-file-chromeLeft', 'url(\"' + new URL('./chromeLeft.av
 style.setProperty('--image-file-chromeMiddle', 'url(\"' + new URL('./chromeMiddle.avif', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-chromeRight', 'url(\"' + new URL('./chromeRight.avif', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-cssoverview_icons_2x', 'url(\"' + new URL('./cssoverview_icons_2x.avif', import.meta.url).toString() + '\")');
+style.setProperty('--image-file-favicon', 'url(\"' + new URL('./favicon.ico', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-navigationControls_2x', 'url(\"' + new URL('./navigationControls_2x.png', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-navigationControls', 'url(\"' + new URL('./navigationControls.png', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-nodeIcon', 'url(\"' + new URL('./nodeIcon.avif', import.meta.url).toString() + '\")');

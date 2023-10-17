@@ -16,7 +16,7 @@ import com.facebook.react.common.ReactConstants;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReactPackageHelper {
+class ReactPackageHelper {
   /**
    * A helper method to iterate over a list of Native Modules and convert them to an iterable.
    *

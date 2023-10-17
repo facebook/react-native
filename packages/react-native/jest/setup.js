@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/js-polyfills/Object.es8');
 jest.requireActual('@react-native/js-polyfills/error-guard');
 
 Object.defineProperties(global, {
@@ -198,6 +197,8 @@ jest
     addEventListener: jest.fn(() => ({
       remove: jest.fn(),
     })),
+    removeEventListener: jest.fn(),
+    currentState: jest.fn(),
   }))
   .mock('../Libraries/Linking/Linking', () => ({
     openURL: jest.fn(),

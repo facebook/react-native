@@ -14,10 +14,10 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +41,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
       mShouldEnableLegacyModuleInterop
           && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+
+  private final boolean mEnableTurboModuleSyncVoidMethods =
+      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
 
   protected ReactPackageTurboModuleManagerDelegate() {
     super();
@@ -138,6 +141,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Override
   public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
     return mShouldRouteTurboModulesThroughLegacyModuleInterop;
+  }
+
+  public boolean unstable_enableSyncVoidMethods() {
+    return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable

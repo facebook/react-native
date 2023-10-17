@@ -44,13 +44,13 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.internal.turbomodule.core.NativeMethodCallInvokerHolderImpl;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
-import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
-import com.facebook.react.turbomodule.core.TurboModuleManager;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.uimanager.ComponentNameResolver;
 import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * An experimental replacement for {@link com.facebook.react.ReactInstanceManager} responsible for
@@ -272,7 +273,9 @@ final class ReactInstance {
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
-    ReactNativeConfig config = mDelegate.getReactNativeConfig(mTurboModuleManager);
+    ReactNativeConfig config =
+        mDelegate.getReactNativeConfig(
+            (Function1<String, NativeModule>) name -> mTurboModuleManager.getModule(name));
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
@@ -414,8 +417,8 @@ final class ReactInstance {
   /* package */ void destroy() {
     FLog.d(TAG, "ReactInstance.destroy() is called.");
     mQueueConfiguration.destroy();
-    mTurboModuleManager.onCatalystInstanceDestroy();
-    mFabricUIManager.onCatalystInstanceDestroy();
+    mTurboModuleManager.invalidate();
+    mFabricUIManager.invalidate();
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;

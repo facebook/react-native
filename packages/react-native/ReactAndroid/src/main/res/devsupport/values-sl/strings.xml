@@ -3,5 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: sl_SI -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">V teku %1$s</string>
 </resources>

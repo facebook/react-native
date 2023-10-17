@@ -16,6 +16,7 @@
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/utils/CoreFeatures.h>
 
 #include "ParagraphState.h"
@@ -152,9 +153,15 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   return getStateData()
       .paragraphLayoutManager
-      .measure(attributedString, content.paragraphAttributes, layoutConstraints)
+      .measure(
+          attributedString,
+          content.paragraphAttributes,
+          textLayoutContext,
+          layoutConstraints)
       .size;
 }
 
@@ -171,8 +178,13 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   auto measurement = getStateData().paragraphLayoutManager.measure(
-      content.attributedString, content.paragraphAttributes, layoutConstraints);
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutContext,
+      layoutConstraints);
 
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = getStateData().paragraphLayoutManager.measureLines(

@@ -10,7 +10,6 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
 import ViewNativeComponent from './ViewNativeComponent';
@@ -100,21 +99,12 @@ const View: React.AbstractComponent<
     // $FlowFixMe[underconstrained-implicit-instantiation]
     let style = flattenStyle(otherProps.style);
 
+    // $FlowFixMe[sketchy-null-mixed]
     const newPointerEvents = style?.pointerEvents || pointerEvents;
-    const collapsableOverride =
-      ReactNativeFeatureFlags.shouldForceUnflattenForElevation()
-        ? {
-            collapsable:
-              style != null && style.elevation != null && style.elevation !== 0
-                ? false
-                : otherProps.collapsable,
-          }
-        : {};
 
     const actualView = (
       <ViewNativeComponent
         {...otherProps}
-        {...collapsableOverride}
         accessibilityLiveRegion={
           ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
         }
@@ -131,6 +121,7 @@ const View: React.AbstractComponent<
         }
         nativeID={id ?? nativeID}
         style={style}
+        // $FlowFixMe[incompatible-type]
         pointerEvents={newPointerEvents}
         ref={forwardedRef}
       />

@@ -15,7 +15,6 @@ import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import readline from 'readline';
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
@@ -23,26 +22,22 @@ const CTRL_D = '\u0004';
 
 export default function attachKeyHandlers({
   cliConfig,
-  serverInstance,
   devServerUrl,
   messageSocket,
+  experimentalDebuggerFrontend,
 }: {
   cliConfig: Config,
   devServerUrl: string,
-  serverInstance: http$Server | https$Server,
   messageSocket: $ReadOnly<{
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
   }>,
+  experimentalDebuggerFrontend: boolean,
 }) {
   if (process.stdin.isTTY !== true) {
     logger.debug('Interactive mode is not supported in this environment');
     return;
   }
-
-  readline.emitKeypressEvents(process.stdin);
-  // $FlowIgnore[prop-missing]
-  process.stdin.setRawMode(true);
 
   const execaOptions = {
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
@@ -83,30 +78,35 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
+        if (!experimentalDebuggerFrontend) {
+          return;
+        }
         await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
         break;
       case CTRL_C:
       case CTRL_D:
         logger.info('Stopping server');
-        listener?.({pause: true});
-        serverInstance.close(() => {
-          process.emit('SIGINT');
-          process.exit();
-        });
+        keyPressHandler.stopInterceptingKeyStrokes();
+        process.emit('SIGINT');
+        process.exit();
     }
   };
 
   const keyPressHandler = new KeyPressHandler(onPress);
-  const listener = keyPressHandler.createInteractionListener();
+  keyPressHandler.createInteractionListener();
   keyPressHandler.startInterceptingKeyStrokes();
 
   logger.log(
-    `
-${chalk.bold('i')} - run on iOS
-${chalk.bold('a')} - run on Android
-${chalk.bold('d')} - open Dev Menu
-${chalk.bold('j')} - open debugger
-${chalk.bold('r')} - reload app
-`,
+    [
+      '',
+      `${chalk.bold('i')} - run on iOS`,
+      `${chalk.bold('a')} - run on Android`,
+      `${chalk.bold('d')} - open Dev Menu`,
+      ...(experimentalDebuggerFrontend
+        ? [`${chalk.bold('j')} - open debugger (experimental, Hermes only)`]
+        : []),
+      `${chalk.bold('r')} - reload app`,
+      '',
+    ].join('\n'),
   );
 }

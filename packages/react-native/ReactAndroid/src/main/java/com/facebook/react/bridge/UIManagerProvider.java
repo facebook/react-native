@@ -7,12 +7,16 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+
 /**
- * @deprecated since this would be deprecated later as part of Stable APIs with bridge removal and
- *     not encouraged usage.
+ * {@link UIManagerProvider} is used to create UIManager objects during the initialization of React
+ * Native. This was introduced as a temporary interface to enable the new renderer of React Native
+ * in isolation of others part of the new architecture of React Native.
  */
-@Deprecated
+@DeprecatedInNewArchitecture
 public interface UIManagerProvider {
 
+  /* Provides a {@link com.facebook.react.bridge.UIManager} for the context received as a parameter. */
   UIManager createUIManager(ReactApplicationContext context);
 }

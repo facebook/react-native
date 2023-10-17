@@ -176,10 +176,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-+ (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
-{
-}
-
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   NSMutableString *hexString = [NSMutableString string];
@@ -308,20 +304,20 @@ RCT_EXPORT_METHOD(requestPermissions
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
 
-  UIUserNotificationType types = UIUserNotificationTypeNone;
+  UNAuthorizationOptions options = UNAuthorizationOptionNone;
 
   if (permissions.alert()) {
-    types |= UIUserNotificationTypeAlert;
+    options |= UNAuthorizationOptionAlert;
   }
   if (permissions.badge()) {
-    types |= UIUserNotificationTypeBadge;
+    options |= UNAuthorizationOptionBadge;
   }
   if (permissions.sound()) {
-    types |= UIUserNotificationTypeSound;
+    options |= UNAuthorizationOptionSound;
   }
 
   [UNUserNotificationCenter.currentNotificationCenter
-      requestAuthorizationWithOptions:types
+      requestAuthorizationWithOptions:options
                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
                       if (error != NULL) {
                         reject(@"-1", @"Error - Push authorization request failed.", error);

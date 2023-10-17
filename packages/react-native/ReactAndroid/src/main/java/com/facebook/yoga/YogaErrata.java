@@ -12,6 +12,7 @@ package com.facebook.yoga;
 public enum YogaErrata {
   NONE(0),
   STRETCH_FLEX_BASIS(1),
+  STARTING_ENDING_EDGE_FROM_FLEX_DIRECTION(2),
   ALL(2147483647),
   CLASSIC(2147483646);
 
@@ -29,6 +30,7 @@ public enum YogaErrata {
     switch (value) {
       case 0: return NONE;
       case 1: return STRETCH_FLEX_BASIS;
+      case 2: return STARTING_ENDING_EDGE_FROM_FLEX_DIRECTION;
       case 2147483647: return ALL;
       case 2147483646: return CLASSIC;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);

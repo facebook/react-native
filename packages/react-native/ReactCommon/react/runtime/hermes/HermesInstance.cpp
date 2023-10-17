@@ -7,7 +7,6 @@
 
 #include "HermesInstance.h"
 
-#include <JSITracing.h>
 #include <jsi/jsilib.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
@@ -128,8 +127,6 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
 
   std::unique_ptr<HermesRuntime> hermesRuntime =
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
-
-  jsi::addNativeTracingHooks(*hermesRuntime);
 
 #ifdef HERMES_ENABLE_DEBUGGER
   std::unique_ptr<DecoratedRuntime> decoratedRuntime =

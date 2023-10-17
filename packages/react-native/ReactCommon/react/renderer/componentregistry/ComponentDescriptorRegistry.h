@@ -54,13 +54,6 @@ class ComponentDescriptorRegistry {
 
   bool hasComponentDescriptorAt(ComponentHandle componentHandle) const;
 
-  ShadowNode::Shared createNode(
-      Tag tag,
-      const std::string& viewName,
-      SurfaceId surfaceId,
-      const folly::dynamic& props,
-      const InstanceHandle::Shared& instanceHandle) const;
-
   void setFallbackComponentDescriptor(
       const SharedComponentDescriptor& descriptor);
   ComponentDescriptor::Shared getFallbackComponentDescriptor() const;

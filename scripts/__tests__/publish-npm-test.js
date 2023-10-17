@@ -14,6 +14,7 @@ const consoleErrorMock = jest.fn();
 const isTaggedLatestMock = jest.fn();
 const setReactNativeVersionMock = jest.fn();
 const publishAndroidArtifactsToMavenMock = jest.fn();
+const removeNewArchFlags = jest.fn();
 const env = process.env;
 
 jest
@@ -36,7 +37,8 @@ jest
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
   .mock('./../set-rn-version', () => setReactNativeVersionMock)
-  .mock('../monorepo/get-and-update-nightlies');
+  .mock('../monorepo/get-and-update-packages')
+  .mock('../releases/remove-new-arch-flags', () => removeNewArchFlags);
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
@@ -62,10 +64,19 @@ describe('publish-npm', () => {
     jest.resetAllMocks();
   });
 
+  describe('publish-npm.js', () => {
+    it('Fails when invalid build type is passed', () => {
+      expect(() => publishNpm('invalid')).toThrowError(
+        'Unsupported build type: invalid',
+      );
+    });
+  });
+
   describe('dry-run', () => {
     it('should set version and not publish', () => {
       publishNpm('dry-run');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(exitMock).toHaveBeenCalledWith(0);
       expect(isTaggedLatestMock.mock.calls).toHaveLength(0);
       expect(echoMock).toHaveBeenCalledWith(
@@ -88,9 +99,10 @@ describe('publish-npm', () => {
 
       publishNpm('nightly');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        true,
+        'nightly',
       );
       expect(execMock.mock.calls[0][0]).toBe(
         `npm view react-native@next version`,
@@ -111,6 +123,7 @@ describe('publish-npm', () => {
 
       publishNpm('nightly');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
       expect(execMock.mock.calls[0][0]).toBe(
         `npm view react-native@next version`,
@@ -139,10 +152,11 @@ describe('publish-npm', () => {
 
       publishNpm('release');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag 0.81-stable --otp otp`,
@@ -163,10 +177,11 @@ describe('publish-npm', () => {
 
       publishNpm('release');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
@@ -187,10 +202,11 @@ describe('publish-npm', () => {
 
       publishNpm('release');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
@@ -209,10 +225,11 @@ describe('publish-npm', () => {
 
       publishNpm('release');
 
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.0-rc.4';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
-        false,
+        'release',
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag next --otp ${process.env.NPM_CONFIG_OTP}`,

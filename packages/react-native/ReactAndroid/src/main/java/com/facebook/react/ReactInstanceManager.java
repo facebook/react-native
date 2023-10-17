@@ -86,6 +86,9 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -94,9 +97,6 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
-import com.facebook.react.turbomodule.core.TurboModuleManager;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -1237,8 +1237,7 @@ public class ReactInstanceManager {
               reactRoot.getRootViewGroup(),
               initialProperties == null
                   ? new WritableNativeMap()
-                  : Arguments.fromBundle(initialProperties),
-              reactRoot.getInitialUITemplate());
+                  : Arguments.fromBundle(initialProperties));
       reactRoot.setRootViewTag(rootTag);
       reactRoot.runApplication();
     }

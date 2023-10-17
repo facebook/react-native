@@ -46,7 +46,7 @@ MapBuffer convertAccessibilityState(const AccessibilityState& state) {
   MapBufferBuilder builder(5);
   builder.putBool(ACCESSIBILITY_STATE_BUSY, state.busy);
   builder.putBool(ACCESSIBILITY_STATE_DISABLED, state.disabled);
-  builder.putBool(ACCESSIBILITY_STATE_EXPANDED, state.expanded);
+  builder.putBool(ACCESSIBILITY_STATE_EXPANDED, state.expanded.value_or(false));
   builder.putBool(ACCESSIBILITY_STATE_SELECTED, state.selected);
   int checked;
   switch (state.checked) {
@@ -125,7 +125,8 @@ void AccessibilityProps::propsDiffMapBuffer(
   if (oldProps.accessibilityState != newProps.accessibilityState) {
     builder.putMapBuffer(
         AP_ACCESSIBILITY_STATE,
-        convertAccessibilityState(newProps.accessibilityState));
+        convertAccessibilityState(
+            newProps.accessibilityState.value_or(AccessibilityState{})));
   }
 
   if (oldProps.accessibilityValue != newProps.accessibilityValue) {

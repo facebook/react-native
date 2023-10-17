@@ -37,7 +37,6 @@ namespace facebook::react {
 // "key function" for the ShadowNodeWrapper class -- this allow for RTTI to work
 // properly across dynamic library boundaries (i.e. dynamic_cast that is used by
 // isHostObject method)
-ShadowNodeWrapper::~ShadowNodeWrapper() = default;
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(

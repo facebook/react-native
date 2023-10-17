@@ -101,8 +101,11 @@ RCT_EXPORT_MODULE()
 
   RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
+    NSMutableDictionary<NSNumber *, id<RCTComponent>> *viewRegistry =
+        (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry;
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-      UIView *rootView = self->_viewRegistry[rootViewTag];
+      id<RCTComponent> rootView = viewRegistry[rootViewTag];
+      [self _purgeChildren:[rootView reactSubviews] fromRegistry:viewRegistry];
       if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)rootView invalidate];
       }
@@ -534,7 +537,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertUIManagerQueue();
 
-  NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+  NSPointerArray *affectedShadowViews = [NSPointerArray weakObjectsPointerArray];
   [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
   if (!affectedShadowViews.count) {
@@ -1489,10 +1492,10 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
   // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
   // native.
-  moduleConstants[@"Commands"] = viewConfig[@"Commands"];
-  // In the Old Architecture "Constants" are empty.
-  moduleConstants[@"Constants"] = [NSDictionary new];
-
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    moduleConstants[@"Commands"] = viewConfig[@"Commands"];
+    moduleConstants[@"Constants"] = viewConfig[@"Constants"];
+  }
   // Add direct events
   for (NSString *eventName in viewConfig[@"directEvents"]) {
     if (!directEvents[eventName]) {

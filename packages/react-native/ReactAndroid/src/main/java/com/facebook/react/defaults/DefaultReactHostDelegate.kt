@@ -11,13 +11,13 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.NativeModule
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSEngineInstance
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.hermes.HermesInstance
-import com.facebook.react.turbomodule.core.TurboModuleManager
 
 /**
  * A utility class that allows you to simplify the initialization of React Native by setting up a
@@ -50,7 +50,7 @@ class DefaultReactHostDelegate(
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 
-  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
+  override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?) = reactNativeConfig
 
   override fun handleInstanceException(error: Exception) = exceptionHandler(error)
 }

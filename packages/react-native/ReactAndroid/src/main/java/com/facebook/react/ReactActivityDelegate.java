@@ -7,19 +7,16 @@
 
 package com.facebook.react;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
@@ -88,7 +85,7 @@ public class ReactActivityDelegate {
   }
 
   public ReactHost getReactHost() {
-    return ((ReactApplication) getPlainActivity().getApplication()).getReactHostInterface();
+    return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
 
   public ReactInstanceManager getReactInstanceManager() {
@@ -204,7 +201,6 @@ public class ReactActivityDelegate {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
     mPermissionListener = listener;
