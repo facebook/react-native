@@ -320,6 +320,22 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 attachments.push_back(TextMeasurement::Attachment{rect, false});
               }];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+
+  [textStorage enumerateAttribute:NSBackgroundColorAttributeName
+                          inRange:characterRange
+                          options:0
+                       usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
+                         NSRange truncatedRange =
+                             [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
+
+                         // Remove background color if glyphs is truncated
+                         if (truncatedRange.location != NSNotFound && range.location >= truncatedRange.location) {
+                           [textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
+                         }
+                       }];
+
   return TextMeasurement{{size.width, size.height}, attachments};
 }
 
