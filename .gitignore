@@ -115,6 +115,7 @@ package-lock.json
 /packages/react-native/template/ios/Pods/
 /packages/react-native/template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
+/packages/**/RCTLegacyInteropComponents.mm
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
