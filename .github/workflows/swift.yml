@@ -1,4 +1,4 @@
-# This workflow will build a Swift project
+9# This workflow will build a Swift project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
 
 name: Swift
@@ -20,3 +20,36 @@ jobs:
       run: swift build -v
     - name: Run tests
       run: swift test -v
+    
+- name: swift-package-dependencies-check
+  # You may pin to the exact commit or the version.
+  # uses: MarcoEidinger/swift-package-dependencies-check@13f94b743f2f1df3105ae01a78a467b6edfb2925
+  uses: MarcoEidinger/swift-package-dependencies-check@2.5.0
+  with:
+    # Modify Package.resolved in case of new versions
+    isMutating: # optional
+    # Action will fail if outdated dependencies were detected.
+    failWhenOutdated: # optional, default is true
+    # The path to the directory where you want the swift commands to be run
+    directory: # optional, default is .
+
+- name: swift-codecov
+  # You may pin to the exact commit or the version.
+  # uses: mattpolzin/swift-codecov-action@739530f0842a163004eaa2e63b48f957a554a61a
+  uses: mattpolzin/swift-codecov-action@0.7.5
+  with:
+    # The name of the target project. This must be specified if you would like local dependencies (specified by path in the project manifest) to be left out of coverage numbers. If specified, this must be exactly the same spelling as the root folder of the target project.
+    PROJECT_NAME: # optional, default is 
+    # The location of the JSON file produced by swift test --enable-code-coverage
+    CODECOV_JSON: # optional, default is .build/debug/codecov/*.json
+    # true by default, but if false then will not output the whole codecov table to stdout.
+    PRINT_STDOUT: # optional, default is true
+    # filename by default, but if specified otherwise will apply a sort order to the test coverage table. This is only relevant if PRINT_STDOUT is true. Possible values: filename, +cov, -cov
+    SORT_ORDER: # optional, default is filename
+    # By default, there is no minimum coverage. Set this to make the script fail if the minimum coverage is not met.
+    MINIMUM_COVERAGE: # optional
+    # `false` by default, but if `true` then coverage numbers will include project dependencies.
+    INCLUDE_DEPENDENCIES: # optional, default is false
+    # `false` by default, but if `true` then coverage numbers will include the percentage of the test files themselves that was exercised.
+    INCLUDE_TESTS: # optional, default is false
+    
