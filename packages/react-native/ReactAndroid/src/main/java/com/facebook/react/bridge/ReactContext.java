@@ -71,7 +71,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable JSExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
 
-  private @Nullable InteropModuleRegistry mInteropModuleRegistry;
+  protected @Nullable InteropModuleRegistry mInteropModuleRegistry;
   private boolean mIsInitialized = false;
 
   public ReactContext(Context base) {
