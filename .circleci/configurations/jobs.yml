@@ -403,11 +403,6 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
-      flipper:
-        default: "WithFlipper"
-        description: Whether Flipper is enabled. Must be one of "WithFlipper", "WithoutFlipper".
-        type: enum
-        enum: ["WithFlipper", "WithoutFlipper"]
       use_frameworks:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
@@ -465,7 +460,7 @@ jobs:
           podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
           steps:
             - run:
-                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
+                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
                 command: |
                   cd /tmp/$PROJECT_NAME/ios
 
@@ -475,10 +470,6 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
-                  fi
-
-                  if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
-                    export NO_FLIPPER=1
                   fi
 
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
@@ -561,7 +552,6 @@ jobs:
                         fi
 
                         if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                          export NO_FLIPPER=1
                           export USE_FRAMEWORKS=dynamic
                         fi
 
