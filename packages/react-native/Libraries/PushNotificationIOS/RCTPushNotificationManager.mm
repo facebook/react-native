@@ -176,10 +176,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-+ (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
-{
-}
-
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   NSMutableString *hexString = [NSMutableString string];
