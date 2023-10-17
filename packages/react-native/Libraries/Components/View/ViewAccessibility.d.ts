@@ -219,16 +219,16 @@ export type AccessibilityRole =
 
 export interface AccessibilityPropsAndroid {
   /**
-   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props, 
-   * the text is read aloud. The value should should match the nativeID of the related element. 
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
    */
   accessibilityLabelledBy?: string | string[] | undefined;
 
   /**
-   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props, 
-   * the text is read aloud. The value should should match the nativeID of the related element. 
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
    */

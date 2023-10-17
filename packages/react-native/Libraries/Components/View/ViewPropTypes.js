@@ -267,16 +267,16 @@ type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
 
 type AndroidViewProps = $ReadOnly<{|
   /**
-   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props, 
-   * the text is read aloud. The value should should match the nativeID of the related element. 
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
    */
   accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
-   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props, 
-   * the text is read aloud. The value should should match the nativeID of the related element. 
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
    *
    * @platform android
    */
