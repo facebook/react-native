@@ -1,22 +1,13 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-package com.facebook.react.uimanager.events;
+package com.facebook.react.views.webview;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.events.Event;
 
-/**
- * Event dispatched when total width or height of a view's children changes.
- *
- * @deprecated Please define your own event for custom components
- */
-@Deprecated
+/** Event dispatched when total width or height of a view's children changes */
 public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
 
   public static final String EVENT_NAME = "topContentSizeChange";
