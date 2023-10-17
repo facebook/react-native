@@ -155,7 +155,7 @@ public class ReactFeatureFlags {
   public static boolean enableDefaultAsyncBatchedPriority = false;
 
   /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = false;
+  public static boolean enableFabricSharedEventPipeline = true;
 
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
