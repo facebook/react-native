@@ -36,6 +36,10 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
 
+  /**
+   * By default, native module methods that return void run asynchronously. This flag will make
+   * execution of void methods in TurboModules stay on the JS thread.
+   */
   public static volatile boolean unstable_enableTurboModuleSyncVoidMethods = false;
 
   /**
