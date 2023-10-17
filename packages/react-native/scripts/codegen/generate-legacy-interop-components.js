@@ -35,8 +35,7 @@ const outputPath = argv.outputPath;
 
 function fileBody(components) {
   // eslint-disable duplicate-license-header
-  return `
-/*
+  return `/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
