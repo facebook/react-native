@@ -10,6 +10,8 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
+import LogBox from './LogBox/LogBox';
+
 let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
   allRejections: true,
   onUnhandled: (id, rejection = {}) => {
@@ -34,17 +36,29 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       }
     }
 
-    const warning =
-      `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-      `${message ?? ''}\n` +
-      (stack == null ? '' : stack);
-    console.warn(warning);
+    const warning = `Possible unhandled promise rejection (id: ${id}):\n${
+      message ?? ''
+    }`;
+    if (__DEV__) {
+      LogBox.addLog({
+        level: 'warn',
+        message: {
+          content: warning,
+          substitutions: [],
+        },
+        componentStack: [],
+        stack,
+        category: 'possible_unhandled_promise_rejection',
+      });
+    } else {
+      console.warn(warning);
+    }
   },
   onHandled: id => {
     const warning =
-      `Promise Rejection Handled (id: ${id})\n` +
+      `Promise rejection handled (id: ${id})\n` +
       'This means you can ignore any previous messages of the form ' +
-      `"Possible Unhandled Promise Rejection (id: ${id}):"`;
+      `"Possible unhandled promise rejection (id: ${id}):"`;
     console.warn(warning);
   },
 };
