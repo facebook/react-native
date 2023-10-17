@@ -418,10 +418,10 @@ public class ReactViewGroup extends ViewGroup
     if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
-      super.removeViewsInLayout(idx - clippedSoFar, 1);
+      removeViewsInLayout(idx - clippedSoFar, 1);
       needUpdateClippingRecursive = true;
     } else if (intersects && child.getParent() == null) {
-      super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
+      addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -499,23 +499,18 @@ public class ReactViewGroup extends ViewGroup
     return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
   }
 
-  @Override
-  public void addView(View child, int index, ViewGroup.LayoutParams params) {
-    // This will get called for every overload of addView so there is not need to override every
-    // method.
+  private void handleAddView(View view) {
+    UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      getDrawingOrderHelper().handleAddView(child);
+      getDrawingOrderHelper().handleAddView(view);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
-
-    super.addView(child, index, params);
   }
 
-  @Override
-  public void removeView(View view) {
+  private void handleRemoveView(View view) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
@@ -524,22 +519,60 @@ public class ReactViewGroup extends ViewGroup
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
+  }
 
+  private void handleRemoveViews(int start, int count) {
+    int endIndex = start + count;
+    for (int index = start; index < endIndex; index++) {
+      if (index < getChildCount()) {
+        handleRemoveView(getChildAt(index));
+      }
+    }
+  }
+
+  @Override
+  public void addView(View child, int index, ViewGroup.LayoutParams params) {
+    // This will get called for every overload of addView so there is not need to override every
+    // method.
+    handleAddView(child);
+    super.addView(child, index, params);
+  }
+
+  @Override
+  protected boolean addViewInLayout(
+      View child, int index, LayoutParams params, boolean preventRequestLayout) {
+    handleAddView(child);
+    return super.addViewInLayout(child, index, params, preventRequestLayout);
+  }
+
+  @Override
+  public void removeView(View view) {
+    handleRemoveView(view);
     super.removeView(view);
   }
 
   @Override
   public void removeViewAt(int index) {
-    UiThreadUtil.assertOnUiThread();
-
-    if (!customDrawOrderDisabled()) {
-      getDrawingOrderHelper().handleRemoveView(getChildAt(index));
-      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
-    } else {
-      setChildrenDrawingOrderEnabled(false);
-    }
-
+    handleRemoveView(getChildAt(index));
     super.removeViewAt(index);
+  }
+
+  @Override
+  public void removeViewInLayout(View view) {
+    handleRemoveView(view);
+    super.removeViewInLayout(view);
+  }
+
+  @Override
+  public void removeViewsInLayout(int start, int count) {
+    handleRemoveViews(start, count);
+    super.removeViewsInLayout(start, count);
+  }
+
+  @Override
+  public void removeViews(int start, int count) {
+    handleRemoveViews(start, count);
+    super.removeViews(start, count);
   }
 
   @Override
@@ -663,7 +696,7 @@ public class ReactViewGroup extends ViewGroup
           clippedSoFar++;
         }
       }
-      super.removeViewsInLayout(index - clippedSoFar, 1);
+      removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
   }
