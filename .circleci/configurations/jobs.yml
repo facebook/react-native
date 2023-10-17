@@ -124,18 +124,6 @@ jobs:
       - run_yarn
       - setup_hermes_version
       - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: |
-            appium driver install uiautomator2
-            appium driver install xcuitest
-      - run:
-          name: Start Appium server
-          command: appium --base-path /wd/hub
-          background: true
-      - run:
           name: Start Metro
           command: |
             cd packages/rn-tester
@@ -170,11 +158,23 @@ jobs:
                 name: Move app to correct directory
                 command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
             - run:
+                name: Install appium
+                command: npm install appium@2.0.0 -g
+            - run:
+                name: Install appium drivers
+                command: |
+                  appium driver install uiautomator2
+                  appium driver install xcuitest
+            - run:
+                name: Start Appium server
+                command: appium --base-path /wd/hub
+                background: true
+            - run:
                 name: Check Appium server status
                 command: scripts/circleci/check_appium_server_status.sh
             - run:
                 name: Run E2E tests
-                no_output_timeout: 30m
+                no_output_timeout: 5m
                 command: |
                   cd packages/rn-tester-e2e
                   (yarn test-e2e ios 2>&1 | tee /tmp/test_log) || true
@@ -201,18 +201,6 @@ jobs:
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: ""
       - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: |
-            appium driver install uiautomator2@2.29.1
-            appium driver install xcuitest@4.32.10
-      - run:
-          name: Start Appium server
-          command: appium --base-path /wd/hub
-          background: true
-      - run:
           name: Start Metro
           command: |
             cd packages/rn-tester
@@ -228,6 +216,18 @@ jobs:
           name: Move app to correct directory
           command: mv packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86_64-debug.apk packages/rn-tester-e2e/apps/rn-tester.apk
       - run:
+          name: Install appium
+          command: npm install appium@2.0.0 -g
+      - run:
+          name: Install appium drivers
+          command: |
+            appium driver install uiautomator2@2.29.1
+            appium driver install xcuitest@4.32.10
+      - run:
+          name: Start Appium server
+          command: appium --base-path /wd/hub
+          background: true
+      - run:
           name: Check Appium server status
           command: |
             if ! nc -z 127.0.0.1 4723; then
@@ -236,7 +236,7 @@ jobs:
             fi
       - run:
           name: Run E2E tests
-          no_output_timeout: 30m
+          no_output_timeout: 5m
           command: |
             cd packages/rn-tester-e2e
             (yarn test-e2e android 2>&1 | tee /tmp/test_log) || true
