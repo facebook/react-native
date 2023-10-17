@@ -398,8 +398,7 @@ inline void fromRawValue(
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = context.treatAutoAsYGValueUndefined() ? YGValueUndefined
-                                                     : YGValueAuto;
+      result = YGValueAuto;
       return;
     } else {
       if (stringValue.back() == '%') {
