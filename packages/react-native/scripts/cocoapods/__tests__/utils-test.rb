@@ -5,7 +5,6 @@
 
 require "test/unit"
 require_relative "../utils.rb"
-require_relative "../flipper.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/EnvironmentMock.rb"
@@ -101,7 +100,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -117,7 +115,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => false,
             :hermes_enabled => false,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -132,7 +129,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 
@@ -148,7 +144,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => false,
-            :flipper_configuration => FlipperConfiguration.disabled
         })
     end
 

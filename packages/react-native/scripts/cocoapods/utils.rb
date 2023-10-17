@@ -23,7 +23,6 @@ class ReactNativePodsUtils
         flags = {
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         }
 
         if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -269,14 +268,6 @@ class ReactNativePodsUtils
         pod_to_update = Set.new([
             "boost",
             "CocoaAsyncSocket",
-            "Flipper",
-            "Flipper-DoubleConversion",
-            "Flipper-Fmt",
-            "Flipper-Boost-iOSX",
-            "Flipper-Folly",
-            "Flipper-Glog",
-            "Flipper-PeerTalk",
-            "FlipperKit",
             "fmt",
             "libevent",
             "OpenSSL-Universal",
