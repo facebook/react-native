@@ -26,6 +26,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import android.view.View;
 
 /**
  * This class represents a batch of {@link MountItem}s, represented directly as int buffers to
