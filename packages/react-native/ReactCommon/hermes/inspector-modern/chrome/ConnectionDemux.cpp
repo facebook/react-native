@@ -61,7 +61,7 @@ void LocalConnection::disconnect() {
 } // namespace
 
 ConnectionDemux::ConnectionDemux(
-    facebook::react::jsinspector_modern::IInspector &inspector)
+    facebook::react::jsinspector_modern::IInspector& inspector)
     : globalInspector_(inspector),
       inspectedContexts_(std::make_shared<std::unordered_set<std::string>>()) {}
 
@@ -69,7 +69,7 @@ ConnectionDemux::~ConnectionDemux() = default;
 
 DebugSessionToken ConnectionDemux::enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
-    const std::string &title) {
+    const std::string& title) {
   std::scoped_lock lock(mutex_);
 
   // TODO(#22976087): workaround for ComponentScript contexts never being
@@ -112,7 +112,7 @@ int ConnectionDemux::addPage(
     // require a copyable callback?
     std::shared_ptr<IRemoteConnection> sharedConn = std::move(remoteConn);
     if (!conn->registerCallbacks(
-            [sharedConn](const std::string &message) {
+            [sharedConn](const std::string& message) {
               sharedConn->onMessage(message);
             },
             [sharedConn]() { sharedConn->onDisconnect(); })) {
