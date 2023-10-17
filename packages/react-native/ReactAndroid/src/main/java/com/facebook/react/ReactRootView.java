@@ -854,20 +854,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private @Nullable WindowManager.LayoutParams getWindowLayoutParams() {
-      View view = ReactRootView.this;
-      if (view.getLayoutParams() instanceof WindowManager.LayoutParams) {
-        return (WindowManager.LayoutParams) view.getLayoutParams();
-      }
-      while (view.getParent() instanceof View) {
-        view = (View) view.getParent();
-        if (view.getLayoutParams() instanceof WindowManager.LayoutParams) {
-          return (WindowManager.LayoutParams) view.getLayoutParams();
-        }
-      }
-      return null;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
@@ -885,13 +871,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
-          int softInputMode;
-          WindowManager.LayoutParams windowLayoutParams = getWindowLayoutParams();
-          if (windowLayoutParams != null) {
-            softInputMode = windowLayoutParams.softInputMode;
-          } else {
-            return;
-          }
+          ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
+          Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
+
+          int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height
