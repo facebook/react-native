@@ -434,28 +434,43 @@ RCT_EXPORT_METHOD(scheduleLocalNotification : (JS::NativePushNotificationManager
 
 RCT_EXPORT_METHOD(cancelAllLocalNotifications)
 {
-  [RCTSharedApplication() cancelAllLocalNotifications];
+  [[UNUserNotificationCenter currentNotificationCenter]
+      getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
+        NSMutableArray<NSString *> *notificationIdentifiersToCancel = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+          [notificationIdentifiersToCancel addObject:request.identifier];
+        }
+        [[UNUserNotificationCenter currentNotificationCenter]
+            removePendingNotificationRequestsWithIdentifiers:notificationIdentifiersToCancel];
+      }];
 }
 
 RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)userInfo)
 {
-  for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
-    __block BOOL matchesAll = YES;
-    NSDictionary<NSString *, id> *notificationInfo = notification.userInfo;
-    // Note: we do this with a loop instead of just `isEqualToDictionary:`
-    // because we only require that all specified userInfo values match the
-    // notificationInfo values - notificationInfo may contain additional values
-    // which we don't care about.
-    [userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-      if (![notificationInfo[key] isEqual:obj]) {
-        matchesAll = NO;
-        *stop = YES;
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+    NSMutableArray<NSString *> *notificationIdentifiersToCancel = [NSMutableArray new];
+    for (UNNotificationRequest *request in requests) {
+      NSDictionary<NSString *, id> *notificationInfo = request.content.userInfo;
+      // Note: we do this with a loop instead of just `isEqualToDictionary:`
+      // because we only require that all specified userInfo values match the
+      // notificationInfo values - notificationInfo may contain additional values
+      // which we don't care about.
+      __block BOOL shouldCancel = YES;
+      [userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
+        if (![notificationInfo[key] isEqual:obj]) {
+          shouldCancel = NO;
+          *stop = YES;
+        }
+      }];
+
+      if (shouldCancel) {
+        [notificationIdentifiersToCancel addObject:request.identifier];
       }
-    }];
-    if (matchesAll) {
-      [RCTSharedApplication() cancelLocalNotification:notification];
     }
-  }
+
+    [center removePendingNotificationRequestsWithIdentifiers:notificationIdentifiersToCancel];
+  }];
 }
 
 RCT_EXPORT_METHOD(getInitialNotification
