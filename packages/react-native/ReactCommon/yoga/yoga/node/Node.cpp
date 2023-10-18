@@ -157,18 +157,41 @@ float Node::getInlineEndMargin(
   return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
 }
 
-float Node::getFlexStartBorder(FlexDirection axis) const {
+float Node::getInlineStartBorder(FlexDirection axis, Direction direction)
+    const {
+  const YGEdge startEdge = getInlineStartEdgeUsingErrata(axis, direction);
+  YGValue leadingBorder = isRow(axis)
+      ? computeEdgeValueForRow(style_.border(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.border(), startEdge);
+
+  return maxOrDefined(leadingBorder.value, 0.0f);
+}
+
+float Node::getFlexStartBorder(FlexDirection axis, Direction direction) const {
+  const YGEdge leadRelativeFlexItemEdge =
+      flexStartRelativeEdge(axis, direction);
   YGValue leadingBorder = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.border(), YGEdgeStart, flexStartEdge(axis))
+            style_.border(), leadRelativeFlexItemEdge, flexStartEdge(axis))
       : computeEdgeValueForColumn(style_.border(), flexStartEdge(axis));
 
   return maxOrDefined(leadingBorder.value, 0.0f);
 }
 
-float Node::getFlexEndBorder(FlexDirection axis) const {
+float Node::getInlineEndBorder(FlexDirection axis, Direction direction) const {
+  const YGEdge endEdge = getInlineEndEdgeUsingErrata(axis, direction);
   YGValue trailingBorder = isRow(axis)
-      ? computeEdgeValueForRow(style_.border(), YGEdgeEnd, flexEndEdge(axis))
+      ? computeEdgeValueForRow(style_.border(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.border(), endEdge);
+
+  return maxOrDefined(trailingBorder.value, 0.0f);
+}
+
+float Node::getFlexEndBorder(FlexDirection axis, Direction direction) const {
+  const YGEdge trailRelativeFlexItemEdge = flexEndRelativeEdge(axis, direction);
+  YGValue trailingBorder = isRow(axis)
+      ? computeEdgeValueForRow(
+            style_.border(), trailRelativeFlexItemEdge, flexEndEdge(axis))
       : computeEdgeValueForColumn(style_.border(), flexEndEdge(axis));
 
   return maxOrDefined(trailingBorder.value, 0.0f);
@@ -191,14 +214,35 @@ float Node::getFlexEndPadding(FlexDirection axis, float widthSize) const {
   return maxOrDefined(resolveValue(trailingPadding, widthSize).unwrap(), 0.0f);
 }
 
-float Node::getFlexStartPaddingAndBorder(FlexDirection axis, float widthSize)
-    const {
-  return getFlexStartPadding(axis, widthSize) + getFlexStartBorder(axis);
+float Node::getInlineStartPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  return getFlexStartPadding(axis, widthSize) +
+      getInlineStartBorder(axis, direction);
 }
 
-float Node::getFlexEndPaddingAndBorder(FlexDirection axis, float widthSize)
-    const {
-  return getFlexEndPadding(axis, widthSize) + getFlexEndBorder(axis);
+float Node::getFlexStartPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  return getFlexStartPadding(axis, widthSize) +
+      getFlexStartBorder(axis, direction);
+}
+
+float Node::getInlineEndPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  return getFlexEndPadding(axis, widthSize) +
+      getInlineEndBorder(axis, direction);
+}
+
+float Node::getFlexEndPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize) const {
+  return getFlexEndPadding(axis, widthSize) + getFlexEndBorder(axis, direction);
 }
 
 float Node::getMarginForAxis(FlexDirection axis, float widthSize) const {

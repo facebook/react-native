@@ -97,6 +97,32 @@ inline YGEdge inlineEndEdge(
   return YGEdgeBottom;
 }
 
+/**
+ * The physical edges that YGEdgeStart and YGEdgeEnd correspond to (e.g.
+ * left/right) are soley dependent on the direction. However, there are cases
+ * where we want the flex start/end edge (i.e. which edge is the start/end
+ * for laying out flex items), which can be distinct from the corresponding
+ * inline edge. In these cases we need to know which "relative edge"
+ * (YGEdgeStart/YGEdgeEnd) corresponds to the said flex start/end edge as these
+ * relative edges can be used instead of physical ones when defining certain
+ * attributes like border or padding.
+ */
+inline YGEdge flexStartRelativeEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  const YGEdge leadLayoutEdge = inlineStartEdge(flexDirection, direction);
+  const YGEdge leadFlexItemEdge = flexStartEdge(flexDirection);
+  return leadLayoutEdge == leadFlexItemEdge ? YGEdgeStart : YGEdgeEnd;
+}
+
+inline YGEdge flexEndRelativeEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  const YGEdge trailLayoutEdge = inlineEndEdge(flexDirection, direction);
+  const YGEdge trailFlexItemEdge = flexEndEdge(flexDirection);
+  return trailLayoutEdge == trailFlexItemEdge ? YGEdgeEnd : YGEdgeStart;
+}
+
 inline Dimension dimension(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
