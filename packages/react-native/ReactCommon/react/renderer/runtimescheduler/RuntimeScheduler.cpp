@@ -7,6 +7,7 @@
 
 #include "RuntimeScheduler.h"
 #include "RuntimeScheduler_Legacy.h"
+#include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
 #include <react/renderer/debug/SystraceSection.h>
@@ -15,11 +16,28 @@
 
 namespace facebook::react {
 
+namespace {
+std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
+    RuntimeExecutor runtimeExecutor,
+    bool useModernRuntimeScheduler,
+    std::function<RuntimeSchedulerTimePoint()> now) {
+  if (useModernRuntimeScheduler) {
+    return std::make_unique<RuntimeScheduler_Modern>(
+        std::move(runtimeExecutor), std::move(now));
+  } else {
+    return std::make_unique<RuntimeScheduler_Legacy>(
+        std::move(runtimeExecutor), std::move(now));
+  }
+}
+} // namespace
+
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
+    bool useModernRuntimeScheduler,
     std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeSchedulerImpl_(std::make_unique<RuntimeScheduler_Legacy>(
+    : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
+          useModernRuntimeScheduler,
           std::move(now))) {}
 
 void RuntimeScheduler::scheduleWork(RawCallback&& callback) const noexcept {
@@ -28,13 +46,13 @@ void RuntimeScheduler::scheduleWork(RawCallback&& callback) const noexcept {
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function&& callback) noexcept {
+    jsi::Function&& callback) const noexcept {
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    RawCallback&& callback) noexcept {
+    RawCallback&& callback) const noexcept {
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 

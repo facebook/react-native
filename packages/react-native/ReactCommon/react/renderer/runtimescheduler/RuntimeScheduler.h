@@ -18,14 +18,20 @@ namespace facebook::react {
 class RuntimeSchedulerBase {
  public:
   virtual ~RuntimeSchedulerBase() = default;
+  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
+  // refactor has been shipped.
   virtual void scheduleWork(RawCallback&& callback) const noexcept = 0;
   virtual void executeNowOnTheSameThread(RawCallback&& callback) = 0;
+  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
+  // refactor has been shipped.
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) noexcept = 0;
+      jsi::Function&& callback) const noexcept = 0;
+  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
+  // refactor has been shipped.
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) noexcept = 0;
+      RawCallback&& callback) const noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
   virtual bool getIsSynchronous() const noexcept = 0;
@@ -38,8 +44,9 @@ class RuntimeSchedulerBase {
 // at runtime based on a feature flag.
 class RuntimeScheduler final : RuntimeSchedulerBase {
  public:
-  RuntimeScheduler(
+  explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
+      bool useModernRuntimeScheduler = false,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
 
@@ -74,11 +81,11 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) noexcept override;
+      jsi::Function&& callback) const noexcept override;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) noexcept override;
+      RawCallback&& callback) const noexcept override;
 
   /*
    * Cancelled task will never be executed.

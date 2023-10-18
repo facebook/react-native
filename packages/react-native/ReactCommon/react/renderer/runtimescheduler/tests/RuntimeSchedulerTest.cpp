@@ -10,6 +10,7 @@
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <memory>
+#include <semaphore>
 
 #include "StubClock.h"
 #include "StubErrorUtils.h"
@@ -19,7 +20,7 @@ namespace facebook::react {
 
 using namespace std::chrono_literals;
 
-class RuntimeSchedulerTest : public testing::Test {
+class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     hostFunctionCallCount_ = 0;
@@ -41,8 +42,10 @@ class RuntimeSchedulerTest : public testing::Test {
       return stubClock_->getNow();
     };
 
-    runtimeScheduler_ =
-        std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
+    auto useModernRuntimeScheduler = GetParam();
+
+    runtimeScheduler_ = std::make_unique<RuntimeScheduler>(
+        runtimeExecutor, useModernRuntimeScheduler, stubNow);
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -71,7 +74,7 @@ class RuntimeSchedulerTest : public testing::Test {
   std::shared_ptr<StubErrorUtils> stubErrorUtils_;
 };
 
-TEST_F(RuntimeSchedulerTest, now) {
+TEST_P(RuntimeSchedulerTest, now) {
   stubClock_->setTimePoint(1ms);
 
   EXPECT_EQ(runtimeScheduler_->now(), RuntimeSchedulerTimePoint(1ms));
@@ -85,12 +88,12 @@ TEST_F(RuntimeSchedulerTest, now) {
   EXPECT_EQ(runtimeScheduler_->now(), RuntimeSchedulerTimePoint(6011ms));
 }
 
-TEST_F(RuntimeSchedulerTest, getShouldYield) {
+TEST_P(RuntimeSchedulerTest, getShouldYield) {
   // Always returns false for now.
   EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
+TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
   bool didRunTask = false;
   auto callback =
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
@@ -111,7 +114,7 @@ TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
+TEST_P(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
   bool didRunTask = false;
   auto callback =
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
@@ -132,7 +135,7 @@ TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, taskExpiration) {
+TEST_P(RuntimeSchedulerTest, taskExpiration) {
   bool didRunTask = false;
   auto callback =
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
@@ -156,7 +159,7 @@ TEST_F(RuntimeSchedulerTest, taskExpiration) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
+TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   uint firstTaskCallOrder = 0;
   auto callbackOne = createHostFunctionFromLambda(
       [this, &firstTaskCallOrder](bool /*unused*/) {
@@ -189,7 +192,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
+TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   uint lowPriorityTaskCallOrder = 0;
   auto callbackOne = createHostFunctionFromLambda(
       [this, &lowPriorityTaskCallOrder](bool /*unused*/) {
@@ -222,7 +225,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
-TEST_F(RuntimeSchedulerTest, cancelTask) {
+TEST_P(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
   auto callback = createHostFunctionFromLambda([&didRunTask](bool /*unused*/) {
     didRunTask = true;
@@ -243,7 +246,7 @@ TEST_F(RuntimeSchedulerTest, cancelTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, continuationTask) {
+TEST_P(RuntimeSchedulerTest, continuationTask) {
   bool didRunTask = false;
   bool didContinuationTask = false;
 
@@ -275,7 +278,7 @@ TEST_F(RuntimeSchedulerTest, continuationTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
+TEST_P(RuntimeSchedulerTest, getCurrentPriorityLevel) {
   auto callback =
       createHostFunctionFromLambda([this](bool /*didUserCallbackTimeout*/) {
         EXPECT_EQ(
@@ -315,7 +318,7 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
       SchedulerPriority::NormalPriority);
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
+TEST_P(RuntimeSchedulerTest, scheduleWorkWithYielding) {
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](const jsi::Runtime& /*unused*/) { wasCalled = true; });
@@ -333,7 +336,12 @@ TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
+TEST_P(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
+  // Only for legacy runtime scheduler
+  if (GetParam()) {
+    return;
+  }
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -360,7 +368,12 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
+TEST_P(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
+  // Only for legacy runtime scheduler
+  if (GetParam()) {
+    return;
+  }
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -388,7 +401,12 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
+TEST_P(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
+  // Only for legacy runtime scheduler
+  if (GetParam()) {
+    return;
+  }
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -414,7 +432,184 @@ TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, scheduleTaskFromTask) {
+TEST_P(RuntimeSchedulerTest, scheduleTaskWithYielding) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  bool wasCalled = false;
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority,
+      [&](const jsi::Runtime& /*unused*/) { wasCalled = true; });
+
+  EXPECT_FALSE(wasCalled);
+
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(wasCalled);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccess) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  uint syncTaskExecutionCount = 0;
+  uint normalTaskExecutionCount = 0;
+
+  std::binary_semaphore signalTaskToSync{0};
+
+  // No tasks scheduled, not yielding necessary.
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+
+  std::thread t1([this, &signalTaskToSync, &syncTaskExecutionCount]() {
+    // Wait for the normal task to start executing
+    signalTaskToSync.acquire();
+
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&syncTaskExecutionCount](jsi::Runtime& /*runtime*/) {
+          syncTaskExecutionCount++;
+        });
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority,
+      [this, &normalTaskExecutionCount, &signalTaskToSync](
+          jsi::Runtime& /*unused*/) {
+        // Notify the "main" thread that it should request sync access.
+        signalTaskToSync.release();
+
+        // Wait for the sync access to request yielding
+        while (!runtimeScheduler_->getShouldYield()) {
+          // This is just to avoid the loop to take significant CPU while
+          // waiting for the yield request.
+          std::chrono::duration<int, std::milli> timespan(10);
+          std::this_thread::sleep_for(timespan);
+        }
+
+        normalTaskExecutionCount++;
+      });
+
+  EXPECT_EQ(normalTaskExecutionCount, 0);
+  EXPECT_EQ(syncTaskExecutionCount, 0);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // Only the normal task has been scheduled at this point.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // This will start executing the normal task, which will unblock the thread
+  // that will request sync access
+  stubQueue_->tick();
+
+  // The normal task yielded to the synchronous access, which is now waiting
+  // to execute
+  EXPECT_EQ(normalTaskExecutionCount, 1);
+  EXPECT_EQ(syncTaskExecutionCount, 0);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // Execute the synchronous access and wait for completion
+  stubQueue_->tick();
+  t1.join();
+
+  EXPECT_EQ(syncTaskExecutionCount, 1);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // The previous task is still in the queue (although it was executed already).
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // Just empty the queue
+  stubQueue_->tick();
+
+  EXPECT_EQ(normalTaskExecutionCount, 1); // It hasn't executed again
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, immediateTaskYieldsToSynchronousAccess) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  uint syncTaskExecutionCount = 0;
+  uint normalTaskExecutionCount = 0;
+
+  std::binary_semaphore signalTaskToSync{0};
+
+  // No tasks scheduled, not yielding necessary.
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+
+  std::thread t1([this, &signalTaskToSync, &syncTaskExecutionCount]() {
+    // Wait for the normal task to start executing
+    signalTaskToSync.acquire();
+
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&syncTaskExecutionCount](jsi::Runtime& /*runtime*/) {
+          syncTaskExecutionCount++;
+        });
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority,
+      [this, &normalTaskExecutionCount, &signalTaskToSync](
+          jsi::Runtime& /*unused*/) {
+        // Notify the "main" thread that it should request sync access.
+        signalTaskToSync.release();
+
+        // Wait for the sync access to request yielding
+        while (!runtimeScheduler_->getShouldYield()) {
+          // This is just to avoid the loop to take significant CPU while
+          // waiting for the yield request.
+          std::chrono::duration<int, std::milli> timespan(10);
+          std::this_thread::sleep_for(timespan);
+        }
+
+        normalTaskExecutionCount++;
+      });
+
+  EXPECT_EQ(normalTaskExecutionCount, 0);
+  EXPECT_EQ(syncTaskExecutionCount, 0);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // Only the normal task has been scheduled at this point.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // This will start executing the normal task, which will unblock the thread
+  // that will request sync access
+  stubQueue_->tick();
+
+  // The normal task yielded to the synchronous access, which is now waiting
+  // to execute
+  EXPECT_EQ(normalTaskExecutionCount, 1);
+  EXPECT_EQ(syncTaskExecutionCount, 0);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // Execute the synchronous access and wait for completion
+  stubQueue_->tick();
+  t1.join();
+
+  EXPECT_EQ(syncTaskExecutionCount, 1);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // The previous task is still in the queue (although it was executed already),
+  // so the sync task scheduled the work loop to process it.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // Just empty the queue
+  stubQueue_->tick();
+
+  EXPECT_EQ(normalTaskExecutionCount, 1); // It hasn't executed again
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, scheduleTaskFromTask) {
   bool didRunFirstTask = false;
   bool didRunSecondTask = false;
   auto firstCallback = createHostFunctionFromLambda(
@@ -448,7 +643,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTaskFromTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, handlingError) {
+TEST_P(RuntimeSchedulerTest, handlingError) {
   bool didRunTask = false;
   auto firstCallback =
       createHostFunctionFromLambda([this, &didRunTask](bool /*unused*/) {
@@ -470,7 +665,7 @@ TEST_F(RuntimeSchedulerTest, handlingError) {
   EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
 }
 
-TEST_F(RuntimeSchedulerTest, basicSameThreadExecution) {
+TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
@@ -494,7 +689,7 @@ TEST_F(RuntimeSchedulerTest, basicSameThreadExecution) {
   EXPECT_TRUE(didRunSynchronousTask);
 }
 
-TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
+TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   bool didRunSynchronousTask = false;
   bool didRunSubsequentTask = false;
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
@@ -532,7 +727,7 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   EXPECT_TRUE(didRunSubsequentTask);
 }
 
-TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
+TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   bool didRunSynchronousTask = false;
   bool didRunSubsequentTask = false;
   std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
@@ -550,7 +745,11 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::LowPriority, std::move(callback));
-          runtimeScheduler_->callExpiredTasks(runtime);
+
+          // Only for legacy runtime scheduler
+          if (!GetParam()) {
+            runtimeScheduler_->callExpiredTasks(runtime);
+          }
 
           EXPECT_FALSE(didRunSubsequentTask);
         });
@@ -579,7 +778,12 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
+TEST_P(RuntimeSchedulerTest, legacyTwoThreadsRequestAccessToTheRuntime) {
+  // Only for legacy runtime scheduler
+  if (GetParam()) {
+    return;
+  }
+
   bool didRunSynchronousTask = false;
   bool didRunWork = false;
 
@@ -616,5 +820,92 @@ TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
   EXPECT_TRUE(didRunSynchronousTask);
   EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 }
+
+TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  std::binary_semaphore signalTask1ToScheduleTask2{0};
+  std::binary_semaphore signalTask2ToResumeTask1{0};
+
+  bool didRunSynchronousTask1 = false;
+  bool didRunSynchronousTask2 = false;
+
+  std::thread t1([this,
+                  &didRunSynchronousTask1,
+                  &signalTask1ToScheduleTask2,
+                  &signalTask2ToResumeTask1]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&didRunSynchronousTask1,
+         &signalTask1ToScheduleTask2,
+         &signalTask2ToResumeTask1](jsi::Runtime& /*runtime*/) {
+          // Notify that the second task can be scheduled.
+          signalTask1ToScheduleTask2.release();
+
+          // Wait for the second task to be scheduled before finishing this task
+          signalTask2ToResumeTask1.acquire();
+
+          didRunSynchronousTask1 = true;
+        });
+  });
+
+  std::thread t2([this,
+                  &didRunSynchronousTask2,
+                  &signalTask1ToScheduleTask2,
+                  &signalTask2ToResumeTask1]() {
+    // Wait for the first task to start executing before scheduling this one.
+    signalTask1ToScheduleTask2.acquire();
+
+    // Notify the first task that it can resume execution.
+    // As we can't do this after the task this from thread has been scheduled
+    // (because it's synchronous), we can just do a short wait instead in a new
+    // thread.
+    std::thread t3([&signalTask2ToResumeTask1]() {
+      std::chrono::duration<int, std::milli> timespan(50);
+      std::this_thread::sleep_for(timespan);
+      signalTask2ToResumeTask1.release();
+    });
+
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&didRunSynchronousTask2](jsi::Runtime& /*runtime*/) {
+          didRunSynchronousTask2 = true;
+        });
+
+    t3.join();
+  });
+
+  auto hasTask = stubQueue_->waitForTasks(1);
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunSynchronousTask1);
+  EXPECT_FALSE(didRunSynchronousTask2);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // Only the first task would have been scheduled at this point.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+  t1.join();
+
+  EXPECT_TRUE(didRunSynchronousTask1);
+  EXPECT_FALSE(didRunSynchronousTask2);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  // Now we've scheduled the second task.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+  t2.join();
+
+  EXPECT_TRUE(didRunSynchronousTask1);
+  EXPECT_TRUE(didRunSynchronousTask2);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UseModernRuntimeScheduler,
+    RuntimeSchedulerTest,
+    testing::Values(false, true));
 
 } // namespace facebook::react
