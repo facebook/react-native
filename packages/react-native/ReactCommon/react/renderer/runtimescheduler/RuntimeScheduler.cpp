@@ -40,19 +40,19 @@ RuntimeScheduler::RuntimeScheduler(
           useModernRuntimeScheduler,
           std::move(now))) {}
 
-void RuntimeScheduler::scheduleWork(RawCallback&& callback) const noexcept {
+void RuntimeScheduler::scheduleWork(RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleWork(std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function&& callback) const noexcept {
+    jsi::Function&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
-    RawCallback&& callback) const noexcept {
+    RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 

@@ -36,7 +36,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   RuntimeScheduler_Legacy(RuntimeScheduler_Legacy&&) = delete;
   RuntimeScheduler_Legacy& operator=(RuntimeScheduler_Legacy&&) = delete;
 
-  void scheduleWork(RawCallback&& callback) const noexcept override;
+  void scheduleWork(RawCallback&& callback) noexcept override;
 
   /*
    * Grants access to the runtime synchronously on the caller's thread.
@@ -55,11 +55,11 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) const noexcept override;
+      jsi::Function&& callback) noexcept override;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) const noexcept override;
+      RawCallback&& callback) noexcept override;
 
   /*
    * Cancelled task will never be executed.
@@ -111,34 +111,34 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
  private:
-  mutable std::priority_queue<
+  std::priority_queue<
       std::shared_ptr<Task>,
       std::vector<std::shared_ptr<Task>>,
       TaskPriorityComparer>
       taskQueue_;
 
   const RuntimeExecutor runtimeExecutor_;
-  mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
+  SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
   /*
    * Counter indicating how many access to the runtime have been requested.
    */
-  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
+  std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
 
-  mutable std::atomic_bool isSynchronous_{false};
+  std::atomic_bool isSynchronous_{false};
 
-  void startWorkLoop(jsi::Runtime& runtime) const;
+  void startWorkLoop(jsi::Runtime& runtime);
 
   /*
    * Schedules a work loop unless it has been already scheduled
    * This is to avoid unnecessary calls to `runtimeExecutor`.
    */
-  void scheduleWorkLoopIfNecessary() const;
+  void scheduleWorkLoopIfNecessary();
 
   void executeTask(
       jsi::Runtime& runtime,
       const std::shared_ptr<Task>& task,
-      bool didUserCallbackTimeout) const;
+      bool didUserCallbackTimeout);
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -150,12 +150,12 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  mutable std::atomic_bool isWorkLoopScheduled_{false};
+  std::atomic_bool isWorkLoopScheduled_{false};
 
   /*
    * This flag is set while performing work, to prevent re-entrancy.
    */
-  mutable std::atomic_bool isPerformingWork_{false};
+  std::atomic_bool isPerformingWork_{false};
 };
 
 } // namespace facebook::react

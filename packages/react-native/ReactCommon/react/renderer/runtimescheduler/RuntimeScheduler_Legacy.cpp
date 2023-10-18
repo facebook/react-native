@@ -21,8 +21,7 @@ RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
-void RuntimeScheduler_Legacy::scheduleWork(
-    RawCallback&& callback) const noexcept {
+void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
 
   runtimeAccessRequests_ += 1;
@@ -38,7 +37,7 @@ void RuntimeScheduler_Legacy::scheduleWork(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function&& callback) const noexcept {
+    jsi::Function&& callback) noexcept {
   SystraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
@@ -58,7 +57,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
-    RawCallback&& callback) const noexcept {
+    RawCallback&& callback) noexcept {
   SystraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
@@ -145,7 +144,7 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
 
 #pragma mark - Private
 
-void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() const {
+void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() {
   if (!isWorkLoopScheduled_ && !isPerformingWork_) {
     isWorkLoopScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime& runtime) {
@@ -155,7 +154,7 @@ void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() const {
   }
 }
 
-void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) const {
+void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
   SystraceSection s("RuntimeScheduler::startWorkLoop");
 
   auto previousPriority = currentPriority_;
@@ -184,7 +183,7 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) const {
 void RuntimeScheduler_Legacy::executeTask(
     jsi::Runtime& runtime,
     const std::shared_ptr<Task>& task,
-    bool didUserCallbackTimeout) const {
+    bool didUserCallbackTimeout) {
   SystraceSection s(
       "RuntimeScheduler::executeTask",
       "priority",
