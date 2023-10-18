@@ -47,7 +47,7 @@ inline FlexDirection resolveCrossDirection(
       : FlexDirection::Column;
 }
 
-inline YGEdge leadingEdge(const FlexDirection flexDirection) {
+inline YGEdge flexStartEdge(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
       return YGEdgeTop;
@@ -62,7 +62,7 @@ inline YGEdge leadingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge trailingEdge(const FlexDirection flexDirection) {
+inline YGEdge flexEndEdge(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
       return YGEdgeBottom;
@@ -77,7 +77,7 @@ inline YGEdge trailingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge leadingLayoutEdge(
+inline YGEdge inlineStartEdge(
     const FlexDirection flexDirection,
     const Direction direction) {
   if (isRow(flexDirection)) {
@@ -87,7 +87,7 @@ inline YGEdge leadingLayoutEdge(
   return YGEdgeTop;
 }
 
-inline YGEdge trailingLayoutEdge(
+inline YGEdge inlineEndEdge(
     const FlexDirection flexDirection,
     const Direction direction) {
   if (isRow(flexDirection)) {
