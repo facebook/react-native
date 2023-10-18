@@ -28,7 +28,8 @@ ReactInstance::ReactInstance(
     std::unique_ptr<jsi::Runtime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
-    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc)
+    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
+    bool useModernRuntimeScheduler)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
@@ -75,8 +76,8 @@ ReactInstance::ReactInstance(
     }
   };
 
-  runtimeScheduler_ =
-      std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
+  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+      std::move(runtimeExecutor), useModernRuntimeScheduler);
 
   auto pipedRuntimeExecutor =
       [runtimeScheduler = runtimeScheduler_.get()](

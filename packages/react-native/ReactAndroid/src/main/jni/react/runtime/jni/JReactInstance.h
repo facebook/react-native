@@ -45,7 +45,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-      bool isProfiling);
+      bool isProfiling,
+      bool useModernRuntimeScheduler);
 
   /*
    * Instantiates and returns an instance of `JSTimerExecutor`.
@@ -90,7 +91,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-      bool isProfiling) noexcept;
+      bool isProfiling,
+      bool useModernRuntimeScheduler) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
