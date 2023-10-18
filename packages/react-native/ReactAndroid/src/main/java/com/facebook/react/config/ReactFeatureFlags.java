@@ -165,4 +165,10 @@ public class ReactFeatureFlags {
 
   /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
   public static boolean enableTurboModuleStableAPI = false;
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
+   * priorities from any thread.
+   */
+  public static boolean useModernRuntimeScheduler = false;
 }
