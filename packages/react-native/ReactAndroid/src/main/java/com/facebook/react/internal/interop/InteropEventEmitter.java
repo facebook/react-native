@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.fabric.interop;
+package com.facebook.react.internal.interop;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
