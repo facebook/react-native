@@ -8,37 +8,18 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
+#include <atomic>
+#include <memory>
+#include <queue>
 
 namespace facebook::react {
 
-// This is a temporary abstract class for RuntimeScheduler forks to implement
-// (and use them interchangeably).
-class RuntimeSchedulerBase {
+class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
-  virtual ~RuntimeSchedulerBase() = default;
-  virtual void scheduleWork(RawCallback&& callback) const noexcept = 0;
-  virtual void executeNowOnTheSameThread(RawCallback&& callback) = 0;
-  virtual std::shared_ptr<Task> scheduleTask(
-      SchedulerPriority priority,
-      jsi::Function&& callback) noexcept = 0;
-  virtual std::shared_ptr<Task> scheduleTask(
-      SchedulerPriority priority,
-      RawCallback&& callback) noexcept = 0;
-  virtual void cancelTask(Task& task) noexcept = 0;
-  virtual bool getShouldYield() const noexcept = 0;
-  virtual bool getIsSynchronous() const noexcept = 0;
-  virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
-  virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
-  virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
-};
-
-// This is a proxy for RuntimeScheduler implementation, which will be selected
-// at runtime based on a feature flag.
-class RuntimeScheduler final : RuntimeSchedulerBase {
- public:
-  RuntimeScheduler(
+  RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
@@ -46,14 +27,14 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   /*
    * Not copyable.
    */
-  RuntimeScheduler(const RuntimeScheduler&) = delete;
-  RuntimeScheduler& operator=(const RuntimeScheduler&) = delete;
+  RuntimeScheduler_Legacy(const RuntimeScheduler_Legacy&) = delete;
+  RuntimeScheduler_Legacy& operator=(const RuntimeScheduler_Legacy&) = delete;
 
   /*
    * Not movable.
    */
-  RuntimeScheduler(RuntimeScheduler&&) = delete;
-  RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
+  RuntimeScheduler_Legacy(RuntimeScheduler_Legacy&&) = delete;
+  RuntimeScheduler_Legacy& operator=(RuntimeScheduler_Legacy&&) = delete;
 
   void scheduleWork(RawCallback&& callback) const noexcept override;
 
@@ -130,9 +111,51 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
  private:
-  // Actual implementation, stored as a unique pointer to simplify memory
-  // management.
-  std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
+  mutable std::priority_queue<
+      std::shared_ptr<Task>,
+      std::vector<std::shared_ptr<Task>>,
+      TaskPriorityComparer>
+      taskQueue_;
+
+  const RuntimeExecutor runtimeExecutor_;
+  mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
+
+  /*
+   * Counter indicating how many access to the runtime have been requested.
+   */
+  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
+
+  mutable std::atomic_bool isSynchronous_{false};
+
+  void startWorkLoop(jsi::Runtime& runtime) const;
+
+  /*
+   * Schedules a work loop unless it has been already scheduled
+   * This is to avoid unnecessary calls to `runtimeExecutor`.
+   */
+  void scheduleWorkLoopIfNecessary() const;
+
+  void executeTask(
+      jsi::Runtime& runtime,
+      const std::shared_ptr<Task>& task,
+      bool didUserCallbackTimeout) const;
+
+  /*
+   * Returns a time point representing the current point in time. May be called
+   * from multiple threads.
+   */
+  std::function<RuntimeSchedulerTimePoint()> now_;
+
+  /*
+   * Flag indicating if callback on JavaScript queue has been
+   * scheduled.
+   */
+  mutable std::atomic_bool isWorkLoopScheduled_{false};
+
+  /*
+   * This flag is set while performing work, to prevent re-entrancy.
+   */
+  mutable std::atomic_bool isPerformingWork_{false};
 };
 
 } // namespace facebook::react
