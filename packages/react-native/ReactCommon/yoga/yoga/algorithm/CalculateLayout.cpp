@@ -343,13 +343,13 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified width, compute the width based on
     // the left/right offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Row) &&
-        child->isFlexEndPositionDefined(FlexDirection::Row)) {
+    if (child->isInlineStartPositionDefined(FlexDirection::Row, direction) &&
+        child->isInlineEndPositionDefined(FlexDirection::Row, direction)) {
       childWidth = node->getLayout().measuredDimension(Dimension::Width) -
           (node->getInlineStartBorder(FlexDirection::Row, direction) +
            node->getInlineEndBorder(FlexDirection::Row, direction)) -
-          (child->getFlexStartPosition(FlexDirection::Row, width) +
-           child->getFlexEndPosition(FlexDirection::Row, width));
+          (child->getInlineStartPosition(FlexDirection::Row, direction, width) +
+           child->getInlineEndPosition(FlexDirection::Row, direction, width));
       childWidth =
           boundAxis(child, FlexDirection::Row, childWidth, width, width);
     }
@@ -363,13 +363,15 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified height, compute the height based on
     // the top/bottom offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Column) &&
-        child->isFlexEndPositionDefined(FlexDirection::Column)) {
+    if (child->isInlineStartPositionDefined(FlexDirection::Column, direction) &&
+        child->isInlineEndPositionDefined(FlexDirection::Column, direction)) {
       childHeight = node->getLayout().measuredDimension(Dimension::Height) -
           (node->getInlineStartBorder(FlexDirection::Column, direction) +
            node->getInlineEndBorder(FlexDirection::Column, direction)) -
-          (child->getFlexStartPosition(FlexDirection::Column, height) +
-           child->getFlexEndPosition(FlexDirection::Column, height));
+          (child->getInlineStartPosition(
+               FlexDirection::Column, direction, height) +
+           child->getInlineEndPosition(
+               FlexDirection::Column, direction, height));
       childHeight =
           boundAxis(child, FlexDirection::Column, childHeight, height, width);
     }
@@ -446,18 +448,19 @@ static void layoutAbsoluteChild(
       depth,
       generationCount);
 
-  if (child->isFlexEndPositionDefined(mainAxis) &&
-      !child->isFlexStartPositionDefined(mainAxis)) {
+  if (child->isInlineEndPositionDefined(mainAxis, direction) &&
+      !child->isInlineStartPositionDefined(mainAxis, direction)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(mainAxis)) -
             child->getLayout().measuredDimension(dimension(mainAxis)) -
             node->getInlineEndBorder(mainAxis, direction) -
             child->getInlineEndMargin(
                 mainAxis, direction, isMainAxisRow ? width : height) -
-            child->getFlexEndPosition(mainAxis, isMainAxisRow ? width : height),
+            child->getInlineEndPosition(
+                mainAxis, direction, isMainAxisRow ? width : height),
         flexStartEdge(mainAxis));
   } else if (
-      !child->isFlexStartPositionDefined(mainAxis) &&
+      !child->isInlineStartPositionDefined(mainAxis, direction) &&
       node->getStyle().justifyContent() == Justify::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
@@ -465,7 +468,7 @@ static void layoutAbsoluteChild(
             2.0f,
         flexStartEdge(mainAxis));
   } else if (
-      !child->isFlexStartPositionDefined(mainAxis) &&
+      !child->isInlineStartPositionDefined(mainAxis, direction) &&
       node->getStyle().justifyContent() == Justify::FlexEnd) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
@@ -474,10 +477,11 @@ static void layoutAbsoluteChild(
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(mainAxis)) {
+      child->isInlineStartPositionDefined(mainAxis, direction)) {
     child->setLayoutPosition(
-        child->getFlexStartPosition(
+        child->getInlineStartPosition(
             mainAxis,
+            direction,
             node->getLayout().measuredDimension(dimension(mainAxis))) +
             node->getInlineStartBorder(mainAxis, direction) +
             child->getInlineStartMargin(
@@ -487,20 +491,20 @@ static void layoutAbsoluteChild(
         flexStartEdge(mainAxis));
   }
 
-  if (child->isFlexEndPositionDefined(crossAxis) &&
-      !child->isFlexStartPositionDefined(crossAxis)) {
+  if (child->isInlineEndPositionDefined(crossAxis, direction) &&
+      !child->isInlineStartPositionDefined(crossAxis, direction)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(crossAxis)) -
             child->getLayout().measuredDimension(dimension(crossAxis)) -
             node->getInlineEndBorder(crossAxis, direction) -
             child->getInlineEndMargin(
                 crossAxis, direction, isMainAxisRow ? height : width) -
-            child->getFlexEndPosition(
-                crossAxis, isMainAxisRow ? height : width),
+            child->getInlineEndPosition(
+                crossAxis, direction, isMainAxisRow ? height : width),
         flexStartEdge(crossAxis));
 
   } else if (
-      !child->isFlexStartPositionDefined(crossAxis) &&
+      !child->isInlineStartPositionDefined(crossAxis, direction) &&
       resolveChildAlignment(node, child) == Align::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(crossAxis)) -
@@ -508,7 +512,7 @@ static void layoutAbsoluteChild(
             2.0f,
         flexStartEdge(crossAxis));
   } else if (
-      !child->isFlexStartPositionDefined(crossAxis) &&
+      !child->isInlineStartPositionDefined(crossAxis, direction) &&
       ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
        (node->getStyle().flexWrap() == Wrap::WrapReverse))) {
     child->setLayoutPosition(
@@ -518,10 +522,11 @@ static void layoutAbsoluteChild(
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(crossAxis)) {
+      child->isInlineStartPositionDefined(crossAxis, direction)) {
     child->setLayoutPosition(
-        child->getFlexStartPosition(
+        child->getInlineStartPosition(
             crossAxis,
+            direction,
             node->getLayout().measuredDimension(dimension(crossAxis))) +
             node->getInlineStartBorder(crossAxis, direction) +
             child->getInlineStartMargin(
@@ -1305,13 +1310,14 @@ static void justifyMainAxis(
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
-        child->isFlexStartPositionDefined(mainAxis)) {
+        child->isInlineStartPositionDefined(mainAxis, direction)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
         // defined, we override the position to whatever the user said (and
         // margin/border).
         child->setLayoutPosition(
-            child->getFlexStartPosition(mainAxis, availableInnerMainDim) +
+            child->getInlineStartPosition(
+                mainAxis, direction, availableInnerMainDim) +
                 node->getInlineStartBorder(mainAxis, direction) +
                 child->getInlineStartMargin(
                     mainAxis, direction, availableInnerWidth),
@@ -1864,10 +1870,11 @@ static void calculateLayoutImpl(
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
           const bool isChildLeadingPosDefined =
-              child->isFlexStartPositionDefined(crossAxis);
+              child->isInlineStartPositionDefined(crossAxis, direction);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
-                child->getFlexStartPosition(crossAxis, availableInnerCrossDim) +
+                child->getInlineStartPosition(
+                    crossAxis, direction, availableInnerCrossDim) +
                     node->getInlineStartBorder(crossAxis, direction) +
                     child->getInlineStartMargin(
                         crossAxis, direction, availableInnerWidth),
@@ -2195,8 +2202,10 @@ static void calculateLayoutImpl(
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine -
                         calculateBaseline(child) +
-                        child->getFlexStartPosition(
-                            FlexDirection::Column, availableInnerCrossDim),
+                        child->getInlineStartPosition(
+                            FlexDirection::Column,
+                            direction,
+                            availableInnerCrossDim),
                     YGEdgeTop);
 
                 break;
