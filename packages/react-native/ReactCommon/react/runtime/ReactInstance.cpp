@@ -24,30 +24,6 @@
 
 namespace facebook::react {
 
-// Looping on \c drainMicrotasks until it completes or hits the retries bound.
-static void performMicrotaskCheckpoint(jsi::Runtime& runtime) {
-  uint8_t retries = 0;
-  // A heuristic number to guard inifinite or absurd numbers of retries.
-  constexpr unsigned int kRetriesBound = 255;
-
-  while (retries < kRetriesBound) {
-    try {
-      // The default behavior of \c drainMicrotasks is unbounded execution.
-      // We may want to make it bounded in the future.
-      if (runtime.drainMicrotasks()) {
-        break;
-      }
-    } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
-    }
-    retries++;
-  }
-
-  if (retries == kRetriesBound) {
-    throw std::runtime_error("Hits microtasks retries bound.");
-  }
-}
-
 ReactInstance::ReactInstance(
     std::unique_ptr<jsi::Runtime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
@@ -91,7 +67,6 @@ ReactInstance::ReactInstance(
                 if (auto strongTimerManager = weakTimerManager.lock()) {
                   strongTimerManager->callReactNativeMicrotasks(*strongRuntime);
                 }
-                performMicrotaskCheckpoint(*strongRuntime);
               } catch (jsi::JSError& originalError) {
                 handleJSError(*strongRuntime, originalError, true);
               }
