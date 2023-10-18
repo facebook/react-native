@@ -87,31 +87,31 @@ YGEdge Node::getLeadingLayoutEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
   return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? leadingEdge(flexDirection)
-      : leadingLayoutEdge(flexDirection, direction);
+      ? flexStartEdge(flexDirection)
+      : inlineStartEdge(flexDirection, direction);
 }
 
 YGEdge Node::getTrailingLayoutEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
   return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? trailingEdge(flexDirection)
-      : trailingLayoutEdge(flexDirection, direction);
+      ? flexEndEdge(flexDirection)
+      : inlineEndEdge(flexDirection, direction);
 }
 
 bool Node::isLeadingPositionDefined(FlexDirection axis) const {
   auto leadingPosition = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), leadingEdge(axis));
+            style_.position(), YGEdgeStart, flexStartEdge(axis))
+      : computeEdgeValueForColumn(style_.position(), flexStartEdge(axis));
 
   return !leadingPosition.isUndefined();
 }
 
 bool Node::isTrailingPosDefined(FlexDirection axis) const {
   auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), trailingEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, flexEndEdge(axis))
+      : computeEdgeValueForColumn(style_.position(), flexEndEdge(axis));
 
   return !trailingPosition.isUndefined();
 }
@@ -119,16 +119,16 @@ bool Node::isTrailingPosDefined(FlexDirection axis) const {
 float Node::getLeadingPosition(FlexDirection axis, float axisSize) const {
   auto leadingPosition = isRow(axis)
       ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), leadingEdge(axis));
+            style_.position(), YGEdgeStart, flexStartEdge(axis))
+      : computeEdgeValueForColumn(style_.position(), flexStartEdge(axis));
 
   return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getTrailingPosition(FlexDirection axis, float axisSize) const {
   auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), trailingEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, flexEndEdge(axis))
+      : computeEdgeValueForColumn(style_.position(), flexEndEdge(axis));
 
   return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
 }
@@ -159,32 +159,34 @@ float Node::getTrailingMargin(
 
 float Node::getLeadingBorder(FlexDirection axis) const {
   YGValue leadingBorder = isRow(axis)
-      ? computeEdgeValueForRow(style_.border(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.border(), leadingEdge(axis));
+      ? computeEdgeValueForRow(
+            style_.border(), YGEdgeStart, flexStartEdge(axis))
+      : computeEdgeValueForColumn(style_.border(), flexStartEdge(axis));
 
   return maxOrDefined(leadingBorder.value, 0.0f);
 }
 
 float Node::getTrailingBorder(FlexDirection axis) const {
   YGValue trailingBorder = isRow(axis)
-      ? computeEdgeValueForRow(style_.border(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.border(), trailingEdge(axis));
+      ? computeEdgeValueForRow(style_.border(), YGEdgeEnd, flexEndEdge(axis))
+      : computeEdgeValueForColumn(style_.border(), flexEndEdge(axis));
 
   return maxOrDefined(trailingBorder.value, 0.0f);
 }
 
 float Node::getLeadingPadding(FlexDirection axis, float widthSize) const {
   auto leadingPadding = isRow(axis)
-      ? computeEdgeValueForRow(style_.padding(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.padding(), leadingEdge(axis));
+      ? computeEdgeValueForRow(
+            style_.padding(), YGEdgeStart, flexStartEdge(axis))
+      : computeEdgeValueForColumn(style_.padding(), flexStartEdge(axis));
 
   return maxOrDefined(resolveValue(leadingPadding, widthSize).unwrap(), 0.0f);
 }
 
 float Node::getTrailingPadding(FlexDirection axis, float widthSize) const {
   auto trailingPadding = isRow(axis)
-      ? computeEdgeValueForRow(style_.padding(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.padding(), trailingEdge(axis));
+      ? computeEdgeValueForRow(style_.padding(), YGEdgeEnd, flexEndEdge(axis))
+      : computeEdgeValueForColumn(style_.padding(), flexEndEdge(axis));
 
   return maxOrDefined(resolveValue(trailingPadding, widthSize).unwrap(), 0.0f);
 }
@@ -418,7 +420,7 @@ YGValue Node::marginLeadingValue(FlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
-    return style_.margin()[leadingEdge(axis)];
+    return style_.margin()[flexStartEdge(axis)];
   }
 }
 
@@ -426,7 +428,7 @@ YGValue Node::marginTrailingValue(FlexDirection axis) const {
   if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
-    return style_.margin()[trailingEdge(axis)];
+    return style_.margin()[flexEndEdge(axis)];
   }
 }
 

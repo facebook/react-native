@@ -88,8 +88,8 @@ static void setChildTrailingPosition(
   const float size = child->getLayout().measuredDimension(dimension(axis));
   child->setLayoutPosition(
       node->getLayout().measuredDimension(dimension(axis)) - size -
-          child->getLayout().position[leadingEdge(axis)],
-      trailingEdge(axis));
+          child->getLayout().position[flexStartEdge(axis)],
+      flexEndEdge(axis));
 }
 
 static void constrainMaxSizeForMode(
@@ -456,7 +456,7 @@ static void layoutAbsoluteChild(
                 mainAxis, direction, isMainAxisRow ? width : height) -
             child->getTrailingPosition(
                 mainAxis, isMainAxisRow ? width : height),
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   } else if (
       !child->isLeadingPositionDefined(mainAxis) &&
       node->getStyle().justifyContent() == Justify::Center) {
@@ -464,14 +464,14 @@ static void layoutAbsoluteChild(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
          child->getLayout().measuredDimension(dimension(mainAxis))) /
             2.0f,
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   } else if (
       !child->isLeadingPositionDefined(mainAxis) &&
       node->getStyle().justifyContent() == Justify::FlexEnd) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
          child->getLayout().measuredDimension(dimension(mainAxis))),
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
@@ -485,7 +485,7 @@ static void layoutAbsoluteChild(
                 mainAxis,
                 direction,
                 node->getLayout().measuredDimension(dimension(mainAxis))),
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   }
 
   if (child->isTrailingPosDefined(crossAxis) &&
@@ -498,7 +498,7 @@ static void layoutAbsoluteChild(
                 crossAxis, direction, isMainAxisRow ? height : width) -
             child->getTrailingPosition(
                 crossAxis, isMainAxisRow ? height : width),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
 
   } else if (
       !child->isLeadingPositionDefined(crossAxis) &&
@@ -507,7 +507,7 @@ static void layoutAbsoluteChild(
         (node->getLayout().measuredDimension(dimension(crossAxis)) -
          child->getLayout().measuredDimension(dimension(crossAxis))) /
             2.0f,
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   } else if (
       !child->isLeadingPositionDefined(crossAxis) &&
       ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
@@ -515,7 +515,7 @@ static void layoutAbsoluteChild(
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(crossAxis)) -
          child->getLayout().measuredDimension(dimension(crossAxis))),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
@@ -529,7 +529,7 @@ static void layoutAbsoluteChild(
                 crossAxis,
                 direction,
                 node->getLayout().measuredDimension(dimension(crossAxis))),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   }
 }
 
@@ -1308,7 +1308,7 @@ static void justifyMainAxis(
                 node->getLeadingBorder(mainAxis) +
                 child->getLeadingMargin(
                     mainAxis, direction, availableInnerWidth),
-            leadingEdge(mainAxis));
+            flexStartEdge(mainAxis));
       }
     } else {
       // Now that we placed the element, we need to update the variables.
@@ -1322,9 +1322,9 @@ static void justifyMainAxis(
 
         if (performLayout) {
           child->setLayoutPosition(
-              childLayout.position[leadingEdge(mainAxis)] +
+              childLayout.position[flexStartEdge(mainAxis)] +
                   flexLine.layout.mainDim,
-              leadingEdge(mainAxis));
+              flexStartEdge(mainAxis));
         }
 
         if (child != flexLine.itemsInFlow.back()) {
@@ -1378,9 +1378,9 @@ static void justifyMainAxis(
         }
       } else if (performLayout) {
         child->setLayoutPosition(
-            childLayout.position[leadingEdge(mainAxis)] +
+            childLayout.position[flexStartEdge(mainAxis)] +
                 node->getLeadingBorder(mainAxis) + leadingMainDim,
-            leadingEdge(mainAxis));
+            flexStartEdge(mainAxis));
       }
     }
   }
@@ -1856,18 +1856,18 @@ static void calculateLayoutImpl(
                     node->getLeadingBorder(crossAxis) +
                     child->getLeadingMargin(
                         crossAxis, direction, availableInnerWidth),
-                leadingEdge(crossAxis));
+                flexStartEdge(crossAxis));
           }
           // If leading position is not defined or calculations result in Nan,
           // default to border + margin
           if (!isChildLeadingPosDefined ||
               yoga::isUndefined(
-                  child->getLayout().position[leadingEdge(crossAxis)])) {
+                  child->getLayout().position[flexStartEdge(crossAxis)])) {
             child->setLayoutPosition(
                 node->getLeadingBorder(crossAxis) +
                     child->getLeadingMargin(
                         crossAxis, direction, availableInnerWidth),
-                leadingEdge(crossAxis));
+                flexStartEdge(crossAxis));
           }
         } else {
           float leadingCrossDim = leadingPaddingAndBorderCross;
@@ -1975,9 +1975,9 @@ static void calculateLayoutImpl(
           }
           // And we apply the position
           child->setLayoutPosition(
-              child->getLayout().position[leadingEdge(crossAxis)] +
+              child->getLayout().position[flexStartEdge(crossAxis)] +
                   totalLineCrossDim + leadingCrossDim,
-              leadingEdge(crossAxis));
+              flexStartEdge(crossAxis));
         }
       }
     }
@@ -2092,7 +2092,7 @@ static void calculateLayoutImpl(
                     currentLead +
                         child->getLeadingMargin(
                             crossAxis, direction, availableInnerWidth),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::FlexEnd: {
@@ -2102,7 +2102,7 @@ static void calculateLayoutImpl(
                             crossAxis, direction, availableInnerWidth) -
                         child->getLayout().measuredDimension(
                             dimension(crossAxis)),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::Center: {
@@ -2111,7 +2111,7 @@ static void calculateLayoutImpl(
 
                 child->setLayoutPosition(
                     currentLead + (lineHeight - childHeight) / 2,
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::Stretch: {
@@ -2119,7 +2119,7 @@ static void calculateLayoutImpl(
                     currentLead +
                         child->getLeadingMargin(
                             crossAxis, direction, availableInnerWidth),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
 
                 // Remeasure child with the line height as it as been only
                 // measured with the owners height yet.
@@ -2275,9 +2275,9 @@ static void calculateLayoutImpl(
       if (child->getStyle().positionType() != PositionType::Absolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimension(dimension(crossAxis)) -
-                child->getLayout().position[leadingEdge(crossAxis)] -
+                child->getLayout().position[flexStartEdge(crossAxis)] -
                 child->getLayout().measuredDimension(dimension(crossAxis)),
-            leadingEdge(crossAxis));
+            flexStartEdge(crossAxis));
       }
     }
   }
