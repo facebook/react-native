@@ -14,12 +14,13 @@
 #include <atomic>
 #include <memory>
 #include <queue>
+#include <shared_mutex>
 
 namespace facebook::react {
 
-class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
+class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
-  explicit RuntimeScheduler_Legacy(
+  explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
@@ -27,15 +28,21 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   /*
    * Not copyable.
    */
-  RuntimeScheduler_Legacy(const RuntimeScheduler_Legacy&) = delete;
-  RuntimeScheduler_Legacy& operator=(const RuntimeScheduler_Legacy&) = delete;
+  RuntimeScheduler_Modern(const RuntimeScheduler_Modern&) = delete;
+  RuntimeScheduler_Modern& operator=(const RuntimeScheduler_Modern&) = delete;
 
   /*
    * Not movable.
    */
-  RuntimeScheduler_Legacy(RuntimeScheduler_Legacy&&) = delete;
-  RuntimeScheduler_Legacy& operator=(RuntimeScheduler_Legacy&&) = delete;
+  RuntimeScheduler_Modern(RuntimeScheduler_Modern&&) = delete;
+  RuntimeScheduler_Modern& operator=(RuntimeScheduler_Modern&&) = delete;
 
+  /*
+   * Alias for scheduleTask with immediate priority.
+   *
+   * To be removed when we finish testing this implementation.
+   * All callers should use scheduleTask with the right priority afte that.
+   */
   void scheduleWork(RawCallback&& callback) const noexcept override;
 
   /*
@@ -48,15 +55,17 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void executeNowOnTheSameThread(RawCallback&& callback) override;
 
   /*
-   * Adds a JavaScript callback to priority queue with given priority.
+   * Adds a JavaScript callback to the priority queue with the given priority.
    * Triggers workloop if needed.
-   *
-   * Thread synchronization must be enforced externally.
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function&& callback) const noexcept override;
 
+  /*
+   * Adds a custom callback to the priority queue with the given priority.
+   * Triggers workloop if needed.
+   */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) const noexcept override;
@@ -96,7 +105,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * Returns current monotonic time. This time is not related to wall clock
    * time.
    *
-   * Thread synchronization must be enforced externally.
+   * Can be called from any thread.
    */
   RuntimeSchedulerTimePoint now() const noexcept override;
 
@@ -107,38 +116,49 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * before the next event is sent to React.
    *
    * Thread synchronization must be enforced externally.
+   *
+   * TODO remove when we add support for microtasks
    */
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
  private:
+  mutable std::atomic<uint_fast8_t> syncTaskRequests_{0};
+
   mutable std::priority_queue<
       std::shared_ptr<Task>,
       std::vector<std::shared_ptr<Task>>,
       TaskPriorityComparer>
       taskQueue_;
 
+  mutable std::shared_ptr<Task> currentTask_;
+
+  /**
+   * This protects the access to `taskQueue_` and `isWorkLoopScheduled_`.
+   */
+  mutable std::shared_mutex schedulingMutex_;
+
   const RuntimeExecutor runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
-  /*
-   * Counter indicating how many access to the runtime have been requested.
-   */
-  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
-
   mutable std::atomic_bool isSynchronous_{false};
 
-  void startWorkLoop(jsi::Runtime& runtime) const;
+  void scheduleWorkLoop() const;
+  void startWorkLoop(jsi::Runtime& runtime, bool onlyExpired) const;
 
-  /*
-   * Schedules a work loop unless it has been already scheduled
-   * This is to avoid unnecessary calls to `runtimeExecutor`.
+  std::shared_ptr<Task> selectTask(
+      RuntimeSchedulerTimePoint currentTime,
+      bool onlyExpired) const;
+
+  void scheduleTask(std::shared_ptr<Task> task) const;
+
+  /**
+   * Follows all the steps necessary to execute the given task (in the future,
+   * this will include executing microtasks, flushing rendering work, etc.)
    */
-  void scheduleWorkLoopIfNecessary() const;
-
   void executeTask(
       jsi::Runtime& runtime,
       const std::shared_ptr<Task>& task,
-      bool didUserCallbackTimeout) const;
+      RuntimeSchedulerTimePoint currentTime) const;
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -150,12 +170,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  mutable std::atomic_bool isWorkLoopScheduled_{false};
-
-  /*
-   * This flag is set while performing work, to prevent re-entrancy.
-   */
-  mutable std::atomic_bool isPerformingWork_{false};
+  mutable bool isWorkLoopScheduled_{false};
 };
 
 } // namespace facebook::react
