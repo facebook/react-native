@@ -38,7 +38,14 @@ void RuntimeScheduler_Legacy::scheduleWork(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function&& callback) noexcept {
+    jsi::Function&& callback) const noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleTask",
+      "priority",
+      serialize(priority),
+      "callbackType",
+      "jsi::Function");
+
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -51,7 +58,14 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
-    RawCallback&& callback) noexcept {
+    RawCallback&& callback) const noexcept {
+  SystraceSection s(
+      "RuntimeScheduler::scheduleTask",
+      "priority",
+      serialize(priority),
+      "callbackType",
+      "RawCallback");
+
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
