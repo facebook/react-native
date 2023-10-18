@@ -346,8 +346,8 @@ static void layoutAbsoluteChild(
     if (child->isFlexStartPositionDefined(FlexDirection::Row) &&
         child->isFlexEndPositionDefined(FlexDirection::Row)) {
       childWidth = node->getLayout().measuredDimension(Dimension::Width) -
-          (node->getFlexStartBorder(FlexDirection::Row) +
-           node->getFlexEndBorder(FlexDirection::Row)) -
+          (node->getInlineStartBorder(FlexDirection::Row, direction) +
+           node->getInlineEndBorder(FlexDirection::Row, direction)) -
           (child->getFlexStartPosition(FlexDirection::Row, width) +
            child->getFlexEndPosition(FlexDirection::Row, width));
       childWidth =
@@ -366,8 +366,8 @@ static void layoutAbsoluteChild(
     if (child->isFlexStartPositionDefined(FlexDirection::Column) &&
         child->isFlexEndPositionDefined(FlexDirection::Column)) {
       childHeight = node->getLayout().measuredDimension(Dimension::Height) -
-          (node->getFlexStartBorder(FlexDirection::Column) +
-           node->getFlexEndBorder(FlexDirection::Column)) -
+          (node->getInlineStartBorder(FlexDirection::Column, direction) +
+           node->getInlineEndBorder(FlexDirection::Column, direction)) -
           (child->getFlexStartPosition(FlexDirection::Column, height) +
            child->getFlexEndPosition(FlexDirection::Column, height));
       childHeight =
@@ -451,7 +451,7 @@ static void layoutAbsoluteChild(
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(mainAxis)) -
             child->getLayout().measuredDimension(dimension(mainAxis)) -
-            node->getFlexEndBorder(mainAxis) -
+            node->getInlineEndBorder(mainAxis, direction) -
             child->getInlineEndMargin(
                 mainAxis, direction, isMainAxisRow ? width : height) -
             child->getFlexEndPosition(mainAxis, isMainAxisRow ? width : height),
@@ -479,7 +479,7 @@ static void layoutAbsoluteChild(
         child->getFlexStartPosition(
             mainAxis,
             node->getLayout().measuredDimension(dimension(mainAxis))) +
-            node->getFlexStartBorder(mainAxis) +
+            node->getInlineStartBorder(mainAxis, direction) +
             child->getInlineStartMargin(
                 mainAxis,
                 direction,
@@ -492,7 +492,7 @@ static void layoutAbsoluteChild(
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(crossAxis)) -
             child->getLayout().measuredDimension(dimension(crossAxis)) -
-            node->getFlexEndBorder(crossAxis) -
+            node->getInlineEndBorder(crossAxis, direction) -
             child->getInlineEndMargin(
                 crossAxis, direction, isMainAxisRow ? height : width) -
             child->getFlexEndPosition(
@@ -523,7 +523,7 @@ static void layoutAbsoluteChild(
         child->getFlexStartPosition(
             crossAxis,
             node->getLayout().measuredDimension(dimension(crossAxis))) +
-            node->getFlexStartBorder(crossAxis) +
+            node->getInlineStartBorder(crossAxis, direction) +
             child->getInlineStartMargin(
                 crossAxis,
                 direction,
@@ -1199,10 +1199,16 @@ static void justifyMainAxis(
     const float availableInnerWidth,
     const bool performLayout) {
   const auto& style = node->getStyle();
+
   const float leadingPaddingAndBorderMain =
-      node->getFlexStartPaddingAndBorder(mainAxis, ownerWidth);
+      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? node->getInlineStartPaddingAndBorder(mainAxis, direction, ownerWidth)
+      : node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
   const float trailingPaddingAndBorderMain =
-      node->getFlexEndPaddingAndBorder(mainAxis, ownerWidth);
+      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? node->getInlineEndPaddingAndBorder(mainAxis, direction, ownerWidth)
+      : node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
+
   const float gap = node->getGapForAxis(mainAxis);
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
@@ -1306,7 +1312,7 @@ static void justifyMainAxis(
         // margin/border).
         child->setLayoutPosition(
             child->getFlexStartPosition(mainAxis, availableInnerMainDim) +
-                node->getFlexStartBorder(mainAxis) +
+                node->getInlineStartBorder(mainAxis, direction) +
                 child->getInlineStartMargin(
                     mainAxis, direction, availableInnerWidth),
             flexStartEdge(mainAxis));
@@ -1380,7 +1386,8 @@ static void justifyMainAxis(
       } else if (performLayout) {
         child->setLayoutPosition(
             childLayout.position[flexStartEdge(mainAxis)] +
-                node->getFlexStartBorder(mainAxis) + leadingMainDim,
+                node->getInlineStartBorder(mainAxis, direction) +
+                leadingMainDim,
             flexStartEdge(mainAxis));
       }
     }
@@ -1518,12 +1525,14 @@ static void calculateLayoutImpl(
   const float marginAxisRow = marginRowLeading + marginRowTrailing;
   const float marginAxisColumn = marginColumnLeading + marginColumnTrailing;
 
-  node->setLayoutBorder(node->getFlexStartBorder(flexRowDirection), startEdge);
-  node->setLayoutBorder(node->getFlexEndBorder(flexRowDirection), endEdge);
   node->setLayoutBorder(
-      node->getFlexStartBorder(flexColumnDirection), YGEdgeTop);
+      node->getInlineStartBorder(flexRowDirection, direction), startEdge);
   node->setLayoutBorder(
-      node->getFlexEndBorder(flexColumnDirection), YGEdgeBottom);
+      node->getInlineEndBorder(flexRowDirection, direction), endEdge);
+  node->setLayoutBorder(
+      node->getInlineStartBorder(flexColumnDirection, direction), YGEdgeTop);
+  node->setLayoutBorder(
+      node->getInlineEndBorder(flexColumnDirection, direction), YGEdgeBottom);
 
   node->setLayoutPadding(
       node->getFlexStartPadding(flexRowDirection, ownerWidth), startEdge);
@@ -1594,9 +1603,9 @@ static void calculateLayoutImpl(
   const float paddingAndBorderAxisMain =
       paddingAndBorderForAxis(node, mainAxis, ownerWidth);
   const float leadingPaddingAndBorderCross =
-      node->getFlexStartPaddingAndBorder(crossAxis, ownerWidth);
+      node->getInlineStartPaddingAndBorder(crossAxis, direction, ownerWidth);
   const float trailingPaddingAndBorderCross =
-      node->getFlexEndPaddingAndBorder(crossAxis, ownerWidth);
+      node->getInlineEndPaddingAndBorder(crossAxis, direction, ownerWidth);
   const float paddingAndBorderAxisCross =
       leadingPaddingAndBorderCross + trailingPaddingAndBorderCross;
 
@@ -1855,7 +1864,7 @@ static void calculateLayoutImpl(
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
                 child->getFlexStartPosition(crossAxis, availableInnerCrossDim) +
-                    node->getFlexStartBorder(crossAxis) +
+                    node->getInlineStartBorder(crossAxis, direction) +
                     child->getInlineStartMargin(
                         crossAxis, direction, availableInnerWidth),
                 flexStartEdge(crossAxis));
@@ -1866,7 +1875,7 @@ static void calculateLayoutImpl(
               yoga::isUndefined(
                   child->getLayout().position[flexStartEdge(crossAxis)])) {
             child->setLayoutPosition(
-                node->getFlexStartBorder(crossAxis) +
+                node->getInlineStartBorder(crossAxis, direction) +
                     child->getInlineStartMargin(
                         crossAxis, direction, availableInnerWidth),
                 flexStartEdge(crossAxis));
