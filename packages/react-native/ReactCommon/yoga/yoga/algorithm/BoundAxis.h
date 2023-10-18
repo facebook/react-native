@@ -21,8 +21,8 @@ inline float paddingAndBorderForAxis(
     const yoga::Node* const node,
     const FlexDirection axis,
     const float widthSize) {
-  return node->getLeadingPaddingAndBorder(axis, widthSize) +
-      node->getTrailingPaddingAndBorder(axis, widthSize);
+  return node->getFlexStartPaddingAndBorder(axis, widthSize) +
+      node->getFlexEndPaddingAndBorder(axis, widthSize);
 }
 
 inline FloatOptional boundAxisWithinMinAndMax(
