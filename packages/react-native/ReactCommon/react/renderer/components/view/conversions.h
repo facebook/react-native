@@ -746,41 +746,11 @@ inline std::string toString(const yoga::FlexDirection& value) {
 }
 
 inline std::string toString(const yoga::Justify& value) {
-  switch (value) {
-    case yoga::Justify::FlexStart:
-      return "flex-start";
-    case yoga::Justify::Center:
-      return "center";
-    case yoga::Justify::FlexEnd:
-      return "flex-end";
-    case yoga::Justify::SpaceBetween:
-      return "space-between";
-    case yoga::Justify::SpaceAround:
-      return "space-around";
-    case yoga::Justify::SpaceEvenly:
-      return "space-evenly";
-  }
+  return YGJustifyToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Align& value) {
-  switch (value) {
-    case yoga::Align::Auto:
-      return "auto";
-    case yoga::Align::FlexStart:
-      return "flex-start";
-    case yoga::Align::Center:
-      return "center";
-    case yoga::Align::FlexEnd:
-      return "flex-end";
-    case yoga::Align::Stretch:
-      return "stretch";
-    case yoga::Align::Baseline:
-      return "baseline";
-    case yoga::Align::SpaceBetween:
-      return "space-between";
-    case yoga::Align::SpaceAround:
-      return "space-around";
-  }
+  return YGAlignToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::PositionType& value) {

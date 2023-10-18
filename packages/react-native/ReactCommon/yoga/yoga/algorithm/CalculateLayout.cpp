@@ -2036,6 +2036,18 @@ static void calculateLayoutImpl(
             currentLead += remainingAlignContentDim / 2;
           }
           break;
+        case Align::SpaceEvenly:
+          if (availableInnerCrossDim > totalLineCrossDim) {
+            currentLead +=
+                remainingAlignContentDim / static_cast<float>(lineCount + 1);
+            if (lineCount > 1) {
+              crossDimLead =
+                  remainingAlignContentDim / static_cast<float>(lineCount + 1);
+            }
+          } else {
+            currentLead += remainingAlignContentDim / 2;
+          }
+          break;
         case Align::SpaceBetween:
           if (availableInnerCrossDim > totalLineCrossDim && lineCount > 1) {
             crossDimLead =
@@ -2192,6 +2204,7 @@ static void calculateLayoutImpl(
               case Align::Auto:
               case Align::SpaceBetween:
               case Align::SpaceAround:
+              case Align::SpaceEvenly:
                 break;
             }
           }
