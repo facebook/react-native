@@ -165,4 +165,9 @@ public class ReactFeatureFlags {
 
   /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
   public static boolean enableTurboModuleStableAPI = false;
+
+  /**
+   * When enabled, It will detect the text cutoff phenomenon and log some information.
+   */
+  public static boolean enableDetectTextCutoff = true;
 }
