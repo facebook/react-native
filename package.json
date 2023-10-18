@@ -117,7 +117,7 @@
     "debug": ">=3.1.0",
     "es5-ext": "0.10.53",
     "micromatch": "^4.0.0",
-    "readable-stream": "^4.0.0",
+    "readable-stream": "^4.0.0 <4.4.2",
     "shell-quote": "^1.7.3",
     "tough-cookie": "^4.1.3"
   },
