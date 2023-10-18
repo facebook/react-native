@@ -579,6 +579,14 @@ export type ViewProps = $ReadOnly<{|
   id?: string,
 
   /**
+  * Whether this `View` needs to rendered offscreen and composited with an
+  * alpha in order to preserve 100% correct colors and blending behavior.
+  *
+  * See https://reactnative.dev/docs/view#needsoffscreenalphacompositing
+  */
+  needsOffscreenAlphaCompositing?: ?boolean,
+
+  /**
    * Used to locate this view in end-to-end tests.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
