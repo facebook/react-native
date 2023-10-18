@@ -18,20 +18,14 @@ namespace facebook::react {
 class RuntimeSchedulerBase {
  public:
   virtual ~RuntimeSchedulerBase() = default;
-  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
-  // refactor has been shipped.
-  virtual void scheduleWork(RawCallback&& callback) const noexcept = 0;
+  virtual void scheduleWork(RawCallback&& callback) noexcept = 0;
   virtual void executeNowOnTheSameThread(RawCallback&& callback) = 0;
-  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
-  // refactor has been shipped.
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) const noexcept = 0;
-  // FIXME(T167271466): remove `const` modified when the RuntimeScheduler
-  // refactor has been shipped.
+      jsi::Function&& callback) noexcept = 0;
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) const noexcept = 0;
+      RawCallback&& callback) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
   virtual bool getIsSynchronous() const noexcept = 0;
@@ -62,7 +56,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   RuntimeScheduler(RuntimeScheduler&&) = delete;
   RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
 
-  void scheduleWork(RawCallback&& callback) const noexcept override;
+  void scheduleWork(RawCallback&& callback) noexcept override;
 
   /*
    * Grants access to the runtime synchronously on the caller's thread.
@@ -81,11 +75,11 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) const noexcept override;
+      jsi::Function&& callback) noexcept override;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) const noexcept override;
+      RawCallback&& callback) noexcept override;
 
   /*
    * Cancelled task will never be executed.

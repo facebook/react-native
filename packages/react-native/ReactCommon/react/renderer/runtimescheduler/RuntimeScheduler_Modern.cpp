@@ -21,15 +21,14 @@ RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
-void RuntimeScheduler_Modern::scheduleWork(
-    RawCallback&& callback) const noexcept {
+void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
   scheduleTask(SchedulerPriority::ImmediatePriority, std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
-    jsi::Function&& callback) const noexcept {
+    jsi::Function&& callback) noexcept {
   SystraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
@@ -48,7 +47,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
-    RawCallback&& callback) const noexcept {
+    RawCallback&& callback) noexcept {
   SystraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
@@ -144,7 +143,7 @@ void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
 
 #pragma mark - Private
 
-void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) const {
+void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
   bool shouldScheduleWorkLoop = false;
 
   {
@@ -167,14 +166,14 @@ void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) const {
   }
 }
 
-void RuntimeScheduler_Modern::scheduleWorkLoop() const {
+void RuntimeScheduler_Modern::scheduleWorkLoop() {
   runtimeExecutor_(
       [this](jsi::Runtime& runtime) { startWorkLoop(runtime, false); });
 }
 
 void RuntimeScheduler_Modern::startWorkLoop(
     jsi::Runtime& runtime,
-    bool onlyExpired) const {
+    bool onlyExpired) {
   SystraceSection s("RuntimeScheduler::startWorkLoop");
 
   auto previousPriority = currentPriority_;
@@ -201,7 +200,7 @@ void RuntimeScheduler_Modern::startWorkLoop(
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
     RuntimeSchedulerTimePoint currentTime,
-    bool onlyExpired) const {
+    bool onlyExpired) {
   // We need a unique lock here because we'll also remove executed tasks from
   // the top of the queue.
   std::unique_lock lock(schedulingMutex_);
@@ -229,7 +228,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 void RuntimeScheduler_Modern::executeTask(
     jsi::Runtime& runtime,
     const std::shared_ptr<Task>& task,
-    RuntimeSchedulerTimePoint currentTime) const {
+    RuntimeSchedulerTimePoint currentTime) {
   auto didUserCallbackTimeout = task->expirationTime <= currentTime;
 
   SystraceSection s(

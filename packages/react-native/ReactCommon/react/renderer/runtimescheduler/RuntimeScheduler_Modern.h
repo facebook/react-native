@@ -43,7 +43,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * To be removed when we finish testing this implementation.
    * All callers should use scheduleTask with the right priority afte that.
    */
-  void scheduleWork(RawCallback&& callback) const noexcept override;
+  void scheduleWork(RawCallback&& callback) noexcept override;
 
   /*
    * Grants access to the runtime synchronously on the caller's thread.
@@ -60,7 +60,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function&& callback) const noexcept override;
+      jsi::Function&& callback) noexcept override;
 
   /*
    * Adds a custom callback to the priority queue with the given priority.
@@ -68,7 +68,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback&& callback) const noexcept override;
+      RawCallback&& callback) noexcept override;
 
   /*
    * Cancelled task will never be executed.
@@ -122,15 +122,15 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
  private:
-  mutable std::atomic<uint_fast8_t> syncTaskRequests_{0};
+  std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
-  mutable std::priority_queue<
+  std::priority_queue<
       std::shared_ptr<Task>,
       std::vector<std::shared_ptr<Task>>,
       TaskPriorityComparer>
       taskQueue_;
 
-  mutable std::shared_ptr<Task> currentTask_;
+  std::shared_ptr<Task> currentTask_;
 
   /**
    * This protects the access to `taskQueue_` and `isWorkLoopScheduled_`.
@@ -138,18 +138,18 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   mutable std::shared_mutex schedulingMutex_;
 
   const RuntimeExecutor runtimeExecutor_;
-  mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
+  SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
-  mutable std::atomic_bool isSynchronous_{false};
+  std::atomic_bool isSynchronous_{false};
 
-  void scheduleWorkLoop() const;
-  void startWorkLoop(jsi::Runtime& runtime, bool onlyExpired) const;
+  void scheduleWorkLoop();
+  void startWorkLoop(jsi::Runtime& runtime, bool onlyExpired);
 
   std::shared_ptr<Task> selectTask(
       RuntimeSchedulerTimePoint currentTime,
-      bool onlyExpired) const;
+      bool onlyExpired);
 
-  void scheduleTask(std::shared_ptr<Task> task) const;
+  void scheduleTask(std::shared_ptr<Task> task);
 
   /**
    * Follows all the steps necessary to execute the given task (in the future,
@@ -158,7 +158,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void executeTask(
       jsi::Runtime& runtime,
       const std::shared_ptr<Task>& task,
-      RuntimeSchedulerTimePoint currentTime) const;
+      RuntimeSchedulerTimePoint currentTime);
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -170,7 +170,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  mutable bool isWorkLoopScheduled_{false};
+  bool isWorkLoopScheduled_{false};
 };
 
 } // namespace facebook::react
