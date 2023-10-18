@@ -1535,13 +1535,17 @@ static void calculateLayoutImpl(
       node->getInlineEndBorder(flexColumnDirection, direction), YGEdgeBottom);
 
   node->setLayoutPadding(
-      node->getFlexStartPadding(flexRowDirection, ownerWidth), startEdge);
+      node->getInlineStartPadding(flexRowDirection, direction, ownerWidth),
+      startEdge);
   node->setLayoutPadding(
-      node->getFlexEndPadding(flexRowDirection, ownerWidth), endEdge);
+      node->getInlineEndPadding(flexRowDirection, direction, ownerWidth),
+      endEdge);
   node->setLayoutPadding(
-      node->getFlexStartPadding(flexColumnDirection, ownerWidth), YGEdgeTop);
+      node->getInlineStartPadding(flexColumnDirection, direction, ownerWidth),
+      YGEdgeTop);
   node->setLayoutPadding(
-      node->getFlexEndPadding(flexColumnDirection, ownerWidth), YGEdgeBottom);
+      node->getInlineEndPadding(flexColumnDirection, direction, ownerWidth),
+      YGEdgeBottom);
 
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(

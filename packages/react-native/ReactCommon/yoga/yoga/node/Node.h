@@ -216,8 +216,22 @@ class YG_EXPORT Node : public ::YGNode {
       const;
   float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
       const;
-  float getFlexStartPadding(FlexDirection axis, float widthSize) const;
-  float getFlexEndPadding(FlexDirection axis, float widthSize) const;
+  float getFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
   float getFlexStartPaddingAndBorder(
       FlexDirection axis,
       Direction direction,
