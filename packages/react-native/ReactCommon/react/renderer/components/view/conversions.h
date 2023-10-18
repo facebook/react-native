@@ -722,27 +722,11 @@ inline std::string toString(const std::array<float, N> vec) {
 }
 
 inline std::string toString(const yoga::Direction& value) {
-  switch (value) {
-    case yoga::Direction::Inherit:
-      return "inherit";
-    case yoga::Direction::LTR:
-      return "ltr";
-    case yoga::Direction::RTL:
-      return "rtl";
-  }
+  return YGDirectionToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::FlexDirection& value) {
-  switch (value) {
-    case yoga::FlexDirection::Column:
-      return "column";
-    case yoga::FlexDirection::ColumnReverse:
-      return "column-reverse";
-    case yoga::FlexDirection::Row:
-      return "row";
-    case yoga::FlexDirection::RowReverse:
-      return "row-reverse";
-  }
+  return YGFlexDirectionToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Justify& value) {
@@ -754,45 +738,19 @@ inline std::string toString(const yoga::Align& value) {
 }
 
 inline std::string toString(const yoga::PositionType& value) {
-  switch (value) {
-    case yoga::PositionType::Static:
-      return "static";
-    case yoga::PositionType::Relative:
-      return "relative";
-    case yoga::PositionType::Absolute:
-      return "absolute";
-  }
+  return YGPositionTypeToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Wrap& value) {
-  switch (value) {
-    case yoga::Wrap::NoWrap:
-      return "no-wrap";
-    case yoga::Wrap::Wrap:
-      return "wrap";
-    case yoga::Wrap::WrapReverse:
-      return "wrap-reverse";
-  }
+  return YGWrapToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Overflow& value) {
-  switch (value) {
-    case yoga::Overflow::Visible:
-      return "visible";
-    case yoga::Overflow::Scroll:
-      return "scroll";
-    case yoga::Overflow::Hidden:
-      return "hidden";
-  }
+  return YGOverflowToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Display& value) {
-  switch (value) {
-    case yoga::Display::Flex:
-      return "flex";
-    case yoga::Display::None:
-      return "none";
-  }
+  return YGDisplayToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const YGValue& value) {
