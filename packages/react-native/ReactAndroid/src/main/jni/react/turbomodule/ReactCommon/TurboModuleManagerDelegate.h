@@ -19,7 +19,7 @@ class TurboModuleManagerDelegate
     : public jni::HybridClass<TurboModuleManagerDelegate> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleManagerDelegate;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManagerDelegate;";
 
   virtual std::shared_ptr<TurboModule> getTurboModule(
       const std::string& name,

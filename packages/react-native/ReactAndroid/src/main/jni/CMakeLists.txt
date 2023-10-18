@@ -190,7 +190,6 @@ add_executable(reactnative_unittest
 
   target_link_libraries(reactnative_unittest
   folly_runtime
-  folly_futures
   glog
   glog_init
   gtest_main

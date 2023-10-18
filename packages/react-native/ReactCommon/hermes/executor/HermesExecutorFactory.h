@@ -9,7 +9,6 @@
 
 #include <hermes/hermes.h>
 #include <jsireact/JSIExecutor.h>
-#include <functional>
 #include <utility>
 
 namespace facebook::react {

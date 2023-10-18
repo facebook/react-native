@@ -72,7 +72,7 @@ export default function openDebuggerMiddleware({
       if (typeof appId === 'string') {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger...',
+            ' JS debugger (experimental)...',
         );
         target = targets.find(_target => _target.description === appId);
       } else {
@@ -108,7 +108,6 @@ export default function openDebuggerMiddleware({
                 getDevToolsFrontendUrl(
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
-                  experiments,
                 ),
               ),
             );
@@ -120,7 +119,6 @@ export default function openDebuggerMiddleware({
                 target.webSocketDebuggerUrl,
                 // Use a relative URL.
                 '',
-                experiments,
               ),
             });
             res.end();

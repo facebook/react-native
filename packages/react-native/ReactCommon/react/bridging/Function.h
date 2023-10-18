@@ -29,26 +29,28 @@ class AsyncCallback {
             std::move(function),
             std::move(jsInvoker))) {}
 
-  void operator()(Args... args) const {
+  void operator()(Args... args) const noexcept {
     call(std::forward<Args>(args)...);
   }
 
-  void call(Args... args) const {
+  void call(Args... args) const noexcept {
     callWithArgs(std::nullopt, std::forward<Args>(args)...);
   }
 
-  void callWithPriority(SchedulerPriority priority, Args... args) const {
+  void callWithPriority(SchedulerPriority priority, Args... args)
+      const noexcept {
     callWithArgs(priority, std::forward<Args>(args)...);
   }
 
-  void call(
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
+  void call(std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
     callWithFunction(std::nullopt, std::move(callImpl));
   }
 
   void callWithPriority(
       SchedulerPriority priority,
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
     callWithFunction(priority, std::move(callImpl));
   }
 
@@ -58,16 +60,15 @@ class AsyncCallback {
   std::shared_ptr<SyncCallback<void(Args...)>> callback_;
 
   void callWithArgs(std::optional<SchedulerPriority> priority, Args... args)
-      const {
-    auto wrapper = callback_->wrapper_.lock();
-    if (wrapper) {
-      auto& jsInvoker = wrapper->jsInvoker();
+      const noexcept {
+    if (auto wrapper = callback_->wrapper_.lock()) {
       auto fn = [callback = callback_,
                  argsPtr = std::make_shared<std::tuple<Args...>>(
                      std::make_tuple(std::forward<Args>(args)...))] {
         callback->apply(std::move(*argsPtr));
       };
 
+      auto& jsInvoker = wrapper->jsInvoker();
       if (priority) {
         jsInvoker.invokeAsync(*priority, std::move(fn));
       } else {
@@ -78,15 +79,19 @@ class AsyncCallback {
 
   void callWithFunction(
       std::optional<SchedulerPriority> priority,
-      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl) const {
-    auto wrapper = callback_->wrapper_.lock();
-    if (wrapper) {
-      auto& jsInvoker = wrapper->jsInvoker();
-      auto fn = [wrapper = std::move(wrapper),
-                 callImpl = std::move(callImpl)]() {
-        callImpl(wrapper->runtime(), wrapper->callback());
+      std::function<void(jsi::Runtime&, jsi::Function&)>&& callImpl)
+      const noexcept {
+    if (auto wrapper = callback_->wrapper_.lock()) {
+      // Capture callback_ and not wrapper_. If callback_ is deallocated or the
+      // JSVM is shutdown before the async task is scheduled, the underlying
+      // function will have been deallocated.
+      auto fn = [callback = callback_, callImpl = std::move(callImpl)]() {
+        if (auto wrapper2 = callback->wrapper_.lock()) {
+          callImpl(wrapper2->runtime(), wrapper2->callback());
+        }
       };
 
+      auto& jsInvoker = wrapper->jsInvoker();
       if (priority) {
         jsInvoker.invokeAsync(*priority, std::move(fn));
       } else {

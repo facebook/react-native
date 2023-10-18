@@ -552,7 +552,8 @@ type ____LayoutStyle_Internal = $ReadOnly<{
     | 'center'
     | 'stretch'
     | 'space-between'
-    | 'space-around',
+    | 'space-around'
+    | 'space-evenly',
 
   /** `overflow` controls how children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`

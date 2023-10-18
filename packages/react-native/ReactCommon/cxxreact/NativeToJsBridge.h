@@ -97,7 +97,7 @@ class NativeToJsBridge {
    */
   void destroy();
 
-  void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
+  void runOnExecutorQueue(std::function<void(JSExecutor*)>&& task) noexcept;
 
   /**
    * NativeMethodCallInvoker is used by TurboModules to schedule work on the

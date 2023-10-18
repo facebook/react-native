@@ -31,7 +31,8 @@ namespace TMPL = TurboModulePerfLogger;
 JavaTurboModule::JavaTurboModule(const InitParams& params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
+      shouldVoidMethodsExecuteSync_(params.shouldVoidMethodsExecuteSync) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -591,7 +592,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   const char* methodName = methodNameStr.c_str();
   const char* moduleName = name_.c_str();
 
-  bool isMethodSync = !(valueKind == VoidKind || valueKind == PromiseKind);
+  bool isMethodSync =
+      (valueKind == VoidKind && shouldVoidMethodsExecuteSync_) ||
+      !(valueKind == VoidKind || valueKind == PromiseKind);
 
   if (isMethodSync) {
     TMPL::syncMethodCallStart(moduleName, methodName);
@@ -870,6 +873,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       return returnValue;
     }
     case VoidKind: {
+      if (shouldVoidMethodsExecuteSync_) {
+        env->CallVoidMethodA(instance, methodID, jargs.data());
+        checkJNIErrorForMethodCall();
+
+        TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+        TMPL::syncMethodCallEnd(moduleName, methodName);
+        return jsi::Value::undefined();
+      }
+
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 

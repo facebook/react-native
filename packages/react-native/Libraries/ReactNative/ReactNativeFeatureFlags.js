@@ -54,10 +54,6 @@ export type FeatureFlags = {|
    * Enables use of setNativeProps in JS driven animations.
    */
   shouldUseSetNativePropsInFabric: () => boolean,
-  /**
-   * Enables a hotfix for forcing materialization of views with elevation set.
-   */
-  shouldForceUnflattenForElevation: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -70,7 +66,6 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
   shouldUseSetNativePropsInFabric: () => false,
-  shouldForceUnflattenForElevation: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

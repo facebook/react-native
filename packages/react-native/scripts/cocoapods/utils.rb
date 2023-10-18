@@ -23,7 +23,6 @@ class ReactNativePodsUtils
         flags = {
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         }
 
         if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -57,31 +56,6 @@ class ReactNativePodsUtils
                         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
                     end
                 end
-            end
-        end
-    end
-
-    def self.exclude_i386_architecture_while_using_hermes(installer)
-        is_using_hermes = self.has_pod(installer, 'hermes-engine')
-
-        if is_using_hermes
-            key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
-
-            projects = self.extract_projects(installer)
-
-            projects.each do |project|
-                project.build_configurations.each do |config|
-                    current_setting = config.build_settings[key] || ""
-
-                    excluded_archs_includes_I386 = current_setting.include?("i386")
-
-                    if !excluded_archs_includes_I386
-                        # Hermes does not support 'i386' architecture
-                        config.build_settings[key] = "#{current_setting} i386".strip
-                    end
-                end
-
-                project.save()
             end
         end
     end
@@ -291,32 +265,13 @@ class ReactNativePodsUtils
     end
 
     def self.updateOSDeploymentTarget(installer)
-        pod_to_update = Set.new([
-            "boost",
-            "CocoaAsyncSocket",
-            "Flipper",
-            "Flipper-DoubleConversion",
-            "Flipper-Fmt",
-            "Flipper-Boost-iOSX",
-            "Flipper-Folly",
-            "Flipper-Glog",
-            "Flipper-PeerTalk",
-            "FlipperKit",
-            "fmt",
-            "libevent",
-            "OpenSSL-Universal",
-            "RCT-Folly",
-            "SocketRocket",
-            "YogaKit"
-        ])
-
         installer.target_installation_results.pod_target_installation_results
             .each do |pod_name, target_installation_result|
-                unless pod_to_update.include?(pod_name)
-                    next
-                end
                 target_installation_result.native_target.build_configurations.each do |config|
-                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
+                    old_iphone_deploy_target = config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] ?
+                        config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] :
+                        Helpers::Constants.min_ios_version_supported
+                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = [Helpers::Constants.min_ios_version_supported.to_f, old_iphone_deploy_target.to_f].max.to_s
                 end
             end
     end

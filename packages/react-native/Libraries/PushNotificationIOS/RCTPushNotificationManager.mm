@@ -176,10 +176,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-+ (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
-{
-}
-
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   NSMutableString *hexString = [NSMutableString string];
@@ -308,20 +304,20 @@ RCT_EXPORT_METHOD(requestPermissions
   // Add a listener to make sure that startObserving has been called
   [self addListener:@"remoteNotificationsRegistered"];
 
-  UIUserNotificationType types = UIUserNotificationTypeNone;
+  UNAuthorizationOptions options = UNAuthorizationOptionNone;
 
   if (permissions.alert()) {
-    types |= UIUserNotificationTypeAlert;
+    options |= UNAuthorizationOptionAlert;
   }
   if (permissions.badge()) {
-    types |= UIUserNotificationTypeBadge;
+    options |= UNAuthorizationOptionBadge;
   }
   if (permissions.sound()) {
-    types |= UIUserNotificationTypeSound;
+    options |= UNAuthorizationOptionSound;
   }
 
   [UNUserNotificationCenter.currentNotificationCenter
-      requestAuthorizationWithOptions:types
+      requestAuthorizationWithOptions:options
                     completionHandler:^(BOOL granted, NSError *_Nullable error) {
                       if (error != NULL) {
                         reject(@"-1", @"Error - Push authorization request failed.", error);
@@ -438,28 +434,43 @@ RCT_EXPORT_METHOD(scheduleLocalNotification : (JS::NativePushNotificationManager
 
 RCT_EXPORT_METHOD(cancelAllLocalNotifications)
 {
-  [RCTSharedApplication() cancelAllLocalNotifications];
+  [[UNUserNotificationCenter currentNotificationCenter]
+      getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
+        NSMutableArray<NSString *> *notificationIdentifiersToCancel = [NSMutableArray new];
+        for (UNNotificationRequest *request in requests) {
+          [notificationIdentifiersToCancel addObject:request.identifier];
+        }
+        [[UNUserNotificationCenter currentNotificationCenter]
+            removePendingNotificationRequestsWithIdentifiers:notificationIdentifiersToCancel];
+      }];
 }
 
 RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)userInfo)
 {
-  for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
-    __block BOOL matchesAll = YES;
-    NSDictionary<NSString *, id> *notificationInfo = notification.userInfo;
-    // Note: we do this with a loop instead of just `isEqualToDictionary:`
-    // because we only require that all specified userInfo values match the
-    // notificationInfo values - notificationInfo may contain additional values
-    // which we don't care about.
-    [userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-      if (![notificationInfo[key] isEqual:obj]) {
-        matchesAll = NO;
-        *stop = YES;
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *_Nonnull requests) {
+    NSMutableArray<NSString *> *notificationIdentifiersToCancel = [NSMutableArray new];
+    for (UNNotificationRequest *request in requests) {
+      NSDictionary<NSString *, id> *notificationInfo = request.content.userInfo;
+      // Note: we do this with a loop instead of just `isEqualToDictionary:`
+      // because we only require that all specified userInfo values match the
+      // notificationInfo values - notificationInfo may contain additional values
+      // which we don't care about.
+      __block BOOL shouldCancel = YES;
+      [userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
+        if (![notificationInfo[key] isEqual:obj]) {
+          shouldCancel = NO;
+          *stop = YES;
+        }
+      }];
+
+      if (shouldCancel) {
+        [notificationIdentifiersToCancel addObject:request.identifier];
       }
-    }];
-    if (matchesAll) {
-      [RCTSharedApplication() cancelLocalNotification:notification];
     }
-  }
+
+    [center removePendingNotificationRequestsWithIdentifiers:notificationIdentifiersToCancel];
+  }];
 }
 
 RCT_EXPORT_METHOD(getInitialNotification

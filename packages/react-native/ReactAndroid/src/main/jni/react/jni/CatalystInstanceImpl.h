@@ -13,7 +13,6 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
-#include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JRuntimeExecutor.h"
 #include "JRuntimeScheduler.h"

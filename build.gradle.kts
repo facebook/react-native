@@ -20,8 +20,8 @@ File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStrea
 }
 
 version =
-    if (project.hasProperty("isNightly") &&
-        (project.property("isNightly") as? String).toBoolean()) {
+    if (project.hasProperty("isSnapshot") &&
+        (project.property("isSnapshot") as? String).toBoolean()) {
       "${reactAndroidProperties.getProperty("VERSION_NAME")}-SNAPSHOT"
     } else {
       reactAndroidProperties.getProperty("VERSION_NAME")
@@ -88,8 +88,6 @@ tasks.register("publishAllToMavenTempLocal") {
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
   // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
   dependsOn(
-      ":packages:react-native:ReactAndroid:flipper-integration:publishAllPublicationsToMavenTempLocalRepository")
-  dependsOn(
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
@@ -97,7 +95,6 @@ tasks.register("publishAllToSonatype") {
   description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:external-artifacts:publishToSonatype")
-  dependsOn(":packages:react-native:ReactAndroid:flipper-integration:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
 

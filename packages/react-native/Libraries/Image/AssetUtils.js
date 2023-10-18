@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -14,12 +14,11 @@ let cacheBreaker;
 let warnIfCacheBreakerUnset = true;
 
 export function pickScale(scales: Array<number>, deviceScale?: number): number {
-  if (deviceScale == null) {
-    deviceScale = PixelRatio.get();
-  }
+  const requiredDeviceScale = deviceScale ?? PixelRatio.get();
+
   // Packager guarantees that `scales` array is sorted
   for (let i = 0; i < scales.length; i++) {
-    if (scales[i] >= deviceScale) {
+    if (scales[i] >= requiredDeviceScale) {
       return scales[i];
     }
   }

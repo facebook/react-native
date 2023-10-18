@@ -13,6 +13,7 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
 namespace facebook::react {
 
@@ -106,10 +107,13 @@ void TextInputShadowNode::updateStateIfNeeded(
 Size TextInputShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   return textLayoutManager_
       ->measure(
           attributedStringBoxToMeasure(layoutContext),
           getConcreteProps().getEffectiveParagraphAttributes(),
+          textLayoutContext,
           layoutConstraints,
           nullptr)
       .size;

@@ -21,7 +21,8 @@ YG_ENUM_SEQ_DECL(
     YGAlignStretch,
     YGAlignBaseline,
     YGAlignSpaceBetween,
-    YGAlignSpaceAround)
+    YGAlignSpaceAround,
+    YGAlignSpaceEvenly)
 
 YG_ENUM_SEQ_DECL(
     YGDimension,
@@ -55,6 +56,7 @@ YG_ENUM_DECL(
     YGErrata,
     YGErrataNone = 0,
     YGErrataStretchFlexBasis = 1,
+    YGErrataStartingEndingEdgeFromFlexDirection = 2,
     YGErrataAll = 2147483647,
     YGErrataClassic = 2147483646)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)

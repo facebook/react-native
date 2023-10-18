@@ -807,6 +807,8 @@ if (rootProject.name == "react-native-build-from-source") {
 
 kotlin {
     jvmToolchain(17)
+
+    explicitApi()
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

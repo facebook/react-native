@@ -12,9 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Point;
@@ -856,14 +854,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private Activity getActivity() {
-      Context context = getContext();
-      while (!(context instanceof Activity) && context instanceof ContextWrapper) {
-        context = ((ContextWrapper) context).getBaseContext();
-      }
-      return (Activity) context;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
@@ -881,7 +871,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
-          int softInputMode = getActivity().getWindow().getAttributes().softInputMode;
+          ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
+          Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
+
+          int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height

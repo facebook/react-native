@@ -304,7 +304,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   if (!RCTLayoutMetricsEqualToLayoutMetrics(self.layoutMetrics, layoutMetrics)) {
     self.layoutMetrics = layoutMetrics;
-    [layoutContext.affectedShadowViews addObject:self];
+    [layoutContext.affectedShadowViews addPointer:((__bridge void *)self)];
   }
 }
 
