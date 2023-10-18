@@ -284,6 +284,10 @@ inline void fromRawValue(
     result = yoga::Align::SpaceAround;
     return;
   }
+  if (stringValue == "space-evenly") {
+    result = yoga::Align::SpaceEvenly;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Align:" << stringValue;
   react_native_expect(false);
 }
