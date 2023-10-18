@@ -170,7 +170,7 @@ TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callbackOne));
 
-  uint secondTaskCallOrder;
+  uint secondTaskCallOrder = 0;
   auto callbackTwo = createHostFunctionFromLambda(
       [this, &secondTaskCallOrder](bool /*unused*/) {
         secondTaskCallOrder = hostFunctionCallCount_;
@@ -203,7 +203,7 @@ TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::LowPriority, std::move(callbackOne));
 
-  uint userBlockingPriorityTaskCallOrder;
+  uint userBlockingPriorityTaskCallOrder = 0;
   auto callbackTwo = createHostFunctionFromLambda(
       [this, &userBlockingPriorityTaskCallOrder](bool /*unused*/) {
         userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
