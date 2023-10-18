@@ -27,6 +27,8 @@ const char* YGAlignToString(const YGAlign value) {
       return "space-between";
     case YGAlignSpaceAround:
       return "space-around";
+    case YGAlignSpaceEvenly:
+      return "space-evenly";
   }
   return "unknown";
 }
