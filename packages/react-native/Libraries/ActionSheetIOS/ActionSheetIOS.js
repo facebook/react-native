@@ -145,6 +145,10 @@ const ActionSheetIOS = {
     );
   },
 
+  /**
+   * Dismisses the most upper iOS action sheet presented, if no action sheet is
+   * present a warning is displayed.
+   */
   dismissActionSheet: () => {
     invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     if (typeof RCTActionSheetManager.dismissActionSheet === 'function') {

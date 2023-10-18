@@ -312,6 +312,11 @@ public class MountItemDispatcher {
   @UiThread
   @ThreadConfined(UI)
   public void dispatchPreMountItems(long frameTimeNanos) {
+    if (mPreMountItems.isEmpty()) {
+      // Avoid starting systrace if there are no pre mount items.
+      return;
+    }
+
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from

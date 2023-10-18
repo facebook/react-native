@@ -71,7 +71,7 @@ static SEL selectorForType(NSString *type)
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager ?: _bridgelessViewManager;
+  return _manager ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)

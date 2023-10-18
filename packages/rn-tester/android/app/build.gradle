@@ -146,6 +146,8 @@ android {
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
+        buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
     }
     externalNativeBuild {
         cmake {
@@ -180,7 +182,6 @@ android {
 dependencies {
     // Build React Native from source
     implementation project(':packages:react-native:ReactAndroid')
-    implementation project(':packages:react-native:ReactAndroid:flipper-integration')
 
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))

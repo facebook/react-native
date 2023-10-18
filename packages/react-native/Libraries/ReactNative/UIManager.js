@@ -8,31 +8,10 @@
  * @format
  */
 
-import type {RootTag} from '../Types/RootTagTypes';
-import type {Spec} from './NativeUIManager';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
-
-export interface UIManagerJSInterface extends Spec {
-  +getViewManagerConfig: (viewManagerName: string) => Object;
-  +hasViewManagerConfig: (viewManagerName: string) => boolean;
-  +createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object,
-  ) => void;
-  +updateView: (reactTag: number, viewName: string, props: Object) => void;
-  +manageChildren: (
-    containerTag: ?number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>,
-  ) => void;
-}
 
 function isFabricReactTag(reactTag: number): boolean {
   // React reserves even numbers for Fabric.
@@ -45,7 +24,7 @@ const UIManagerImpl: UIManagerJSInterface =
     : require('./PaperUIManager');
 
 // $FlowFixMe[cannot-spread-interface]
-const UIManager = {
+const UIManager: UIManagerJSInterface = {
   ...UIManagerImpl,
   measure(
     reactTag: number,

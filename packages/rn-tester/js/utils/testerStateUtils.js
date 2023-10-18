@@ -21,7 +21,6 @@ import RNTesterList from './RNTesterList';
 export const Screens = {
   COMPONENTS: 'components',
   APIS: 'apis',
-  BOOKMARKS: 'bookmarks',
 };
 
 export const initialNavigationState: RNTesterNavigationState = {
@@ -29,15 +28,12 @@ export const initialNavigationState: RNTesterNavigationState = {
   activeModuleTitle: null,
   activeModuleExampleKey: null,
   screen: Screens.COMPONENTS,
-  bookmarks: {components: [], apis: []},
   recentlyUsed: {components: [], apis: []},
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {
   const filteredSections: {
-    ['apis' | 'bookmarks' | 'components']: Array<
-      SectionData<RNTesterModuleInfo>,
-    >,
+    ['apis' | 'components']: Array<SectionData<RNTesterModuleInfo>>,
   } = {};
   const sectionKeys = Object.keys(examplesList);
 
@@ -50,22 +46,19 @@ const filterEmptySections = (examplesList: ExamplesList): any => {
   return filteredSections;
 };
 
-export const getExamplesListWithBookmarksAndRecentlyUsed = ({
-  bookmarks,
+export const getExamplesListWithRecentlyUsed = ({
   recentlyUsed,
 }: {
-  bookmarks: ComponentList,
   recentlyUsed: ComponentList,
 }): ExamplesList | null => {
   // Return early if state has not been initialized from storage
-  if (!bookmarks || !recentlyUsed) {
+  if (!recentlyUsed) {
     return null;
   }
 
   const components = RNTesterList.Components.map(
     (componentExample): RNTesterModuleInfo => ({
       ...componentExample,
-      isBookmarked: bookmarks.components.includes(componentExample.key),
       exampleType: Screens.COMPONENTS,
     }),
   );
@@ -76,13 +69,8 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     )
     .filter(Boolean);
 
-  const bookmarkedComponents = components.filter(
-    component => component.isBookmarked,
-  );
-
   const apis = RNTesterList.APIs.map((apiExample): RNTesterModuleInfo => ({
     ...apiExample,
-    isBookmarked: bookmarks.apis.includes(apiExample.key),
     exampleType: Screens.APIS,
   }));
 
@@ -91,8 +79,6 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
       apis.find(apiExample => apiExample.key === recentAPIKey),
     )
     .filter(Boolean);
-
-  const bookmarkedAPIs = apis.filter(apiExample => apiExample.isBookmarked);
 
   const examplesList: ExamplesList = {
     [Screens.COMPONENTS]: [
@@ -116,18 +102,6 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
       {
         key: 'APIS',
         data: apis,
-        title: 'APIs',
-      },
-    ],
-    [Screens.BOOKMARKS]: [
-      {
-        key: 'COMPONENTS',
-        data: bookmarkedComponents,
-        title: 'Components',
-      },
-      {
-        key: 'APIS',
-        data: bookmarkedAPIs,
         title: 'APIs',
       },
     ],

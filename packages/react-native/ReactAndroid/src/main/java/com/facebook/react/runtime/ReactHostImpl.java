@@ -922,6 +922,7 @@ public class ReactHostImpl implements ReactHost {
                     final JSBundleLoader bundleLoader = task.getResult();
                     final BridgelessReactContext reactContext = getOrCreateReactContext();
                     final DevSupportManager devSupportManager = getDevSupportManager();
+                    reactContext.setJSExceptionHandler(devSupportManager);
 
                     log(method, "Creating ReactInstance");
                     final ReactInstance instance =
@@ -1036,6 +1037,7 @@ public class ReactHostImpl implements ReactHost {
 
           final BridgelessReactContext reactContext = getOrCreateReactContext();
           final DevSupportManager devSupportManager = getDevSupportManager();
+          reactContext.setJSExceptionHandler(devSupportManager);
 
           return getJsBundleLoader()
               .onSuccess(

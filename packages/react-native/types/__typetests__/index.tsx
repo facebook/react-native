@@ -2115,4 +2115,7 @@ const ActionSheetIOSTest = () => {
     },
     () => undefined,
   );
+
+  // test dismissActionSheet method
+  ActionSheetIOS.dismissActionSheet();
 };

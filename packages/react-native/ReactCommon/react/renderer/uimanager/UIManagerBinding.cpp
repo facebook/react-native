@@ -155,15 +155,14 @@ void UIManagerBinding::dispatchEventToJS(
     LOG(WARNING) << "instanceHandle is null, event will be dropped";
   }
 
-  auto& eventHandlerWrapper =
-      static_cast<const EventHandlerWrapper&>(*eventHandler_);
-
   currentEventPriority_ = priority;
-  eventHandlerWrapper.callback.call(
-      runtime,
-      {std::move(instanceHandle),
-       jsi::String::createFromUtf8(runtime, type),
-       std::move(payload)});
+  if (eventHandler_) {
+    eventHandler_->call(
+        runtime,
+        std::move(instanceHandle),
+        jsi::String::createFromUtf8(runtime, type),
+        std::move(payload));
+  }
   currentEventPriority_ = ReactEventPriority::Default;
 }
 
@@ -545,7 +544,7 @@ jsi::Value UIManagerBinding::get(
           auto eventHandler =
               arguments[0].getObject(runtime).getFunction(runtime);
           eventHandler_ =
-              std::make_unique<EventHandlerWrapper>(std::move(eventHandler));
+              std::make_unique<jsi::Function>(std::move(eventHandler));
           return jsi::Value::undefined();
         });
   }

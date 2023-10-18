@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
  * This Class helps to calculate the velocity for all ScrollView. The x and y velocity will later on
  * send to ReactScrollViewHelper for further use.
  */
-public class VelocityHelper {
+class VelocityHelper {
 
   private @Nullable VelocityTracker mVelocityTracker;
   private float mXVelocity;

@@ -50,6 +50,22 @@ function getSampleLegacyModule() {
   return module;
 }
 
+function stringify(obj: mixed): string {
+  function replacer(_: string, value: mixed) {
+    if (value instanceof Object && !(value instanceof Array)) {
+      return Object.keys(value ?? {})
+        .sort()
+        .reduce((sorted: {[key: string]: mixed}, key: string) => {
+          sorted[key] = (value ?? {})[key];
+          return sorted;
+        }, {});
+    }
+    return value;
+  }
+
+  return (JSON.stringify(obj, replacer) || '').replaceAll('"', "'");
+}
+
 class SampleLegacyModuleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
 
@@ -119,7 +135,7 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
           getObjectInteger: () => getSampleLegacyModule()?.getObjectInteger(99),
           getObjectFloat: () => getSampleLegacyModule()?.getObjectFloat(99.95),
           getString: () => getSampleLegacyModule()?.getString('Hello'),
-          getRootTag: () => getSampleLegacyModule()?.getRootTag(this.context),
+          getRootTag: () => getSampleLegacyModule()?.getRootTag(11),
           getObject: () =>
             getSampleLegacyModule()?.getObject({a: 1, b: 'foo', c: null}),
           getUnsafeObject: () =>
@@ -171,7 +187,7 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
     return (
       <View style={styles.result}>
         <Text testID={name + '-result'} style={[styles.value]}>
-          {(JSON.stringify(result.value) || '').replaceAll('"', "'")}
+          {stringify(result.value)}
         </Text>
         <Text style={[styles.type]}>{result.type}</Text>
       </View>

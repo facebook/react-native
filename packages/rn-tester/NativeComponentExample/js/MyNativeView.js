@@ -87,6 +87,7 @@ export default function MyNativeView(props: {}): React.Node {
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
+  const [arrayValues, setArrayValues] = useState([1, 2, 3]);
   const [hsba, setHsba] = useState<HSBA>(new HSBA());
   const [cornerRadiusIndex, setCornerRadiusIndex] = useState<number>(0);
   const [legacyMeasure, setLegacyMeasure] =
@@ -102,7 +103,7 @@ export default function MyNativeView(props: {}): React.Node {
         ref={ref}
         style={{flex: 1}}
         opacity={opacity}
-        values={[0, 1, 2, 3, 4]}
+        values={arrayValues}
         onIntArrayChanged={event => {
           console.log(event.nativeEvent.values);
           console.log(event.nativeEvent.boolValues);
@@ -135,7 +136,7 @@ export default function MyNativeView(props: {}): React.Node {
       </Text>
       <Text style={{color: 'green', textAlign: 'center'}}>
         Constants From Interop Layer:{' '}
-        {UIManager.RNTMyLegacyNativeView.Constants.PI}
+        {UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Constants.PI}
       </Text>
       <Button
         title="Change Background"
@@ -154,6 +155,11 @@ export default function MyNativeView(props: {}): React.Node {
         title="Set Opacity"
         onPress={() => {
           setOpacity(Math.random());
+          setArrayValues([
+            Math.floor(Math.random() * 100),
+            Math.floor(Math.random() * 100),
+            Math.floor(Math.random() * 100),
+          ]);
         }}
       />
       <Button

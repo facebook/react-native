@@ -16,7 +16,7 @@ import com.facebook.react.common.SingleThreadAsserter;
  * Simple container class to keep track of {@link ReactShadowNode}s associated with a particular
  * UIManagerModule instance.
  */
-public class ShadowNodeRegistry {
+class ShadowNodeRegistry {
 
   private final SparseArray<ReactShadowNode> mTagsToCSSNodes;
   private final SparseBooleanArray mRootTags;

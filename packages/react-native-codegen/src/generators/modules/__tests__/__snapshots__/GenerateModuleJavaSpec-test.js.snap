@@ -20,7 +20,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -66,7 +66,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -136,7 +136,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -178,7 +178,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class AliasTurboModuleSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -224,7 +224,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -272,7 +272,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -338,7 +338,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -462,7 +462,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements TurboModule {
@@ -500,7 +500,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeSampleTurboModule2Spec extends ReactContextBaseJavaModule implements TurboModule {

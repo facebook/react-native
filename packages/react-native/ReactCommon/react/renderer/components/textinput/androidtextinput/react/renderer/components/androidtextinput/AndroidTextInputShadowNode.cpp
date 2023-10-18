@@ -16,6 +16,7 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
 #include <utility>
 
@@ -157,7 +158,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    const LayoutContext& /*layoutContext*/,
+    const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
@@ -183,10 +184,13 @@ Size AndroidTextInputShadowNode::measureContent(
     return {0, 0};
   }
 
+  TextLayoutContext textLayoutContext;
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   return textLayoutManager_
       ->measure(
           AttributedStringBox{attributedString},
           getConcreteProps().paragraphAttributes,
+          textLayoutContext,
           layoutConstraints,
           nullptr)
       .size;

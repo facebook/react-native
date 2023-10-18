@@ -10,6 +10,7 @@
 #include <react/renderer/core/EventLogger.h>
 #include "NativePerformanceObserver.h"
 
+#include <functional>
 #include <unordered_map>
 
 namespace facebook::react {
@@ -298,8 +299,7 @@ void PerformanceEntryReporter::scheduleFlushBuffer() {
 
 struct StrKey {
   uint32_t key;
-  StrKey(std::string_view s)
-      : key(folly::hash::fnv32_buf(s.data(), s.length())) {}
+  StrKey(std::string_view s) : key(std::hash<std::string_view>{}(s)) {}
 
   bool operator==(const StrKey& rhs) const {
     return key == rhs.key;

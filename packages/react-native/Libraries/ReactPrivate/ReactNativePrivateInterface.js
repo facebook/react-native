@@ -27,7 +27,7 @@ import typeof {
   diff as diffAttributePayloads,
 } from '../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import typeof UIManager from '../ReactNative/UIManager';
-import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import typeof * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import type {DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';

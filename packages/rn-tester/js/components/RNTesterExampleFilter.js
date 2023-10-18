@@ -28,7 +28,7 @@ type Props<T> = {
   disableSearch?: boolean,
   testID?: string,
   hideFilterPills?: boolean,
-  page: 'examples_page' | 'components_page' | 'bookmarks_page',
+  page: 'examples_page' | 'components_page',
   sections: $ReadOnlyArray<SectionData<T>>,
   ...
 };
