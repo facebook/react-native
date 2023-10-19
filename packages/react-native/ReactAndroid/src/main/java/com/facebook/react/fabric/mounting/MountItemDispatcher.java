@@ -93,15 +93,11 @@ public class MountItemDispatcher {
   }
 
   /**
-   * Try to dispatch MountItems. Returns true if any items were dispatched, false otherwise. A
-   * `false` return value doesn't indicate errors, it may just indicate there was no work to be
-   * done.
-   *
-   * @return
+   * Try to dispatch MountItems. In case of the exception, we will retry 10 times before giving up.
    */
   @UiThread
   @ThreadConfined(UI)
-  public boolean tryDispatchMountItems() {
+  public void tryDispatchMountItems() {
     // If we're already dispatching, don't reenter.
     // Reentrance can potentially happen a lot on Android in Fabric because
     // `updateState` from the
@@ -111,7 +107,7 @@ public class MountItemDispatcher {
     // This is a pretty blunt tool, but we might not have better options since we really don't want
     // to execute anything out-of-order.
     if (mInDispatch) {
-      return false;
+      return;
     }
 
     final boolean didDispatchItems;
@@ -145,7 +141,6 @@ public class MountItemDispatcher {
       tryDispatchMountItems();
     }
     mReDispatchCounter = 0;
-    return didDispatchItems;
   }
 
   @UiThread
