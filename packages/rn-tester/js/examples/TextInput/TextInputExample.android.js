@@ -482,7 +482,7 @@ const examples: Array<RNTesterModuleExample> = [
         'next',
       ];
       const returnKeyLabels = ['Compile', 'React Native'];
-      const examples = returnKeyTypes.map(type => {
+      const returnKeyExamples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -504,7 +504,7 @@ const examples: Array<RNTesterModuleExample> = [
       });
       return (
         <View>
-          {examples}
+          {returnKeyExamples}
           {types}
         </View>
       );
