@@ -99,36 +99,46 @@ YGEdge Node::getInlineEndEdgeUsingErrata(
       : inlineEndEdge(flexDirection, direction);
 }
 
-bool Node::isFlexStartPositionDefined(FlexDirection axis) const {
+bool Node::isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+    const {
+  const YGEdge startEdge = getInlineStartEdgeUsingErrata(axis, direction);
   auto leadingPosition = isRow(axis)
-      ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, flexStartEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), flexStartEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.position(), startEdge);
 
   return !leadingPosition.isUndefined();
 }
 
-bool Node::isFlexEndPositionDefined(FlexDirection axis) const {
+bool Node::isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+    const {
+  const YGEdge endEdge = getInlineEndEdgeUsingErrata(axis, direction);
   auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, flexEndEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), flexEndEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.position(), endEdge);
 
   return !trailingPosition.isUndefined();
 }
 
-float Node::getFlexStartPosition(FlexDirection axis, float axisSize) const {
+float Node::getInlineStartPosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize) const {
+  const YGEdge startEdge = getInlineStartEdgeUsingErrata(axis, direction);
   auto leadingPosition = isRow(axis)
-      ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, flexStartEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), flexStartEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.position(), startEdge);
 
   return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
-float Node::getFlexEndPosition(FlexDirection axis, float axisSize) const {
+float Node::getInlineEndPosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize) const {
+  const YGEdge endEdge = getInlineEndEdgeUsingErrata(axis, direction);
   auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, flexEndEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), flexEndEdge(axis));
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.position(), endEdge);
 
   return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
 }
@@ -440,12 +450,15 @@ void Node::setLayoutDimension(float dimensionValue, Dimension dimension) {
 
 // If both left and right are defined, then use left. Otherwise return +left or
 // -right depending on which is defined.
-float Node::relativePosition(FlexDirection axis, float axisSize) const {
-  if (isFlexStartPositionDefined(axis)) {
-    return getFlexStartPosition(axis, axisSize);
+float Node::relativePosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize) const {
+  if (isInlineStartPositionDefined(axis, direction)) {
+    return getInlineStartPosition(axis, direction, axisSize);
   }
 
-  return -1 * getFlexEndPosition(axis, axisSize);
+  return -1 * getInlineEndPosition(axis, direction, axisSize);
 }
 
 void Node::setPosition(
@@ -465,8 +478,10 @@ void Node::setPosition(
   // Here we should check for `PositionType::Static` and in this case zero inset
   // properties (left, right, top, bottom, begin, end).
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
-  const float relativePositionMain = relativePosition(mainAxis, mainSize);
-  const float relativePositionCross = relativePosition(crossAxis, crossSize);
+  const float relativePositionMain =
+      relativePosition(mainAxis, directionRespectingRoot, mainSize);
+  const float relativePositionCross =
+      relativePosition(crossAxis, directionRespectingRoot, crossSize);
 
   const YGEdge mainAxisLeadingEdge =
       getInlineStartEdgeUsingErrata(mainAxis, direction);
