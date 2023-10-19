@@ -31,7 +31,7 @@ commands:
       - restore_cache:
           key: *rbenv_cache_key
       - run:
-          name: Bundle Install
+          name: Install the proper Ruby and run Bundle install
           command: |
             # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
 
@@ -61,6 +61,7 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
+            rbenv rehash
             gem install bundler
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:

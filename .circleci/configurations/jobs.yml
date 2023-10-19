@@ -116,7 +116,7 @@ jobs:
     executor: reactnativeios
     parameters:
       ruby_version:
-        default: "2.7.7"
+        default: "2.7.8"
         description: The version of ruby that must be used
         type: string
     steps:
