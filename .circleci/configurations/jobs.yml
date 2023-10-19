@@ -877,6 +877,22 @@ jobs:
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
             mv build_"$SLICE" "$FINAL_PATH"
+
+            # check whether everything is there
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework" ]]; then
+              echo "Successfully built hermes.framework for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework for $SLICE in $FLAVOR"
+              exit 1
+            fi
+
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework.dSYM" ]]; then
+              echo "Successfully built hermes.framework.dSYM for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework.dSYM for $SLICE in $FLAVOR"
+              echo "Please try again"
+              exit 1
+            fi
       - save_cache:
           key: << parameters.slice_base_cache_key >>-<< parameters.slice >>-<< parameters.flavor >>
           paths:
