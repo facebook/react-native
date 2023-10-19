@@ -155,10 +155,8 @@ jobs:
                 name: Move app to correct directory
                 command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
             - run:
-                name: Start Appium server and check status status
-                command: |
-                  appium --base-path /wd/hub
-                  scripts/circleci/check_appium_server_status.sh
+                name: Start Appium server
+                command: appium --base-path /wd/hub
                 background: true
             - run:
                 name: Start Metro
@@ -169,6 +167,9 @@ jobs:
             - run:
                 name: Boot iOS Simulator
                 command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+            - run:
+                name: Check Appium server status
+                command: scripts/circleci/check_appium_server_status.sh
             - run:
                 name: Run E2E tests
                 no_output_timeout: 10m
@@ -211,7 +212,6 @@ jobs:
           name: Start Appium server and check status status
           command: |
             appium --base-path /wd/hub
-            scripts/circleci/check_appium_server_status.sh
           background: true
       - run:
           name: Start Metro
@@ -224,6 +224,9 @@ jobs:
           no-window: true
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: ""
+      - run:
+          name: Check Appium server status
+          command: scripts/circleci/check_appium_server_status.sh
       - run:
           name: Run E2E tests
           no_output_timeout: 10m
