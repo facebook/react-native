@@ -333,6 +333,14 @@ type AndroidProps = $ReadOnly<{|
   cursorColor?: ?ColorValue,
 
   /**
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  selectionHandleColor?: ?ColorValue,
+
+  /**
    * When `false`, if there is a small amount of space available around a text input
    * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
    * the text inside of a full screen text input mode. When `true`, this feature is

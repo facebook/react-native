@@ -62,6 +62,12 @@ TextInputProps::TextInputProps(
           "selectionColor",
           sourceProps.selectionColor,
           {})),
+      selectionHandleColor(convertRawProp(
+          context,
+          rawProps,
+          "selectionHandleColor",
+          sourceProps.selectionHandleColor,
+          {})),
       underlineColorAndroid(convertRawProp(
           context,
           rawProps,

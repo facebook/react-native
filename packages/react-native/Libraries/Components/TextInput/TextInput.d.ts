@@ -337,6 +337,14 @@ export interface TextInputAndroidProps {
   cursorColor?: ColorValue | null | undefined;
 
   /**
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  selectionHandleColor?: ColorValue | null | undefined;
+
+  /**
    * Determines whether the individual fields in your app should be included in a
    * view structure for autofill purposes on Android API Level 26+. Defaults to auto.
    * To disable auto complete, use `off`.

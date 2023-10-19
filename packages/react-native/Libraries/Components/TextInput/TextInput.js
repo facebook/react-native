@@ -918,6 +918,12 @@ export type Props = $ReadOnly<{|
   selectionColor?: ?ColorValue,
 
   /**
+   * The text selection handle color.
+   * @platform android
+   */
+  selectionHandleColor?: ?ColorValue,
+
+  /**
    * If `true`, all text will automatically be selected on focus.
    */
   selectTextOnFocus?: ?boolean,
@@ -1506,7 +1512,18 @@ function InternalTextInput(props: Props): React.Node {
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
-
+    // For consistency with iOS set cursor/selectionHandle color as selectionColor
+    const colorProps = {
+      selectionColor: props.selectionColor,
+      selectionHandleColor:
+        props.selectionHandleColor === undefined
+          ? props.selectionColor
+          : props.selectionHandleColor,
+      cursorColor:
+        props.cursorColor === undefined
+          ? props.selectionColor
+          : props.cursorColor,
+    };
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
        * exactly with the props for TextInput. This will need to get fixed */
@@ -1520,6 +1537,7 @@ function InternalTextInput(props: Props): React.Node {
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
         ref={ref}
         {...otherProps}
+        {...colorProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}

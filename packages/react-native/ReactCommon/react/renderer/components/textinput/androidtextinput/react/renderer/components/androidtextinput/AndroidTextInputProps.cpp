@@ -134,6 +134,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "selectionColor",
           sourceProps.selectionColor,
           {})),
+      selectionHandleColor(CoreFeatures::enablePropIteratorSetter? sourceProps.selectionHandleColor : convertRawProp(context, rawProps,
+          "selectionHandleColor",
+          sourceProps.selectionHandleColor,
+          {})),
       value(CoreFeatures::enablePropIteratorSetter? sourceProps.value : convertRawProp(context, rawProps, "value", sourceProps.value, {})),
       defaultValue(CoreFeatures::enablePropIteratorSetter? sourceProps.defaultValue : convertRawProp(context, rawProps,
           "defaultValue",
@@ -347,6 +351,7 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(placeholderTextColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionHandleColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(defaultValue);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
@@ -446,6 +451,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["placeholderTextColor"] = toAndroidRepr(placeholderTextColor);
   props["secureTextEntry"] = secureTextEntry;
   props["selectionColor"] = toAndroidRepr(selectionColor);
+  props["selectionHandleColor"] = toAndroidRepr(selectionHandleColor);
   props["value"] = value;
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
