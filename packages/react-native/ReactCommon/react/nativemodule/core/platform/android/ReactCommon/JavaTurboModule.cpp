@@ -57,8 +57,6 @@ JavaTurboModule::~JavaTurboModule() {
 
 namespace {
 
-constexpr auto kReactBuildConfigJavaDescriptor = "com/facebook/react/common/build/ReactBuildConfig";
-
 constexpr auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
 
 bool getFeatureFlagBoolValue(const char *name) {
