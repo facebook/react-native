@@ -77,9 +77,10 @@ internal object AgpConfiguratorUtils {
             val android = subproject.extensions.getByType(LibraryExtension::class.java)
             val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
-            if (manifestFile.exists()) {
-              val packageName = getPackageNameFromManifest(manifestFile)
-              ext.namespace = packageName
+            manifestFile.takeIf { it.exists() }?.let { file ->
+              getPackageNameFromManifest(file)?.let { packageName ->
+                 ext.namespace = packageName
+              }
             }
           }
         }
@@ -92,8 +93,15 @@ const val DEFAULT_DEV_SERVER_PORT = "8081"
 fun getPackageNameFromManifest(manifest: File): String? {
   val factory: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
   val builder: DocumentBuilder = factory.newDocumentBuilder()
-  val xmlDocument = builder.parse(manifest)
 
-  val manifestElement = xmlDocument.getElementsByTagName("manifest").item(0) as? Element
-  return manifestElement?.getAttribute("package")
+  try {
+    val xmlDocument = builder.parse(manifest)
+
+    val manifestElement = xmlDocument.getElementsByTagName("manifest").item(0) as? Element
+    val packageName = manifestElement?.getAttribute("package")
+
+    return if (packageName.isNullOrEmpty()) null else packageName
+  } catch (e: Exception) {
+    return null
+  }
 }
