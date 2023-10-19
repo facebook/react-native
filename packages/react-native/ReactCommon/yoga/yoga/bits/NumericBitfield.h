@@ -34,7 +34,7 @@ template <
     typename Enum,
     std::enable_if_t<(ordinalCount<Enum>() > 0), bool> = true>
 constexpr uint8_t minimumBitCount() {
-  return details::log2ceilFn(ordinalCount<Enum>() - 1);
+  return details::log2ceilFn(static_cast<uint8_t>(ordinalCount<Enum>() - 1));
 }
 
 template <typename Enum>
