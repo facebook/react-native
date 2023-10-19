@@ -154,12 +154,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (getReloadAppAction(context).equals(action)) {
-              if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
-                mDevSettings.setRemoteJSDebugEnabled(true);
-                mDevServerHelper.launchJSDevtools();
-              } else {
-                mDevSettings.setRemoteJSDebugEnabled(false);
-              }
               handleReloadJS();
             }
           }
@@ -367,13 +361,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     if (mDevSettings.isDeviceDebugEnabled()) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
-
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (mDevSettings.isRemoteJSDebugEnabled()) {
-        mDevSettings.setRemoteJSDebugEnabled(false);
-        handleReloadJS();
-      }
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
           () ->
@@ -593,12 +580,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
 
     return mDevServerHelper.getSourceUrl(Assertions.assertNotNull(mJSAppBundleName));
-  }
-
-  @Override
-  public String getJSBundleURLForRemoteDebugging() {
-    return mDevServerHelper.getJSBundleURLForRemoteDebugging(
-        Assertions.assertNotNull(mJSAppBundleName));
   }
 
   @Override
@@ -962,19 +943,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     UiThreadUtil.runOnUiThread(
         () -> {
           mDevSettings.setHotModuleReplacementEnabled(isHotModuleReplacementEnabled);
-          handleReloadJS();
-        });
-  }
-
-  @Override
-  public void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled) {
-    if (!mIsDevSupportEnabled) {
-      return;
-    }
-
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
           handleReloadJS();
         });
   }

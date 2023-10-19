@@ -57,12 +57,10 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleType;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
@@ -298,11 +296,6 @@ public class ReactInstanceManager {
   private ReactInstanceDevHelper createDevHelperInterface() {
     return new ReactInstanceDevHelper() {
       @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-      }
-
-      @Override
       public void onJSBundleLoadedFromServer() {
         ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
@@ -448,14 +441,9 @@ public class ReactInstanceManager {
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                            && !devSettings.isRemoteJSDebugEnabled()
                             && !mUseFallbackBundle) {
-                          // If there is a up-to-date bundle downloaded from server,
-                          // with remote JS debugging disabled, always use that.
                           onJSBundleLoadedFromServer();
                         } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
                           recreateReactContextInBackgroundFromBundleLoader();
                         }
                       });
@@ -1021,16 +1009,6 @@ public class ReactInstanceManager {
 
   public String getJsExecutorName() {
     return mJavaScriptExecutorFactory.toString();
-  }
-
-  @ThreadConfined(UI)
-  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
-    recreateReactContextInBackground(
-        new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
-        JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
-            mDevSupportManager.getSourceUrl()));
   }
 
   @ThreadConfined(UI)

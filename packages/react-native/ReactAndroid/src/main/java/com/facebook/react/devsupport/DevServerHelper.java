@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -56,8 +55,6 @@ import okio.Sink;
  * </ul>
  */
 public class DevServerHelper {
-  public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
   private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
@@ -237,13 +234,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public String getWebsocketProxyURL() {
-    return String.format(
-        Locale.US,
-        "ws://%s/debugger-proxy?role=client",
-        mPackagerConnectionSettings.getDebugServerHost());
-  }
-
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
@@ -259,28 +249,6 @@ public class DevServerHelper {
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
-  }
-
-  public void downloadBundleFromURL(
-      DevBundleDownloadListener callback,
-      File outputFile,
-      String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo,
-      Request.Builder requestBuilder) {
-    mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, requestBuilder);
-  }
-
-  /** @return the host to use when connecting to the bundle server from the host itself. */
-  private String getHostForJSProxy() {
-    // Use custom port if configured. Note that host stays "localhost".
-    String host = Assertions.assertNotNull(mPackagerConnectionSettings.getDebugServerHost());
-    int portOffset = host.lastIndexOf(':');
-    if (portOffset > -1) {
-      return "localhost" + host.substring(portOffset);
-    } else {
-      return AndroidInfoHelpers.DEVICE_LOCALHOST;
-    }
   }
 
   /** @return whether we should enable dev mode when requesting JS bundles. */
@@ -345,45 +313,12 @@ public class DevServerHelper {
     }
   }
 
-  private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(
-        Locale.US,
-        "http://%s/launch-js-devtools",
-        mPackagerConnectionSettings.getDebugServerHost());
-  }
-
-  public void launchJSDevtools() {
-    Request request = new Request.Builder().url(createLaunchJSDevtoolsCommandUrl()).build();
-    mClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // ignore HTTP call response, this is just to open a debugger page and there is no
-                // reason to report failures from here
-              }
-
-              @Override
-              public void onResponse(@NonNull Call call, @NonNull Response response) {
-                // ignore HTTP call response - see above
-              }
-            });
-  }
-
   public String getSourceMapUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.MAP);
   }
 
   public String getSourceUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.BUNDLE);
-  }
-
-  public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
-    // The host we use when connecting to the JS bundle server from the emulator is not the
-    // same as the one needed to connect to the same server from the JavaScript proxy running on the
-    // host itself.
-    return createBundleURL(mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
   }
 
   /**

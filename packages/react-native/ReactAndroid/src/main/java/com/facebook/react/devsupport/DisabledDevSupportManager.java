@@ -78,9 +78,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void setHotModuleReplacementEnabled(boolean isHotModuleReplacementEnabled) {}
 
   @Override
-  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {}
-
-  @Override
   public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}
 
   @Override
@@ -114,11 +111,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public String getSourceUrl() {
-    return null;
-  }
-
-  @Override
-  public String getJSBundleURLForRemoteDebugging() {
     return null;
   }
 

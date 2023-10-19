@@ -61,7 +61,7 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
 
   @Override
   public void setIsDebuggingRemotely(boolean isDebugginRemotelyEnabled) {
-    mDevSupportManager.setRemoteJSDebugEnabled(isDebugginRemotelyEnabled);
+    // Not implemented
   }
 
   @Override

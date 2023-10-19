@@ -28,12 +28,6 @@ public interface DeveloperSettings {
   /** @return Whether Nuclide JS debugging is enabled. */
   boolean isDeviceDebugEnabled();
 
-  /** @return Whether remote JS debugging is enabled. */
-  boolean isRemoteJSDebugEnabled();
-
-  /** Enable/Disable remote JS debugging. */
-  void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled);
-
   /** @return Whether Start Sampling Profiler on App Start is enabled. */
   boolean isStartSamplingProfilerOnInit();
 

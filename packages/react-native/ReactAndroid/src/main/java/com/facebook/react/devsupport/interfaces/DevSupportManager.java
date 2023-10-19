@@ -62,8 +62,6 @@ public interface DevSupportManager extends JSExceptionHandler {
 
   String getSourceUrl();
 
-  String getJSBundleURLForRemoteDebugging();
-
   String getDownloadedJSBundleFile();
 
   boolean hasUpToDateJSBundleInCache();
@@ -81,8 +79,6 @@ public interface DevSupportManager extends JSExceptionHandler {
   void isPackagerRunning(PackagerStatusCallback callback);
 
   void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled);
-
-  void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled);
 
   void setFpsDebugEnabled(final boolean isFpsDebugEnabled);
 

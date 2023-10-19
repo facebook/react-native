@@ -10,7 +10,6 @@ package com.facebook.react.devsupport;
 import android.app.Activity;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 
 /**
@@ -19,9 +18,6 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
  * developer menu options.
  */
 public interface ReactInstanceDevHelper {
-
-  /** Request react instance recreation with JS debugging enabled. */
-  void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);
 
   /** Notify react instance manager about new JS bundle version downloaded from the server. */
   void onJSBundleLoadedFromServer();

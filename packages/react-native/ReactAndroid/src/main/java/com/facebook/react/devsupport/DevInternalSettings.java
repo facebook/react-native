@@ -28,7 +28,6 @@ class DevInternalSettings
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
-  private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
   private static final String PREFS_START_SAMPLING_PROFILER_ON_INIT =
       "start_sampling_profiler_on_init";
 
@@ -83,16 +82,6 @@ class DevInternalSettings
   @Override
   public boolean isDeviceDebugEnabled() {
     return ReactBuildConfig.DEBUG;
-  }
-
-  @Override
-  public boolean isRemoteJSDebugEnabled() {
-    return mPreferences.getBoolean(PREFS_REMOTE_JS_DEBUG_KEY, false);
-  }
-
-  @Override
-  public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
-    mPreferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply();
   }
 
   @Override

@@ -12,7 +12,6 @@ import android.content.Context;
 import android.view.View;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.devsupport.DevSupportManagerBase;
@@ -98,11 +97,6 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
     return new ReactInstanceDevHelper() {
-      @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory) {
-        // Not implemented
-      }
-
       @Override
       public void onJSBundleLoadedFromServer() {
         throw new IllegalStateException("Not implemented for bridgeless mode");
