@@ -57,7 +57,7 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
-public class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
+class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
