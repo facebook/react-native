@@ -7,14 +7,12 @@
 
 package com.facebook.react.fabric.mounting;
 
-import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
 import android.view.View;
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -62,10 +60,8 @@ public class MountItemDispatcher {
     mItemDispatchListener = listener;
   }
 
-  @AnyThread
-  @ThreadConfined(ANY)
-  public void dispatchCommandMountItem(DispatchCommandMountItem command) {
-    addViewCommandMountItem(command);
+  public void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
+    mViewCommandMountItems.add(mountItem);
   }
 
   public void addMountItem(MountItem mountItem) {
@@ -86,10 +82,6 @@ public class MountItemDispatcher {
           mountItem.getSurfaceId(),
           mountItem.toString());
     }
-  }
-
-  public void addViewCommandMountItem(DispatchCommandMountItem mountItem) {
-    mViewCommandMountItems.add(mountItem);
   }
 
   /**
@@ -159,7 +151,7 @@ public class MountItemDispatcher {
             mountItem.incrementRetries();
             // In case we haven't retried executing this item yet, execute in the next batch of
             // items
-            dispatchCommandMountItem(mountItem);
+            addViewCommandMountItem(mountItem);
           }
         } else {
           printMountItem(
@@ -214,7 +206,7 @@ public class MountItemDispatcher {
           // the current batch of mount items has finished executing.
           if (command.getRetries() == 0) {
             command.incrementRetries();
-            dispatchCommandMountItem(command);
+            addViewCommandMountItem(command);
           } else {
             // It's very common for commands to be executed on views that no longer exist - for
             // example, a blur event on TextInput being fired because of a navigation event away

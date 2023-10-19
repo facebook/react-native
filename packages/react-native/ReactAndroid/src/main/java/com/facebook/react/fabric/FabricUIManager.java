@@ -1023,7 +1023,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int commandId,
       @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.dispatchCommandMountItem(
+    mMountItemDispatcher.addViewCommandMountItem(
         MountItemFactory.createDispatchCommandMountItem(
             surfaceId, reactTag, commandId, commandArgs));
   }
@@ -1039,10 +1039,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
-      mMountItemDispatcher.dispatchCommandMountItem(
+      mMountItemDispatcher.addViewCommandMountItem(
           createDispatchCommandMountItemForInterop(surfaceId, reactTag, commandId, commandArgs));
     } else {
-      mMountItemDispatcher.dispatchCommandMountItem(
+      mMountItemDispatcher.addViewCommandMountItem(
           MountItemFactory.createDispatchCommandMountItem(
               surfaceId, reactTag, commandId, commandArgs));
     }
