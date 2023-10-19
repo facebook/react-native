@@ -303,10 +303,12 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          e);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for com.facebook.react.shell.MainReactPackage$$ReactModuleInfoProvider",
+          e);
     }
   }
 }
