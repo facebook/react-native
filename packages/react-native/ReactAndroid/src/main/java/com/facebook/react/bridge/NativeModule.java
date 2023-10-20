@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import javax.annotation.Nonnull;
 
 /**
@@ -18,6 +19,7 @@ import javax.annotation.Nonnull;
  * not provide any Java code (so they can be reused on other platforms), and instead should register
  * themselves using {@link CxxModuleWrapper}.
  */
+@StableReactNativeAPI
 @DoNotStrip
 public interface NativeModule {
 
@@ -52,7 +54,7 @@ public interface NativeModule {
    *
    * @deprecated use {@link #invalidate()} instead.
    */
-  @DeprecatedInNewArchitecture(message = "Use invalidate method instead")
+  @Deprecated(since = "Use invalidate method instead", forRemoval = true)
   void onCatalystInstanceDestroy();
 
   /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */

@@ -264,10 +264,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:use_native_state")) {
-    CoreFeatures::useNativeState = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }

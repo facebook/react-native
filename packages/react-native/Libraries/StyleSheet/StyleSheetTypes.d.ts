@@ -40,6 +40,7 @@ export interface FlexStyle {
     | 'stretch'
     | 'space-between'
     | 'space-around'
+    | 'space-evenly'
     | undefined;
   alignItems?: FlexAlignType | undefined;
   alignSelf?: 'auto' | FlexAlignType | undefined;

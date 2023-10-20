@@ -17,8 +17,6 @@
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
-#include "JSITracing.h"
-
 using namespace facebook::hermes;
 using namespace facebook::jsi;
 
@@ -43,13 +41,16 @@ class HermesExecutorRuntimeAdapter
   }
 
   void tickleJs() override {
-    // The queue will ensure that runtime_ is still valid when this
-    // gets invoked.
-    thread_->runOnQueue([&runtime = runtime_]() {
-      auto func =
-          runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
-      func.call(*runtime);
-    });
+    thread_->runOnQueue(
+        [weakRuntime = std::weak_ptr<HermesRuntime>(runtime_)]() {
+          auto runtime = weakRuntime.lock();
+          if (!runtime) {
+            return;
+          }
+          jsi::Function func =
+              runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
+          func.call(*runtime);
+        });
   }
 
  private:
@@ -240,8 +241,6 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<MessageQueueThread> jsQueue,
     const JSIScopedTimeoutInvoker& timeoutInvoker,
     RuntimeInstaller runtimeInstaller)
-    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {
-  jsi::addNativeTracingHooks(*runtime);
-}
+    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {}
 
 } // namespace facebook::react

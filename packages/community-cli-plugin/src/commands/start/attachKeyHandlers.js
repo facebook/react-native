@@ -103,7 +103,7 @@ export default function attachKeyHandlers({
       `${chalk.bold('a')} - run on Android`,
       `${chalk.bold('d')} - open Dev Menu`,
       ...(experimentalDebuggerFrontend
-        ? [`${chalk.bold('j')} - open debugger (experimental)`]
+        ? [`${chalk.bold('j')} - open debugger (experimental, Hermes only)`]
         : []),
       `${chalk.bold('r')} - reload app`,
       '',

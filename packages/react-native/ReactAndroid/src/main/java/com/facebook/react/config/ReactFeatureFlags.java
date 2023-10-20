@@ -37,6 +37,12 @@ public class ReactFeatureFlags {
   public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
 
   /**
+   * By default, native module methods that return void run asynchronously. This flag will make
+   * execution of void methods in TurboModules stay on the JS thread.
+   */
+  public static volatile boolean unstable_enableTurboModuleSyncVoidMethods = false;
+
+  /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
    */
@@ -127,12 +133,6 @@ public class ReactFeatureFlags {
    */
   public static boolean reduceDeleteCreateMutation = false;
 
-  /**
-   * Use JSI NativeState API to store references to native objects rather than the more expensive
-   * HostObject pattern
-   */
-  public static boolean useNativeState = false;
-
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
@@ -155,7 +155,7 @@ public class ReactFeatureFlags {
   public static boolean enableDefaultAsyncBatchedPriority = false;
 
   /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = false;
+  public static boolean enableFabricSharedEventPipeline = true;
 
   /** When enabled, Fabric will avoid cloning notes to perform state progression. */
   public static boolean enableClonelessStateProgression = false;
@@ -165,4 +165,10 @@ public class ReactFeatureFlags {
 
   /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
   public static boolean enableTurboModuleStableAPI = false;
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
+   * priorities from any thread.
+   */
+  public static boolean useModernRuntimeScheduler = false;
 }

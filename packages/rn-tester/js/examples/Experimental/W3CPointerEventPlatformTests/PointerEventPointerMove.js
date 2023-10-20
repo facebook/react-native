@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 // adapted from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_pointermove.html

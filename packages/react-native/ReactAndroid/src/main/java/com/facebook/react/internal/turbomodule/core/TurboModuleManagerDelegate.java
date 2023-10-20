@@ -70,5 +70,10 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
+  /* Can TurboModule methods that return void execute on the JS thread? */
+  public boolean unstable_enableSyncVoidMethods() {
+    return false;
+  }
+
   protected synchronized void maybeLoadOtherSoLibraries() {}
 }

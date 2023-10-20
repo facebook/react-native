@@ -11,6 +11,7 @@
 
 const yargs = require('yargs');
 const fs = require('fs');
+const p = require('path');
 
 const CONFIG_FILE_NAME = 'react-native.config.js';
 const PROJECT_FIELD = 'project';
@@ -35,8 +36,7 @@ const outputPath = argv.outputPath;
 
 function fileBody(components) {
   // eslint-disable duplicate-license-header
-  return `
-/*
+  return `/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -93,7 +93,11 @@ function extractComponentsNames(reactNativeConfig) {
 }
 
 function generateRCTLegacyInteropComponents() {
-  const configFilePath = `${appRoot}/${CONFIG_FILE_NAME}`;
+  const cwd = process.cwd();
+  const configFilePath = p.join(cwd, appRoot, CONFIG_FILE_NAME);
+  console.log(
+    `Looking for a react-native.config.js file at ${configFilePath}...`,
+  );
   let reactNativeConfig = null;
   try {
     reactNativeConfig = require(configFilePath);
@@ -107,7 +111,7 @@ function generateRCTLegacyInteropComponents() {
     console.log('Skip LegacyInterop generation');
     return;
   }
-
+  console.log(`Components found: ${componentNames}`);
   let componentsArray = componentNames.map(name => `\t\t\t@"${name}",`);
   // Remove the last comma
   if (componentsArray.length > 0) {
@@ -118,6 +122,7 @@ function generateRCTLegacyInteropComponents() {
 
   const filePath = `${outputPath}/${OUTPUT_FILE_NAME}`;
   fs.writeFileSync(filePath, fileBody(componentsArray.join('\n')));
+  console.log(`${filePath} updated!`);
 }
 
 generateRCTLegacyInteropComponents();

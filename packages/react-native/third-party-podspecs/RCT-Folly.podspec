@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
   spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/libevent/include/\"",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
                                # In dynamic framework (use_frameworks!) mode, ignore the unused and undefined boost symbols when generating the library.
                                "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\""
                              }
@@ -107,43 +107,6 @@ Pod::Spec.new do |spec|
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/*.h',
                             'folly/system/ThreadId.h'
-  end
-
-  spec.subspec 'Futures' do |futures|
-    futures.dependency 'libevent'
-    futures.pod_target_xcconfig = { "HEADER_SEARCH_PATHS" => ["$(inherited)", "$(PODS_ROOT)/Headers/Public/libevent/event"] }
-    futures.source_files = 'folly/{CancellationToken,ExceptionString,ExceptionWrapper,ExceptionWrapper-inl,Executor,Singleton,SingletonThreadLocal,SharedMutex,Try}.{h,cpp}',
-                           'folly/chrono/Hardware.{h,cpp}',
-                           'folly/concurrency/*.{h,cpp}',
-                           'folly/detail/{AsyncTrace,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
-                           'folly/executors/*.{h,cpp}',
-                           'folly/executors/task_queue/*.{h,cpp}',
-                           'folly/executors/thread_factory/{NamedThreadFactory,ThreadFactory}.{h,cpp}',
-                           'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
-                           'folly/experimental/**/*.h',
-                           'folly/experimental/coro/Coroutine.{h,cpp}',
-                           'folly/experimental/coro/Traits.{h,cpp}',
-                           'folly/fibers/*.{h,cpp}',
-                           'folly/futures/*.{h,cpp}',
-                           'folly/futures/detail/*.{h,cpp}',
-                           'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
-                           'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseLocal,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
-                           'folly/lang/{SafeAssert,UncaughtExceptions}.{h,cpp}',
-                           'folly/memory/{MallctlHelper,ReentrantAllocator,SanitizeAddress}.{h,cpp}',
-                           'folly/portability/{GFlags,SysMembarrier,SysUio}.{h,cpp}',
-                           'folly/synchronization/*.{h,cpp}',
-                           'folly/synchronization/detail/*.{h,cpp}',
-                           'folly/system/{Pid,ThreadId,ThreadName,HardwareConcurrency}.{h,cpp}',
-                           'folly/tracing/{AsyncStack,AsyncStack-inl,StaticTracepoint}.{h,cpp}'
-                          # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
-                          #
-                          #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
-                          #  'folly/concurrency/{CacheLocality,UnboundedQueue}.{h,cpp}',
-                          #  'folly/system/ThreadId.h',
-                          #  'folly/synchronization/Hazptr{,-fwd,Domain,Holder,Obj,ObjLinked,Rec,ThrLocal}.{h,cpp}',
-                          #  'folly/synchronization/{AsymmetricMemoryBarrier,AtomicStruct,Baton,MicroSpinLock,ParkingLot,RWSpinLock,SanitizeThread,SaturatingSemaphore,WaitOptions}.{h,cpp}',
-                          #  'folly/synchronization/detail/{AtomicUtils,Sleeper,Spin}.{h,cpp}',
-                          #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
   end
 
   # Folly has issues when compiled with iOS 10 set as deployment target

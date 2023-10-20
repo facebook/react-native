@@ -284,6 +284,10 @@ inline void fromRawValue(
     result = yoga::Align::SpaceAround;
     return;
   }
+  if (stringValue == "space-evenly") {
+    result = yoga::Align::SpaceEvenly;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Align:" << stringValue;
   react_native_expect(false);
 }
@@ -398,8 +402,7 @@ inline void fromRawValue(
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = context.treatAutoAsYGValueUndefined() ? YGValueUndefined
-                                                     : YGValueAuto;
+      result = YGValueAuto;
       return;
     } else {
       if (stringValue.back() == '%') {
@@ -723,107 +726,35 @@ inline std::string toString(const std::array<float, N> vec) {
 }
 
 inline std::string toString(const yoga::Direction& value) {
-  switch (value) {
-    case yoga::Direction::Inherit:
-      return "inherit";
-    case yoga::Direction::LTR:
-      return "ltr";
-    case yoga::Direction::RTL:
-      return "rtl";
-  }
+  return YGDirectionToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::FlexDirection& value) {
-  switch (value) {
-    case yoga::FlexDirection::Column:
-      return "column";
-    case yoga::FlexDirection::ColumnReverse:
-      return "column-reverse";
-    case yoga::FlexDirection::Row:
-      return "row";
-    case yoga::FlexDirection::RowReverse:
-      return "row-reverse";
-  }
+  return YGFlexDirectionToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Justify& value) {
-  switch (value) {
-    case yoga::Justify::FlexStart:
-      return "flex-start";
-    case yoga::Justify::Center:
-      return "center";
-    case yoga::Justify::FlexEnd:
-      return "flex-end";
-    case yoga::Justify::SpaceBetween:
-      return "space-between";
-    case yoga::Justify::SpaceAround:
-      return "space-around";
-    case yoga::Justify::SpaceEvenly:
-      return "space-evenly";
-  }
+  return YGJustifyToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Align& value) {
-  switch (value) {
-    case yoga::Align::Auto:
-      return "auto";
-    case yoga::Align::FlexStart:
-      return "flex-start";
-    case yoga::Align::Center:
-      return "center";
-    case yoga::Align::FlexEnd:
-      return "flex-end";
-    case yoga::Align::Stretch:
-      return "stretch";
-    case yoga::Align::Baseline:
-      return "baseline";
-    case yoga::Align::SpaceBetween:
-      return "space-between";
-    case yoga::Align::SpaceAround:
-      return "space-around";
-  }
+  return YGAlignToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::PositionType& value) {
-  switch (value) {
-    case yoga::PositionType::Static:
-      return "static";
-    case yoga::PositionType::Relative:
-      return "relative";
-    case yoga::PositionType::Absolute:
-      return "absolute";
-  }
+  return YGPositionTypeToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Wrap& value) {
-  switch (value) {
-    case yoga::Wrap::NoWrap:
-      return "no-wrap";
-    case yoga::Wrap::Wrap:
-      return "wrap";
-    case yoga::Wrap::WrapReverse:
-      return "wrap-reverse";
-  }
+  return YGWrapToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Overflow& value) {
-  switch (value) {
-    case yoga::Overflow::Visible:
-      return "visible";
-    case yoga::Overflow::Scroll:
-      return "scroll";
-    case yoga::Overflow::Hidden:
-      return "hidden";
-  }
+  return YGOverflowToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Display& value) {
-  switch (value) {
-    case yoga::Display::Flex:
-      return "flex";
-    case yoga::Display::None:
-      return "none";
-  }
+  return YGDisplayToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const YGValue& value) {

@@ -42,6 +42,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       mShouldEnableLegacyModuleInterop
           && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
 
+  private final boolean mEnableTurboModuleSyncVoidMethods =
+      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
+
   protected ReactPackageTurboModuleManagerDelegate() {
     super();
   }
@@ -138,6 +141,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Override
   public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
     return mShouldRouteTurboModulesThroughLegacyModuleInterop;
+  }
+
+  public boolean unstable_enableSyncVoidMethods() {
+    return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable

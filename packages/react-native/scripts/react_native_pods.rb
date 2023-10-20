@@ -8,7 +8,6 @@ require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
-require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -66,7 +65,6 @@ end
 # - new_arch_enabled: whether the new architecture should be enabled or not.
 # - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
-# - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
 # - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
@@ -76,7 +74,6 @@ def use_react_native! (
   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
-  flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
   ios_folder: 'ios'
@@ -188,12 +185,6 @@ def use_react_native! (
     setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
-  # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
-  if flipper_configuration.flipper_enabled
-    install_flipper_dependencies(prefix)
-    use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
-  end
-
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
     if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
@@ -229,16 +220,6 @@ def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
 end
 
-# It installs the flipper dependencies into the project.
-#
-# Parameters
-# - versions: a dictionary of Flipper Library -> Versions that can be used to customize which version of Flipper to install.
-# - configurations: an array of configuration where to install the dependencies.
-def use_flipper!(versions = {}, configurations: ['Debug'])
-  Pod::UI.warn "use_flipper is deprecated, use the flipper_configuration option in the use_react_native function"
-  use_flipper_pods(versions, :configurations => configurations)
-end
-
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
@@ -254,10 +235,6 @@ def react_native_post_install(
   ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
-
-  if ReactNativePodsUtils.has_pod(installer, 'Flipper')
-    flipper_post_install(installer)
-  end
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
   hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")

@@ -22,7 +22,6 @@ const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
-  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
@@ -52,14 +51,16 @@ class AppContainer extends React.Component<Props, State> {
   static getDerivedStateFromError: any = undefined;
 
   mountReactDevToolsOverlays(): void {
-    const DevtoolsOverlay = require('../Inspector/DevtoolsOverlay').default;
-    const devtoolsOverlay = <DevtoolsOverlay inspectedView={this._mainRef} />;
+    if (__DEV__) {
+      const DevtoolsOverlay = require('../Inspector/DevtoolsOverlay').default;
+      const devtoolsOverlay = <DevtoolsOverlay inspectedView={this._mainRef} />;
 
-    const TraceUpdateOverlay =
-      require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
-    const traceUpdateOverlay = <TraceUpdateOverlay />;
+      const TraceUpdateOverlay =
+        require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
+      const traceUpdateOverlay = <TraceUpdateOverlay />;
 
-    this.setState({devtoolsOverlay, traceUpdateOverlay});
+      this.setState({devtoolsOverlay, traceUpdateOverlay});
+    }
   }
 
   componentDidMount(): void {

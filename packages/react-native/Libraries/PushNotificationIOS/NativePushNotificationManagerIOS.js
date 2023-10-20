@@ -23,14 +23,20 @@ type Notification = {|
   // Actual type: string | number
   +fireDate?: ?number,
   +alertBody?: ?string,
-  +alertAction?: ?string,
   +userInfo?: ?Object,
   +category?: ?string,
   // Actual type: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute'
   +repeatInterval?: ?string,
   +applicationIconBadgeNumber?: ?number,
   +isSilent?: ?boolean,
+  /**
+   * Custom notification sound to play. Write-only: soundName will be null when
+   * accessing already created notifications using getScheduledLocalNotifications
+   * or getDeliveredNotifications.
+   */
   +soundName?: ?string,
+  /** DEPRECATED. This was used for iOS's legacy UILocalNotification. */
+  +alertAction?: ?string,
 |};
 
 export interface Spec extends TurboModule {

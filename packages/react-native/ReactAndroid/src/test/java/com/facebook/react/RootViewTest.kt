@@ -13,6 +13,7 @@ import android.graphics.Insets
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.WindowInsets
+import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
@@ -211,9 +212,11 @@ class RootViewTest {
                   .setVisible(WindowInsets.Type.ime(), true)
                   .build()
         }
+    val rootViewSpy = spy(rootView)
+    whenever(rootViewSpy.getLayoutParams()).thenReturn(WindowManager.LayoutParams())
 
-    rootView.startReactApplication(instanceManager, "")
-    rootView.simulateCheckForKeyboardForTesting()
+    rootViewSpy.startReactApplication(instanceManager, "")
+    rootViewSpy.simulateCheckForKeyboardForTesting()
 
     val params = Arguments.createMap()
     val endCoordinates = Arguments.createMap()

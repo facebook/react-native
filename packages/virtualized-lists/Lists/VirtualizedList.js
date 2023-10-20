@@ -969,10 +969,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           {React.cloneElement(element, {
             onLayout: (event: LayoutEvent) => {
               this._onLayoutEmpty(event);
+              // $FlowFixMe[prop-missing] React.Element internal inspection
               if (element.props.onLayout) {
                 element.props.onLayout(event);
               }
             },
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             style: StyleSheet.compose(inversionStyle, element.props.style),
           })}
         </VirtualizedListCellContextProvider>,

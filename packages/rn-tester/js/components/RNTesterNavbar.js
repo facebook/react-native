@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {RNTesterTheme} from './RNTesterTheme';
@@ -14,42 +14,6 @@ import * as React from 'react';
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
-
-const BookmarkTab = ({
-  handleNavBarPress,
-  isBookmarkActive,
-  theme,
-}: {
-  handleNavBarPress: (data: {screen: string}) => void,
-  isBookmarkActive: boolean,
-  theme: RNTesterTheme,
-}) => (
-  <View style={styles.centerBox}>
-    <View
-      style={[
-        styles.centralBoxCutout,
-        {backgroundColor: theme.BackgroundColor},
-      ]}
-    />
-    <View style={styles.floatContainer}>
-      <Pressable
-        testID="bookmarks-tab"
-        onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
-        <View
-          style={[styles.floatingButton, {backgroundColor: theme.BorderColor}]}>
-          <Image
-            style={styles.bookmarkIcon}
-            source={
-              isBookmarkActive
-                ? require('../assets/bottom-nav-bookmark-fill.png')
-                : require('../assets/bottom-nav-bookmark-outline.png')
-            }
-          />
-        </View>
-      </Pressable>
-    </View>
-  </View>
-);
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -138,18 +102,12 @@ const RNTesterNavbar = ({
 
   const isAPIActive = screen === 'apis' && !isExamplePageOpen;
   const isComponentActive = screen === 'components' && !isExamplePageOpen;
-  const isBookmarkActive = screen === 'bookmarks' && !isExamplePageOpen;
 
   return (
     <View>
       <View style={styles.buttonContainer}>
         <ComponentTab
           isComponentActive={isComponentActive}
-          handleNavBarPress={handleNavBarPress}
-          theme={theme}
-        />
-        <BookmarkTab
-          isBookmarkActive={isBookmarkActive}
           handleNavBarPress={handleNavBarPress}
           theme={theme}
         />
@@ -189,11 +147,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.9,
     shadowRadius: 10,
     elevation: 5,
-  },
-  bookmarkIcon: {
-    width: 30,
-    height: 30,
-    margin: 10,
   },
   componentIcon: {
     width: 20,
