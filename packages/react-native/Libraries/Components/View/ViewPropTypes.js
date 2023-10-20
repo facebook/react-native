@@ -579,11 +579,11 @@ export type ViewProps = $ReadOnly<{|
   id?: string,
 
   /**
-  * Whether this `View` needs to rendered offscreen and composited with an
-  * alpha in order to preserve 100% correct colors and blending behavior.
-  *
-  * See https://reactnative.dev/docs/view#needsoffscreenalphacompositing
-  */
+   * Whether this `View` needs to rendered offscreen and composited with an
+   * alpha in order to preserve 100% correct colors and blending behavior.
+   *
+   * See https://reactnative.dev/docs/view#needsoffscreenalphacompositing
+   */
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
