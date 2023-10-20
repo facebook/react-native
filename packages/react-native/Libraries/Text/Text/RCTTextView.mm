@@ -16,6 +16,14 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#ifdef __IPHONE_16_0
+@interface RCTTextView () <UIEditMenuInteractionDelegate>
+
+@property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+
+@end
+#endif
+
 @implementation RCTTextView {
   CAShapeLayer *_highlightLayer;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
@@ -213,31 +221,49 @@
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(handleLongPress:)];
+  if (@available(iOS 16.0, *)) {
+      _editMenuInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+      [self addInteraction:_editMenuInteraction];
+  }
+    
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
 - (void)disableContextMenu
 {
   [self removeGestureRecognizer:_longPressGestureRecognizer];
+    
+  if (@available(iOS 16.0, *)) {
+    [self removeInteraction:_editMenuInteraction];
+    _editMenuInteraction = nil;
+  }
   _longPressGestureRecognizer = nil;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
 #if !TARGET_OS_UIKITFORMAC
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  if (@available(iOS 16.0, *)) {
+      CGPoint location = [gesture locationInView:self];
+      UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
+      if (_editMenuInteraction) {
+          [_editMenuInteraction presentEditMenuWithConfiguration:config];
+      }
+  } else {
+      // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
+      UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
+      if (menuController.isMenuVisible) {
+        return;
+      }
+
+      if (!self.isFirstResponder) {
+        [self becomeFirstResponder];
+      }
+
+      [menuController setTargetRect:self.bounds inView:self];
+      [menuController setMenuVisible:YES animated:YES];
   }
-
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
-  }
-
-  [menuController setTargetRect:self.bounds inView:self];
-  [menuController setMenuVisible:YES animated:YES];
 #endif
 }
 
