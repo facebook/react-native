@@ -8,6 +8,10 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
+; Ignore other platform suffixes
+.*\.macos\.js$
+.*\.windows\.js$
+
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 ; Checked-in build output
