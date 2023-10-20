@@ -56,7 +56,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     }
   }
 
-  private static final double EXPECTED_FRAME_TIME = 16.9;
+  private static final double DEFAULT_FPS = 60.0;
 
   private @Nullable Choreographer mChoreographer;
   private final ReactContext mReactContext;
@@ -70,6 +70,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
   private int m4PlusFrameStutters = 0;
   private int mNumFrameCallbacksWithBatchDispatches = 0;
   private boolean mIsRecordingFpsInfoAtEachFrame = false;
+  private double mTargetFps = DEFAULT_FPS;
   private @Nullable TreeMap<Long, FpsInfo> mTimeToFps;
 
   public FpsDebugFrameCallback(ReactContext reactContext) {
@@ -120,10 +121,15 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
   }
 
   public void start() {
+    start(mTargetFps);
+  }
+
+  public void start(double targetFps) {
     mReactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    mTargetFps = targetFps;
     UiThreadUtil.runOnUiThread(
         () -> {
           mChoreographer = Choreographer.getInstance();
@@ -173,7 +179,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
 
   public int getExpectedNumFrames() {
     double totalTimeMS = getTotalTimeMS();
-    int expectedFrames = (int) (totalTimeMS / EXPECTED_FRAME_TIME + 1);
+    int expectedFrames = (int) (mTargetFps * totalTimeMS / 1000 + 1);
     return expectedFrames;
   }
 
