@@ -276,7 +276,12 @@ public class ReactInstanceManager {
       mPackages.add(
           new CoreModulesPackage(
               this,
-              this::invokeDefaultOnBackPressed,
+              new DefaultHardwareBackBtnHandler() {
+                @Override
+                public void invokeDefaultOnBackPressed() {
+                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+                }
+              },
               lazyViewManagersEnabled,
               minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
