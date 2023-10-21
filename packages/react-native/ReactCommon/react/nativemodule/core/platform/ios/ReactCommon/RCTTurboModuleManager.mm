@@ -206,6 +206,9 @@ static Class getFallbackClassFromName(const char *name)
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+
+  BOOL _enableSharedModuleQueue;
+  dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -221,6 +224,11 @@ static Class getFallbackClassFromName(const char *name)
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
+    _enableSharedModuleQueue = NO;
+
+    if (_enableSharedModuleQueue) {
+      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    }
 
     if (RCTTurboModuleInteropEnabled()) {
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
@@ -685,8 +693,12 @@ static Class getFallbackClassFromName(const char *name)
    * following if condition's block.
    */
   if (!methodQueue) {
-    NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-    methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    if (_enableSharedModuleQueue) {
+      methodQueue = _sharedModuleQueue;
+    } else {
+      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
+      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    }
 
     if (moduleHasMethodQueueGetter) {
       /**
