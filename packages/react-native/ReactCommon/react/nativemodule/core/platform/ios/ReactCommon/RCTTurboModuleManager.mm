@@ -224,7 +224,7 @@ static Class getFallbackClassFromName(const char *name)
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
-    _enableSharedModuleQueue = NO;
+    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
 
     if (_enableSharedModuleQueue) {
       _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
