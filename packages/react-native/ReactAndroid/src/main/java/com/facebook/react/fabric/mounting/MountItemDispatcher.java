@@ -161,9 +161,17 @@ public class MountItemDispatcher {
     }
   }
 
+  /*
+   * Executes view commands, pre mount items and mount items in the respective order:
+   * 1. View commands.
+   * 2. Pre mount items.
+   * 3. Regular mount items.
+   *
+   * Does nothing if `viewCommandMountItemsToDispatch` and `mountItemsToDispatch` are empty.
+   * Nothing should call this directly except for `tryDispatchMountItems`.
+   */
   @UiThread
   @ThreadConfined(UI)
-  /** Nothing should call this directly except for `tryDispatchMountItems`. */
   private boolean dispatchMountItems() {
     if (mReDispatchCounter == 0) {
       mBatchedExecutionTime = 0;
@@ -296,6 +304,12 @@ public class MountItemDispatcher {
     return true;
   }
 
+  /*
+   * Executes pre mount items. Pre mount items are operations that can be executed before the mount items come. For example view preallocation.
+   * This is a performance optimisation to do as much work ahead of time as possible.
+   *
+   * `tryDispatchMountItems` will also execute pre mount items, but only if there are mount items to be executed.
+   */
   @UiThread
   @ThreadConfined(UI)
   public void dispatchPreMountItems(long frameTimeNanos) {

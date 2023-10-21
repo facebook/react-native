@@ -1294,6 +1294,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
 
       try {
+        // First, execute as many pre mount items as we can within frameTimeNanos time.
+        // If not all pre mount items were executed, following may happen:
+        //   1. In case there are view commands or mount items in MountItemDispatcher: execute
+        //   remaining pre mount items.
+        //   2. In case there are no view commands or mount items, wait until next frame.
         mMountItemDispatcher.dispatchPreMountItems(frameTimeNanos);
         mMountItemDispatcher.tryDispatchMountItems();
       } catch (Exception ex) {
