@@ -30,8 +30,6 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
   NSUInteger _id;
 }
 
-@synthesize methodQueue = _methodQueue;
-
 RCT_EXPORT_MODULE()
 
 - (float)handlerPriority
