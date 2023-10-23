@@ -898,10 +898,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
           runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTInvocationErrorHandler internalRejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTInvocationErrorHandler internalRejectCopy = nil;
-          if (internalRejectBlock != nil) {
-            internalRejectCopy = [internalRejectBlock copy];
-          }
+          RCTInvocationErrorHandler internalRejectCopy = [internalRejectBlock copy];
 
           [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
           [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
