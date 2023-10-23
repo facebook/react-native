@@ -92,7 +92,10 @@ public abstract class BaseJavaModule implements NativeModule {
     onCatalystInstanceDestroy();
   }
 
-  /** Subclasses can use this method to access catalyst context passed as a constructor. */
+  /**
+   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
+   * constructor.
+   */
   protected final ReactApplicationContext getReactApplicationContext() {
     return Assertions.assertNotNull(
         mReactApplicationContext,
@@ -100,10 +103,11 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   /**
-   * Subclasses can use this method to access catalyst context passed as a constructor. Use this
-   * version to check that the underlying CatalystInstance is active before returning, and
-   * automatically have SoftExceptions or debug information logged for you. Consider using this
-   * whenever calling ReactApplicationContext methods that require the Catalyst instance be alive.
+   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
+   * constructor. Use this version to check that the underlying React Instance is active before
+   * returning, and automatically have SoftExceptions or debug information logged for you. Consider
+   * using this whenever calling ReactApplicationContext methods that require the React instance be
+   * alive.
    *
    * <p>This can return null at any time, but especially during teardown methods it's
    * possible/likely.
