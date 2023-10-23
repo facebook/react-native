@@ -437,13 +437,13 @@ static std::optional<jsi::JSError> handleCause(
   } else {
     if (optionalInternalRejectBlock != nil) {
       optionalInternalRejectBlock(cause);
+      return std::nullopt;
     } else {
       // Crash on native layer there is no promise in JS to reject.
       // We executed JSFunction returning void asynchrounously.
       throw;
     }
   }
-  return std::nullopt;
 }
 
 /**
