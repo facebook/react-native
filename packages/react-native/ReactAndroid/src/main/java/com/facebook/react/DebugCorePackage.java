@@ -36,7 +36,8 @@ import javax.inject.Provider;
     nativeModules = {
       JSCHeapCapture.class,
     })
-public class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+/* package */
+class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
   private @Nullable Map<String, ModuleSpec> mViewManagers;
 
   public DebugCorePackage() {}

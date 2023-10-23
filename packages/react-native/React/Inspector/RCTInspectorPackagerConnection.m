@@ -328,8 +328,47 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   if (self = [super init]) {
     _owningPackagerConnection = owningPackagerConnection;
     _pageId = pageId;
+    [self addObserverFor:UIApplicationDidEnterBackgroundNotification];
+    [self addObserverFor:UIApplicationWillEnterForegroundNotification];
   }
   return self;
+}
+
+- (void)addObserverFor:(NSString *)notificationName
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleBackgroundEvent:)
+                                               name:notificationName
+                                             object:nil];
+}
+
+- (void)consoleInfo:(NSString *)message format:(NSString *)format
+{
+  if (!message) {
+    return;
+  }
+  NSNumber *now = @([[NSDate date] timeIntervalSince1970] * 1000);
+  NSDictionary *json = @{
+    @"method" : @"Runtime.consoleAPICalled",
+    @"params" : @{@"type" : @"info", @"args" : format == nil ? @[ message ] : @[ message, format ], @"timestamp" : now}
+  };
+  NSError *error = nil;
+  NSData *data = [NSJSONSerialization dataWithJSONObject:json options:0 error:&error];
+  if (error != nil) {
+    NSLog(@"Unable to serialize a console.warn() message: %@", error);
+    return;
+  }
+  NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  [self onMessage:str];
+}
+
+- (void)handleBackgroundEvent:(NSNotification *)notification
+{
+  if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
+    [self consoleInfo:@"App has moved into the %cforeground" format:@"font-weight: bold"];
+  } else if ([notification.name isEqualToString:UIApplicationDidEnterBackgroundNotification]) {
+    [self consoleInfo:@"App has moved into the %cbackground" format:@"font-weight: bold"];
+  }
 }
 
 - (void)onMessage:(NSString *)message

@@ -184,7 +184,7 @@ export interface ViewProps
    * the Z-index of sibling views always takes precedence if a touch
    * hits two overlapping views.
    */
-  hitSlop?: Insets | undefined;
+  hitSlop?: null | Insets | number | undefined;
 
   /**
    * Used to reference react managed views from native code.

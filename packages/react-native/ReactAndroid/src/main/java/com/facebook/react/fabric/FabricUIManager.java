@@ -57,7 +57,6 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
-import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -66,6 +65,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
+import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -799,20 +799,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           };
       if (UiThreadUtil.isOnUiThread()) {
         runnable.run();
-      } else {
-        // The Choreographer will dispatch any mount items,
-        // but it only gets called at the /beginning/ of the
-        // frame - it has no idea if, or when, there is actually work scheduled. That means if we
-        // have a big chunk of work
-        // scheduled but the scheduling happens 1ms after the
-        // start of a UI frame, we'll miss out on 15ms of time
-        // to perform the work (assuming a 16ms frame).
-        // The DispatchUIFrameCallback still has value because of
-        // the PreMountItems that we need to process at a lower
-        // priority.
-        if (ReactFeatureFlags.enableEarlyScheduledMountItemExecution) {
-          UiThreadUtil.runOnUiThread(runnable);
-        }
       }
     }
 
@@ -1023,7 +1009,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int commandId,
       @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.dispatchCommandMountItem(
+    mMountItemDispatcher.addViewCommandMountItem(
         MountItemFactory.createDispatchCommandMountItem(
             surfaceId, reactTag, commandId, commandArgs));
   }
@@ -1039,10 +1025,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
-      mMountItemDispatcher.dispatchCommandMountItem(
+      mMountItemDispatcher.addViewCommandMountItem(
           createDispatchCommandMountItemForInterop(surfaceId, reactTag, commandId, commandArgs));
     } else {
-      mMountItemDispatcher.dispatchCommandMountItem(
+      mMountItemDispatcher.addViewCommandMountItem(
           MountItemFactory.createDispatchCommandMountItem(
               surfaceId, reactTag, commandId, commandArgs));
     }
@@ -1294,6 +1280,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
 
       try {
+        // First, execute as many pre mount items as we can within frameTimeNanos time.
+        // If not all pre mount items were executed, following may happen:
+        //   1. In case there are view commands or mount items in MountItemDispatcher: execute
+        //   remaining pre mount items.
+        //   2. In case there are no view commands or mount items, wait until next frame.
         mMountItemDispatcher.dispatchPreMountItems(frameTimeNanos);
         mMountItemDispatcher.tryDispatchMountItems();
       } catch (Exception ex) {

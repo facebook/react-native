@@ -33,7 +33,7 @@ type FilesOutput = Map<string, string>;
 type StructsMap = Map<string, string>;
 
 type ComponentCollection = $ReadOnly<{
-  [component: string]: ComponentShape,
+  [componentName: string]: ComponentShape,
   ...
 }>;
 

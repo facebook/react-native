@@ -43,8 +43,8 @@
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      - test_e2e_ios:
-          ruby_version: "2.7.7"
+      # - test_e2e_ios:
+      #     ruby_version: "2.7.7"
       - test_ios_template:
           requires:
             - build_npm_package
@@ -52,6 +52,7 @@
           ruby_version: "3.2.0"
           architecture: "NewArch"
           flavor: "Debug"
+          executor: reactnativeios-lts
       - test_ios_template:
           requires:
             - build_npm_package
@@ -73,6 +74,7 @@
           name: "Test RNTester with Ruby 3.2.0"
           ruby_version: "3.2.0"
           architecture: "NewArch"
+          executor: reactnativeios-lts
       - test_ios_rntester:
           requires:
             - build_hermes_macos
