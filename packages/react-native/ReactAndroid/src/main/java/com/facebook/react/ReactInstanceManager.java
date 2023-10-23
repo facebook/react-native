@@ -332,8 +332,11 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
-          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+          boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
+          rootView.setIsFabric(isFabric);
+          Bundle launchOptions = new Bundle();
+          launchOptions.putBoolean("concurrentRoot", isFabric);
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, launchOptions);
           return rootView;
         }
 
