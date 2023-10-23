@@ -405,7 +405,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           handlePromiseRejection(reason);
         };
 
-        RCTNSDictionaryPromiseRejectBlock internalRejectBlock = nil;
+        RCTInvocationErrorHandler internalRejectBlock = nil;
 
         if (RCTRejectTurboModulePromiseOnNativeError()) {
           internalRejectBlock = ^(NSDictionary *dict) {
@@ -425,7 +425,7 @@ static std::optional<jsi::JSError> handleCause(
     bool isSync,
     NSDictionary *cause,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock)
+    RCTInvocationErrorHandler optionalInternalRejectBlock)
 {
   if (isSync) {
     NSString *message = cause[@"message"];
@@ -461,7 +461,7 @@ id ObjCTurboModule::performMethodInvocation(
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock)
+    RCTInvocationErrorHandler optionalInternalRejectBlock)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -923,10 +923,10 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   switch (returnType) {
     case PromiseKind: {
       returnValue = createPromise(
-          runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTNSDictionaryPromiseRejectBlock internalRejectBlock) {
+          runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTInvocationErrorHandler internalRejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTNSDictionaryPromiseRejectBlock internalRejectCopy = nil;
+          RCTInvocationErrorHandler internalRejectCopy = nil;
           if (internalRejectBlock != nil) {
             internalRejectCopy = [internalRejectBlock copy];
           }
