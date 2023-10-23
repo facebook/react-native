@@ -74,10 +74,10 @@ public class ReactDelegate {
       boolean fabricEnabled) {
     mActivity = activity;
     mMainComponentName = appKey;
+    mFabricEnabled = fabricEnabled;
     mLaunchOptions = composeLaunchOptions(launchOptions);
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
-    mFabricEnabled = fabricEnabled;
   }
 
   public void onHostResume() {
