@@ -16,6 +16,7 @@
 #include <jsi/instrumentation.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <cxxreact/ReactMarker.h>
 #include <iostream>
@@ -65,8 +66,14 @@ ReactInstance::ReactInstance(
               SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
               try {
                 callback(*strongRuntime);
-                if (auto strongTimerManager = weakTimerManager.lock()) {
-                  strongTimerManager->callReactNativeMicrotasks(*strongRuntime);
+
+                // If we have first-class support for microtasks,
+                // they would've been called as part of the previous callback.
+                if (!CoreFeatures::enableMicrotasks) {
+                  if (auto strongTimerManager = weakTimerManager.lock()) {
+                    strongTimerManager->callReactNativeMicrotasks(
+                        *strongRuntime);
+                  }
                 }
               } catch (jsi::JSError& originalError) {
                 handleJSError(*strongRuntime, originalError, true);

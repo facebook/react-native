@@ -182,4 +182,4 @@ async function handleStatuses() {
   }
 }
 
-handleStatuses();
+// handleStatuses();

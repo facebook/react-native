@@ -8,11 +8,41 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <cxxreact/ErrorUtils.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/utils/CoreFeatures.h>
 #include <utility>
 #include "ErrorUtils.h"
 
 namespace facebook::react {
+
+namespace {
+// Looping on \c drainMicrotasks until it completes or hits the retries bound.
+void executeMicrotasks(jsi::Runtime& runtime) {
+  SystraceSection s("RuntimeScheduler::executeMicrotasks");
+
+  uint8_t retries = 0;
+  // A heuristic number to guard infinite or absurd numbers of retries.
+  const static unsigned int kRetriesBound = 255;
+
+  while (retries < kRetriesBound) {
+    try {
+      // The default behavior of \c drainMicrotasks is unbounded execution.
+      // We may want to make it bounded in the future.
+      if (runtime.drainMicrotasks()) {
+        break;
+      }
+    } catch (jsi::JSError& error) {
+      handleJSError(runtime, error, true);
+    }
+    retries++;
+  }
+
+  if (retries == kRetriesBound) {
+    throw std::runtime_error("Hits microtasks retries bound.");
+  }
+}
+} // namespace
 
 #pragma mark - Public
 
@@ -135,8 +165,12 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
   }
 }
 
-// This will be replaced by microtasks
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
+  // If we have first-class support for microtasks, this a no-op.
+  if (CoreFeatures::enableMicrotasks) {
+    return;
+  }
+
   SystraceSection s("RuntimeScheduler::callExpiredTasks");
   startWorkLoop(runtime, true);
 }
@@ -241,6 +275,22 @@ void RuntimeScheduler_Modern::executeTask(
   currentTask_ = task;
   currentPriority_ = task->priority;
 
+  executeMacrotask(runtime, task, didUserCallbackTimeout);
+
+  if (CoreFeatures::enableMicrotasks) {
+    executeMicrotasks(runtime);
+  }
+
+  // TODO report long tasks
+  // TODO update rendering
+}
+
+void RuntimeScheduler_Modern::executeMacrotask(
+    jsi::Runtime& runtime,
+    std::shared_ptr<Task> task,
+    bool didUserCallbackTimeout) const {
+  SystraceSection s("RuntimeScheduler::executeMacrotask");
+
   auto result = task->execute(runtime, didUserCallbackTimeout);
 
   if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
@@ -248,10 +298,6 @@ void RuntimeScheduler_Modern::executeTask(
     // and keep the task in the queue.
     task->callback = result.getObject(runtime).getFunction(runtime);
   }
-
-  // TODO execute microtasks
-  // TODO report long tasks
-  // TODO update rendering
 }
 
 } // namespace facebook::react

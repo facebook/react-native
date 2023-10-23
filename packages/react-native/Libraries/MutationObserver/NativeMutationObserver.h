@@ -94,7 +94,7 @@ class NativeMutationObserver
   bool notifiedMutationObservers_{};
   std::function<void()> notifyMutationObservers_;
 
-  void onMutations(std::vector<const MutationRecord>& records);
+  void onMutations(std::vector<MutationRecord>& records);
   void notifyMutationObserversIfNecessary();
 
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(

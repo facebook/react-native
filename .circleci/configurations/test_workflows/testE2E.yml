@@ -7,5 +7,4 @@
     jobs:
       - test_e2e_ios:
           ruby_version: "2.7.7"
-      # This is not stable
-      # - test_e2e_android
+      - test_e2e_android

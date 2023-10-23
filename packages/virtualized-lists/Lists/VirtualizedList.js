@@ -1257,8 +1257,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
+      // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.
+      // This could lead to internal inconsistencies within VirtualizedList.
+      const {onContentSizeChange, ...otherProps} = props;
+      return <View {...otherProps} />;
     } else if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',

@@ -139,6 +139,14 @@ Scheduler::Scheduler(
   reduceDeleteCreateMutationLayoutAnimation_ = true;
 #endif
 
+#ifdef ANDROID
+  CoreFeatures::enableMicrotasks =
+      reactNativeConfig_->getBool("react_fabric:enable_microtasks_android");
+#else
+  CoreFeatures::enableMicrotasks =
+      reactNativeConfig_->getBool("react_fabric:enable_microtasks_ios");
+#endif
+
   CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
       "react_fabric:block_paint_for_use_layout_effect");
 

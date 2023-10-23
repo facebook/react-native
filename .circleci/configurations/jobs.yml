@@ -386,7 +386,6 @@ jobs:
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
-    executor: reactnativeios
     parameters:
       flavor:
         default: "Debug"
@@ -424,6 +423,11 @@ jobs:
       cocoapods_cache_key:
         type: string
         default: *template_cocoapods_cache_key
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -492,7 +496,7 @@ jobs:
   #    JOBS: Test iOS RNTester
   # -------------------------
   test_ios_rntester:
-    executor: reactnativeios
+
     parameters:
       jsengine:
         default: "Hermes"
@@ -517,6 +521,11 @@ jobs:
         description: whether unit tests should run or not.
         default: false
         type: boolean
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     steps:
       - checkout_code_with_cache
       - run_yarn

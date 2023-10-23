@@ -79,6 +79,18 @@ commands:
         type: string
 
     steps:
+      - run:
+          name: Move to Node 18 if Needed
+          command: |
+            node_version=$(node -v)
+            major_version=$(echo $node_version | cut -c 2- | cut -d '.' -f 1)
+
+            if [[ $major_version < 18 ]]; then
+              nvm install 18.18.0
+              nvm alias default 18.18.0
+            else
+              echo 'We have the right node version!'
+            fi
       - restore_cache:
           keys:
             - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}

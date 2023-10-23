@@ -79,6 +79,10 @@ export type PageDescription = {
   devtoolsFrontendUrl: string,
   type: string,
   webSocketDebuggerUrl: string,
+  // Metadata specific to React Native
+  reactNative: {
+    logicalDeviceId: string,
+  },
   ...
 };
 export type JsonPagesListResponse = Array<PageDescription>;
