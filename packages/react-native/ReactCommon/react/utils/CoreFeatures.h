@@ -63,6 +63,10 @@ class CoreFeatures {
 
   // When enabled, rawProps in Props will not include Yoga specific props.
   static bool excludeYogaFromRawProps;
+
+  // Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler
+  // (execution).
+  static bool enableMicrotasks;
 };
 
 } // namespace facebook::react
