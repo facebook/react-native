@@ -249,21 +249,21 @@
       if (_editMenuInteraction) {
           [_editMenuInteraction presentEditMenuWithConfiguration:config];
       }
-  } else {
-      // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-      UIMenuController *menuController = [UIMenuController sharedMenuController];
-
-      if (menuController.isMenuVisible) {
-        return;
-      }
-
-      if (!self.isFirstResponder) {
-        [self becomeFirstResponder];
-      }
-
-      [menuController setTargetRect:self.bounds inView:self];
-      [menuController setMenuVisible:YES animated:YES];
+      return;
   }
+  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
+  UIMenuController *menuController = [UIMenuController sharedMenuController];
+
+  if (menuController.isMenuVisible) {
+    return;
+  }
+
+  if (!self.isFirstResponder) {
+    [self becomeFirstResponder];
+  }
+
+  [menuController setTargetRect:self.bounds inView:self];
+  [menuController setMenuVisible:YES animated:YES];
 #endif
 }
 
