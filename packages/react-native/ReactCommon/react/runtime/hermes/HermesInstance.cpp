@@ -105,6 +105,17 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   auto heapSizeMB = heapSizeConfig > 0
       ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
       : 3072;
+
+#ifdef ANDROID
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_android")
+      : false;
+#else
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_ios")
+      : false;
+#endif
+
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
@@ -119,6 +130,7 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
                             .build())
           .withES6Proxy(false)
           .withEnableSampleProfiling(true)
+          .withMicrotaskQueue(enableMicrotasks)
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (cm) {
