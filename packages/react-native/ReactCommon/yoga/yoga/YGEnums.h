@@ -57,6 +57,7 @@ YG_ENUM_DECL(
     YGErrataNone = 0,
     YGErrataStretchFlexBasis = 1,
     YGErrataStartingEndingEdgeFromFlexDirection = 2,
+    YGErrataPositionStaticBehavesLikeRelative = 4,
     YGErrataAll = 2147483647,
     YGErrataClassic = 2147483646)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
