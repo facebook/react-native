@@ -9,6 +9,7 @@ package com.facebook.react.common.mapbuffer
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
 import java.lang.StringBuilder
 import java.nio.ByteBuffer
@@ -21,6 +22,7 @@ import javax.annotation.concurrent.NotThreadSafe
  *
  * See [MapBuffer] documentation for more details
  */
+@StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
 class ReadableMapBuffer : MapBuffer {
