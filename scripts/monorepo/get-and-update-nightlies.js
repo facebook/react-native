@@ -141,7 +141,7 @@ function publishPackages(packages /*: PackageMap */) {
     });
 
     if (result.code !== 0) {
-      // [macOS - Our publish-npm.js script doesn't actually publish, so we shouldn't throw an error on failure
+      // [macOS Our publish-npm.js script doesn't actually publish, so we shouldn't throw an error on failure
       console.log(
         `\u274c Failed to publish version ${nightlyVersion} of ${packageName}. npm publish exited with code ${result.code}:`,
       );
