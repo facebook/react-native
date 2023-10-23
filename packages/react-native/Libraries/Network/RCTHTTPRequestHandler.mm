@@ -32,7 +32,6 @@ void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProv
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
-@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
