@@ -43,7 +43,7 @@ function requireModuleParser() {
       };
 
       withBabelRegister(config, () => {
-        RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules');
+        RNModuleParser = require('@react-native/codegen/src/parsers/flow/modules/index');
         RNParserUtils = require('@react-native/codegen/src/parsers/utils');
         RNFlowParser = require('@react-native/codegen/src/parsers/flow/parser');
         RNParserCommons = require('@react-native/codegen/src/parsers/parsers-commons');
@@ -56,7 +56,7 @@ function requireModuleParser() {
       };
 
       withBabelRegister(config, () => {
-        RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules');
+        RNModuleParser = require('@react-native/codegen/lib/parsers/flow/modules/index');
         RNParserUtils = require('@react-native/codegen/lib/parsers/utils');
         RNFlowParser = require('@react-native/codegen/lib/parsers/flow/parser');
         RNParserCommons = require('@react-native/codegen/lib/parsers/parsers-commons');

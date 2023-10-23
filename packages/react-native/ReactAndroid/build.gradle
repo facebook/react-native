@@ -387,17 +387,6 @@ task prepareKotlinBuildScriptModel {
     // We create it here so we can let it depend on preBuild inside the android{}
 }
 
-// As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
-// This is not the case for users of React Native, as we ship a compiled version of the codegen.
-final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
-    it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
-    it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
-    it.onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-    }
-}
-
 /**
  * Finds the path of the installed npm package with the given name using Node's
  * module resolution algorithm, which searches "node_modules" directories up to
@@ -594,7 +583,6 @@ android {
     }
 
     preBuild.dependsOn(
-            buildCodegenCLITask,
             generateCodegenArtifactsFromSchema,
             prepareBoost,
             prepareDoubleConversion,
@@ -606,7 +594,6 @@ android {
             prepareLibevent,
             preparePrefab
     )
-    generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
     prepareKotlinBuildScriptModel.dependsOn(
             preBuild,
             ":packages:react-native:ReactAndroid:hermes-engine:preBuild",

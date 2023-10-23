@@ -22,11 +22,6 @@ def build_codegen!(react_native_path, relative_installation_root, dir_manager: D
     else
       raise "[codegen] Could not find react-native-codegen."
     end
-
-    if !dir_manager.exist?("#{codegen_cli_path}/lib")
-      Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
-      system("#{codegen_cli_path}/scripts/oss/build.sh")
-    end
   end
 
 # It generates an empty `ThirdPartyProvider`, required by Fabric to load the components

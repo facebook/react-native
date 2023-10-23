@@ -21,18 +21,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const REACT_NATIVE_REPOSITORY_ROOT = path.join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  '..',
-);
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 
-const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
-const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${REACT_NATIVE_PACKAGE_ROOT_FOLDER}/../${CODEGEN_DEPENDENCY_NAME}`;
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
@@ -288,31 +278,6 @@ function handleInAppLibraries(
   );
 }
 
-// CodeGen
-function getCodeGenCliPath() {
-  let codegenCliPath;
-  if (fs.existsSync(CODEGEN_REPO_PATH)) {
-    codegenCliPath = CODEGEN_REPO_PATH;
-
-    if (!fs.existsSync(path.join(CODEGEN_REPO_PATH, 'lib'))) {
-      console.log('\n\n[Codegen] >>>>> Building react-native-codegen package');
-      execSync('yarn install', {
-        cwd: codegenCliPath,
-        stdio: 'inherit',
-      });
-      execSync('yarn build', {
-        cwd: codegenCliPath,
-        stdio: 'inherit',
-      });
-    }
-  } else if (fs.existsSync(CODEGEN_NPM_PATH)) {
-    codegenCliPath = CODEGEN_NPM_PATH;
-  } else {
-    throw `error: Could not determine ${CODEGEN_DEPENDENCY_NAME} location. Try running 'yarn install' or 'npm install' in your project root.`;
-  }
-  return codegenCliPath;
-}
-
 function computeIOSOutputDir(outputPath, appRootDir) {
   return path.join(outputPath ? outputPath : appRootDir, 'build/generated/ios');
 }
@@ -327,13 +292,9 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
   executeNodeScript(node, [
-    `${path.join(
-      codegenCliPath,
-      'lib',
-      'cli',
-      'combine',
-      'combine-js-to-schema-cli.js',
-    )}`,
+    require.resolve(
+      '@react-native/codegen/cli/combine/combine-js-to-schema-cli.js',
+    ),
     '--platform',
     'ios',
     pathToSchema,
@@ -381,7 +342,6 @@ function generateNativeCodegenFiles(
   fabricEnabled,
   iosOutputDir,
   node,
-  codegenCliPath,
   schemaPaths,
 ) {
   let fabricEnabledTypes = ['components', 'all'];
@@ -396,7 +356,7 @@ function generateNativeCodegenFiles(
       return;
     }
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), library.config.name));
-    const pathToSchema = generateSchema(tmpDir, library, node, codegenCliPath);
+    const pathToSchema = generateSchema(tmpDir, library, node);
     generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
 
     // Filter the react native core library out.
@@ -560,8 +520,6 @@ function execute(
       return;
     }
 
-    const codegenCliPath = getCodeGenCliPath();
-
     const schemaPaths = {};
 
     const iosOutputDir = computeIOSOutputDir(outputPath, appRootDir);
@@ -571,7 +529,6 @@ function execute(
       fabricEnabled,
       iosOutputDir,
       node,
-      codegenCliPath,
       schemaPaths,
     );
 
