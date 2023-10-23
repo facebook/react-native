@@ -112,9 +112,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /** Temporary flag to allow execution of mount items up to 15ms earlier than normal. */
-  public static boolean enableEarlyScheduledMountItemExecution = false;
-
   /**
    * Allow closing the small gap that appears between paths when drawing a rounded View with a
    * border.
