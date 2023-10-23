@@ -16,8 +16,8 @@ import org.gradle.api.provider.ListProperty
  * A private extension we set on the rootProject to make easier to share values at execution time
  * between app project and library project.
  *
- * Specifically, the [codegenDir], [reactNativeDir] and other properties should be provided by apps
- * (for setups like a monorepo which are app specific) and libraries should honor those values.
+ * Specifically, [reactNativeDir] and other properties should be provided by apps (for setups like a
+ * monorepo which are app specific) and libraries should honor those values.
  *
  * Users are not supposed to access directly this extension from their build.gradle file.
  */
@@ -51,7 +51,4 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
 
   val nodeExecutableAndArgs: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("node"))
-
-  val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 }
