@@ -234,7 +234,7 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-  return {runtime, std::move(error)};
+  return jsi::JSError(runtime, std::move(error));
 }
 
 /**
@@ -244,7 +244,7 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const st
 {
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
   error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, cause));
-  return {runtime, std::move(error)};
+  return jsi::JSError(runtime, std::move(error));
 }
 
 /**
