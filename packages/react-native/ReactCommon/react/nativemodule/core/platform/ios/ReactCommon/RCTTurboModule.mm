@@ -7,6 +7,7 @@
 
 #import "RCTTurboModule.h"
 #import "RCTBlockGuard.h"
+#import "RCTUtils.h"
 
 #include <glog/logging.h>
 #import <objc/message.h>
@@ -399,27 +400,24 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           handlePromiseRejection(reason);
         };
 
-        RCTInvocationErrorHandler internalRejectBlock = nil;
-
-        if (RCTRejectTurboModulePromiseOnNativeError()) {
-          internalRejectBlock = ^(NSDictionary *dict) {
-            handlePromiseRejection(dict);
-          };
-        }
-
-        invokeCopy(resolveBlock, rejectBlock, internalRejectBlock);
+        invokeCopy(resolveBlock, rejectBlock);
         return jsi::Value::undefined();
       });
 
   return Promise.callAsConstructor(runtime, fn);
 }
 
-static NSDictionary * maybeCatchException(
+static NSError * maybeCatchException(
     BOOL shoudCatch,
-    NSDictionary *cause)
+    NSDictionary *causeUserInfo,
+    NSError *overrideWithError)
 {
   if (shoudCatch) {
-    return cause;
+    if (overrideWithError) {
+      return overrideWithError;
+    } else {
+      return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:causeUserInfo];
+    }
   } else {
     // Crash on native layer there is no promise in JS to reject.
     // We executed JSFunction returning void asynchrounously.
@@ -442,7 +440,7 @@ id ObjCTurboModule::performMethodInvocation(
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTInvocationErrorHandler optionalInternalRejectBlock)
+    RCTPromiseRejectBlock reject)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -462,67 +460,51 @@ id ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    NSDictionary *caughtException = nil;
-    BOOL shouldCatchException = isSync || optionalInternalRejectBlock;
+    NSError *caughtException = nil;
+    BOOL shouldCatchException = isSync || reject;
     try {
       @try {
         [inv invokeWithTarget:strongModule];
        } @catch (NSException *exception) {
          caughtException = maybeCatchException(
-                     shouldCatchException,
-                     @{
+                     shouldCatchException, @{
                        @"name": exception.name,
-                       @"message": exception.reason,
+                       NSLocalizedDescriptionKey: exception.reason,
                        @"stackSymbols": exception.callStackSymbols,
                        @"stackReturnAddresses": exception.callStackReturnAddresses,
-                     });
+                     }, nil);
        } @catch (NSError *error) {
-         caughtException = maybeCatchException(
-                     shouldCatchException,
-                     @{
-                       @"userInfo": error.userInfo,
-                       @"domain": error.domain,
-                     });
+         caughtException = maybeCatchException(shouldCatchException, nil, error);
        } @catch (NSString *errorMessage) {
-         caughtException = maybeCatchException(
-                     shouldCatchException,
-                     @{
-                       @"message": errorMessage,
-                     });
+         caughtException = maybeCatchException(shouldCatchException, @{
+                      NSLocalizedDescriptionKey: errorMessage,
+                     }, nil);
        } @catch (id e) {
-         caughtException = maybeCatchException(
-                     shouldCatchException,
-                     @{
-                       @"message": @"Unknown Objective-C Object thrown.",
-                     });
+         caughtException = maybeCatchException(shouldCatchException, @{
+                      NSLocalizedDescriptionKey: @"Unknown Objective-C Object thrown.",
+                     }, nil);
        } @finally {
          [retainedObjectsForInvocation removeAllObjects];
        }
     } catch (const std::exception &exception) {
-      caughtException = maybeCatchException(
-                  shouldCatchException,
-                  @{
-                    @"message": [NSString stringWithUTF8String:exception.what()],
-                  });
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: [NSString stringWithUTF8String:exception.what()],
+                  }, nil);
     } catch (const std::string &errorMessage) {
-      caughtException = maybeCatchException(
-                  shouldCatchException,
-                  @{
-                    @"message": [NSString stringWithUTF8String:errorMessage.c_str()],
-                  });
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: [NSString stringWithUTF8String:errorMessage.c_str()],
+                  }, nil);
     } catch (...) {
-      caughtException = maybeCatchException(
-                  shouldCatchException,
-                  @{
-                    @"message": @"Unknown C++ exception thrown.",
-                  });
+      caughtException = maybeCatchException(shouldCatchException, @{
+                    NSLocalizedDescriptionKey: @"Unknown C++ exception thrown.",
+                  }, nil);
     }
 
     if (caughtException) {
       if (isSync) {
-        throw convertNSDictionaryToJSError(runtime, caughtException);
+        throw convertNSDictionaryToJSError(runtime, RCTJSErrorFromCodeMessageAndNSError(nil, nil, caughtException));
       } else {
-        optionalInternalRejectBlock(caughtException);
+        reject(nil, nil, caughtException);
       }
     }
 
@@ -895,17 +877,26 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   switch (returnType) {
     case PromiseKind: {
       returnValue = createPromise(
-          runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTInvocationErrorHandler internalRejectBlock) {
+        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTInvocationErrorHandler internalRejectCopy = [internalRejectBlock copy];
 
           [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
           [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
           [retainedObjectsForInvocation addObject:resolveCopy];
           [retainedObjectsForInvocation addObject:rejectCopy];
+
+          RCTPromiseRejectBlock internalReject = nil;
+          if (RCTRejectTurboModulePromiseOnNativeError()) {
+            internalReject = rejectCopy;
+          };
           // The return type becomes void in the ObjC side.
-          performMethodInvocation(runtime, isMethodSync(VoidKind), methodName, inv, retainedObjectsForInvocation, internalRejectCopy);
+          performMethodInvocation(runtime,
+                                  isMethodSync(VoidKind),
+                                  methodName,
+                                  inv,
+                                  retainedObjectsForInvocation,
+                                  internalReject);
           });
       break;
     }
