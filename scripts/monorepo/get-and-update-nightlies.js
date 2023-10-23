@@ -127,7 +127,8 @@ function updateDependencies(
 
 /**
  * Publish the passed set of packages to npm with the `nightly` tag.
- * In case a package fails to be published, it throws an error, stopping the nightly publishing completely
+ * [macOS] In case a package fails to be published, the upstream version of this script throws an error.
+ * However, since this fork defers publishing to a separate ADO step, we just log the error and move on.
  */
 function publishPackages(packages /*: PackageMap */) {
   for (const [packageName, packageMetadata] of Object.entries(packages)) {
@@ -140,9 +141,12 @@ function publishPackages(packages /*: PackageMap */) {
     });
 
     if (result.code !== 0) {
-      throw new Error(
+      // [macOS - Our publish-npm.js script doesn't actually publish, so we shouldn't throw an error on failure
+      console.log(
         `\u274c Failed to publish version ${nightlyVersion} of ${packageName}. npm publish exited with code ${result.code}:`,
       );
+      console.error(result.stderr);
+      // macOS]
     }
 
     console.log(`\u2705 Successfully published new version of ${packageName}`);
