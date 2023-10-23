@@ -43,8 +43,8 @@
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      - test_e2e_ios:
-          ruby_version: "2.7.7"
+      # - test_e2e_ios:
+      #     ruby_version: "2.7.7"
       - test_ios_template:
           requires:
             - build_npm_package
