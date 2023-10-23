@@ -9,6 +9,7 @@
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/utils/CoreFeatures.h>
 #include <memory>
 #include <semaphore>
 
@@ -24,7 +25,18 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     hostFunctionCallCount_ = 0;
-    runtime_ = facebook::hermes::makeHermesRuntime();
+
+    auto useModernRuntimeScheduler = GetParam();
+
+    CoreFeatures::enableMicrotasks = useModernRuntimeScheduler;
+
+    // Configuration that enables microtasks
+    ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
+        ::hermes::vm::RuntimeConfig::Builder().withMicrotaskQueue(
+            useModernRuntimeScheduler);
+
+    runtime_ =
+        facebook::hermes::makeHermesRuntime(runtimeConfigBuilder.build());
     stubErrorUtils_ = StubErrorUtils::createAndInstallIfNeeded(*runtime_);
     stubQueue_ = std::make_unique<StubQueue>();
 
@@ -41,8 +53,6 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
     auto stubNow = [this]() -> RuntimeSchedulerTimePoint {
       return stubClock_->getNow();
     };
-
-    auto useModernRuntimeScheduler = GetParam();
 
     runtimeScheduler_ = std::make_unique<RuntimeScheduler>(
         runtimeExecutor, useModernRuntimeScheduler, stubNow);
@@ -111,6 +121,54 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
   stubQueue_->tick();
 
   EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, scheduleSingleTaskWithMicrotasks) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  bool didRunTask = false;
+  bool didRunMicrotask = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool /* unused */) {
+    didRunTask = true;
+
+    auto microtaskCallback = jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forUtf8(*runtime_, ""),
+        3,
+        [&](jsi::Runtime& /*unused*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* arguments,
+            size_t /*unused*/) -> jsi::Value {
+          didRunMicrotask = true;
+          return jsi::Value::undefined();
+        });
+
+    // Hermes doesn't expose a C++ API to schedule microtasks, so we just access
+    // the API that it exposes to JS.
+    auto global = runtime_->global();
+    auto enqueueJobFn = global.getPropertyAsObject(*runtime_, "HermesInternal")
+                            .getPropertyAsFunction(*runtime_, "enqueueJob");
+
+    enqueueJobFn.call(*runtime_, std::move(microtaskCallback));
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_TRUE(didRunMicrotask);
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
@@ -521,7 +579,8 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccess) {
 
   EXPECT_EQ(syncTaskExecutionCount, 1);
   EXPECT_TRUE(runtimeScheduler_->getShouldYield());
-  // The previous task is still in the queue (although it was executed already).
+  // The previous task is still in the queue (although it was executed
+  // already).
   EXPECT_EQ(stubQueue_->size(), 1);
 
   // Just empty the queue
@@ -597,8 +656,8 @@ TEST_P(RuntimeSchedulerTest, immediateTaskYieldsToSynchronousAccess) {
 
   EXPECT_EQ(syncTaskExecutionCount, 1);
   EXPECT_TRUE(runtimeScheduler_->getShouldYield());
-  // The previous task is still in the queue (although it was executed already),
-  // so the sync task scheduled the work loop to process it.
+  // The previous task is still in the queue (although it was executed
+  // already), so the sync task scheduled the work loop to process it.
   EXPECT_EQ(stubQueue_->size(), 1);
 
   // Just empty the queue
@@ -708,7 +767,7 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::ImmediatePriority, std::move(callback));
 
-          runtimeScheduler_->callExpiredTasks(runtime);
+          EXPECT_FALSE(didRunSubsequentTask);
         });
   });
 
@@ -724,7 +783,15 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   t1.join();
 
   EXPECT_TRUE(didRunSynchronousTask);
+  EXPECT_FALSE(didRunSubsequentTask);
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
   EXPECT_TRUE(didRunSubsequentTask);
+
+  EXPECT_EQ(stubQueue_->size(), 0);
 }
 
 TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
@@ -745,11 +812,6 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
 
           runtimeScheduler_->scheduleTask(
               SchedulerPriority::LowPriority, std::move(callback));
-
-          // Only for legacy runtime scheduler
-          if (!GetParam()) {
-            runtimeScheduler_->callExpiredTasks(runtime);
-          }
 
           EXPECT_FALSE(didRunSubsequentTask);
         });
@@ -844,7 +906,8 @@ TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
           // Notify that the second task can be scheduled.
           signalTask1ToScheduleTask2.release();
 
-          // Wait for the second task to be scheduled before finishing this task
+          // Wait for the second task to be scheduled before finishing this
+          // task
           signalTask2ToResumeTask1.acquire();
 
           didRunSynchronousTask1 = true;
@@ -860,8 +923,8 @@ TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
 
     // Notify the first task that it can resume execution.
     // As we can't do this after the task this from thread has been scheduled
-    // (because it's synchronous), we can just do a short wait instead in a new
-    // thread.
+    // (because it's synchronous), we can just do a short wait instead in a
+    // new thread.
     std::thread t3([&signalTask2ToResumeTask1]() {
       std::chrono::duration<int, std::milli> timespan(50);
       std::this_thread::sleep_for(timespan);

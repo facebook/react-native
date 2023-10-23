@@ -152,13 +152,20 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void scheduleTask(std::shared_ptr<Task> task);
 
   /**
-   * Follows all the steps necessary to execute the given task (in the future,
-   * this will include executing microtasks, flushing rendering work, etc.)
+   * Follows all the steps necessary to execute the given task.
+   * Depending on feature flags, this could also execute its microtasks.
+   * In the future, this will include other steps in the Web event loop, like
+   * updating the UI in native, executing resize observer callbacks, etc.
    */
   void executeTask(
       jsi::Runtime& runtime,
       const std::shared_ptr<Task>& task,
       RuntimeSchedulerTimePoint currentTime);
+
+  void executeMacrotask(
+      jsi::Runtime& runtime,
+      std::shared_ptr<Task> task,
+      bool didUserCallbackTimeout) const;
 
   /*
    * Returns a time point representing the current point in time. May be called
