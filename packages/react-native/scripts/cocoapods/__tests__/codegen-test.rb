@@ -106,6 +106,7 @@ class CodegenTests < Test::Unit::TestCase
 
         DirMock.mocked_existing_dirs([
             @base_path + "/"+ @prefix + "/../react-native-codegen",
+            @base_path + "/"+ @prefix + "/../react-native-codegen/lib"
         ])
 
         # Act
@@ -121,6 +122,7 @@ class CodegenTests < Test::Unit::TestCase
         ])
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/"+ @prefix + "/../react-native-codegen",
+            @base_path + "/"+ @prefix + "/../react-native-codegen/lib",
         ])
         assert_equal(Pod::UI.collected_messages, ["[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"])
         assert_equal($collected_commands, [])
@@ -160,10 +162,13 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/" + @prefix + "/../react-native-codegen",
             codegen_cli_path,
+            codegen_cli_path + "/lib",
         ])
         assert_equal(Pod::UI.collected_messages, [
+            "[Codegen] building #{codegen_cli_path}.",
             "[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"
         ])
+        assert_equal($collected_commands, ["~/app/ios/../../../@react-native/codegen/scripts/oss/build.sh"])
         assert_equal(FileMock.open_files[0].collected_write, ["[]"])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands[0], {
@@ -198,10 +203,13 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/" + rn_path + "/../react-native-codegen",
             @base_path + "/" + codegen_cli_path,
+            @base_path + "/" + codegen_cli_path + "/lib",
         ])
         assert_equal(Pod::UI.collected_messages, [
+            "[Codegen] building #{@base_path + "/" + codegen_cli_path}.",
             "[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"
         ])
+        assert_equal($collected_commands, [@base_path + "/" + rn_path + "/../@react-native/codegen/scripts/oss/build.sh"])
         assert_equal(FileMock.open_files[0].collected_write, ["[]"])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands[0], {

@@ -26,7 +26,7 @@ import type {
 type FilesOutput = Map<string, string>;
 
 type ComponentCollection = $ReadOnly<{
-  [componentName: string]: ComponentShape,
+  [component: string]: ComponentShape,
   ...
 }>;
 
