@@ -240,9 +240,9 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 /**
  * Creates JSError with current JS runtime and NSDictionary data as cause.
  */
-static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const std::string &message, NSDictionary *cause)
+static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, NSDictionary *cause)
 {
-  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (cause[@"message"] ? std::string([cause[@"message"] UTF8String]) : "<unknown>"));
   error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, cause));
   return jsi::JSError(runtime, std::move(error));
 }
@@ -253,13 +253,7 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const st
 static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, const std::optional<std::string> &jsInvocationStack)
 {
   jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
-  jsi::Value error;
-  NSString *message = reason[@"message"];
-  if (message) {
-    error = createJSRuntimeError(runtime, "Exception in HostFunction: " + std::string([message UTF8String]));
-  } else {
-    error = createJSRuntimeError(runtime, "Exception in HostFunction: <unknown>");
-  }
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (reason[@"message"] ? std::string([reason[@"message"] UTF8String]) : "<unknown>"));
 
   if (jsInvocationStack.has_value()) {
     error.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
@@ -420,29 +414,16 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   return Promise.callAsConstructor(runtime, fn);
 }
 
-static std::optional<jsi::JSError> handleCause(
-    jsi::Runtime &runtime,
-    bool isSync,
-    NSDictionary *cause,
-    NSMutableArray *retainedObjectsForInvocation,
-    RCTInvocationErrorHandler optionalInternalRejectBlock)
+static NSDictionary * maybeCatchException(
+    BOOL shoudCatch,
+    NSDictionary *cause)
 {
-  if (isSync) {
-    NSString *message = cause[@"message"];
-    if (message) {
-      return convertNSDictionaryToJSError(runtime, std::string([message UTF8String]), cause);
-    } else {
-      return convertNSDictionaryToJSError(runtime, "<unknown>", cause);
-    }
+  if (shoudCatch) {
+    return cause;
   } else {
-    if (optionalInternalRejectBlock != nil) {
-      optionalInternalRejectBlock(cause);
-      return std::nullopt;
-    } else {
-      // Crash on native layer there is no promise in JS to reject.
-      // We executed JSFunction returning void asynchrounously.
-      throw;
-    }
+    // Crash on native layer there is no promise in JS to reject.
+    // We executed JSFunction returning void asynchrounously.
+    throw;
   }
 }
 
@@ -481,77 +462,68 @@ id ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    std::optional<jsi::JSError> handledCatch = std::nullopt;
+    NSDictionary *caughtException = nil;
+    BOOL shouldCatchException = isSync || optionalInternalRejectBlock;
     try {
       @try {
         [inv invokeWithTarget:strongModule];
        } @catch (NSException *exception) {
-         handledCatch = handleCause(runtime,
-                     isSync,
+         caughtException = maybeCatchException(
+                     shouldCatchException,
                      @{
                        @"name": exception.name,
                        @"message": exception.reason,
                        @"stackSymbols": exception.callStackSymbols,
                        @"stackReturnAddresses": exception.callStackReturnAddresses,
-                     },
-                     retainedObjectsForInvocation,
-                     optionalInternalRejectBlock);
+                     });
        } @catch (NSError *error) {
-         handledCatch = handleCause(runtime,
-                     isSync,
+         caughtException = maybeCatchException(
+                     shouldCatchException,
                      @{
                        @"userInfo": error.userInfo,
                        @"domain": error.domain,
-                     },
-                     retainedObjectsForInvocation,
-                     optionalInternalRejectBlock);
+                     });
        } @catch (NSString *errorMessage) {
-         handledCatch = handleCause(runtime,
-                     isSync,
+         caughtException = maybeCatchException(
+                     shouldCatchException,
                      @{
                        @"message": errorMessage,
-                     },
-                     retainedObjectsForInvocation,
-                     optionalInternalRejectBlock);
+                     });
        } @catch (id e) {
-         handledCatch = handleCause(runtime,
-                     isSync,
+         caughtException = maybeCatchException(
+                     shouldCatchException,
                      @{
                        @"message": @"Unknown Objective-C Object thrown.",
-                     },
-                     retainedObjectsForInvocation,
-                     optionalInternalRejectBlock);
+                     });
        } @finally {
          [retainedObjectsForInvocation removeAllObjects];
        }
     } catch (const std::exception &exception) {
-      handledCatch = handleCause(runtime,
-                  isSync,
+      caughtException = maybeCatchException(
+                  shouldCatchException,
                   @{
                     @"message": [NSString stringWithUTF8String:exception.what()],
-                  },
-                  retainedObjectsForInvocation,
-                  optionalInternalRejectBlock);
+                  });
     } catch (const std::string &errorMessage) {
-      handledCatch = handleCause(runtime,
-                  isSync,
+      caughtException = maybeCatchException(
+                  shouldCatchException,
                   @{
                     @"message": [NSString stringWithUTF8String:errorMessage.c_str()],
-                  },
-                  retainedObjectsForInvocation,
-                  optionalInternalRejectBlock);
+                  });
     } catch (...) {
-      handledCatch = handleCause(runtime,
-                  isSync,
+      caughtException = maybeCatchException(
+                  shouldCatchException,
                   @{
                     @"message": @"Unknown C++ exception thrown.",
-                  },
-                  retainedObjectsForInvocation,
-                  optionalInternalRejectBlock);
+                  });
     }
 
-    if (handledCatch.has_value()) {
-      throw handledCatch.value();
+    if (caughtException) {
+      if (isSync) {
+        throw convertNSDictionaryToJSError(runtime, caughtException);
+      } else {
+        optionalInternalRejectBlock(caughtException);
+      }
     }
 
     if (!isSync) {
