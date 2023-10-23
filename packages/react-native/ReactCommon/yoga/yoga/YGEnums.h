@@ -21,7 +21,8 @@ YG_ENUM_SEQ_DECL(
     YGAlignStretch,
     YGAlignBaseline,
     YGAlignSpaceBetween,
-    YGAlignSpaceAround)
+    YGAlignSpaceAround,
+    YGAlignSpaceEvenly)
 
 YG_ENUM_SEQ_DECL(
     YGDimension,

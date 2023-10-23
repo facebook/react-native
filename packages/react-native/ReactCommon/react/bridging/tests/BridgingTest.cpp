@@ -290,6 +290,24 @@ TEST_F(BridgingTest, asyncCallbackTest) {
   EXPECT_EQ("hello again"s, output);
 }
 
+TEST_F(BridgingTest, asyncCallbackInvalidation) {
+  std::string output;
+  std::function<void(std::string)> func = [&](auto str) { output = str; };
+
+  auto jsCallback = bridging::fromJs<AsyncCallback<>>(
+      rt, bridging::toJs(rt, func, invoker), invoker);
+  jsCallback.call(
+      [](jsi::Runtime& rt, jsi::Function& f) { f.call(rt, "hello"); });
+
+  // LongLivedObjectCollection goes away before callback is executed
+  LongLivedObjectCollection::get().clear();
+
+  flushQueue();
+
+  // Assert native callback is never invoked
+  ASSERT_EQ(""s, output);
+}
+
 TEST_F(BridgingTest, asyncCallbackImplicitBridgingTest) {
   std::string output;
   auto func = std::function<void(std::string)>([&](auto str) { output = str; });

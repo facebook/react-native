@@ -39,9 +39,10 @@ let startNativeAnimationNextId = 1;
 export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
-  __nativeId: number;
   __onEnd: ?EndCallback;
   __iterations: number;
+
+  _nativeId: number;
 
   start(
     fromValue: number,
@@ -52,8 +53,8 @@ export default class Animation {
   ): void {}
 
   stop(): void {
-    if (this.__nativeId) {
-      NativeAnimatedHelper.API.stopAnimation(this.__nativeId);
+    if (this._nativeId) {
+      NativeAnimatedHelper.API.stopAnimation(this._nativeId);
     }
   }
 
@@ -78,20 +79,6 @@ export default class Animation {
       return result;
     }
 
-    // Vectorized animations (animations on AnimatedValueXY, AnimatedColor nodes)
-    // are split into multiple animations for each component that execute in parallel.
-    // Calling update() on AnimatedProps when each animation completes results in
-    // potential flickering as all animations that are part of the vectorized animation
-    // may not have completed yet. For example, only the animation for the red channel of
-    // an animating color may have been completed, resulting in a temporary red color
-    // being rendered. So, for now, ignore AnimatedProps that use a vectorized animation.
-    if (
-      Platform.OS === 'ios' &&
-      (node instanceof AnimatedValueXY || node instanceof AnimatedColor)
-    ) {
-      return result;
-    }
-
     for (const child of node.__getChildren()) {
       result.push(...this.__findAnimatedPropsNodes(child));
     }
@@ -108,9 +95,9 @@ export default class Animation {
     try {
       const config = this.__getNativeAnimationConfig();
       animatedValue.__makeNative(config.platformConfig);
-      this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      this._nativeId = NativeAnimatedHelper.generateNewAnimationId();
       NativeAnimatedHelper.API.startAnimatingNode(
-        this.__nativeId,
+        this._nativeId,
         animatedValue.__getNativeTag(),
         config,
         result => {

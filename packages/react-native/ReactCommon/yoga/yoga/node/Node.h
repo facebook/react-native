@@ -48,12 +48,15 @@ class YG_EXPORT Node : public ::YGNode {
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
-  float relativePosition(FlexDirection axis, const float axisSize) const;
+  float relativePosition(
+      FlexDirection axis,
+      Direction direction,
+      const float axisSize) const;
 
-  YGEdge getLeadingLayoutEdgeUsingErrata(
+  YGEdge getInlineStartEdgeUsingErrata(
       FlexDirection flexDirection,
       Direction direction) const;
-  YGEdge getTrailingLayoutEdgeUsingErrata(
+  YGEdge getInlineEndEdgeUsingErrata(
       FlexDirection flexDirection,
       Direction direction) const;
 
@@ -196,24 +199,66 @@ class YG_EXPORT Node : public ::YGNode {
       YGEdge edge);
 
   // Methods related to positions, margin, padding and border
-  bool isLeadingPositionDefined(FlexDirection axis) const;
-  bool isTrailingPosDefined(FlexDirection axis) const;
-  float getLeadingPosition(FlexDirection axis, float axisSize) const;
-  float getTrailingPosition(FlexDirection axis, float axisSize) const;
-  float getLeadingMargin(
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+      const;
+  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+      const;
+  float getInlineStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineStartMargin(
       FlexDirection axis,
       Direction direction,
       float widthSize) const;
-  float getTrailingMargin(
+  float getInlineEndMargin(
       FlexDirection axis,
       Direction direction,
       float widthSize) const;
-  float getLeadingBorder(FlexDirection flexDirection) const;
-  float getTrailingBorder(FlexDirection flexDirection) const;
-  float getLeadingPadding(FlexDirection axis, float widthSize) const;
-  float getTrailingPadding(FlexDirection axis, float widthSize) const;
-  float getLeadingPaddingAndBorder(FlexDirection axis, float widthSize) const;
-  float getTrailingPaddingAndBorder(FlexDirection axis, float widthSize) const;
+  float getFlexStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
   float getMarginForAxis(FlexDirection axis, float widthSize) const;
   float getGapForAxis(FlexDirection axis) const;
   // Setters
@@ -293,7 +338,7 @@ class YG_EXPORT Node : public ::YGNode {
   void markDirtyAndPropagateDownwards();
 
   // Other methods
-  YGValue marginLeadingValue(FlexDirection axis) const;
+  YGValue getFlexStartMarginValue(FlexDirection axis) const;
   YGValue marginTrailingValue(FlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();

@@ -47,7 +47,7 @@ inline FlexDirection resolveCrossDirection(
       : FlexDirection::Column;
 }
 
-inline YGEdge leadingEdge(const FlexDirection flexDirection) {
+inline YGEdge flexStartEdge(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
       return YGEdgeTop;
@@ -62,7 +62,7 @@ inline YGEdge leadingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge trailingEdge(const FlexDirection flexDirection) {
+inline YGEdge flexEndEdge(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
       return YGEdgeBottom;
@@ -77,7 +77,7 @@ inline YGEdge trailingEdge(const FlexDirection flexDirection) {
   fatalWithMessage("Invalid FlexDirection");
 }
 
-inline YGEdge leadingLayoutEdge(
+inline YGEdge inlineStartEdge(
     const FlexDirection flexDirection,
     const Direction direction) {
   if (isRow(flexDirection)) {
@@ -87,7 +87,7 @@ inline YGEdge leadingLayoutEdge(
   return YGEdgeTop;
 }
 
-inline YGEdge trailingLayoutEdge(
+inline YGEdge inlineEndEdge(
     const FlexDirection flexDirection,
     const Direction direction) {
   if (isRow(flexDirection)) {
@@ -95,6 +95,32 @@ inline YGEdge trailingLayoutEdge(
   }
 
   return YGEdgeBottom;
+}
+
+/**
+ * The physical edges that YGEdgeStart and YGEdgeEnd correspond to (e.g.
+ * left/right) are soley dependent on the direction. However, there are cases
+ * where we want the flex start/end edge (i.e. which edge is the start/end
+ * for laying out flex items), which can be distinct from the corresponding
+ * inline edge. In these cases we need to know which "relative edge"
+ * (YGEdgeStart/YGEdgeEnd) corresponds to the said flex start/end edge as these
+ * relative edges can be used instead of physical ones when defining certain
+ * attributes like border or padding.
+ */
+inline YGEdge flexStartRelativeEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  const YGEdge leadLayoutEdge = inlineStartEdge(flexDirection, direction);
+  const YGEdge leadFlexItemEdge = flexStartEdge(flexDirection);
+  return leadLayoutEdge == leadFlexItemEdge ? YGEdgeStart : YGEdgeEnd;
+}
+
+inline YGEdge flexEndRelativeEdge(
+    FlexDirection flexDirection,
+    Direction direction) {
+  const YGEdge trailLayoutEdge = inlineEndEdge(flexDirection, direction);
+  const YGEdge trailFlexItemEdge = flexEndEdge(flexDirection);
+  return trailLayoutEdge == trailFlexItemEdge ? YGEdgeEnd : YGEdgeStart;
 }
 
 inline Dimension dimension(const FlexDirection flexDirection) {

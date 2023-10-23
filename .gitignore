@@ -38,7 +38,6 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/gradlew.bat
 /packages/react-native/ReactAndroid/external-artifacts/build/
 /packages/react-native/ReactAndroid/external-artifacts/artifacts/
-/packages/react-native/ReactAndroid/flipper-integration/build/
 /packages/react-native/ReactAndroid/hermes-engine/build/
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
 /packages/react-native/template/android/app/build/
@@ -116,6 +115,7 @@ package-lock.json
 /packages/react-native/template/ios/Pods/
 /packages/react-native/template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
+/packages/**/RCTLegacyInteropComponents.mm
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*

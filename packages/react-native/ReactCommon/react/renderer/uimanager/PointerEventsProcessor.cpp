@@ -33,9 +33,7 @@ static bool isViewListeningToEvents(
     const ShadowNode& shadowNode,
     std::initializer_list<ViewEvents::Offset> eventTypes) {
   if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::ViewKind)) {
-    auto props = shadowNode.getProps();
-    auto viewProps = static_cast<const ViewProps&>(*props);
-
+    auto& viewProps = static_cast<const ViewProps&>(*shadowNode.getProps());
     for (const ViewEvents::Offset eventType : eventTypes) {
       if (viewProps.events[eventType]) {
         return true;

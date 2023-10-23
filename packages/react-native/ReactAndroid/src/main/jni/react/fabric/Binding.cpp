@@ -414,7 +414,6 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
   CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
       getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
   CoreFeatures::enableCleanParagraphYogaNode =

@@ -265,8 +265,11 @@ using namespace facebook::react;
        oldViewProps.transformOrigin != newViewProps.transformOrigin) &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
-    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
-    self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
+    CATransform3D caTransform = RCTCATransform3DFromTransformMatrix(newTransform);
+
+    self.layer.transform = caTransform;
+    // Enable edge antialiasing in rotation, skew, or perspective transforms
+    self.layer.allowsEdgeAntialiasing = caTransform.m12 != 0.0f || caTransform.m21 != 0.0f || caTransform.m34 != 0.0f;
   }
 
   // `hitSlop`

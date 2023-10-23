@@ -106,14 +106,20 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
                     .yogaNode_) {
-  // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-  // dirty flag, measure function, and other properties being set originally in
-  // the `YogaLayoutableShadowNode` constructor above.
+// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
+// dirty flag, measure function, and other properties being set originally in
+// the `YogaLayoutableShadowNode` constructor above.
 
+// There is a known race condition when background executor is enabled, where
+// a tree may be laid out on the Fabric background thread concurrently with
+// the ShadowTree being created on the JS thread. This assert can be
+// re-enabled after disabling background executor everywhere.
+#if 0
   react_native_assert(
       static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
+#endif
 
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     for (auto& child : getChildren()) {
@@ -368,7 +374,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
-  auto props = static_cast<const YogaStylableProps&>(*props_);
+  auto& props = static_cast<const YogaStylableProps&>(*props_);
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
