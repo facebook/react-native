@@ -139,7 +139,7 @@
 - (BOOL)bridgelessEnabled;
 
 /// Return the bundle URL for the main bundle.
-- (NSURL *)getBundleURL;
+- (NSURL *)bundleURL;
 
 #endif
 
