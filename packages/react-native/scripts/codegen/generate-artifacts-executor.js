@@ -372,7 +372,7 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
   const outputDir =
     CORE_LIBRARIES_WITH_OUTPUT_FOLDER[library.config.name] ?? iosOutputDir;
   fs.mkdirSync(outputDir, {recursive: true});
-  execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
+  fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 
