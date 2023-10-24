@@ -146,7 +146,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)extraInitialProps
 {
-  NSMutableDictionary *initProps = [NSMutableDictionary new];
+  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
 #ifdef RCT_NEW_ARCH_ENABLED
   // Hardcoding the Concurrent Root as it it not recommended to
   // have the concurrentRoot turned off when Fabric is enabled.
@@ -157,8 +157,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)prepareInitialProps
 {
-  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
-  return initProps;
+  return nil;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
