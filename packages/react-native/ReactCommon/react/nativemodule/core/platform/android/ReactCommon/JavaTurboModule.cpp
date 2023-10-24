@@ -414,7 +414,7 @@ jsi::Value createJSRuntimeError(
 /**
  * Cpp struct to hold JVMFrame
  */
-struct SimpleJFrame {
+struct JavaFrame {
     std::string className;
     std::string fileName;
     int lineNumber;
@@ -424,24 +424,24 @@ struct SimpleJFrame {
 /**
  * Cpp struct to hold JThrowable
  */
-struct SimpleJThrowable {
+struct JavaThrowable {
     std::string name;
     std::string message;
-    std::vector<SimpleJFrame> stackElements;
+    std::vector<JavaFrame> stackElements;
 };
 
 /**
  * Extracts throwable properties to JVM env independent data holder.
  */
-SimpleJThrowable extractThrowable(
+JavaThrowable extractThrowable(
             jni::local_ref<jni::JThrowable> throwable) {
-    SimpleJThrowable extracted;
+    JavaThrowable extracted;
     auto stackTrace = throwable->getStackTrace();
 
     extracted.stackElements.reserve(stackTrace->size());
     for (int i = 0; i < stackTrace->size(); ++i) {
         auto frame = stackTrace->getElement(i);
-        extracted.stackElements.push_back(SimpleJFrame {
+        extracted.stackElements.push_back(JavaFrame {
                 frame->getClassName(),
                 frame->getFileName(),
                 frame->getLineNumber(),
@@ -458,14 +458,14 @@ SimpleJThrowable extractThrowable(
 /**
  * Converts simple JVM independent Throwable container to JSError.
  */
-jsi::JSError convertSimpleJThrowableToJSError(
+jsi::JSError convertJavaThrowableToJSError(
         jsi::Runtime& runtime,
-        SimpleJThrowable throwable) {
-    auto stackTrace = throwable.stackElements;
+        JavaThrowable throwable) {
+    auto &stackTrace = throwable.stackElements;
 
     jsi::Array stackElements(runtime, stackTrace.size());
     for (int i = 0; i < stackTrace.size(); ++i) {
-        auto frame = stackTrace[i];
+        auto &frame = stackTrace[i];
 
         jsi::Object frameObject(runtime);
         frameObject.setProperty(runtime, "className", frame.className);
@@ -476,16 +476,14 @@ jsi::JSError convertSimpleJThrowableToJSError(
     }
 
     jsi::Object cause(runtime);
-    auto name = throwable.name;
-    auto message = throwable.message;
-    cause.setProperty(runtime, "name", name);
-    cause.setProperty(runtime, "message", message);
+    cause.setProperty(runtime, "name", throwable.name);
+    cause.setProperty(runtime, "message", throwable.message);
     cause.setProperty(runtime, "stackElements", std::move(stackElements));
 
     jsi::Value error =
-            createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+            createJSRuntimeError(runtime, "Exception in HostFunction: " + throwable.message);
     error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-    return jsi::JSError{runtime, std::move(error)};
+    return jsi::JSError(runtime, std::move(error));
 }
 
 /**
@@ -494,25 +492,21 @@ jsi::JSError convertSimpleJThrowableToJSError(
 jsi::JSError convertThrowableToJSError(
         jsi::Runtime& runtime,
         jni::local_ref<jni::JThrowable> throwable) {
-    return convertSimpleJThrowableToJSError(runtime, extractThrowable(throwable));
+    return convertJavaThrowableToJSError(runtime, extractThrowable(throwable));
 }
 
 void rejectWithException(
-    std::optional<AsyncCallback<>> &reject,
+    AsyncCallback<> &reject,
     std::exception_ptr exception,
-    std::optional<std::string> jsInvocationStack) {
+    std::optional<std::string> &jsInvocationStack) {
     auto localThrowable = jni::getJavaExceptionForCppException(exception);
     auto simpleThrowable = extractThrowable(localThrowable);
 
-    if (!reject.has_value()) {
-        throw;
-    }
-
-    reject->call([
+    reject.call([
             jsInvocationStack,
             simpleThrowable = std::move(simpleThrowable)
             ](jsi::Runtime& rt, jsi::Function& jsFunction) {
-        auto jsError = convertSimpleJThrowableToJSError(rt, simpleThrowable);
+        auto jsError = convertJavaThrowableToJSError(rt, simpleThrowable);
 
         if (jsInvocationStack.has_value()) {
             jsError.value().asObject(rt).setProperty(rt, "stack", jsInvocationStack.value());
@@ -872,7 +866,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jsi::Function Promise =
           runtime.global().getPropertyAsFunction(runtime, "Promise");
 
-      std::optional<AsyncCallback<>> rejectCallback;
+      // The callback is used for auto rejecting if error is caught from method invocation
+      std::optional<AsyncCallback<>> nativeRejectCallback;
+
       // The promise constructor runs its arg immediately, so this is safe
       jobject javaPromise;
       jsi::Value jsPromise = Promise.callAsConstructor(
@@ -890,7 +886,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 }
 
                 if (rejectTurboModulePromiseOnNativeError()) {
-                    rejectCallback = AsyncCallback({runtime, args[1].getObject(runtime).getFunction(runtime), jsInvoker_});
+                    nativeRejectCallback = AsyncCallback(runtime, args[1].getObject(runtime).getFunction(runtime), jsInvoker_);
                 }
 
                 auto resolve = createJavaCallback(
@@ -912,7 +908,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jargs[argCount].l = globalPromise;
 
       // JS Stack at the time when the promise is created.
-      std::optional<std::string> jsInvocationStack = std::nullopt;
+      std::optional<std::string> jsInvocationStack;
       if (traceTurboModulePromiseRejections()) {
           jsInvocationStack = createJSRuntimeError(runtime, "")
                   .asObject(runtime)
@@ -928,7 +924,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
           [jargs,
-                 rejectCallback = std::move(rejectCallback),
+                 rejectCallback = std::move(nativeRejectCallback),
                  jsInvocationStack = std::move(jsInvocationStack),
            globalRefs,
            methodID,
@@ -952,9 +948,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
               TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
-              if (rejectTurboModulePromiseOnNativeError()) {
+              if (rejectTurboModulePromiseOnNativeError() && rejectCallback) {
                   auto exception = std::current_exception();
-                  rejectWithException(rejectCallback, exception, jsInvocationStack);
+                  rejectWithException(*rejectCallback, exception, jsInvocationStack);
+                  rejectCallback = std::nullopt;
               } else {
                   throw;
               }
