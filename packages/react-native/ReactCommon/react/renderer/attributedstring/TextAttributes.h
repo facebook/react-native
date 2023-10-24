@@ -11,7 +11,6 @@
 #include <limits>
 #include <optional>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/LayoutPrimitives.h>
@@ -20,6 +19,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -108,8 +108,7 @@ template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
       const facebook::react::TextAttributes& textAttributes) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         textAttributes.foregroundColor,
         textAttributes.backgroundColor,
         textAttributes.opacity,
