@@ -412,87 +412,36 @@ jsi::Value createJSRuntimeError(
 }
 
 /**
- * Cpp struct to hold JVMFrame
- */
-struct JavaFrame {
-    std::string className;
-    std::string fileName;
-    int lineNumber;
-    std::string methodName;
-};
-
-/**
- * Cpp struct to hold JThrowable
- */
-struct JavaThrowable {
-    std::string name;
-    std::string message;
-    std::vector<JavaFrame> stackElements;
-};
-
-/**
- * Extracts throwable properties to JVM env independent data holder.
- */
-JavaThrowable extractThrowable(
-            jni::local_ref<jni::JThrowable> throwable) {
-    JavaThrowable extracted;
-    auto stackTrace = throwable->getStackTrace();
-
-    extracted.stackElements.reserve(stackTrace->size());
-    for (int i = 0; i < stackTrace->size(); ++i) {
-        auto frame = stackTrace->getElement(i);
-        extracted.stackElements.push_back(JavaFrame {
-                frame->getClassName(),
-                frame->getFileName(),
-                frame->getLineNumber(),
-                frame->getMethodName()
-        });
-    }
-
-    extracted.name = throwable->getClass()->getCanonicalName()->toStdString();
-    extracted.message = throwable->getMessage()->toStdString();
-
-    return extracted;
-}
-
-/**
- * Converts simple JVM independent Throwable container to JSError.
- */
-jsi::JSError convertJavaThrowableToJSError(
-        jsi::Runtime& runtime,
-        JavaThrowable throwable) {
-    auto &stackTrace = throwable.stackElements;
-
-    jsi::Array stackElements(runtime, stackTrace.size());
-    for (int i = 0; i < stackTrace.size(); ++i) {
-        auto &frame = stackTrace[i];
-
-        jsi::Object frameObject(runtime);
-        frameObject.setProperty(runtime, "className", frame.className);
-        frameObject.setProperty(runtime, "fileName", frame.fileName);
-        frameObject.setProperty(runtime, "lineNumber", frame.lineNumber);
-        frameObject.setProperty(runtime, "methodName", frame.methodName);
-        stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
-    }
-
-    jsi::Object cause(runtime);
-    cause.setProperty(runtime, "name", throwable.name);
-    cause.setProperty(runtime, "message", throwable.message);
-    cause.setProperty(runtime, "stackElements", std::move(stackElements));
-
-    jsi::Value error =
-            createJSRuntimeError(runtime, "Exception in HostFunction: " + throwable.message);
-    error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-    return jsi::JSError(runtime, std::move(error));
-}
-
-/**
  * Creates JSError with current JS runtime stack and Throwable stack trace.
  */
 jsi::JSError convertThrowableToJSError(
         jsi::Runtime& runtime,
         jni::local_ref<jni::JThrowable> throwable) {
-    return convertJavaThrowableToJSError(runtime, extractThrowable(throwable));
+    auto stackTrace = throwable->getStackTrace();
+
+    jsi::Array stackElements(runtime, stackTrace->size());
+    for (int i = 0; i < stackTrace->size(); ++i) {
+        auto frame = stackTrace->getElement(i);
+
+        jsi::Object frameObject(runtime);
+        frameObject.setProperty(runtime, "className", frame->getClassName());
+        frameObject.setProperty(runtime, "fileName", frame->getFileName());
+        frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+        frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+        stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+    }
+
+    jsi::Object cause(runtime);
+    auto name = throwable->getClass()->getCanonicalName()->toStdString();
+    auto message = throwable->getMessage()->toStdString();
+    cause.setProperty(runtime, "name", name);
+    cause.setProperty(runtime, "message", message);
+    cause.setProperty(runtime, "stackElements", std::move(stackElements));
+
+    jsi::Value error =
+            createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+    error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+    return {runtime, std::move(error)};
 }
 
 void rejectWithException(
@@ -500,13 +449,13 @@ void rejectWithException(
     std::exception_ptr exception,
     std::optional<std::string> &jsInvocationStack) {
     auto localThrowable = jni::getJavaExceptionForCppException(exception);
-    auto simpleThrowable = extractThrowable(localThrowable);
+    jni::global_ref<jni::JThrowable> globalThrowable = jni::make_global(localThrowable.get());
 
     reject.call([
             jsInvocationStack,
-            simpleThrowable = std::move(simpleThrowable)
+            globalThrowable
             ](jsi::Runtime& rt, jsi::Function& jsFunction) {
-        auto jsError = convertJavaThrowableToJSError(rt, simpleThrowable);
+        auto jsError = convertThrowableToJSError(rt,jni::make_local(globalThrowable));
 
         if (jsInvocationStack.has_value()) {
             jsError.value().asObject(rt).setProperty(rt, "stack", jsInvocationStack.value());
