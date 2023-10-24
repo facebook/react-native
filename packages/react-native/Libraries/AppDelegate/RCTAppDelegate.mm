@@ -157,7 +157,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)prepareInitialProps
 {
-  return nil;
+  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
+  return initProps;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
