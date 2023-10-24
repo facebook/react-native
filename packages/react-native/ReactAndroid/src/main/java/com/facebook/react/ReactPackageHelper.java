@@ -7,7 +7,6 @@
 
 package com.facebook.react;
 
-import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;
@@ -42,11 +41,8 @@ class ReactPackageHelper {
     } else {
       nativeModules = reactPackage.createNativeModules(reactApplicationContext);
     }
-    return new Iterable<ModuleHolder>() {
-      @NonNull
-      @Override
-      public Iterator<ModuleHolder> iterator() {
-        return new Iterator<ModuleHolder>() {
+    return () ->
+        new Iterator<ModuleHolder>() {
           int position = 0;
 
           @Override
@@ -64,7 +60,5 @@ class ReactPackageHelper {
             throw new UnsupportedOperationException("Cannot remove methods ");
           }
         };
-      }
-    };
   }
 }
