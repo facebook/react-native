@@ -189,6 +189,7 @@ async function testRNTestProject(circleCIArtifacts) {
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
   const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
+  const shortCommit = exec('git rev-parse HEAD', {silent: true}).toString().trim().slice(0, 9);
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const dateIdentifier = new Date()
@@ -197,7 +198,7 @@ async function testRNTestProject(circleCIArtifacts) {
     .replace(/[-:]/g, '')
     .replace(/[T]/g, '-');
 
-  const releaseVersion = `${baseVersion}-${dateIdentifier}`;
+  const releaseVersion = `1000.0.0-${shortCommit}`;
 
   // Prepare some variables for later use
   const repoRoot = pwd();
@@ -206,7 +207,7 @@ async function testRNTestProject(circleCIArtifacts) {
 
   const mavenLocalPath =
     circleCIArtifacts != null
-      ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local.zip')
+      ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
   const hermesPath = await prepareArtifacts(
     circleCIArtifacts,
@@ -218,30 +219,13 @@ async function testRNTestProject(circleCIArtifacts) {
   );
 
   updateTemplatePackage({
-    'react-native': `file:${localNodeTGZPath}`,
+    'react-native': `file://${localNodeTGZPath}`,
   });
-
-  // create locally the node module
-  exec('npm pack --pack-destination ', {cwd: reactNativePackagePath});
-
-  // node pack does not creates a version of React Native with the right name on main.
-  // Let's add some defensive programming checks:
-  if (!fs.existsSync(localNodeTGZPath)) {
-    const tarfile = fs
-      .readdirSync(reactNativePackagePath)
-      .find(name => name.startsWith('react-native-') && name.endsWith('.tgz'));
-    if (!tarfile) {
-      throw new Error("Couldn't find a zipped version of react-native");
-    }
-    exec(
-      `cp ${path.join(reactNativePackagePath, tarfile)} ${localNodeTGZPath}`,
-    );
-  }
 
   pushd('/tmp/');
   // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${localNodeTGZPath} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${reactNativePackagePath} --skip-install`,
   );
 
   cd('RNTestProject');
@@ -249,7 +233,7 @@ async function testRNTestProject(circleCIArtifacts) {
 
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}/tmp/maven-local" >> android/gradle.properties`,
   );
 
   // Update gradle properties to set Hermes as false
@@ -262,18 +246,17 @@ async function testRNTestProject(circleCIArtifacts) {
     );
   }
 
-  // doing the pod install here so that it's easier to play around RNTestProject
-  cd('ios');
-  exec('bundle install');
-  exec(
-    `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-      argv.hermes ? 1 : 0
-    } bundle exec pod install --ansi`,
-  );
-
-  cd('..');
-
   if (argv.platform === 'iOS') {
+    // doing the pod install here so that it's easier to play around RNTestProject
+    cd('ios');
+    exec('bundle install');
+    exec(
+      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
+        argv.hermes ? 1 : 0
+      } bundle exec pod install --ansi`,
+    );
+
+    cd('..');
     exec('yarn ios');
   } else {
     // android
