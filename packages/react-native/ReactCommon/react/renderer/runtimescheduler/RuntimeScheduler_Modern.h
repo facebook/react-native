@@ -121,6 +121,15 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
+  /**
+   * Schedules a function that notifies or applies UI changes in the host
+   * platform, to be executed during the "Update the rendering" step of the
+   * event loop. If the step is not enabled, the function is executed
+   * immediately.
+   */
+  void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
@@ -167,6 +176,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       std::shared_ptr<Task> task,
       bool didUserCallbackTimeout) const;
 
+  void updateRendering();
+
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
@@ -178,6 +189,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * scheduled.
    */
   bool isWorkLoopScheduled_{false};
+
+  std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
 };
 
 } // namespace facebook::react

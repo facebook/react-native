@@ -142,6 +142,15 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
   currentPriority_ = previousPriority;
 }
 
+void RuntimeScheduler_Legacy::scheduleRenderingUpdate(
+    RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
+  SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
+
+  if (renderingUpdate != nullptr) {
+    renderingUpdate();
+  }
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() {

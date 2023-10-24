@@ -124,17 +124,41 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
-TEST_P(RuntimeSchedulerTest, scheduleSingleTaskWithMicrotasks) {
+TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
+  CoreFeatures::blockPaintForUseLayoutEffect = false;
+
+  bool didRunRenderingUpdate = false;
+
+  runtimeScheduler_->scheduleRenderingUpdate(
+      [&]() { didRunRenderingUpdate = true; });
+
+  EXPECT_TRUE(didRunRenderingUpdate);
+}
+
+TEST_P(
+    RuntimeSchedulerTest,
+    scheduleSingleTaskWithMicrotasksAndBatchedRenderingUpdate) {
   // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
 
-  bool didRunTask = false;
-  bool didRunMicrotask = false;
+  CoreFeatures::blockPaintForUseLayoutEffect = true;
+
+  uint nextOperationPosition = 1;
+
+  uint taskPosition = 0;
+  uint microtaskPosition = 0;
+  uint updateRenderingPosition = 0;
 
   auto callback = createHostFunctionFromLambda([&](bool /* unused */) {
-    didRunTask = true;
+    taskPosition = nextOperationPosition;
+    nextOperationPosition++;
+
+    runtimeScheduler_->scheduleRenderingUpdate([&]() {
+      updateRenderingPosition = nextOperationPosition;
+      nextOperationPosition++;
+    });
 
     auto microtaskCallback = jsi::Function::createFromHostFunction(
         *runtime_,
@@ -144,7 +168,8 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTaskWithMicrotasks) {
             const jsi::Value& /*unused*/,
             const jsi::Value* arguments,
             size_t /*unused*/) -> jsi::Value {
-          didRunMicrotask = true;
+          microtaskPosition = nextOperationPosition;
+          nextOperationPosition++;
           return jsi::Value::undefined();
         });
 
@@ -162,13 +187,16 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTaskWithMicrotasks) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
 
-  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(taskPosition, 0);
+  EXPECT_EQ(microtaskPosition, 0);
+  EXPECT_EQ(updateRenderingPosition, 0);
   EXPECT_EQ(stubQueue_->size(), 1);
 
   stubQueue_->tick();
 
-  EXPECT_TRUE(didRunTask);
-  EXPECT_TRUE(didRunMicrotask);
+  EXPECT_EQ(taskPosition, 1);
+  EXPECT_EQ(microtaskPosition, 2);
+  EXPECT_EQ(updateRenderingPosition, 3);
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
