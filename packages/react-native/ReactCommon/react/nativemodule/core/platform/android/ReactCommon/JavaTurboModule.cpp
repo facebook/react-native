@@ -431,7 +431,7 @@ struct SimpleJThrowable {
 };
 
 /**
- * TODO:
+ * Extracts throwable properties to JVM env independent data holder.
  */
 SimpleJThrowable extractThrowable(
             jni::local_ref<jni::JThrowable> throwable) {
@@ -456,7 +456,7 @@ SimpleJThrowable extractThrowable(
 }
 
 /**
- * TODO:
+ * Converts simple JVM independent Throwable container to JSError.
  */
 jsi::JSError convertSimpleJThrowableToJSError(
         jsi::Runtime& runtime,
@@ -500,7 +500,7 @@ jsi::JSError convertThrowableToJSError(
 void rejectWithException(
     std::optional<AsyncCallback<>> &reject,
     std::exception_ptr exception,
-    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
+    std::optional<std::string> jsInvocationStack) {
     auto localThrowable = jni::getJavaExceptionForCppException(exception);
     auto simpleThrowable = extractThrowable(localThrowable);
 
@@ -515,7 +515,7 @@ void rejectWithException(
         auto jsError = convertSimpleJThrowableToJSError(rt, simpleThrowable);
 
         if (jsInvocationStack.has_value()) {
-            jsError.value().asObject(rt).setProperty(rt, "stack", *jsInvocationStack.value());
+            jsError.value().asObject(rt).setProperty(rt, "stack", jsInvocationStack.value());
         }
 
         jsFunction.call(rt, jsError.value());
@@ -872,7 +872,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jsi::Function Promise =
           runtime.global().getPropertyAsFunction(runtime, "Promise");
 
-      std::optional<AsyncCallback<>> rejectJSIFunctionWeakWrapper;
+      std::optional<AsyncCallback<>> rejectCallback;
       // The promise constructor runs its arg immediately, so this is safe
       jobject javaPromise;
       jsi::Value jsPromise = Promise.callAsConstructor(
@@ -890,7 +890,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 }
 
                 if (rejectTurboModulePromiseOnNativeError()) {
-                    rejectJSIFunctionWeakWrapper = AsyncCallback({runtime, args[0].getObject(runtime).getFunction(runtime), jsInvoker_});
+                    rejectCallback = AsyncCallback({runtime, args[1].getObject(runtime).getFunction(runtime), jsInvoker_});
                 }
 
                 auto resolve = createJavaCallback(
@@ -912,13 +912,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jargs[argCount].l = globalPromise;
 
       // JS Stack at the time when the promise is created.
-      // This has to be shared pointer to hold jsi::Value
-      std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
+      std::optional<std::string> jsInvocationStack = std::nullopt;
       if (traceTurboModulePromiseRejections()) {
-          auto stack = createJSRuntimeError(runtime, "")
+          jsInvocationStack = createJSRuntimeError(runtime, "")
                   .asObject(runtime)
-                  .getProperty(runtime, "stack");
-          jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
+                  .getProperty(runtime, "stack")
+                  .toString(runtime)
+                  .utf8(runtime);
       }
 
       const char* moduleName = name_.c_str();
@@ -928,7 +928,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
           [jargs,
-                 rejectJSIFunctionWeakWrapper,
+                 rejectCallback = std::move(rejectCallback),
                  jsInvocationStack = std::move(jsInvocationStack),
            globalRefs,
            methodID,
@@ -954,7 +954,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
               if (rejectTurboModulePromiseOnNativeError()) {
                   auto exception = std::current_exception();
-                  rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+                  rejectWithException(rejectCallback, exception, jsInvocationStack);
               } else {
                   throw;
               }
