@@ -294,24 +294,18 @@ void Scheduler::uiManagerDidFinishTransaction(
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    if (CoreFeatures::blockPaintForUseLayoutEffect) {
-      auto weakRuntimeScheduler =
-          contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-              "RuntimeScheduler");
-      auto runtimeScheduler = weakRuntimeScheduler.has_value()
-          ? weakRuntimeScheduler.value().lock()
-          : nullptr;
-      if (runtimeScheduler && !mountSynchronously) {
-        runtimeScheduler->scheduleTask(
-            SchedulerPriority::UserBlockingPriority,
-            [delegate = delegate_,
-             mountingCoordinator =
-                 std::move(mountingCoordinator)](jsi::Runtime&) {
-              delegate->schedulerDidFinishTransaction(mountingCoordinator);
-            });
-      } else {
-        delegate_->schedulerDidFinishTransaction(mountingCoordinator);
-      }
+    auto weakRuntimeScheduler =
+        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+            "RuntimeScheduler");
+    auto runtimeScheduler = weakRuntimeScheduler.has_value()
+        ? weakRuntimeScheduler.value().lock()
+        : nullptr;
+    if (runtimeScheduler && !mountSynchronously) {
+      runtimeScheduler->scheduleRenderingUpdate(
+          [delegate = delegate_,
+           mountingCoordinator = std::move(mountingCoordinator)]() {
+            delegate->schedulerDidFinishTransaction(mountingCoordinator);
+          });
     } else {
       delegate_->schedulerDidFinishTransaction(mountingCoordinator);
     }

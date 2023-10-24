@@ -17,7 +17,13 @@
 namespace facebook::react {
 
 namespace {
-// Looping on \c drainMicrotasks until it completes or hits the retries bound.
+/**
+ * This is partially equivalent to the "Perform a microtask checkpoint" step in
+ * the Web event loop. See
+ * https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint.
+ *
+ * Iterates on \c drainMicrotasks until it completes or hits the retries bound.
+ */
 void executeMicrotasks(jsi::Runtime& runtime) {
   SystraceSection s("RuntimeScheduler::executeMicrotasks");
 
@@ -175,6 +181,19 @@ void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
   startWorkLoop(runtime, true);
 }
 
+void RuntimeScheduler_Modern::scheduleRenderingUpdate(
+    RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
+  SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
+
+  if (CoreFeatures::blockPaintForUseLayoutEffect) {
+    pendingRenderingUpdates_.push(renderingUpdate);
+  } else {
+    if (renderingUpdate != nullptr) {
+      renderingUpdate();
+    }
+  }
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
@@ -278,11 +297,31 @@ void RuntimeScheduler_Modern::executeTask(
   executeMacrotask(runtime, task, didUserCallbackTimeout);
 
   if (CoreFeatures::enableMicrotasks) {
+    // "Perform a microtask checkpoint" step.
     executeMicrotasks(runtime);
   }
 
-  // TODO report long tasks
-  // TODO update rendering
+  if (CoreFeatures::blockPaintForUseLayoutEffect) {
+    // "Update the rendering" step.
+    updateRendering();
+  }
+}
+
+/**
+ * This is partially equivalent to the "Update the rendering" step in the Web
+ * event loop. See
+ * https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering.
+ */
+void RuntimeScheduler_Modern::updateRendering() {
+  SystraceSection s("RuntimeScheduler::updateRendering");
+
+  while (!pendingRenderingUpdates_.empty()) {
+    auto& pendingRenderingUpdate = pendingRenderingUpdates_.front();
+    if (pendingRenderingUpdate != nullptr) {
+      pendingRenderingUpdate();
+    }
+    pendingRenderingUpdates_.pop();
+  }
 }
 
 void RuntimeScheduler_Modern::executeMacrotask(

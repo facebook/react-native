@@ -84,4 +84,10 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
   return runtimeSchedulerImpl_->callExpiredTasks(runtime);
 }
 
+void RuntimeScheduler::scheduleRenderingUpdate(
+    RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
+  return runtimeSchedulerImpl_->scheduleRenderingUpdate(
+      std::move(renderingUpdate));
+}
+
 } // namespace facebook::react

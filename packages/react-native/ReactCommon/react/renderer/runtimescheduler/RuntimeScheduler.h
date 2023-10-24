@@ -13,6 +13,8 @@
 
 namespace facebook::react {
 
+using RuntimeSchedulerRenderingUpdate = std::function<void()>;
+
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
 class RuntimeSchedulerBase {
@@ -32,6 +34,8 @@ class RuntimeSchedulerBase {
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
+  virtual void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -129,6 +133,9 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    * Thread synchronization must be enforced externally.
    */
   void callExpiredTasks(jsi::Runtime& runtime) override;
+
+  void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory
