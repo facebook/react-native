@@ -36,12 +36,12 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
-  self.initialProps = [self setUpInitialProps];
+  self.initialProps = [self prepareInitialProps];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (NSDictionary *)setUpInitialProps
+- (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = [NSMutableDictionary new];
 

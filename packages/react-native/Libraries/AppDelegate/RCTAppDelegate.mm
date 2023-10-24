@@ -122,7 +122,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
-    NSDictionary *initProps = [self prepareInitialProps];
+    NSMutableDictionary *initProps = [[self prepareInitialProps] mutableCopy] ?: [NSMutableDictionary new];
+    [initProps addEntriesFromDictionary:[self extraInitialProps]];
+
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -142,17 +144,20 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return nil;
 }
 
-- (NSDictionary *)prepareInitialProps
+- (NSDictionary *)extraInitialProps
 {
-  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
-
+  NSMutableDictionary *initProps = [NSMutableDictionary new];
 #ifdef RCT_NEW_ARCH_ENABLED
   // Hardcoding the Concurrent Root as it it not recommended to
   // have the concurrentRoot turned off when Fabric is enabled.
   initProps[kRNConcurrentRoot] = @([self fabricEnabled]);
 #endif
-
   return initProps;
+}
+
+- (NSDictionary *)prepareInitialProps
+{
+  return nil;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
