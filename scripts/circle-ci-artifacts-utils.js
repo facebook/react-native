@@ -128,10 +128,11 @@ async function _findUrlForJob(jobName, artifactPath) {
   _throwIfJobIsUnsuccessful(job);
 
   const artifacts = await _getJobsArtifacts(job.job_number);
-  let artifact = artifacts.find(artifact => artifact.path.indexOf(artifactPath) > -1)
+  let artifact = artifacts.find(
+    artifact => artifact.path.indexOf(artifactPath) > -1,
+  );
   if (!artifact) {
     throw new Error(`I could not find the artifact with path ${artifactPath}`);
-
   }
   return artifact.url;
 }
@@ -161,8 +162,14 @@ async function artifactURLForMavenLocal() {
 }
 
 async function artifactURLForReactNative() {
-  let shortCommit = exec('git rev-parse HEAD', {silent: true}).toString().trim().slice(0, 9);
-  return _findUrlForJob('build_npm_package', `react-native-1000.0.0-${shortCommit}.tgz`);
+  let shortCommit = exec('git rev-parse HEAD', {silent: true})
+    .toString()
+    .trim()
+    .slice(0, 9);
+  return _findUrlForJob(
+    'build_npm_package',
+    `react-native-1000.0.0-${shortCommit}.tgz`,
+  );
 }
 
 async function artifactURLForHermesRNTesterAPK(emulatorArch) {

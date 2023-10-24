@@ -170,7 +170,7 @@ async function downloadArtifactsFromCircleCI(
 ) {
   const mavenLocalURL = await circleCIArtifacts.artifactURLForMavenLocal();
   const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
-  const reactNativeURL = await circleCIArtifacts.artifactURLForReactNative()
+  const reactNativeURL = await circleCIArtifacts.artifactURLForReactNative();
 
   const hermesPath = path.join(
     circleCIArtifacts.baseTmpPath(),

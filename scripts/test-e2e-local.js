@@ -189,7 +189,10 @@ async function testRNTestProject(circleCIArtifacts) {
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
   const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
-  const shortCommit = exec('git rev-parse HEAD', {silent: true}).toString().trim().slice(0, 9);
+  const shortCommit = exec('git rev-parse HEAD', {silent: true})
+    .toString()
+    .trim()
+    .slice(0, 9);
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const dateIdentifier = new Date()
