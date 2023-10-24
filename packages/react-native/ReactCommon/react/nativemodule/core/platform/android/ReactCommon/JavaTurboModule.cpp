@@ -82,8 +82,6 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-using CallbackExecutor = std::function<void(jsi::Runtime&, jsi::Function&, const std::vector<jsi::Value>&)>;
-
 auto createJavaCallback(
     jsi::Runtime& rt,
     jsi::Function&& function,
@@ -122,67 +120,6 @@ struct JPromiseImpl : public jni::JavaClass<JPromiseImpl> {
 };
 
 jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message);
-
-jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
-    const std::weak_ptr<CallbackWrapper> &function,
-    std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
-  auto executor = [jsInvocationStack](
-          const std::shared_ptr<CallbackWrapper>& reject,
-          const std::vector<jsi::Value>& args) {
-      std::optional<std::string> message = std::nullopt;
-      jsi::Runtime &rt2 = reject->runtime();
-
-      if (!args.empty()) {
-          const jsi::Value &cause = args[0];
-          if (cause.isObject() && cause.asObject(rt2).getProperty(rt2, "message").isString()) {
-              message = cause.asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
-          }
-      }
-
-      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + (message.has_value() ? message.value() : "<unknown>"));
-      if (!args.empty()) {
-          error.asObject(rt2).setProperty(rt2, "cause", args[0]);
-      }
-      if (jsInvocationStack.has_value()) {
-          error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack.value());
-      }
-      reject->callback().call(rt2, error);
-  };
-  return JCxxCallbackImpl::newObjectCxxArgs(
-          [function,
-                  wrapperWasCalled = false,
-                  executor = std::move(executor)](folly::dynamic responses) mutable {
-              if (wrapperWasCalled) {
-                  LOG(FATAL) << "callback arg cannot be called more than once";
-              }
-
-              auto strongWrapper = function.lock();
-              if (!strongWrapper) {
-                  return;
-              }
-
-              strongWrapper->jsInvoker().invokeAsync(
-                      [function,
-                              responses = std::move(responses),
-                              executor = std::move(executor)]() {
-                          auto strongWrapper2 = function.lock();
-                          if (!strongWrapper2) {
-                              return;
-                          }
-
-                          std::vector<jsi::Value> args;
-                          args.reserve(responses.size());
-                          for (const auto &val : responses) {
-                              args.emplace_back(
-                                      jsi::valueFromDynamic(strongWrapper2->runtime(), val));
-                          }
-
-                          executor(strongWrapper2, args);
-                      });
-
-              wrapperWasCalled = true;
-          });
-}
 
 // This is used for generating short exception strings.
 std::string stringifyJSIValue(const jsi::Value& v, jsi::Runtime* rt = nullptr) {
@@ -475,66 +412,114 @@ jsi::Value createJSRuntimeError(
 }
 
 /**
+ * Cpp struct to hold JVMFrame
+ */
+struct SimpleJFrame {
+    std::string className;
+    std::string fileName;
+    int lineNumber;
+    std::string methodName;
+};
+
+/**
+ * Cpp struct to hold JThrowable
+ */
+struct SimpleJThrowable {
+    std::string name;
+    std::string message;
+    std::vector<SimpleJFrame> stackElements;
+};
+
+/**
+ * TODO:
+ */
+SimpleJThrowable extractThrowable(
+            jni::local_ref<jni::JThrowable> throwable) {
+    SimpleJThrowable extracted;
+    auto stackTrace = throwable->getStackTrace();
+
+    extracted.stackElements.reserve(stackTrace->size());
+    for (int i = 0; i < stackTrace->size(); ++i) {
+        auto frame = stackTrace->getElement(i);
+        extracted.stackElements.push_back(SimpleJFrame {
+                frame->getClassName(),
+                frame->getFileName(),
+                frame->getLineNumber(),
+                frame->getMethodName()
+        });
+    }
+
+    extracted.name = throwable->getClass()->getCanonicalName()->toStdString();
+    extracted.message = throwable->getMessage()->toStdString();
+
+    return extracted;
+}
+
+/**
+ * TODO:
+ */
+jsi::JSError convertSimpleJThrowableToJSError(
+        jsi::Runtime& runtime,
+        SimpleJThrowable throwable) {
+    auto stackTrace = throwable.stackElements;
+
+    jsi::Array stackElements(runtime, stackTrace.size());
+    for (int i = 0; i < stackTrace.size(); ++i) {
+        auto frame = stackTrace[i];
+
+        jsi::Object frameObject(runtime);
+        frameObject.setProperty(runtime, "className", frame.className);
+        frameObject.setProperty(runtime, "fileName", frame.fileName);
+        frameObject.setProperty(runtime, "lineNumber", frame.lineNumber);
+        frameObject.setProperty(runtime, "methodName", frame.methodName);
+        stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+    }
+
+    jsi::Object cause(runtime);
+    auto name = throwable.name;
+    auto message = throwable.message;
+    cause.setProperty(runtime, "name", name);
+    cause.setProperty(runtime, "message", message);
+    cause.setProperty(runtime, "stackElements", std::move(stackElements));
+
+    jsi::Value error =
+            createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+    error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+    return jsi::JSError{runtime, std::move(error)};
+}
+
+/**
  * Creates JSError with current JS runtime stack and Throwable stack trace.
  */
 jsi::JSError convertThrowableToJSError(
-    jsi::Runtime& runtime,
-    jni::local_ref<jni::JThrowable> throwable) {
-  auto stackTrace = throwable->getStackTrace();
-
-  jsi::Array stackElements(runtime, stackTrace->size());
-  for (int i = 0; i < stackTrace->size(); ++i) {
-    auto frame = stackTrace->getElement(i);
-
-    jsi::Object frameObject(runtime);
-    frameObject.setProperty(runtime, "className", frame->getClassName());
-    frameObject.setProperty(runtime, "fileName", frame->getFileName());
-    frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
-    frameObject.setProperty(runtime, "methodName", frame->getMethodName());
-    stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
-  }
-
-  jsi::Object cause(runtime);
-  auto name = throwable->getClass()->getCanonicalName()->toStdString();
-  auto message = throwable->getMessage()->toStdString();
-  cause.setProperty(runtime, "name", name);
-  cause.setProperty(runtime, "message", message);
-  cause.setProperty(runtime, "stackElements", std::move(stackElements));
-
-  jsi::Value error =
-      createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
-  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-  return {runtime, std::move(error)};
+        jsi::Runtime& runtime,
+        jni::local_ref<jni::JThrowable> throwable) {
+    return convertSimpleJThrowableToJSError(runtime, extractThrowable(throwable));
 }
 
 void rejectWithException(
-    std::weak_ptr<CallbackWrapper> &rejectWeak,
+    std::optional<AsyncCallback<>> &reject,
     std::exception_ptr exception,
     std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack) {
-  auto reject = rejectWeak.lock();
-  if (reject) {
     auto localThrowable = jni::getJavaExceptionForCppException(exception);
-    jni::global_ref<jni::JThrowable> throwable = jni::make_global(localThrowable.get());
-    auto jsError = convertThrowableToJSError(reject->runtime(), localThrowable);
+    auto simpleThrowable = extractThrowable(localThrowable);
 
-    reject->jsInvoker().invokeAsync([
-    rejectWeak = std::move(rejectWeak),
-    jsInvocationStack = std::move(jsInvocationStack),
-    jsError]() {
-      auto reject2 = rejectWeak.lock();
-      if (reject2) {
-        jsi::Runtime &runtime = reject2->runtime();
+    if (!reject.has_value()) {
+        throw;
+    }
+
+    reject->call([
+            jsInvocationStack,
+            simpleThrowable = std::move(simpleThrowable)
+            ](jsi::Runtime& rt, jsi::Function& jsFunction) {
+        auto jsError = convertSimpleJThrowableToJSError(rt, simpleThrowable);
+
         if (jsInvocationStack.has_value()) {
-          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack.value());
+            jsError.value().asObject(rt).setProperty(rt, "stack", *jsInvocationStack.value());
         }
-        reject2->callback().call(
-          runtime,
-          jsError.value());
-      }
+
+        jsFunction.call(rt, jsError.value());
     });
-  } else {
-    throw;
-  }
 }
 
 } // namespace
@@ -887,6 +872,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       jsi::Function Promise =
           runtime.global().getPropertyAsFunction(runtime, "Promise");
 
+      std::optional<AsyncCallback<>> rejectJSIFunctionWeakWrapper;
       // The promise constructor runs its arg immediately, so this is safe
       jobject javaPromise;
       jsi::Value jsPromise = Promise.callAsConstructor(
@@ -903,15 +889,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   throw jsi::JSError(runtime, "Incorrect number of arguments");
                 }
 
-            // JS Stack at the time when the promise is created.
-            // This has to be shared pointer to hold jsi::Value
-            std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
-            if (traceTurboModulePromiseRejections()) {
-                auto stack = createJSRuntimeError(runtime, "")
-                        .asObject(runtime)
-                        .getProperty(runtime, "stack");
-                jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
-            }
+                if (rejectTurboModulePromiseOnNativeError()) {
+                    rejectJSIFunctionWeakWrapper = AsyncCallback({runtime, args[0].getObject(runtime).getFunction(runtime), jsInvoker_});
+                }
 
                 auto resolve = createJavaCallback(
                     runtime,
@@ -921,8 +901,6 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     runtime,
                     args[1].getObject(runtime).getFunction(runtime),
                     jsInvoker_);
-                            auto rejectJSIFunctionWeakWrapper =
-                CallbackWrapper::createWeak(std::move(rejectJSIFn), runtime, jsInvoker_);
                 javaPromise = JPromiseImpl::create(resolve, reject).release();
 
                 return jsi::Value::undefined();
@@ -933,10 +911,19 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       env->DeleteLocalRef(javaPromise);
       jargs[argCount].l = globalPromise;
 
+      // JS Stack at the time when the promise is created.
+      // This has to be shared pointer to hold jsi::Value
+      std::optional<std::shared_ptr<jsi::Value>> jsInvocationStack = std::nullopt;
+      if (traceTurboModulePromiseRejections()) {
+          auto stack = createJSRuntimeError(runtime, "")
+                  .asObject(runtime)
+                  .getProperty(runtime, "stack");
+          jsInvocationStack = std::make_shared<jsi::Value>(std::move(stack));
+      }
+
       const char* moduleName = name_.c_str();
       const char* methodName = methodNameStr.c_str();
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
-
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
       nativeMethodCallInvoker_->invokeAsync(
           methodName,
@@ -965,12 +952,12 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
               TMPL::asyncMethodCallExecutionFail(moduleName, methodName, id);
-                    if (rejectTurboModulePromiseOnNativeError()) {
-                        auto exception = std::current_exception();
-                        rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
-                    } else {
+              if (rejectTurboModulePromiseOnNativeError()) {
+                  auto exception = std::current_exception();
+                  rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
+              } else {
                   throw;
-                    }
+              }
             }
 
             for (auto globalRef : globalRefs) {
