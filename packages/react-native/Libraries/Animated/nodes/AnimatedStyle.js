@@ -30,6 +30,10 @@ function createAnimatedStyle(
   const animatedStyles: any = {};
   for (const key in style) {
     const value = style[key];
+    if (!value) {
+      continue;
+    }
+
     if (key === 'transform') {
       animatedStyles[key] =
         ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
