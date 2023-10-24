@@ -88,7 +88,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   RCTAppSetupPrepareApp(application, enableTM);
 
   UIView *rootView;
-
   if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
     // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
@@ -101,8 +100,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self createReactHost];
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName
-                                                      initialProperties:launchOptions];
+    NSDictionary *initProps = [self prepareInitialProps];
+    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
         initWithSurface:surface
@@ -284,14 +283,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (void)createReactHost
 {
   __weak __typeof(self) weakSelf = self;
-  _reactHost = [[RCTHost alloc] initWithBundleURL:[self getBundleURL]
+  _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
                                      hostDelegate:nil
                        turboModuleManagerDelegate:self
                                  jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
                                    return [weakSelf createJSEngineInstance];
                                  }];
   [_reactHost setBundleURLProvider:^NSURL *() {
-    return [weakSelf getBundleURL];
+    return [weakSelf bundleURL];
   }];
   [_reactHost setContextContainerHandler:self];
   [_reactHost start];
@@ -311,9 +310,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 }
 
-- (NSURL *)getBundleURL
+- (NSURL *)bundleURL
 {
-  [NSException raise:@"RCTAppDelegate::getBundleURL not implemented"
+  [NSException raise:@"RCTAppDelegate::bundleURL not implemented"
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
 }
