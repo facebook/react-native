@@ -17,8 +17,8 @@ const {
 const submitText = 'Your application has been submitted!';
 const cancelText = 'Your application has been cancelled!';
 
-describe('Test is checking submit button', () => {
-  test('Should view properly submit alert text', async () => {
+describe('Test is checking submit button', function() {
+  it('Should view properly submit alert text', async function() {
     expect(
       await ComponentsScreen.checkButtonComponentIsDisplayed(),
     ).toBeTruthy();
@@ -31,8 +31,8 @@ describe('Test is checking submit button', () => {
   });
 });
 
-describe('Test is checking cancel button', () => {
-  test('Should view properly submit cancel text', async () => {
+describe('Test is checking cancel button', function() {
+  it('Should view properly submit cancel text', async function () {
     expect(
       await ComponentsScreen.checkButtonComponentIsDisplayed(),
     ).toBeTruthy();
