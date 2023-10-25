@@ -155,15 +155,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return nil;
 }
 
-- (void)updateInitialProps:(NSMutableDictionary *)initialProps
-{
-#ifdef RCT_NEW_ARCH_ENABLED
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  initialProps[kRNConcurrentRoot] = @([self fabricEnabled]);
-#endif
-}
-
 - (NSDictionary *)prepareInitialProps
 {
   return self.initialProps;
