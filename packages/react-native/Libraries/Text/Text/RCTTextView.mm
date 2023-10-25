@@ -16,13 +16,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#ifdef __IPHONE_16_0
 @interface RCTTextView () <UIEditMenuInteractionDelegate>
 
 @property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
 
 @end
-#endif
 
 @implementation RCTTextView {
   CAShapeLayer *_highlightLayer;
