@@ -33,14 +33,8 @@ class ReactPackageHelper {
         ReactConstants.TAG,
         reactPackage.getClass().getSimpleName()
             + " is not a LazyReactPackage, falling back to old version.");
-    final List<NativeModule> nativeModules;
-    if (reactPackage instanceof ReactInstancePackage) {
-      ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
-      nativeModules =
-          reactInstancePackage.createNativeModules(reactApplicationContext, reactInstanceManager);
-    } else {
-      nativeModules = reactPackage.createNativeModules(reactApplicationContext);
-    }
+    final List<NativeModule> nativeModules =
+        reactPackage.createNativeModules(reactApplicationContext);
     return () ->
         new Iterator<ModuleHolder>() {
           int position = 0;
