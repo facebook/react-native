@@ -29,12 +29,6 @@ import java.util.Map;
 @Deprecated(since = "This class is deprecated, please use BaseReactPackage instead.")
 public abstract class LazyReactPackage implements ReactPackage {
 
-  @Deprecated
-  public static ReactModuleInfoProvider getReactModuleInfoProviderViaReflection(
-      LazyReactPackage lazyReactPackage) {
-    return Collections::emptyMap;
-  }
-
   /**
    * We return an iterable
    *
