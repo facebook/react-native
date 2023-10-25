@@ -8,7 +8,8 @@
 #import "RCTTurboModule.h"
 #import "RCTBlockGuard.h"
 
-#include <glog/logging.h>
+#import <cxxreact/SystraceSection.h>
+#import <glog/logging.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import <atomic>
@@ -425,7 +426,17 @@ id ObjCTurboModule::performMethodInvocation(
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block, moduleName, methodNameStr]() -> void {
+      SystraceSection s(
+          "RCTTurboModuleAsyncMethodInvocation",
+          "module",
+          moduleName,
+          "method",
+          methodNameStr,
+          "returnType",
+          "promise");
+      block();
+    });
     return nil;
   }
 }
@@ -475,7 +486,11 @@ void ObjCTurboModule::performVoidMethodInvocation(
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
+      SystraceSection s(
+          "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
+      block();
+    });
   }
 }
 
