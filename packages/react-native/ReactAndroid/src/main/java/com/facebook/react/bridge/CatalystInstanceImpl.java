@@ -18,6 +18,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
@@ -140,7 +141,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
 
     initializeBridge(
-        new BridgeCallback(this),
+        new InstanceCallback(this),
         jsExecutor,
         mReactQueueConfiguration.getJSQueueThread(),
         mNativeModulesQueueThread,
@@ -152,18 +153,17 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
 
-  @DoNotStrip
-  private static class BridgeCallback implements ReactCallback {
+  @DoNotStripAny
+  private static class InstanceCallback {
     // We do this so the callback doesn't keep the CatalystInstanceImpl alive.
     // In this case, the callback is held in C++ code, so the GC can't see it
     // and determine there's an inaccessible cycle.
     private final WeakReference<CatalystInstanceImpl> mOuter;
 
-    BridgeCallback(CatalystInstanceImpl outer) {
+    InstanceCallback(CatalystInstanceImpl outer) {
       mOuter = new WeakReference<>(outer);
     }
 
-    @Override
     public void onBatchComplete() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
@@ -174,7 +174,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    @Override
     public void incrementPendingJSCalls() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
@@ -182,7 +181,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    @Override
     public void decrementPendingJSCalls() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
@@ -211,7 +209,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
 
   private native void initializeBridge(
-      ReactCallback callback,
+      InstanceCallback callback,
       JavaScriptExecutor jsExecutor,
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
@@ -639,7 +637,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   public static class Builder {
-
     private @Nullable ReactQueueConfigurationSpec mReactQueueConfigurationSpec;
     private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NativeModuleRegistry mRegistry;
