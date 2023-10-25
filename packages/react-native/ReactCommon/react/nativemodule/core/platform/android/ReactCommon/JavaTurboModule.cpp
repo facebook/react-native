@@ -6,9 +6,9 @@
  */
 
 #include <memory>
-#include <sstream>
 #include <string>
 
+#include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -739,6 +739,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
+            SystraceSection s(
+                "JavaTurboModuleAsyncMethodInvocation",
+                "module",
+                moduleNameStr,
+                "method",
+                methodNameStr,
+                "returnType",
+                "void");
+
             auto instance = instance_.lockLocal();
             if (!instance) {
               return;
@@ -822,6 +831,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
+            SystraceSection s(
+                "JavaTurboModuleAsyncMethodInvocation",
+                "module",
+                moduleNameStr,
+                "method",
+                methodNameStr,
+                "returnType",
+                "promise");
+
             auto instance = instance_.lockLocal();
             if (!instance) {
               return;
