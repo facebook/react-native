@@ -100,8 +100,6 @@
  * By default, it assigns the rootView to the view property of the rootViewController
  * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
  * For example: UISplitViewController requires `setViewController(_:for:)`
- *
- * @return: void
  */
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
