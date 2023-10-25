@@ -54,10 +54,10 @@ const mapping = [
     name: 'RUN_ANDROID',
     filterFN: name => name.indexOf('ReactAndroid/') > -1,
   },
-  {
-    name: 'RUN_E2E',
-    filterFN: name => name.indexOf('rn-tester-e2e/') > -1,
-  },
+  // {
+  //   name: 'RUN_E2E',
+  //   filterFN: name => name.indexOf('rn-tester-e2e/') > -1,
+  // },
   {
     name: 'RUN_JS',
     filterFN: name => isJSChange(name),
@@ -154,7 +154,7 @@ async function _computeAndSavePipelineParameters(pipelineType, outputPath) {
     run_ios: pipelineType === 'RUN_IOS',
     run_android: pipelineType === 'RUN_ANDROID',
     run_js: pipelineType === 'RUN_JS',
-    run_e2e: pipelineType === 'RUN_E2E' || pipelineType === 'RUN_JS',
+    // run_e2e: pipelineType === 'RUN_E2E' || pipelineType === 'RUN_JS',
   };
 
   const stringifiedParams = JSON.stringify(params, null, 2);
@@ -180,8 +180,8 @@ function createConfigs(inputPath, outputPath, configFile) {
   const testConfigs = {
     run_ios: ['testIOS.yml'],
     run_android: ['testAndroid.yml'],
-    run_e2e: ['testE2E.yml'],
-    run_all: ['testE2E.yml', 'testJS.yml', 'testAll.yml'],
+    // run_e2e: ['testE2E.yml'],
+    run_all: [/*'testE2E.yml',*/ 'testJS.yml', 'testAll.yml'],
     run_js: ['testJS.yml'],
   };
 

@@ -149,6 +149,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
       webSocketDebuggerUrl,
       vm: page.vm,
       deviceName: device.getName(),
+      reactNative: {
+        logicalDeviceId: deviceId,
+      },
     };
   }
 

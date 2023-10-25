@@ -58,4 +58,14 @@ public class UiThreadUtil {
     }
     sMainHandler.postDelayed(runnable, delayInMs);
   }
+
+  /** Removes the given {@code Runnable} on the UI thread. */
+  public static void removeOnUiThread(Runnable runnable) {
+    synchronized (UiThreadUtil.class) {
+      if (sMainHandler == null) {
+        sMainHandler = new Handler(Looper.getMainLooper());
+      }
+    }
+    sMainHandler.removeCallbacks(runnable);
+  }
 }

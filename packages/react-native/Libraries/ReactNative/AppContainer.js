@@ -22,7 +22,6 @@ const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
-  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,

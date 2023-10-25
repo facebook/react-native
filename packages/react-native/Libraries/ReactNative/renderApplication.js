@@ -83,6 +83,12 @@ export default function renderApplication<Props: Object>(
     );
   }
 
+  if (fabric && !useConcurrentRoot) {
+    console.warn(
+      'Using Fabric without concurrent root is deprecated. Please enable concurrent root for this application.',
+    );
+  }
+
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',

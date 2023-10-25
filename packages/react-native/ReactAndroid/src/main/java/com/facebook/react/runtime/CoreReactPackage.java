@@ -41,8 +41,8 @@ import java.util.Map;
     })
 class CoreReactPackage extends TurboReactPackage {
 
-  private DevSupportManager mDevSupportManager;
-  private DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
+  private final DevSupportManager mDevSupportManager;
+  private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
 
   public CoreReactPackage(
       DevSupportManager devSupportManager, DefaultHardwareBackBtnHandler hardwareBackBtnHandler) {
@@ -77,7 +77,7 @@ class CoreReactPackage extends TurboReactPackage {
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     try {
       Class<?> reactModuleInfoProviderClass =
-          Class.forName("com.facebook.react.CoreModulesPackage$$ReactModuleInfoProvider");
+          Class.forName(CoreReactPackage.class.getName() + "$$ReactModuleInfoProvider");
       return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
     } catch (ClassNotFoundException e) {
       // In OSS case, the annotation processor does not run. We fall back on creating this byhand
@@ -109,10 +109,16 @@ class CoreReactPackage extends TurboReactPackage {
       return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for "
+              + CoreReactPackage.class.getName()
+              + "$$ReactModuleInfoProvider",
+          e);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+          "No ReactModuleInfoProvider for "
+              + CoreReactPackage.class.getName()
+              + "$$ReactModuleInfoProvider",
+          e);
     }
   }
 }
