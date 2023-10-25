@@ -15,11 +15,19 @@
   },
   "devDependencies": {
     "eslint": "^8.19.0",
-    "jest": "^29.6.3",
     "webdriverio": "^7.32.0",
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
-    "@types/jest": "^29.5.3"
+    "@babel/register": "^7.20.0",
+    "@types/mocha": "^10.0.3",
+    "@wdio/appium-service": "^7.32.0",
+    "@wdio/cli": "^7.32.0",
+    "@wdio/local-runner": "^7.32.0",
+    "@wdio/mocha-framework": "^7.32.0",
+    "@wdio/spec-reporter": "^7.32.0",
+    "appium": "2.0.0",
+    "appium-uiautomator2-driver": "^2.29.0",
+    "appium-xcuitest-driver": "^5.6.0"
   }
 }

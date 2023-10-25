@@ -8,11 +8,11 @@
  * @format
  */
 
-module.exports = {
-  testTimeout: 120000,
-  bail: 0,
-  setupFilesAfterEnv: ['./jest.setup.js'],
-  testMatch: ['**/specs/**/*.js'],
-  maxWorkers: 1,
-  verbose: true,
-};
+// module.exports = {
+//   testTimeout: 120000,
+//   bail: 0,
+//   setupFilesAfterEnv: ['./jest.setup.js'],
+//   testMatch: ['**/specs/**/*.js'],
+//   maxWorkers: 1,
+//   verbose: true,
+// };
