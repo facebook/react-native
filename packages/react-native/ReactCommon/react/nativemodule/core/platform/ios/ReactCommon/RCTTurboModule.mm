@@ -253,14 +253,13 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, NSDictio
  */
 static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, const std::optional<std::string> &jsInvocationStack)
 {
-  jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (reason[@"message"] ? std::string([reason[@"message"] UTF8String]) : "<unknown>"));
+  error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, reason));
 
   if (jsInvocationStack.has_value()) {
     error.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
   }
 
-  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return error;
 }
 
@@ -273,6 +272,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
+  
   // JS Stack at the time when the promise is created.
   std::optional<std::string> jsInvocationStack;
   if (RCTTraceTurboModulePromiseRejections()) {
@@ -282,7 +282,6 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
     .asString(runtime)
     .utf8(runtime);
   }
-
 
   std::string moduleName = name_;
 
@@ -877,27 +876,25 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   switch (returnType) {
     case PromiseKind: {
       returnValue = createPromise(
-        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-          RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
-          RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-
-          [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
-          [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
-          [retainedObjectsForInvocation addObject:resolveCopy];
-          [retainedObjectsForInvocation addObject:rejectCopy];
-
-          RCTPromiseRejectBlock internalReject = nil;
-          if (RCTRejectTurboModulePromiseOnNativeError()) {
-            internalReject = rejectCopy;
-          };
-          // The return type becomes void in the ObjC side.
-          performMethodInvocation(runtime,
-                                  isMethodSync(VoidKind),
-                                  methodName,
-                                  inv,
-                                  retainedObjectsForInvocation,
-                                  internalReject);
-          });
+          runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+            RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
+            RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
+            [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
+            [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
+            [retainedObjectsForInvocation addObject:resolveCopy];
+            [retainedObjectsForInvocation addObject:rejectCopy];
+            RCTPromiseRejectBlock internalReject = nil;
+            if (RCTRejectTurboModulePromiseOnNativeError()) {
+              internalReject = rejectCopy;
+            };
+            // The return type becomes void in the ObjC side.
+            performMethodInvocation(runtime,
+                                    isMethodSync(VoidKind),
+                                    methodName,
+                                    inv,
+                                    retainedObjectsForInvocation,
+                                    internalReject);
+            });
       break;
     }
     case VoidKind: {
