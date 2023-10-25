@@ -15,6 +15,7 @@ import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
@@ -82,6 +83,7 @@ class ReactPlugin : Plugin<Project> {
 
     // Library Only Configuration
     configureBuildConfigFieldsForLibraries(project)
+    configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
