@@ -5,19 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react;
+package com.facebook.react
 
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContext
 
-/**
- * New Listener interface for react instance events. {@Link
- * ReactInstanceManager.ReactInstanceEventListener will be deprecated.}
- */
-public interface ReactInstanceEventListener {
-
+/** Interface to subscribe for react instance events */
+interface ReactInstanceEventListener {
   /**
    * Called when the react context is initialized (all modules registered). Always called on the UI
    * thread.
    */
-  void onReactContextInitialized(ReactContext context);
+  fun onReactContextInitialized(context: ReactContext)
 }
