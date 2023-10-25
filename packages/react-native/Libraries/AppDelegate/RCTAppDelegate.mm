@@ -42,6 +42,19 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
+static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
+  // Hardcoding the Concurrent Root as it it not recommended to
+  // have the concurrentRoot turned off when Fabric is enabled.
+  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
+  return mutableProps;
+#else
+  return initialProps;
+#endif
+}
+
 @interface RCTAppDelegate () <
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
@@ -100,7 +113,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self createReactHost];
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    NSDictionary *initProps = [self prepareInitialProps];
+    NSDictionary *initProps = updateInitialProps([self prepareInitialProps], [self fabricEnabled]);
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
@@ -121,8 +134,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
-    NSMutableDictionary *initProps = [[self prepareInitialProps] mutableCopy] ?: [NSMutableDictionary new];
-    [self updateInitialProps:initProps];
+    NSDictionary *initProps = updateInitialProps([self prepareInitialProps], [self fabricEnabled]);
 
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
