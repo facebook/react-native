@@ -42,6 +42,17 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
+@interface RCTAppDelegate () <
+    RCTTurboModuleManagerDelegate,
+    RCTComponentViewFactoryComponentProvider,
+    RCTContextContainerHandling> {
+  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
+  facebook::react::ContextContainer::Shared _contextContainer;
+}
+@end
+
+#endif
+
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -54,17 +65,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return initialProps;
 #endif
 }
-
-@interface RCTAppDelegate () <
-    RCTTurboModuleManagerDelegate,
-    RCTComponentViewFactoryComponentProvider,
-    RCTContextContainerHandling> {
-  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
-  facebook::react::ContextContainer::Shared _contextContainer;
-}
-@end
-
-#endif
 
 @interface RCTAppDelegate () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
