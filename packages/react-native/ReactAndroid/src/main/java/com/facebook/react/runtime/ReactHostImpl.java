@@ -638,6 +638,9 @@ public class ReactHostImpl implements ReactHost {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
+    if (DEV) {
+      mDevSupportManager.handleException(e);
+    }
     destroy(method, e);
     mReactHostDelegate.handleInstanceException(e);
   }
