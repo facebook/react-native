@@ -1518,6 +1518,19 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.14
+
+### Changed
+- Update JSCodeshift to 0.14 ([5a695dd](https://github.com/facebook/react-native/commit/5a695dd17c5681883018ba8d3c3608032aba14d9) by [@stianjensen](https://github.com/stianjensen))
+
+### Fixed
+
+#### iOS specific
+
+- Fix Gemfile to set the max version of Active support to 7.0.8 ([a1a220b](https://github.com/facebook/react-native/commit/a1a220b6ace4e35b2cda45b869dc0ff4fb8fbdc1) by [@cipolleschi](https://github.com/cipolleschi))
+- Update Xcode 15 patches to be more robust ([735d06c01f](https://github.com/facebook/react-native/commit/735d06c01fe743fad58213e80bca64a0c70ea8ca) by [@cipolleschi](https://github.com/cipolleschi))
+- Make Hermes build properly with Xcode 15 ([5f4a091](https://github.com/facebook/react-native/commit/5f4a091a2ff86bcbcfa6f8fe438d260cca029cd3) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.70.13
 
 ### Fixed
