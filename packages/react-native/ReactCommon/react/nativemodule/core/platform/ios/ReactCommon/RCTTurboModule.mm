@@ -894,7 +894,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
                                     inv,
                                     retainedObjectsForInvocation,
                                     internalReject);
-            });
+          });
       break;
     }
     case VoidKind: {
