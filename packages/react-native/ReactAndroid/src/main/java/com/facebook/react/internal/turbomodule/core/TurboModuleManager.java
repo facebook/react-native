@@ -20,6 +20,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
@@ -195,7 +196,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!isTurboModule(moduleName)) {
+    if (!ReactFeatureFlags.enableTurboModuleStableAPI && !isTurboModule(moduleName)) {
       return null;
     }
 
@@ -218,7 +219,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!isTurboModule(moduleName)) {
+    if (!ReactFeatureFlags.enableTurboModuleStableAPI && !isTurboModule(moduleName)) {
       return null;
     }
 
@@ -249,7 +250,9 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
                 + "\", but TurboModuleManager was tearing down. Returning null. Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + isTurboModule(moduleName)
+                + (ReactFeatureFlags.enableTurboModuleStableAPI
+                    ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
+                    : isTurboModule(moduleName))
                 + ".");
         return null;
       }
@@ -333,7 +336,9 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
                 + "\". Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + isTurboModule(moduleName)
+                + (ReactFeatureFlags.enableTurboModuleStableAPI
+                    ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
+                    : isTurboModule(moduleName))
                 + ".");
       }
 
