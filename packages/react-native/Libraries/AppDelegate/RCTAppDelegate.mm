@@ -93,10 +93,13 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 {
   BOOL enableTM = NO;
   BOOL enableBridgeless = NO;
+  BOOL fabricEnabled = NO;
 #if RCT_NEW_ARCH_ENABLED
   enableTM = self.turboModuleEnabled;
   enableBridgeless = self.bridgelessEnabled;
+  fabricEnabled = [self fabricEnabled];
 #endif
+  NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
   RCTAppSetupPrepareApp(application, enableTM);
 
@@ -104,7 +107,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
     // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-    RCTSetUseNativeViewConfigsInBridgelessMode([self fabricEnabled]);
+    RCTSetUseNativeViewConfigsInBridgelessMode(fabricEnabled);
 
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
@@ -113,7 +116,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     [self createReactHost];
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    NSDictionary *initProps = updateInitialProps([self prepareInitialProps], [self fabricEnabled]);
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
@@ -134,7 +136,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
-    NSDictionary *initProps = updateInitialProps([self prepareInitialProps], [self fabricEnabled]);
 
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
