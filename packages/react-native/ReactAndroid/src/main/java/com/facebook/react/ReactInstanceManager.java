@@ -55,8 +55,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -71,6 +69,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
@@ -88,7 +87,6 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -114,6 +112,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import kotlin.jvm.functions.Function1;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It exposes a way to configure
@@ -182,7 +181,8 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
-  private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable Function1<ReactApplicationContext, UIManagerProvider>
+      mUIManagerProviderFunction;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
@@ -230,7 +230,7 @@ public class ReactInstanceManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
-      @Nullable JSIModulePackage jsiModulePackage,
+      @Nullable Function1<ReactApplicationContext, UIManagerProvider> uIManagerProviderFunction,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
@@ -289,7 +289,7 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
-    mJSIModulePackage = jsiModulePackage;
+    mUIManagerProviderFunction = uIManagerProviderFunction;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -1351,7 +1351,7 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
-    final CatalystInstance catalystInstance;
+    final CatalystInstanceImpl catalystInstance;
     try {
       catalystInstance = catalystInstanceBuilder.build();
     } finally {
@@ -1379,26 +1379,20 @@ public class ReactInstanceManager {
           new TurboModuleManager(
               catalystInstance.getRuntimeExecutor(),
               tmmDelegate,
-              catalystInstance.getJSCallInvokerHolder(),
-              catalystInstance.getNativeMethodCallInvokerHolder());
+              ((CatalystInstance) catalystInstance).getJSCallInvokerHolder(),
+              ((CatalystInstance) catalystInstance).getNativeMethodCallInvokerHolder());
 
-      catalystInstance.setTurboModuleManager(turboModuleManager);
-
-      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
+      catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
       // Eagerly initialize TurboModules
-      for (String moduleName : registry.getEagerInitModuleNames()) {
-        registry.getModule(moduleName);
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
       }
     }
 
-    if (mJSIModulePackage != null) {
-      catalystInstance.addJSIModules(
-          mJSIModulePackage.getJSIModules(
-              reactContext, catalystInstance.getJavaScriptContextHolder()));
-    }
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
+    if (mUIManagerProviderFunction != null && ReactFeatureFlags.enableFabricRenderer) {
+      catalystInstance.setFabricUIManager(
+          mUIManagerProviderFunction.invoke(reactContext).createUIManager(reactContext));
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

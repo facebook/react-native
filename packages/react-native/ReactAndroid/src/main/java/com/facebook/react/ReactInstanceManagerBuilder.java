@@ -20,9 +20,10 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
@@ -38,6 +39,7 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import kotlin.jvm.functions.Function1;
 
 /** Builder class for {@link ReactInstanceManager} */
 public class ReactInstanceManagerBuilder {
@@ -64,7 +66,8 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
-  private @Nullable JSIModulePackage mJSIModulesPackage;
+  private @Nullable Function1<ReactApplicationContext, UIManagerProvider>
+      mUIManagerProviderFunction;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
@@ -73,16 +76,16 @@ public class ReactInstanceManagerBuilder {
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
-  public ReactInstanceManagerBuilder setJSIModulesPackage(
-      @Nullable JSIModulePackage jsiModulePackage) {
-    mJSIModulesPackage = jsiModulePackage;
-    return this;
-  }
-
   /** Factory for desired implementation of JavaScriptExecutor. */
   public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
       @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
     mJavaScriptExecutorFactory = javaScriptExecutorFactory;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUIManagerProviderFunction(
+      Function1<ReactApplicationContext, UIManagerProvider> uIManagerProviderFunction) {
+    mUIManagerProviderFunction = uIManagerProviderFunction;
     return this;
   }
 
@@ -344,7 +347,7 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-        mJSIModulesPackage,
+        mUIManagerProviderFunction,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,
         mSurfaceDelegateFactory,

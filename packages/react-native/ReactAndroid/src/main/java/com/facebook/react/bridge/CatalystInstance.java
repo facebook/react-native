@@ -13,8 +13,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an environment allowing
@@ -69,8 +69,6 @@ public interface CatalystInstance
   @Nullable
   NativeModule getNativeModule(String moduleName);
 
-  JSIModule getJSIModule(JSIModuleType moduleType);
-
   Collection<NativeModule> getNativeModules();
 
   /**
@@ -114,8 +112,6 @@ public interface CatalystInstance
 
   RuntimeScheduler getRuntimeScheduler();
 
-  void addJSIModules(List<JSIModuleSpec> jsiModules);
-
   /**
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
    * work on the JS Thread. Required for TurboModuleManager initialization.
@@ -129,9 +125,23 @@ public interface CatalystInstance
   NativeMethodCallInvokerHolder getNativeMethodCallInvokerHolder();
 
   /**
-   * For the time being, we want code relying on the old infra to also work with TurboModules.
-   * Hence, we must provide the TurboModuleRegistry to CatalystInstance so that getNativeModule,
-   * hasNativeModule, and getNativeModules can also return TurboModules.
+   * @deprecated since this would be deprecated later as part of Stable APIs with bridge removal and
+   *     not encouraged usage.
    */
-  void setTurboModuleManager(JSIModule getter);
+  @Deprecated
+  void setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry);
+
+  /**
+   * @deprecated since this would be deprecated later as part of Stable APIs with bridge removal and
+   *     not encouraged usage.
+   */
+  @Deprecated
+  void setFabricUIManager(UIManager fabricUIManager);
+
+  /**
+   * @deprecated since this would be deprecated later as part of Stable APIs with bridge removal and
+   *     not encouraged usage.
+   */
+  @Deprecated
+  UIManager getFabricUIManager();
 }

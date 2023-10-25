@@ -102,11 +102,6 @@ public abstract class ReactInstrumentationTest
     return null;
   }
 
-  @Nullable
-  protected ReactInstanceSpecForTest.JSIModuleBuilder getJSIModuleBuilder() {
-    return null;
-  }
-
   /** Override this method to provide extra native modules to be loaded before the app starts */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     ReactInstanceSpecForTest reactInstanceSpecForTest =
@@ -119,7 +114,6 @@ public abstract class ReactInstrumentationTest
     }
     reactInstanceSpecForTest.setReactPackageTurboModuleManagerDelegateBuilder(
         getReactPackageTurboModuleManagerDelegateBuilder());
-    reactInstanceSpecForTest.setJSIModuleBuilder(getJSIModuleBuilder());
     return reactInstanceSpecForTest;
   }
 

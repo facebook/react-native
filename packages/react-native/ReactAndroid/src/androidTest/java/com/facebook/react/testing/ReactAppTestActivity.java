@@ -21,14 +21,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleProvider;
-import com.facebook.react.bridge.JSIModuleSpec;
-import com.facebook.react.bridge.JSIModuleType;
-import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -37,8 +30,6 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -244,44 +235,15 @@ public class ReactAppTestActivity extends FragmentActivity
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
         .setInitialLifecycleState(mLifecycleState)
-        .setJSIModulesPackage(
-            new JSIModulePackage() {
-              @Override
-              public List<JSIModuleSpec> getJSIModules(
-                  final ReactApplicationContext reactApplicationContext,
-                  final JavaScriptContextHolder jsContext) {
-                List<JSIModuleSpec> packages = new ArrayList<>();
-                packages.add(
-                    new JSIModuleSpec() {
-                      @Override
-                      public JSIModuleType getJSIModuleType() {
-                        return JSIModuleType.UIManager;
-                      }
-
-                      @Override
-                      public JSIModuleProvider getJSIModuleProvider() {
-                        return new JSIModuleProvider() {
-                          @Override
-                          public UIManager get() {
-                            ViewManagerRegistry viewManagerRegistry =
-                                new ViewManagerRegistry(
-                                    mReactInstanceManager.getOrCreateViewManagers(
-                                        reactApplicationContext));
-
-                            FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
-                            return factory != null
-                                ? factory.getFabricUIManager(
-                                    reactApplicationContext, viewManagerRegistry)
-                                : null;
-                          }
-                        };
-                      }
-                    });
-                if (spec.getJSIModuleBuilder() != null) {
-                  packages.addAll(spec.getJSIModuleBuilder().build(reactApplicationContext));
-                }
-                return packages;
-              }
+        .setUIManagerProviderFunction(
+            reactApplicationContext -> {
+              ViewManagerRegistry viewManagerRegistry =
+                  new ViewManagerRegistry(
+                      mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
+              FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
+              return factory != null
+                  ? factory.getFabricUIManager(reactApplicationContext, viewManagerRegistry)
+                  : null;
             });
 
     final CountDownLatch latch = new CountDownLatch(1);

@@ -10,10 +10,11 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -22,6 +23,7 @@ import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import java.util.List;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -83,7 +85,7 @@ public abstract class ReactNativeHost {
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-            .setJSIModulesPackage(getJSIModulePackage())
+            .setUIManagerProviderFunction(getUIManagerProviderFunction())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
@@ -123,8 +125,12 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  protected @Nullable JSIModulePackage getJSIModulePackage() {
-    return null;
+  protected Function1<ReactApplicationContext, UIManagerProvider> getUIManagerProviderFunction() {
+    return new Function1<ReactApplicationContext, UIManagerProvider>() {
+      public UIManagerProvider invoke(ReactApplicationContext reactApplicationContext) {
+        return null;
+      }
+    };
   }
 
   /** Returns whether or not to treat it as normal if Activity is null. */

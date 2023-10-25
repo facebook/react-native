@@ -12,7 +12,6 @@ import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.content.Context;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.uimanager.UIManagerModule;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class BridgelessReactContextTest {
 
   @Test(expected = UnsupportedOperationException.class)
   public void getJSIModule_throwsException() {
-    mBridgelessReactContext.getJSIModule(JSIModuleType.TurboModuleManager);
+    mBridgelessReactContext.getFabricUIManager();
   }
 
   // Disable this test for now due to mocking FabricUIManager fails
@@ -60,7 +59,7 @@ public class BridgelessReactContextTest {
   // public void getJSIModuleTest() {
   //   FabricUIManager fabricUiManager = Mockito.mock(FabricUIManager.class);
   //   doReturn(fabricUiManager).when(mReactHost).getUIManager();
-  //   assertThat(mBridgelessReactContext.getJSIModule(JSIModuleType.UIManager))
+  //   assertThat(mBridgelessReactContext.getFabricUIManager())
   //       .isEqualTo(fabricUiManager);
   // }
 

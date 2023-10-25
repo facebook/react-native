@@ -546,12 +546,12 @@ public class ReactContext extends ContextWrapper {
     return null;
   }
 
-  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
+  public @Nullable UIManager getFabricUIManager() {
     if (!hasActiveReactInstance()) {
       throw new IllegalStateException(
-          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
+          "Unable to retrieve a UIManager if CatalystInstance is not active.");
     }
-    return mCatalystInstance.getJSIModule(moduleType);
+    return mCatalystInstance.getFabricUIManager();
   }
 
   /**

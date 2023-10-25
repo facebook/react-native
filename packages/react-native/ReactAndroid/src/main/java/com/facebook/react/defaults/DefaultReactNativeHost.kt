@@ -14,14 +14,10 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
-import com.facebook.react.bridge.JSIModulePackage
-import com.facebook.react.bridge.JSIModuleProvider
-import com.facebook.react.bridge.JSIModuleSpec
-import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.UIManager
+import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.fabric.FabricJSIModuleProvider
+import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.uimanager.ViewManagerRegistry
 
@@ -46,32 +42,21 @@ protected constructor(
         null
       }
 
-  override fun getJSIModulePackage(): JSIModulePackage? =
-      if (isNewArchEnabled) {
-        JSIModulePackage { reactApplicationContext: ReactApplicationContext, _ ->
-          listOf(
-              object : JSIModuleSpec<UIManager> {
-                override fun getJSIModuleType(): JSIModuleType = JSIModuleType.UIManager
+  override fun getUIManagerProviderFunction(): ((ReactApplicationContext) -> UIManagerProvider)? =
+      if (isNewArchEnabled)
+          { reactApplicationContext ->
+            val componentFactory = ComponentFactory()
 
-                override fun getJSIModuleProvider(): JSIModuleProvider<UIManager> {
-                  val componentFactory = ComponentFactory()
+            DefaultComponentsRegistry.register(componentFactory)
 
-                  DefaultComponentsRegistry.register(componentFactory)
+            val reactInstanceManager: ReactInstanceManager = getReactInstanceManager()
 
-                  val reactInstanceManager: ReactInstanceManager = getReactInstanceManager()
-
-                  val viewManagers =
-                      reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
-                  val viewManagerRegistry = ViewManagerRegistry(viewManagers)
-                  return FabricJSIModuleProvider(
-                      reactApplicationContext,
-                      componentFactory,
-                      ReactNativeConfig.DEFAULT_CONFIG,
-                      viewManagerRegistry)
-                }
-              })
-        }
-      } else {
+            val viewManagers = reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
+            val viewManagerRegistry = ViewManagerRegistry(viewManagers)
+            FabricUIManagerProviderImpl(
+                componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
+          }
+      else {
         null
       }
 
