@@ -425,11 +425,26 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mFontSize = (int) fontSize;
   }
 
+  @Override
+  public int getColor() {
+    return mColor;
+  }
+
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
     }
+  }
+
+  @Override
+  public boolean isColorSet() {
+    return mIsColorSet;
+  }
+
+  @Override
+  public int getBackgroundColor() {
+    return mBackgroundColor;
   }
 
   private void setBackgroundColor(Integer color) {
@@ -441,6 +456,21 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
       mBackgroundColor = color;
     }
     // }
+  }
+
+  @Override
+  public boolean isBackgroundColorSet() {
+    return mIsBackgroundColorSet;
+  }
+
+  @Override
+  public int getFontStyle() {
+    return mFontStyle;
+  }
+
+  @Override
+  public String getFontFamily() {
+    return mFontFamily;
   }
 
   private void setFontFamily(@Nullable String fontFamily) {
@@ -545,6 +575,16 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
+  @Override
+  public String getFontFeatureSettings() {
+    return mFontFeatureSettings;
+  }
+
+  @Override
+  public int getFontWeight() {
+    return mFontWeight;
+  }
+
   private void setFontWeight(@Nullable String fontWeightString) {
     mFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
@@ -571,6 +611,16 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
+  @Override
+  public boolean isUnderlineTextDecorationSet() {
+    return mIsUnderlineTextDecorationSet;
+  }
+
+  @Override
+  public boolean isLineThroughTextDecorationSet() {
+    return mIsLineThroughTextDecorationSet;
+  }
+
   private void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
@@ -589,8 +639,18 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
+  @Override
+  public float getTextShadowOffsetDx() {
+    return mTextShadowOffsetDx;
+  }
+
   private void setTextShadowOffsetDx(float dx) {
     mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(dx);
+  }
+
+  @Override
+  public float getTextShadowOffsetDy() {
+    return mTextShadowOffsetDy;
   }
 
   private void setTextShadowOffsetDy(float dy) {
@@ -616,10 +676,20 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     mLayoutDirection = getLayoutDirection(layoutDirection);
   }
 
+  @Override
+  public float getTextShadowRadius() {
+    return mTextShadowRadius;
+  }
+
   private void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
     }
+  }
+
+  @Override
+  public int getTextShadowColor() {
+    return mTextShadowColor;
   }
 
   private void setTextShadowColor(int textShadowColor) {
@@ -643,12 +713,23 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     }
   }
 
+  @Override
+  public AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
       mAccessibilityRole = null;
     } else {
       mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
     }
+  }
+
+  @Nullable
+  @Override
+  public Role getRole() {
+    return mRole;
   }
 
   private void setRole(@Nullable String role) {
@@ -697,86 +778,5 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
       }
     }
     return androidHyphenationFrequency;
-  }
-
-  @Nullable
-  @Override
-  public Role getRole() {
-    return mRole;
-  }
-
-  @Override
-  public AccessibilityRole getAccessibilityRole() {
-    return mAccessibilityRole;
-  }
-
-  @Override
-  public boolean isBackgroundColorSet() {
-    return mIsBackgroundColorSet;
-  }
-
-  @Override
-  public int getBackgroundColor() {
-    return mBackgroundColor;
-  }
-
-  @Override
-  public boolean isColorSet() {
-    return mIsColorSet;
-  }
-
-  @Override
-  public int getColor() {
-    return mColor;
-  }
-
-  @Override
-  public int getFontStyle() {
-    return mFontStyle;
-  }
-
-  @Override
-  public int getFontWeight() {
-    return mFontWeight;
-  }
-
-  @Override
-  public String getFontFamily() {
-    return mFontFamily;
-  }
-
-  @Override
-  public String getFontFeatureSettings() {
-    return mFontFeatureSettings;
-  }
-
-  @Override
-  public boolean isUnderlineTextDecorationSet() {
-    return mIsUnderlineTextDecorationSet;
-  }
-
-  @Override
-  public boolean isLineThroughTextDecorationSet() {
-    return mIsLineThroughTextDecorationSet;
-  }
-
-  @Override
-  public float getTextShadowOffsetDx() {
-    return mTextShadowOffsetDx;
-  }
-
-  @Override
-  public float getTextShadowOffsetDy() {
-    return mTextShadowOffsetDy;
-  }
-
-  @Override
-  public float getTextShadowRadius() {
-    return mTextShadowRadius;
-  }
-
-  @Override
-  public int getTextShadowColor() {
-    return mTextShadowColor;
   }
 }
