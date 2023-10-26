@@ -8,16 +8,16 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   PressableComponentScreen,
-} = require('../../screens/components/pressableComponent.screen.js');
+} = require('../../../screens/components/pressableComponent.screen.js');
 
 // fixed variables
 const onPressText = 'onPress';
 
-describe('Test is checking pressable component', () => {
-  test('Should view onPress text', async () => {
+describe('Test is checking pressable component', function() {
+  it('Should view onPress text', async function() {
     await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkPressableComponentIsDisplayed(),

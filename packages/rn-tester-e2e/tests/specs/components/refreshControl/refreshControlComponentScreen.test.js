@@ -8,13 +8,13 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   RefreshControlComponentScreen,
-} = require('../../screens/components/refreshControlComponent.screen.js');
+} = require('../../../screens/components/refreshControlComponent.screen.js');
 
-describe('Test is checking RefreshControl component', () => {
-  test('Should view initial row element', async () => {
+describe('Test is checking RefreshControl component', function() {
+  it('Should view initial row element', async function() {
     await RefreshControlComponentScreen.scrollUntilRefreshControlComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkRefreshControlComponentIsDisplayed(),

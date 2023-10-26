@@ -8,16 +8,16 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   KeyboardAvoidingViewComponentScreen,
-} = require('../../screens/components/keyboardAvoidingViewComponent.screen.js');
+} = require('../../../screens/components/keyboardAvoidingViewComponent.screen.js');
 
 // fixed variables
 const registerText = 'Successfully Registered!';
 
-describe('Test is checking keyboardAvoidingView component', () => {
-  test('Should view properly successfully registered text', async () => {
+describe('Test is checking keyboardAvoidingView component', function() {
+  it('Should view properly successfully registered text', async function() {
     await KeyboardAvoidingViewComponentScreen.scrollUntilKeyboardAvoidingViewComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkKeyboardAvoidingViewComponentIsDisplayed(),

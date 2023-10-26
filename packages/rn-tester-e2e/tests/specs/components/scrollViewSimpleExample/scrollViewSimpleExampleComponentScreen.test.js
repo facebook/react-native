@@ -8,13 +8,13 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   ScrollViewSimpleExampleComponentScreen,
-} = require('../../screens/components/scrollViewSimpleExampleComponent.screen.js');
+} = require('../../../screens/components/scrollViewSimpleExampleComponent.screen.js');
 
-describe('Test is checking ScrollVIewSimpleExample component', () => {
-  test('Should view scroll view item element', async () => {
+describe('Test is checking ScrollVIewSimpleExample component', function() {
+  it('Should view scroll view item element', async function() {
     await ScrollViewSimpleExampleComponentScreen.scrollUntilScrollViewSimpleExampleComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkScrollViewSimpleExampleComponentIsDisplayed(),

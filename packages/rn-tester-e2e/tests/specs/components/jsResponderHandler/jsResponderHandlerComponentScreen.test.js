@@ -8,16 +8,16 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   JSResponderHandlerComponentScreen,
-} = require('../../screens/components/jsResponderHandlerComponent.screen.js');
+} = require('../../../screens/components/jsResponderHandlerComponent.screen.js');
 
 // fixed variables
 const roweZeroText = 'I am row 0';
 
-describe('Test is checking row zero JSResponderHandler component', () => {
-  test('Should view properly row zero element', async () => {
+describe('Test is checking row zero JSResponderHandler component', function() {
+  it('Should view properly row zero element', async function() {
     await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkJSResponderHandlerComponentIsDisplayed(),

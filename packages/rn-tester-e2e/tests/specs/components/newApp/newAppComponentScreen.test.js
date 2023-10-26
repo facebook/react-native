@@ -8,13 +8,13 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
 const {
   NewAppComponentScreen,
-} = require('../../screens/components/newAppComponent.screen.js');
+} = require('../../../screens/components/newAppComponent.screen.js');
 
-describe('Test is checking new app screen component', () => {
-  test('Should view new app header element', async () => {
+describe('Test is checking new app screen component', function() {
+  it('Should view new app header element', async function() {
     await NewAppComponentScreen.scrollUntilNewAppHeaderComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkNewAppScreenComponentIsDisplayed(),
