@@ -11,7 +11,8 @@
   "directory": "packages/rn-tester-e2e"
   },
   "scripts": {
-    "test-e2e": "npx wdio wdio.conf.js"
+    "test-e2e-ios": "npx wdio wdio.conf.ios.js",
+    "test-e2e-android": "npx wdio wdio.conf.android.js"
   },
   "devDependencies": {
     "eslint": "^8.23.1",

@@ -1,5 +1,5 @@
-
 const path = require('path');
+
 exports.config = {
     runner: 'local',
     path: '/',
@@ -7,62 +7,23 @@ exports.config = {
     specs: [
         './tests/specs/components/**/*.test.js'
     ],
-    // Patterns to exclude.
     exclude: [
-        // 'path/to/excluded/files'
     ],
     
     maxInstances: 1,
     
-    //For now ios only
     capabilities: [{ 
-        platformName: 'iOS',
-        'appium:platformVersion': '16.4',
-        'appium:deviceName': 'iPhone 14',
-        'appium:automationName': 'XCUITest',
-        'appium:app': path.join(process.cwd(), '/apps/rn-tester.app')
+      platformName: 'iOS',
+      'appium:platformVersion': '16.4',
+      'appium:deviceName': 'iPhone 14',
+      'appium:automationName': 'XCUITest',
+      'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
     }],
-
-    //
-    // ===================
-    // Test Configurations
-    // ===================
-    // Define all options that are relevant for the WebdriverIO instance here
-    //
-    // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'debug',
-    //
-    // Set specific log levels per logger
-    // loggers:
-    // - webdriver, webdriverio
-    // - @wdio/browserstack-service, @wdio/devtools-service, @wdio/sauce-service
-    // - @wdio/mocha-framework, @wdio/jasmine-framework
-    // - @wdio/local-runner
-    // - @wdio/sumologic-reporter
-    // - @wdio/cli, @wdio/config, @wdio/utils
-    // Level of logging verbosity: trace | debug | info | warn | error | silent
-    // logLevels: {
-    //     webdriver: 'info',
-    //     '@wdio/appium-service': 'info'
-    // },
-    //
-    // If you only want to run your tests until a specific amount of tests have failed use
-    // bail (default is 0 - don't bail, run all tests).
+    logLevel: 'info',
     bail: 0,
-    //
-    // Set a base URL in order to shorten url command calls. If your `url` parameter starts
-    // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
-    // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
-    // gets prepended directly.
-    //
-    // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
-    //
-    // Default timeout in milliseconds for request
-    // if browser driver or grid doesn't send response
     connectionRetryTimeout: 120000,
-    //
-    // Default request retries count
+    
     connectionRetryCount: 3,
     services: [
         [
@@ -72,20 +33,20 @@ exports.config = {
               address: 'localhost',
               port: 4723
             },
-            // logPath: './'
           }
         ]
       ],
     
-    // Framework you want to run your specs with.
-    // The following are supported: Mocha, Jasmine, and Cucumber
-    // see also: https://webdriver.io/docs/frameworks
-    //
-    // Make sure you have the wdio adapter package for the specific framework installed
-    // before running any tests.
     framework: 'mocha',
-    reporters: ['spec'],
+    reporters: ['spec', ['spec', {
+      showPreface: false,
+      outputDir: './logs',
+      stdout: true,
+      logFile: './logs/spec-reporter.log'
+  }]],
+    framework: 'mocha',
     mochaOpts: {
+        retries: 4,
         ui: 'bdd',
         timeout: 60000,
         require: ['@babel/register']
