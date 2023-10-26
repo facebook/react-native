@@ -8,8 +8,6 @@
  * @format
  */
 
-import {driver} from '../../jest.setup';
-
 type PlatformsReference = {
   ios: string,
   android: string,
@@ -17,18 +15,18 @@ type PlatformsReference = {
 
 class Utils {
   async checkElementExistence(locator: string): Promise<boolean> {
-    await driver.$(locator).waitForDisplayed();
-    return driver.$(locator).isDisplayed();
+    await $(locator).waitForDisplayed();
+    return $(locator).isDisplayed();
   }
 
   async clickElement(locator: string): Promise<void> {
-    await driver.$(locator).waitForDisplayed();
-    await driver.$(locator).click();
+    await $(locator).waitForDisplayed();
+    await $(locator).click();
   }
 
   async getElementText(locator: string): Promise<string> {
-    await driver.$(locator).waitForDisplayed();
-    return driver.$(locator).getText();
+    await $(locator).waitForDisplayed();
+    return $(locator).getText();
   }
 
   platformSelect(platforms: PlatformsReference): string {
@@ -38,10 +36,11 @@ class Utils {
 
   async scrollToElement(locator: string): Promise<void> {
     let {width, height} = await driver.getWindowSize();
+    console.log(width, height)
     let elementIsFound;
     try {
-      elementIsFound = await driver.$(locator).isDisplayed();
-      while (!elementIsFound) {
+      elementIsFound = await $(locator).isDisplayed();
+      while (!(await elementIsFound)) {
         driver.touchPerform([
           {
             action: 'press',
@@ -67,7 +66,7 @@ class Utils {
             action: 'release',
           },
         ]);
-        elementIsFound = await driver.$(locator).isDisplayed();
+        elementIsFound = await $(locator).isDisplayed();
       }
     } catch (err) {
       console.log('Element is not found');

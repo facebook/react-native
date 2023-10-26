@@ -2,12 +2,10 @@
 const path = require('path');
 exports.config = {
     runner: 'local',
-    port: 4723,
     path: '/',
-    baseUrl: 'http://localhost',
     
     specs: [
-        './tests/specs/components/*.test.js'
+        './tests/specs/components/**/*.test.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -22,7 +20,7 @@ exports.config = {
         'appium:platformVersion': '17.0',
         'appium:deviceName': 'iPhone 15',
         'appium:automationName': 'XCUITest',
-        'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
+        'appium:app': path.join(process.cwd(), '/apps/rn-tester.app')
     }],
 
     //
@@ -66,16 +64,18 @@ exports.config = {
     //
     // Default request retries count
     connectionRetryCount: 3,
-    services: ['appium'],
-    appium: {
-        args: {
-            address: 'localhost',
-            port: 4723,
-            command: 'appium',
-            debugLogSpacing: true,
-            logLevel: 'info'
-        }
-    },
+    services: [
+        [
+          'appium',
+          {
+            args: {
+              address: 'localhost',
+              port: 4723
+            },
+            // logPath: './'
+          }
+        ]
+      ],
     
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
