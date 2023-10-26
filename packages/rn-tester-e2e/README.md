@@ -90,13 +90,7 @@ And modify lines L24->L39 to reflect your local setup configuration (ex. `platfo
 
 ## Testing the RNTester app E2E
 
-After you have done all the above correctly, and you have the Android/iOS apps in the `rn-tester-e2e/apps` folder, in a dedicated terminal window, run:
-
-```bash
-appium --base-path /wd/hub
-```
-
-This will start the Appium server - you will need this to keep running.
+After you have done all the above correctly, and you have the Android/iOS apps in the `rn-tester-e2e/apps` folder.
 
 Then open a second terminal window and start the Metro terminal from the `packages/rn-tester` folder, via `yarn start --reset-cache`. This terminal window also needs to keep running.
 
@@ -105,8 +99,8 @@ Now, make sure that the iOS simulator/the Android emulator is up and running.
 Finally, you can open a third terminal window and run:
 
 ```bash
-yarn test-e2e android # for android
-yarn test-e2e ios # for ios
+yarn test-e2e-android # for android
+yarn test-e2e-ios # for ios
 ```
 
 Now you should see the RNTester app being open, and the defined test being run.
