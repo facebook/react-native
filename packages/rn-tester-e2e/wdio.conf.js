@@ -17,8 +17,8 @@ exports.config = {
     //For now ios only
     capabilities: [{ 
         platformName: 'iOS',
-        'appium:platformVersion': '17.0',
-        'appium:deviceName': 'iPhone 15',
+        'appium:platformVersion': '16.4',
+        'appium:deviceName': 'iPhone 14',
         'appium:automationName': 'XCUITest',
         'appium:app': path.join(process.cwd(), '/apps/rn-tester.app')
     }],
