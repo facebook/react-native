@@ -76,7 +76,7 @@ static NSString *RCTGenerateFormBoundary()
 
 - (RCTURLRequestCancellationBlock)process:(NSArray<NSDictionary *> *)formData callback:(RCTHTTPQueryResult)callback
 {
-  RCTAssertThread(_networker.methodQueue, @"process: must be called on method queue");
+  RCTAssertThread([_networker requestQueue], @"process: must be called on request queue");
 
   if (formData.count == 0) {
     return callback(nil, nil);
@@ -105,7 +105,7 @@ static NSString *RCTGenerateFormBoundary()
 
 - (RCTURLRequestCancellationBlock)handleResult:(NSDictionary<NSString *, id> *)result error:(NSError *)error
 {
-  RCTAssertThread(_networker.methodQueue, @"handleResult: must be called on method queue");
+  RCTAssertThread([_networker requestQueue], @"handleResult: must be called on request queue");
 
   if (error) {
     return _callback(error, nil);
@@ -300,7 +300,7 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                completionBlock:(void (^)(NSURLRequest *request))block
 {
-  RCTAssertThread([self requestQueue], @"buildRequest: must be called on method queue");
+  RCTAssertThread([self requestQueue], @"buildRequest: must be called on request queue");
 
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
@@ -391,7 +391,7 @@ RCT_EXPORT_MODULE()
                    callback:(RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary<NSString *, id> *result))
                                 callback
 {
-  RCTAssertThread([self requestQueue], @"processDataForHTTPQuery: must be called on method queue");
+  RCTAssertThread([self requestQueue], @"processDataForHTTPQuery: must be called on request queue");
 
   if (!query) {
     return callback(nil, nil);
@@ -520,7 +520,7 @@ RCT_EXPORT_MODULE()
         response:(NSURLResponse *)response
          forTask:(RCTNetworkTask *)task
 {
-  RCTAssertThread([self requestQueue], @"sendData: must be called on method queue");
+  RCTAssertThread([self requestQueue], @"sendData: must be called on request queue");
 
   id responseData = nil;
   for (id<RCTNetworkingResponseHandler> handler in _responseHandlers) {
@@ -558,7 +558,7 @@ RCT_EXPORT_MODULE()
     incrementalUpdates:(BOOL)incrementalUpdates
         responseSender:(RCTResponseSenderBlock)responseSender
 {
-  RCTAssertThread([self requestQueue], @"sendRequest: must be called on method queue");
+  RCTAssertThread([self requestQueue], @"sendRequest: must be called on request queue");
   __weak __typeof(self) weakSelf = self;
   __block RCTNetworkTask *task;
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
