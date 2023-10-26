@@ -109,7 +109,7 @@
           run_unit_tests: true
           architecture: "OldArch"
           use_frameworks: "StaticLibraries"
-          ruby_version: "2.6.10"
+          ruby_version: "2.7.8"
           requires:
             - build_hermes_macos
           matrix:

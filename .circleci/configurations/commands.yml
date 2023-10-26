@@ -20,7 +20,7 @@ commands:
   setup_ruby:
     parameters:
       ruby_version:
-        default: "2.6.10"
+        default: "2.7.8"
         type: string
     steps:
       - restore_cache:

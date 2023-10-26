@@ -408,7 +408,7 @@ jobs:
         type: enum
         enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
-        default: "2.6.10"
+        default: "2.7.8"
         description: The version of ruby that must be used
         type: string
       podfile_lock_path:
@@ -514,7 +514,7 @@ jobs:
         type: enum
         enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
-        default: "2.6.10"
+        default: "2.7.8"
         description: The version of ruby that must be used
         type: string
       run_unit_tests:
@@ -619,7 +619,7 @@ jobs:
       - run:
           name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs --version=18.18.0 --allow-downgrade 
+          command: choco install nodejs --version=18.18.0 --allow-downgrade
 
       # Setup Dependencies
       - run:
