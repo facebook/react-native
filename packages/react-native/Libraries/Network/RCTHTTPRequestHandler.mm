@@ -78,8 +78,7 @@ RCT_EXPORT_MODULE()
 
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
-    RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
-    callbackQueue.underlyingQueue = [networking requestQueue];
+    callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
     NSURLSessionConfiguration *configuration;
     if (urlSessionConfigurationProvider) {
       configuration = urlSessionConfigurationProvider();
