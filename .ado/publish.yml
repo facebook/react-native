@@ -53,7 +53,7 @@ extends:
            displayName: NPM Publish React-native-macos
            pool:
              name: Azure Pipelines
-             vmImage: internal-macos12
+             vmImage: macos-13
              os: macOS
            variables:
              - name: BUILDSECMON_OPT_IN
