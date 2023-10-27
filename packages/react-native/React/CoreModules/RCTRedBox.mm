@@ -25,7 +25,7 @@
 
 #if RCT_DEV_MENU
 
-@class RCTRedBoxWindow;
+@class RCTRedBoxController;
 
 @interface UIButton (RCTRedBox)
 
@@ -62,19 +62,19 @@
 
 @end
 
-@protocol RCTRedBoxWindowActionDelegate <NSObject>
+@protocol RCTRedBoxControllerActionDelegate <NSObject>
 
-- (void)redBoxWindow:(RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
-- (void)reloadFromRedBoxWindow:(RCTRedBoxWindow *)redBoxWindow;
+- (void)redBoxController:(RCTRedBoxController *)redBoxController openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
+- (void)reloadFromRedBoxController:(RCTRedBoxController *)redBoxController;
 - (void)loadExtraDataViewController;
 
 @end
 
-@interface RCTRedBoxWindow : UIViewController <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
+@interface RCTRedBoxController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic, weak) id<RCTRedBoxControllerActionDelegate> actionDelegate;
 @end
 
-@implementation RCTRedBoxWindow {
+@implementation RCTRedBoxController {
   UITableView *_stackTraceTableView;
   NSString *_lastErrorMessage;
   NSArray<RCTJSStackFrame *> *_lastStackTrace;
@@ -95,10 +95,6 @@
 }
 
 - (void)viewDidLoad {
-    [self setupView];
-}
-
-- (void) setupView {
     self.view.backgroundColor = [UIColor blackColor];
 
     const CGFloat buttonHeight = 60;
@@ -194,7 +190,6 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:buttonStackView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-
 }
 
 - (UIButton *)redBoxButton:(NSString *)title
@@ -277,7 +272,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_actionDelegate reloadFromRedBoxWindow:self];
+  [_actionDelegate reloadFromRedBoxController:self];
 }
 
 - (void)showExtraDataViewController
@@ -415,7 +410,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   if (indexPath.section == 1) {
     NSUInteger row = indexPath.row;
     RCTJSStackFrame *stackFrame = _lastStackTrace[row];
-    [_actionDelegate redBoxWindow:self openStackFrameInEditor:stackFrame];
+    [_actionDelegate redBoxController:self openStackFrameInEditor:stackFrame];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -457,13 +452,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 @interface RCTRedBox () <
     RCTInvalidating,
-    RCTRedBoxWindowActionDelegate,
+    RCTRedBoxControllerActionDelegate,
     RCTRedBoxExtraDataActionDelegate,
     NativeRedBoxSpec>
 @end
 
 @implementation RCTRedBox {
-  RCTRedBoxWindow *_window;
+  RCTRedBoxController *_window;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
   RCTRedBoxExtraDataViewController *_extraDataViewController;
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -612,7 +607,7 @@ RCT_EXPORT_MODULE()
                                                                                 body:nil];
 #pragma clang diagnostic pop
     if (!self->_window) {
-        self->_window = [[RCTRedBoxWindow alloc] initWithCustomButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
+        self->_window = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
       self->_window.actionDelegate = self;
     }
 
@@ -654,7 +649,7 @@ RCT_EXPORT_METHOD(dismiss)
   [self dismiss];
 }
 
-- (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
+- (void)redBoxController:(__unused RCTRedBoxController *)redBoxController openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
   NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
@@ -677,10 +672,10 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)reload
 {
   // Window is not used and can be nil
-  [self reloadFromRedBoxWindow:nil];
+  [self reloadFromRedBoxController:nil];
 }
 
-- (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
+- (void)reloadFromRedBoxController:(__unused RCTRedBoxController *)redBoxController
 {
   if (_overrideReloadAction) {
     _overrideReloadAction();
