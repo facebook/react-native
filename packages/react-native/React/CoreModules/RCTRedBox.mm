@@ -458,7 +458,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 @end
 
 @implementation RCTRedBox {
-  RCTRedBoxController *_window;
+  RCTRedBoxController *_controller;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
   RCTRedBoxExtraDataViewController *_extraDataViewController;
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -606,14 +606,14 @@ RCT_EXPORT_MODULE()
     [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
                                                                                 body:nil];
 #pragma clang diagnostic pop
-    if (!self->_window) {
-        self->_window = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
-      self->_window.actionDelegate = self;
+    if (!self->_controller) {
+        self->_controller = [[RCTRedBoxController alloc] initWithCustomButtonTitles:self->_customButtonTitles customButtonHandlers:self->_customButtonHandlers];
+      self->_controller.actionDelegate = self;
     }
 
     RCTErrorInfo *errorInfo = [[RCTErrorInfo alloc] initWithErrorMessage:message stack:stack];
     errorInfo = [self _customizeError:errorInfo];
-    [self->_window showErrorMessage:errorInfo.errorMessage
+    [self->_controller showErrorMessage:errorInfo.errorMessage
                           withStack:errorInfo.stack
                            isUpdate:isUpdate
                         errorCookie:errorCookie];
@@ -624,8 +624,8 @@ RCT_EXPORT_MODULE()
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Make sure the CMD+E shortcut doesn't call this twice
-    if (self->_extraDataViewController != nil && ![self->_window presentedViewController]) {
-      [self->_window presentViewController:self->_extraDataViewController
+    if (self->_extraDataViewController != nil && ![self->_controller presentedViewController]) {
+      [self->_controller presentViewController:self->_extraDataViewController
                                                      animated:YES
                                                    completion:nil];
     }
@@ -640,7 +640,7 @@ RCT_EXPORT_METHOD(setExtraData : (NSDictionary *)extraData forIdentifier : (NSSt
 RCT_EXPORT_METHOD(dismiss)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_window dismiss];
+    [self->_controller dismiss];
   });
 }
 
