@@ -138,7 +138,9 @@ function Header(props: {
               : props.theme.BackgroundColor,
         },
       ]}>
-      <Text style={styles.headerDescription}>{props.description}</Text>
+      <Text style={[styles.headerDescription, {color: props.theme.LabelColor}]}>
+        {props.description}
+      </Text>
     </View>
   );
 }
