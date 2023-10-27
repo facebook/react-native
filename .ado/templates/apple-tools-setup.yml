@@ -5,3 +5,10 @@ steps:
 
   - script: 'brew bundle --file .ado/Brewfile'
     displayName: 'brew bundle'
+
+  - script: |
+      xcrun simctl list
+    displayName: 'List Simulators'
+  - script: |
+      xcrun --sdk iphonesimulator --show-sdk-version
+    displayName: 'Determine iOS SDK version'
