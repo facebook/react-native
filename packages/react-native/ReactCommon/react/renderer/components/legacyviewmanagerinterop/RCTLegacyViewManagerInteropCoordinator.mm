@@ -92,6 +92,10 @@ using namespace facebook::react;
   if (props.isObject()) {
     NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
     [_componentData setProps:convertedProps forView:view];
+
+    if ([view respondsToSelector:@selector(didSetProps:)]) {
+      [view performSelector:@selector(didSetProps:) withObject:[convertedProps allKeys]];
+    }
   }
 }
 
