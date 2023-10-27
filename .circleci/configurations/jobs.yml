@@ -194,6 +194,14 @@ jobs:
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: ""
       - run:
+          name: Install appium
+          command: npm install appium@2.0.0 -g
+      - run:
+          name: Install appium drivers
+          command: |
+            appium driver install uiautomator2@2.29.0
+            appium driver install xcuitest@5.6.0
+      - run:
           name: Start Metro
           command: |
             cd packages/rn-tester
@@ -208,25 +216,6 @@ jobs:
       - run:
           name: Move app to correct directory
           command: mv packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86_64-debug.apk packages/rn-tester-e2e/apps/rn-tester.apk
-      - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: |
-            appium driver install uiautomator2@2.29.1
-            appium driver install xcuitest@4.32.10
-      - run:
-          name: Start Appium server
-          command: appium --base-path /wd/hub
-          background: true
-      - run:
-          name: Check Appium server status
-          command: |
-            if ! nc -z 127.0.0.1 4723; then
-              echo Could not find Appium server
-              exit 1
-            fi
       - run:
           name: Run E2E tests
           no_output_timeout: 5m
