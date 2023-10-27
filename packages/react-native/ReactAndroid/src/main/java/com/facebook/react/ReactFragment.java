@@ -181,7 +181,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     public Builder() {
       mComponentName = null;
       mLaunchOptions = null;
-      mFabricEnabled = null;
+      mFabricEnabled = false;
     }
 
     /**
