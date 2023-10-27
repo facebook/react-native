@@ -4,9 +4,6 @@ parameters:
 
 steps:
   - template: apple-tools-setup.yml
-
-  # Task Group: Xcode select proper version
-  - template: apple-xcode-select.yml
     parameters:
       slice_name: ${{ parameters.slice_name }}
       xcode_version: ${{ parameters.xcode_version }}
