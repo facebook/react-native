@@ -29,7 +29,6 @@ jobs:
     cancelTimeoutInMinutes: 5
     steps:
       - template: templates/apple-tools-setup.yml
-      - template: templates/apple-xcode-select.yml
         parameters:
           slice_name: $(slice_name)
           xcode_version: $(xcode_version)

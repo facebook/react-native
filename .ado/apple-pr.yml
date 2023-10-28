@@ -36,7 +36,7 @@ jobs:
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_configuration: 'Debug'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
           xcode_actions: 'build test'
           xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
           new_arch_enabled: '0'
@@ -46,7 +46,7 @@ jobs:
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_configuration: 'Release'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
           xcode_actions: 'build'
           xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
           new_arch_enabled: '0'
@@ -76,7 +76,7 @@ jobs:
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_configuration: 'Debug'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
           xcode_actions: 'build' # https://github.com/facebook/react-native/issues/39719 Tests fail on RNTester with `RCT_NEW_ARCH_ENABLED`
           xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
           new_arch_enabled: '1'
@@ -86,7 +86,7 @@ jobs:
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_configuration: 'Release'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
           xcode_actions: 'build'
           xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
           new_arch_enabled: '1'
@@ -117,7 +117,7 @@ jobs:
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Debug'
-        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
         #   xcode_actions: 'build test'
         #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
         #   new_arch_enabled: '0'
@@ -127,7 +127,7 @@ jobs:
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Release'
-        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
         #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
         #   xcode_actions: 'build'
         #   new_arch_enabled: '0'
@@ -157,7 +157,7 @@ jobs:
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Debug'
-        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
         #   xcode_actions: 'build' # https://github.com/facebook/react-native/issues/39719 Tests fail on RNTester with `RCT_NEW_ARCH_ENABLED`
         #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
         #   new_arch_enabled: '1'
@@ -167,7 +167,7 @@ jobs:
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Release'
-        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_destination: 'platform=iOS Simulator,OS=$(ios_version),name=$(ios_simulator)'
         #   xcode_actions: 'build'
         #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
         #   new_arch_enabled: '1'

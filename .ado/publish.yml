@@ -22,159 +22,158 @@ variables:
   - name: tags
     value: production,externalfacing
 
-jobs:
-  - job: RNGithubNpmJSPublish
-    displayName: NPM Publish React-native-macos
+resources:
+  repositories:
+    - repository: OfficePipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      ref: refs/tags/release
+
+extends:
+  template: v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
+  parameters:
     pool:
-      vmImage: $(VmImageApple)
-    variables:
-      - name: BUILDSECMON_OPT_IN
-        value: true
-    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
-    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-    dependsOn:
-      - Compliance
-    steps:
-      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
-        clean: true # whether to fetch clean each time
-        # fetchDepth: 2 # the depth of commits to ask Git to fetch
-        lfs: false # whether to download Git-LFS files
-        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-latest
+      os: windows
+    sdl:
+      eslint:
+        configuration: 'recommended'
+        parser: '@typescript-eslint/parser'
+        parserOptions: ''
+        enableExclusions: true
+        # Justification: js files in this repo are flow files. the built-in eslint does not support this. Adding a separate step to run the sdl rules for flow files.
+        exclusionPatterns: '**/*.js'
+      credscan:
+          suppressionsFile: .ado/CredScanSuppressions.json
+    stages:
+      - stage: main
+        jobs:
+         - job: RNGithubNpmJSPublish
+           displayName: NPM Publish React-native-macos
+           pool:
+             name: Azure Pipelines
+             vmImage: macos-13
+             os: macOS
+           variables:
+             - name: BUILDSECMON_OPT_IN
+               value: true
+           timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+           cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+           templateContext:
+             outputs:
+               - output: pipelineArtifact
+                 targetPath: $(System.DefaultWorkingDirectory)
+                 artifactName: github-npm-js-publish
+           steps:
+             - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+               clean: true # whether to fetch clean each time
+               # fetchDepth: 2 # the depth of commits to ask Git to fetch
+               lfs: false # whether to download Git-LFS files
+               submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+               persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      # Setup the repo to be ready for release. This includes:
-      # - Autogenerating the next version number
-      # - Calling the approprate scripts that upstream React Native uses to prepare a release
-      # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
+             # Setup the repo to be ready for release. This includes:
+             # - Autogenerating the next version number
+             # - Calling the approprate scripts that upstream React Native uses to prepare a release
+             # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
 
-      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-        - template: templates/apple-job-publish.yml
-          parameters:
-            build_type: nightly
-      - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
-        - template: templates/apple-job-publish.yml
-          parameters:
-            build_type: release
-      - ${{ else }}:
-        - task: CmdLine@2
-          displayName: Unknown branch, skipping publish
-          inputs:
-            script: |
-              echo "Skipping publish for branch $(Build.SourceBranchName)"
-              exit 1
+             - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/1espt') }}:
+               - template: .ado/templates/apple-job-publish.yml@self
+                 parameters:
+                   build_type: nightly
+             - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
+               - template: .ado/templates/apple-job-publish.yml@self
+                 parameters:
+                   build_type: release
+             - ${{ else }}:
+               - task: CmdLine@2
+                 displayName: Unknown branch, skipping publish
+                 inputs:
+                   script: |
+                     echo "Skipping publish for branch $(Build.SourceBranchName)"
+                     exit 1
 
-      # Set the NPM dist-tag and do the actual NPM publish
-  
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
-        displayName: Set dist-tag to latest
-        condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
+             # Set the NPM dist-tag and do the actual NPM publish
+         
+             - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
+               displayName: Set dist-tag to latest
+               condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
 
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
-        displayName: Set dist-tag to canary
-        condition: eq(variables['Build.SourceBranchName'], 'main')
+             - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
+               displayName: Set dist-tag to canary
+               condition: eq(variables['Build.SourceBranchName'], 'main')
 
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
-        displayName: Set dist-tag to v0.x-stable
-        condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
+             - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
+               displayName: Set dist-tag to v0.x-stable
+               condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
-      - task: CmdLine@2
-        displayName: Actual NPM Publish
-        inputs:
-          script: |
-            npm publish ./packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+             - task: CmdLine@2
+               displayName: Actual NPM Publish
+               inputs:
+                 script: |
+                   npm publish ./packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
 
-      # Set the git tag and push the version update back to Github
+             # Set the git tag and push the version update back to Github
 
-      - template: templates/configure-git.yml
+             - template: .ado/templates/configure-git.yml@self
 
-      - task: CmdLine@2
-        displayName: 'Tag and push to Github'
-        inputs:
-          script: node .ado/gitTagRelease.js
-        env:
-          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
-          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubAuthToken: $(githubAuthToken)
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
+             - task: CmdLine@2
+               displayName: 'Tag and push to Github'
+               inputs:
+                 script: node .ado/gitTagRelease.js
+               env:
+                 BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+                 BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+                 SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+                 githubAuthToken: $(githubAuthToken)
+               condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
-      # Generate and publish the SBOM
-  
-      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-        displayName: 📒 Generate Manifest
-        inputs:
-          BuildDropPath: $(System.DefaultWorkingDirectory)
+         - job: RNMacOSInitNpmJSPublish
+           displayName: NPM Publish beachball packages (e.g., react-native-macos-init)
+           pool:
+             name: cxeiss-ubuntu-20-04-large
+             image: cxe-ubuntu-20-04-1es-pt
+             os: linux
+           timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+           cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+           condition: eq(variables['Build.SourceBranchName'], '1espt')
+           templateContext:
+             outputs:
+               - output: pipelineArtifact
+                 targetPath: $(System.DefaultWorkingDirectory)
+                 artifactName: macos-init-npm-js-publish
+           steps:
+             - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+               clean: true # whether to fetch clean each time
+               # fetchDepth: 2 # the depth of commits to ask Git to fetch
+               lfs: false # whether to download Git-LFS files
+               submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+               persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - task: PublishPipelineArtifact@1
-        displayName: 📒 Publish Manifest
-        inputs:
-          artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
-          targetPath: $(System.DefaultWorkingDirectory)/_manifest
-      
+             - template: .ado/templates/configure-git.yml@self
 
-  - job: RNMacOSInitNpmJSPublish
-    displayName: NPM Publish beachball packages (e.g., react-native-macos-init)
-    pool: cxeiss-ubuntu-20-04-large
-    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
-    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-    condition: eq(variables['Build.SourceBranchName'], 'main')
-    dependsOn:
-      - Compliance
-    steps:
-      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
-        clean: true # whether to fetch clean each time
-        # fetchDepth: 2 # the depth of commits to ask Git to fetch
-        lfs: false # whether to download Git-LFS files
-        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+             - task: CmdLine@2
+               displayName: yarn install
+               inputs:
+                 script: |
+                   cd packages/react-native-macos-init
+                   yarn install
 
-      - template: templates/configure-git.yml
+             - task: CmdLine@2
+               displayName: Build react-native-macos-init
+               inputs:
+                 script: |
+                   cd packages/react-native-macos-init
+                   yarn build
 
-      - task: CmdLine@2
-        displayName: yarn install
-        inputs:
-          script: |
-            cd packages/react-native-macos-init
-            yarn install
+             - task: CmdLine@2
+               displayName: Code tested in other pipeline [test]
+               inputs:
+                 script: echo "This code is tested as part of an integration test. See the 'Verify react-native-macos-init' task."
 
-      - task: CmdLine@2
-        displayName: Build react-native-macos-init
-        inputs:
-          script: |
-            cd packages/react-native-macos-init
-            yarn build
-
-      - task: CmdLine@2
-        displayName: Code tested in other pipeline [test]
-        inputs:
-          script: echo "This code is tested as part of an integration test. See the 'Verify react-native-macos-init' task."
-
-      - task: CmdLine@2
-        displayName: "Publish beachball packages to npmjs.org"
-        inputs:
-          script: |
-            npx beachball publish --scope '!packages/react-native' --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
-
-      # beachball modifies the package.json files so run manifest generation after it.
-      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-        displayName: 📒 Generate Manifest
-        inputs:
-          BuildDropPath: $(System.DefaultWorkingDirectory)
-
-      - task: PublishPipelineArtifact@1
-        displayName: 📒 Publish Manifest
-        inputs:
-          artifactName: SBom-RNMacOSInitNpmJSPublish-$(System.JobAttempt)
-          targetPath: $(System.DefaultWorkingDirectory)/_manifest
-
-  - job: Compliance
-    displayName: React-Native GitHub Compliance pipeline
-    pool: OE-OfficePublic
-    timeoutInMinutes: 15 # how long to run the job before automatically cancelling
-    steps:
-      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
-        clean: true # whether to fetch clean each time
-        fetchDepth: 10 # the depth of commits to ask Git to fetch
-        lfs: false # whether to download Git-LFS files
-        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+             - task: CmdLine@2
+               displayName: "Publish beachball packages to npmjs.org"
+               inputs:
+                 script: |
+                   npx beachball publish --scope '!packages/react-native' --branch origin/$(Build.SourceBranchName) -n NOAUTH -yes -m "applying package updates ***NO_CI***" --access public

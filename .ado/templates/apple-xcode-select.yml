@@ -9,5 +9,5 @@ parameters:
 steps:
   - bash: |
       sudo xcode-select --switch '${{ parameters.xcode_version }}'
-    displayName: Switch Xcode version ${{ parameters.slice_name }}
+    displayName: Switch Xcode version ${{ parameters.xcode_version }} for ${{ parameters.slice_name }}
     failOnStderr: true
