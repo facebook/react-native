@@ -78,7 +78,7 @@ extends:
              # - Calling the approprate scripts that upstream React Native uses to prepare a release
              # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
 
-             - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/1espt') }}:
+             - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
                - template: .ado/templates/apple-job-publish.yml@self
                  parameters:
                    build_type: nightly
@@ -137,7 +137,7 @@ extends:
              os: linux
            timeoutInMinutes: 90 # how long to run the job before automatically cancelling
            cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-           condition: eq(variables['Build.SourceBranchName'], '1espt')
+           condition: eq(variables['Build.SourceBranchName'], 'main')
            templateContext:
              outputs:
                - output: pipelineArtifact
