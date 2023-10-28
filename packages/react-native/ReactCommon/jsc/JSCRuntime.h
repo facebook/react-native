@@ -13,7 +13,16 @@
 namespace facebook {
 namespace jsc {
 
+// [macOS
+struct RuntimeConfig {
+  bool enableDebugger;
+  std::string debuggerName;
+};
+// macOS]
+
 std::unique_ptr<jsi::Runtime> makeJSCRuntime();
+
+std::unique_ptr<jsi::Runtime> makeJSCRuntime(const facebook::jsc::RuntimeConfig& rc); // [macOS]
 
 } // namespace jsc
 } // namespace facebook
