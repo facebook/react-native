@@ -67,6 +67,7 @@ steps:
       useXcpretty: true
       publishJUnitResults: true
       xctoolReporter: 'junit:test-results.xml'
+      xcodeVersion: ${{ parameters.xcode_version }}
 
   - task: ShellScript@2
     displayName: 'Cleanup packager and WebSocket test server'
