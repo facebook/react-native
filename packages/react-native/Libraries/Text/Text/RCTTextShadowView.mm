@@ -193,6 +193,14 @@
                             attachment.bounds = (CGRect){CGPointZero, fittingSize};
                             attachment.image = placeholderImage;
                             [attributedText addAttribute:NSAttachmentAttributeName value:attachment range:range];
+
+                            if (range.location > 0) {
+                              UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:range.location - 1 effectiveRange:NULL];
+                              [attributedText addAttribute:NSFontAttributeName value:font range:range];
+                            } else if (range.location + range.length < attributedText.length) {
+                              UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:range.location + range.length effectiveRange:NULL];
+                                [attributedText addAttribute:NSFontAttributeName value:font range:range];
+                            }
                           }];
 
   [attributedText endEditing];
@@ -286,11 +294,12 @@
                 CGSize attachmentSize = attachment.bounds.size;
 
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+                float lineHeight = font.pointSize;
 
                 CGRect frame = {
                     {RCTRoundPixelValue(glyphRect.origin.x),
                      RCTRoundPixelValue(
-                         glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender)},
+                         glyphRect.origin.y + glyphRect.size.height - lineHeight + (font.ascender + font.descender - attachmentSize.height) / 2)},
                     {RCTRoundPixelValue(attachmentSize.width), RCTRoundPixelValue(attachmentSize.height)}};
 
                 NSRange truncatedGlyphRange =
