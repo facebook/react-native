@@ -174,4 +174,12 @@ public class ReactFeatureFlags {
    * in JS will be rejected (The JS error will include native stack)
    */
   public static boolean rejectTurboModulePromiseOnNativeError = true;
+
+  /*
+   * When the app is completely migrated to Fabric, set this flag to true to
+   * disable parts of Paper infrastructre that are not needed anymore but consume
+   * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
+   * longer work as they won't subscribe to ReactChoregrapher for updates.
+   */
+  public static boolean enableFabricRendererExclusively = false;
 }
