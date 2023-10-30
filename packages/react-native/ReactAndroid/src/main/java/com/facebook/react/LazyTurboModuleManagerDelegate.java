@@ -47,10 +47,11 @@ public abstract class LazyTurboModuleManagerDelegate
      * the cases)
      */
     for (ReactPackage reactPackage : mPackages) {
-      if (reactPackage instanceof TurboReactPackage) {
-        TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
+      if (reactPackage instanceof BaseReactPackage) {
+        BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
         try {
-          TurboModule nativeModule = (TurboModule) turboPkg.getModule(moduleName, mReactContext);
+          TurboModule nativeModule =
+              (TurboModule) baseReactPackage.getModule(moduleName, mReactContext);
           if (nativeModule != null) {
             return nativeModule;
           }

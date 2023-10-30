@@ -619,7 +619,7 @@ jobs:
       - run:
           name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs-lts
+          command: choco install nodejs --version=18.18.0 --allow-downgrade 
 
       # Setup Dependencies
       - run:

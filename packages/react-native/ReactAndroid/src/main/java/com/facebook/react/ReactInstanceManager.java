@@ -77,6 +77,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
@@ -88,7 +89,6 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -133,6 +133,7 @@ import java.util.Set;
  * <p>To instantiate an instance of this class use {@link #builder}.
  */
 @ThreadSafe
+@StableReactNativeAPI
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
@@ -1338,7 +1339,7 @@ public class ReactInstanceManager {
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
     reactContext.setJSExceptionHandler(exceptionHandler);
 
-    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
+    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
 
     CatalystInstanceImpl.Builder catalystInstanceBuilder =
         new CatalystInstanceImpl.Builder()
@@ -1384,11 +1385,9 @@ public class ReactInstanceManager {
 
       catalystInstance.setTurboModuleManager(turboModuleManager);
 
-      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
-
       // Eagerly initialize TurboModules
-      for (String moduleName : registry.getEagerInitModuleNames()) {
-        registry.getModule(moduleName);
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
       }
     }
 
@@ -1416,9 +1415,7 @@ public class ReactInstanceManager {
   }
 
   private NativeModuleRegistry processPackages(
-      ReactApplicationContext reactContext,
-      List<ReactPackage> packages,
-      boolean checkAndUpdatePackageMembership) {
+      ReactApplicationContext reactContext, List<ReactPackage> packages) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
         new NativeModuleRegistryBuilder(reactContext, this);
 
@@ -1426,14 +1423,8 @@ public class ReactInstanceManager {
 
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
-        if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
-          continue;
-        }
         Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
         try {
-          if (checkAndUpdatePackageMembership) {
-            mPackages.add(reactPackage);
-          }
           processPackage(reactPackage, nativeModuleRegistryBuilder);
         } finally {
           Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
