@@ -199,7 +199,7 @@
                               [attributedText addAttribute:NSFontAttributeName value:font range:range];
                             } else if (range.location + range.length < attributedText.length) {
                               UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:range.location + range.length effectiveRange:NULL];
-                                [attributedText addAttribute:NSFontAttributeName value:font range:range];
+                              [attributedText addAttribute:NSFontAttributeName value:font range:range];
                             }
                           }];
 
