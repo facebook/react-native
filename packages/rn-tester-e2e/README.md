@@ -19,8 +19,8 @@ The first step you need to do is to ensure to install the tooling:
 
 ```bash
 npm install appium@2.0.0 -g
-appium driver install uiautomator2
-appium driver install xcuitest
+appium driver install uiautomator2@2.29.0
+appium driver install xcuitest@5.6.0
 ```
 
 > More details about drivers in Appium [here](https://appium.github.io/appium/docs/en/2.0/guides/managing-exts/) and [here](https://appium.github.io/appium/docs/en/2.0/quickstart/uiauto2-driver/)
@@ -113,6 +113,6 @@ This project has 2 main folders:
 
 - `tests`, where the tests and referencing files all live. The substructure is as follows:
   - `screens` -> in this folder, you will find `*.screen.js` files, where each file represents a navigation screen for RNTester. So there are 3 root ones (`apis`, `bookmarks`, `components`) and then for subscreens, there's a folder with the same name - currently, that's only `components` that contains `buttonComponent.screen.js`. The content of these files is what was earlier mentioned as "references": they provide an easy way to define all elements present in said screen, so that they can be used for tests.
-  - `specs` -> this folder follows a similar 1:1 mapping to the RNTester screens, but for the tests: for each screen (or subscreen) there's a dedicated `*.test.js` file (such as `buttonComponentScreen.test.js`). Ideally, in this file the Jest tests are standard, leveraging the `*.screen.js` counterpart for the details of defining how Appium/WDIO can reach those elements on screen.
+  - `specs` -> this folder follows a similar 1:1 mapping to the RNTester screens, but for the tests: for each screen (or subscreen) there's a dedicated folder file and within it theres test file (such as `invertedFlatList.test.js`).
 
 When adding a new test, please ensure that you follow this pattern and add the relevant test in the right screen file / screen test file. Use the files mentioned above as examples.

@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
 const path = require('path');
 
 exports.config = {
@@ -25,6 +35,7 @@ exports.config = {
     connectionRetryTimeout: 120000,
     
     connectionRetryCount: 3,
+    specFileRetries: 2,
     services: [
         [
           'appium',
@@ -33,14 +44,13 @@ exports.config = {
               address: 'localhost',
               port: 4723
             },
+            logPath: './reports',
           }
         ]
       ],
-    
     reporters: ['spec'],
     framework: 'mocha',
     mochaOpts: {
-        retries: 4,
         ui: 'bdd',
         timeout: 60000,
         require: ['@babel/register']
