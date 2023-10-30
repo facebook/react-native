@@ -7,6 +7,7 @@ version: 2.1
 orbs:
   win: circleci/windows@2.4.0
   android: circleci/android@2.3.0
+  ruby: circleci/ruby@2.1.0
 
 # -------------------------
 #        REFERENCES

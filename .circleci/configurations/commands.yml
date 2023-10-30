@@ -31,38 +31,12 @@ commands:
       - restore_cache:
           key: *rbenv_cache_key
       - run:
-          name: Bundle Install
-          command: |
-            # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
-
-            if [[ -z "$(command -v rbenv)" ]]; then
-              brew install rbenv ruby-build
-              # Load and init rbenv
-              (rbenv init 2> /dev/null) || true
-              echo '' >>  ~/.bash_profile
-              echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
-              source ~/.bash_profile
-            else
-              echo "rbenv found; Skipping installation"
-            fi
-
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
-
-            # Install the right version of ruby
-            if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
-              # ensure that `ruby-build` can see all the available versions of Ruby
-              # some PRs received machines in a weird state, this should make the pipelines
-              # more robust.
-              brew update && brew upgrade ruby-build
-              rbenv install << parameters.ruby_version >>
-            fi
-
-            # Set ruby dependencies
-            rbenv global << parameters.ruby_version >>
-            gem install bundler
-            bundle check || bundle install --path vendor/bundle --clean
+          name: Ruby Orb Dependencies
+          command: brew install gnupg
+      - ruby/install:
+          version: "<< parameters.ruby_version >>"
+      - ruby/install-deps:
+          clean-bundle: true
       - save_cache:
           key: *rbenv_cache_key
           paths:
