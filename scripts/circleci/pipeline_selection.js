@@ -55,6 +55,10 @@ const mapping = [
     filterFN: name => name.indexOf('ReactAndroid/') > -1,
   },
   {
+    name: 'RUN_E2E',
+    filterFN: name => name.indexOf('rn-tester-e2e/') > -1,
+  },
+  {
     name: 'RUN_JS',
     filterFN: name => isJSChange(name),
   },
@@ -196,7 +200,7 @@ function createConfigs(inputPath, outputPath, configFile) {
     run_ios: ['testIOS.yml'],
     run_android: ['testAndroid.yml'],
     run_e2e: ['testE2E.yml'],
-    run_all: ['testJS.yml', 'testAll.yml'],
+    run_all: ['testE2E.yml', 'testJS.yml', 'testAll.yml'],
     run_js: ['testJS.yml'],
   };
 
