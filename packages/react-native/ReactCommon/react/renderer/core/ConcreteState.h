@@ -32,8 +32,8 @@ class ConcreteState : public State {
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(const SharedData& data, const State& state)
-      : State(data, state) {}
+  explicit ConcreteState(const SharedData& data, const State& previousState)
+      : State(data, previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and

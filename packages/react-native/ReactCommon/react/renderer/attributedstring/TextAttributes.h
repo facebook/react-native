@@ -11,7 +11,6 @@
 #include <limits>
 #include <optional>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/LayoutPrimitives.h>
@@ -20,6 +19,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -74,6 +74,7 @@ class TextAttributes : public DebugStringConvertible {
 
   // Special
   std::optional<bool> isHighlighted{};
+  std::optional<bool> isPressable{};
 
   // TODO T59221129: document where this value comes from and how it is set.
   // It's not clear if this is being used properly, or if it's being set at all.
@@ -107,8 +108,7 @@ template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
       const facebook::react::TextAttributes& textAttributes) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         textAttributes.foregroundColor,
         textAttributes.backgroundColor,
         textAttributes.opacity,
@@ -132,6 +132,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowRadius,
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
+        textAttributes.isPressable,
         textAttributes.layoutDirection,
         textAttributes.accessibilityRole,
         textAttributes.role);

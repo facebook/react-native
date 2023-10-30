@@ -10,6 +10,7 @@ package com.facebook.react.module.processing;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
+import com.facebook.annotationprocessors.common.ProcessorBase;
 import com.facebook.infer.annotation.SuppressFieldNotInitialized;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -55,7 +55,7 @@ import javax.lang.model.util.Types;
   "com.facebook.react.module.annotations.ReactModuleList",
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class ReactModuleSpecProcessor extends AbstractProcessor {
+public class ReactModuleSpecProcessor extends ProcessorBase {
 
   private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);
   private static final TypeName MAP_TYPE =
@@ -78,7 +78,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   }
 
   @Override
-  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+  public boolean processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     Set<? extends Element> reactModuleListElements =
         roundEnv.getElementsAnnotatedWith(ReactModuleList.class);
     for (Element reactModuleListElement : reactModuleListElements) {
@@ -161,13 +161,13 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
       String turboModuleInterfaceCanonicalName =
-          "com.facebook.react.turbomodule.core.interfaces.TurboModule";
+          "com.facebook.react.internal.turbomodule.core.interfaces.TurboModule";
       TypeMirror turboModuleInterface =
           mElements.getTypeElement(turboModuleInterfaceCanonicalName).asType();
 
       if (turboModuleInterface == null) {
         throw new RuntimeException(
-            "com.facebook.react.turbomodule.core.interfaces.TurboModule interface not found.");
+            "com.facebook.react.internal.turbomodule.core.interfaces.TurboModule interface not found.");
       }
 
       for (String nativeModule : nativeModules) {
@@ -227,8 +227,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                 .append(reactModule.canOverrideExistingModule())
                 .append(", ")
                 .append(reactModule.needsEagerInit())
-                .append(", ")
-                .append(hasConstants)
                 .append(", ")
                 .append(reactModule.isCxxModule())
                 .append(", ")

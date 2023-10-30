@@ -28,10 +28,10 @@ class ParagraphComponentDescriptor final
   }
 
  protected:
-  void adopt(const ShadowNode::Unshared& shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto& paragraphShadowNode = static_cast<ParagraphShadowNode&>(*shadowNode);
+    auto& paragraphShadowNode = static_cast<ParagraphShadowNode&>(shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.

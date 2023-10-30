@@ -700,49 +700,64 @@ RCT_EXPORT_METHOD(sendRequest
                   : (JS::NativeNetworkingIOS::SpecSendRequestQuery &)query callback
                   : (RCTResponseSenderBlock)responseSender)
 {
-  NSDictionary *queryDict = @{
-    @"method" : query.method(),
-    @"url" : query.url(),
-    @"data" : query.data(),
-    @"headers" : query.headers(),
-    @"responseType" : query.responseType(),
-    @"incrementalUpdates" : @(query.incrementalUpdates()),
-    @"timeout" : @(query.timeout()),
-    @"withCredentials" : @(query.withCredentials()),
-  };
+  NSString *method = query.method();
+  NSString *url = query.url();
+  id<NSObject> data = query.data();
+  id<NSObject> headers = query.headers();
+  NSString *queryResponseType = query.responseType();
+  bool queryIncrementalUpdates = query.incrementalUpdates();
+  double timeout = query.timeout();
+  bool withCredentials = query.withCredentials();
 
-  // TODO: buildRequest returns a cancellation block, but there's currently
-  // no way to invoke it, if, for example the request is cancelled while
-  // loading a large file to build the request body
-  [self buildRequest:queryDict
-      completionBlock:^(NSURLRequest *request) {
-        NSString *responseType = [RCTConvert NSString:queryDict[@"responseType"]];
-        BOOL incrementalUpdates = [RCTConvert BOOL:queryDict[@"incrementalUpdates"]];
-        [self sendRequest:request
-                  responseType:responseType
-            incrementalUpdates:incrementalUpdates
-                responseSender:responseSender];
-      }];
+  dispatch_async(_methodQueue, ^{
+    NSDictionary *queryDict = @{
+      @"method" : method,
+      @"url" : url,
+      @"data" : data,
+      @"headers" : headers,
+      @"responseType" : queryResponseType,
+      @"incrementalUpdates" : @(queryIncrementalUpdates),
+      @"timeout" : @(timeout),
+      @"withCredentials" : @(withCredentials),
+    };
+
+    // TODO: buildRequest returns a cancellation block, but there's currently
+    // no way to invoke it, if, for example the request is cancelled while
+    // loading a large file to build the request body
+    [self buildRequest:queryDict
+        completionBlock:^(NSURLRequest *request) {
+          NSString *responseType = [RCTConvert NSString:queryDict[@"responseType"]];
+          BOOL incrementalUpdates = [RCTConvert BOOL:queryDict[@"incrementalUpdates"]];
+          [self sendRequest:request
+                    responseType:responseType
+              incrementalUpdates:incrementalUpdates
+                  responseSender:responseSender];
+        }];
+  });
 }
 
 RCT_EXPORT_METHOD(abortRequest : (double)requestID)
 {
-  [_tasksByRequestID[[NSNumber numberWithDouble:requestID]] cancel];
-  [_tasksByRequestID removeObjectForKey:[NSNumber numberWithDouble:requestID]];
+  dispatch_async(_methodQueue, ^{
+    [self->_tasksByRequestID[[NSNumber numberWithDouble:requestID]] cancel];
+    [self->_tasksByRequestID removeObjectForKey:[NSNumber numberWithDouble:requestID]];
+  });
 }
 
 RCT_EXPORT_METHOD(clearCookies : (RCTResponseSenderBlock)responseSender)
 {
-  NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-  if (!storage.cookies.count) {
-    responseSender(@[ @NO ]);
-    return;
-  }
+  dispatch_async(_methodQueue, ^{
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    if (!storage.cookies.count) {
+      responseSender(@[ @NO ]);
+      return;
+    }
 
-  for (NSHTTPCookie *cookie in storage.cookies) {
-    [storage deleteCookie:cookie];
-  }
-  responseSender(@[ @YES ]);
+    for (NSHTTPCookie *cookie in storage.cookies) {
+      [storage deleteCookie:cookie];
+    }
+    responseSender(@[ @YES ]);
+  });
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

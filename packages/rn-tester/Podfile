@@ -32,7 +32,7 @@ if USE_FRAMEWORKS
   use_frameworks! :linkage => linkage.to_sym
 end
 
-def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
+def pods(target_name, options = {})
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
@@ -42,16 +42,10 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
   puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    # Custom fabric component is only supported when using codegen discovery.
-    pod 'MyNativeView', :path => "NativeComponentExample"
-  end
-
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
     hermes_enabled: hermes_enabled,
-    flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: false, #deprecated
@@ -66,7 +60,9 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
+
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'MyNativeView', :path => "NativeComponentExample"
     pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
   end
 end
@@ -88,5 +84,4 @@ end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
-  __fix_double_definition_of_clockid_in_folly()
 end

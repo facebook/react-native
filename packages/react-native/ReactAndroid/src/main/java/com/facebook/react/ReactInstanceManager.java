@@ -77,6 +77,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
@@ -86,6 +87,8 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -94,9 +97,6 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
-import com.facebook.react.turbomodule.core.TurboModuleManager;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -133,6 +133,7 @@ import java.util.Set;
  * <p>To instantiate an instance of this class use {@link #builder}.
  */
 @ThreadSafe
+@StableReactNativeAPI
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
@@ -276,7 +277,12 @@ public class ReactInstanceManager {
       mPackages.add(
           new CoreModulesPackage(
               this,
-              this::invokeDefaultOnBackPressed,
+              new DefaultHardwareBackBtnHandler() {
+                @Override
+                public void invokeDefaultOnBackPressed() {
+                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+                }
+              },
               lazyViewManagersEnabled,
               minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
@@ -327,8 +333,11 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
-          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+          boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
+          rootView.setIsFabric(isFabric);
+          Bundle launchOptions = new Bundle();
+          launchOptions.putBoolean("concurrentRoot", isFabric);
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, launchOptions);
           return rootView;
         }
 
@@ -1237,8 +1246,7 @@ public class ReactInstanceManager {
               reactRoot.getRootViewGroup(),
               initialProperties == null
                   ? new WritableNativeMap()
-                  : Arguments.fromBundle(initialProperties),
-              reactRoot.getInitialUITemplate());
+                  : Arguments.fromBundle(initialProperties));
       reactRoot.setRootViewTag(rootTag);
       reactRoot.runApplication();
     }
@@ -1331,7 +1339,7 @@ public class ReactInstanceManager {
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
     reactContext.setJSExceptionHandler(exceptionHandler);
 
-    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
+    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
 
     CatalystInstanceImpl.Builder catalystInstanceBuilder =
         new CatalystInstanceImpl.Builder()
@@ -1354,14 +1362,12 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
-    if (ReactFeatureFlags.unstable_useRuntimeSchedulerAlways) {
-      // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
-      // the `nativeRuntimeScheduler` object is registered on JS.
-      // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
-      // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
-      // architecture so it will always be there.
-      catalystInstance.getRuntimeScheduler();
-    }
+    // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
+    // the `nativeRuntimeScheduler` object is registered on JS.
+    // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
+    // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
+    // architecture so it will always be there.
+    catalystInstance.getRuntimeScheduler();
 
     if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
@@ -1379,11 +1385,9 @@ public class ReactInstanceManager {
 
       catalystInstance.setTurboModuleManager(turboModuleManager);
 
-      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
-
       // Eagerly initialize TurboModules
-      for (String moduleName : registry.getEagerInitModuleNames()) {
-        registry.getModule(moduleName);
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
       }
     }
 
@@ -1411,9 +1415,7 @@ public class ReactInstanceManager {
   }
 
   private NativeModuleRegistry processPackages(
-      ReactApplicationContext reactContext,
-      List<ReactPackage> packages,
-      boolean checkAndUpdatePackageMembership) {
+      ReactApplicationContext reactContext, List<ReactPackage> packages) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
         new NativeModuleRegistryBuilder(reactContext, this);
 
@@ -1421,14 +1423,8 @@ public class ReactInstanceManager {
 
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
-        if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
-          continue;
-        }
         Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
         try {
-          if (checkAndUpdatePackageMembership) {
-            mPackages.add(reactPackage);
-          }
           processPackage(reactPackage, nativeModuleRegistryBuilder);
         } finally {
           Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);

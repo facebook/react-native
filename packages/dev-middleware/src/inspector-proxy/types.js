@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -79,6 +79,10 @@ export type PageDescription = {
   devtoolsFrontendUrl: string,
   type: string,
   webSocketDebuggerUrl: string,
+  // Metadata specific to React Native
+  reactNative: {
+    logicalDeviceId: string,
+  },
   ...
 };
 export type JsonPagesListResponse = Array<PageDescription>;

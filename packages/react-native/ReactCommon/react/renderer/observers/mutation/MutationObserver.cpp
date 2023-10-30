@@ -77,7 +77,7 @@ static ShadowNode::Shared findNodeOfSameFamily(
 void MutationObserver::recordMutations(
     const RootShadowNode& oldRootShadowNode,
     const RootShadowNode& newRootShadowNode,
-    std::vector<const MutationRecord>& recordedMutations) const {
+    std::vector<MutationRecord>& recordedMutations) const {
   // This tracks the nodes that have already been processed by this observer,
   // so we avoid unnecessary work and duplicated entries.
   SetOfShadowNodePointers processedNodes;
@@ -110,7 +110,7 @@ void MutationObserver::recordMutationsInTarget(
     const RootShadowNode& oldRootShadowNode,
     const RootShadowNode& newRootShadowNode,
     bool observeSubtree,
-    std::vector<const MutationRecord>& recordedMutations,
+    std::vector<MutationRecord>& recordedMutations,
     SetOfShadowNodePointers& processedNodes) const {
   // If the node isnt't present in the old tree, it's either:
   // - A new node. In that case, the mutation happened in its parent, not in the
@@ -146,7 +146,7 @@ void MutationObserver::recordMutationsInSubtrees(
     const ShadowNode& oldNode,
     const ShadowNode& newNode,
     bool observeSubtree,
-    std::vector<const MutationRecord>& recordedMutations,
+    std::vector<MutationRecord>& recordedMutations,
     SetOfShadowNodePointers processedNodes) const {
   bool isSameNode = &oldNode == &newNode;
   // If the nodes are referentially equal, their children are also the same.

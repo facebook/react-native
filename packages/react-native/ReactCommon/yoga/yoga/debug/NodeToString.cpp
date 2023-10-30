@@ -11,6 +11,7 @@
 
 #include <yoga/YGEnums.h>
 
+#include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -33,7 +34,7 @@ static void appendFormattedString(std::string& str, const char* fmt, ...) {
   va_start(args, fmt);
   va_list argsCopy;
   va_copy(argsCopy, args);
-  std::vector<char> buf(1 + vsnprintf(NULL, 0, fmt, args));
+  std::vector<char> buf(1 + static_cast<size_t>(vsnprintf(NULL, 0, fmt, args)));
   va_end(args);
   vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
@@ -90,13 +91,12 @@ static void appendEdges(
     const std::string& key,
     const Style::Edges& edges) {
   if (areFourValuesEqual(edges)) {
-    auto edgeValue = yoga::Node::computeEdgeValueForColumn(
-        edges, YGEdgeLeft, CompactValue::ofZero());
-    appendNumberIfNotZero(base, key, edgeValue);
+    auto edgeValue = yoga::Node::computeEdgeValueForColumn(edges, YGEdgeLeft);
+    appendNumberIfNotUndefined(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
-      appendNumberIfNotZero(base, str, edges[edge]);
+      appendNumberIfNotZero(base, str, edges[static_cast<size_t>(edge)]);
     }
   }
 }
@@ -108,27 +108,25 @@ static void appendEdgeIfNotUndefined(
     const YGEdge edge) {
   // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
   auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
-      ? yoga::Node::computeEdgeValueForRow(
-            edges, edge, edge, CompactValue::ofUndefined())
-      : yoga::Node::computeEdgeValueForColumn(
-            edges, edge, CompactValue::ofUndefined());
+      ? yoga::Node::computeEdgeValueForRow(edges, edge, edge)
+      : yoga::Node::computeEdgeValueForColumn(edges, edge);
   appendNumberIfNotUndefined(base, str, value);
 }
 
 void nodeToString(
     std::string& str,
-    yoga::Node* node,
-    YGPrintOptions options,
+    const yoga::Node* node,
+    PrintOptions options,
     uint32_t level) {
   indent(str, level);
   appendFormattedString(str, "<div ");
 
-  if (options & YGPrintOptionsLayout) {
+  if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
     appendFormattedString(str, "layout=\"");
     appendFormattedString(
-        str, "width: %g; ", node->getLayout().dimensions[YGDimensionWidth]);
+        str, "width: %g; ", node->getLayout().dimension(Dimension::Width));
     appendFormattedString(
-        str, "height: %g; ", node->getLayout().dimensions[YGDimensionHeight]);
+        str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
         str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
     appendFormattedString(
@@ -136,32 +134,28 @@ void nodeToString(
     appendFormattedString(str, "\" ");
   }
 
-  if (options & YGPrintOptionsStyle) {
+  if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendFormattedString(str, "style=\"");
     const auto& style = node->getStyle();
     if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
       appendFormattedString(
-          str,
-          "flex-direction: %s; ",
-          YGFlexDirectionToString(style.flexDirection()));
+          str, "flex-direction: %s; ", toString(style.flexDirection()));
     }
     if (style.justifyContent() != yoga::Node{}.getStyle().justifyContent()) {
       appendFormattedString(
-          str,
-          "justify-content: %s; ",
-          YGJustifyToString(style.justifyContent()));
+          str, "justify-content: %s; ", toString(style.justifyContent()));
     }
     if (style.alignItems() != yoga::Node{}.getStyle().alignItems()) {
       appendFormattedString(
-          str, "align-items: %s; ", YGAlignToString(style.alignItems()));
+          str, "align-items: %s; ", toString(style.alignItems()));
     }
     if (style.alignContent() != yoga::Node{}.getStyle().alignContent()) {
       appendFormattedString(
-          str, "align-content: %s; ", YGAlignToString(style.alignContent()));
+          str, "align-content: %s; ", toString(style.alignContent()));
     }
     if (style.alignSelf() != yoga::Node{}.getStyle().alignSelf()) {
       appendFormattedString(
-          str, "align-self: %s; ", YGAlignToString(style.alignSelf()));
+          str, "align-self: %s; ", toString(style.alignSelf()));
     }
     appendFloatOptionalIfDefined(str, "flex-grow", style.flexGrow());
     appendFloatOptionalIfDefined(str, "flex-shrink", style.flexShrink());
@@ -169,50 +163,41 @@ void nodeToString(
     appendFloatOptionalIfDefined(str, "flex", style.flex());
 
     if (style.flexWrap() != yoga::Node{}.getStyle().flexWrap()) {
-      appendFormattedString(
-          str, "flex-wrap: %s; ", YGWrapToString(style.flexWrap()));
+      appendFormattedString(str, "flex-wrap: %s; ", toString(style.flexWrap()));
     }
 
     if (style.overflow() != yoga::Node{}.getStyle().overflow()) {
-      appendFormattedString(
-          str, "overflow: %s; ", YGOverflowToString(style.overflow()));
+      appendFormattedString(str, "overflow: %s; ", toString(style.overflow()));
     }
 
     if (style.display() != yoga::Node{}.getStyle().display()) {
-      appendFormattedString(
-          str, "display: %s; ", YGDisplayToString(style.display()));
+      appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
     appendEdges(str, "margin", style.margin());
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (yoga::Node::computeColumnGap(
-            style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeColumnGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(
-          str, "column-gap", style.gap()[YGGutterColumn]);
-    }
-    if (yoga::Node::computeRowGap(style.gap(), CompactValue::ofUndefined()) !=
-        yoga::Node::computeRowGap(
-            yoga::Node{}.getStyle().gap(), CompactValue::ofUndefined())) {
-      appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
+    if (!style.gap(Gutter::All).isUndefined()) {
+      appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
+    } else {
+      appendNumberIfNotUndefined(str, "column-gap", style.gap(Gutter::Column));
+      appendNumberIfNotUndefined(str, "row-gap", style.gap(Gutter::Row));
     }
 
-    appendNumberIfNotAuto(str, "width", style.dimensions()[YGDimensionWidth]);
-    appendNumberIfNotAuto(str, "height", style.dimensions()[YGDimensionHeight]);
+    appendNumberIfNotAuto(str, "width", style.dimension(Dimension::Width));
+    appendNumberIfNotAuto(str, "height", style.dimension(Dimension::Height));
     appendNumberIfNotAuto(
-        str, "max-width", style.maxDimensions()[YGDimensionWidth]);
+        str, "max-width", style.maxDimension(Dimension::Width));
     appendNumberIfNotAuto(
-        str, "max-height", style.maxDimensions()[YGDimensionHeight]);
+        str, "max-height", style.maxDimension(Dimension::Height));
     appendNumberIfNotAuto(
-        str, "min-width", style.minDimensions()[YGDimensionWidth]);
+        str, "min-width", style.minDimension(Dimension::Width));
     appendNumberIfNotAuto(
-        str, "min-height", style.minDimensions()[YGDimensionHeight]);
+        str, "min-height", style.minDimension(Dimension::Height));
 
     if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
       appendFormattedString(
-          str, "position: %s; ", YGPositionTypeToString(style.positionType()));
+          str, "position: %s; ", toString(style.positionType()));
     }
 
     appendEdgeIfNotUndefined(str, "left", style.position(), YGEdgeLeft);
@@ -227,9 +212,10 @@ void nodeToString(
   }
   appendFormattedString(str, ">");
 
-  const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
-  if (options & YGPrintOptionsChildren && childCount > 0) {
-    for (uint32_t i = 0; i < childCount; i++) {
+  const size_t childCount = node->getChildCount();
+  if ((options & PrintOptions::Children) == PrintOptions::Children &&
+      childCount > 0) {
+    for (size_t i = 0; i < childCount; i++) {
       appendFormattedString(str, "\n");
       nodeToString(str, node->getChild(i), options, level + 1);
     }
@@ -237,6 +223,12 @@ void nodeToString(
     indent(str, level);
   }
   appendFormattedString(str, "</div>");
+}
+
+void print(const yoga::Node* node, PrintOptions options) {
+  std::string str;
+  yoga::nodeToString(str, node, options, 0);
+  yoga::log(node, LogLevel::Debug, str.c_str());
 }
 
 } // namespace facebook::yoga

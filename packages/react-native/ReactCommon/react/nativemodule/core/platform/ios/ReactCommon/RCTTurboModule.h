@@ -45,6 +45,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
     bool isSyncModule;
+    bool shouldVoidMethodsExecuteSync;
   };
 
   ObjCTurboModule(const InitParams &params);
@@ -112,6 +113,9 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   // Does the NativeModule dispatch async methods to the JS thread?
   const bool isSyncModule_;
 
+  // Should void methods execute synchronously?
+  const bool shouldVoidMethodsExecuteSync_;
+
   /**
    * TODO(ramanpreet):
    * Investigate an optimization that'll let us get rid of this NSMutableDictionary.
@@ -135,6 +139,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   id performMethodInvocation(
       jsi::Runtime &runtime,
       bool isSync,
+      const char *methodName,
+      NSInvocation *inv,
+      NSMutableArray *retainedObjectsForInvocation);
+  void performVoidMethodInvocation(
+      jsi::Runtime &runtime,
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);

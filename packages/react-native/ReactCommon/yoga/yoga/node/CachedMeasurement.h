@@ -10,6 +10,8 @@
 #include <cmath>
 
 #include <yoga/Yoga.h>
+
+#include <yoga/enums/MeasureMode.h>
 #include <yoga/numeric/Comparison.h>
 
 namespace facebook::yoga {
@@ -17,8 +19,8 @@ namespace facebook::yoga {
 struct CachedMeasurement {
   float availableWidth{-1};
   float availableHeight{-1};
-  YGMeasureMode widthMeasureMode{YGMeasureModeUndefined};
-  YGMeasureMode heightMeasureMode{YGMeasureModeUndefined};
+  MeasureMode widthMeasureMode{MeasureMode::Undefined};
+  MeasureMode heightMeasureMode{MeasureMode::Undefined};
 
   float computedWidth{-1};
   float computedHeight{-1};

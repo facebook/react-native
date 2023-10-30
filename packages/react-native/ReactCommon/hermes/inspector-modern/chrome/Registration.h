@@ -7,11 +7,13 @@
 
 #pragma once
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 #include <memory>
 #include <string>
 
 #include <hermes/hermes.h>
-#include <hermes/inspector-modern/RuntimeAdapter.h>
+#include <hermes/inspector/RuntimeAdapter.h>
 
 namespace facebook {
 namespace hermes {
@@ -28,7 +30,7 @@ using DebugSessionToken = int;
  */
 extern DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
-    const std::string &title);
+    const std::string& title);
 
 /*
  * disableDebugging removes this runtime from the list of debuggable JS targets
@@ -41,3 +43,5 @@ extern void disableDebugging(DebugSessionToken session);
 } // namespace inspector_modern
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_ENABLE_DEBUGGER

@@ -8,10 +8,21 @@ require_relative "../new_architecture.rb"
 require_relative "./test_utils/InstallerMock.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
+require_relative "./test_utils/FileMock.rb"
+
+## Monkey patching to reset properly static props of the Helper.
+class NewArchitectureHelper
+    def self.reset
+        @@NewArchWarningEmitted = false
+    end
+end
 
 class NewArchitectureTests < Test::Unit::TestCase
     def teardown
         Pod::UI.reset()
+        FileMock.reset()
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
+        NewArchitectureHelper.reset()
     end
 
     # ============================= #
@@ -22,10 +33,10 @@ class NewArchitectureTests < Test::Unit::TestCase
         installer = prepare_mocked_installer_with_react_core
         NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
 
-        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
-        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
+        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
-        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++17 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++17 on /test/path2.xcproj"])
+        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
     end
 
     def test_setClangCxxLanguageStandardIfNeeded_whenReactCoreIsNotPresent
@@ -42,10 +53,10 @@ class NewArchitectureTests < Test::Unit::TestCase
         installer = prepare_mocked_installer_with_react_core_and_different_language_standards
         NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
 
-        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
-        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
+        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
-        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++17 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++17 on /test/path2.xcproj"])
+        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
     end
 
     # =================== #
@@ -101,15 +112,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, true)
 
         # Assert
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DNDEBUG")
         assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
@@ -125,18 +136,18 @@ class NewArchitectureTests < Test::Unit::TestCase
         spec = SpecMock.new
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, true, '2021.07.22.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, true, '2023.08.07.00')
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
-        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
-        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
+        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "React-Codegen" },
@@ -166,21 +177,225 @@ class NewArchitectureTests < Test::Unit::TestCase
         }
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, false, '2021.07.22.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, false, '2023.08.07.00')
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
-        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
                 { :dependency_name => "glog" }
             ]
         )
     end
+
+    # =============================== #
+    # Test - Compute New Arch Enabled #
+    # =============================== #
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVarNil_returnTrueWithNoWarning
+        version = '1000.0.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = nil
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVar1_returnTrueWithNoWarning
+        version = '1000.0.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVarNil_returnFalseWithNoWarning
+        version = '1000.0.0'
+        new_arch_enabled = false
+        ENV['RCT_NEW_ARCH_ENABLED'] = nil
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVar0_returnFalseWithNoWarning
+        version = '1000.0.0'
+        new_arch_enabled = false
+        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnvNil_returnTrueWithNoWarning
+        version = '0.73.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = nil
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnv1_returnTrueWithNoWarning
+        version = '0.73.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnvNil_returnFalseWithNoWarning
+        version = '0.73.0'
+        new_arch_enabled = false
+        ENV['RCT_NEW_ARCH_ENABLED'] = nil
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnv0_returnFalseWithNoWarning
+        version = '0.73.0'
+        new_arch_enabled = false
+        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnvNil_returnTrueWithNoWarning
+        version = '0.0.0-prealpha.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = nil
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal([], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnv1_returnTrueWithWarning
+        version = '0.0.0-prealpha.0'
+        new_arch_enabled = true
+        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
+            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
+    end
+
+
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalseAndEnv0_returnTrueWithWarning
+        version = '0.0.0-prealpha.0'
+        new_arch_enabled = false
+        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
+            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
+    end
+
+    def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
+        version = '0.0.0-prealpha-0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
+        version = '0.0.0-prealpha0'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("1", isEnabled)
+    end
+
+    def test_computeNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
+        version = '3.2.1'
+        new_arch_enabled = false
+
+        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
+
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns);
+    end
+
+    # =================================== #
+    # Test - Extract React Native Version #
+    # =================================== #
+    def test_extractReactNativeVersion_whenFileDoesNotExists_raiseError()
+        react_native_path = './node_modules/react-native/'
+
+        exception = assert_raise(RuntimeError) do
+            NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+        end
+
+        assert_equal("Couldn't find the React Native package.json file at ./node_modules/react-native/package.json", exception.message)
+    end
+
+    def test_extractReactNativeVersion_whenFileExists_returnTheRightVersion()
+        react_native_path = "./node_modules/react-native/"
+        full_path = File.join(react_native_path, "package.json")
+        json = "{\"version\": \"1.0.0-prealpha.0\"}"
+        FileMock.mocked_existing_files([full_path])
+        FileMock.files_to_read({
+            full_path => json
+        })
+
+        version = NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
+
+        assert_equal("1.0.0-prealpha.0", version)
+    end
+
+    # =============================== #
+    # Test - New Architecture Enabled #
+    # =============================== #
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo1_returnTrue
+        ENV["RCT_NEW_ARCH_ENABLED"] = "1"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_true(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsSetTo0_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = "0"
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
+    def test_newArchEnabled_whenRCTNewArchEnabledIsNotSet_returnFalse
+        ENV["RCT_NEW_ARCH_ENABLED"] = nil
+        is_enabled = NewArchitectureHelper.new_arch_enabled
+        assert_false(is_enabled)
+    end
+
+
 end
 
 # ================ #
@@ -199,8 +414,8 @@ def prepare_mocked_installer_with_react_core
                 TargetMock.new(
                     "React-Core",
                     [
-                        BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
-                        BuildConfigurationMock.new("Release", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
+                        BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }),
+                        BuildConfigurationMock.new("Release", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }),
                     ]
                 )
             ]
@@ -229,7 +444,7 @@ def prepare_mocked_installer_with_react_core_and_different_language_standards
                 TargetMock.new(
                     "React-Core",
                     [
-                        BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }),
+                        BuildConfigurationMock.new("Debug", { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }),
                         BuildConfigurationMock.new("Release", { "CLANG_CXX_LANGUAGE_STANDARD" => "new" }),
                     ]
                 )

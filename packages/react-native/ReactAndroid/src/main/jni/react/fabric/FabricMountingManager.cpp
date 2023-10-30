@@ -25,6 +25,7 @@
 
 #include <cfenv>
 #include <cmath>
+#include <unordered_set>
 #include <vector>
 
 namespace facebook::react {
@@ -48,7 +49,7 @@ FabricMountingManager::FabricMountingManager(
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
-  allocatedViewRegistry_.emplace(surfaceId, butter::set<Tag>{});
+  allocatedViewRegistry_.emplace(surfaceId, std::unordered_set<Tag>{});
 }
 
 void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
@@ -230,20 +231,7 @@ static inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> FabricMountingManager::getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
-  if (CoreFeatures::enableMapBuffer &&
-      newShadowView.traits.check(
-          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
-    react_native_assert(
-        newShadowView.props->rawProps.empty() &&
-        "Raw props must be empty when views are using mapbuffer");
-
-    // MapBufferBuilder must be constructed and live in this scope,
-    MapBufferBuilder builder;
-    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
-    return JReadableMapBuffer::createWithContents(builder.build());
-  } else {
-    return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
-  }
+  return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
 void FabricMountingManager::executeMount(
@@ -274,12 +262,12 @@ void FabricMountingManager::executeMount(
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
-    auto defaultAllocatedViews = butter::set<Tag>{};
-    // Do not remove `defaultAllocatedViews` or initialize `butter::set<Tag>{}`
-    // inline in below ternary expression -
-    // if falsy operand is a value type, the compiler will decide the expression
-    // to be a value type, an unnecessary (sometimes expensive) copy will happen
-    // as a result.
+    auto defaultAllocatedViews = std::unordered_set<Tag>{};
+    // Do not remove `defaultAllocatedViews` or initialize
+    // `std::unordered_set<Tag>{}` inline in below ternary expression - if falsy
+    // operand is a value type, the compiler will decide the expression to be a
+    // value type, an unnecessary (sometimes expensive) copy will happen as a
+    // result.
     const auto& allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
@@ -512,7 +500,8 @@ void FabricMountingManager::executeMount(
                                           jlong,
                                           jlong,
                                           jlong,
-                                          jlong)>("scheduleMountItem");
+                                          jlong,
+                                          jint)>("scheduleMountItem");
 
   if (batchMountItemIntsSize == 0) {
     auto finishTransactionEndTime = telemetryTimePointNow();
@@ -527,7 +516,8 @@ void FabricMountingManager::executeMount(
         telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
         telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
         telemetryTimePointToMilliseconds(finishTransactionStartTime),
-        telemetryTimePointToMilliseconds(finishTransactionEndTime));
+        telemetryTimePointToMilliseconds(finishTransactionEndTime),
+        telemetry.getAffectedLayoutNodesCount());
     return;
   }
 
@@ -814,7 +804,8 @@ void FabricMountingManager::executeMount(
       telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
       telemetryTimePointToMilliseconds(finishTransactionStartTime),
-      telemetryTimePointToMilliseconds(finishTransactionEndTime));
+      telemetryTimePointToMilliseconds(finishTransactionEndTime),
+      telemetry.getAffectedLayoutNodesCount());
 
   env->DeleteLocalRef(intBufferArray);
 }

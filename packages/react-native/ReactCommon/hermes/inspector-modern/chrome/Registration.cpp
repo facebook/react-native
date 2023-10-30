@@ -8,6 +8,8 @@
 #include "Registration.h"
 #include "ConnectionDemux.h"
 
+#ifdef HERMES_ENABLE_DEBUGGER
+
 namespace facebook {
 namespace hermes {
 namespace inspector_modern {
@@ -15,8 +17,9 @@ namespace chrome {
 
 namespace {
 
-ConnectionDemux &demux() {
-  static ConnectionDemux instance{facebook::react::getInspectorInstance()};
+ConnectionDemux& demux() {
+  static ConnectionDemux instance{
+      facebook::react::jsinspector_modern::getInspectorInstance()};
   return instance;
 }
 
@@ -24,7 +27,7 @@ ConnectionDemux &demux() {
 
 DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
-    const std::string &title) {
+    const std::string& title) {
   return demux().enableDebugging(std::move(adapter), title);
 }
 
@@ -36,3 +39,5 @@ void disableDebugging(DebugSessionToken session) {
 } // namespace inspector_modern
 } // namespace hermes
 } // namespace facebook
+
+#endif // HERMES_ENABLE_DEBUGGER

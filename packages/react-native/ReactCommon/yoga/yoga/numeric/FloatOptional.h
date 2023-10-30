@@ -7,67 +7,83 @@
 
 #pragma once
 
-#include <cmath>
+#include <yoga/numeric/Comparison.h>
 #include <limits>
 
 namespace facebook::yoga {
 
 struct FloatOptional {
-private:
+ private:
   float value_ = std::numeric_limits<float>::quiet_NaN();
 
-public:
+ public:
   explicit constexpr FloatOptional(float value) : value_(value) {}
   constexpr FloatOptional() = default;
 
   // returns the wrapped value, or a value x with YGIsUndefined(x) == true
-  constexpr float unwrap() const { return value_; }
+  constexpr float unwrap() const {
+    return value_;
+  }
 
-  bool isUndefined() const { return std::isnan(value_); }
+  constexpr float unwrapOrDefault(float defaultValue) const {
+    return isUndefined() ? defaultValue : value_;
+  }
+
+  constexpr bool isUndefined() const {
+    return yoga::isUndefined(value_);
+  }
 };
 
 // operators take FloatOptional by value, as it is a 32bit value
 
-inline bool operator==(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator==(FloatOptional lhs, FloatOptional rhs) {
   return lhs.unwrap() == rhs.unwrap() ||
       (lhs.isUndefined() && rhs.isUndefined());
 }
-inline bool operator!=(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator!=(FloatOptional lhs, FloatOptional rhs) {
   return !(lhs == rhs);
 }
 
-inline bool operator==(FloatOptional lhs, float rhs) {
+constexpr bool operator==(FloatOptional lhs, float rhs) {
   return lhs == FloatOptional{rhs};
 }
-inline bool operator!=(FloatOptional lhs, float rhs) {
+constexpr bool operator!=(FloatOptional lhs, float rhs) {
   return !(lhs == rhs);
 }
 
-inline bool operator==(float lhs, FloatOptional rhs) {
+constexpr bool operator==(float lhs, FloatOptional rhs) {
   return rhs == lhs;
 }
-inline bool operator!=(float lhs, FloatOptional rhs) {
+constexpr bool operator!=(float lhs, FloatOptional rhs) {
   return !(lhs == rhs);
 }
 
-inline FloatOptional operator+(FloatOptional lhs, FloatOptional rhs) {
+constexpr FloatOptional operator+(FloatOptional lhs, FloatOptional rhs) {
   return FloatOptional{lhs.unwrap() + rhs.unwrap()};
 }
 
-inline bool operator>(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator>(FloatOptional lhs, FloatOptional rhs) {
   return lhs.unwrap() > rhs.unwrap();
 }
 
-inline bool operator<(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator<(FloatOptional lhs, FloatOptional rhs) {
   return lhs.unwrap() < rhs.unwrap();
 }
 
-inline bool operator>=(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator>=(FloatOptional lhs, FloatOptional rhs) {
   return lhs > rhs || lhs == rhs;
 }
 
-inline bool operator<=(FloatOptional lhs, FloatOptional rhs) {
+constexpr bool operator<=(FloatOptional lhs, FloatOptional rhs) {
   return lhs < rhs || lhs == rhs;
+}
+
+constexpr FloatOptional maxOrDefined(FloatOptional lhs, FloatOptional rhs) {
+  return FloatOptional{yoga::maxOrDefined(lhs.unwrap(), rhs.unwrap())};
+}
+
+inline bool inexactEquals(FloatOptional lhs, FloatOptional rhs) {
+  return yoga::inexactEquals(lhs.unwrap(), rhs.unwrap());
 }
 
 } // namespace facebook::yoga

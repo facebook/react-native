@@ -88,14 +88,14 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   void initialize() noexcept {
     auto& props = BaseShadowNode::getConcreteProps();
 
-    if (props.yogaStyle.display() == YGDisplayNone) {
+    if (props.yogaStyle.display() == yoga::Display::None) {
       BaseShadowNode::traits_.set(ShadowNodeTraits::Trait::Hidden);
     } else {
       BaseShadowNode::traits_.unset(ShadowNodeTraits::Trait::Hidden);
     }
 
     // `zIndex` is only defined for non-`static` positioned views.
-    if (props.yogaStyle.positionType() != YGPositionTypeStatic) {
+    if (props.yogaStyle.positionType() != yoga::PositionType::Static) {
       BaseShadowNode::orderIndex_ = props.zIndex.value_or(0);
     } else {
       BaseShadowNode::orderIndex_ = 0;

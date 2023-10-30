@@ -7,11 +7,18 @@
 
 #pragma once
 
-#include <cstdint>
 #include <stdio.h>
+#include <cstdint>
 #include <vector>
 
+#include <yoga/Yoga.h>
+
 #include <yoga/config/Config.h>
+#include <yoga/enums/Dimension.h>
+#include <yoga/enums/Direction.h>
+#include <yoga/enums/Errata.h>
+#include <yoga/enums/MeasureMode.h>
+#include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
@@ -21,61 +28,41 @@ struct YGNode {};
 
 namespace facebook::yoga {
 
-#pragma pack(push)
-#pragma pack(1)
-struct NodeFlags {
-  bool hasNewLayout : 1;
-  bool isReferenceBaseline : 1;
-  bool isDirty : 1;
-  uint8_t nodeType : 1;
-  bool measureUsesContext : 1;
-  bool baselineUsesContext : 1;
-  bool printUsesContext : 1;
-};
-#pragma pack(pop)
-
-class YOGA_EXPORT Node : public ::YGNode {
-public:
-  using MeasureWithContextFn =
-      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
-  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
-  using PrintWithContextFn = void (*)(YGNode*, void*);
-
-private:
+class YG_EXPORT Node : public ::YGNode {
+ private:
+  bool hasNewLayout_ : 1 = true;
+  bool isReferenceBaseline_ : 1 = false;
+  bool isDirty_ : 1 = false;
+  NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
-  NodeFlags flags_ = {};
-  union {
-    YGMeasureFunc noContext;
-    MeasureWithContextFn withContext;
-  } measure_ = {nullptr};
-  union {
-    YGBaselineFunc noContext;
-    BaselineWithContextFn withContext;
-  } baseline_ = {nullptr};
-  union {
-    YGPrintFunc noContext;
-    PrintWithContextFn withContext;
-  } print_ = {nullptr};
-  YGDirtiedFunc dirtied_ = nullptr;
+  YGMeasureFunc measureFunc_ = {nullptr};
+  YGBaselineFunc baselineFunc_ = {nullptr};
+  YGPrintFunc printFunc_ = {nullptr};
+  YGDirtiedFunc dirtiedFunc_ = nullptr;
   Style style_ = {};
   LayoutResults layout_ = {};
-  uint32_t lineIndex_ = 0;
+  size_t lineIndex_ = 0;
   Node* owner_ = nullptr;
   std::vector<Node*> children_ = {};
-  Config* config_;
+  const Config* config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
-  FloatOptional relativePosition(
-      const YGFlexDirection axis,
+  float relativePosition(
+      FlexDirection axis,
+      Direction direction,
       const float axisSize) const;
 
-  void setMeasureFunc(decltype(measure_));
-  void setBaselineFunc(decltype(baseline_));
+  YGEdge getInlineStartEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  YGEdge getInlineEndEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
 
   void useWebDefaults() {
-    style_.flexDirection() = YGFlexDirectionRow;
-    style_.alignContent() = YGAlignStretch;
+    style_.flexDirection() = FlexDirection::Row;
+    style_.alignContent() = Align::Stretch;
   }
 
   // DANGER DANGER DANGER!
@@ -85,11 +72,9 @@ private:
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
   Node& operator=(Node&&) = default;
 
-public:
-  Node() : Node{static_cast<Config*>(YGConfigGetDefault())} {
-    flags_.hasNewLayout = true;
-  }
-  explicit Node(Config* config);
+ public:
+  Node();
+  explicit Node(const Config* config);
   ~Node() = default; // cleanup of owner/children relationships in YGNodeFree
 
   Node(Node&&);
@@ -103,240 +88,284 @@ public:
   Node& operator=(const Node&) = delete;
 
   // Getters
-  void* getContext() const { return context_; }
-
-  void print(void*);
-
-  bool getHasNewLayout() const { return flags_.hasNewLayout; }
-
-  YGNodeType getNodeType() const {
-    return static_cast<YGNodeType>(flags_.nodeType);
+  void* getContext() const {
+    return context_;
   }
 
-  bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
+  void print();
 
-  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
+  bool getHasNewLayout() const {
+    return hasNewLayout_;
+  }
+
+  NodeType getNodeType() const {
+    return nodeType_;
+  }
+
+  bool hasMeasureFunc() const noexcept {
+    return measureFunc_ != nullptr;
+  }
+
+  YGSize measure(float, MeasureMode, float, MeasureMode);
 
   bool hasBaselineFunc() const noexcept {
-    return baseline_.noContext != nullptr;
+    return baselineFunc_ != nullptr;
   }
 
-  float baseline(float width, float height, void* layoutContext);
+  float baseline(float width, float height) const;
 
-  bool hasErrata(YGErrata errata) const { return config_->hasErrata(errata); }
+  bool hasErrata(Errata errata) const {
+    return config_->hasErrata(errata);
+  }
 
-  YGDirtiedFunc getDirtied() const { return dirtied_; }
+  YGDirtiedFunc getDirtiedFunc() const {
+    return dirtiedFunc_;
+  }
 
   // For Performance reasons passing as reference.
-  Style& getStyle() { return style_; }
+  Style& getStyle() {
+    return style_;
+  }
 
-  const Style& getStyle() const { return style_; }
+  const Style& getStyle() const {
+    return style_;
+  }
 
   // For Performance reasons passing as reference.
-  LayoutResults& getLayout() { return layout_; }
+  LayoutResults& getLayout() {
+    return layout_;
+  }
 
-  const LayoutResults& getLayout() const { return layout_; }
+  const LayoutResults& getLayout() const {
+    return layout_;
+  }
 
-  uint32_t getLineIndex() const { return lineIndex_; }
+  size_t getLineIndex() const {
+    return lineIndex_;
+  }
 
-  bool isReferenceBaseline() { return flags_.isReferenceBaseline; }
+  bool isReferenceBaseline() const {
+    return isReferenceBaseline_;
+  }
 
   // returns the Node that owns this Node. An owner is used to identify
   // the YogaTree that a Node belongs to. This method will return the parent
   // of the Node when a Node only belongs to one YogaTree or nullptr when
   // the Node is shared between two or more YogaTrees.
-  Node* getOwner() const { return owner_; }
-
-  // Deprecated, use getOwner() instead.
-  Node* getParent() const { return getOwner(); }
-
-  const std::vector<Node*>& getChildren() const { return children_; }
-
-  // Applies a callback to all children, after cloning them if they are not
-  // owned.
-  template <typename T>
-  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
-    int i = 0;
-    for (Node*& child : children_) {
-      if (child->getOwner() != this) {
-        child = static_cast<Node*>(
-            config_->cloneNode(child, this, i, cloneContext));
-        child->setOwner(this);
-      }
-      i += 1;
-
-      callback(child, cloneContext);
-    }
+  Node* getOwner() const {
+    return owner_;
   }
 
-  Node* getChild(uint32_t index) const { return children_.at(index); }
+  // Deprecated, use getOwner() instead.
+  Node* getParent() const {
+    return getOwner();
+  }
 
-  Config* getConfig() const { return config_; }
+  const std::vector<Node*>& getChildren() const {
+    return children_;
+  }
 
-  bool isDirty() const { return flags_.isDirty; }
+  Node* getChild(size_t index) const {
+    return children_.at(index);
+  }
+
+  size_t getChildCount() const {
+    return children_.size();
+  }
+
+  const Config* getConfig() const {
+    return config_;
+  }
+
+  bool isDirty() const {
+    return isDirty_;
+  }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
   }
 
-  YGValue getResolvedDimension(int index) const {
-    return resolvedDimensions_[index];
+  YGValue getResolvedDimension(Dimension dimension) const {
+    return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
   static CompactValue computeEdgeValueForColumn(
       const Style::Edges& edges,
-      YGEdge edge,
-      CompactValue defaultValue);
+      YGEdge edge);
 
   static CompactValue computeEdgeValueForRow(
       const Style::Edges& edges,
       YGEdge rowEdge,
-      YGEdge edge,
-      CompactValue defaultValue);
-
-  static CompactValue computeRowGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
-
-  static CompactValue computeColumnGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
+      YGEdge edge);
 
   // Methods related to positions, margin, padding and border
-  FloatOptional getLeadingPosition(
-      const YGFlexDirection axis,
-      const float axisSize) const;
-  bool isLeadingPositionDefined(const YGFlexDirection axis) const;
-  bool isTrailingPosDefined(const YGFlexDirection axis) const;
-  FloatOptional getTrailingPosition(
-      const YGFlexDirection axis,
-      const float axisSize) const;
-  FloatOptional getLeadingMargin(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingMargin(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  float getLeadingBorder(const YGFlexDirection flexDirection) const;
-  float getTrailingBorder(const YGFlexDirection flexDirection) const;
-  FloatOptional getLeadingPadding(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingPadding(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getLeadingPaddingAndBorder(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingPaddingAndBorder(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getMarginForAxis(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getGapForAxis(const YGFlexDirection axis, const float widthSize)
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const;
+  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+      const;
+  float getInlineStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getMarginForAxis(FlexDirection axis, float widthSize) const;
+  float getGapForAxis(FlexDirection axis) const;
   // Setters
 
-  void setContext(void* context) { context_ = context; }
+  void setContext(void* context) {
+    context_ = context;
+  }
 
   void setPrintFunc(YGPrintFunc printFunc) {
-    print_.noContext = printFunc;
-    flags_.printUsesContext = false;
+    printFunc_ = printFunc;
   }
-  void setPrintFunc(PrintWithContextFn printFunc) {
-    print_.withContext = printFunc;
-    flags_.printUsesContext = true;
-  }
-  void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
 
   void setHasNewLayout(bool hasNewLayout) {
-    flags_.hasNewLayout = hasNewLayout;
+    hasNewLayout_ = hasNewLayout;
   }
 
-  void setNodeType(YGNodeType nodeType) {
-    flags_.nodeType = static_cast<uint8_t>(nodeType);
+  void setNodeType(NodeType nodeType) {
+    nodeType_ = nodeType;
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
-  void setMeasureFunc(MeasureWithContextFn);
-  void setMeasureFunc(std::nullptr_t) {
-    return setMeasureFunc(YGMeasureFunc{nullptr});
-  }
 
   void setBaselineFunc(YGBaselineFunc baseLineFunc) {
-    flags_.baselineUsesContext = false;
-    baseline_.noContext = baseLineFunc;
-  }
-  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
-    flags_.baselineUsesContext = true;
-    baseline_.withContext = baseLineFunc;
-  }
-  void setBaselineFunc(std::nullptr_t) {
-    return setBaselineFunc(YGBaselineFunc{nullptr});
+    baselineFunc_ = baseLineFunc;
   }
 
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+    dirtiedFunc_ = dirtiedFunc;
+  }
 
-  void setStyle(const Style& style) { style_ = style; }
+  void setStyle(const Style& style) {
+    style_ = style;
+  }
 
-  void setLayout(const LayoutResults& layout) { layout_ = layout; }
+  void setLayout(const LayoutResults& layout) {
+    layout_ = layout;
+  }
 
-  void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
+  void setLineIndex(size_t lineIndex) {
+    lineIndex_ = lineIndex;
+  }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
-    flags_.isReferenceBaseline = isReferenceBaseline;
+    isReferenceBaseline_ = isReferenceBaseline;
   }
 
-  void setOwner(Node* owner) { owner_ = owner; }
+  void setOwner(Node* owner) {
+    owner_ = owner;
+  }
 
-  void setChildren(const std::vector<Node*>& children) { children_ = children; }
+  void setChildren(const std::vector<Node*>& children) {
+    children_ = children;
+  }
 
   // TODO: rvalue override for setChildren
 
   void setConfig(Config* config);
 
   void setDirty(bool isDirty);
-  void setLayoutLastOwnerDirection(YGDirection direction);
+  void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
-  void setLayoutMeasuredDimension(float measuredDimension, int index);
+  void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float dimension, int index);
-  void setLayoutDirection(YGDirection direction);
-  void setLayoutMargin(float margin, int index);
-  void setLayoutBorder(float border, int index);
-  void setLayoutPadding(float padding, int index);
-  void setLayoutPosition(float position, int index);
+  void setLayoutDimension(float dimensionValue, Dimension dimension);
+  void setLayoutDirection(Direction direction);
+  void setLayoutMargin(float margin, YGEdge edge);
+  void setLayoutBorder(float border, YGEdge edge);
+  void setLayoutPadding(float padding, YGEdge edge);
+  void setLayoutPosition(float position, YGEdge edge);
   void setPosition(
-      const YGDirection direction,
+      const Direction direction,
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
   void markDirtyAndPropagateDownwards();
 
   // Other methods
-  YGValue marginLeadingValue(const YGFlexDirection axis) const;
-  YGValue marginTrailingValue(const YGFlexDirection axis) const;
+  YGValue getFlexStartMarginValue(FlexDirection axis) const;
+  YGValue marginTrailingValue(FlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
-  YGDirection resolveDirection(const YGDirection ownerDirection);
+  Direction resolveDirection(const Direction ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(Node* oldChild, Node* newChild);
-  void replaceChild(Node* child, uint32_t index);
-  void insertChild(Node* child, uint32_t index);
+  void replaceChild(Node* child, size_t index);
+  void insertChild(Node* child, size_t index);
   /// Removes the first occurrence of child
   bool removeChild(Node* child);
-  void removeChild(uint32_t index);
+  void removeChild(size_t index);
 
-  void cloneChildrenIfNeeded(void*);
+  void cloneChildrenIfNeeded();
   void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
   bool isNodeFlexible();
   void reset();
 };
+
+inline Node* resolveRef(const YGNodeRef ref) {
+  return static_cast<Node*>(ref);
+}
+
+inline const Node* resolveRef(const YGNodeConstRef ref) {
+  return static_cast<const Node*>(ref);
+}
 
 } // namespace facebook::yoga

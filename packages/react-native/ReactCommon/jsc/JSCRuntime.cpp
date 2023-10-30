@@ -256,6 +256,8 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
   jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
 
+  JSValueRef getNativeStateSymbol();
+
   void checkException(JSValueRef exc);
   void checkException(JSValueRef res, JSValueRef exc);
   void checkException(JSValueRef exc, const char* msg);
@@ -264,6 +266,7 @@ class JSCRuntime : public jsi::Runtime {
   JSGlobalContextRef ctx_;
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
+  JSValueRef nativeStateSymbol_ = nullptr;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> symbolCounter_;
@@ -291,27 +294,8 @@ class JSCRuntime : public jsi::Runtime {
   } while (0)
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-// This takes care of watch and tvos (due to backwards compatibility in
-// Availability.h
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define _JSC_NO_ARRAY_BUFFERS
-#endif
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160400
 #define _JSC_HAS_INSPECTABLE
-#endif
-#endif
-#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
-// Only one of these should be set for a build.  If somehow that's not
-// true, this will be a compile-time error and it can be resolved when
-// we understand why.
-#define _JSC_FAST_IS_ARRAY
-#endif
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
-#define _JSC_NO_ARRAY_BUFFERS
 #endif
 #endif
 
@@ -361,18 +345,6 @@ JSStringRef getFunctionString() {
   static JSStringRef func = JSStringCreateWithUTF8CString("Function");
   return func;
 }
-
-#if !defined(_JSC_FAST_IS_ARRAY)
-JSStringRef getArrayString() {
-  static JSStringRef array = JSStringCreateWithUTF8CString("Array");
-  return array;
-}
-
-JSStringRef getIsArrayString() {
-  static JSStringRef isArray = JSStringCreateWithUTF8CString("isArray");
-  return isArray;
-}
-#endif
 } // namespace
 
 // std::string utility
@@ -415,6 +387,8 @@ JSCRuntime::~JSCRuntime() {
   // atomic<bool> to avoid unsafe unprotects happening after shutdown
   // has started.
   ctxInvalid_ = true;
+  // No need to unprotect nativeStateSymbol_ since the heap is getting torn down
+  // anyway
   JSGlobalContextRelease(ctx_);
 #ifndef NDEBUG
   assert(
@@ -481,25 +455,6 @@ bool JSCRuntime::isInspectable() {
   return false;
 }
 
-namespace {
-
-bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
-  // Before: Empirically, an es6 Symbol is not an object, but its type is
-  // object.  This makes no sense, but we'll run with it.
-  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
-
-  JSType type = JSValueGetType(ctx, ref);
-
-  if (type == /* kJSTypeSymbol */ 6) {
-    return true;
-  }
-
-  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
-}
-
-} // namespace
-
 JSCRuntime::JSCSymbolValue::JSCSymbolValue(
     JSGlobalContextRef ctx,
     const std::atomic<bool>& ctxInvalid,
@@ -517,7 +472,7 @@ JSCRuntime::JSCSymbolValue::JSCSymbolValue(
       counter_(counter)
 #endif
 {
-  assert(smellsLikeES6Symbol(ctx_, sym_));
+  assert(JSValueIsSymbol(ctx_, sym_));
   JSValueProtect(ctx_, sym_);
 #ifndef NDEBUG
   counter_ += 1;
@@ -754,7 +709,7 @@ jsi::Object JSCRuntime::createObject() {
 }
 
 // HostObject details
-namespace detail {
+namespace {
 struct HostObjectProxyBase {
   HostObjectProxyBase(
       JSCRuntime& rt,
@@ -764,15 +719,13 @@ struct HostObjectProxyBase {
   JSCRuntime& runtime;
   std::shared_ptr<jsi::HostObject> hostObject;
 };
-} // namespace detail
 
-namespace {
 std::once_flag hostObjectClassOnceFlag;
 JSClassRef hostObjectClass{};
 } // namespace
 
 jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
-  struct HostObjectProxy : public detail::HostObjectProxyBase {
+  struct HostObjectProxy : public HostObjectProxyBase {
     static JSValueRef getProperty(
         JSContextRef ctx,
         JSObjectRef object,
@@ -904,25 +857,107 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
   // We are guaranteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
-  auto metadata =
-      static_cast<detail::HostObjectProxyBase*>(JSObjectGetPrivate(object));
+  auto metadata = static_cast<HostObjectProxyBase*>(JSObjectGetPrivate(object));
   assert(metadata);
   return metadata->hostObject;
 }
 
-bool JSCRuntime::hasNativeState(const jsi::Object&) {
-  throw std::logic_error("Not implemented");
+// NativeState details
+namespace {
+struct NativeStateContainer {
+  NativeStateContainer(std::shared_ptr<jsi::NativeState> state)
+      : nativeState(std::move(state)) {}
+
+  std::shared_ptr<jsi::NativeState> nativeState;
+
+  static void finalize(JSObjectRef obj) {
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(obj));
+    delete container;
+  }
+};
+
+JSClassRef getNativeStateClass() {
+  static JSClassRef nativeStateClass = [] {
+    JSClassDefinition nativeStateClassDef = kJSClassDefinitionEmpty;
+    nativeStateClassDef.version = 0;
+    nativeStateClassDef.attributes = kJSClassAttributeNoAutomaticPrototype;
+    nativeStateClassDef.finalize = NativeStateContainer::finalize;
+    return JSClassCreate(&nativeStateClassDef);
+  }();
+  return nativeStateClass;
+}
+} // namespace
+
+JSValueRef JSCRuntime::getNativeStateSymbol() {
+  if (!nativeStateSymbol_) {
+    JSStringRef symbolName =
+        JSStringCreateWithUTF8CString("__internal_nativeState");
+    JSValueRef symbol = JSValueMakeSymbol(ctx_, symbolName);
+    JSValueProtect(ctx_, symbol);
+    nativeStateSymbol_ = symbol;
+    JSStringRelease(symbolName);
+  }
+  return nativeStateSymbol_;
+}
+
+bool JSCRuntime::hasNativeState(const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  return JSValueIsObjectOfClass(ctx_, state, getNativeStateClass());
 }
 
 std::shared_ptr<jsi::NativeState> JSCRuntime::getNativeState(
-    const jsi::Object&) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj) {
+  JSValueRef exc = nullptr;
+  JSValueRef state = JSObjectGetPropertyForKey(
+      ctx_, objectRef(obj), getNativeStateSymbol(), &exc);
+  checkException(exc);
+
+  JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+  checkException(exc);
+
+  auto container =
+      static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+  assert(container);
+  return container->nativeState;
 }
 
 void JSCRuntime::setNativeState(
-    const jsi::Object&,
-    std::shared_ptr<jsi::NativeState>) {
-  throw std::logic_error("Not implemented");
+    const jsi::Object& obj,
+    std::shared_ptr<jsi::NativeState> nativeState) {
+  JSValueRef nativeStateSymbol = getNativeStateSymbol();
+
+  JSValueRef exc = nullptr;
+  JSValueRef state =
+      JSObjectGetPropertyForKey(ctx_, objectRef(obj), nativeStateSymbol, &exc);
+  checkException(exc);
+  if (JSValueIsUndefined(ctx_, state)) {
+    JSObjectRef stateObj = JSObjectMake(
+        ctx_,
+        getNativeStateClass(),
+        new NativeStateContainer(std::move(nativeState)));
+    JSObjectSetPropertyForKey(
+        ctx_,
+        objectRef(obj),
+        nativeStateSymbol,
+        stateObj,
+        kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontEnum |
+            kJSPropertyAttributeDontDelete,
+        &exc);
+    checkException(exc);
+  } else {
+    JSObjectRef stateObj = JSValueToObject(ctx_, state, &exc);
+    checkException(exc);
+
+    auto container =
+        static_cast<NativeStateContainer*>(JSObjectGetPrivate(stateObj));
+    assert(container);
+    container->nativeState = std::move(nativeState);
+  }
 }
 
 jsi::Value JSCRuntime::getProperty(
@@ -988,55 +1023,21 @@ void JSCRuntime::setPropertyValue(
 }
 
 bool JSCRuntime::isArray(const jsi::Object& obj) const {
-#if !defined(_JSC_FAST_IS_ARRAY)
-  JSObjectRef global = JSContextGetGlobalObject(ctx_);
-  JSStringRef arrayString = getArrayString();
-  JSValueRef exc = nullptr;
-  JSValueRef arrayCtorValue =
-      JSObjectGetProperty(ctx_, global, arrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef arrayCtor = JSValueToObject(ctx_, arrayCtorValue, &exc);
-  JSC_ASSERT(exc);
-  JSStringRef isArrayString = getIsArrayString();
-  JSValueRef isArrayValue =
-      JSObjectGetProperty(ctx_, arrayCtor, isArrayString, &exc);
-  JSC_ASSERT(exc);
-  JSObjectRef isArray = JSValueToObject(ctx_, isArrayValue, &exc);
-  JSC_ASSERT(exc);
-  JSValueRef arg = objectRef(obj);
-  JSValueRef result =
-      JSObjectCallAsFunction(ctx_, isArray, nullptr, 1, &arg, &exc);
-  JSC_ASSERT(exc);
-  return JSValueToBoolean(ctx_, result);
-#else
   return JSValueIsArray(ctx_, objectRef(obj));
-#endif
 }
 
 bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
   return typedArrayType == kJSTypedArrayTypeArrayBuffer;
-#endif
 }
 
 uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   return static_cast<uint8_t*>(
       JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
-#endif
 }
 
 size_t JSCRuntime::size(const jsi::ArrayBuffer& obj) {
-#if defined(_JSC_NO_ARRAY_BUFFERS)
-  throw std::runtime_error("Unsupported");
-#else
   return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
-#endif
 }
 
 bool JSCRuntime::isFunction(const jsi::Object& obj) const {
@@ -1480,16 +1481,11 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
       JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
       return jsi::Value(createObject(objRef));
     }
-      // TODO: Uncomment this when all supported JSC versions have this symbol
-      //    case kJSTypeSymbol:
-    default: {
-      if (smellsLikeES6Symbol(ctx_, value)) {
-        return jsi::Value(createSymbol(value));
-      } else {
-        // WHAT ARE YOU
-        abort();
-      }
-    }
+    case kJSTypeSymbol:
+      return jsi::Value(createSymbol(value));
+    default:
+      // WHAT ARE YOU
+      abort();
   }
 }
 

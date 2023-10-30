@@ -1468,6 +1468,11 @@ class JSI_EXPORT JSError : public JSIException {
   /// but necessary to avoid ambiguity with the above.
   JSError(std::string what, Runtime& rt, Value&& value);
 
+  /// Creates a JSError referring to the provided value, message and stack. This
+  /// constructor does not take a Runtime parameter, and therefore cannot result
+  /// in recursively invoking the JSError constructor.
+  JSError(Value&& value, std::string message, std::string stack);
+
   JSError(const JSError&) = default;
 
   virtual ~JSError();

@@ -15,9 +15,8 @@ function myDevServerImpl(args) {
   ...
 
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host: args.host,
-    port: metroConfig.server.port,
     projectRoot: metroConfig.projectRoot,
+    serverBaseUrl: `http://${args.host}:${args.port}`,
     logger,
   });
 
@@ -58,6 +57,10 @@ Returns the list of available WebSocket targets for all connected React Native a
 #### GET `/json/version` ([CDP](https://chromedevtools.github.io/devtools-protocol/#endpoints))
 
 Returns version metadata used by Chrome DevTools.
+
+#### GET `/debugger-frontend`
+
+Subpaths of this endpoint are reserved to serve the JavaScript debugger frontend.
 
 #### POST `/open-debugger`
 

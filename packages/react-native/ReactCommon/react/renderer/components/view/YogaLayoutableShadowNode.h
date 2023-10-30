@@ -26,8 +26,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
-  using ListOfShared =
-      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using ListOfShared = std::vector<Shared>;
 
   static ShadowNodeTraits BaseTraits();
   static ShadowNodeTraits::Trait IdentifierTrait();
@@ -88,6 +87,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       LayoutConstraints layoutConstraints) override;
 
   void layout(LayoutContext layoutContext) override;
+
+  Rect getContentBounds() const;
 
  protected:
   /*
@@ -151,22 +152,23 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   /**
    * Replcaes a child with a mutable clone of itself, returning the clone.
    */
-  YogaLayoutableShadowNode& cloneChildInPlace(int32_t layoutableChildIndex);
+  YogaLayoutableShadowNode& cloneChildInPlace(size_t layoutableChildIndex);
 
   static yoga::Config& initializeYogaConfig(
       yoga::Config& config,
-      YGConfigRef previousConfig = nullptr);
+      YGConfigConstRef previousConfig = nullptr);
   static YGNodeRef yogaNodeCloneCallbackConnector(
-      YGNodeRef oldYogaNode,
-      YGNodeRef parentYogaNode,
-      int childIndex);
+      YGNodeConstRef oldYogaNode,
+      YGNodeConstRef parentYogaNode,
+      size_t childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(
-      YGNodeRef yogaNode,
+      YGNodeConstRef yogaNode,
       float width,
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
-  static YogaLayoutableShadowNode& shadowNodeFromContext(YGNodeRef yogaNode);
+  static YogaLayoutableShadowNode& shadowNodeFromContext(
+      YGNodeConstRef yogaNode);
 
 #pragma mark - RTL Legacy Autoflip
 

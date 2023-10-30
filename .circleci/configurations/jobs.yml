@@ -9,7 +9,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: node-browsers-small
+    executor: node-browsers-medium
     steps:
       - checkout
       - run_yarn
@@ -110,109 +110,6 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #     JOBS: iOS Unit Tests
-  # -------------------------
-  test_ios:
-    executor: reactnativeios
-    parameters:
-      run_unit_tests:
-        description: Specifies whether unit tests should run.
-        type: boolean
-        default: false
-      jsengine:
-        default: "Hermes"
-        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
-        type: enum
-        enum: ["Hermes", "JSC"]
-      ruby_version:
-        default: "2.6.10"
-        description: The version of ruby that must be used
-        type: string
-    environment:
-      - REPORTS_DIR: "./reports/junit"
-    steps:
-      - checkout_code_with_cache
-      - setup_ruby:
-          ruby_version: << parameters.ruby_version >>
-      - brew_install:
-          package: xcbeautify
-      - run:
-          name: Run Ruby Tests
-          command: |
-            cd packages/react-native/scripts
-            sh run_ruby_tests.sh
-      - run_yarn
-      - *attach_hermes_workspace
-      - run: |
-          cd packages/rn-tester
-          bundle check || bundle install
-      - run:
-          name: Boot iPhone Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
-
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@18/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
-          name: "Brew: Tap wix/brew"
-          command: brew tap wix/brew
-      - brew_install:
-          package: applesimutils watchman
-
-      - run:
-          name: Configure Watchman
-          command: echo "{}" > .watchmanconfig
-
-      - run:
-          name: Setup the CocoaPods environment
-          command: |
-            bundle exec pod setup
-
-      - with_hermes_tarball_cache_span:
-          set_tarball_path: True
-          steps:
-            - with_rntester_pods_cache_span:
-                steps:
-                  - run:
-                      name: Generate RNTesterPods Workspace
-                      command: |
-                        if [[ << parameters.jsengine >> == "JSC" ]]; then
-                          export USE_HERMES=0
-                        fi
-
-                        cd packages/rn-tester
-                        bundle install
-                        bundle exec pod install --verbose
-
-      # -------------------------
-      # Runs iOS unit tests
-      - when:
-          condition: << parameters.run_unit_tests >>
-          steps:
-            - run:
-                name: "Run Tests: iOS Unit and Integration Tests"
-                command: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
-            - run:
-                name: Zip Derived data folder
-                when: always
-                command: |
-                  echo "zipping tests results"
-                  cd /Users/distiller/Library/Developer/Xcode
-                  XCRESULT_PATH=$(find . -name '*.xcresult')
-                  tar -zcvf xcresults.tar.gz $XCRESULT_PATH
-            - store_artifacts_if_needed:
-                path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
-      # -------------------------
-      # Collect Results
-      - report_bundle_size:
-          platform: ios
-      - store_test_results:
-          path: ./reports/junit
-
-  # -------------------------
   #     JOBS: iOS E2E Tests
   # -------------------------
   test_e2e_ios:
@@ -225,8 +122,7 @@ jobs:
     steps:
       - checkout_code_with_cache
       - run_yarn
-      - attach_workspace:
-          at: .
+      - setup_hermes_version
       - run:
           name: Install appium
           command: npm install appium@2.0.0 -g
@@ -278,6 +174,7 @@ jobs:
                 command: scripts/circleci/check_appium_server_status.sh
             - run:
                 name: Run E2E tests
+                no_output_timeout: 30m
                 command: |
                   cd packages/rn-tester-e2e
                   (yarn test-e2e ios 2>&1 | tee /tmp/test_log) || true
@@ -309,8 +206,8 @@ jobs:
       - run:
           name: Install appium drivers
           command: |
-            appium driver install uiautomator2
-            appium driver install xcuitest
+            appium driver install uiautomator2@2.29.1
+            appium driver install xcuitest@4.32.10
       - run:
           name: Start Appium server
           command: appium --base-path /wd/hub
@@ -321,8 +218,6 @@ jobs:
             cd packages/rn-tester
             yarn start
           background: true
-      - attach_workspace:
-          at: .
       - with_gradle_cache:
           steps:
             - run:
@@ -341,6 +236,7 @@ jobs:
             fi
       - run:
           name: Run E2E tests
+          no_output_timeout: 30m
           command: |
             cd packages/rn-tester-e2e
             (yarn test-e2e android 2>&1 | tee /tmp/test_log) || true
@@ -354,9 +250,9 @@ jobs:
     executor: reactnativeandroid-xlarge
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     steps:
       - checkout
@@ -390,7 +286,6 @@ jobs:
             - packages/react-native/ReactAndroid/build/
             - packages/react-native/ReactAndroid/hermes-engine/.cxx/
             - packages/react-native/ReactAndroid/hermes-engine/build/
-            - packages/react-native/ReactAndroid/flipper-integration/build/
             - packages/react-native/ReactAndroid/src/main/jni/prebuilt/
             - packages/react-native-gradle-plugin/.gradle/
             - packages/react-native-gradle-plugin/build/
@@ -491,7 +386,6 @@ jobs:
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
-    executor: reactnativeios
     parameters:
       flavor:
         default: "Debug"
@@ -508,11 +402,6 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
-      flipper:
-        default: "WithFlipper"
-        description: Whether Flipper is enabled. Must be one of "WithFlipper", "WithoutFlipper".
-        type: enum
-        enum: ["WithFlipper", "WithoutFlipper"]
       use_frameworks:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
@@ -534,6 +423,11 @@ jobs:
       cocoapods_cache_key:
         type: string
         default: *template_cocoapods_cache_key
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -570,7 +464,7 @@ jobs:
           podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
           steps:
             - run:
-                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
+                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
                 command: |
                   cd /tmp/$PROJECT_NAME/ios
 
@@ -580,10 +474,6 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
-                  fi
-
-                  if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
-                    export NO_FLIPPER=1
                   fi
 
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
@@ -606,7 +496,7 @@ jobs:
   #    JOBS: Test iOS RNTester
   # -------------------------
   test_ios_rntester:
-    executor: reactnativeios
+
     parameters:
       jsengine:
         default: "Hermes"
@@ -627,6 +517,15 @@ jobs:
         default: "2.6.10"
         description: The version of ruby that must be used
         type: string
+      run_unit_tests:
+        description: whether unit tests should run or not.
+        default: false
+        type: boolean
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -641,6 +540,10 @@ jobs:
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
       - setup_ruby:
           ruby_version: << parameters.ruby_version >>
+      - when:
+          condition: << parameters.run_unit_tests >>
+          steps:
+            - prepare_ios_tests
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
@@ -658,7 +561,6 @@ jobs:
                         fi
 
                         if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                          export NO_FLIPPER=1
                           export USE_FRAMEWORKS=dynamic
                         fi
 
@@ -666,13 +568,24 @@ jobs:
 
                         bundle install
                         bundle exec pod install
-                  - run:
-                      name: Build RNTester
-                      command: |
-                        xcodebuild build \
-                          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-                          -scheme RNTester \
-                          -sdk iphonesimulator
+                  - when:
+                      condition:
+                        # The run_ios_test will also build RNTester so we don't nee to build it
+                        # here if we run tests
+                        equal: [ false, << parameters.run_unit_tests >> ]
+
+                      steps:
+                          - run:
+                              name: Build RNTester
+                              command: |
+                                xcodebuild build \
+                                  -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                                  -scheme RNTester \
+                                  -sdk iphonesimulator
+                  - when:
+                      condition: << parameters.run_unit_tests >>
+                      steps:
+                          - run_ios_tests
 
   # -------------------------
   #    JOBS: Windows
@@ -706,7 +619,7 @@ jobs:
       - run:
           name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs-lts
+          command: choco install nodejs --version=18.18.0 --allow-downgrade 
 
       # Setup Dependencies
       - run:
@@ -770,21 +683,7 @@ jobs:
             apt install -y nodejs
             npm install --global yarn
       - checkout
-      - run:
-          name: Set up Hermes workspace and caching
-          command: |
-            mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
-
-            if [ -f "$HERMES_VERSION_FILE" ]; then
-              echo "Hermes Version file found! Using this version for the build:"
-              cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
-            else
-              echo "Hermes Version file not found!!!"
-              echo "Using the last commit from main for the build:"
-              HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
-              echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
-            fi
-            cat /tmp/hermes/hermesversion
+      - setup_hermes_version
       - get_react_native_version
       - restore_cache:
           key: *hermes_workspace_cache_key
@@ -987,6 +886,22 @@ jobs:
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
             mv build_"$SLICE" "$FINAL_PATH"
+
+            # check whether everything is there
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework" ]]; then
+              echo "Successfully built hermes.framework for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework for $SLICE in $FLAVOR"
+              exit 1
+            fi
+
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework.dSYM" ]]; then
+              echo "Successfully built hermes.framework.dSYM for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework.dSYM for $SLICE in $FLAVOR"
+              echo "Please try again"
+              exit 1
+            fi
       - save_cache:
           key: << parameters.slice_base_cache_key >>-<< parameters.slice >>-<< parameters.flavor >>
           paths:
@@ -1258,9 +1173,9 @@ jobs:
   build_npm_package:
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", or "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     executor: reactnativeandroid-xlarge
     environment:
@@ -1300,16 +1215,17 @@ jobs:
       - attach_workspace:
           at: .
 
-      # START: Stables and nightlies
+      # START: Stables, nightlies and prealphas
       # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
             or:
               - equal: [ "release", << parameters.release_type >> ]
               - equal: [ "nightly", << parameters.release_type >> ]
+              - equal: [ "prealpha", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      # END: Stables and nightlies
+      # END: Stables, prealpha and nightlies
 
       - with_gradle_cache:
           steps:
@@ -1323,7 +1239,7 @@ jobs:
                   else
                     export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
                   fi
-                  node ./scripts/publish-npm.js --<< parameters.release_type >>
+                  node ./scripts/publish-npm.js -t << parameters.release_type >>
 
       - run:
           name: Zip Maven Artifacts from /tmp/maven-local
@@ -1386,19 +1302,6 @@ jobs:
           name: Poll Maven for Artifacts
           command: |
             node scripts/circleci/poll-maven.js
-
-
-  # -------------------------
-  #    JOBS: Nightly
-  # -------------------------
-  nightly_job:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - run:
-          name: Nightly
-          command: |
-            echo "Nightly build run"
 
   find_and_publish_bumped_packages:
     executor: nodelts

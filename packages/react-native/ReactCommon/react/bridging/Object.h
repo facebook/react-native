@@ -10,7 +10,6 @@
 #include <react/bridging/AString.h>
 #include <react/bridging/Base.h>
 
-#include <butter/map.h>
 #include <map>
 #include <unordered_map>
 
@@ -32,7 +31,7 @@ struct Bridging<
     std::shared_ptr<T>,
     std::enable_if_t<std::is_base_of_v<jsi::HostObject, T>>> {
   static std::shared_ptr<T> fromJs(jsi::Runtime& rt, const jsi::Object& value) {
-    return value.asHostObject<T>(rt);
+    return value.getHostObject<T>(rt);
   }
 
   static jsi::Object toJs(jsi::Runtime& rt, std::shared_ptr<T> value) {
@@ -82,12 +81,6 @@ struct Bridging {
 };
 
 } // namespace map_detail
-
-#ifdef BUTTER_USE_FOLLY_CONTAINERS
-template <typename... Args>
-struct Bridging<butter::map<std::string, Args...>>
-    : map_detail::Bridging<butter::map<std::string, Args...>> {};
-#endif
 
 template <typename... Args>
 struct Bridging<std::map<std::string, Args...>>

@@ -22,7 +22,7 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++17)
+add_compile_options(-Wall -Werror -std=c++20)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -64,9 +64,8 @@ add_react_common_subdir(jsiexecutor)
 add_react_common_subdir(cxxreact)
 add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
-add_react_common_subdir(butter)
 add_react_common_subdir(callinvoker)
-add_react_common_subdir(jsinspector)
+add_react_common_subdir(jsinspector-modern)
 add_react_common_subdir(hermes/executor)
 add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
@@ -78,7 +77,6 @@ add_react_common_subdir(react/renderer/componentregistry)
 add_react_common_subdir(react/renderer/mounting)
 add_react_common_subdir(react/renderer/scheduler)
 add_react_common_subdir(react/renderer/telemetry)
-add_react_common_subdir(react/renderer/templateprocessor)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/element)
@@ -134,8 +132,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/MessageTests.cpp
-  ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/RemoteObjectsTableTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
@@ -167,7 +163,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/SchedulerPriorityTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/telemetry/tests/TransactionTelemetryTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
 
@@ -178,14 +173,11 @@ add_executable(reactnative_unittest
 
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
   # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionDemuxTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/detail/tests/SerialExecutorTests.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/tests/InspectorTests.cpp
 
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionTests.cpp
   )
   target_compile_options(reactnative_unittest
     PRIVATE
@@ -193,12 +185,11 @@ add_executable(reactnative_unittest
     -Werror
     -fexceptions
     -frtti
-    -std=c++17
+    -std=c++20
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest
   folly_runtime
-  folly_futures
   glog
   glog_init
   gtest_main
@@ -215,7 +206,6 @@ add_executable(reactnative_unittest
   react_render_graphics
   react_render_mapbuffer
   react_render_mounting
-  react_render_templateprocessor
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils

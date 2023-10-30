@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <butter/map.h>
+#include <unordered_map>
+
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -186,7 +187,7 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      butter::map<std::string, T>* type) noexcept {
+      std::unordered_map<std::string, T>* type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
@@ -264,11 +265,11 @@ class RawValue {
   }
 
   template <typename T>
-  static butter::map<std::string, T> castValue(
+  static std::unordered_map<std::string, T> castValue(
       const folly::dynamic& dynamic,
-      butter::map<std::string, T>* type) {
+      std::unordered_map<std::string, T>* type) {
     react_native_assert(dynamic.isObject());
-    auto result = butter::map<std::string, T>{};
+    auto result = std::unordered_map<std::string, T>{};
     for (const auto& item : dynamic.items()) {
       react_native_assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T*)nullptr);

@@ -35,7 +35,7 @@ class MutationObserver {
   void recordMutations(
       const RootShadowNode& oldRootShadowNode,
       const RootShadowNode& newRootShadowNode,
-      std::vector<const MutationRecord>& recordedMutations) const;
+      std::vector<MutationRecord>& recordedMutations) const;
 
  private:
   MutationObserverId mutationObserverId_;
@@ -49,7 +49,7 @@ class MutationObserver {
       const RootShadowNode& oldRootShadowNode,
       const RootShadowNode& newRootShadowNode,
       bool observeSubtree,
-      std::vector<const MutationRecord>& recordedMutations,
+      std::vector<MutationRecord>& recordedMutations,
       SetOfShadowNodePointers& processedNodes) const;
 
   void recordMutationsInSubtrees(
@@ -57,7 +57,7 @@ class MutationObserver {
       const ShadowNode& oldNode,
       const ShadowNode& newNode,
       bool observeSubtree,
-      std::vector<const MutationRecord>& recordedMutations,
+      std::vector<MutationRecord>& recordedMutations,
       SetOfShadowNodePointers processedNodes) const;
 };
 

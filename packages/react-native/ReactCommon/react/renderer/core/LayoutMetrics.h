@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/RectangleEdges.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -51,6 +51,16 @@ struct LayoutMetrics {
         Size{
             frame.size.width - contentInsets.left - contentInsets.right,
             frame.size.height - contentInsets.top - contentInsets.bottom}};
+  }
+
+  // Origin: the outer border of the node.
+  // Size: includes content and padding (but no borders).
+  Rect getPaddingFrame() const {
+    return Rect{
+        Point{borderWidth.left, borderWidth.top},
+        Size{
+            frame.size.width - borderWidth.left - borderWidth.right,
+            frame.size.height - borderWidth.top - borderWidth.bottom}};
   }
 
   bool operator==(const LayoutMetrics& rhs) const {
@@ -101,8 +111,7 @@ namespace std {
 template <>
 struct hash<facebook::react::LayoutMetrics> {
   size_t operator()(const facebook::react::LayoutMetrics& layoutMetrics) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         layoutMetrics.frame,
         layoutMetrics.contentInsets,
         layoutMetrics.borderWidth,

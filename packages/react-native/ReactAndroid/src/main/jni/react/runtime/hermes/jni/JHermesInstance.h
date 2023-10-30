@@ -8,11 +8,12 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
+#include <cxxreact/MessageQueueThread.h>
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/runtime/JSEngineInstance.h>
 #include <react/runtime/hermes/HermesInstance.h>
 #include "../../jni/JJSEngineInstance.h"
@@ -25,16 +26,24 @@ class JHermesInstance
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/runtime/hermes/HermesInstance;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass> /* unused */,
+      jni::alias_ref<jobject> reactNativeConfig);
 
   static void registerNatives();
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept;
+  JHermesInstance(std::shared_ptr<const ReactNativeConfig> reactNativeConfig)
+      : reactNativeConfig_(reactNativeConfig){};
+
+  std::unique_ptr<jsi::Runtime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
 
   ~JHermesInstance() {}
 
  private:
   friend HybridBase;
+
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 };
 
 } // namespace facebook::react

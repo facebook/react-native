@@ -25,6 +25,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
+import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -48,7 +49,6 @@ import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
@@ -597,7 +597,8 @@ public class ReactHostImpl implements ReactHost {
     return null;
   }
 
-  public DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
+  /* package */
+  DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
     return () -> {
       UiThreadUtil.assertOnUiThread();
       if (mDefaultHardwareBackBtnHandler != null) {
@@ -637,6 +638,9 @@ public class ReactHostImpl implements ReactHost {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
+    if (DEV) {
+      mDevSupportManager.handleException(e);
+    }
     destroy(method, e);
     mReactHostDelegate.handleInstanceException(e);
   }
@@ -921,6 +925,7 @@ public class ReactHostImpl implements ReactHost {
                     final JSBundleLoader bundleLoader = task.getResult();
                     final BridgelessReactContext reactContext = getOrCreateReactContext();
                     final DevSupportManager devSupportManager = getDevSupportManager();
+                    reactContext.setJSExceptionHandler(devSupportManager);
 
                     log(method, "Creating ReactInstance");
                     final ReactInstance instance =
@@ -1035,6 +1040,7 @@ public class ReactHostImpl implements ReactHost {
 
           final BridgelessReactContext reactContext = getOrCreateReactContext();
           final DevSupportManager devSupportManager = getDevSupportManager();
+          reactContext.setJSExceptionHandler(devSupportManager);
 
           return getJsBundleLoader()
               .onSuccess(

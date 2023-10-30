@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
+folly_version = '2023.08.07.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -29,11 +29,11 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                             "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-utils"
@@ -80,14 +81,6 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/attributedstring"
   end
 
-  s.subspec "butter" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "butter/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "butter/tests"
-    ss.header_dir           = "butter"
-  end
-
   s.subspec "core" do |ss|
     header_search_path = [
       "\"$(PODS_ROOT)/boost\"",
@@ -100,6 +93,7 @@ Pod::Spec.new do |s|
     if ENV['USE_FRAMEWORKS']
       header_search_path = header_search_path + [
         "\"$(PODS_ROOT)/DoubleConversion\"",
+        "\"$(PODS_ROOT)/fmt/include\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",

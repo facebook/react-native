@@ -7,12 +7,11 @@
 
 #include "HermesInstance.h"
 
-#include <JSITracing.h>
 #include <jsi/jsilib.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
-#include <hermes/inspector-modern/RuntimeAdapter.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
+#include <hermes/inspector/RuntimeAdapter.h>
 #include <jsi/decorator.h>
 #endif
 
@@ -37,23 +36,43 @@ namespace facebook::react {
 // lead to a runtime crash.
 class HermesInstanceRuntimeAdapter : public inspector_modern::RuntimeAdapter {
  public:
-  HermesInstanceRuntimeAdapter(std::shared_ptr<HermesRuntime> hermesRuntime)
-      : hermesRuntime_(hermesRuntime) {}
+  HermesInstanceRuntimeAdapter(
+      std::shared_ptr<HermesRuntime> hermesRuntime,
+      std::shared_ptr<MessageQueueThread> msgQueueThread)
+      : hermesRuntime_(std::move(hermesRuntime)),
+        messageQueueThread_(std::move(msgQueueThread)) {}
   virtual ~HermesInstanceRuntimeAdapter() = default;
 
   HermesRuntime& getRuntime() override {
     return *hermesRuntime_;
   }
 
+  void tickleJs() override {
+    std::weak_ptr<HermesRuntime> weakRuntime(hermesRuntime_);
+    messageQueueThread_->runOnQueue([weakRuntime]() {
+      auto runtime = weakRuntime.lock();
+      if (!runtime) {
+        return;
+      }
+      jsi::Function func =
+          runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
+      func.call(*runtime);
+    });
+  }
+
  private:
   std::shared_ptr<HermesRuntime> hermesRuntime_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
 };
 
 class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
  public:
-  DecoratedRuntime(std::unique_ptr<HermesRuntime> runtime)
+  DecoratedRuntime(
+      std::unique_ptr<HermesRuntime> runtime,
+      std::shared_ptr<MessageQueueThread> msgQueueThread)
       : RuntimeDecorator<jsi::Runtime>(*runtime), runtime_(std::move(runtime)) {
-    auto adapter = std::make_unique<HermesInstanceRuntimeAdapter>(runtime_);
+    auto adapter = std::make_unique<HermesInstanceRuntimeAdapter>(
+        runtime_, msgQueueThread);
 
     debugToken_ = inspector_modern::chrome::enableDebugging(
         std::move(adapter), "Hermes Bridgeless React Native");
@@ -70,13 +89,11 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
-std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime() noexcept {
-  return createJSRuntime(nullptr, nullptr);
-}
-
 std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-    std::shared_ptr<::hermes::vm::CrashManager> cm) noexcept {
+    std::shared_ptr<::hermes::vm::CrashManager> cm,
+    std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
+  assert(msgQueueThread != nullptr);
   int64_t vmExperimentFlags = reactNativeConfig
       ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
       : 0;
@@ -88,6 +105,17 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   auto heapSizeMB = heapSizeConfig > 0
       ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
       : 3072;
+
+#ifdef ANDROID
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_android")
+      : false;
+#else
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_ios")
+      : false;
+#endif
+
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
@@ -102,6 +130,7 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
                             .build())
           .withES6Proxy(false)
           .withEnableSampleProfiling(true)
+          .withMicrotaskQueue(enableMicrotasks)
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (cm) {
@@ -113,11 +142,10 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
 
 #ifdef HERMES_ENABLE_DEBUGGER
   std::unique_ptr<DecoratedRuntime> decoratedRuntime =
-      std::make_unique<DecoratedRuntime>(std::move(hermesRuntime));
+      std::make_unique<DecoratedRuntime>(
+          std::move(hermesRuntime), msgQueueThread);
   return decoratedRuntime;
 #endif
-
-  jsi::addNativeTracingHooks(*hermesRuntime);
 
   return hermesRuntime;
 }

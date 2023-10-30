@@ -9,7 +9,20 @@
  */
 
 export type Experiments = $ReadOnly<{
-  enableCustomDebuggerFrontend: boolean,
+  /**
+   * Enables the new JS debugger launch flow and custom debugger frontend
+   * (@react-native/debugger-frontend). When disabled, /open-debugger will
+   * trigger the legacy Flipper connection flow.
+   */
+  enableNewDebugger: boolean,
+
+  /**
+   * Enables the handling of GET requests in the /open-debugger endpoint,
+   * in addition to POST requests. GET requests respond by redirecting to
+   * the debugger frontend, instead of opening it using the BrowserLauncher
+   * interface.
+   */
+  enableOpenDebuggerRedirect: boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;

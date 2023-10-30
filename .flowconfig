@@ -8,6 +8,10 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
+; Ignore other platform suffixes
+.*\.macos\.js$
+.*\.windows\.js$
+
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 ; Checked-in build output
@@ -77,4 +81,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.215.1
+^0.219.4

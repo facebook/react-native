@@ -30,7 +30,7 @@ Pod::Spec.new do |spec|
   spec.source_files        = ''
 
   spec.pod_target_xcconfig = {
-                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }
 
@@ -60,7 +60,13 @@ Pod::Spec.new do |spec|
         :execution_position => :before_compile,
         :script => <<-EOS
         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$REACT_NATIVE_PATH"
+
+        CONFIG="Release"
+        if echo $GCC_PREPROCESSOR_DEFINITIONS | grep -q "DEBUG=1"; then
+          CONFIG="Debug"
+        fi
+
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
         EOS
       }
     end
@@ -71,6 +77,18 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
       ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'inspector' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/*.h'
+      ss.header_dir = 'hermes/inspector'
+    end
+
+    spec.subspec 'inspector_chrome' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+      ss.header_dir = 'hermes/inspector/chrome'
     end
 
     spec.subspec 'Public' do |ss|

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <cxxreact/MessageQueueThread.h>
 #import <jsi/jsi.h>
 #import <react/runtime/JSEngineInstance.h>
 
@@ -15,7 +16,8 @@ class RCTJscInstance : public JSEngineInstance {
  public:
   RCTJscInstance();
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime() noexcept override;
+  std::unique_ptr<jsi::Runtime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
   ~RCTJscInstance(){};
 };

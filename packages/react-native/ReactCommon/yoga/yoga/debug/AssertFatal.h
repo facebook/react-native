@@ -8,17 +8,20 @@
 #pragma once
 
 #include <yoga/Yoga.h>
-#include <yoga/node/Node.h>
 #include <yoga/config/Config.h>
+#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
 [[noreturn]] void fatalWithMessage(const char* message);
 
 void assertFatal(bool condition, const char* message);
-void assertFatalWithNode(YGNodeRef node, bool condition, const char* message);
+void assertFatalWithNode(
+    const yoga::Node* node,
+    bool condition,
+    const char* message);
 void assertFatalWithConfig(
-    YGConfigRef config,
+    const yoga::Config* config,
     bool condition,
     const char* message);
 

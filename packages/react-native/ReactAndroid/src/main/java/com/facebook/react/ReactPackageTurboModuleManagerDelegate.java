@@ -14,10 +14,10 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,18 +42,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       mShouldEnableLegacyModuleInterop
           && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
 
-  @Override
-  public boolean unstable_shouldEnableLegacyModuleInterop() {
-    return mShouldEnableLegacyModuleInterop;
-  }
+  private final boolean mEnableTurboModuleSyncVoidMethods =
+      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
 
-  @Override
-  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
-    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
-  }
-
-  private boolean shouldSupportLegacyPackages() {
-    return unstable_shouldEnableLegacyModuleInterop();
+  protected ReactPackageTurboModuleManagerDelegate() {
+    super();
   }
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -61,13 +54,13 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     super();
     final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
-      if (reactPackage instanceof TurboReactPackage) {
-        final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
+      if (reactPackage instanceof BaseReactPackage) {
+        final BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
-            moduleName -> turboPkg.getModule(moduleName, applicationContext);
+            moduleName -> baseReactPackage.getModule(moduleName, applicationContext);
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
-            moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
+            moduleProvider, baseReactPackage.getReactModuleInfoProvider().getReactModuleInfos());
         continue;
       }
 
@@ -118,14 +111,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
                       moduleClass.getName(),
                       reactModule.canOverrideExistingModule(),
                       true,
-                      reactModule.hasConstants(),
                       reactModule.isCxxModule(),
                       TurboModule.class.isAssignableFrom(moduleClass))
                   : new ReactModuleInfo(
                       moduleName,
                       moduleClass.getName(),
                       module.canOverrideExistingModule(),
-                      true,
                       true,
                       CxxModuleWrapper.class.isAssignableFrom(moduleClass),
                       TurboModule.class.isAssignableFrom(moduleClass));
@@ -140,6 +131,20 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
       }
     }
+  }
+
+  @Override
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return mShouldEnableLegacyModuleInterop;
+  }
+
+  @Override
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
+  }
+
+  public boolean unstable_enableSyncVoidMethods() {
+    return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable
@@ -251,6 +256,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       }
     }
     return moduleNames;
+  }
+
+  private boolean shouldSupportLegacyPackages() {
+    return unstable_shouldEnableLegacyModuleInterop();
   }
 
   public abstract static class Builder {

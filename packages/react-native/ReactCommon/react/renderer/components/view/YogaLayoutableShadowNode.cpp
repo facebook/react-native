@@ -26,8 +26,8 @@
 namespace facebook::react {
 
 static int FabricDefaultYogaLog(
-    const YGConfigRef /*unused*/,
-    const YGNodeRef /*unused*/,
+    const YGConfigConstRef /*unused*/,
+    const YGNodeConstRef /*unused*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -106,14 +106,20 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
                     .yogaNode_) {
-  // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-  // dirty flag, measure function, and other properties being set originally in
-  // the `YogaLayoutableShadowNode` constructor above.
+// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
+// dirty flag, measure function, and other properties being set originally in
+// the `YogaLayoutableShadowNode` constructor above.
 
+// There is a known race condition when background executor is enabled, where
+// a tree may be laid out on the Fabric background thread concurrently with
+// the ShadowTree being created on the JS thread. This assert can be
+// re-enabled after disabling background executor everywhere.
+#if 0
   react_native_assert(
       static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
+#endif
 
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     for (auto& child : getChildren()) {
@@ -123,9 +129,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
 
-  YGConfigRef previousConfig = YGNodeGetConfig(
+  YGConfigConstRef previousConfig =
       &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
-           .yogaNode_);
+           .yogaConfig_;
 
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
@@ -190,9 +196,7 @@ void YogaLayoutableShadowNode::appendYogaChild(
   ensureYogaChildrenLookFine();
 
   yogaLayoutableChildren_.push_back(childNode);
-  yogaNode_.insertChild(
-      &childNode->yogaNode_,
-      static_cast<uint32_t>(yogaNode_.getChildren().size()));
+  yogaNode_.insertChild(&childNode->yogaNode_, yogaNode_.getChildren().size());
 
   ensureYogaChildrenLookFine();
 }
@@ -219,7 +223,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     auto clonedChildNode = childNode.clone({});
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, static_cast<int>(index));
+    replaceChild(childNode, clonedChildNode, static_cast<int32_t>(index));
   }
 
   ensureYogaChildrenLookFine();
@@ -278,7 +282,7 @@ void YogaLayoutableShadowNode::replaceChild(
   }
 
   bool suggestedIndexAccurate = suggestedIndex >= 0 &&
-      suggestedIndex < yogaLayoutableChildren_.size() &&
+      suggestedIndex < static_cast<int32_t>(yogaLayoutableChildren_.size()) &&
       yogaLayoutableChildren_[suggestedIndex].get() == layoutableOldChild;
 
   auto oldChildIter = suggestedIndexAccurate
@@ -370,7 +374,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
-  auto props = static_cast<const YogaStylableProps&>(*props_);
+  auto& props = static_cast<const YogaStylableProps&>(*props_);
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
@@ -513,7 +517,7 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
-    int32_t layoutableChildIndex) {
+    size_t layoutableChildIndex) {
   ensureUnsealed();
 
   const auto& childNode = *yogaLayoutableChildren_[layoutableChildIndex];
@@ -525,7 +529,8 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
 
-  replaceChild(childNode, clonedChildNode, layoutableChildIndex);
+  replaceChild(
+      childNode, clonedChildNode, static_cast<int32_t>(layoutableChildIndex));
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
 
@@ -533,8 +538,12 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.dimensions()[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
-  style.dimensions()[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  style.setDimension(
+      yoga::Dimension::Width,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
+  style.setDimension(
+      yoga::Dimension::Height,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -544,19 +553,23 @@ void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
 
   auto style = yogaNode_.getStyle();
 
-  auto leftPadding = yogaStyleValueFromFloat(padding.left);
-  auto topPadding = yogaStyleValueFromFloat(padding.top);
-  auto rightPadding = yogaStyleValueFromFloat(padding.right);
-  auto bottomPadding = yogaStyleValueFromFloat(padding.bottom);
+  auto leftPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left);
+  auto topPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top);
+  auto rightPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
+  auto bottomPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
 
   if (leftPadding != style.padding()[YGEdgeLeft] ||
       topPadding != style.padding()[YGEdgeTop] ||
       rightPadding != style.padding()[YGEdgeRight] ||
       bottomPadding != style.padding()[YGEdgeBottom]) {
-    style.padding()[YGEdgeTop] = yogaStyleValueFromFloat(padding.top);
-    style.padding()[YGEdgeLeft] = yogaStyleValueFromFloat(padding.left);
-    style.padding()[YGEdgeRight] = yogaStyleValueFromFloat(padding.right);
-    style.padding()[YGEdgeBottom] = yogaStyleValueFromFloat(padding.bottom);
+    style.padding()[YGEdgeTop] =
+        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top);
+    style.padding()[YGEdgeLeft] =
+        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left);
+    style.padding()[YGEdgeRight] =
+        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
+    style.padding()[YGEdgeBottom] =
+        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
     yogaNode_.setStyle(style);
     yogaNode_.setDirty(true);
   }
@@ -567,7 +580,7 @@ void YogaLayoutableShadowNode::setPositionType(
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.positionType() = positionType;
+  style.positionType() = yoga::scopedEnum(positionType);
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -625,22 +638,21 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
-  yogaStyle.maxDimensions()[YGDimensionWidth] = std::isfinite(maximumSize.width)
-      ? yogaStyleValueFromFloat(maximumSize.width)
-      : YGValueUndefined;
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Width,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.width));
 
-  yogaStyle.maxDimensions()[YGDimensionHeight] =
-      std::isfinite(maximumSize.height)
-      ? yogaStyleValueFromFloat(maximumSize.height)
-      : YGValueUndefined;
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Height,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.height));
 
-  yogaStyle.minDimensions()[YGDimensionWidth] = minimumSize.width > 0
-      ? yogaStyleValueFromFloat(minimumSize.width)
-      : YGValueUndefined;
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Width,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.width));
 
-  yogaStyle.minDimensions()[YGDimensionHeight] = minimumSize.height > 0
-      ? yogaStyleValueFromFloat(minimumSize.height)
-      : YGValueUndefined;
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Height,
+      yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.height));
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
@@ -666,16 +678,16 @@ void YogaLayoutableShadowNode::layoutTree(
 }
 
 static EdgeInsets calculateOverflowInset(
-    Rect containerFrame,
-    Rect contentFrame) {
-  auto size = containerFrame.size;
+    Rect contentFrame,
+    Rect contentBounds) {
+  auto size = contentFrame.size;
   auto overflowInset = EdgeInsets{};
-  overflowInset.left = std::min(contentFrame.getMinX(), Float{0.0});
-  overflowInset.top = std::min(contentFrame.getMinY(), Float{0.0});
+  overflowInset.left = std::min(contentBounds.getMinX(), Float{0.0});
+  overflowInset.top = std::min(contentBounds.getMinY(), Float{0.0});
   overflowInset.right =
-      -std::max(contentFrame.getMaxX() - size.width, Float{0.0});
+      -std::max(contentBounds.getMaxX() - size.width, Float{0.0});
   overflowInset.bottom =
-      -std::max(contentFrame.getMaxY() - size.height, Float{0.0});
+      -std::max(contentBounds.getMaxY() - size.height, Float{0.0});
   return overflowInset;
 }
 
@@ -683,7 +695,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   react_native_assert(!yogaNode_.isDirty());
 
-  auto contentFrame = Rect{};
   for (auto childYogaNode : yogaNode_.getChildren()) {
     auto& childNode = shadowNodeFromContext(childYogaNode);
 
@@ -725,38 +736,9 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         childNode.layout(layoutContext);
       }
     }
-
-    auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
-    if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
-      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
-      auto hitSlop = viewChildNode != nullptr
-          ? viewChildNode->getConcreteProps().hitSlop
-          : EdgeInsets{};
-
-      // The contentFrame should always union with existing child node layout +
-      // overflowInset. The transform may in a deferred animation and not
-      // applied yet.
-      contentFrame.unionInPlace(insetBy(
-          layoutMetricsWithOverflowInset.frame,
-          layoutMetricsWithOverflowInset.overflowInset));
-      contentFrame.unionInPlace(
-          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
-
-      auto childTransform = childNode.getTransform();
-      if (childTransform != Transform::Identity()) {
-        // The child node's transform matrix will affect the parent node's
-        // contentFrame. We need to union with child node's after transform
-        // layout here.
-        contentFrame.unionInPlace(insetBy(
-            layoutMetricsWithOverflowInset.frame * childTransform,
-            layoutMetricsWithOverflowInset.overflowInset * childTransform));
-        contentFrame.unionInPlace(outsetBy(
-            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
-      }
-    }
   }
 
-  if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the
@@ -765,19 +747,62 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     // cosmetic and will be handled by pixel density conversion logic later when
     // render the view. The actual overflowInset value is not changed as if the
     // transform is not happening here.
+    auto contentBounds = getContentBounds();
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, contentBounds);
   } else {
     layoutMetrics_.overflowInset = {};
   }
 }
 
+Rect YogaLayoutableShadowNode::getContentBounds() const {
+  auto contentBounds = Rect{};
+
+  for (auto childYogaNode : yogaNode_.getChildren()) {
+    auto& childNode = shadowNodeFromContext(childYogaNode);
+
+    // Verifying that the Yoga node belongs to the ShadowNode.
+    react_native_assert(&childNode.yogaNode_ == childYogaNode);
+
+    auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
+    if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
+      auto hitSlop = viewChildNode != nullptr
+          ? viewChildNode->getConcreteProps().hitSlop
+          : EdgeInsets{};
+
+      // The contentBounds should always union with existing child node layout +
+      // overflowInset. The transform may in a deferred animation and not
+      // applied yet.
+      contentBounds.unionInPlace(insetBy(
+          layoutMetricsWithOverflowInset.frame,
+          layoutMetricsWithOverflowInset.overflowInset));
+      contentBounds.unionInPlace(
+          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
+
+      auto childTransform = childNode.getTransform();
+      if (childTransform != Transform::Identity()) {
+        // The child node's transform matrix will affect the parent node's
+        // contentBounds. We need to union with child node's after transform
+        // layout here.
+        contentBounds.unionInPlace(insetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform,
+            layoutMetricsWithOverflowInset.overflowInset * childTransform));
+        contentBounds.unionInPlace(outsetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
+      }
+    }
+  }
+
+  return contentBounds;
+}
+
 #pragma mark - Yoga Connectors
 
-YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
-    YGNode* /*oldYogaNode*/,
-    YGNode* parentYogaNode,
-    int childIndex) {
+YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
+    YGNodeConstRef /*oldYogaNode*/,
+    YGNodeConstRef parentYogaNode,
+    size_t childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
   auto& parentNode = shadowNodeFromContext(parentYogaNode);
@@ -785,7 +810,7 @@ YGNode* YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
-    YGNode* yogaNode,
+    YGNodeConstRef yogaNode,
     float width,
     YGMeasureMode widthMode,
     float height,
@@ -832,14 +857,14 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
-    YGNodeRef yogaNode) {
+    YGNodeConstRef yogaNode) {
   return traitCast<YogaLayoutableShadowNode&>(
       *static_cast<ShadowNode*>(YGNodeGetContext(yogaNode)));
 }
 
 yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     yoga::Config& config,
-    const YGConfigRef previousConfig) {
+    YGConfigConstRef previousConfig) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   if (previousConfig != nullptr) {

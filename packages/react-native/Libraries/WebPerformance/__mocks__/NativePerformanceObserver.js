@@ -114,6 +114,15 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
         (entryName == null || e.name === entryName),
     );
   },
+
+  getSupportedPerformanceEntryTypes:
+    (): $ReadOnlyArray<RawPerformanceEntryType> => {
+      return [
+        RawPerformanceEntryTypeValues.MARK,
+        RawPerformanceEntryTypeValues.MEASURE,
+        RawPerformanceEntryTypeValues.EVENT,
+      ];
+    },
 };
 
 export default NativePerformanceObserverMock;

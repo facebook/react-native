@@ -11,23 +11,20 @@
 
 import type {Config} from '@react-native-community/cli-types';
 
-import {
-  addInteractionListener,
-  logger,
-} from '@react-native-community/cli-tools';
+import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import readline from 'readline';
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
-const CTRL_Z = '\u0026';
+const CTRL_D = '\u0004';
 
 export default function attachKeyHandlers({
   cliConfig,
   devServerUrl,
   messageSocket,
+  experimentalDebuggerFrontend,
 }: {
   cliConfig: Config,
   devServerUrl: string,
@@ -35,15 +32,12 @@ export default function attachKeyHandlers({
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
   }>,
+  experimentalDebuggerFrontend: boolean,
 }) {
   if (process.stdin.isTTY !== true) {
     logger.debug('Interactive mode is not supported in this environment');
     return;
   }
-
-  readline.emitKeypressEvents(process.stdin);
-  // $FlowIgnore[prop-missing]
-  process.stdin.setRawMode(true);
 
   const execaOptions = {
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
@@ -53,7 +47,7 @@ export default function attachKeyHandlers({
     switch (key) {
       case 'r':
         messageSocket.broadcast('reload', null);
-        logger.info('Reloading app...');
+        logger.info('Reloading connected app(s)...');
         break;
       case 'd':
         messageSocket.broadcast('devMenu', null);
@@ -84,29 +78,35 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
+        if (!experimentalDebuggerFrontend) {
+          return;
+        }
         await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
         break;
-      case CTRL_Z:
-        process.emit('SIGTSTP', 'SIGTSTP');
-        break;
       case CTRL_C:
+      case CTRL_D:
+        logger.info('Stopping server');
+        keyPressHandler.stopInterceptingKeyStrokes();
+        process.emit('SIGINT');
         process.exit();
     }
   };
 
   const keyPressHandler = new KeyPressHandler(onPress);
-  const listener = keyPressHandler.createInteractionListener();
-  addInteractionListener(listener);
+  keyPressHandler.createInteractionListener();
   keyPressHandler.startInterceptingKeyStrokes();
 
   logger.log(
-    '\n' +
-      [
-        `${chalk.bold('i')} - run on iOS`,
-        `${chalk.bold('a')} - run on Android`,
-        `${chalk.bold('d')} - open Dev Menu`,
-        `${chalk.bold('j')} - open debugger`,
-        `${chalk.bold('r')} - reload app`,
-      ].join('\n'),
+    [
+      '',
+      `${chalk.bold('i')} - run on iOS`,
+      `${chalk.bold('a')} - run on Android`,
+      `${chalk.bold('d')} - open Dev Menu`,
+      ...(experimentalDebuggerFrontend
+        ? [`${chalk.bold('j')} - open debugger (experimental, Hermes only)`]
+        : []),
+      `${chalk.bold('r')} - reload app`,
+      '',
+    ].join('\n'),
   );
 }

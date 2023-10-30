@@ -52,7 +52,7 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local enable_debugger cmake_build_type
+  local enable_debugger cmake_build_type xcode_15_flags xcode_major_version
 
   if [[ $BUILD_TYPE == "Debug" ]]; then
     enable_debugger="true"
@@ -67,8 +67,15 @@ function configure_apple_framework {
     cmake_build_type="MinSizeRel"
   fi
 
+  xcode_15_flags=""
+  xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
+  if [[ $xcode_major_version -ge 15 ]]; then
+    xcode_15_flags="LINKER:-ld_classic"
+  fi
+
   pushd "$HERMES_PATH" > /dev/null || exit 1
     cmake -S . -B "build_$1" \
+      -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
       -DHERMES_APPLE_TARGET_PLATFORM:STRING="$1" \
       -DCMAKE_OSX_ARCHITECTURES:STRING="$2" \
       -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING="$3" \
@@ -121,9 +128,19 @@ function build_apple_framework {
     fi
 
     # Copy over Hermes and JSI API headers.
-    mkdir -p destroot/include/hermes/Public destroot/include/jsi
+    mkdir -p destroot/include/hermes/Public
     cp public/hermes/Public/*.h destroot/include/hermes/Public
+
+    mkdir -p destroot/include/hermes
     cp API/hermes/*.h destroot/include/hermes
+
+    mkdir -p destroot/include/hermes/inspector
+    cp API/hermes/inspector/*.h destroot/include/hermes/inspector
+
+    mkdir -p destroot/include/hermes/inspector/chrome
+    cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
+
+    mkdir -p destroot/include/jsi
     cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
 }
@@ -137,10 +154,20 @@ function prepare_dest_root_for_ci {
   cp -R "./build_catalyst/API/hermes/hermes.framework"* "destroot/Library/Frameworks/catalyst"
   cp "./build_macosx/bin/"* "destroot/bin"
 
-  mkdir -p destroot/include/hermes/Public destroot/include/jsi
-
+  # Copy over Hermes and JSI API headers.
+  mkdir -p destroot/include/hermes/Public
   cp public/hermes/Public/*.h destroot/include/hermes/Public
+
+  mkdir -p destroot/include/hermes
   cp API/hermes/*.h destroot/include/hermes
+
+  mkdir -p destroot/include/hermes/inspector
+  cp API/hermes/inspector/*.h destroot/include/hermes/inspector
+
+  mkdir -p destroot/include/hermes/inspector/chrome
+  cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
+
+  mkdir -p destroot/include/jsi
   cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
 }
 

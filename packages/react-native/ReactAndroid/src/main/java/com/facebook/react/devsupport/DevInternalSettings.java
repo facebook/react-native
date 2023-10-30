@@ -82,7 +82,7 @@ class DevInternalSettings
 
   @Override
   public boolean isDeviceDebugEnabled() {
-    return ReactBuildConfig.IS_INTERNAL_BUILD && ReactBuildConfig.DEBUG;
+    return ReactBuildConfig.DEBUG;
   }
 
   @Override

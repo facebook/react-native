@@ -10,31 +10,30 @@
  */
 
 declare module '@pkgjs/parseargs' {
-  declare type ParseArgsOptionConfig = {
-    type: 'string' | 'boolean',
-    short?: string,
-    multiple?: boolean,
-  };
-
-  declare type ParseArgsOptionsConfig = {
-    [longOption: string]: ParseArgsOptionConfig,
-  };
-
-  declare export type ParseArgsConfig = {
+  declare export function parseArgs<
+    TOptions: {[string]: util$ParseArgsOption} = {},
+  >(config: {
+    args?: Array<string>,
+    options?: TOptions,
     strict?: boolean,
     allowPositionals?: boolean,
-    tokens?: boolean,
-    options?: ParseArgsOptionsConfig,
-    args?: string[],
+    tokens?: false,
+  }): {
+    values: util$ParseArgsOptionsToValues<TOptions>,
+    positionals: Array<string>,
   };
 
-  declare type ParsedResults = {
-    values: {
-      [longOption: string]: void | string | boolean | Array<string | boolean>,
-    },
-    positionals: string[],
-    ...
+  declare export function parseArgs<
+    TOptions: {[string]: util$ParseArgsOption} = {},
+  >(config: {
+    args?: Array<string>,
+    options?: TOptions,
+    strict?: boolean,
+    allowPositionals?: boolean,
+    tokens: true,
+  }): {
+    values: util$ParseArgsOptionsToValues<TOptions>,
+    positionals: Array<string>,
+    tokens: Array<util$ParseArgsToken>,
   };
-
-  declare export function parseArgs(config: ParseArgsConfig): ParsedResults;
 }

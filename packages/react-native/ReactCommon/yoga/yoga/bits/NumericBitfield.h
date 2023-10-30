@@ -8,19 +8,21 @@
 #pragma once
 
 #include <bitset>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
+#include <type_traits>
 
 #include <yoga/YGEnums.h>
+#include <yoga/enums/YogaEnums.h>
 
 namespace facebook::yoga::details {
 
-constexpr size_t log2ceilFn(size_t n) {
+constexpr uint8_t log2ceilFn(uint8_t n) {
   return n < 1 ? 0 : (1 + log2ceilFn(n / 2));
 }
 
-constexpr int mask(size_t bitWidth, size_t index) {
-  return ((1 << bitWidth) - 1) << index;
+constexpr uint32_t mask(uint8_t bitWidth, uint8_t index) {
+  return ((1u << bitWidth) - 1u) << index;
 }
 
 } // namespace facebook::yoga::details
@@ -28,39 +30,33 @@ constexpr int mask(size_t bitWidth, size_t index) {
 namespace facebook::yoga {
 
 // The number of bits necessary to represent enums defined with YG_ENUM_SEQ_DECL
-template <typename Enum>
-constexpr size_t minimumBitCount() {
-  static_assert(
-      enums::count<Enum>() > 0, "Enums must have at least one entries");
-  return details::log2ceilFn(enums::count<Enum>() - 1);
+template <
+    typename Enum,
+    std::enable_if_t<(ordinalCount<Enum>() > 0), bool> = true>
+constexpr uint8_t minimumBitCount() {
+  return details::log2ceilFn(static_cast<uint8_t>(ordinalCount<Enum>() - 1));
 }
 
 template <typename Enum>
-constexpr Enum getEnumData(int flags, size_t index) {
+constexpr Enum getEnumData(uint32_t flags, uint8_t index) {
   return static_cast<Enum>(
       (flags & details::mask(minimumBitCount<Enum>(), index)) >> index);
 }
 
-template <typename Enum>
-void setEnumData(uint32_t& flags, size_t index, int newValue) {
-  flags = (flags & ~details::mask(minimumBitCount<Enum>(), index)) |
-      ((newValue << index) & (details::mask(minimumBitCount<Enum>(), index)));
-}
-
-template <typename Enum>
-void setEnumData(uint8_t& flags, size_t index, int newValue) {
+template <typename Enum, typename Value>
+void setEnumData(uint32_t& flags, uint8_t index, Value newValue) {
   flags =
       (flags &
-       ~static_cast<uint8_t>(details::mask(minimumBitCount<Enum>(), index))) |
-      ((newValue << index) &
-       (static_cast<uint8_t>(details::mask(minimumBitCount<Enum>(), index))));
+       ~static_cast<uint32_t>(details::mask(minimumBitCount<Enum>(), index))) |
+      ((static_cast<uint32_t>(newValue) << index) &
+       (details::mask(minimumBitCount<Enum>(), index)));
 }
 
-constexpr bool getBooleanData(int flags, size_t index) {
+constexpr bool getBooleanData(uint32_t flags, uint8_t index) {
   return (flags >> index) & 1;
 }
 
-inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
+inline void setBooleanData(uint32_t& flags, uint8_t index, bool value) {
   if (value) {
     flags |= 1 << index;
   } else {

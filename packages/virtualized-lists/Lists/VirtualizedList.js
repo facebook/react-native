@@ -969,10 +969,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           {React.cloneElement(element, {
             onLayout: (event: LayoutEvent) => {
               this._onLayoutEmpty(event);
+              // $FlowFixMe[prop-missing] React.Element internal inspection
               if (element.props.onLayout) {
                 element.props.onLayout(event);
               }
             },
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             style: StyleSheet.compose(inversionStyle, element.props.style),
           })}
         </VirtualizedListCellContextProvider>,
@@ -1211,6 +1213,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _nestedChildLists: ChildListCollection<VirtualizedList> =
     new ChildListCollection();
   _offsetFromParentVirtualizedList: number = 0;
+  _pendingViewabilityUpdate: boolean = false;
   _prevParentOffset: number = 0;
   _scrollMetrics: {
     dOffset: number,
@@ -1254,8 +1257,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
+      // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.
+      // This could lead to internal inconsistencies within VirtualizedList.
+      const {onContentSizeChange, ...otherProps} = props;
+      return <View {...otherProps} />;
     } else if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
@@ -1302,18 +1307,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     });
 
     if (layoutHasChanged) {
-      // TODO: We have not yet received parent content length, meaning we do not
-      // yet have up to date offsets in RTL. This means layout queries done
-      // when scheduling a new batch may not yet be correct. This is corrected
-      // when we schedule again in response to `onContentSizeChange`.
-      const {horizontal, rtl} = this._orientation();
-      this._scheduleCellsToRenderUpdate({
-        allowImmediateExecution: !(horizontal && rtl),
-      });
+      this._scheduleCellsToRenderUpdate();
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
-
     this._computeBlankness();
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
@@ -1746,9 +1743,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
-    const allowImmediateExecution = opts?.allowImmediateExecution ?? true;
-
+  _scheduleCellsToRenderUpdate() {
     // Only trigger high-priority updates if we've actually rendered cells,
     // and with that size estimate, accurately compute how many cells we should render.
     // Otherwise, it would just render as many cells as it can (of zero dimension),
@@ -1757,7 +1752,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
     if (
-      allowImmediateExecution &&
       this._shouldRenderWithPriority() &&
       (this._listMetrics.getAverageCellLength() || this.props.getItemLayout) &&
       !this._hiPriInProgress

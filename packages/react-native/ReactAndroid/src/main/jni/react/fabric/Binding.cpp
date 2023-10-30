@@ -98,7 +98,7 @@ void Binding::driveCxxAnimations() {
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
-  const auto& scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
     return;
@@ -217,21 +217,6 @@ void Binding::startSurfaceWithConstraints(
     return;
   }
   mountingManager->onSurfaceStart(surfaceId);
-}
-
-void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
-  SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "Binding::renderTemplateToSurface: scheduler disappeared";
-    return;
-  }
-
-  auto env = jni::Environment::current();
-  const char* nativeString = env->GetStringUTFChars(uiTemplate, JNI_FALSE);
-  scheduler->renderTemplateToSurface(surfaceId, nativeString);
-  env->ReleaseStringUTFChars(uiTemplate, nativeString);
 }
 
 void Binding::stopSurface(jint surfaceId) {
@@ -429,14 +414,16 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
-  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
   CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
       getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
   CoreFeatures::enableCleanParagraphYogaNode =
       getFeatureFlagValue("enableCleanParagraphYogaNode");
   CoreFeatures::enableDefaultAsyncBatchedPriority =
       getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
+  CoreFeatures::enableClonelessStateProgression =
+      getFeatureFlagValue("enableClonelessStateProgression");
+  CoreFeatures::excludeYogaFromRawProps =
+      getFeatureFlagValue("excludeYogaFromRawProps");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
@@ -578,8 +565,6 @@ void Binding::registerNatives() {
           "getInspectorDataForInstance", Binding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-      makeNativeMethod(
-          "renderTemplateToSurface", Binding::renderTemplateToSurface),
       makeNativeMethod("stopSurface", Binding::stopSurface),
       makeNativeMethod("setConstraints", Binding::setConstraints),
       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),

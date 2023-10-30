@@ -46,7 +46,7 @@ if (require.main === module) {
     .option('b', {
       alias: 'build-type',
       type: 'string',
-      choices: ['dry-run', 'nightly', 'release'],
+      choices: ['dry-run', 'nightly', 'release', 'prealpha'],
       required: true,
     }).argv;
 

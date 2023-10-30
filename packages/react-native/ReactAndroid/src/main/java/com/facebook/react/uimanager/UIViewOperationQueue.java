@@ -94,41 +94,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private final class EmitOnLayoutEventOperation extends ViewOperation {
-
-    private final int mScreenX;
-    private final int mScreenY;
-    private final int mScreenWidth;
-    private final int mScreenHeight;
-
-    public EmitOnLayoutEventOperation(
-        int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-      super(tag);
-      mScreenX = screenX;
-      mScreenY = screenY;
-      mScreenWidth = screenWidth;
-      mScreenHeight = screenHeight;
-    }
-
-    @Override
-    public void execute() {
-      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
-
-      if (uiManager != null) {
-        uiManager
-            .getEventDispatcher()
-            .dispatchEvent(
-                OnLayoutEvent.obtain(
-                    -1 /* SurfaceId not used in classic renderer */,
-                    mTag,
-                    mScreenX,
-                    mScreenY,
-                    mScreenWidth,
-                    mScreenHeight));
-      }
-    }
-  }
-
   private final class UpdateInstanceHandleOperation extends ViewOperation {
 
     private final long mInstanceHandle;
@@ -591,7 +556,18 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.sendAccessibilityEvent(mTag, mEventType);
+      try {
+        mNativeViewHierarchyManager.sendAccessibilityEvent(mTag, mEventType);
+      } catch (RetryableMountingLayerException e) {
+        // Accessibility events are similar to commands in that they're imperative
+        // calls from JS, disconnected from the commit lifecycle, and therefore
+        // inherently unpredictable and dangerous. If we encounter a "retryable"
+        // error, that is, a known category of errors that this is likely to hit
+        // due to race conditions (like the view disappearing after the event is
+        // queued and before it executes), we log a soft exception and continue along.
+        // Other categories of errors will still cause a hard crash.
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
+      }
     }
   }
 
@@ -754,12 +730,6 @@ public class UIViewOperationQueue {
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mUpdatePropertiesOperationCount++;
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
-  }
-
-  public void enqueueOnLayoutEvent(
-      int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
-    mOperations.add(
-        new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
   }
 
   public void enqueueUpdateLayout(

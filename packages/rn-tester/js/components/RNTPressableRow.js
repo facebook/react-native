@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import * as React from 'react';
@@ -20,7 +20,6 @@ type Props = {
   testID?: ?string,
   onPressIn?: ?() => mixed,
   onPressOut?: ?() => mixed,
-  rightAddOn?: ?React.Node,
   bottomAddOn?: ?React.Node,
   children?: ?React.Node,
   title: string,
@@ -34,7 +33,6 @@ export default function RNTPressableRow({
   onPressOut,
   title,
   description,
-  rightAddOn,
   bottomAddOn,
   onPress,
   style,
@@ -58,7 +56,6 @@ export default function RNTPressableRow({
       onPress={onPress}>
       <View style={styles.topRowStyle}>
         <RNTesterComponentTitle>{title}</RNTesterComponentTitle>
-        {rightAddOn}
       </View>
       <Text
         style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}>

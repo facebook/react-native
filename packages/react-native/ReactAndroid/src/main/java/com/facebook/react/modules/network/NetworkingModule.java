@@ -343,8 +343,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     // client and set the timeout explicitly on the clone.  This is cheap as everything else is
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
-    if (timeout != mClient.connectTimeoutMillis()) {
-      clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+    if (timeout != mClient.callTimeoutMillis()) {
+      clientBuilder.callTimeout(timeout, TimeUnit.MILLISECONDS);
     }
     OkHttpClient client = clientBuilder.build();
 
@@ -761,11 +761,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return null;
       }
       String headerName = HeaderUtil.stripHeaderName(header.getString(0));
-      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
+      String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;
       }
-      headersBuilder.add(headerName, headerValue);
+      headersBuilder.addUnsafeNonAscii(headerName, headerValue);
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
       headersBuilder.add(USER_AGENT_HEADER_NAME, mDefaultUserAgent);
