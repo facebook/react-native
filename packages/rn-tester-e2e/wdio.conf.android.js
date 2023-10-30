@@ -59,9 +59,15 @@ exports.config = {
         require: ['@babel/register']
     },
 
+    beforeSession: async function (config, capabilities, specs) {
+        await fs.mkdirSync('./reports/errorShots', { recursive: true });
+      },
+  
     afterTest: async function(test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            // await driver.takeScreenshot();
+            const fileName = encodeURIComponent(await test.title.replace(/\s+/g, '-'));
+            const filePath = './reports/errorShots/' + fileName + '.png';
+            await driver.takeScreenshot(filePath);
         }
     },
 
