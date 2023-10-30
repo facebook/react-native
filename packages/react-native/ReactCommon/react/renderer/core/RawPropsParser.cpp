@@ -33,7 +33,7 @@ const RawValue* RawPropsParser::at(
     // 4950 lookups and equality checks on initialization of the parser, which
     // happens exactly once per component.
     size_t size = keys_.size();
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
       if (keys_[i] == key) {
         return nullptr;
       }
