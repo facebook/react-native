@@ -84,8 +84,10 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
-  if (!isHermes) {
+  if (!isHermes && (isNull || src.indexOf('=>') !== -1)) {
     extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
+  }
+  if (!isHermes) {
     extraPlugins.push([require('@babel/plugin-transform-computed-properties')]);
     extraPlugins.push([require('@babel/plugin-transform-parameters')]);
     extraPlugins.push([
