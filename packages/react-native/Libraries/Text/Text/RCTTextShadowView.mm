@@ -294,12 +294,11 @@
                 CGSize attachmentSize = attachment.bounds.size;
 
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
-                float lineHeight = font.pointSize;
 
                 CGRect frame = {
                     {RCTRoundPixelValue(glyphRect.origin.x),
                      RCTRoundPixelValue(
-                         glyphRect.origin.y + glyphRect.size.height - lineHeight + (font.ascender + font.descender - attachmentSize.height) / 2)},
+                         glyphRect.origin.y + glyphRect.size.height - font.pointSize + (font.ascender + font.descender - attachmentSize.height) / 2)},
                     {RCTRoundPixelValue(attachmentSize.width), RCTRoundPixelValue(attachmentSize.height)}};
 
                 NSRange truncatedGlyphRange =
