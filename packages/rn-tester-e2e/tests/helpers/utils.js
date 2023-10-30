@@ -36,7 +36,6 @@ class Utils {
 
   async scrollToElement(locator: string): Promise<void> {
     let {width, height} = await driver.getWindowSize();
-    console.log(width, height)
     let elementIsFound;
     try {
       elementIsFound = await $(locator).isDisplayed();

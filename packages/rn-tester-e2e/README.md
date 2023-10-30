@@ -1,9 +1,8 @@
 # RNTester E2E folder
 
-In this folder we have a the setup for running E2E testing in RNTester via the usage of [Appium](https://appium.io/) and [WebDriverIO](https://webdriver.io/) and [Jest](https://jestjs.io/).
+In this folder we have a the setup for running E2E testing in RNTester via the usage of [Appium](https://appium.io/) and [WebDriverIO](https://webdriver.io/).
 
 - [Setting up locally](#setting-up-locally)
-  - [(one-off) Setting up Appium](#one-off-setting-up-appium)
   - [Building RNTester app](#building-rntester-app)
     - [Building for iOS](#building-for-ios)
     - [Building for Android](#building-for-android)
@@ -13,19 +12,6 @@ In this folder we have a the setup for running E2E testing in RNTester via the u
 
 ## Setting up locally
 
-### (one-off) Setting up Appium
-
-The first step you need to do is to ensure to install the tooling:
-
-```bash
-npm install appium@2.0.0 -g
-appium driver install uiautomator2@2.29.0
-appium driver install xcuitest@5.6.0
-```
-
-> More details about drivers in Appium [here](https://appium.github.io/appium/docs/en/2.0/guides/managing-exts/) and [here](https://appium.github.io/appium/docs/en/2.0/quickstart/uiauto2-driver/)
-
-You should not need to run install commands for drivers separately more than once, even if you bump the dep in package.json.
 
 ### Building RNTester app
 
