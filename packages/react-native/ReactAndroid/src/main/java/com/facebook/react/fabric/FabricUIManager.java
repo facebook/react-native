@@ -52,6 +52,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -188,6 +189,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private volatile boolean mDestroyed = false;
 
   private boolean mDriveCxxAnimations = false;
+  private final AtomicBoolean mIsFrameCallbackScheduled = new AtomicBoolean(false);
 
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
@@ -693,7 +695,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // If the reactTag exists, we assume that it might at the end of the next
     // batch of MountItems. Otherwise, we try to execute immediately.
     if (!mMountingManager.getViewExists(reactTag)) {
-      mMountItemDispatcher.addMountItem(synchronousMountItem);
+      addMountItem(synchronousMountItem);
       return;
     }
 
@@ -726,7 +728,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
 
-    mMountItemDispatcher.addPreAllocateMountItem(
+    addPreAllocateMountItem(
         MountItemFactory.createPreAllocateViewMountItem(
             rootTag,
             reactTag,
@@ -799,6 +801,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           };
       if (UiThreadUtil.isOnUiThread()) {
         runnable.run();
+      } else {
+        postChoreographerCallbackIfNecessary();
       }
     }
 
@@ -959,10 +963,50 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
+  private void addPreAllocateMountItem(final MountItem mountItem) {
+    mMountItemDispatcher.addPreAllocateMountItem(mountItem);
+    postChoreographerCallbackIfNecessary();
+  }
+
+  private void addMountItem(final MountItem mountItem) {
+    mMountItemDispatcher.addMountItem(mountItem);
+    postChoreographerCallbackIfNecessary();
+  }
+
+  private void addViewCommandMountItem(final DispatchCommandMountItem mountItem) {
+    mMountItemDispatcher.addViewCommandMountItem(mountItem);
+    postChoreographerCallbackIfNecessary();
+  }
+
+  private void postChoreographerCallbackIfNecessary() {
+    if (ReactFeatureFlags.enableOnDemandReactChoreographer == false) {
+      return;
+    }
+
+    if (mIsFrameCallbackScheduled.get()) {
+      return;
+    }
+
+    boolean isWorkPending = mMountItemDispatcher.hasMountItems() || mDriveCxxAnimations;
+    boolean isAppActive = mReactApplicationContext.getLifecycleState() == LifecycleState.RESUMED;
+
+    if (isWorkPending && isAppActive) {
+      // It is important to only schedule one frame callback at a time.
+      // Otherwise, with LayoutAnimations, deadlock may occur.
+      mIsFrameCallbackScheduled.set(true);
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    }
+  }
+
   @Override
   public void onHostResume() {
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    if (ReactFeatureFlags.enableOnDemandReactChoreographer) {
+      postChoreographerCallbackIfNecessary();
+    } else {
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    }
   }
 
   @Override
@@ -1009,7 +1053,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int commandId,
       @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.addViewCommandMountItem(
+    addViewCommandMountItem(
         MountItemFactory.createDispatchCommandMountItem(
             surfaceId, reactTag, commandId, commandArgs));
   }
@@ -1025,10 +1069,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
-      mMountItemDispatcher.addViewCommandMountItem(
+      addViewCommandMountItem(
           createDispatchCommandMountItemForInterop(surfaceId, reactTag, commandId, commandArgs));
     } else {
-      mMountItemDispatcher.addViewCommandMountItem(
+      addViewCommandMountItem(
           MountItemFactory.createDispatchCommandMountItem(
               surfaceId, reactTag, commandId, commandArgs));
     }
@@ -1040,7 +1084,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void sendAccessibilityEvent(int reactTag, int eventType) {
     // Can be called from native, not just JS - we need to migrate the native callsites
     // before removing this entirely.
-    mMountItemDispatcher.addMountItem(
+    addMountItem(
         MountItemFactory.createSendAccessibilityEventMountItem(View.NO_ID, reactTag, eventType));
   }
 
@@ -1060,7 +1104,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       throw new IllegalArgumentException(
           "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);
     }
-    mMountItemDispatcher.addMountItem(
+    addMountItem(
         MountItemFactory.createSendAccessibilityEventMountItem(surfaceId, reactTag, eventType));
   }
 
@@ -1076,7 +1120,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int initialReactTag,
       final boolean blockNativeResponder) {
-    mMountItemDispatcher.addMountItem(
+    addMountItem(
         new MountItem() {
           @Override
           public void execute(@NonNull MountingManager mountingManager) {
@@ -1110,7 +1154,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * the touch events are going to be handled by JS.
    */
   public void clearJSResponder() {
-    mMountItemDispatcher.addMountItem(
+    addMountItem(
         new MountItem() {
           @Override
           public void execute(@NonNull MountingManager mountingManager) {
@@ -1151,6 +1195,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @AnyThread
   public void onAnimationStarted() {
     mDriveCxxAnimations = true;
+    postChoreographerCallbackIfNecessary();
   }
 
   // Called from Binding.cpp
@@ -1266,6 +1311,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     @UiThread
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
+      mIsFrameCallbackScheduled.set(false);
       if (!mIsMountingEnabled || mDestroyed) {
         FLog.w(TAG, "Not flushing pending UI operations because of previously thrown Exception");
         return;
@@ -1292,9 +1338,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         stop();
         throw ex;
       } finally {
-        ReactChoreographer.getInstance()
-            .postFrameCallback(
-                ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        if (ReactFeatureFlags.enableOnDemandReactChoreographer == false) {
+          ReactChoreographer.getInstance()
+              .postFrameCallback(
+                  ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        } else {
+          postChoreographerCallbackIfNecessary();
+        }
       }
     }
   }

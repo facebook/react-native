@@ -182,4 +182,10 @@ public class ReactFeatureFlags {
    * longer work as they won't subscribe to ReactChoregrapher for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
+
+  /*
+   * When enabled, uses of ReactChoreographer (e.g. FabricUIManager) will only post callback
+   *  when there is work to do.
+   */
+  public static boolean enableOnDemandReactChoreographer = false;
 }
