@@ -162,7 +162,7 @@ jobs:
                 no_output_timeout: 5m
                 command: |
                   cd packages/rn-tester-e2e
-                  (yarn test-e2e) || true
+                  (yarn test-e2e-ios 2>&1 | tee /tmp/test_log) || true
             - store_artifacts:
                 path: /tmp/test_log
 
@@ -205,7 +205,7 @@ jobs:
           no_output_timeout: 5m
           command: |
             cd packages/rn-tester-e2e
-            (yarn test-e2e android 2>&1 | tee /tmp/test_log) || true
+            (yarn test-e2e-android 2>&1 | tee /tmp/test_log) || true
       - store_artifacts:
           path: /tmp/test_log
 
