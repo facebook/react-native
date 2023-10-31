@@ -1748,8 +1748,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
     if (
+      (this._listMetrics.getAverageCellLength() > 0 ||
+        this.props.getItemLayout != null) &&
       this._shouldRenderWithPriority() &&
-      (this._listMetrics.getAverageCellLength() || this.props.getItemLayout) &&
       !this._hiPriInProgress
     ) {
       this._hiPriInProgress = true;
