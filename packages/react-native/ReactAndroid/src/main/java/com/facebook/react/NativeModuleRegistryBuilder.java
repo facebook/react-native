@@ -39,8 +39,7 @@ public class NativeModuleRegistryBuilder {
           ((BaseReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
     } else {
       moduleHolders =
-          ReactPackageHelper.getNativeModuleIterator(
-              reactPackage, mReactApplicationContext, mReactInstanceManager);
+          ReactPackageHelper.getNativeModuleIterator(reactPackage, mReactApplicationContext);
     }
 
     for (ModuleHolder moduleHolder : moduleHolders) {
