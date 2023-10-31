@@ -245,7 +245,8 @@ class WebSocket extends EventTarget {
             data = BlobManager.createFromOptions(ev.data);
             break;
         }
-        this.dispatchEvent(new MessageEvent('message', {data}));
+        const raw_length = ev.raw_length;
+        this.dispatchEvent(new MessageEvent('message', {data, raw_length}));
       }),
       this._eventEmitter.addListener('websocketOpen', ev => {
         if (ev.id !== this._socketId) {
