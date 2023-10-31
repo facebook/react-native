@@ -37,21 +37,6 @@ void RCTSetDispatchW3CPointerEvents(BOOL value)
 }
 
 /*
- * Validate RCTEventEmitter. For experimentation only.
- */
-static BOOL RCTValidateCanSendEventInRCTEventEmitter = NO;
-
-BOOL RCTGetValidateCanSendEventInRCTEventEmitter(void)
-{
-  return RCTValidateCanSendEventInRCTEventEmitter;
-}
-
-void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
-{
-  RCTValidateCanSendEventInRCTEventEmitter = value;
-}
-
-/*
  * Memory Pressure Unloading Level for experimentation only.
  * Default is 15, which is TRIM_MEMORY_RUNNING_CRITICAL.
  */

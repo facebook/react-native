@@ -71,18 +71,6 @@
   }
 }
 
-/* TODO: (T118587955) Remove canSendEvents_DEPRECATED and validate RCTEventEmitter does not fail
- * RCTAssert in _callableJSModules when the React Native instance is invalidated.
- */
-- (BOOL)canSendEvents_DEPRECATED
-{
-  bool canSendEvents = _callableJSModules != nil;
-  if (!canSendEvents && RCTGetValidateCanSendEventInRCTEventEmitter()) {
-    RCTLogError(@"Trying to send event when _callableJSModules is nil.");
-  }
-  return canSendEvents;
-}
-
 - (void)startObserving
 {
   // Does nothing
