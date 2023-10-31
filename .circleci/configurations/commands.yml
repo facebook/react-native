@@ -46,11 +46,14 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
-            echo "Xcode version $(xcodebuild -version)"
+            xcode=$(xcodebuild -version | cut -d' ' -f2 | head -n 1)
+            # For some reason, the Xcode 14.1 machnine is already properly configured.
+            if [[ $xcode != '14.1' ]]; then
+              brew reinstall libyaml
+              gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
+              export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
+            fi
 
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
 
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
