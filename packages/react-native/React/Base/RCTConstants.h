@@ -56,12 +56,6 @@ RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
 
 /*
- * Parse JS stack for unhandled JS errors caught in C++
- */
-RCT_EXTERN BOOL RCTGetParseUnhandledJSErrorStackNatively(void);
-RCT_EXTERN void RCTSetParseUnhandledJSErrorStackNatively(BOOL value);
-
-/*
  * Use native view configs in bridgeless mode
  */
 RCT_EXTERN BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void);

@@ -53,22 +53,6 @@ void RCTSetMemoryPressureUnloadLevel(int value)
 }
 
 /*
- * In Bridge mode, parse the JS stack for unhandled JS errors, to display in RedBox.
- * When false (previous default behavior), a native stack is displayed in the RedBox.
- */
-static BOOL RCTParseUnhandledJSErrorStackNatively = NO;
-
-BOOL RCTGetParseUnhandledJSErrorStackNatively(void)
-{
-  return RCTParseUnhandledJSErrorStackNatively;
-}
-
-void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
-{
-  RCTParseUnhandledJSErrorStackNatively = value;
-}
-
-/*
  * Use native view configs in bridgeless mode
  */
 static BOOL RCTUseNativeViewConfigsInBridgelessMode = NO;
