@@ -59,6 +59,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
+  public static final short TA_KEY_TEXT_TRANSFORM = 27;
 
   public static final int UNSET = -1;
 
@@ -219,6 +220,9 @@ public class TextAttributeProps {
         case TA_KEY_ROLE:
           result.setRole(Role.values()[entry.getIntValue()]);
           break;
+        case TA_KEY_TEXT_TRANSFORM:
+          result.setTextTransform(entry.getStringValue());
+          break;
       }
     }
 
@@ -226,7 +230,6 @@ public class TextAttributeProps {
     // setNumberOfLines
     // setColor
     // setIncludeFontPadding
-    // setTextTransform
     return result;
   }
 
