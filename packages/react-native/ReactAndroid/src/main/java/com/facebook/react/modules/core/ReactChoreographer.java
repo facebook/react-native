@@ -13,6 +13,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.ChoreographerProvider;
 import java.util.ArrayDeque;
 
 /**
@@ -55,9 +56,9 @@ public final class ReactChoreographer {
 
   private static ReactChoreographer sInstance;
 
-  public static void initialize() {
+  public static void initialize(ChoreographerProvider choreographerProvider) {
     if (sInstance == null) {
-      sInstance = new ReactChoreographer();
+      sInstance = new ReactChoreographer(choreographerProvider);
     }
   }
 
@@ -66,8 +67,7 @@ public final class ReactChoreographer {
     return sInstance;
   }
 
-  // This needs to be volatile due to double checked locking issue - https://fburl.com/z409owpf
-  private @Nullable volatile Choreographer mChoreographer;
+  private @Nullable ChoreographerProvider.Choreographer mChoreographer;
 
   private final ArrayDeque<Choreographer.FrameCallback>[] mCallbackQueues;
 
@@ -101,7 +101,7 @@ public final class ReactChoreographer {
   private int mTotalCallbacks = 0;
   private boolean mHasPostedCallback = false;
 
-  private ReactChoreographer() {
+  private ReactChoreographer(ChoreographerProvider choreographerProvider) {
     mCallbackQueues = new ArrayDeque[CallbackType.values().length];
     for (int i = 0; i < mCallbackQueues.length; i++) {
       mCallbackQueues[i] = new ArrayDeque<>();
@@ -109,7 +109,7 @@ public final class ReactChoreographer {
 
     UiThreadUtil.runOnUiThread(
         () -> {
-          mChoreographer = Choreographer.getInstance();
+          mChoreographer = choreographerProvider.getChoreographer();
         });
   }
 

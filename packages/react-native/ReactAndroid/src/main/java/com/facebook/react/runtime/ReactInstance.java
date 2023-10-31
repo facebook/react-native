@@ -44,6 +44,7 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.internal.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
@@ -137,7 +138,7 @@ final class ReactInstance {
     MessageQueueThread nativeModulesMessageQueueThread =
         mQueueConfiguration.getNativeModulesQueueThread();
 
-    ReactChoreographer.initialize();
+    ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
     if (useDevSupport) {
       devSupportManager.startInspector();
     }
