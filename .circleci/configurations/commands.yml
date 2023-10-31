@@ -46,6 +46,8 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
+            echo "Xcode version $(xcodebuild -version)"
+
             brew reinstall libyaml
             gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
             export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
