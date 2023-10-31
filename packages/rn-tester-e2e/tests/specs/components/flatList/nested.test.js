@@ -8,13 +8,13 @@
  * @format
  */
 
- const {ComponentsScreen} = require('../../../screens/components.screen.js');
- const {
-   FlatListComponentScreen,
- } = require('../../../screens/components/flatListComponent.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
+const {
+  FlatListComponentScreen,
+} = require('../../../screens/components/flatListComponent.screen.js');
 
-describe('Test is checking nested component', function() {
-  it('Should view properly the nested header element', async function() {
+describe('Test is checking nested component', function () {
+  it('Should view properly the nested header element', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();

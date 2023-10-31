@@ -13,8 +13,8 @@ const {
   RefreshControlComponentScreen,
 } = require('../../../screens/components/refreshControlComponent.screen.js');
 
-describe('Test is checking RefreshControl component', function() {
-  it('Should view initial row element', async function() {
+describe('Test is checking RefreshControl component', function () {
+  it('Should view initial row element', async function () {
     await RefreshControlComponentScreen.scrollUntilRefreshControlComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkRefreshControlComponentIsDisplayed(),

@@ -8,15 +8,15 @@
  * @format
  */
 
- const {ComponentsScreen} = require('../../../screens/components.screen.js');
- const {
-   ButtonComponentScreen,
- } = require('../../../screens/components/buttonComponent.screen.js');
+const {ComponentsScreen} = require('../../../screens/components.screen.js');
+const {
+  ButtonComponentScreen,
+} = require('../../../screens/components/buttonComponent.screen.js');
 
 const submitText = 'Your application has been submitted!';
 
-describe('Test is checking submit button', function() {
-  it('Should view properly submit alert text', async function(){
+describe('Test is checking submit button', function () {
+  it('Should view properly submit alert text', async function () {
     expect(
       await ComponentsScreen.checkButtonComponentIsDisplayed(),
     ).toBeTruthy();
@@ -28,6 +28,3 @@ describe('Test is checking submit button', function() {
     await ButtonComponentScreen.clickOkButton();
   });
 });
-
-
-

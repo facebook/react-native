@@ -16,8 +16,8 @@ const {
 // fixed variables
 const registerText = 'Successfully Registered!';
 
-describe('Test is checking keyboardAvoidingView component', function() {
-  it('Should view properly successfully registered text', async function() {
+describe('Test is checking keyboardAvoidingView component', function () {
+  it('Should view properly successfully registered text', async function () {
     await KeyboardAvoidingViewComponentScreen.scrollUntilKeyboardAvoidingViewComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkKeyboardAvoidingViewComponentIsDisplayed(),

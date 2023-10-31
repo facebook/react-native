@@ -13,8 +13,8 @@ const {
   NewAppComponentScreen,
 } = require('../../../screens/components/newAppComponent.screen.js');
 
-describe('Test is checking new app screen component', function() {
-  it('Should view new app header element', async function() {
+describe('Test is checking new app screen component', function () {
+  it('Should view new app header element', async function () {
     await NewAppComponentScreen.scrollUntilNewAppHeaderComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkNewAppScreenComponentIsDisplayed(),

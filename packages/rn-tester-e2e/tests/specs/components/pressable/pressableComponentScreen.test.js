@@ -16,8 +16,8 @@ const {
 // fixed variables
 const onPressText = 'onPress';
 
-describe('Test is checking pressable component', function() {
-  it('Should view onPress text', async function() {
+describe('Test is checking pressable component', function () {
+  it('Should view onPress text', async function () {
     await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkPressableComponentIsDisplayed(),
