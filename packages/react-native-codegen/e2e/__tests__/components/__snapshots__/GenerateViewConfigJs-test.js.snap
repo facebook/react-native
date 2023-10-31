@@ -415,7 +415,7 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource').default,
     },
   },
 };
@@ -569,7 +569,7 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource').default,
     },
 
     color: {

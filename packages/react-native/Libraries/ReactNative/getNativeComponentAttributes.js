@@ -11,7 +11,7 @@
 'use strict';
 
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const resolveAssetSource = require('../Image/resolveAssetSource');
+const resolveAssetSource = require('../Image/resolveAssetSource').default;
 const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');

@@ -10,87 +10,96 @@
 
 // Resolves an asset into a `source` for `Image`.
 
-'use strict';
-
+import typeof * as NativeSourceCodeModule from '../NativeModules/specs/NativeSourceCode';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageSource} from './ImageSource';
 
-const AssetSourceResolver = require('./AssetSourceResolver');
-const {pickScale} = require('./AssetUtils');
-const AssetRegistry = require('@react-native/assets-registry/registry');
+import AssetSourceResolver from './AssetSourceResolver';
+import {pickScale} from './AssetUtils';
+import AssetRegistry from '@react-native/assets-registry/registry';
 
-let _customSourceTransformer, _serverURL, _scriptURL;
+let cachedCustomSourceTransformer,
+  cachedServerURL,
+  cachedScriptURL,
+  cachedSourceCodeScriptURL;
 
-let _sourceCodeScriptURL: ?string;
 function getSourceCodeScriptURL(): ?string {
-  if (_sourceCodeScriptURL != null) {
-    return _sourceCodeScriptURL;
+  if (cachedSourceCodeScriptURL != null) {
+    return cachedSourceCodeScriptURL;
   }
 
-  let sourceCode =
+  let sourceCode: ?NativeSourceCodeModule['default'] =
     global.nativeExtensions && global.nativeExtensions.SourceCode;
   if (!sourceCode) {
     sourceCode = require('../NativeModules/specs/NativeSourceCode').default;
   }
-  _sourceCodeScriptURL = sourceCode.getConstants().scriptURL;
-  return _sourceCodeScriptURL;
+
+  cachedSourceCodeScriptURL = sourceCode.getConstants().scriptURL;
+  return cachedSourceCodeScriptURL;
 }
 
 function getDevServerURL(): ?string {
-  if (_serverURL === undefined) {
-    const sourceCodeScriptURL = getSourceCodeScriptURL();
-    const match = sourceCodeScriptURL?.match(/^https?:\/\/.*?\//);
-    if (match) {
-      // jsBundle was loaded from network
-      _serverURL = match[0];
-    } else {
-      // jsBundle was loaded from file
-      _serverURL = null;
-    }
+  // `null` is a valid produced value, so we return it immediately.
+  if (cachedServerURL !== undefined) {
+    return cachedServerURL;
   }
-  return _serverURL;
+
+  const sourceCodeScriptURL = getSourceCodeScriptURL();
+  const match = sourceCodeScriptURL?.match(/^https?:\/\/.*?\//);
+  if (match) {
+    // jsBundle was loaded from network
+    cachedServerURL = match[0];
+  } else {
+    // jsBundle was loaded from file
+    cachedServerURL = null;
+  }
+
+  return cachedServerURL;
 }
 
-function _coerceLocalScriptURL(scriptURL: ?string): ?string {
-  let normalizedScriptURL = scriptURL;
-
-  if (normalizedScriptURL != null) {
-    if (normalizedScriptURL.startsWith('assets://')) {
-      // android: running from within assets, no offline path to use
-      return null;
-    }
-    normalizedScriptURL = normalizedScriptURL.substring(
-      0,
-      normalizedScriptURL.lastIndexOf('/') + 1,
-    );
-    if (!normalizedScriptURL.includes('://')) {
-      // Add file protocol in case we have an absolute file path and not a URL.
-      // This shouldn't really be necessary. scriptURL should be a URL.
-      normalizedScriptURL = 'file://' + normalizedScriptURL;
-    }
+function coerceLocalScriptURL(scriptURL: ?string): ?string {
+  if (
+    scriptURL == null ||
+    // android: running from within assets, no offline path to use
+    scriptURL.startsWith('assets://')
+  ) {
+    return null;
   }
 
-  return normalizedScriptURL;
+  // Take the "directory" part of the scriptURL, as we assume the assets will
+  // be in the same directory.
+  let localScriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+
+  if (!localScriptURL.includes('://')) {
+    // Add file protocol in case we have an absolute file path and not a URL.
+    // This shouldn't really be necessary. scriptURL should be a URL.
+    localScriptURL = 'file://' + localScriptURL;
+  }
+
+  return localScriptURL;
 }
 
 function getScriptURL(): ?string {
-  if (_scriptURL === undefined) {
-    _scriptURL = _coerceLocalScriptURL(getSourceCodeScriptURL());
+  if (cachedScriptURL === undefined) {
+    cachedScriptURL = coerceLocalScriptURL(getSourceCodeScriptURL());
   }
-  return _scriptURL;
+
+  return cachedScriptURL;
 }
 
 function setCustomSourceTransformer(
   transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource,
 ): void {
-  _customSourceTransformer = transformer;
+  cachedCustomSourceTransformer = transformer;
 }
 
 /**
  * `source` is either a number (opaque type returned by require('./foo.png'))
  * or an `ImageSource` like { uri: '<http location || file path>' }
  */
-function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
+export default function resolveAssetSource(
+  source: ?ImageSource,
+): ?ResolvedAssetSource {
   if (source == null || typeof source === 'object') {
     // $FlowFixMe[incompatible-exact] `source` doesn't exactly match `ResolvedAssetSource`
     // $FlowFixMe[incompatible-return] `source` doesn't exactly match `ResolvedAssetSource`
@@ -107,12 +116,13 @@ function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
     getScriptURL(),
     asset,
   );
-  if (_customSourceTransformer) {
-    return _customSourceTransformer(resolver);
+
+  if (cachedCustomSourceTransformer) {
+    return cachedCustomSourceTransformer(resolver);
   }
+
   return resolver.defaultAsset();
 }
 
 resolveAssetSource.pickScale = pickScale;
 resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
-module.exports = resolveAssetSource;
