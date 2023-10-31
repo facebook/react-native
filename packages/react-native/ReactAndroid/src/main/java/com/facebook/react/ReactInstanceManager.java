@@ -88,6 +88,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
+import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -236,7 +237,8 @@ public class ReactInstanceManager {
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable ChoreographerProvider choreographerProvider) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -294,7 +296,10 @@ public class ReactInstanceManager {
     mJSIModulePackage = jsiModulePackage;
 
     // Instantiate ReactChoreographer in UI thread.
-    ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
+    ReactChoreographer.initialize(
+        choreographerProvider != null
+            ? choreographerProvider
+            : AndroidChoreographerProvider.getInstance());
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
