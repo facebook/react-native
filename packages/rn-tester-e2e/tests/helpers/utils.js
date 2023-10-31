@@ -30,8 +30,7 @@ class Utils {
   }
 
   platformSelect(platforms: PlatformsReference): string {
-    // if something goes wrong, we fallback to ios. But it should never happent, the process will fail way earlier.
-    return platforms[process?.env?.E2E_DEVICE || 'ios'];
+    return platforms[browser.capabilities.platformName.toLowerCase()];
   }
 
   async scrollToElement(locator: string): Promise<void> {
