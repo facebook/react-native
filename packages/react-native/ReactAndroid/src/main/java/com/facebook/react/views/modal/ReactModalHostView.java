@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -328,19 +329,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
-      if (context instanceof Activity) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-          int appearance =
-              ((Activity) context).getWindow().getInsetsController().getSystemBarsAppearance();
-          mDialog.getWindow().getInsetsController().setSystemBarsAppearance(appearance, appearance);
-        } else {
-          mDialog
-              .getWindow()
-              .getDecorView()
-              .setSystemUiVisibility(
-                  ((Activity) context).getWindow().getDecorView().getSystemUiVisibility());
-        }
-      }
+      updateSystemAppearance();
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
   }
@@ -391,6 +380,32 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       window.setDimAmount(0.5f);
       window.setFlags(
           WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
+  }
+
+  private void updateSystemAppearance() {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+      return;
+    }
+    Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateSystemAppearance");
+    // Modeled after the version check in StatusBarModule.setStyle
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+      int activityAppearance =
+          currentActivity.getWindow().getInsetsController().getSystemBarsAppearance();
+      int activityLightStatusBars =
+          activityAppearance & WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+      mDialog
+          .getWindow()
+          .getInsetsController()
+          .setSystemBarsAppearance(
+              activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+    } else {
+      mDialog
+          .getWindow()
+          .getDecorView()
+          .setSystemUiVisibility(
+              currentActivity.getWindow().getDecorView().getSystemUiVisibility());
     }
   }
 
