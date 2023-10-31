@@ -15,6 +15,8 @@
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageSource} from './ImageSource';
 
+import SourceCode from '../NativeModules/specs/NativeSourceCode';
+
 const AssetSourceResolver = require('./AssetSourceResolver');
 const {pickScale} = require('./AssetUtils');
 const AssetRegistry = require('@react-native/assets-registry/registry');
@@ -27,12 +29,7 @@ function getSourceCodeScriptURL(): ?string {
     return _sourceCodeScriptURL;
   }
 
-  let sourceCode =
-    global.nativeExtensions && global.nativeExtensions.SourceCode;
-  if (!sourceCode) {
-    sourceCode = require('../NativeModules/specs/NativeSourceCode').default;
-  }
-  _sourceCodeScriptURL = sourceCode.getConstants().scriptURL;
+  _sourceCodeScriptURL = SourceCode.getConstants().scriptURL;
   return _sourceCodeScriptURL;
 }
 
