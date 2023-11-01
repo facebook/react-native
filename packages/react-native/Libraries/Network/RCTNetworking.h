@@ -28,6 +28,8 @@
 
 @interface RCTNetworking : RCTEventEmitter
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 /**
  * Allows RCTNetworking instances to be initialized with handlers.
  * The handlers will be requested via the bridge's moduleForName method when required.

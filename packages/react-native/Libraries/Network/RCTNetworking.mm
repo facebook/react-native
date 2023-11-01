@@ -170,7 +170,7 @@ RCT_EXPORT_MODULE()
 - (instancetype)initWithHandlersProvider:
     (NSArray<id<RCTURLRequestHandler>> * (^)(RCTModuleRegistry *moduleRegistry))getHandlers
 {
-  if (self = [super initWithDisabledObservation]) {
+  if (self = [self init]) {
     _handlersProvider = getHandlers;
   }
   return self;
