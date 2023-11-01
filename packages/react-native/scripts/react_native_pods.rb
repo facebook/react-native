@@ -236,7 +236,7 @@ def react_native_post_install(
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
-  fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
+  fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
 
   if hermes_enabled
