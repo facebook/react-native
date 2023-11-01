@@ -179,6 +179,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   }
 
   @Override
+  public boolean unstable_isLazyTurboModuleDelegate() {
+    return false;
+  }
+
+  @Override
   public boolean unstable_isModuleRegistered(String moduleName) {
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);

@@ -20,7 +20,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
@@ -196,7 +195,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!ReactFeatureFlags.enableTurboModuleStableAPI && !isTurboModule(moduleName)) {
+    if (!isTurboModuleStableAPIEnabled() && !isTurboModule(moduleName)) {
       return null;
     }
 
@@ -204,6 +203,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return module instanceof CxxModuleWrapper && module instanceof TurboModule
         ? (CxxModuleWrapper) module
         : null;
+  }
+
+  public boolean isTurboModuleStableAPIEnabled() {
+    return mDelegate != null && mDelegate.unstable_isLazyTurboModuleDelegate();
   }
 
   // used from TurboModuleManager.cpp
@@ -219,7 +222,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!ReactFeatureFlags.enableTurboModuleStableAPI && !isTurboModule(moduleName)) {
+    if (!isTurboModuleStableAPIEnabled() && !isTurboModule(moduleName)) {
       return null;
     }
 
@@ -250,7 +253,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
                 + "\", but TurboModuleManager was tearing down. Returning null. Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + (ReactFeatureFlags.enableTurboModuleStableAPI
+                + (isTurboModuleStableAPIEnabled()
                     ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
                     : isTurboModule(moduleName))
                 + ".");
@@ -336,7 +339,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
                 + "\". Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + (ReactFeatureFlags.enableTurboModuleStableAPI
+                + (isTurboModuleStableAPIEnabled()
                     ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
                     : isTurboModule(moduleName))
                 + ".");

@@ -75,6 +75,11 @@ public abstract class LazyTurboModuleManagerDelegate
   }
 
   @Override
+  public boolean unstable_isLazyTurboModuleDelegate() {
+    return true;
+  }
+
+  @Override
   public boolean unstable_shouldEnableLegacyModuleInterop() {
     return false;
   }
