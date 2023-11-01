@@ -301,7 +301,7 @@
                 localLayoutContext.absolutePosition.x += frame.origin.x;
                 localLayoutContext.absolutePosition.y += frame.origin.y;
 
-                [shadowView layoutWithMinimumSize:frame.size
+                [shadowView layoutWithMinimumSize:CGSizeZero
                                       maximumSize:frame.size
                                   layoutDirection:self.layoutMetrics.layoutDirection
                                     layoutContext:localLayoutContext];
