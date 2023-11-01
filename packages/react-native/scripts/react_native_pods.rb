@@ -258,7 +258,7 @@ def react_native_post_install(
     flipper_post_install(installer)
   end
 
-  fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
+  fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
 
   if hermes_enabled
