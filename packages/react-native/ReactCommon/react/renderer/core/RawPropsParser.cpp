@@ -33,7 +33,7 @@ const RawValue* RawPropsParser::at(
     // 4950 lookups and equality checks on initialization of the parser, which
     // happens exactly once per component.
     size_t size = keys_.size();
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
       if (keys_[i] == key) {
         return nullptr;
       }
@@ -69,7 +69,8 @@ const RawValue* RawPropsParser::at(
   do {
     rawProps.keyIndexCursor_++;
 
-    if (UNLIKELY(rawProps.keyIndexCursor_ >= keys_.size())) {
+    if (UNLIKELY(
+            static_cast<size_t>(rawProps.keyIndexCursor_) >= keys_.size())) {
 #ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
         LOG(ERROR)
