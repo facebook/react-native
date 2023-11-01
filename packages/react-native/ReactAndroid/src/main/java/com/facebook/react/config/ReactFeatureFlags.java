@@ -107,12 +107,6 @@ public class ReactFeatureFlags {
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
   /**
-   * Allow closing the small gap that appears between paths when drawing a rounded View with a
-   * border.
-   */
-  public static boolean enableCloseVisibleGapBetweenPaths = true;
-
-  /**
    * Allow fix in layout animation to drop delete...create mutations which could cause missing view
    * state in Fabric SurfaceMountingManager.
    */
