@@ -20,10 +20,6 @@ namespace facebook::react {
 #ifdef ANDROID
 
 TEST(ParagraphLocalDataTest, testSomething) {
-  auto attributedString = AttributedString();
-  auto fragment = AttributedString::Fragment();
-  fragment.string = "test";
-
   auto text = TextAttributes();
   text.foregroundColor = {
       colorFromComponents({100 / 255.0, 153 / 255.0, 253 / 255.0, 1.0})};
@@ -31,8 +27,16 @@ TEST(ParagraphLocalDataTest, testSomething) {
   text.fontStyle = FontStyle::Italic;
   text.fontWeight = FontWeight::Thin;
   text.fontVariant = FontVariant::TabularNums;
+
+  auto fragment = AttributedString::Fragment{};
+  fragment.string = "test";
   fragment.textAttributes = text;
-  attributedString.prependFragment(fragment);
+
+  auto span = AttributedString::Span{};
+  span.appendFragment(fragment);
+
+  auto attributedString = AttributedString{};
+  attributedString.prependSpan(span);
 
   auto paragraphState = ParagraphState{};
   paragraphState.attributedString = attributedString;

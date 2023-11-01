@@ -25,16 +25,16 @@ class BaseTextShadowNode {
   class Attachment final {
    public:
     /*
-     * Unowning pointer to a `ShadowNode` that represents the attachment.
+     * Non-owning pointer to a `ShadowNode` that represents the attachment.
      * Cannot be `null`.
      */
     const ShadowNode* shadowNode;
 
     /*
-     * Index of the fragment in `AttributedString` that represents the
+     * Handle to the fragment in `AttributedString` that represents the
      * the attachment.
      */
-    size_t fragmentIndex;
+    AttributedString::FragmentHandle fragmentHandle;
   };
 
   /*
@@ -43,6 +43,29 @@ class BaseTextShadowNode {
    * at all, therefore we don't need an inline buffer (`small_vector`).
    */
   using Attachments = std::vector<Attachment>;
+
+  static void buildSpanForParent(
+      const TextAttributes& baseTextAttributes,
+      const ShadowNode& parentNode,
+      AttributedString::Span& outSpan,
+      size_t outSpanIndex,
+      Attachments& outAttachments);
+
+  static void buildSpanForTopLevelChild(
+      const TextAttributes& baseTextAttributes,
+      const ShadowNode& rootNode,
+      const ShadowNode::Shared topLevelChildNode,
+      AttributedString::Span& outSpan,
+      size_t outSpanIndex,
+      Attachments& outAttachments);
+
+  static void buildSpanForChild(
+      const TextAttributes& baseTextAttributes,
+      const ShadowNode& parentNode,
+      const ShadowNode::Shared childNode,
+      AttributedString::Span& outSpan,
+      size_t outSpanIndex,
+      Attachments& outAttachments);
 
   /*
    * Builds an `AttributedString` which represents text content of the node.
@@ -53,7 +76,7 @@ class BaseTextShadowNode {
    */
   static void buildAttributedString(
       const TextAttributes& baseTextAttributes,
-      const ShadowNode& parentNode,
+      const ShadowNode& rootNode,
       AttributedString& outAttributedString,
       Attachments& outAttachments);
 

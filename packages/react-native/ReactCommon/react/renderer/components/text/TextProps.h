@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/attributedstring/TextAttributes.h>
+#include <react/renderer/attributedstring/SpanAttributes.h>
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -28,6 +29,10 @@ class TextProps : public Props, public BaseTextProps {
       RawPropsPropNameHash hash,
       const char* propName,
       const RawValue& value);
+
+#pragma mark - Props
+
+  SpanAttributes spanAttributes{};
 
 #pragma mark - DebugStringConvertible
 

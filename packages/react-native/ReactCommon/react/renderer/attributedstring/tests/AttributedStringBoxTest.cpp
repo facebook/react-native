@@ -23,7 +23,11 @@ TEST(AttributedStringBoxTest, testValueConstructor) {
   auto attributedString = AttributedString{};
   auto fragment = AttributedString::Fragment{};
   fragment.string = "test string";
-  attributedString.appendFragment(fragment);
+
+  auto span = AttributedString::Span{};
+  span.appendFragment(fragment);
+
+  attributedString.appendSpan(span);
   auto attributedStringBox = AttributedStringBox{attributedString};
 
   EXPECT_EQ(attributedStringBox.getMode(), AttributedStringBox::Mode::Value);
@@ -58,7 +62,12 @@ TEST(AttributedStringBoxTest, testMoveConstructor) {
     auto attributedString = AttributedString{};
     auto fragment = AttributedString::Fragment{};
     fragment.string = "test string";
-    attributedString.appendFragment(fragment);
+
+    auto span = AttributedString::Span{};
+    span.appendFragment(fragment);
+
+    attributedString.appendSpan(span);
+
     auto movedFromAttributedStringBox = AttributedStringBox{attributedString};
 
     auto moveToAttributedStringBox =
@@ -88,7 +97,11 @@ TEST(AttributedStringBoxTest, testMoveAssignment) {
     auto attributedString = AttributedString{};
     auto fragment = AttributedString::Fragment{};
     fragment.string = "test string";
-    attributedString.appendFragment(fragment);
+
+    auto span = AttributedString::Span{};
+    span.appendFragment(fragment);
+
+    attributedString.appendSpan(span);
     auto movedFromAttributedStringBox = AttributedStringBox{attributedString};
 
     auto moveToAttributedStringBox = AttributedStringBox{};

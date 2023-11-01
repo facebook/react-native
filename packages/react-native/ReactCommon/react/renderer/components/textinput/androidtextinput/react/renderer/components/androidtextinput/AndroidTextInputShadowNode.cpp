@@ -47,6 +47,7 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   if (!getConcreteProps().text.empty()) {
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.apply(getConcreteProps().textAttributes);
+
     auto fragment = AttributedString::Fragment{};
     fragment.string = getConcreteProps().text;
     fragment.textAttributes = textAttributes;
@@ -55,7 +56,11 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
     // that effect.
     fragment.textAttributes.backgroundColor = clearColor();
     fragment.parentShadowView = ShadowView(*this);
-    attributedString.prependFragment(fragment);
+
+    auto span = AttributedString::Span{};
+    span.appendFragment(fragment);
+
+    attributedString.prependSpan(span);
   }
 
   return attributedString;
@@ -85,7 +90,11 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
   // appended to the AttributedString (see implementation of appendFragment)
   fragment.textAttributes = textAttributes;
   fragment.parentShadowView = ShadowView(*this);
-  textAttributedString.appendFragment(fragment);
+
+  auto span = AttributedString::Span{};
+  span.appendFragment(fragment);
+
+  textAttributedString.appendSpan(span);
 
   return textAttributedString;
 }

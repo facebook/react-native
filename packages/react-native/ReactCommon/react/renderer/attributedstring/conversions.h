@@ -896,10 +896,25 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   return _textAttributes;
 }
 
-inline folly::dynamic toDynamic(const AttributedString& attributedString) {
+inline folly::dynamic toDynamic(const AttributedString::Fragment& fragment) {
+  folly::dynamic value = folly::dynamic::object();
+  value["string"] = fragment.string;
+  if (fragment.parentShadowView.componentHandle) {
+    value["reactTag"] = fragment.parentShadowView.tag;
+  }
+  if (fragment.isAttachment()) {
+    value["isAttachment"] = true;
+    value["width"] = fragment.parentShadowView.layoutMetrics.frame.size.width;
+    value["height"] = fragment.parentShadowView.layoutMetrics.frame.size.height;
+  }
+  value["textAttributes"] = toDynamic(fragment.textAttributes);
+  return value;
+}
+
+inline folly::dynamic toDynamic(const AttributedString::Span& span) {
   auto value = folly::dynamic::object();
   auto fragments = folly::dynamic::array();
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto fragment : span.getFragments()) {
     folly::dynamic dynamicFragment = folly::dynamic::object();
     dynamicFragment["string"] = fragment.string;
     if (fragment.parentShadowView.componentHandle) {
@@ -916,6 +931,20 @@ inline folly::dynamic toDynamic(const AttributedString& attributedString) {
     fragments.push_back(dynamicFragment);
   }
   value("fragments", fragments);
+  value("string", span.getString());
+  return value;
+}
+
+inline folly::dynamic toDynamic(const AttributedString& attributedString) {
+  auto value = folly::dynamic::object();
+  auto spans = folly::dynamic::array();
+  for (auto span : attributedString.getSpans()) {
+    folly::dynamic dynamicSpan = folly::dynamic::object();
+    dynamicSpan["string"] = span.getString();
+
+    spans.push_back(dynamicSpan);
+  }
+  value("spans", spans);
   value(
       "hash", std::hash<facebook::react::AttributedString>{}(attributedString));
   value("string", attributedString.getString());
@@ -932,8 +961,11 @@ inline folly::dynamic toDynamic(const AttributedString::Range& range) {
 // constants for AttributedString serialization
 constexpr static MapBuffer::Key AS_KEY_HASH = 0;
 constexpr static MapBuffer::Key AS_KEY_STRING = 1;
-constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
-constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
+constexpr static MapBuffer::Key AS_KEY_SPANS = 2;
+
+// constants for Span serialization
+constexpr static MapBuffer::Key SP_KEY_STRING = 0;
+constexpr static MapBuffer::Key SP_KEY_FRAGMENTS = 1;
 
 // constants for Fragment serialization
 constexpr static MapBuffer::Key FR_KEY_STRING = 0;
@@ -1134,40 +1166,67 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   return builder.build();
 }
 
-inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
-  auto fragmentsBuilder = MapBufferBuilder();
+inline MapBuffer toMapBuffer(const AttributedString::Fragment& fragment) {
+  auto builder = MapBufferBuilder();
+
+  builder.putString(FR_KEY_STRING, fragment.string);
+  if (fragment.parentShadowView.componentHandle) {
+    builder.putInt(FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
+  }
+  if (fragment.isAttachment()) {
+    builder.putBool(FR_KEY_IS_ATTACHMENT, true);
+    builder.putDouble(
+        FR_KEY_WIDTH, fragment.parentShadowView.layoutMetrics.frame.size.width);
+    builder.putDouble(
+        FR_KEY_HEIGHT,
+        fragment.parentShadowView.layoutMetrics.frame.size.height);
+  }
+  auto textAttributesMap = toMapBuffer(fragment.textAttributes);
+  builder.putMapBuffer(FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
+
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const AttributedString::Fragments& fragments) {
+  auto builder = MapBufferBuilder();
 
   int index = 0;
-  for (auto fragment : attributedString.getFragments()) {
-    auto dynamicFragmentBuilder = MapBufferBuilder();
-    dynamicFragmentBuilder.putString(FR_KEY_STRING, fragment.string);
-    if (fragment.parentShadowView.componentHandle) {
-      dynamicFragmentBuilder.putInt(
-          FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
-    }
-    if (fragment.isAttachment()) {
-      dynamicFragmentBuilder.putBool(FR_KEY_IS_ATTACHMENT, true);
-      dynamicFragmentBuilder.putDouble(
-          FR_KEY_WIDTH,
-          fragment.parentShadowView.layoutMetrics.frame.size.width);
-      dynamicFragmentBuilder.putDouble(
-          FR_KEY_HEIGHT,
-          fragment.parentShadowView.layoutMetrics.frame.size.height);
-    }
-    auto textAttributesMap = toMapBuffer(fragment.textAttributes);
-    dynamicFragmentBuilder.putMapBuffer(
-        FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
-    auto dynamicFragmentMap = dynamicFragmentBuilder.build();
-    fragmentsBuilder.putMapBuffer(index++, dynamicFragmentMap);
+  for (auto fragment : fragments) {
+    builder.putMapBuffer(index++, toMapBuffer(fragment));
   }
 
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const AttributedString::Span& span) {
   auto builder = MapBufferBuilder();
+
+  builder.putString(SP_KEY_STRING, span.getString());
+  builder.putMapBuffer(SP_KEY_FRAGMENTS, toMapBuffer(span.getFragments()));
+
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const AttributedString::Spans& spans) {
+  auto builder = MapBufferBuilder();
+
+  int index = 0;
+  for (auto span : spans) {
+    builder.putMapBuffer(index++, toMapBuffer(span));
+  }
+
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
+  auto builder = MapBufferBuilder();
+
   builder.putInt(
       AS_KEY_HASH,
       std::hash<facebook::react::AttributedString>{}(attributedString));
   builder.putString(AS_KEY_STRING, attributedString.getString());
-  auto fragmentsMap = fragmentsBuilder.build();
-  builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
+
+  builder.putMapBuffer(AS_KEY_SPANS, toMapBuffer(attributedString.getSpans()));
   return builder.build();
 }
 

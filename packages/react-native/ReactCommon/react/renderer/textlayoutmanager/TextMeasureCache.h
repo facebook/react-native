@@ -141,7 +141,7 @@ inline bool areAttributedStringFragmentsEquivalentLayoutWise(
         rhs.parentShadowView.layoutMetrics));
 }
 
-inline size_t textAttributesHashLayoutWise(
+inline size_t attributedStringFragmentHashLayoutWise(
     const AttributedString::Fragment& fragment) {
   // Here we are not taking `isAttachment` and `layoutMetrics` into account
   // because they are logically interdependent and this can break an invariant
@@ -150,9 +150,9 @@ inline size_t textAttributesHashLayoutWise(
       fragment.string, textAttributesHashLayoutWise(fragment.textAttributes));
 }
 
-inline bool areAttributedStringsEquivalentLayoutWise(
-    const AttributedString& lhs,
-    const AttributedString& rhs) {
+inline bool areAttributedStringSpansEquivalentLayoutWise(
+    const AttributedString::Span& lhs,
+    const AttributedString::Span& rhs) {
   auto& lhsFragment = lhs.getFragments();
   auto& rhsFragment = rhs.getFragments();
 
@@ -171,12 +171,46 @@ inline bool areAttributedStringsEquivalentLayoutWise(
   return true;
 }
 
-inline size_t textAttributedStringHashLayoutWise(
+inline size_t attributedStringSpanSpansHashLayoutWise(
+    const AttributedString::Span& span) {
+  auto seed = size_t{0};
+
+  for (const auto& fragment : span.getFragments()) {
+    facebook::react::hash_combine(
+        seed, attributedStringFragmentHashLayoutWise(fragment));
+  }
+
+  return seed;
+}
+
+inline bool areAttributedStringsEquivalentLayoutWise(
+    const AttributedString& lhs,
+    const AttributedString& rhs) {
+  auto& lhsSpans = lhs.getSpans();
+  auto& rhsSpans = rhs.getSpans();
+
+  if (lhsSpans.size() != rhsSpans.size()) {
+    return false;
+  }
+
+  auto size = lhsSpans.size();
+  for (auto i = size_t{0}; i < size; i++) {
+    if (!areAttributedStringSpansEquivalentLayoutWise(
+            lhsSpans.at(i), rhsSpans.at(i))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+inline size_t attributedStringHashLayoutWise(
     const AttributedString& attributedString) {
   auto seed = size_t{0};
 
-  for (const auto& fragment : attributedString.getFragments()) {
-    facebook::react::hash_combine(seed, textAttributesHashLayoutWise(fragment));
+  for (const auto& fragment : attributedString.getSpans()) {
+    facebook::react::hash_combine(
+        seed, attributedStringSpanSpansHashLayoutWise(fragment));
   }
 
   return seed;
@@ -206,7 +240,7 @@ template <>
 struct hash<facebook::react::TextMeasureCacheKey> {
   size_t operator()(const facebook::react::TextMeasureCacheKey& key) const {
     return facebook::react::hash_combine(
-        textAttributedStringHashLayoutWise(key.attributedString),
+        attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.layoutConstraints.maximumSize.width);
   }

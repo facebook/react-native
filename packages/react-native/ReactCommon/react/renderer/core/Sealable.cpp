@@ -48,6 +48,7 @@ Sealable& Sealable::operator=(Sealable&& other) noexcept {
 }
 
 void Sealable::seal() const {
+  sealChildren();
   sealed_ = true;
 }
 
@@ -57,6 +58,9 @@ bool Sealable::getSealed() const {
 
 void Sealable::ensureUnsealed() const {
   react_native_assert(!sealed_ && "Attempt to mutate a sealed object.");
+}
+
+void Sealable::sealChildren() const {
 }
 
 #endif

@@ -48,11 +48,16 @@ namespace facebook::react {
 // Release-mode, production version
 class Sealable {
  public:
+  virtual ~Sealable() noexcept {};
+
   inline void seal() const {}
   inline bool getSealed() const {
     return true;
   }
   inline void ensureUnsealed() const {}
+
+ protected:
+  virtual void sealChildren() const {};
 };
 
 #else
@@ -63,7 +68,7 @@ class Sealable {
   Sealable();
   Sealable(const Sealable& other);
   Sealable(Sealable&& other) noexcept;
-  ~Sealable() noexcept;
+  virtual ~Sealable() noexcept;
   Sealable& operator=(const Sealable& other);
   Sealable& operator=(Sealable&& other) noexcept;
 
@@ -83,6 +88,12 @@ class Sealable {
    * Call this from all non-`const` methods.
    */
   void ensureUnsealed() const;
+
+ protected:
+  /*
+   * Seal all sealable children of the object.
+   */
+  virtual void sealChildren() const;
 
  private:
   mutable std::atomic<bool> sealed_{false};
