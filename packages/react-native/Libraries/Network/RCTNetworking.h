@@ -10,6 +10,8 @@
 #import <React/RCTNetworkTask.h>
 #import <React/RCTURLRequestHandler.h>
 
+RCT_EXTERN void RCTEnableNetworkingRequestQueue(BOOL enabled);
+
 @protocol RCTNetworkingRequestHandler <NSObject>
 
 // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
@@ -55,6 +57,8 @@
 - (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
 
 - (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
+
+- (dispatch_queue_t)requestQueue;
 
 @end
 
