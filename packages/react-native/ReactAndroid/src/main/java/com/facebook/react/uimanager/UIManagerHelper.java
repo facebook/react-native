@@ -22,9 +22,9 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherProvider;
 
 /** Helper class for {@link UIManager}. */
 public class UIManagerHelper {
@@ -53,19 +53,13 @@ public class UIManagerHelper {
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
-      UIManager uiManager = null;
-      if (uiManagerType == FABRIC) {
-        uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
-      } else if (ReactFeatureFlags.unstable_useFabricInterop) {
-        // When Fabric Interop is enabled in Bridgeless mode, enable the legacy UIManager
-        uiManager = context.getNativeModule(UIManagerModule.class);
-      }
-
+      @Nullable UIManager uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new ReactNoCrashSoftException(
                 "Cannot get UIManager because the instance hasn't been initialized yet."));
+        return null;
       }
       return uiManager;
     }
@@ -124,6 +118,13 @@ public class UIManagerHelper {
   @Nullable
   public static EventDispatcher getEventDispatcher(
       ReactContext context, @UIManagerType int uiManagerType) {
+    // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
+    if (context.isBridgeless()) {
+      if (context instanceof ThemedReactContext) {
+        context = ((ThemedReactContext) context).getReactApplicationContext();
+      }
+      return ((EventDispatcherProvider) context).getEventDispatcher();
+    }
     UIManager uiManager = getUIManager(context, uiManagerType, false);
     if (uiManager == null) {
       ReactSoftExceptionLogger.logSoftException(
