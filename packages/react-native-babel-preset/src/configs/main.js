@@ -84,9 +84,10 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
-  if (!isHermes && (isNull || src.indexOf('=>') !== -1)) {
-    extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
-  }
+  // TODO(gaearon): put this back into '=>' indexOf bailout
+  // and patch react-refresh to not depend on this transform.
+  extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
+
   if (!isHermes) {
     extraPlugins.push([require('@babel/plugin-transform-computed-properties')]);
     extraPlugins.push([require('@babel/plugin-transform-parameters')]);
