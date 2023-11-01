@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 
 /**
  * {@link UIManagerProvider} is used to create UIManager objects during the initialization of React
@@ -15,8 +15,8 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
  * in isolation of others part of the new architecture of React Native.
  */
 @DeprecatedInNewArchitecture
-public interface UIManagerProvider {
+interface UIManagerProvider {
 
   /* Provides a {@link com.facebook.react.bridge.UIManager} for the context received as a parameter. */
-  UIManager createUIManager(ReactApplicationContext context);
+  fun createUIManager(context: ReactApplicationContext): UIManager
 }
