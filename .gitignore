@@ -150,6 +150,7 @@ vendor/
 .metro-health-check*
 
 # E2E files
+/packages/rn-tester-e2e/reports
 /packages/rn-tester-e2e/apps/*.apk
 /packages/rn-tester-e2e/apps/*.app
 
