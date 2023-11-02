@@ -14,8 +14,8 @@ type PlatformsReference = {
 };
 
 class Utils {
-  async checkElementExistence(locator: string): Promise<boolean> {
-    await $(locator).waitForDisplayed();
+  async checkElementExistence(locator: string, timeout: number = browser.waitforTimeout): Promise<boolean> {
+    await $(locator).waitForDisplayed({timeout: timeout});
     return $(locator).isDisplayed();
   }
 
