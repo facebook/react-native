@@ -16,8 +16,6 @@ import type {
 } from './IPerformanceLogger';
 
 import * as Systrace from '../Performance/Systrace';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
-import NativePerformance from '../WebPerformance/NativePerformance';
 import infoLog from './infoLog';
 
 const _cookies: {[key: string]: number, ...} = {};
@@ -26,7 +24,7 @@ const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally 
 
 // This is the prefix for optional logging points/timespans as marks/measures via Performance API,
 // used to separate these internally from other marks/measures
-const WEB_PERFORMANCE_PREFIX = 'global_perf_';
+const WEB_PERFORMANCE_PREFIX = 'web_perf_';
 
 export const getCurrentTimestamp: () => number =
   global.nativeQPLTimestamp ?? (() => global.performance.now());
@@ -37,22 +35,12 @@ class PerformanceLogger implements IPerformanceLogger {
   _points: {[key: string]: ?number} = {};
   _pointExtras: {[key: string]: ?Extras, ...} = {};
   _closed: boolean = false;
-  _isGlobalLogger: boolean = false;
-  _isGlobalWebPerformanceLoggerEnabled: ?boolean;
+  _isLoggingForWebPerformance: boolean = false;
 
-  constructor(isGlobalLogger?: boolean) {
-    this._isGlobalLogger = isGlobalLogger === true;
-  }
-
-  _isLoggingForWebPerformance(): boolean {
-    if (!this._isGlobalLogger || NativePerformance == null) {
-      return false;
-    }
-    if (this._isGlobalWebPerformanceLoggerEnabled == null) {
-      this._isGlobalWebPerformanceLoggerEnabled =
-        ReactNativeFeatureFlags.isGlobalWebPerformanceLoggerEnabled();
-    }
-    return this._isGlobalWebPerformanceLoggerEnabled === true;
+  // When `isLoggingForWebPerformance` is true, the data will be additionally logged via
+  // Performance.mark/measure API, if available.
+  constructor(isLoggingForWebPerformance?: boolean) {
+    this._isLoggingForWebPerformance = isLoggingForWebPerformance === true;
   }
 
   // NOTE: The Performance.mark/measure calls are wrapped here to ensure that
@@ -63,7 +51,7 @@ class PerformanceLogger implements IPerformanceLogger {
   // In most of the other cases this kind of check for `performance` being defined
   // wouldn't be necessary.
   _performanceMark(key: string, startTime: number) {
-    if (this._isLoggingForWebPerformance()) {
+    if (this._isLoggingForWebPerformance) {
       global.performance?.mark?.(key, {
         startTime,
       });
@@ -75,7 +63,7 @@ class PerformanceLogger implements IPerformanceLogger {
     start: number | string,
     end: number | string,
   ) {
-    if (this._isLoggingForWebPerformance()) {
+    if (this._isLoggingForWebPerformance) {
       global.performance?.measure?.(key, {
         start,
         end,
@@ -365,7 +353,7 @@ export type {Extras, ExtraValue, IPerformanceLogger, Timespan};
  * The loggers need to have minimal overhead since they're used in production.
  */
 export default function createPerformanceLogger(
-  isGlobalLogger?: boolean,
+  isLoggingForWebPerformance?: boolean,
 ): IPerformanceLogger {
-  return new PerformanceLogger(isGlobalLogger);
+  return new PerformanceLogger(isLoggingForWebPerformance);
 }
