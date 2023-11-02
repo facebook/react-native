@@ -294,7 +294,7 @@ def react_native_post_install(
   end
 
   fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
-  hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
+  hermes_enabled = ENV['USE_HERMES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
