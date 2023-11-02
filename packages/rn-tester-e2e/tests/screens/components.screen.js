@@ -115,7 +115,10 @@ export const ComponentsScreen: ComponentsScreenType = {
   checkComponentScreenHeaderIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.componentScreenHeaderElement, 60000);
+    return await Utils.checkElementExistence(
+      this.componentScreenHeaderElement,
+      60000,
+    );
   },
   checkButtonComponentIsDisplayed: async function (
     this: ComponentsScreenType,
