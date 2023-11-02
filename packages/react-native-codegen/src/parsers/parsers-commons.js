@@ -707,6 +707,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;

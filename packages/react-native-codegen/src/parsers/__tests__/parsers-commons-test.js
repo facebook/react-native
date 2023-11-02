@@ -742,6 +742,62 @@ describe('buildSchema', () => {
     });
   });
 
+  describe('when there is a codegenNativeComponent, using `as`', () => {
+    const contents = `
+      import type {ViewProps} from 'ViewPropTypes';
+      import type {HostComponent} from 'react-native';
+
+      const codegenNativeComponent = require('codegenNativeComponent');
+
+      export type ModuleProps = $ReadOnly<{|
+        ...ViewProps,
+      |}>;
+
+      export default codegenNativeComponent<ModuleProps>(
+        'Module',
+      ) as HostComponent<ModuleProps>;
+    `;
+
+    it('returns a module with good properties', () => {
+      const schema = buildSchema(
+        contents,
+        'fileName',
+        wrapComponentSchema,
+        buildComponentSchema,
+        buildModuleSchema,
+        Visitor,
+        flowParser,
+        flowTranslateTypeAnnotation,
+      );
+
+      expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
+      expect(getConfigTypeSpy).toHaveBeenCalledWith(
+        parser.getAst(contents),
+        Visitor,
+      );
+      expect(schema).toEqual({
+        modules: {
+          Module: {
+            type: 'Component',
+            components: {
+              Module: {
+                extendsProps: [
+                  {
+                    type: 'ReactNativeBuiltInType',
+                    knownTypeName: 'ReactNativeCoreViewProps',
+                  },
+                ],
+                events: [],
+                props: [],
+                commands: [],
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
   describe('when there is a TurboModule', () => {
     const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
