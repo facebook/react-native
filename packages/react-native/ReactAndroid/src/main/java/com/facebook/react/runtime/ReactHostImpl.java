@@ -1746,12 +1746,15 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  public void setJSEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  @Nullable
+  @Override
+  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
+    return mJSEngineResolutionAlgorithm;
   }
 
-  public @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
+  @Override
+  public void setJsEngineResolutionAlgorithm(
+      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
+    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 }
