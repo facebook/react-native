@@ -12,6 +12,7 @@ import {UtilsSingleton as Utils, iOSLabel} from '../helpers/utils';
 
 // root level screen in RNTester: Components
 
+const componentScreenHeader = 'Components';
 const buttonComponentLabel = 'Button Simple React Native button component.';
 const activityIndicatorComponentLabel =
   'ActivityIndicator Animated loading indicators.';
@@ -31,6 +32,7 @@ const scrollViewSimpleExampleComponentLabel =
   'ScrollViewSimpleExample Component that enables scrolling through child components.';
 
 type ComponentsScreenType = {
+  componentScreenHeaderElement: string,
   buttonComponentLabelElement: string,
   activityIndicatorComponentLabelElement: string,
   keyboardAvoidingViewComponentLabelElement: string,
@@ -65,6 +67,10 @@ type ComponentsScreenType = {
 
 export const ComponentsScreen: ComponentsScreenType = {
   // Reference in the top level Component list
+  componentScreenHeaderElement: Utils.platformSelect({
+    ios: iOSLabel(componentScreenHeader),
+    android: `~${componentScreenHeader}`,
+  }),
   buttonComponentLabelElement: Utils.platformSelect({
     ios: iOSLabel(buttonComponentLabel),
     android: `~${buttonComponentLabel}`,
@@ -106,6 +112,11 @@ export const ComponentsScreen: ComponentsScreenType = {
     android: `~${scrollViewSimpleExampleComponentLabel}`,
   }),
   // Methods to interact with top level elements in the list
+  checkComponentScreenHeaderIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.componentScreenHeaderElement);
+  },
   checkButtonComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {

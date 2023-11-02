@@ -14,11 +14,17 @@ const {
 } = require('../../../screens/components/activityIndicatorComponent.screen.js');
 
 describe('Test is checking default activity indicator component', function () {
-  it('Should view properly Indicator Component', async function () {
-    expect(
-      await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
-    ).toBeTruthy();
-  });
+  before(async function (capabilities, specs) {
+    //Added it for make sure that metro bundler is completed
+    await ComponentsScreen.checkComponentScreenHeaderIsDisplayed({
+      timeout: 100000,
+    });
+  }),
+    it('Should view properly Indicator Component', async function () {
+      expect(
+        await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
+      ).toBeTruthy();
+    });
 
   it('Click Activity Indicator', async function () {
     await ComponentsScreen.clickActivityIndicatorComponent();

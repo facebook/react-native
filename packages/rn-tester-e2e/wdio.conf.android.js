@@ -9,6 +9,7 @@
  */
 
 const path = require('path');
+const fs = require('fs');
 
 exports.config = {
   runner: 'local',
