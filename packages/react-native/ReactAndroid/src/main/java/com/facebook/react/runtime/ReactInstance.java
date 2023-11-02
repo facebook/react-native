@@ -71,6 +71,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -93,6 +94,7 @@ final class ReactInstance {
   private final TurboModuleManager mTurboModuleManager;
   private final FabricUIManager mFabricUIManager;
   private final JavaTimerManager mJavaTimerManager;
+  private final Map<String, ViewManager> mViewManagers = new ConcurrentHashMap<>();
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
   @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
@@ -489,8 +491,12 @@ final class ReactInstance {
   }
 
   private @Nullable ViewManager createViewManager(String viewManagerName) {
+    // Return cached view manager if available, no matter it's eagerly or lazily loaded
+    if (mViewManagers.containsKey(viewManagerName)) {
+      return mViewManagers.get(viewManagerName);
+    }
+    List<ReactPackage> packages = mReactPackages;
     if (mDelegate != null) {
-      List<ReactPackage> packages = mReactPackages;
       if (packages != null) {
         synchronized (packages) {
           for (ReactPackage reactPackage : packages) {
@@ -499,6 +505,7 @@ final class ReactInstance {
                   ((ViewManagerOnDemandReactPackage) reactPackage)
                       .createViewManager(mBridgelessReactContext, viewManagerName);
               if (viewManager != null) {
+                mViewManagers.put(viewManagerName, viewManager);
                 return viewManager;
               }
             }
@@ -507,7 +514,17 @@ final class ReactInstance {
       }
     }
 
-    return null;
+    // Once a view manager is not found in all react packages via lazy loading, fall back to default
+    // implementation: eagerly initialize all view managers
+    for (ReactPackage reactPackage : packages) {
+      List<ViewManager> viewManagersInPackage =
+          reactPackage.createViewManagers(mBridgelessReactContext);
+      for (ViewManager viewManager : viewManagersInPackage) {
+        mViewManagers.put(viewManager.getName(), viewManager);
+      }
+    }
+
+    return mViewManagers.get(viewManagerName);
   }
 
   private @NonNull Collection<String> getViewManagerNames() {
@@ -534,8 +551,28 @@ final class ReactInstance {
 
   private @NonNull NativeMap getUIManagerConstants() {
     List<ViewManager> viewManagers = new ArrayList<ViewManager>();
-    for (String viewManagerName : getViewManagerNames()) {
-      viewManagers.add(createViewManager(viewManagerName));
+    boolean canLoadViewManagersLazily = true;
+
+    List<ReactPackage> packages = mReactPackages;
+    for (ReactPackage reactPackage : packages) {
+      if (!(reactPackage instanceof ViewManagerOnDemandReactPackage)) {
+        canLoadViewManagersLazily = false;
+        break;
+      }
+    }
+    // 1, Retrive view managers via on demand loading
+    if (canLoadViewManagersLazily) {
+      for (String viewManagerName : getViewManagerNames()) {
+        viewManagers.add(createViewManager(viewManagerName));
+      }
+    } else {
+      // 2, There are packages that don't implement ViewManagerOnDemandReactPackage so we retrieve
+      // view managers via eager loading
+      for (ReactPackage reactPackage : packages) {
+        List<ViewManager> viewManagersInPackage =
+            reactPackage.createViewManagers(mBridgelessReactContext);
+        viewManagers.addAll(viewManagersInPackage);
+      }
     }
     Map<String, Object> constants =
         UIManagerModule.createConstants(viewManagers, new HashMap<>(), new HashMap<>());
