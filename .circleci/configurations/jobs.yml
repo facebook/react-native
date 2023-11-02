@@ -171,6 +171,8 @@ jobs:
                   (yarn test-e2e-ios 2>&1 | tee /tmp/test_log) || true
             - store_artifacts:
                 path: /tmp/test_log
+            - store_artifacts:
+                path: ~/react-native/packages/rn-tester-e2e/reports
 
   # -------------------------
   #     JOBS: Android E2E Tests
@@ -220,6 +222,8 @@ jobs:
             (yarn test-e2e-android 2>&1 | tee /tmp/test_log) || true
       - store_artifacts:
           path: /tmp/test_log
+      - store_artifacts:
+          path:  ~/react-native/packages/rn-tester-e2e/reports
 
   # -------------------------
   #    JOBS: Build Android
