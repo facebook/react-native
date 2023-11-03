@@ -54,10 +54,6 @@ const mapping = [
     name: 'RUN_ANDROID',
     filterFN: name => name.indexOf('ReactAndroid/') > -1,
   },
-  // {
-  //   name: 'RUN_E2E',
-  //   filterFN: name => name.indexOf('rn-tester-e2e/') > -1,
-  // },
   {
     name: 'RUN_JS',
     filterFN: name => isJSChange(name),
@@ -135,7 +131,22 @@ function _getFilesFromGit() {
   }
 }
 
-async function _computeAndSavePipelineParameters(pipelineType, outputPath) {
+function _shouldRunE2E() {
+  try {
+    const gitCommand = 'git log -1 --pretty=format:"%B" | head -n 1';
+    const commitMessage = String(execSync(gitCommand)).trim();
+    return commitMessage.indexOf('#run-e2e-tests') >= 0;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+async function _computeAndSavePipelineParameters(
+  pipelineType,
+  outputPath,
+  shouldRunE2E,
+) {
   fs.mkdirSync(outputPath, {recursive: true});
   const filePath = `${outputPath}/pipeline_config.json`;
 
@@ -145,7 +156,10 @@ async function _computeAndSavePipelineParameters(pipelineType, outputPath) {
   }
 
   if (pipelineType === 'ALL') {
-    fs.writeFileSync(filePath, JSON.stringify({run_all: true}, null, 2));
+    fs.writeFileSync(
+      filePath,
+      JSON.stringify({run_all: true, run_e2e: shouldRunE2E}, null, 2),
+    );
     return;
   }
 
@@ -154,7 +168,7 @@ async function _computeAndSavePipelineParameters(pipelineType, outputPath) {
     run_ios: pipelineType === 'RUN_IOS',
     run_android: pipelineType === 'RUN_ANDROID',
     run_js: pipelineType === 'RUN_JS',
-    // run_e2e: pipelineType === 'RUN_E2E' || pipelineType === 'RUN_JS',
+    run_e2e: shouldRunE2E,
   };
 
   const stringifiedParams = JSON.stringify(params, null, 2);
@@ -180,8 +194,8 @@ function createConfigs(inputPath, outputPath, configFile) {
   const testConfigs = {
     run_ios: ['testIOS.yml'],
     run_android: ['testAndroid.yml'],
-    // run_e2e: ['testE2E.yml'],
-    run_all: [/*'testE2E.yml',*/ 'testJS.yml', 'testAll.yml'],
+    run_e2e: ['testE2E.yml'],
+    run_all: ['testJS.yml', 'testAll.yml'],
     run_js: ['testJS.yml'],
   };
 
@@ -219,12 +233,18 @@ async function filterJobs(outputPath) {
     return;
   }
 
+  const shouldRunE2E = _shouldRunE2E();
+
   for (const filter of mapping) {
     const found = fileList.every(filter.filterFN);
     if (found) {
-      await _computeAndSavePipelineParameters(filter.name, outputPath);
+      await _computeAndSavePipelineParameters(
+        filter.name,
+        outputPath,
+        shouldRunE2E,
+      );
       return;
     }
   }
-  await _computeAndSavePipelineParameters('ALL', outputPath);
+  await _computeAndSavePipelineParameters('ALL', outputPath, shouldRunE2E);
 }
