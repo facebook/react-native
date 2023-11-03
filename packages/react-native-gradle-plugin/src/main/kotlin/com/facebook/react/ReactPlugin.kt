@@ -71,7 +71,6 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFieldsForApp(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
-      configureJavaToolChains(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
@@ -87,6 +86,9 @@ class ReactPlugin : Plugin<Project> {
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
+
+    // Library and App Configurations
+    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
