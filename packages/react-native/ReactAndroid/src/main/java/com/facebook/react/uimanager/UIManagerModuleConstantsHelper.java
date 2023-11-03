@@ -7,15 +7,12 @@
 
 package com.facebook.react.uimanager;
 
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -112,21 +109,11 @@ import java.util.Set;
     for (ViewManager viewManager : viewManagers) {
       final String viewManagerName = viewManager.getName();
 
-      SystraceMessage.beginSection(
-              TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModuleConstantsHelper.createConstants")
-          .arg("ViewManager", viewManagerName)
-          .arg("Lazy", false)
-          .flush();
-
-      try {
-        Map viewManagerConstants =
-            createConstantsForViewManager(
-                viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
-        if (!viewManagerConstants.isEmpty()) {
-          constants.put(viewManagerName, viewManagerConstants);
-        }
-      } finally {
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Map viewManagerConstants =
+          createConstantsForViewManager(
+              viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
+      if (!viewManagerConstants.isEmpty()) {
+        constants.put(viewManagerName, viewManagerConstants);
       }
     }
 
