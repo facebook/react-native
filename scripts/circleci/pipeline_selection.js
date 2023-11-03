@@ -105,8 +105,7 @@ yargs
     'filter-jobs',
     'Filters the jobs based on the list of chaged files in the PR',
     filterJobsOptions,
-    argv =>
-      filterJobs(argv.output_path).then(() => console.info('Filtering done!')),
+    argv => filterJobs(argv.output_path),
   )
   .demandCommand()
   .strict()
@@ -135,15 +134,15 @@ function _shouldRunE2E() {
   try {
     const gitCommand = 'git log -1 --pretty=format:"%B" | head -n 1';
     const commitMessage = String(execSync(gitCommand)).trim();
-    console.log(`commitMessage: ${commitMessage}`)
-    return commitMessage.indexOf('#run-e2e-tests') >= 0;
+    console.log(`commitMessage: ${commitMessage}`);
+    return commitMessage.includes('#run-e2e-tests');
   } catch (error) {
     console.error(error);
-    return [];
+    return false;
   }
 }
 
-async function _computeAndSavePipelineParameters(
+function _computeAndSavePipelineParameters(
   pipelineType,
   outputPath,
   shouldRunE2E,
@@ -227,11 +226,11 @@ function createConfigs(inputPath, outputPath, configFile) {
   );
 }
 
-async function filterJobs(outputPath) {
+function filterJobs(outputPath) {
   const fileList = _getFilesFromGit();
 
   if (fileList.length === 0) {
-    await _computeAndSavePipelineParameters('SKIP', outputPath);
+    _computeAndSavePipelineParameters('SKIP', outputPath);
     return;
   }
 
@@ -240,13 +239,9 @@ async function filterJobs(outputPath) {
   for (const filter of mapping) {
     const found = fileList.every(filter.filterFN);
     if (found) {
-      await _computeAndSavePipelineParameters(
-        filter.name,
-        outputPath,
-        shouldRunE2E,
-      );
+      _computeAndSavePipelineParameters(filter.name, outputPath, shouldRunE2E);
       return;
     }
   }
-  await _computeAndSavePipelineParameters('ALL', outputPath, shouldRunE2E);
+  _computeAndSavePipelineParameters('ALL', outputPath, shouldRunE2E);
 }
