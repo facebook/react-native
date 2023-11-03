@@ -135,6 +135,7 @@ function _shouldRunE2E() {
   try {
     const gitCommand = 'git log -1 --pretty=format:"%B" | head -n 1';
     const commitMessage = String(execSync(gitCommand)).trim();
+    console.log(`commitMessage: ${commitMessage}`)
     return commitMessage.indexOf('#run-e2e-tests') >= 0;
   } catch (error) {
     console.error(error);
@@ -155,6 +156,7 @@ async function _computeAndSavePipelineParameters(
     return;
   }
 
+  console.log(`Should run e2e? ${shouldRunE2E}`);
   if (pipelineType === 'ALL') {
     fs.writeFileSync(
       filePath,
