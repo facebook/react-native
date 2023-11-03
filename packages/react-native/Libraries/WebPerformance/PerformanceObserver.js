@@ -13,6 +13,7 @@ import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 import warnOnce from '../Utilities/warnOnce';
 import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
+import PerformanceEventTiming from './PerformanceEventTiming';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
@@ -332,3 +333,5 @@ function union<T>(
 function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
   return new Set([...a].filter(x => !b.has(x)));
 }
+
+export {PerformanceEventTiming};
