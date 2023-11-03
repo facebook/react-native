@@ -32,7 +32,7 @@ exports.config = {
 
   bail: 0,
 
-  waitforTimeout: 20000,
+  waitforTimeout: 10000,
 
   connectionRetryTimeout: 120000,
 
@@ -54,7 +54,7 @@ exports.config = {
   reporters: ['spec'],
   mochaOpts: {
     ui: 'bdd',
-    timeout: 120000,
+    timeout: 40000,
     require: ['@babel/register'],
   },
 
