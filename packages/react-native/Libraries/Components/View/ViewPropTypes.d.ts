@@ -145,6 +145,17 @@ export interface ViewPropsAndroid {
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
    */
   focusable?: boolean | undefined;
+
+  /**
+   * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+   * See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * for more details.
+   *
+   * Supports the following values:
+   * -  0 (View is focusable)
+   * - -1 (View is not focusable)
+   */
+  tabIndex?: 0 | -1 | undefined;
 }
 
 /**
