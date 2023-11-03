@@ -67,7 +67,7 @@ exports.config = {
     context,
     {error, result, duration, passed, retries},
   ) {
-    if (!passed) {
+    if (!passed || error !== undefined) {
       const fileName = encodeURIComponent(
         await test.title.replace(/\s+/g, '-'),
       );
