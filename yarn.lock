@@ -2394,13 +2394,6 @@
   dependencies:
     serve-static "^1.13.1"
 
-"@react-native-community/cli-debugger-ui@12.0.0-alpha.17":
-  version "12.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-12.0.0-alpha.17.tgz#e984231ce3fe3fc9489bc5ca892718e8372de690"
-  integrity sha512-JWP3cmtoThy/xaH7E/hqalanEqfRTduMwxd5F4hpZvVgbNJ9CSjrJoEMC362g4R2Uq5h/ZiD0EzhXYEZH1pRIg==
-  dependencies:
-    serve-static "^1.13.1"
-
 "@react-native-community/cli-doctor@12.0.0":
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-doctor/-/cli-doctor-12.0.0.tgz#d5b2a5974911ec628b894180565c5363861c4326"
@@ -2479,41 +2472,10 @@
     serve-static "^1.13.1"
     ws "^7.5.1"
 
-"@react-native-community/cli-server-api@12.0.0-alpha.17":
-  version "12.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-server-api/-/cli-server-api-12.0.0-alpha.17.tgz#f80fe0f40b465a0cbba0b3d166db6f45111ac9ef"
-  integrity sha512-G7qJZkHEC445ltX6hM7xByWfHajuCP+jDOTzV5I4CSFzGS4f1xVhkNtuWphsnP3dKvNgOzp4t5GZrWo9qksJQQ==
-  dependencies:
-    "@react-native-community/cli-debugger-ui" "12.0.0-alpha.17"
-    "@react-native-community/cli-tools" "12.0.0-alpha.17"
-    compression "^1.7.1"
-    connect "^3.6.5"
-    errorhandler "^1.5.1"
-    nocache "^3.0.1"
-    pretty-format "^26.6.2"
-    serve-static "^1.13.1"
-    ws "^7.5.1"
-
 "@react-native-community/cli-tools@12.0.0":
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-12.0.0.tgz#2ff8bff8d6bb0f1162c574fdcf47aa273a48b7ad"
   integrity sha512-p5QN3UMoAKUTpVblKAf+tW3I+nX6wyPgaXYZ+K3H0vZNmbVim+eODFi32NH1XnvuvblVpakovmMrhnBpRnSAgg==
-  dependencies:
-    appdirsjs "^1.2.4"
-    chalk "^4.1.2"
-    find-up "^5.0.0"
-    mime "^2.4.1"
-    node-fetch "^2.6.0"
-    open "^6.2.0"
-    ora "^5.4.1"
-    semver "^7.5.2"
-    shell-quote "^1.7.3"
-    sudo-prompt "^9.0.0"
-
-"@react-native-community/cli-tools@12.0.0-alpha.17":
-  version "12.0.0-alpha.17"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-12.0.0-alpha.17.tgz#0c7520b41aa411b52a4cdc83ece759aa3dba72fa"
-  integrity sha512-NcBEiPgAp1iM5NSnZffizRHUYF38w4d+chT3MUgJWEGqSgQBnITqOF/tsnk4XBU8UH1lnxt9Hqng0Dh4RpPNAQ==
   dependencies:
     appdirsjs "^1.2.4"
     chalk "^4.1.2"
