@@ -879,19 +879,7 @@ static Class getFallbackClassFromName(const char *name)
    */
   const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
-  BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
-  if (requiresMainQueueSetup) {
-    RCTLogWarn(
-        @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-         "`requiresMainQueueSetup`. In a future release React Native will default to initializing all NativeModules "
-         "on a background thread unless explicitly opted-out of.",
-        moduleClass,
-        hasConstantsToExport ? "constantsToExport"
-            : hasCustomInit  ? "init"
-                             : "");
-  }
-
-  return requiresMainQueueSetup;
+  return hasConstantsToExport || hasCustomInit;
 }
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime
