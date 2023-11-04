@@ -404,12 +404,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  // This is called on the JS thread (see CatalystInstanceImpl).
   @Override
   @AnyThread
   @ThreadConfined(ANY)
   public void invalidate() {
-    FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
+    FLog.i(TAG, "FabricUIManager.invalidate");
 
     if (mDevToolsReactPerfLogger != null) {
       mDevToolsReactPerfLogger.removeDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
