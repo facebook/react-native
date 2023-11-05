@@ -65,10 +65,10 @@ public class OnLayoutEvent extends Event<OnLayoutEvent> {
   @Override
   protected WritableMap getEventData() {
     WritableMap layout = Arguments.createMap();
-    layout.putDouble("x", PixelUtil.toDIPFromPixel(mX));
-    layout.putDouble("y", PixelUtil.toDIPFromPixel(mY));
-    layout.putDouble("width", PixelUtil.toDIPFromPixel(mWidth));
-    layout.putDouble("height", PixelUtil.toDIPFromPixel(mHeight));
+    layout.putDouble("x", PixelUtil.toDIPFromPixel((double) mX));
+    layout.putDouble("y", PixelUtil.toDIPFromPixel((double) mY));
+    layout.putDouble("width", PixelUtil.toDIPFromPixel((double) mWidth));
+    layout.putDouble("height", PixelUtil.toDIPFromPixel((double) mHeight));
 
     WritableMap event = Arguments.createMap();
     event.putMap("layout", layout);

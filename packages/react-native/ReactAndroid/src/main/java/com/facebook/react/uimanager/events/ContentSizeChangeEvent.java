@@ -43,8 +43,8 @@ public class ContentSizeChangeEvent extends Event<ContentSizeChangeEvent> {
   @Override
   protected WritableMap getEventData() {
     WritableMap data = Arguments.createMap();
-    data.putDouble("width", PixelUtil.toDIPFromPixel(mWidth));
-    data.putDouble("height", PixelUtil.toDIPFromPixel(mHeight));
+    data.putDouble("width", PixelUtil.toDIPFromPixel((double) mWidth));
+    data.putDouble("height", PixelUtil.toDIPFromPixel((double) mHeight));
     return data;
   }
 }

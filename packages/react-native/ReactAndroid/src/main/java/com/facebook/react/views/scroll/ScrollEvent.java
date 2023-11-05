@@ -152,16 +152,16 @@ public class ScrollEvent extends Event<ScrollEvent> {
     contentInset.putDouble("right", 0);
 
     WritableMap contentOffset = Arguments.createMap();
-    contentOffset.putDouble("x", PixelUtil.toDIPFromPixel(mScrollX));
-    contentOffset.putDouble("y", PixelUtil.toDIPFromPixel(mScrollY));
+    contentOffset.putDouble("x", PixelUtil.toDIPFromPixel((double) mScrollX));
+    contentOffset.putDouble("y", PixelUtil.toDIPFromPixel((double) mScrollY));
 
     WritableMap contentSize = Arguments.createMap();
-    contentSize.putDouble("width", PixelUtil.toDIPFromPixel(mContentWidth));
-    contentSize.putDouble("height", PixelUtil.toDIPFromPixel(mContentHeight));
+    contentSize.putDouble("width", PixelUtil.toDIPFromPixel((double) mContentWidth));
+    contentSize.putDouble("height", PixelUtil.toDIPFromPixel((double) mContentHeight));
 
     WritableMap layoutMeasurement = Arguments.createMap();
-    layoutMeasurement.putDouble("width", PixelUtil.toDIPFromPixel(mScrollViewWidth));
-    layoutMeasurement.putDouble("height", PixelUtil.toDIPFromPixel(mScrollViewHeight));
+    layoutMeasurement.putDouble("width", PixelUtil.toDIPFromPixel((double) mScrollViewWidth));
+    layoutMeasurement.putDouble("height", PixelUtil.toDIPFromPixel((double) mScrollViewHeight));
 
     WritableMap velocity = Arguments.createMap();
     velocity.putDouble("x", mXVelocity);
