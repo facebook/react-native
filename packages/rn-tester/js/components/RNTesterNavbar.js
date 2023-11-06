@@ -10,10 +10,9 @@
 
 import type {RNTesterTheme} from './RNTesterTheme';
 
-import * as React from 'react';
-import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
-
 import {RNTesterThemeContext} from './RNTesterTheme';
+import * as React from 'react';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */

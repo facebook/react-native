@@ -9,10 +9,10 @@
 
 'use strict';
 
+const {execSync, spawnSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const {execSync, spawnSync} = require('child_process');
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');

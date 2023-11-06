@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
+import RNTOption from '../../components/RNTOption';
 
+const React = require('react');
 const {
   Alert,
   Linking,
@@ -20,7 +21,6 @@ const {
   TouchableHighlight,
   View,
 } = require('react-native');
-import RNTOption from '../../components/RNTOption';
 
 const BINARY_TYPES = {
   String,

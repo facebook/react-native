@@ -10,9 +10,9 @@
 
 'use strict';
 
-const {transform: babelTransform} = require('@babel/core');
-const fixtures = require('../__test_fixtures__/fixtures.js');
 const failures = require('../__test_fixtures__/failures.js');
+const fixtures = require('../__test_fixtures__/fixtures.js');
+const {transform: babelTransform} = require('@babel/core');
 
 const transform = (fixture, filename) =>
   babelTransform(fixture, {

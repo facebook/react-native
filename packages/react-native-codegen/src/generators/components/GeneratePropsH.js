@@ -10,27 +10,24 @@
 
 'use strict';
 import type {ComponentShape} from '../../CodegenSchema';
-
-const {
-  getNativeTypeFromAnnotation,
-  getLocalImports,
-} = require('./ComponentsGeneratorUtils.js');
-
-const {
-  convertDefaultTypeToString,
-  getEnumMaskName,
-  generateStructName,
-  toIntEnumValueName,
-} = require('./CppHelpers.js');
-
-const {getEnumName, toSafeCppString} = require('../Utils');
-
 import type {
   ExtendsPropsShape,
   NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
+const {getEnumName, toSafeCppString} = require('../Utils');
+const {
+  getLocalImports,
+  getNativeTypeFromAnnotation,
+} = require('./ComponentsGeneratorUtils.js');
+const {
+  convertDefaultTypeToString,
+  generateStructName,
+  getEnumMaskName,
+  toIntEnumValueName,
+} = require('./CppHelpers.js');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;

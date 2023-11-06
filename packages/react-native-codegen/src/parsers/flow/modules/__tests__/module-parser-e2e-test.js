@@ -9,22 +9,21 @@
  */
 
 import type {
-  NativeModuleReturnTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
   NativeModuleParamTypeAnnotation,
+  NativeModuleReturnTypeAnnotation,
+  NativeModuleSchema,
 } from '../../../../CodegenSchema';
 
-const invariant = require('invariant');
-
-const {unwrapNullable} = require('../../../parsers-commons');
 const {
+  MissingTypeParameterGenericParserError,
+  UnnamedFunctionParamParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  UnnamedFunctionParamParserError,
-  MissingTypeParameterGenericParserError,
 } = require('../../../errors');
+const {unwrapNullable} = require('../../../parsers-commons');
 const {FlowParser} = require('../../parser');
+const invariant = require('invariant');
 
 const flowParser = new FlowParser();
 

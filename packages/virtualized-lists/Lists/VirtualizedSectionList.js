@@ -10,11 +10,11 @@
 
 import type {ViewToken} from './ViewabilityHelper';
 
-import {View} from 'react-native';
 import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
+import {View} from 'react-native';
 
 type Item = any;
 

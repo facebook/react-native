@@ -9,10 +9,10 @@
 
 'use strict';
 
-const {exec, echo, exit, test, env, pushd, popd} = require('shelljs');
 const {
   createHermesPrebuiltArtifactsTarball,
 } = require('../packages/react-native/scripts/hermes/hermes-utils');
+const {echo, env, exec, exit, popd, pushd, test} = require('shelljs');
 
 function generateAndroidArtifacts(releaseVersion) {
   // -------- Generating Android Artifacts

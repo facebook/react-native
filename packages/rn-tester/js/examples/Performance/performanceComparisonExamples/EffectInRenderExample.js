@@ -13,11 +13,11 @@
 
 import type {ItemDataType} from '../components/itemData';
 
-import * as React from 'react';
-import {useState, useEffect, useCallback, StrictMode} from 'react';
-import {Text} from 'react-native';
 import {generateRandomItems} from '../components/itemData';
 import ItemList from '../components/ItemList';
+import * as React from 'react';
+import {StrictMode, useCallback, useEffect, useState} from 'react';
+import {Text} from 'react-native';
 
 const TIMEOUT = 500;
 const FETCH_COUNT = 250;

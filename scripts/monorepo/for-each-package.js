@@ -7,8 +7,8 @@
  * @format
  */
 
-const path = require('path');
 const {readdirSync, readFileSync} = require('fs');
+const path = require('path');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const PACKAGES_LOCATION = path.join(ROOT_LOCATION, 'packages');

@@ -9,8 +9,8 @@
  */
 
 import type {
-  RNTesterNavigationState,
   ComponentList,
+  RNTesterNavigationState,
 } from '../types/RNTesterTypes';
 
 export const RNTesterNavigationActionsType = {

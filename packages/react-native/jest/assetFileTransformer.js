@@ -11,9 +11,9 @@
 
 /* eslint-env node */
 
-const path = require('path');
 const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
+const path = require('path');
 
 module.exports = {
   // Mocks asset requires to return the filename. Makes it possible to test that

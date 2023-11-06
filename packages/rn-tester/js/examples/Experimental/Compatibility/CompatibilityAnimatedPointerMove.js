@@ -8,10 +8,11 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {Text, Animated, StyleSheet} from 'react-native';
 import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
+
 import ToggleNativeDriver from '../../Animated/utils/ToggleNativeDriver';
+import * as React from 'react';
+import {Animated, StyleSheet, Text} from 'react-native';
 
 const WIDTH = 200;
 const HEIGHT = 250;

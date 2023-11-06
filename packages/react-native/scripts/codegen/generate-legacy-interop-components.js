@@ -9,9 +9,9 @@
 
 'use strict';
 
-const yargs = require('yargs');
 const fs = require('fs');
 const p = require('path');
+const yargs = require('yargs');
 
 const CONFIG_FILE_NAME = 'react-native.config.js';
 const PROJECT_FIELD = 'project';

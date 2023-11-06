@@ -9,20 +9,20 @@
  * @oncall react_native
  */
 
-import type {NextHandleFunction} from 'connect';
 import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
+import type {NextHandleFunction} from 'connect';
 
+import InspectorProxy from './inspector-proxy/InspectorProxy';
+import deprecated_openFlipperMiddleware from './middleware/deprecated_openFlipperMiddleware';
+import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
+import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
 import connect from 'connect';
 import path from 'path';
 import serveStaticMiddleware from 'serve-static';
-import deprecated_openFlipperMiddleware from './middleware/deprecated_openFlipperMiddleware';
-import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
-import InspectorProxy from './inspector-proxy/InspectorProxy';
-import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 
 type Options = $ReadOnly<{
   projectRoot: string,

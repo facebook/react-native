@@ -9,8 +9,9 @@
  */
 
 import type VCTracker, {VisualElement} from './VCTrackerExample';
-import {useEffect, useState} from 'react';
+
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 
 const OVERLAY_SCALE = 0.25;

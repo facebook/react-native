@@ -9,6 +9,7 @@
 
 'use strict';
 
+const RNTesterBlock = require('../../components/RNTesterBlock');
 const React = require('react');
 const {
   Button,
@@ -16,12 +17,10 @@ const {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   ToastAndroid,
+  TouchableOpacity,
   View,
 } = require('react-native');
-
-const RNTesterBlock = require('../../components/RNTesterBlock');
 
 type Props = $ReadOnly<{|
   url?: ?string,

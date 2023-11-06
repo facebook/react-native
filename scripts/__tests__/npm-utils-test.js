@@ -9,9 +9,9 @@
 
 const {
   applyPackageVersions,
+  getNpmInfo,
   getPackageVersionStrByTag,
   publishPackage,
-  getNpmInfo,
 } = require('../npm-utils');
 
 const execMock = jest.fn();

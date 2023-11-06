@@ -11,11 +11,11 @@
 
 import type {Config} from '@react-native-community/cli-types';
 
+import {KeyPressHandler} from '../../utils/KeyPressHandler';
 import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
-import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';

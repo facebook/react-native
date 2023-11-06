@@ -12,10 +12,10 @@
 'use strict';
 
 const combine = require('./combine-js-to-schema');
+const {filterJSFile, parseArgs} = require('./combine-utils');
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
-const {parseArgs, filterJSFile} = require('./combine-utils');
 
 const {platform, outfile, fileList} = parseArgs(process.argv);
 

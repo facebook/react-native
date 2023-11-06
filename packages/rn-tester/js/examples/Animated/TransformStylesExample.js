@@ -9,13 +9,14 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import RNTOption from '../../components/RNTOption';
-import * as React from 'react';
-import {Animated, Text, View, StyleSheet} from 'react-native';
+
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import RNTOption from '../../components/RNTOption';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
+import * as React from 'react';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const transformProperties = {
   rotate: {outputRange: ['0deg', '360deg'], selected: false},

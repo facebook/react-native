@@ -11,9 +11,9 @@
 
 import getAssetDestPathIOS from '../getAssetDestPathIOS';
 
-jest.dontMock('../getAssetDestPathIOS');
-
 const path = require('path');
+
+jest.dontMock('../getAssetDestPathIOS');
 
 describe('getAssetDestPathIOS', () => {
   test('should build correct path', () => {

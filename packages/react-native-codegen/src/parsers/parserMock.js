@@ -11,46 +11,46 @@
 'use strict';
 
 import type {
+  ExtendsPropsShape,
+  NamedShape,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
+  PropTypeAnnotation,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
+} from '../CodegenSchema';
+import type {ParserType} from './errors';
+import type {
   GetSchemaInfoFN,
   GetTypeAnnotationFN,
   Parser,
   ResolveTypeAnnotationFN,
 } from './parser';
-import type {ParserType} from './errors';
-type ExtendsForProp = null | {
-  type: 'ReactNativeBuiltInType',
-  knownTypeName: 'ReactNativeCoreViewProps',
-};
-import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
-  NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMemberType,
-  NativeModuleEnumMembers,
-  NativeModuleAliasMap,
-  NativeModuleEnumMap,
-  PropTypeAnnotation,
-  ExtendsPropsShape,
-} from '../CodegenSchema';
 import type {
   ParserErrorCapturer,
   PropAST,
   TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
+
 import invariant from 'invariant';
 
-const {flattenProperties} = require('./typescript/components/componentsUtils');
-
-const {buildPropSchema} = require('./parsers-commons');
-
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
+const {buildPropSchema} = require('./parsers-commons');
+const {flattenProperties} = require('./typescript/components/componentsUtils');
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
+const flowParser = require('flow-parser');
+
+type ExtendsForProp = null | {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+};
 
 const schemaMock = {
   modules: {

@@ -10,12 +10,11 @@
 
 'use strict';
 
+const {version: currentVersion} = require('./package.json');
+const cli = require('@react-native-community/cli');
+const chalk = require('chalk');
 const {get} = require('https');
 const {URL} = require('url');
-const chalk = require('chalk');
-const cli = require('@react-native-community/cli');
-
-const {version: currentVersion} = require('./package.json');
 
 const isNpxRuntime = process.env.npm_lifecycle_event === 'npx';
 const DEFAULT_REGISTRY_HOST =
