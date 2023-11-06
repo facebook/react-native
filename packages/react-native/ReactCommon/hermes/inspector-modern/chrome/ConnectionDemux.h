@@ -46,17 +46,27 @@ class ConnectionDemux {
   void disableDebugging(DebugSessionToken session);
 
  private:
+  struct PageEntry {
+    std::string title;
+    std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> cdpInterface;
+
+    PageEntry() = default;
+    PageEntry(
+        const std::string& title,
+        std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler>
+            cdpInterface)
+        : title(title), cdpInterface(cdpInterface) {}
+  };
+
   int addPage(
-      std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn);
+      std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn,
+      const std::string& title);
   void removePage(int pageId);
 
   facebook::react::jsinspector_modern::IInspector& globalInspector_;
 
   std::mutex mutex_;
-  std::unordered_map<
-      int,
-      std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler>>
-      conns_;
+  std::unordered_map<int, PageEntry> conns_;
   std::shared_ptr<std::unordered_set<std::string>> inspectedContexts_;
 };
 
