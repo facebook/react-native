@@ -8,19 +8,19 @@
  * @flow strict-local
  */
 
-import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
-import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import {
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  RootTagContext,
-} from 'react-native';
 
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
+import {
+  FlatList,
+  RootTagContext,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
 type State = {|
   testResults: {

@@ -10,13 +10,13 @@
 
 'use strict';
 
-import Scrollable from './SectionList-scrollable';
 import ContentInset from './SectionList-contentInset';
+import inverted from './SectionList-inverted';
 import onEndReached from './SectionList-onEndReached';
 import onViewableItemsChanged from './SectionList-onViewableItemsChanged';
-import withSeparators from './SectionList-withSeparators';
+import Scrollable from './SectionList-scrollable';
 import stickyHeadersEnabled from './SectionList-stickyHeadersEnabled';
-import inverted from './SectionList-inverted';
+import withSeparators from './SectionList-withSeparators';
 
 exports.title = 'SectionList';
 exports.category = 'ListView';

@@ -11,55 +11,53 @@
 
 'use-strict';
 
-import {
-  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
-  isObjectProperty,
-  parseObjectProperty,
-  wrapNullable,
-  unwrapNullable,
-  buildSchemaFromConfigType,
-  buildSchema,
-  parseModuleName,
-  createComponentConfig,
-  propertyNames,
-  getCommandOptions,
-  getOptions,
-  getCommandTypeNameAndOptionsExpression,
-  getTypeResolutionStatus,
-  handleGenericTypeAnnotation,
-} from '../parsers-commons';
 import type {ParserType} from '../errors';
 
-const {Visitor} = require('../parsers-primitives');
-const {wrapComponentSchema} = require('../schema.js');
-const {buildComponentSchema} = require('../flow/components');
-const {buildModuleSchema} = require('../parsers-commons.js');
+import {FlowParser} from '../flow/parser';
+import {MockedParser} from '../parserMock';
+import {
+  assertGenericTypeAnnotationHasExactlyOneTypeParameter,
+  buildSchema,
+  buildSchemaFromConfigType,
+  createComponentConfig,
+  getCommandOptions,
+  getCommandTypeNameAndOptionsExpression,
+  getOptions,
+  getTypeResolutionStatus,
+  handleGenericTypeAnnotation,
+  isObjectProperty,
+  parseModuleName,
+  parseObjectProperty,
+  propertyNames,
+  unwrapNullable,
+  wrapNullable,
+} from '../parsers-commons';
+
 const {
-  isModuleRegistryCall,
-  createParserErrorCapturer,
-} = require('../utils.js');
-const {
-  ParserError,
-  UnsupportedObjectPropertyTypeAnnotationParserError,
-  UnusedModuleInterfaceParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallArgumentTypeParserError,
-  UntypedModuleRegistryCallParserError,
+  IncorrectModuleRegistryCallArityParserError,
+  MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,
-  MisnamedModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  ParserError,
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+  UntypedModuleRegistryCallParserError,
+  UnusedModuleInterfaceParserError,
 } = require('../errors');
-
-import {MockedParser} from '../parserMock';
-import {FlowParser} from '../flow/parser';
+const {buildComponentSchema} = require('../flow/components');
+const {flowTranslateTypeAnnotation} = require('../flow/modules/index');
+const {buildModuleSchema} = require('../parsers-commons.js');
+const {Visitor} = require('../parsers-primitives');
+const {wrapComponentSchema} = require('../schema.js');
+const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
+const {
+  createParserErrorCapturer,
+  isModuleRegistryCall,
+} = require('../utils.js');
 
 const parser = new MockedParser();
-
 const flowParser = new FlowParser();
-
-const {flowTranslateTypeAnnotation} = require('../flow/modules/index');
-const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
 
 beforeEach(() => {
   jest.clearAllMocks();

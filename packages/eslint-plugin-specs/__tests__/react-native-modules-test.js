@@ -10,9 +10,8 @@
 
 'use strict';
 
-const ESLintTester = require('./eslint-tester.js');
-
 const rule = require('../react-native-modules');
+const ESLintTester = require('./eslint-tester.js');
 
 const NATIVE_MODULES_DIR = __dirname;
 

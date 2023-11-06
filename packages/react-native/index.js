@@ -10,94 +10,91 @@
 
 'use strict';
 
+// APIs
+import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
+import typeof Alert from './Libraries/Alert/Alert';
+import typeof Animated from './Libraries/Animated/Animated';
+import typeof * as AnimatedModule from './Libraries/Animated/Animated';
+import typeof Easing from './Libraries/Animated/Easing';
+import typeof useAnimatedValue from './Libraries/Animated/useAnimatedValue';
+import typeof AppState from './Libraries/AppState/AppState';
+import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 // Components
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
+import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
-import typeof FlatList from './Libraries/Lists/FlatList';
-import typeof Image from './Libraries/Image/Image';
-import typeof ImageBackground from './Libraries/Image/ImageBackground';
-import typeof InputAccessoryView from './Libraries/Components/TextInput/InputAccessoryView';
+import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
-import typeof Modal from './Libraries/Modal/Modal';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
-import typeof SectionList from './Libraries/Lists/SectionList';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
-import typeof Text from './Libraries/Text/Text';
+import typeof InputAccessoryView from './Libraries/Components/TextInput/InputAccessoryView';
 import typeof TextInput from './Libraries/Components/TextInput/TextInput';
+import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof Touchable from './Libraries/Components/Touchable/Touchable';
 import typeof TouchableHighlight from './Libraries/Components/Touchable/TouchableHighlight';
 import typeof TouchableNativeFeedback from './Libraries/Components/Touchable/TouchableNativeFeedback';
 import typeof TouchableOpacity from './Libraries/Components/Touchable/TouchableOpacity';
 import typeof TouchableWithoutFeedback from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 import typeof View from './Libraries/Components/View/View';
+import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
+import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
+import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
+import typeof Image from './Libraries/Image/Image';
+import typeof ImageBackground from './Libraries/Image/ImageBackground';
+import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
+import typeof PanResponder from './Libraries/Interaction/PanResponder';
+import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
+import typeof Linking from './Libraries/Linking/Linking';
+import typeof FlatList from './Libraries/Lists/FlatList';
+import typeof SectionList from './Libraries/Lists/SectionList';
 import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
-
-// APIs
-import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
-import typeof Alert from './Libraries/Alert/Alert';
-import typeof Animated from './Libraries/Animated/Animated';
-import typeof * as AnimatedModule from './Libraries/Animated/Animated';
-import typeof Appearance from './Libraries/Utilities/Appearance';
+import typeof LogBox from './Libraries/LogBox/LogBox';
+import typeof Modal from './Libraries/Modal/Modal';
+import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
+import typeof Networking from './Libraries/Network/RCTNetworking';
+import typeof * as Systrace from './Libraries/Performance/Systrace';
+import typeof PermissionsAndroid from './Libraries/PermissionsAndroid/PermissionsAndroid';
+import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNotificationIOS';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
-import typeof AppState from './Libraries/AppState/AppState';
+import typeof I18nManager from './Libraries/ReactNative/I18nManager';
+import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
+import typeof UIManager from './Libraries/ReactNative/UIManager';
+import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
+import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+import typeof Settings from './Libraries/Settings/Settings';
+import typeof Share from './Libraries/Share/Share';
+import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
+// Plugins
+import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+import typeof processColor from './Libraries/StyleSheet/processColor';
+import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
+import typeof Text from './Libraries/Text/Text';
+import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
+import typeof UTFSequence from './Libraries/UTFSequence';
+import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
-import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
-import typeof Easing from './Libraries/Animated/Easing';
-import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
-import typeof I18nManager from './Libraries/ReactNative/I18nManager';
-import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
-import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
-import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
-import typeof Linking from './Libraries/Linking/Linking';
-import typeof LogBox from './Libraries/LogBox/LogBox';
-import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
-import typeof NativeEventEmitter from './Libraries/EventEmitter/NativeEventEmitter';
-import typeof Networking from './Libraries/Network/RCTNetworking';
-import typeof PanResponder from './Libraries/Interaction/PanResponder';
-import typeof PermissionsAndroid from './Libraries/PermissionsAndroid/PermissionsAndroid';
 import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
-import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNotificationIOS';
-import typeof Settings from './Libraries/Settings/Settings';
-import typeof Share from './Libraries/Share/Share';
-import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
-import typeof * as Systrace from './Libraries/Performance/Systrace';
-import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
-import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
-import typeof UIManager from './Libraries/ReactNative/UIManager';
-import typeof useAnimatedValue from './Libraries/Animated/useAnimatedValue';
+import typeof Platform from './Libraries/Utilities/Platform';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
-import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 
-// Plugins
-import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
-import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
-import typeof Platform from './Libraries/Utilities/Platform';
-import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
-import typeof processColor from './Libraries/StyleSheet/processColor';
-import typeof RCTDeviceEventEmitter from './Libraries/EventEmitter/RCTDeviceEventEmitter';
-import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
-import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
-
-import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+const warnOnce = require('./Libraries/Utilities/warnOnce');
+const invariant = require('invariant');
 
 export type HostComponent<T> = _HostComponentInternal<T>;
-
-const invariant = require('invariant');
-const warnOnce = require('./Libraries/Utilities/warnOnce');
 
 module.exports = {
   // Components

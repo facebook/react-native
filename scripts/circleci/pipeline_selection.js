@@ -12,9 +12,9 @@
  * based on the files modified by the commit.
  */
 
+const {execSync} = require('child_process');
 const fs = require('fs');
 const yargs = require('yargs');
-const {execSync} = require('child_process');
 
 /**
  * Check whether the filename is a JS/TS file and not in the script folder

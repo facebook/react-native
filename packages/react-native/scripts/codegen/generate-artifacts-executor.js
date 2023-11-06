@@ -16,7 +16,7 @@
  * in a codegenConfigFilename file.
  */
 
-const {execSync, execFileSync} = require('child_process');
+const {execFileSync, execSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');

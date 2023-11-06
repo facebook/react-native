@@ -9,9 +9,9 @@
 
 'use strict';
 
-const yargs = require('yargs');
-const fs = require('fs');
 const {execSync} = require('child_process');
+const fs = require('fs');
+const yargs = require('yargs');
 
 const LAST_BUILD_FILENAME = '.last_build_configuration';
 

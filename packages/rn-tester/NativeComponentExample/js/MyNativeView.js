@@ -8,16 +8,17 @@
  * @format
  */
 
-import * as React from 'react';
-import {useRef, useState} from 'react';
-import {View, Button, Text, UIManager} from 'react-native';
+import type {MyLegacyViewType} from './MyLegacyViewNativeComponent';
+import type {MyNativeViewType} from './MyNativeViewNativeComponent';
+
+import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
+import {callNativeMethodToChangeBackgroundColor} from './MyLegacyViewNativeComponent';
 import RNTMyNativeView, {
   Commands as RNTMyNativeViewCommands,
 } from './MyNativeViewNativeComponent';
-import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
-import type {MyLegacyViewType} from './MyLegacyViewNativeComponent';
-import type {MyNativeViewType} from './MyNativeViewNativeComponent';
-import {callNativeMethodToChangeBackgroundColor} from './MyLegacyViewNativeComponent';
+import * as React from 'react';
+import {useRef, useState} from 'react';
+import {Button, Text, UIManager, View} from 'react-native';
 const colors = [
   '#0000FF',
   '#FF0000',

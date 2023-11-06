@@ -10,11 +10,11 @@
 
 'use strict';
 
-const underTest = require('../generate-artifacts-executor');
 const fixtures = require('../__test_fixtures__/fixtures');
-const path = require('path');
-const fs = require('fs');
+const underTest = require('../generate-artifacts-executor');
 const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const codegenConfigKey = 'codegenConfig';
 const reactNativeDependencyName = 'react-native';

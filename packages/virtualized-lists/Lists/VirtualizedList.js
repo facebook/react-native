@@ -8,12 +8,7 @@
  * @format
  */
 
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {
-  LayoutEvent,
-  ScrollEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
@@ -22,17 +17,13 @@ import type {
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
-import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
+import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  LayoutEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {
-  I18nManager,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  View,
-  StyleSheet,
-  findNodeHandle,
-} from 'react-native';
 import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
@@ -49,21 +40,29 @@ import {
   VirtualizedListContextProvider,
 } from './VirtualizedListContext.js';
 import {
+  horizontalOrDefault,
+  initialNumToRenderOrDefault,
+  maxToRenderPerBatchOrDefault,
+  onEndReachedThresholdOrDefault,
+  onStartReachedThresholdOrDefault,
+  windowSizeOrDefault,
+} from './VirtualizedListProps';
+import {
   computeWindowedRenderLimits,
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-
 import {
-  horizontalOrDefault,
-  initialNumToRenderOrDefault,
-  maxToRenderPerBatchOrDefault,
-  onStartReachedThresholdOrDefault,
-  onEndReachedThresholdOrDefault,
-  windowSizeOrDefault,
-} from './VirtualizedListProps';
+  I18nManager,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  findNodeHandle,
+} from 'react-native';
 
 export type {RenderItemProps, RenderItemType, Separators};
 

@@ -11,9 +11,9 @@
 
 'use strict';
 
+import RNTesterButton from '../../../components/RNTesterButton';
 import * as React from 'react';
 import {Text} from 'react-native';
-import RNTesterButton from '../../../components/RNTesterButton';
 
 const {useState, useMemo} = React;
 

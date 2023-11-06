@@ -11,24 +11,24 @@
 'use strict';
 
 import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
+  ExtendsPropsShape,
   NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMemberType,
-  NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
   PropTypeAnnotation,
-  ExtendsPropsShape,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
-  ParserErrorCapturer,
-  TypeDeclarationMap,
-  PropAST,
   ASTNode,
+  ParserErrorCapturer,
+  PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
 

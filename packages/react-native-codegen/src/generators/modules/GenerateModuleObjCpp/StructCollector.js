@@ -11,29 +11,28 @@
 'use strict';
 
 import type {
-  Nullable,
-  NativeModuleObjectTypeAnnotation,
-  NativeModuleStringTypeAnnotation,
-  NativeModuleNumberTypeAnnotation,
-  NativeModuleInt32TypeAnnotation,
-  NativeModuleDoubleTypeAnnotation,
-  NativeModuleFloatTypeAnnotation,
-  NativeModuleBooleanTypeAnnotation,
-  NativeModuleEnumDeclaration,
-  NativeModuleGenericObjectTypeAnnotation,
-  ReservedTypeAnnotation,
-  NativeModuleTypeAliasTypeAnnotation,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleBooleanTypeAnnotation,
+  NativeModuleDoubleTypeAnnotation,
+  NativeModuleEnumDeclaration,
+  NativeModuleFloatTypeAnnotation,
+  NativeModuleGenericObjectTypeAnnotation,
+  NativeModuleInt32TypeAnnotation,
+  NativeModuleNumberTypeAnnotation,
+  NativeModuleObjectTypeAnnotation,
+  NativeModuleStringTypeAnnotation,
+  NativeModuleTypeAliasTypeAnnotation,
+  Nullable,
+  ReservedTypeAnnotation,
 } from '../../../CodegenSchema';
-
 import type {AliasResolver} from '../Utils';
 
-const {capitalize} = require('../../Utils');
 const {
   unwrapNullable,
   wrapNullable,
 } = require('../../../parsers/parsers-commons');
+const {capitalize} = require('../../Utils');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 

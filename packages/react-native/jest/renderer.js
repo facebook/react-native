@@ -10,8 +10,8 @@
  */
 
 import * as React from 'react';
-import TestRenderer from 'react-test-renderer';
 import ShallowRenderer from 'react-shallow-renderer';
+import TestRenderer from 'react-test-renderer';
 
 const renderer = new ShallowRenderer();
 

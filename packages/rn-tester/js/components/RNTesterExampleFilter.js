@@ -8,19 +8,20 @@
  * @flow
  */
 
-const React = require('react');
+import type {SectionData} from '../types/RNTesterTypes';
+
+import {RNTesterThemeContext} from './RNTesterTheme';
+
 const RNTesterListFilters = require('./RNTesterListFilters');
+const React = require('react');
 const {
+  Image,
+  Platform,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
-  ScrollView,
-  Image,
-  Platform,
 } = require('react-native');
-import {RNTesterThemeContext} from './RNTesterTheme';
-
-import type {SectionData} from '../types/RNTesterTypes';
 
 type Props<T> = {
   filter: Function,

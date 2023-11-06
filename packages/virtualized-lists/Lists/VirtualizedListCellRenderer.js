@@ -8,17 +8,17 @@
  * @format
  */
 
+import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
   LayoutEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
-import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 
-import {View, StyleSheet} from 'react-native';
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';
+import {StyleSheet, View} from 'react-native';
 
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,

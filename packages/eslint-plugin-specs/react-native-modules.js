@@ -10,8 +10,8 @@
 
 'use strict';
 
-const path = require('path');
 const withBabelRegister = require('./with-babel-register');
+const path = require('path');
 
 // We use the prepack hook before publishing package to set this value to true
 const PACKAGE_USAGE = false;
