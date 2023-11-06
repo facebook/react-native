@@ -183,17 +183,16 @@ async function testRNTestProject(circleCIArtifacts) {
   // create the local npm package to feed the CLI
 
   // base setup required (specular to publish-npm.js)
-  const baseVersion = require('../packages/react-native/package.json').version;
 
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
-  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
   const shortCommit = exec('git rev-parse HEAD', {silent: true})
     .toString()
     .trim()
     .slice(0, 9);
 
   const releaseVersion = `1000.0.0-${shortCommit}`;
+  const buildType = 'dry-run';
 
   // Prepare some variables for later use
   const repoRoot = pwd();
@@ -204,6 +203,7 @@ async function testRNTestProject(circleCIArtifacts) {
     circleCIArtifacts != null
       ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
+
   const hermesPath = await prepareArtifacts(
     circleCIArtifacts,
     mavenLocalPath,
@@ -226,9 +226,16 @@ async function testRNTestProject(circleCIArtifacts) {
   cd('RNTestProject');
   exec('yarn install');
 
+  // When using CircleCI artifacts, the CI will zip maven local into a
+  // /tmp/maven-local subfolder struct.
+  // When we generate the project manually, there is no such structure.
+  const expandedMavenLocal =
+    circleCIArtifacts == null
+      ? mavenLocalPath
+      : `${mavenLocalPath}/tmp/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}/tmp/maven-local" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
   );
 
   // Update gradle properties to set Hermes as false
