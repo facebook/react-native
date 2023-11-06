@@ -525,17 +525,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "selectionHandleColor", customType = "Color")
   public void setSelectionHandleColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      return;
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      BlendModeColorFilter filter = new BlendModeColorFilter(color, BlendMode.SRC_IN);
       Drawable drawableCenter = view.getTextSelectHandle().mutate();
       Drawable drawableLeft = view.getTextSelectHandleLeft().mutate();
       Drawable drawableRight = view.getTextSelectHandleRight().mutate();
-      drawableCenter.setColorFilter(filter);
-      drawableLeft.setColorFilter(filter);
-      drawableRight.setColorFilter(filter);
+      if (color != null) {
+        BlendModeColorFilter filter = new BlendModeColorFilter(color, BlendMode.SRC_IN);
+        drawableCenter.setColorFilter(filter);
+        drawableLeft.setColorFilter(filter);
+        drawableRight.setColorFilter(filter);
+      } else {
+        drawableCenter.clearColorFilter();
+        drawableLeft.clearColorFilter();
+        drawableRight.clearColorFilter();
+      }
       view.setTextSelectHandle(drawableCenter);
       view.setTextSelectHandleLeft(drawableLeft);
       view.setTextSelectHandleRight(drawableRight);
@@ -560,7 +563,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         }
 
         Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        if (color != null) {
+          drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        } else {
+          drawable.clearColorFilter();
+        }
 
         Field editorField = TextView.class.getDeclaredField("mEditor");
         editorField.setAccessible(true);
@@ -577,14 +584,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      return;
-    }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
       if (cursorDrawable != null) {
-        cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        if (color != null) {
+          cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+          cursorDrawable.clearColorFilter();
+        }
         view.setTextCursorDrawable(cursorDrawable);
       }
       return;
@@ -610,7 +617,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
-      drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      if (color != null) {
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      } else {
+        drawable.clearColorFilter();
+      }
 
       Field editorField = TextView.class.getDeclaredField("mEditor");
       editorField.setAccessible(true);
