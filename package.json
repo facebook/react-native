@@ -56,7 +56,7 @@
     "@jest/create-cache-key-function": "^29.6.3",
     "@pkgjs/parseargs": "^0.11.0",
     "@react-native/metro-babel-transformer": "^0.73.12",
-    "@react-native/metro-config": "^0.73.1",
+    "@react-native/metro-config": "^0.73.2",
     "@tsconfig/node18": "1.0.1",
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.57.1",
