@@ -15,6 +15,7 @@ import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
+import warnOnce from '../../Utilities/warnOnce';
 
 export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
 
@@ -114,6 +115,14 @@ class Keyboard {
     );
 
   constructor() {
+    if (Platform.isVisionOS) {
+      warnOnce(
+        'Keyboard-unavailable',
+        'Keyboard is not available on visionOS platform. The system displays the keyboard in a separate window, leaving the app’s window unaffected by the keyboard’s appearance and disappearance',
+      );
+      return;
+    }
+
     this.addListener('keyboardDidShow', ev => {
       this._currentlyShowing = ev;
     });
@@ -151,6 +160,10 @@ class Keyboard {
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
     context?: mixed,
   ): EventSubscription {
+    if (Platform.isVisionOS) {
+      return;
+    }
+
     return this._emitter.addListener(eventType, listener);
   }
 
@@ -160,6 +173,10 @@ class Keyboard {
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void {
+    if (Platform.isVisionOS) {
+      return;
+    }
+
     this._emitter.removeAllListeners(eventType);
   }
 

@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
+#if !TARGET_OS_VISION
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 #define ADD_KEYBOARD_HANDLER(NAME, SELECTOR) [nc addObserver:self selector:@selector(SELECTOR:) name:NAME object:nil]
@@ -35,6 +36,7 @@ RCT_EXPORT_MODULE()
   ADD_KEYBOARD_HANDLER(UIKeyboardDidChangeFrameNotification, keyboardDidChangeFrame);
 
 #undef ADD_KEYBOARD_HANDLER
+#endif
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -51,9 +53,12 @@ RCT_EXPORT_MODULE()
 
 - (void)stopObserving
 {
+#if !TARGET_OS_VISION
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif
 }
 
+#if !TARGET_OS_VISION
 // Bridge might be already invalidated by the time the keyboard is about to be dismissed.
 // This might happen, for example, when reload from the packager is performed.
 // Thus we need to check against nil here.
@@ -72,6 +77,7 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardWillHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
+#endif
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
