@@ -147,6 +147,18 @@ const getPreset = (src, options) => {
       {loose: true},
     ]);
   }
+  if (
+    !isHermes &&
+    (isNull ||
+      src.indexOf('??=') !== -1 ||
+      src.indexOf('||=') !== -1 ||
+      src.indexOf('&&=') !== -1)
+  ) {
+    extraPlugins.push([
+      require('@babel/plugin-proposal-logical-assignment-operators'),
+      {loose: true},
+    ]);
+  }
 
   if (options && options.dev && !options.useTransformReactJSXExperimental) {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-source')]);
