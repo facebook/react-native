@@ -26,6 +26,12 @@ describe('generateCode', () => {
     jest.resetAllMocks();
   });
 
+  beforeEach(() => {
+    // Silence logs from printDeprecationWarningIfNeeded. Ideally, we should have test assertions on these warnings.
+    jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(console, 'debug').mockImplementation();
+  });
+
   it('executeNodes with the right arguments', () => {
     // Define variables and expected values
     const iosOutputDir = 'app/ios/build/generated/ios';

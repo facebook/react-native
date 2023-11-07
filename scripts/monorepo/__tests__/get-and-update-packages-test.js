@@ -60,6 +60,9 @@ describe('getAndUpdatePackages', () => {
       }
       return '';
     });
+
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   it('Publishes the nightly version', () => {
