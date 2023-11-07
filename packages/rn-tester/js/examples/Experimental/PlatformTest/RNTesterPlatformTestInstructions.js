@@ -8,10 +8,10 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{|
   instructions?: $ReadOnlyArray<string>,

@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type {Struct} from '../StructCollector';
 import type {
   MethodSerializationOutput,
   StructParameterRecord,
 } from '../serializeMethod';
+import type {Struct} from '../StructCollector';
 
 const ModuleTemplate = ({
   hasteModuleName,

@@ -22,6 +22,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.TimingModule;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
@@ -134,7 +135,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new SimpleSettableFuture<TimingModule>();
     UiThreadUtil.runOnUiThread(
         () -> {
-          ReactChoreographer.initialize();
+          ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
           TimingModule timingModule =
               new TimingModule(getContext(), Mockito.mock(DevSupportManager.class));
           simpleSettableFuture.set(timingModule);

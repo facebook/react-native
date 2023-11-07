@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../../CodegenSchema';
+
 const {convertDefaultTypeToString, getImports} = require('./CppHelpers');
 
 // File path -> contents

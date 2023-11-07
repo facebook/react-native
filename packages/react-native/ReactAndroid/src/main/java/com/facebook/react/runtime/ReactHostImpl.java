@@ -638,6 +638,9 @@ public class ReactHostImpl implements ReactHost {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
+    if (DEV) {
+      mDevSupportManager.handleException(e);
+    }
     destroy(method, e);
     mReactHostDelegate.handleInstanceException(e);
   }
@@ -1743,12 +1746,15 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  public void setJSEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  @Nullable
+  @Override
+  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
+    return mJSEngineResolutionAlgorithm;
   }
 
-  public @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
+  @Override
+  public void setJsEngineResolutionAlgorithm(
+      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
+    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 }

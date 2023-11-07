@@ -125,6 +125,7 @@ declare type ws$WebSocketOptions = {
   createConnection?:
     | ((options: net$connectOptions, callback?: () => mixed) => net$Socket)
     | ((options: tls$connectOptions, callback?: () => mixed) => tls$TLSSocket),
+  rejectUnauthorized?: boolean,
 };
 
 declare type ws$CloseListener = (code: number, reason: string) => mixed;

@@ -8,11 +8,10 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {RNTesterThemeContext} from './RNTesterTheme';
 import RNTesterComponentTitle from './RNTesterComponentTitle';
-
-import {Platform, StyleSheet, Pressable, Text, View} from 'react-native';
+import {RNTesterThemeContext} from './RNTesterTheme';
+import * as React from 'react';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 type Props = {

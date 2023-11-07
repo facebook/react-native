@@ -14,7 +14,7 @@ function get_architecture {
     elif [[ $1 == "catalyst" ]]; then
       echo "x86_64;arm64"
     else
-      echo "Error: unknown arkitecture passed $1"
+      echo "Error: unknown architecture passed $1"
       exit 1
     fi
 }

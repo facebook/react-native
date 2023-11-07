@@ -11,7 +11,6 @@
 'use strict';
 
 import * as React from 'react';
-
 import {Text, View} from 'react-native';
 
 export const title = 'Invalid Props';

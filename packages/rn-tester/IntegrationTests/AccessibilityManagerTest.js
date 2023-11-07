@@ -9,9 +9,9 @@
  */
 
 import invariant from 'invariant';
-import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
-import {DeviceEventEmitter, NativeModules, View} from 'react-native';
 import * as React from 'react';
+import {DeviceEventEmitter, NativeModules, View} from 'react-native';
+import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
 
 const {TestModule} = NativeModules;
 

@@ -8,11 +8,11 @@
  */
 
 const getAndUpdatePackages = require('../get-and-update-packages');
-const path = require('path');
 const {
-  mockPackages,
   expectedPackages,
+  mockPackages,
 } = require('./__fixtures__/get-and-update-packages-fixtures');
+const path = require('path');
 
 const writeFileSyncMock = jest.fn();
 const publishPackageMock = jest.fn();

@@ -9,10 +9,10 @@
 
 'use strict';
 
+const utils = require('./codegen-utils');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const utils = require('./codegen-utils');
 const RNCodegen = utils.getCodegen();
 
 const GENERATORS = {

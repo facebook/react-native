@@ -12,8 +12,8 @@ import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatf
 import type {EventOccurrence, EventTrackerProps} from './PointerEventSupport';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
-import {EventTracker, mkEvent} from './PointerEventSupport';
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
+import {EventTracker, mkEvent} from './PointerEventSupport';
 import * as React from 'react';
 import {useRef} from 'react';
 import {StyleSheet, View} from 'react-native';

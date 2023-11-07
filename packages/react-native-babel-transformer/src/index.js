@@ -24,9 +24,9 @@ import type {
 */
 
 const {parseSync, transformFromAstSync} = require('@babel/core');
+const makeHMRConfig = require('@react-native/babel-preset/src/configs/hmr');
 const crypto = require('crypto');
 const fs = require('fs');
-const makeHMRConfig = require('@react-native/babel-preset/src/configs/hmr');
 const nullthrows = require('nullthrows');
 const path = require('path');
 

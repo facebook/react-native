@@ -8,9 +8,10 @@
  * @format
  */
 
-import ModalPresentation from './ModalPresentation';
-import ModalOnShow from './ModalOnShow';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
+import ModalOnShow from './ModalOnShow';
+import ModalPresentation from './ModalPresentation';
 
 export const displayName = (undefined: ?string);
 export const framework = 'React';

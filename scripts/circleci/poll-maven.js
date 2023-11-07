@@ -7,8 +7,8 @@
  * @format
  */
 
-const fetch = require('node-fetch');
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 const baseMavenRepo = 'https://repo1.maven.org/maven2/com/facebook/react';
 const artifacts = ['react-native-artifacts', 'react-android', 'hermes-android'];

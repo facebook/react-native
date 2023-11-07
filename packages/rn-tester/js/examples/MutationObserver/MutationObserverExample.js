@@ -11,11 +11,11 @@
 import type ReadOnlyNode from 'react-native/Libraries/DOM/Nodes/ReadOnlyNode';
 import type NodeList from 'react-native/Libraries/DOM/OldStyleCollections/NodeList';
 
-import ReadOnlyElement from 'react-native/Libraries/DOM/Nodes/ReadOnlyElement';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
 import {type ElementRef, useContext, useEffect, useRef, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import ReadOnlyElement from 'react-native/Libraries/DOM/Nodes/ReadOnlyElement';
 import MutationObserver from 'react-native/Libraries/MutationObserver/MutationObserver';
 
 export const name = 'MutationObserver Example';

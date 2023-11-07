@@ -468,7 +468,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={false}
-        onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}

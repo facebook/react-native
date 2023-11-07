@@ -10,23 +10,22 @@
 
 'use strict';
 
+const detectPackageUnreleasedChanges = require('./monorepo/bump-all-updated-packages/bump-utils.js');
+const checkForGitChanges = require('./monorepo/check-for-git-changes');
+const forEachPackage = require('./monorepo/for-each-package');
+const {failIfTagExists} = require('./release-utils');
+const {exitIfNotOnGit, getBranchName} = require('./scm-utils');
+const {isReleaseBranch, parseVersion} = require('./version-utils');
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+const path = require('path');
+const request = require('request');
 /**
  * This script walks a releaser through bumping the version for a release
  * It will commit the appropriate tags to trigger the CircleCI jobs.
  */
-const {exit, echo} = require('shelljs');
-const chalk = require('chalk');
+const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
-const inquirer = require('inquirer');
-const request = require('request');
-const path = require('path');
-const {getBranchName, exitIfNotOnGit} = require('./scm-utils');
-
-const {parseVersion, isReleaseBranch} = require('./version-utils');
-const {failIfTagExists} = require('./release-utils');
-const checkForGitChanges = require('./monorepo/check-for-git-changes');
-const forEachPackage = require('./monorepo/for-each-package');
-const detectPackageUnreleasedChanges = require('./monorepo/bump-all-updated-packages/bump-utils.js');
 
 const ROOT_LOCATION = path.join(__dirname, '..');
 

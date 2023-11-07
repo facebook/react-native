@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
 const NativeCxxModuleExampleExample = require('./NativeCxxModuleExampleExample');
+const React = require('react');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'Cxx TurboModule';

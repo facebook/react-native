@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {TypeDeclarationMap, ASTNode} from '../utils';
+import type {ASTNode, TypeDeclarationMap} from '../utils';
 
 function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   if (value.type === 'GenericTypeAnnotation' && types[value.id.name]) {

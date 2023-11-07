@@ -62,7 +62,7 @@ UIManager::~UIManager() {
                << ").";
 }
 
-ShadowNode::Shared UIManager::createNode(
+std::shared_ptr<ShadowNode> UIManager::createNode(
     Tag tag,
     const std::string& name,
     SurfaceId surfaceId,
@@ -109,7 +109,7 @@ ShadowNode::Shared UIManager::createNode(
   return shadowNode;
 }
 
-ShadowNode::Shared UIManager::cloneNode(
+std::shared_ptr<ShadowNode> UIManager::cloneNode(
     const ShadowNode& shadowNode,
     const ShadowNode::SharedListOfShared& children,
     const RawProps* rawProps) const {

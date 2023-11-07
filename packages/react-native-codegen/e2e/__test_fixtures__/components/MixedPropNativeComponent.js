@@ -9,9 +9,10 @@
  */
 
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {UnsafeMixed} from 'react-native/Libraries/Types/CodegenTypes';
+
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

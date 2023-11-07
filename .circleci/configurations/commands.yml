@@ -46,9 +46,14 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
+            xcode=$(xcodebuild -version | cut -d' ' -f2 | head -n 1)
+            # For some reason, the Xcode 14.1 machnine is already properly configured.
+            if [[ $xcode != '14.1' ]]; then
+              brew reinstall libyaml
+              gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
+              export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
+            fi
+
 
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
@@ -79,6 +84,18 @@ commands:
         type: string
 
     steps:
+      - run:
+          name: Move to Node 18 if Needed
+          command: |
+            node_version=$(node -v)
+            major_version=$(echo $node_version | cut -c 2- | cut -d '.' -f 1)
+
+            if [[ $major_version < 18 ]]; then
+              nvm install 18.18.0
+              nvm alias default 18.18.0
+            else
+              echo 'We have the right node version!'
+            fi
       - restore_cache:
           keys:
             - << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}

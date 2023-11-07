@@ -9,19 +9,19 @@
  * @oncall react_native
  */
 
+import type {EventReporter} from '../types/EventReporter';
+import type {Experiments} from '../types/Experiments';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
   Page,
   PageDescription,
 } from './types';
-import type {EventReporter} from '../types/EventReporter';
-import type {Experiments} from '../types/Experiments';
 import type {IncomingMessage, ServerResponse} from 'http';
 
+import Device from './Device';
 import url from 'url';
 import WS from 'ws';
-import Device from './Device';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -149,6 +149,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
       webSocketDebuggerUrl,
       vm: page.vm,
       deviceName: device.getName(),
+      reactNative: {
+        logicalDeviceId: deviceId,
+      },
     };
   }
 

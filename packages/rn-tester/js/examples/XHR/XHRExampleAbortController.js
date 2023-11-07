@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-
 const {Alert, Button, View} = require('react-native');
 
 class XHRExampleAbortController extends React.Component<{...}, {...}> {

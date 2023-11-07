@@ -20,7 +20,7 @@ export type PerformanceEventTimingJSON = {
   ...
 };
 
-export class PerformanceEventTiming extends PerformanceEntry {
+export default class PerformanceEventTiming extends PerformanceEntry {
   processingStart: HighResTimeStamp;
   processingEnd: HighResTimeStamp;
   interactionId: number;

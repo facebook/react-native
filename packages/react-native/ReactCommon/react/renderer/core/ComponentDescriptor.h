@@ -78,7 +78,7 @@ class ComponentDescriptor {
   /*
    * Creates a new `ShadowNode` of a particular component type.
    */
-  virtual ShadowNode::Shared createShadowNode(
+  virtual std::shared_ptr<ShadowNode> createShadowNode(
       const ShadowNodeFragment& fragment,
       const ShadowNodeFamily::Shared& family) const = 0;
 
