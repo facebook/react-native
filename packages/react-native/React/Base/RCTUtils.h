@@ -93,13 +93,13 @@ RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 #endif // [macOS]
 
 // Returns the shared UIApplication instance, or nil if running in an App Extension
-RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
+RCT_EXTERN RCTUIApplication *__nullable RCTSharedApplication(void); // [macOS]
 
-#if !TARGET_OS_OSX // [macOS]
 // Returns the current main window, useful if you need to access the root view
 // or view controller
-RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
+RCT_EXTERN RCTUIWindow *__nullable RCTKeyWindow(void); // [macOS]
 
+#if !TARGET_OS_OSX // [macOS]
 // Returns the presented view controller, useful if you need
 // e.g. to present a modal view controller or alert over it
 RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
