@@ -159,6 +159,10 @@ describe('hermes-utils', () => {
 
     execCalls = Object.create(null);
     spawnCalls = Object.create(null);
+
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'info').mockImplementation(() => {});
   });
 
   describe('Versioning Hermes', () => {
