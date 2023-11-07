@@ -16,10 +16,10 @@ import type {SchemaType} from '../../CodegenSchema';
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
-  componentDescriptors,
+  collectedComponents,
   libraryName,
 }: {
-  componentDescriptors: string,
+  collectedComponents: Array<string>,
   libraryName: string,
 }) => `
 /**
@@ -33,21 +33,39 @@ const FileTemplate = ({
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/${libraryName}/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-${componentDescriptors}
+${collectedComponents
+  .map(componentName => ComponentTemplate({componentName}))
+  .join('\n')}
+
+inline void ${libraryName}_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  ${collectedComponents
+    .map(componentName => ComponentRegistrationTemplate({componentName}))
+    .join('\n  ')}
+}
 
 } // namespace react
 } // namespace facebook
 `;
 
-const ComponentTemplate = ({className}: {className: string}) =>
+const ComponentTemplate = ({componentName}: {componentName: string}) =>
   `
-using ${className}ComponentDescriptor = ConcreteComponentDescriptor<${className}ShadowNode>;
+using ${componentName}ComponentDescriptor = ConcreteComponentDescriptor<${componentName}ShadowNode>;
+`.trim();
+
+const ComponentRegistrationTemplate = ({
+  componentName,
+}: {
+  componentName: string,
+}) =>
+  `
+providerRegistry->add(concreteComponentDescriptorProvider<${componentName}ComponentDescriptor>());
 `.trim();
 
 module.exports = {
@@ -59,34 +77,29 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';
 
-    const componentDescriptors = Object.keys(schema.modules)
-      .map(moduleName => {
-        const module = schema.modules[moduleName];
-        if (module.type !== 'Component') {
+    const collectedComponents = [];
+    Object.keys(schema.modules).map(moduleName => {
+      const module = schema.modules[moduleName];
+      if (module.type !== 'Component') {
+        return;
+      }
+
+      const {components} = module;
+      // No components in this module
+      if (components == null) {
+        return;
+      }
+
+      Object.keys(components).map(componentName => {
+        if (components[componentName].interfaceOnly === true) {
           return;
         }
-
-        const {components} = module;
-        // No components in this module
-        if (components == null) {
-          return null;
-        }
-
-        return Object.keys(components)
-          .map(componentName => {
-            if (components[componentName].interfaceOnly === true) {
-              return;
-            }
-
-            return ComponentTemplate({className: componentName});
-          })
-          .join('\n');
-      })
-      .filter(Boolean)
-      .join('\n');
+        collectedComponents.push(componentName);
+      });
+    });
 
     const replacedTemplate = FileTemplate({
-      componentDescriptors,
+      collectedComponents,
       libraryName,
     });
 

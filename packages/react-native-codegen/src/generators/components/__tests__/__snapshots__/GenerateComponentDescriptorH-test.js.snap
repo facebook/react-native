@@ -14,6 +14,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/ARRAY_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -21,6 +22,10 @@ namespace facebook {
 namespace react {
 
 using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentShadowNode>;
+
+inline void ARRAY_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ArrayPropsNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -42,6 +47,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -49,6 +55,10 @@ namespace facebook {
 namespace react {
 
 using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentShadowNode>;
+
+inline void ARRAY_PROPS_WITH_NESTED_OBJECT_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ArrayPropsNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -70,6 +80,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/BOOLEAN_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -77,6 +88,10 @@ namespace facebook {
 namespace react {
 
 using BooleanPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<BooleanPropNativeComponentShadowNode>;
+
+inline void BOOLEAN_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<BooleanPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -98,6 +113,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/COLOR_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -105,6 +121,10 @@ namespace facebook {
 namespace react {
 
 using ColorPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ColorPropNativeComponentShadowNode>;
+
+inline void COLOR_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ColorPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -126,6 +146,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/COMMANDS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -133,6 +154,10 @@ namespace facebook {
 namespace react {
 
 using CommandNativeComponentComponentDescriptor = ConcreteComponentDescriptor<CommandNativeComponentShadowNode>;
+
+inline void COMMANDS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<CommandNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -154,6 +179,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/COMMANDS_AND_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -161,6 +187,10 @@ namespace facebook {
 namespace react {
 
 using CommandNativeComponentComponentDescriptor = ConcreteComponentDescriptor<CommandNativeComponentShadowNode>;
+
+inline void COMMANDS_AND_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<CommandNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -182,6 +212,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/DIMENSION_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -189,6 +220,10 @@ namespace facebook {
 namespace react {
 
 using DimensionPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<DimensionPropNativeComponentShadowNode>;
+
+inline void DIMENSION_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<DimensionPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -210,6 +245,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/DOUBLE_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -217,6 +253,10 @@ namespace facebook {
 namespace react {
 
 using DoublePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<DoublePropNativeComponentShadowNode>;
+
+inline void DOUBLE_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<DoublePropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -238,6 +278,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -245,6 +286,10 @@ namespace facebook {
 namespace react {
 
 using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
+
+inline void EVENT_NESTED_OBJECT_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<EventsNestedObjectNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -266,6 +311,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EVENT_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -273,6 +319,10 @@ namespace facebook {
 namespace react {
 
 using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNativeComponentShadowNode>;
+
+inline void EVENT_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<EventsNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -294,6 +344,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -301,6 +352,10 @@ namespace facebook {
 namespace react {
 
 
+
+inline void EVENTS_WITH_PAPER_NAME_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  
+}
 
 } // namespace react
 } // namespace facebook
@@ -322,6 +377,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EXCLUDE_ANDROID/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -329,6 +385,10 @@ namespace facebook {
 namespace react {
 
 using ExcludedAndroidComponentComponentDescriptor = ConcreteComponentDescriptor<ExcludedAndroidComponentShadowNode>;
+
+inline void EXCLUDE_ANDROID_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ExcludedAndroidComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -350,6 +410,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -357,6 +418,10 @@ namespace facebook {
 namespace react {
 
 using ExcludedAndroidIosComponentComponentDescriptor = ConcreteComponentDescriptor<ExcludedAndroidIosComponentShadowNode>;
+
+inline void EXCLUDE_ANDROID_IOS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ExcludedAndroidIosComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -378,6 +443,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -386,6 +452,11 @@ namespace react {
 
 using ExcludedIosComponentComponentDescriptor = ConcreteComponentDescriptor<ExcludedIosComponentShadowNode>;
 using MultiFileIncludedNativeComponentComponentDescriptor = ConcreteComponentDescriptor<MultiFileIncludedNativeComponentShadowNode>;
+
+inline void EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ExcludedIosComponentComponentDescriptor>());
+  providerRegistry->add(concreteComponentDescriptorProvider<MultiFileIncludedNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -407,6 +478,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/FLOAT_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -414,6 +486,10 @@ namespace facebook {
 namespace react {
 
 using FloatPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<FloatPropNativeComponentShadowNode>;
+
+inline void FLOAT_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<FloatPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -435,6 +511,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/IMAGE_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -442,6 +519,10 @@ namespace facebook {
 namespace react {
 
 using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImagePropNativeComponentShadowNode>;
+
+inline void IMAGE_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ImagePropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -463,6 +544,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/INSETS_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -470,6 +552,10 @@ namespace facebook {
 namespace react {
 
 using InsetsPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<InsetsPropNativeComponentShadowNode>;
+
+inline void INSETS_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<InsetsPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -491,6 +577,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/INT32_ENUM_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -498,6 +585,10 @@ namespace facebook {
 namespace react {
 
 using Int32EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Int32EnumPropsNativeComponentShadowNode>;
+
+inline void INT32_ENUM_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<Int32EnumPropsNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -519,6 +610,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/INTEGER_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -526,6 +618,10 @@ namespace facebook {
 namespace react {
 
 using IntegerPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<IntegerPropNativeComponentShadowNode>;
+
+inline void INTEGER_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<IntegerPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -547,6 +643,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/INTERFACE_ONLY/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -554,6 +651,10 @@ namespace facebook {
 namespace react {
 
 
+
+inline void INTERFACE_ONLY_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  
+}
 
 } // namespace react
 } // namespace facebook
@@ -575,6 +676,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/MIXED_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -582,6 +684,10 @@ namespace facebook {
 namespace react {
 
 using MixedPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<MixedPropNativeComponentShadowNode>;
+
+inline void MIXED_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<MixedPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -603,6 +709,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/MULTI_NATIVE_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -610,6 +717,10 @@ namespace facebook {
 namespace react {
 
 using ImageColorPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImageColorPropNativeComponentShadowNode>;
+
+inline void MULTI_NATIVE_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ImageColorPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -631,6 +742,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -638,6 +750,10 @@ namespace facebook {
 namespace react {
 
 using NoPropsNoEventsComponentComponentDescriptor = ConcreteComponentDescriptor<NoPropsNoEventsComponentShadowNode>;
+
+inline void NO_PROPS_NO_EVENTS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<NoPropsNoEventsComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -659,6 +775,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/OBJECT_PROPS/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -666,6 +783,10 @@ namespace facebook {
 namespace react {
 
 using ObjectPropsComponentDescriptor = ConcreteComponentDescriptor<ObjectPropsShadowNode>;
+
+inline void OBJECT_PROPS_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<ObjectPropsComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -687,6 +808,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/POINT_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -694,6 +816,10 @@ namespace facebook {
 namespace react {
 
 using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<PointPropNativeComponentShadowNode>;
+
+inline void POINT_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<PointPropNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -715,6 +841,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/STRING_ENUM_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -722,6 +849,10 @@ namespace facebook {
 namespace react {
 
 using StringEnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<StringEnumPropsNativeComponentShadowNode>;
+
+inline void STRING_ENUM_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<StringEnumPropsNativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -743,6 +874,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/STRING_PROP/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -750,6 +882,10 @@ namespace facebook {
 namespace react {
 
 using StringPropComponentComponentDescriptor = ConcreteComponentDescriptor<StringPropComponentShadowNode>;
+
+inline void STRING_PROP_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<StringPropComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -771,6 +907,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -779,6 +916,11 @@ namespace react {
 
 using MultiFile1NativeComponentComponentDescriptor = ConcreteComponentDescriptor<MultiFile1NativeComponentShadowNode>;
 using MultiFile2NativeComponentComponentDescriptor = ConcreteComponentDescriptor<MultiFile2NativeComponentShadowNode>;
+
+inline void TWO_COMPONENTS_DIFFERENT_FILES_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<MultiFile1NativeComponentComponentDescriptor>());
+  providerRegistry->add(concreteComponentDescriptorProvider<MultiFile2NativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
@@ -800,6 +942,7 @@ Map {
 
 #pragma once
 
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -808,6 +951,11 @@ namespace react {
 
 using MultiComponent1NativeComponentComponentDescriptor = ConcreteComponentDescriptor<MultiComponent1NativeComponentShadowNode>;
 using MultiComponent2NativeComponentComponentDescriptor = ConcreteComponentDescriptor<MultiComponent2NativeComponentShadowNode>;
+
+inline void TWO_COMPONENTS_SAME_FILE_registerComponentDescriptors(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
+  providerRegistry->add(concreteComponentDescriptorProvider<MultiComponent1NativeComponentComponentDescriptor>());
+  providerRegistry->add(concreteComponentDescriptorProvider<MultiComponent2NativeComponentComponentDescriptor>());
+}
 
 } // namespace react
 } // namespace facebook
