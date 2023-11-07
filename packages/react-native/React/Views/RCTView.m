@@ -1492,16 +1492,21 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
 - (void)updateTrackingAreas
 {
-  if (_trackingArea) {
-    [self removeTrackingArea:_trackingArea];
-  }
+  BOOL hasMouseHoverEvent = self.onMouseEnter || self.onMouseLeave;
+  BOOL wouldRecreateIdenticalTrackingArea = hasMouseHoverEvent && _trackingArea && NSEqualRects(self.bounds, [_trackingArea rect]);
 
-  if (self.onMouseEnter || self.onMouseLeave) {
-    _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-                                                 options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited
-                                                   owner:self
-                                                userInfo:nil];
-    [self addTrackingArea:_trackingArea];
+  if (!wouldRecreateIdenticalTrackingArea) {
+    if (_trackingArea) {
+      [self removeTrackingArea:_trackingArea];
+    }
+
+    if (hasMouseHoverEvent) {
+      _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
+                                                   options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited
+                                                     owner:self
+                                                  userInfo:nil];
+      [self addTrackingArea:_trackingArea];
+    }
   }
 
   [super updateTrackingAreas];
