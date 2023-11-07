@@ -99,6 +99,15 @@ YGEdge Node::getInlineEndEdgeUsingErrata(
       : inlineEndEdge(flexDirection, direction);
 }
 
+bool Node::isFlexStartPositionDefined(FlexDirection axis) const {
+  const YGEdge startEdge = flexStartEdge(axis);
+  auto leadingPosition = isRow(axis)
+      ? computeEdgeValueForRow(style_.position(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.position(), startEdge);
+
+  return leadingPosition.isDefined();
+}
+
 bool Node::isInlineStartPositionDefined(FlexDirection axis, Direction direction)
     const {
   const YGEdge startEdge = getInlineStartEdgeUsingErrata(axis, direction);
@@ -109,6 +118,15 @@ bool Node::isInlineStartPositionDefined(FlexDirection axis, Direction direction)
   return leadingPosition.isDefined();
 }
 
+bool Node::isFlexEndPositionDefined(FlexDirection axis) const {
+  const YGEdge endEdge = flexEndEdge(axis);
+  auto trailingPosition = isRow(axis)
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.position(), endEdge);
+
+  return !trailingPosition.isUndefined();
+}
+
 bool Node::isInlineEndPositionDefined(FlexDirection axis, Direction direction)
     const {
   const YGEdge endEdge = getInlineEndEdgeUsingErrata(axis, direction);
@@ -117,6 +135,15 @@ bool Node::isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       : computeEdgeValueForColumn(style_.position(), endEdge);
 
   return trailingPosition.isDefined();
+}
+
+float Node::getFlexStartPosition(FlexDirection axis, float axisSize) const {
+  const YGEdge startEdge = flexStartEdge(axis);
+  auto leadingPosition = isRow(axis)
+      ? computeEdgeValueForRow(style_.position(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.position(), startEdge);
+
+  return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineStartPosition(
@@ -131,6 +158,15 @@ float Node::getInlineStartPosition(
   return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
+float Node::getFlexEndPosition(FlexDirection axis, float axisSize) const {
+  const YGEdge endEdge = flexEndEdge(axis);
+  auto trailingPosition = isRow(axis)
+      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.position(), endEdge);
+
+  return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
+}
+
 float Node::getInlineEndPosition(
     FlexDirection axis,
     Direction direction,
@@ -143,6 +179,15 @@ float Node::getInlineEndPosition(
   return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
 }
 
+float Node::getFlexStartMargin(FlexDirection axis, float widthSize) const {
+  const YGEdge startEdge = flexStartEdge(axis);
+  auto leadingMargin = isRow(axis)
+      ? computeEdgeValueForRow(style_.margin(), YGEdgeStart, startEdge)
+      : computeEdgeValueForColumn(style_.margin(), startEdge);
+
+  return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
+}
+
 float Node::getInlineStartMargin(
     FlexDirection axis,
     Direction direction,
@@ -153,6 +198,15 @@ float Node::getInlineStartMargin(
       : computeEdgeValueForColumn(style_.margin(), startEdge);
 
   return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
+}
+
+float Node::getFlexEndMargin(FlexDirection axis, float widthSize) const {
+  const YGEdge endEdge = flexEndEdge(axis);
+  auto trailingMargin = isRow(axis)
+      ? computeEdgeValueForRow(style_.margin(), YGEdgeEnd, endEdge)
+      : computeEdgeValueForColumn(style_.margin(), endEdge);
+
+  return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineEndMargin(
