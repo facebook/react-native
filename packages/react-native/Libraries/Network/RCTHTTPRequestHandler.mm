@@ -32,7 +32,6 @@ void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProv
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
-@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
@@ -79,7 +78,8 @@ RCT_EXPORT_MODULE()
 
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
-    callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
+    RCTNetworking *networking = [_moduleRegistry moduleForName:"Networking"];
+    callbackQueue.underlyingQueue = [networking requestQueue];
     NSURLSessionConfiguration *configuration;
     if (urlSessionConfigurationProvider) {
       configuration = urlSessionConfigurationProvider();

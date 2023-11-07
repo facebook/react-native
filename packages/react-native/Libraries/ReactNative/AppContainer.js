@@ -17,10 +17,11 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
 import * as React from 'react';
 
+const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
-  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
@@ -34,7 +35,6 @@ type State = {|
   devtoolsOverlay: ?React.Node,
   traceUpdateOverlay: ?React.Node,
   mainKey: number,
-  hasError: boolean,
 |};
 
 class AppContainer extends React.Component<Props, State> {
@@ -43,12 +43,25 @@ class AppContainer extends React.Component<Props, State> {
     devtoolsOverlay: null,
     traceUpdateOverlay: null,
     mainKey: 1,
-    hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EventSubscription = null;
+  _reactDevToolsAgentListener: ?() => void = null;
 
   static getDerivedStateFromError: any = undefined;
+
+  mountReactDevToolsOverlays(): void {
+    if (__DEV__) {
+      const DevtoolsOverlay = require('../Inspector/DevtoolsOverlay').default;
+      const devtoolsOverlay = <DevtoolsOverlay inspectedView={this._mainRef} />;
+
+      const TraceUpdateOverlay =
+        require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
+      const traceUpdateOverlay = <TraceUpdateOverlay />;
+
+      this.setState({devtoolsOverlay, traceUpdateOverlay});
+    }
+  }
 
   componentDidMount(): void {
     if (__DEV__) {
@@ -71,16 +84,23 @@ class AppContainer extends React.Component<Props, State> {
             this.setState({inspector});
           },
         );
-        if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__ != null) {
-          const DevtoolsOverlay =
-            require('../Inspector/DevtoolsOverlay').default;
-          const devtoolsOverlay = (
-            <DevtoolsOverlay inspectedView={this._mainRef} />
-          );
-          const TraceUpdateOverlay =
-            require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
-          const traceUpdateOverlay = <TraceUpdateOverlay />;
-          this.setState({devtoolsOverlay, traceUpdateOverlay});
+
+        if (reactDevToolsHook != null) {
+          if (reactDevToolsHook.reactDevtoolsAgent) {
+            // In case if this is not the first AppContainer rendered and React DevTools are already attached
+            this.mountReactDevToolsOverlays();
+            return;
+          }
+
+          this._reactDevToolsAgentListener = () =>
+            this.mountReactDevToolsOverlays();
+
+          if (reactDevToolsHook.on != null) {
+            reactDevToolsHook.on(
+              'react-devtools',
+              this._reactDevToolsAgentListener,
+            );
+          }
         }
       }
     }
@@ -89,6 +109,13 @@ class AppContainer extends React.Component<Props, State> {
   componentWillUnmount(): void {
     if (this._subscription != null) {
       this._subscription.remove();
+    }
+
+    if (
+      reactDevToolsHook?.off != null &&
+      this._reactDevToolsAgentListener != null
+    ) {
+      reactDevToolsHook.off('react-devtools', this._reactDevToolsAgentListener);
     }
   }
 
@@ -128,10 +155,11 @@ class AppContainer extends React.Component<Props, State> {
         </Wrapper>
       );
     }
+
     return (
       <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
-          {!this.state.hasError && innerView}
+          {innerView}
           {this.state.traceUpdateOverlay}
           {this.state.devtoolsOverlay}
           {this.state.inspector}

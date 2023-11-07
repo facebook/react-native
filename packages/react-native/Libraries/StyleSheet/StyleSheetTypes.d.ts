@@ -40,6 +40,7 @@ export interface FlexStyle {
     | 'stretch'
     | 'space-between'
     | 'space-around'
+    | 'space-evenly'
     | undefined;
   alignItems?: FlexAlignType | undefined;
   alignSelf?: 'auto' | FlexAlignType | undefined;
@@ -121,7 +122,7 @@ export interface ShadowStyleIOS {
   shadowRadius?: number | undefined;
 }
 
-interface PerpectiveTransform {
+interface PerspectiveTransform {
   perspective: AnimatableNumericValue;
 }
 
@@ -173,25 +174,31 @@ interface MatrixTransform {
   matrix: AnimatableNumericValue[];
 }
 
+type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
+  ? {[P in K]: T[K]} & {[P in Exclude<keyof T, K>]?: never}
+  : never;
+
 export interface TransformsStyle {
   transform?:
-    | (
-        | PerpectiveTransform
-        | RotateTransform
-        | RotateXTransform
-        | RotateYTransform
-        | RotateZTransform
-        | ScaleTransform
-        | ScaleXTransform
-        | ScaleYTransform
-        | TranslateXTransform
-        | TranslateYTransform
-        | SkewXTransform
-        | SkewYTransform
-        | MatrixTransform
-      )[]
+    | MaximumOneOf<
+        PerspectiveTransform &
+          RotateTransform &
+          RotateXTransform &
+          RotateYTransform &
+          RotateZTransform &
+          ScaleTransform &
+          ScaleXTransform &
+          ScaleYTransform &
+          TranslateXTransform &
+          TranslateYTransform &
+          SkewXTransform &
+          SkewYTransform &
+          MatrixTransform
+      >[]
     | string
     | undefined;
+  transformOrigin?: Array<string | number> | string | undefined;
+
   /**
    * @deprecated Use matrix in transform prop instead.
    */
@@ -335,6 +342,7 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
   textShadowOffset?: {width: number; height: number} | undefined;
   textShadowRadius?: number | undefined;
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase' | undefined;
+  userSelect?: 'auto' | 'none' | 'text' | 'contain' | 'all' | undefined;
 }
 
 /**

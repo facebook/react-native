@@ -21,6 +21,6 @@ Pod::Spec.new do |spec|
   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => min_ios_version_supported }
+  spec.platforms = min_supported_versions
 
 end

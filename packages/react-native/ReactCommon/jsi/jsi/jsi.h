@@ -943,7 +943,8 @@ class JSI_EXPORT ArrayBuffer : public Object {
   ArrayBuffer(Runtime& runtime, std::shared_ptr<MutableBuffer> buffer)
       : ArrayBuffer(runtime.createArrayBuffer(std::move(buffer))) {}
 
-  /// \return the size of the ArrayBuffer, according to its byteLength property.
+  /// \return the size of the ArrayBuffer storage. This is not affected by
+  /// overriding the byteLength property.
   /// (C++ naming convention)
   size_t size(Runtime& runtime) const {
     return runtime.size(*this);
@@ -1466,6 +1467,11 @@ class JSI_EXPORT JSError : public JSIException {
   /// set to provided message.  This argument order is a bit weird,
   /// but necessary to avoid ambiguity with the above.
   JSError(std::string what, Runtime& rt, Value&& value);
+
+  /// Creates a JSError referring to the provided value, message and stack. This
+  /// constructor does not take a Runtime parameter, and therefore cannot result
+  /// in recursively invoking the JSError constructor.
+  JSError(Value&& value, std::string message, std::string stack);
 
   JSError(const JSError&) = default;
 

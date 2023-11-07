@@ -26,7 +26,7 @@ SynchronousEventBeat::SynchronousEventBeat(
 }
 
 void SynchronousEventBeat::activityDidChange(
-    RunLoopObserver::Delegate const *delegate,
+    const RunLoopObserver::Delegate* delegate,
     RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   lockExecutorAndBeat();
@@ -49,10 +49,10 @@ void SynchronousEventBeat::lockExecutorAndBeat() const {
 
   if (runtimeScheduler_) {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this](jsi::Runtime &runtime) { beat(runtime); });
+        [this](jsi::Runtime& runtime) { beat(runtime); });
   } else {
     executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-        runtimeExecutor_, [this](jsi::Runtime &runtime) { beat(runtime); });
+        runtimeExecutor_, [this](jsi::Runtime& runtime) { beat(runtime); });
   }
 }
 

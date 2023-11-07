@@ -12,6 +12,7 @@
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
 const eslint = require('@seadub/danger-plugin-eslint');
+const fetch = require('node-fetch');
 const {validate: validateChangelog} =
   require('@rnx-kit/rn-changelog-generator').default;
 
@@ -101,3 +102,84 @@ if (isMergeRefStable) {
 // Ensures that eslint is run from root folder and that it can find .eslintrc
 process.chdir('../../');
 eslint.default();
+
+// Wait for statuses and post a message if there are failures.
+async function handleStatuses() {
+  const regex = /Test Suites: \d+ failed/;
+  let startChecking = Date.now();
+  let done = false;
+  while (!done) {
+    let now = Date.now();
+    if (now - startChecking > 90 * 60 * 1000) {
+      warn(
+        "One hour and a half have passed and the E2E jobs haven't finished yet.",
+      );
+      done = true;
+      continue;
+    }
+
+    const githubBaseURL = `https://api.github.com/repos/${danger.github.pr.base.repo.owner.login}/${danger.github.pr.base.repo.name}`;
+    const statusesURL = `${githubBaseURL}/commits/${danger.github.pr.head.sha}/statuses?per_page=100`;
+
+    const response = await fetch(statusesURL, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        Authorization: `Bearer ${process.env.DANGER_GITHUB_API_TOKEN}`,
+      },
+    });
+
+    const data = await response.json();
+    const e2e_jobs = data.filter(job => {
+      return (
+        job.context === 'ci/circleci: test_e2e_ios'
+        // test_e2e_android does not currently tun
+        // || job.context === 'ci/circleci: test_e2e_android'
+      );
+    });
+    if (e2e_jobs.length <= 0) {
+      console.log('No e2e jobs found yet, retrying in 5 minutes.');
+      await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+      continue;
+    }
+
+    const jobFinished = e2e_jobs.every(job => job.state !== 'pending');
+    if (!jobFinished) {
+      console.log("E2E jobs haven't finished yet, retrying in 5 minutes.");
+      await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+      continue;
+    }
+
+    e2e_jobs.forEach(async job => {
+      const url = job.target_url;
+      const components = url.split('/');
+      const jobId = components[components.length - 1];
+      const jobUrl = `https://circleci.com/api/v2/project/gh/facebook/react-native/${jobId}`;
+      const artifactUrl = `${jobUrl}/artifacts`;
+      const artifactResponse = await fetch(artifactUrl);
+      const artifactData = await artifactResponse.json();
+      const testLogs = artifactData.items.filter(
+        item => item.path === 'tmp/test_log',
+      );
+      if (testLogs.length !== 1) {
+        warn(
+          `Can't find the E2E test log for ${job.context}. <a href=${jobUrl}>Job link</a>`,
+        );
+        return;
+      }
+
+      const logUrl = testLogs[0].url;
+      const logResponseText = await fetch(logUrl);
+      const logText = await logResponseText.text();
+
+      if (regex.test(logText)) {
+        warn(
+          `E2E tests for ${job.context} failed with errors. See the <a href="${logUrl}">logs for details<a/>`,
+        );
+      }
+    });
+    done = true;
+  }
+}
+
+// handleStatuses();

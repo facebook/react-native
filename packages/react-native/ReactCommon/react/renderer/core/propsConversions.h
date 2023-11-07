@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include <folly/Likely.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
@@ -25,9 +24,9 @@ namespace facebook::react {
  */
 template <typename T>
 void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    T &result,
+    const PropsParserContext& context,
+    const RawValue& rawValue,
+    T& result,
     T defaultValue) {
   if (!rawValue.hasValue()) {
     result = std::move(defaultValue);
@@ -39,17 +38,17 @@ void fromRawValue(
 
 template <typename T>
 void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    T &result) {
+    const PropsParserContext& context,
+    const RawValue& rawValue,
+    T& result) {
   result = (T)rawValue;
 }
 
 template <typename T>
 void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    std::optional<T> &result) {
+    const PropsParserContext& context,
+    const RawValue& rawValue,
+    std::optional<T>& result) {
   T resultValue;
   fromRawValue(context, rawValue, resultValue);
   result = std::optional<T>{std::move(resultValue)};
@@ -57,9 +56,9 @@ void fromRawValue(
 
 template <typename T>
 void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    std::vector<T> &result) {
+    const PropsParserContext& context,
+    const RawValue& rawValue,
+    std::vector<T>& result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
     auto length = items.size();
@@ -83,9 +82,9 @@ void fromRawValue(
 
 template <typename T>
 void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    std::vector<std::vector<T>> &result) {
+    const PropsParserContext& context,
+    const RawValue& rawValue,
+    std::vector<std::vector<T>>& result) {
   if (rawValue.hasType<std::vector<std::vector<RawValue>>>()) {
     auto items = (std::vector<std::vector<RawValue>>)rawValue;
     auto length = items.size();
@@ -109,21 +108,21 @@ void fromRawValue(
 
 template <typename T, typename U = T>
 T convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *name,
-    T const &sourceValue,
-    U const &defaultValue,
-    char const *namePrefix = nullptr,
-    char const *nameSuffix = nullptr) {
-  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
-  if (LIKELY(rawValue == nullptr)) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* name,
+    T const& sourceValue,
+    U const& defaultValue,
+    const char* namePrefix = nullptr,
+    const char* nameSuffix = nullptr) {
+  const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);
+  if (rawValue == nullptr) [[likely]] {
     return sourceValue;
   }
 
   // Special case: `null` always means "the prop was removed, use default
   // value".
-  if (UNLIKELY(!rawValue->hasValue())) {
+  if (!rawValue->hasValue()) [[unlikely]] {
     return defaultValue;
   }
 
@@ -131,7 +130,7 @@ T convertRawProp(
     T result;
     fromRawValue(context, *rawValue, result);
     return result;
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     // In case of errors, log the error and fall back to the default
     RawPropsKey key{namePrefix, name, nameSuffix};
     // TODO: report this using ErrorUtils so it's more visible to the user

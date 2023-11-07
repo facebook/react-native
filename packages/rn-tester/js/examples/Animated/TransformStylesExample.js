@@ -123,6 +123,10 @@ function AnimatedTransformStyleExample(): React.Node {
           property => properties[property].selected,
         )}
       />
+      <View style={styles.section}>
+        <Text>{'Should not crash when transform style key is undefined'}</Text>
+        <Animated.View style={[styles.animatedView, {transform: undefined}]} />
+      </View>
     </View>
   );
 }
@@ -148,6 +152,9 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     marginBottom: 6,
     borderBottomWidth: 1,
+  },
+  section: {
+    marginTop: 20,
   },
 });
 

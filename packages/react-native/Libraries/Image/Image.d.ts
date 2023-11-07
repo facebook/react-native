@@ -223,7 +223,7 @@ export interface ImagePropsBase
    *
    * The currently supported formats are png, jpg, jpeg, bmp, gif, webp (Android only), psd (iOS only).
    */
-  source: ImageSourcePropType;
+  source?: ImageSourcePropType | undefined;
 
   /**
    * A string representing the resource identifier for the image. Similar to
@@ -260,7 +260,7 @@ export interface ImagePropsBase
   /**
    * A static image to display while downloading the final image off the network.
    */
-  defaultSource?: ImageURISource | number | undefined;
+  defaultSource?: ImageURISource | ImageRequireSource | undefined;
 
   /**
    * The text that's read by the screen reader when the user interacts with

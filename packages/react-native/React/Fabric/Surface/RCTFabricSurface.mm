@@ -274,7 +274,7 @@ using namespace facebook::react;
 
 #pragma mark - Private
 
-- (SurfaceHandler const &)surfaceHandler;
+- (const SurfaceHandler &)surfaceHandler;
 {
   return *_surfaceHandler;
 }

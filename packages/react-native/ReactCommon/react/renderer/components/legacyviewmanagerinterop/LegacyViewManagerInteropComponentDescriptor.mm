@@ -8,6 +8,7 @@
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
+#include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
@@ -73,18 +74,44 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
-static std::shared_ptr<void> const constructCoordinator(
-    ContextContainer::Shared const &contextContainer,
-    ComponentDescriptor::Flavor const &flavor)
+static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge, RCTBridgeProxy *bridgeProxy)
 {
-  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
-  Class viewManagerClass = getViewManagerFromComponentName(componentName);
-  assert(viewManagerClass);
+  Class viewManager = getViewManagerFromComponentName(componentName);
+  if (viewManager != nil) {
+    return viewManager;
+  }
+
+  // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
+  if (bridge != nil) {
+    return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
+  }
+
+  if (bridgeProxy != nil) {
+    return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+  }
+
+  return nil;
+}
+
+static const std::shared_ptr<void> constructCoordinator(
+    const ContextContainer::Shared &contextContainer,
+    const ComponentDescriptor::Flavor &flavor)
+{
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");
   RCTBridge *bridge;
   if (optionalBridge) {
     bridge = unwrapManagedObjectWeakly(optionalBridge.value());
   }
+
+  RCTBridgeProxy *bridgeProxy;
+  auto optionalBridgeProxy = contextContainer->find<std::shared_ptr<void>>("RCTBridgeProxy");
+  if (optionalBridgeProxy) {
+    bridgeProxy = unwrapManagedObjectWeakly(optionalBridgeProxy.value());
+  }
+
+  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
+  Class viewManagerClass = getViewManagerClass(componentName, bridge, bridgeProxy);
+  assert(viewManagerClass);
 
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
   RCTEventDispatcher *eventDispatcher;
@@ -104,11 +131,12 @@ static std::shared_ptr<void> const constructCoordinator(
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
       initWithComponentData:componentData
                      bridge:bridge
+                bridgeProxy:bridgeProxy
       bridgelessInteropData:bridgeModuleDecorator]);
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(
-    ComponentDescriptorParameters const &parameters)
+    const ComponentDescriptorParameters &parameters)
     : ConcreteComponentDescriptor(parameters), _coordinator(constructCoordinator(contextContainer_, flavor_))
 {
 }
@@ -120,15 +148,14 @@ ComponentHandle LegacyViewManagerInteropComponentDescriptor::getComponentHandle(
 
 ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() const
 {
-  return static_cast<std::string const *>(flavor_.get())->c_str();
+  return static_cast<const std::string *>(flavor_.get())->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared const &shadowNode) const
+void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode &shadowNode) const
 {
   ConcreteComponentDescriptor::adopt(shadowNode);
 
-  assert(std::dynamic_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode));
-  auto &legacyViewManagerInteropShadowNode = static_cast<LegacyViewManagerInteropShadowNode &>(*shadowNode);
+  auto &legacyViewManagerInteropShadowNode = static_cast<LegacyViewManagerInteropShadowNode &>(shadowNode);
 
   auto state = LegacyViewManagerInteropState{};
   state.coordinator = _coordinator;

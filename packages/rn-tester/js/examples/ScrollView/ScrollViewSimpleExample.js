@@ -30,7 +30,7 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
     for (let i = 0; i < nItems; i++) {
       items[i] = (
         <TouchableOpacity key={i} style={styles}>
-          <Text>{'Item ' + i}</Text>
+          <Text testID="scroll_view_item">{'Item ' + i}</Text>
         </TouchableOpacity>
       );
     }

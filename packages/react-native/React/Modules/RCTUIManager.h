@@ -9,6 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
@@ -168,6 +169,12 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * need to access the RCTUIManager.
  */
 @interface RCTBridge (RCTUIManager)
+
+@property (nonatomic, readonly) RCTUIManager *uiManager;
+
+@end
+
+@interface RCTBridgeProxy (RCTUIManager)
 
 @property (nonatomic, readonly) RCTUIManager *uiManager;
 

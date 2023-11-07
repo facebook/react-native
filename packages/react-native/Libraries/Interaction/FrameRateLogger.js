@@ -30,28 +30,18 @@ const invariant = require('invariant');
  */
 const FrameRateLogger = {
   /**
-   * Enable `debug` to see local logs of what's going on. `reportStackTraces` will grab stack traces
-   * during UI thread stalls and upload them if the native module supports it.
+   * Enable `debug` to see local logs of what's going on.
    */
-  setGlobalOptions: function (options: {
-    debug?: boolean,
-    reportStackTraces?: boolean,
-    ...
-  }) {
+  setGlobalOptions: function (options: {debug?: boolean, ...}) {
     if (options.debug !== undefined) {
       invariant(
         NativeFrameRateLogger,
         'Trying to debug FrameRateLogger without the native module!',
       );
     }
-    if (NativeFrameRateLogger) {
-      // Needs to clone the object first to avoid modifying the argument.
-      const optionsClone = {
-        debug: !!options.debug,
-        reportStackTraces: !!options.reportStackTraces,
-      };
-      NativeFrameRateLogger.setGlobalOptions(optionsClone);
-    }
+    NativeFrameRateLogger?.setGlobalOptions({
+      debug: !!options.debug,
+    });
   },
 
   /**
@@ -59,7 +49,7 @@ const FrameRateLogger = {
    * in `AppRegistry`, but navigation is also a common place to hook in.
    */
   setContext: function (context: string) {
-    NativeFrameRateLogger && NativeFrameRateLogger.setContext(context);
+    NativeFrameRateLogger?.setContext(context);
   },
 
   /**
@@ -67,7 +57,7 @@ const FrameRateLogger = {
    * automatically.
    */
   beginScroll() {
-    NativeFrameRateLogger && NativeFrameRateLogger.beginScroll();
+    NativeFrameRateLogger?.beginScroll();
   },
 
   /**
@@ -75,7 +65,7 @@ const FrameRateLogger = {
    * automatically.
    */
   endScroll() {
-    NativeFrameRateLogger && NativeFrameRateLogger.endScroll();
+    NativeFrameRateLogger?.endScroll();
   },
 };
 

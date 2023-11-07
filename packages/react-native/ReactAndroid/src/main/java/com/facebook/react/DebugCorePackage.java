@@ -12,11 +12,11 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.devsupport.JSCHeapCapture;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.traceupdateoverlay.TraceUpdateOverlayManager;
@@ -36,7 +36,8 @@ import javax.inject.Provider;
     nativeModules = {
       JSCHeapCapture.class,
     })
-public class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+/* package */
+class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
   private @Nullable Map<String, ModuleSpec> mViewManagers;
 
   public DebugCorePackage() {}
@@ -73,17 +74,11 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
                 moduleClass.getName(),
                 reactModule.canOverrideExistingModule(),
                 reactModule.needsEagerInit(),
-                reactModule.hasConstants(),
                 reactModule.isCxxModule(),
                 TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
+      return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for DebugCorePackage$$ReactModuleInfoProvider", e);

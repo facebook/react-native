@@ -302,14 +302,14 @@ static CGFloat screenScale;
 void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 }
 
 CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 
   return screenScale;
@@ -1047,10 +1047,10 @@ RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
 RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSObject *obj,
     id expectedClass,
-    NSString const *expectedType,
-    NSString const *componentName,
-    NSString const *commandName,
-    NSString const *argPos)
+    const NSString *expectedType,
+    const NSString *componentName,
+    const NSString *commandName,
+    const NSString *argPos)
 {
   if (![obj isKindOfClass:expectedClass]) {
     NSString *kindOfClass = RCTHumanReadableType(obj);

@@ -18,9 +18,11 @@ class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
+using RawPerformanceEntryType = int32_t;
+
 using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
     std::string,
-    int32_t,
+    RawPerformanceEntryType,
     double,
     double,
     // For "event" entries only:
@@ -32,7 +34,7 @@ template <>
 struct Bridging<RawPerformanceEntry>
     : NativePerformanceObserverCxxBaseRawPerformanceEntryBridging<
           std::string,
-          int32_t,
+          RawPerformanceEntryType,
           double,
           double,
           std::optional<double>,
@@ -59,40 +61,43 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
   ~NativePerformanceObserver();
 
-  void startReporting(jsi::Runtime &rt, int32_t entryType);
+  void startReporting(jsi::Runtime& rt, int32_t entryType);
 
-  void stopReporting(jsi::Runtime &rt, int32_t entryType);
+  void stopReporting(jsi::Runtime& rt, int32_t entryType);
 
   void setIsBuffered(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       std::vector<int32_t> entryTypes,
       bool isBuffered);
 
-  GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
+  GetPendingEntriesResult popPendingEntries(jsi::Runtime& rt);
 
   void setOnPerformanceEntryCallback(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       std::optional<AsyncCallback<>> callback);
 
-  void logRawEntry(jsi::Runtime &rt, RawPerformanceEntry entry);
+  void logRawEntry(jsi::Runtime& rt, RawPerformanceEntry entry);
 
   std::vector<std::pair<std::string, uint32_t>> getEventCounts(
-      jsi::Runtime &rt);
+      jsi::Runtime& rt);
 
   void setDurationThreshold(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       int32_t entryType,
       double durationThreshold);
 
   void clearEntries(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       int32_t entryType,
       std::optional<std::string> entryName);
 
   std::vector<RawPerformanceEntry> getEntries(
-      jsi::Runtime &rt,
+      jsi::Runtime& rt,
       std::optional<int32_t> entryType,
       std::optional<std::string> entryName);
+
+  std::vector<RawPerformanceEntryType> getSupportedPerformanceEntryTypes(
+      jsi::Runtime& rt);
 
  private:
 };

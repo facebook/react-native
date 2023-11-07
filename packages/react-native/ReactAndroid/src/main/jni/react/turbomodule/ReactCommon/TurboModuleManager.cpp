@@ -26,7 +26,7 @@ namespace {
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
 
   JavaInteropTurboModule::MethodDescriptor toMethodDescriptor() {
     return JavaInteropTurboModule::MethodDescriptor{
@@ -128,15 +128,15 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createTurboModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
+    bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
-             const std::string &name) -> std::shared_ptr<TurboModule> {
+             const std::string& name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
@@ -148,7 +148,7 @@ TurboModuleManager::createTurboModuleProvider() {
       return nullptr;
     }
 
-    const char *moduleName = name.c_str();
+    const char* moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
@@ -170,7 +170,7 @@ TurboModuleManager::createTurboModuleProvider() {
     static auto getTurboLegacyCxxModule =
         javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-                const std::string &)>("getTurboLegacyCxxModule");
+                const std::string&)>("getTurboLegacyCxxModule");
     auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
@@ -186,7 +186,7 @@ TurboModuleManager::createTurboModuleProvider() {
 
     static auto getTurboJavaModule =
         javaPart->getClass()
-            ->getMethod<jni::alias_ref<JTurboModule>(const std::string &)>(
+            ->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>(
                 "getTurboJavaModule");
     auto moduleInstance = getTurboJavaModule(javaPart.get(), name);
 
@@ -196,7 +196,8 @@ TurboModuleManager::createTurboModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -208,15 +209,15 @@ TurboModuleManager::createTurboModuleProvider() {
   };
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createLegacyModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
+    bool enableSyncVoidMethods) {
   return [legacyModuleCache_ = std::weak_ptr<ModuleCache>(legacyModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
-             const std::string &name) -> std::shared_ptr<TurboModule> {
+             const std::string& name) -> std::shared_ptr<TurboModule> {
     auto legacyModuleCache = legacyModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
@@ -228,7 +229,7 @@ TurboModuleManager::createLegacyModuleProvider() {
       return nullptr;
     }
 
-    const char *moduleName = name.c_str();
+    const char* moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
@@ -244,7 +245,7 @@ TurboModuleManager::createLegacyModuleProvider() {
     static auto getLegacyCxxModule =
         javaPart->getClass()
             ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-                const std::string &)>("getLegacyCxxModule");
+                const std::string&)>("getLegacyCxxModule");
     auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
 
     if (legacyCxxModule) {
@@ -260,7 +261,7 @@ TurboModuleManager::createLegacyModuleProvider() {
 
     static auto getLegacyJavaModule =
         javaPart->getClass()
-            ->getMethod<jni::alias_ref<JNativeModule>(const std::string &)>(
+            ->getMethod<jni::alias_ref<JNativeModule>(const std::string&)>(
                 "getLegacyJavaModule");
     auto moduleInstance = getLegacyJavaModule(javaPart.get(), name);
 
@@ -270,7 +271,8 @@ TurboModuleManager::createLegacyModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       static auto getMethodDescriptorsFromModule =
           javaPart->getClass()
@@ -300,21 +302,27 @@ TurboModuleManager::createLegacyModuleProvider() {
   };
 }
 
-void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
+void TurboModuleManager::installJSIBindings(
+    bool shouldCreateLegacyModules,
+    bool enableSyncVoidMethods) {
   if (!jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
   bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
-  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime &runtime) {
+  runtimeExecutor_([this, isInteropLayerDisabled, enableSyncVoidMethods](
+                       jsi::Runtime& runtime) {
     if (isInteropLayerDisabled) {
-      TurboModuleBinding::install(runtime, createTurboModuleProvider());
+      TurboModuleBinding::install(
+          runtime, createTurboModuleProvider(enableSyncVoidMethods));
       return;
     }
 
     TurboModuleBinding::install(
-        runtime, createTurboModuleProvider(), createLegacyModuleProvider());
+        runtime,
+        createTurboModuleProvider(enableSyncVoidMethods),
+        createLegacyModuleProvider(enableSyncVoidMethods));
   });
 }
 

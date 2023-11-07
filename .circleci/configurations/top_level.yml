@@ -1,0 +1,151 @@
+version: 2.1
+
+# -------------------------
+#        ORBS
+# -------------------------
+
+orbs:
+  win: circleci/windows@2.4.0
+  android: circleci/android@2.3.0
+
+# -------------------------
+#        REFERENCES
+# -------------------------
+references:
+  defaults: &defaults
+    working_directory: ~/react-native
+    environment:
+      - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+      # The public github tokens are publicly visible by design
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
+      # Homebrew currently breaks while updating:
+      # https://discuss.circleci.com/t/brew-install-fails-while-updating/32992
+      - HOMEBREW_NO_AUTO_UPDATE: 1
+  android-defaults: &android-defaults
+    working_directory: ~/react-native
+    docker:
+      - image: reactnativecommunity/react-native-android:v11.0
+    environment:
+      - TERM: "dumb"
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+      # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
+      - ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
+      # Repeated here, as the environment key in this executor will overwrite the one in defaults
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+
+  hermes_workspace_root: &hermes_workspace_root
+    /tmp/hermes
+  hermes_tarball_artifacts_dir: &hermes_tarball_artifacts_dir
+    /tmp/hermes/hermes-runtime-darwin
+  hermes_osxbin_artifacts_dir: &hermes_osxbin_artifacts_dir
+    /tmp/hermes/osx-bin
+  attach_hermes_workspace: &attach_hermes_workspace
+    attach_workspace:
+      at: *hermes_workspace_root
+  xcodebuild_derived_data_path: &xcodebuild_derived_data_path
+    ~/Library/Developer/Xcode/DerivedData/
+
+  main_or_stable_only: &main_or_stable_only
+    filters:
+      branches:
+        only:
+          - main
+          - /0\.[0-9]+[\.[0-9]+]?-stable/
+
+
+  # -------------------------
+  #        Dependency Anchors
+  # -------------------------
+  dependency_versions:
+    xcode_version: &xcode_version "14.3.0"
+    nodelts_image: &nodelts_image "cimg/node:20.2.0"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
+    nodelts_browser_image: &nodelts_browser_image "cimg/node:20.2.0-browsers"
+
+  # -------------------------
+  #        Cache Key Anchors
+  # -------------------------
+  # Anchors for the cache keys
+
+  cache_keys:
+    checkout_cache_key: &checkout_cache_key v1-checkout
+    gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
+    gradle_cache_key: &gradle_cache_key v3-gradle-{{ .Environment.CIRCLE_JOB }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
+    yarn_cache_key: &yarn_cache_key v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+    hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    # Hermes iOS
+    hermesc_apple_cache_key: &hermesc_apple_cache_key v2-hermesc-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_apple_slices_cache_key: &hermes_apple_slices_cache_key v3-hermes-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v1-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v1-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_dsym_debug_cache_key: &hermes_dsym_debug_cache_key v1-hermes-debug-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_dsym_release_cache_key: &hermes_dsym_release_cache_key v1-hermes-release-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    # Cocoapods - RNTester
+    pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    cocoapods_cache_key: &cocoapods_cache_key v10-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v8-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}
+
+    # Cocoapods - Template
+    template_cocoapods_cache_key: &template_cocoapods_cache_key v5-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
+    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v5-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "packages/rn-tester/Podfile.lock" }}
+
+    # Windows
+    windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+    windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
+
+
+  cache_paths:
+    hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
+      - ~/react-native/packages/react-native/sdks/hermes/build_macosx
+      - ~/react-native/packages/react-native/sdks/hermes/destroot
+    hermes_tarball_cache_paths: &hermes_tarball_cache_paths
+      - *hermes_tarball_artifacts_dir
+
+  # -------------------------
+  #        Filters
+  # -------------------------
+  # CircleCI filters are OR-ed, with all branches triggering by default and tags excluded by default
+  # CircleCI env-vars are only set with the branch OR tag that triggered the job, not both.
+
+  # In this case, CIRCLE_BRANCH is unset, but CIRCLE_TAG is set.
+  only_release_tags: &only_release_tags
+    # Both of the following conditions must be included!
+    # Ignore any commit on any branch by default.
+    branches:
+      ignore: /.*/
+    # Only act on version tags.
+    tags:
+      only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+
+# -------------------------
+#        PIPELINE PARAMETERS
+# -------------------------
+parameters:
+  run_release_workflow:
+    default: false
+    type: boolean
+
+  release_latest:
+    default: false
+    type: boolean
+
+  release_version:
+    default: "9999"
+    type: string
+
+  run_nightly_workflow:
+    default: false
+    type: boolean
+
+  run_prealpha_workflow:
+    default: false
+    type: boolean

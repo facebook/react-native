@@ -60,7 +60,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 
 // YogaNode API
 
-static void RCTPrint(YGNodeRef node)
+static void RCTPrint(YGNodeConstRef node)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
   printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
@@ -304,7 +304,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   if (!RCTLayoutMetricsEqualToLayoutMetrics(self.layoutMetrics, layoutMetrics)) {
     self.layoutMetrics = layoutMetrics;
-    [layoutContext.affectedShadowViews addObject:self];
+    [layoutContext.affectedShadowViews addPointer:((__bridge void *)self)];
   }
 }
 
@@ -568,7 +568,7 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
 // IntrinsicContentSize
 
 static inline YGSize
-RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+RCTShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
 

@@ -20,7 +20,7 @@ void jniEnableCppLogging(
       perfLogger->cthis()->get());
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
     // TODO: dvacca ramanpreet unify this with the way
     // "ComponentDescriptorFactory" is defined in Fabric
@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     facebook::react::CompositeTurboModuleManagerDelegate::registerNatives();
 
     facebook::jni::registerNatives(
-        "com/facebook/react/turbomodule/core/TurboModulePerfLogger",
+        "com/facebook/react/internal/turbomodule/core/TurboModulePerfLogger",
         {makeNativeMethod("jniEnableCppLogging", jniEnableCppLogging)});
   });
 }

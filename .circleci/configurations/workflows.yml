@@ -1,0 +1,172 @@
+# -------------------------
+#        WORKFLOWS
+#
+#  When creating a new workflow, make sure to include condition:
+#
+#  when:
+#    and:
+#      - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+#      - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+#      - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
+#
+#  It's setup this way so we can trigger a release via a POST
+#  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
+# -------------------------
+
+workflows:
+  version: 2
+
+  # This workflow should only be triggered by release script
+  package_release:
+    when: << pipeline.parameters.run_release_workflow >>
+    jobs:
+      # This job will push a tag that will trigger the publish_release workflow
+      - prepare_package_for_release:
+          name: prepare_package_for_release
+          version: << pipeline.parameters.release_version >>
+          latest : << pipeline.parameters.release_latest >>
+
+  # This job will run only when a tag is published due to all the jobs being filtered.
+  publish_release:
+    jobs:
+      - prepare_hermes_workspace:
+          filters: *only_release_tags
+      - build_android:
+          filters: *only_release_tags
+          name: build_android_for_release
+          release_type: "release"
+      - build_hermesc_linux:
+          filters: *only_release_tags
+          requires:
+            - prepare_hermes_workspace
+      - build_hermesc_apple:
+          filters: *only_release_tags
+          requires:
+            - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          filters: *only_release_tags
+          requires:
+            - build_hermesc_apple
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+      - build_hermesc_windows:
+          filters: *only_release_tags
+          requires:
+            - prepare_hermes_workspace
+      - build_hermes_macos:
+          filters: *only_release_tags
+          requires:
+            - build_apple_slices_hermes
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+      # This job will trigger when a version tag is pushed (by package_release)
+      - build_npm_package:
+          name: build_and_publish_npm_package
+          release_type: "release"
+          filters: *only_release_tags
+          requires:
+            - build_android_for_release
+            - build_hermesc_linux
+            - build_hermes_macos
+            - build_hermesc_windows
+      - poll_maven:
+          requires:
+            -  build_and_publish_npm_package
+
+  analysis:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
+    jobs:
+      # Run lints on every commit
+      - analyze_code
+
+      # Run code checks on PRs
+      - analyze_pr
+
+  nightly:
+    when: << pipeline.parameters.run_nightly_workflow >>
+    jobs:
+      - prepare_hermes_workspace
+      - build_android:
+          release_type: "nightly"
+      - build_hermesc_linux:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermesc_apple:
+          requires:
+            - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          requires:
+            - build_hermesc_apple
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+      - build_hermesc_windows:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermes_macos:
+          requires:
+            - build_apple_slices_hermes
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+      - build_npm_package:
+          release_type: "nightly"
+          requires:
+            - build_android
+            - build_hermesc_linux
+            - build_hermes_macos
+            - build_hermesc_windows
+
+  prealpha:
+    when: << pipeline.parameters.run_prealpha_workflow >>
+    jobs:
+      - prepare_hermes_workspace
+      - build_android:
+          release_type: "prealpha"
+      - build_hermesc_linux:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermesc_apple:
+          requires:
+            - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          requires:
+            - build_hermesc_apple
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+      - build_hermesc_windows:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermes_macos:
+          requires:
+            - build_apple_slices_hermes
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+      - build_npm_package:
+          release_type: "prealpha"
+          requires:
+            - build_android
+            - build_hermesc_linux
+            - build_hermes_macos
+            - build_hermesc_windows
+
+  publish_bumped_packages:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
+    jobs:
+      - find_and_publish_bumped_packages:
+          <<: *main_or_stable_only

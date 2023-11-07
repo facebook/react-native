@@ -9,17 +9,18 @@
 
 namespace facebook::react {
 
-void *TextLayoutManager::getNativeTextLayoutManager() const {
-  return (void *)this;
+void* TextLayoutManager::getNativeTextLayoutManager() const {
+  return (void*)this;
 }
 
 TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
+    const TextLayoutContext& /*layoutContext*/,
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void>) const {
   TextMeasurement::Attachments attachments;
-  for (auto const &fragment : attributedStringBox.getValue().getFragments()) {
+  for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
     if (fragment.isAttachment()) {
       attachments.push_back(
           TextMeasurement::Attachment{{{0, 0}, {0, 0}}, false});

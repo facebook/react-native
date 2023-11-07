@@ -22,8 +22,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
   RNComponentViewUpdateMaskNone = 0,
   RNComponentViewUpdateMaskProps = 1 << 0,
   RNComponentViewUpdateMaskEventEmitter = 1 << 1,
-  RNComponentViewUpdateMaskState = 1 << 3,
-  RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
+  RNComponentViewUpdateMaskState = 1 << 2,
+  RNComponentViewUpdateMaskLayoutMetrics = 1 << 3,
 
   RNComponentViewUpdateMaskAll = RNComponentViewUpdateMaskProps | RNComponentViewUpdateMaskEventEmitter |
       RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics
@@ -67,35 +67,35 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * Called for updating component's props.
  * Receiver must update native view props accordingly changed props.
  */
-- (void)updateProps:(facebook::react::Props::Shared const &)props
-           oldProps:(facebook::react::Props::Shared const &)oldProps;
+- (void)updateProps:(const facebook::react::Props::Shared &)props
+           oldProps:(const facebook::react::Props::Shared &)oldProps;
 
 /*
  * Called for updating component's state.
  * Receiver must update native view according to changed state.
  */
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState;
+- (void)updateState:(const facebook::react::State::Shared &)state
+           oldState:(const facebook::react::State::Shared &)oldState;
 
 /*
  * Called for updating component's event handlers set.
  * Receiver must cache `eventEmitter` object inside and use it for emitting
  * events when needed.
  */
-- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter;
+- (void)updateEventEmitter:(const facebook::react::EventEmitter::Shared &)eventEmitter;
 
 /*
  * Called for updating component's layout metrics.
  * Receiver must update `UIView` layout-related fields (such as `frame`,
  * `bounds`, `layer.zPosition`, and so on) accordingly.
  */
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics;
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics;
 
 /*
  * Called when receiving a command
  */
-- (void)handleCommand:(NSString const *)commandName args:(NSArray const *)args;
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args;
 
 /*
  * Called right after all update methods were called for a particular component view.

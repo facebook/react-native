@@ -27,7 +27,7 @@ import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
-public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
+class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
   private ReadableMap mHeaders;

@@ -14,13 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTComponentData;
 @class RCTBridge;
+@class RCTBridgeProxy;
 
 typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 @interface RCTLegacyViewManagerInteropCoordinator : NSObject
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
-                               bridge:(RCTBridge *)bridge
+                               bridge:(nullable RCTBridge *)bridge
+                          bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
                 bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
 
 - (UIView *)createPaperViewWithTag:(NSInteger)tag;
@@ -29,7 +31,7 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (void)removeObserveForTag:(NSInteger)tag;
 
-- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
+- (void)setProps:(const folly::dynamic &)props forView:(UIView *)view;
 
 - (NSString *)componentViewName;
 

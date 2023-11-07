@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
-import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
 

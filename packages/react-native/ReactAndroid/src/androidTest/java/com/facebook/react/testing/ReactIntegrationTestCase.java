@@ -7,8 +7,6 @@
 
 package com.facebook.react.testing;
 
-import static org.mockito.Mockito.mock;
-
 import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +22,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.TimingModule;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
@@ -32,6 +31,7 @@ import com.facebook.soloader.SoLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import org.mockito.Mockito;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call within
@@ -135,8 +135,9 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new SimpleSettableFuture<TimingModule>();
     UiThreadUtil.runOnUiThread(
         () -> {
-          ReactChoreographer.initialize();
-          TimingModule timingModule = new TimingModule(getContext(), mock(DevSupportManager.class));
+          ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
+          TimingModule timingModule =
+              new TimingModule(getContext(), Mockito.mock(DevSupportManager.class));
           simpleSettableFuture.set(timingModule);
         });
     try {

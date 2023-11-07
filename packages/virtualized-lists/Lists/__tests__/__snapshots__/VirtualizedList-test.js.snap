@@ -53,7 +53,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -210,7 +210,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -361,7 +361,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -445,7 +445,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -468,7 +468,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={false}
-        onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
@@ -476,7 +475,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View
@@ -526,7 +525,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View>
@@ -595,7 +594,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -672,7 +671,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -749,7 +748,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -886,7 +885,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -1014,6 +1013,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   getItemLayout={[Function]}
   invertStickyHeaders={true}
   inverted={true}
+  isInvertedVirtualizedList={true}
   keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
@@ -1031,7 +1031,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -1203,7 +1203,7 @@ exports[`VirtualizedList renders empty list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1223,7 +1223,7 @@ exports[`VirtualizedList renders empty list after batch 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1246,7 +1246,7 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1286,7 +1286,7 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1315,7 +1315,7 @@ exports[`VirtualizedList renders null list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1347,7 +1347,7 @@ exports[`VirtualizedList renders simple list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1407,7 +1407,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1494,7 +1494,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -1576,7 +1576,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1613,7 +1613,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1711,7 +1711,7 @@ exports[`adjusts render area with non-zero initialScrollIndex 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={10}
 >
@@ -1911,7 +1911,7 @@ exports[`clamps render area when items removed for initialScrollIndex > 0 and sc
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={10}
 >
@@ -2049,7 +2049,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -2176,7 +2176,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -2318,7 +2318,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={10}
 >
@@ -2453,7 +2453,7 @@ exports[`does not move render area when initialScrollIndex is > 0 and offset not
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={10}
 >
@@ -2565,7 +2565,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -2679,7 +2679,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -2818,7 +2818,7 @@ exports[`expands first in viewport to render up to maxToRenderPerBatch on initia
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -2935,7 +2935,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -3055,7 +3055,7 @@ exports[`gracefully handles negative initialScrollIndex 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -3226,7 +3226,7 @@ exports[`handles maintainVisibleContentPosition 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -3395,7 +3395,7 @@ exports[`handles maintainVisibleContentPosition 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -3579,7 +3579,7 @@ exports[`handles maintainVisibleContentPosition 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -3615,6 +3615,273 @@ exports[`handles maintainVisibleContentPosition 3`] = `
         value={0}
       />
     </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 150,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`handles maintainVisibleContentPosition when anchor moves before minIndexForVisible 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maintainVisibleContentPosition={
+    Object {
+      "minIndexForVisible": 1,
+    }
+  }
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={0.0001}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 150,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`handles maintainVisibleContentPosition when anchor moves before minIndexForVisible 2`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maintainVisibleContentPosition={
+    Object {
+      "minIndexForVisible": 1,
+    }
+  }
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={0.0001}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
     <View
       onFocusCapture={[Function]}
       style={null}
@@ -3706,7 +3973,7 @@ exports[`initially renders nothing when initialNumToRender is 0 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -3799,7 +4066,7 @@ exports[`keeps viewport above last focused rendered 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -3997,7 +4264,7 @@ exports[`keeps viewport below last focused rendered 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -4180,7 +4447,7 @@ exports[`renders a zero-height tail spacer on initial render if getItemLayout no
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -4270,7 +4537,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -4381,7 +4648,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -4480,7 +4747,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -4576,7 +4843,7 @@ exports[`renders new items when data is updated with non-zero initialScrollIndex
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={10}
 >
@@ -4659,7 +4926,7 @@ exports[`renders no spacers up to initialScrollIndex on first render when virtua
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -4732,7 +4999,7 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -4834,7 +5101,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -4943,7 +5210,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -5044,7 +5311,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={3}
 >
@@ -5157,7 +5424,7 @@ exports[`renders windowSize derived region at top 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={3}
 >
@@ -5254,7 +5521,7 @@ exports[`renders windowSize derived region in middle 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={3}
 >
@@ -5389,7 +5656,7 @@ exports[`renders zero-height tail spacer on batch render if cells not yet measur
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -5484,7 +5751,7 @@ exports[`retains batch render region when an item is appended 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -5630,7 +5897,7 @@ exports[`retains initial render region when an item is appended 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -5748,7 +6015,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -5937,7 +6204,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={
     Array [
       0,
@@ -6075,7 +6342,7 @@ exports[`virtualizes away last focused index if item removed 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >
@@ -6265,7 +6532,7 @@ exports[`virtualizes away last focused item if focus changes to a new cell 1`] =
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   windowSize={1}
 >

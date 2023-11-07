@@ -14,26 +14,26 @@ using namespace std::literals;
 struct TestClass {
   TestClass(std::shared_ptr<CallInvoker> invoker) : invoker_(invoker) {}
 
-  double add(jsi::Runtime &, int a, float b) {
+  double add(jsi::Runtime&, int a, float b) {
     return a + b;
   }
 
-  jsi::Object getObject(jsi::Runtime &, jsi::Object obj) {
+  jsi::Object getObject(jsi::Runtime&, jsi::Object obj) {
     return obj;
   }
 
-  AsyncPromise<std::string> getPromise(jsi::Runtime &rt, std::string result) {
+  AsyncPromise<std::string> getPromise(jsi::Runtime& rt, std::string result) {
     auto promise = AsyncPromise<std::string>(rt, invoker_);
     promise.resolve(result);
     return promise;
   }
 
   std::string
-  callFunc(jsi::Runtime &, SyncCallback<std::string(int)> func, int num) {
+  callFunc(jsi::Runtime&, SyncCallback<std::string(int)> func, int num) {
     return func(num);
   }
 
-  void callAsync(jsi::Runtime &, AsyncCallback<> callback) {
+  void callAsync(jsi::Runtime&, AsyncCallback<> callback) {
     callback();
   }
 

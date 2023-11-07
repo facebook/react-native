@@ -10,6 +10,7 @@
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook::react {
@@ -24,23 +25,24 @@ namespace facebook::react {
 class ParagraphLayoutManager {
  public:
   TextMeasurement measure(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      const TextLayoutContext& layoutContext,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLines(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       Size size) const;
 
   void setTextLayoutManager(
-      std::shared_ptr<TextLayoutManager const> textLayoutManager) const;
+      std::shared_ptr<const TextLayoutManager> textLayoutManager) const;
 
   /*
    * Returns an opaque pointer to platform-specific `TextLayoutManager`.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
-  std::shared_ptr<TextLayoutManager const> getTextLayoutManager() const;
+  std::shared_ptr<const TextLayoutManager> getTextLayoutManager() const;
 
   /*
    * Returns opaque shared_ptr holding `NSTextStorage`.
@@ -51,7 +53,7 @@ class ParagraphLayoutManager {
   std::shared_ptr<void> getHostTextStorage() const;
 
  private:
-  std::shared_ptr<TextLayoutManager const> mutable textLayoutManager_{};
+  std::shared_ptr<const TextLayoutManager> mutable textLayoutManager_{};
 
   /*
    * Stores opaque pointer to `NSTextStorage` on iOS. nullptr on Android.
@@ -84,9 +86,9 @@ class ParagraphLayoutManager {
    * text measurement result. Returns true if inputs have changed and measure is
    * needed.
    */
-  bool shoudMeasureString(
-      AttributedString const &attributedString,
-      ParagraphAttributes const &paragraphAttributes,
+  bool shouldMeasureString(
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 };
 } // namespace facebook::react

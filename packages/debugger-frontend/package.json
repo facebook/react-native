@@ -1,0 +1,25 @@
+{
+  "name": "@react-native/debugger-frontend",
+  "version": "0.74.0",
+  "description": "Debugger frontend for React Native based on Chrome DevTools",
+  "keywords": [
+    "react-native",
+    "tools"
+  ],
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/debugger-frontend#readme",
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/debugger-frontend"
+  },
+  "license": "BSD-3-Clause",
+  "files": [
+    "index.js",
+    "dist",
+    "BUILD_INFO"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

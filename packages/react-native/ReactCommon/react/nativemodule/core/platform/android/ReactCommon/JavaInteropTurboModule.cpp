@@ -12,7 +12,7 @@ namespace facebook::react {
 namespace {
 
 // This is used for generating short exception strings.
-std::string getType(jsi::Runtime &rt, const jsi::Value &v) {
+std::string getType(jsi::Runtime& rt, const jsi::Value& v) {
   if (v.isUndefined()) {
     return "undefined";
   } else if (v.isNull()) {
@@ -36,21 +36,21 @@ std::string getType(jsi::Runtime &rt, const jsi::Value &v) {
 } // namespace
 
 JavaInteropTurboModule::JavaInteropTurboModule(
-    const JavaTurboModule::InitParams &params,
+    const JavaTurboModule::InitParams& params,
     std::vector<MethodDescriptor> methodDescriptors)
     : JavaTurboModule(params),
       methodDescriptors_(methodDescriptors),
       methodIDs_(methodDescriptors.size()),
       constantsCache_(jsi::Value::undefined()) {
-  for (const auto &methodDescriptor : methodDescriptors) {
+  for (const auto& methodDescriptor : methodDescriptors) {
     methodMap_[methodDescriptor.methodName] = MethodMetadata{
         static_cast<size_t>(methodDescriptor.jsArgCount), nullptr};
   }
 }
 
 jsi::Value JavaInteropTurboModule::create(
-    jsi::Runtime &runtime,
-    const jsi::PropNameID &propName) {
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& propName) {
   for (size_t i = 0; i < methodDescriptors_.size(); i += 1) {
     if (methodDescriptors_[i].methodName == propName.utf8(runtime)) {
       if (propName.utf8(runtime) == "getConstants") {
@@ -59,9 +59,9 @@ jsi::Value JavaInteropTurboModule::create(
             propName,
             static_cast<unsigned int>(methodDescriptors_[i].jsArgCount),
             [this, i](
-                jsi::Runtime &rt,
-                const jsi::Value &thisVal,
-                const jsi::Value *args,
+                jsi::Runtime& rt,
+                const jsi::Value& thisVal,
+                const jsi::Value* args,
                 size_t count) mutable {
               if (!this->constantsCache_.isUndefined()) {
                 return jsi::Value(rt, this->constantsCache_);
@@ -102,9 +102,9 @@ jsi::Value JavaInteropTurboModule::create(
           propName,
           static_cast<unsigned int>(methodDescriptors_[i].jsArgCount),
           [this, i](
-              jsi::Runtime &rt,
-              const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) {
             return this->invokeJavaMethod(
                 rt,
@@ -139,7 +139,7 @@ bool JavaInteropTurboModule::exportsConstants() {
   return false;
 }
 
-const jsi::Value &JavaInteropTurboModule::getConstants(jsi::Runtime &runtime) {
+const jsi::Value& JavaInteropTurboModule::getConstants(jsi::Runtime& runtime) {
   if (!constantsCache_.isUndefined()) {
     return constantsCache_;
   }
@@ -169,7 +169,7 @@ const jsi::Value &JavaInteropTurboModule::getConstants(jsi::Runtime &runtime) {
 }
 
 std::vector<facebook::jsi::PropNameID> JavaInteropTurboModule::getPropertyNames(
-    facebook::jsi::Runtime &runtime) {
+    facebook::jsi::Runtime& runtime) {
   std::vector<facebook::jsi::PropNameID> propNames =
       JavaTurboModule::getPropertyNames(runtime);
 

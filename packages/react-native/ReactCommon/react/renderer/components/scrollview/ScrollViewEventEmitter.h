@@ -28,16 +28,16 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onScroll(const ScrollViewMetrics &scrollViewMetrics) const;
-  void onScrollBeginDrag(const ScrollViewMetrics &scrollViewMetrics) const;
-  void onScrollEndDrag(const ScrollViewMetrics &scrollViewMetrics) const;
-  void onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const;
-  void onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const;
+  void onScroll(const ScrollViewMetrics& scrollViewMetrics) const;
+  void onScrollBeginDrag(const ScrollViewMetrics& scrollViewMetrics) const;
+  void onScrollEndDrag(const ScrollViewMetrics& scrollViewMetrics) const;
+  void onMomentumScrollBegin(const ScrollViewMetrics& scrollViewMetrics) const;
+  void onMomentumScrollEnd(const ScrollViewMetrics& scrollViewMetrics) const;
 
  private:
   void dispatchScrollViewEvent(
       std::string name,
-      const ScrollViewMetrics &scrollViewMetrics,
+      const ScrollViewMetrics& scrollViewMetrics,
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 

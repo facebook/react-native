@@ -1,0 +1,29 @@
+{
+  "name": "@react-native/metro-babel-transformer",
+  "version": "0.74.0",
+  "description": "Babel transformer for React Native applications.",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-babel-transformer"
+  },
+  "keywords": [
+    "transformer",
+    "react-native",
+    "metro"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.20.0",
+    "@react-native/babel-preset": "*",
+    "hermes-parser": "0.17.0",
+    "nullthrows": "^1.1.1"
+  },
+  "peerDependencies": {
+    "@babel/core": "*"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

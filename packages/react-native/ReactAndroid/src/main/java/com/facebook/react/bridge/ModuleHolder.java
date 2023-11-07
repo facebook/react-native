@@ -19,8 +19,8 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Provider;
@@ -71,7 +71,6 @@ public class ModuleHolder {
             nativeModule.getClass().getSimpleName(),
             nativeModule.canOverrideExistingModule(),
             true,
-            true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
             TurboModule.class.isAssignableFrom(nativeModule.getClass()));
 
@@ -118,10 +117,6 @@ public class ModuleHolder {
 
   public boolean getCanOverrideExistingModule() {
     return mReactModuleInfo.canOverrideExistingModule();
-  }
-
-  public boolean getHasConstants() {
-    return mReactModuleInfo.hasConstants();
   }
 
   public boolean isTurboModule() {

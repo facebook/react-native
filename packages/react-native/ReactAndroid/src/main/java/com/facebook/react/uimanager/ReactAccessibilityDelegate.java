@@ -295,6 +295,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     public static AccessibilityRole fromValue(@Nullable String value) {
+      if (value == null) {
+        return NONE;
+      }
+
       for (AccessibilityRole role : AccessibilityRole.values()) {
         if (role.name().equalsIgnoreCase(value)) {
           return role;
@@ -625,11 +629,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         final boolean boolValue = value.asBoolean();
         info.setCheckable(true);
         info.setChecked(boolValue);
-        if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-          info.setText(
-              context.getString(
-                  boolValue ? R.string.state_on_description : R.string.state_off_description));
-        }
       }
     }
   }

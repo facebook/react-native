@@ -1,0 +1,108 @@
+  test_ios:
+    when:
+      and:
+        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
+        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
+    jobs:
+      - prepare_package_for_release:
+          name: prepare_package_for_release
+          version: ''
+          latest : false
+          dryrun: true
+      - prepare_hermes_workspace
+      - build_android:
+          release_type: "dry-run"
+      - build_hermesc_linux:
+          requires:
+            - prepare_hermes_workspace
+      - build_hermesc_apple:
+          requires:
+            - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          requires:
+            - build_hermesc_apple
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+      - build_hermes_macos:
+          requires:
+            - build_apple_slices_hermes
+          matrix:
+            parameters:
+              flavor: ["Debug", "Release"]
+      - build_hermesc_windows:
+          requires:
+            - prepare_hermes_workspace
+      - build_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          release_type: "dry-run"
+          requires:
+            - build_android
+            - build_hermesc_linux
+            - build_hermes_macos
+            - build_hermesc_windows
+      # - test_e2e_ios:
+      #     ruby_version: "2.7.7"
+      - test_ios_template:
+          requires:
+            - build_npm_package
+          name: "Test Template with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+          flavor: "Debug"
+          executor: reactnativeios-lts
+      - test_ios_template:
+          requires:
+            - build_npm_package
+          matrix:
+            parameters:
+              architecture: ["NewArch", "OldArch"]
+              flavor: ["Debug", "Release"]
+              jsengine: ["Hermes", "JSC"]
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
+            exclude:
+             # Tested with Ruby 3.2.0, let's not double test this
+              - architecture: "NewArch"
+                flavor: "Debug"
+                jsengine: "Hermes"
+                use_frameworks: "StaticLibraries"
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
+          name: "Test RNTester with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+          executor: reactnativeios-lts
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              architecture: ["NewArch", "OldArch"]
+              jsengine: ["Hermes", "JSC"]
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
+            exclude:
+              # Tested by test_ios-Hermes
+              - architecture: "OldArch"
+                jsengine: "Hermes"
+                use_frameworks: "StaticLibraries"
+              # Tested by test_ios-JSC
+              - architecture: "OldArch"
+                jsengine: "JSC"
+                use_frameworks: "StaticLibraries"
+              # Tested with Ruby 3.2.0, let's not double test this
+              - architecture: "NewArch"
+                jsengine: "Hermes"
+                use_frameworks: "StaticLibraries"
+      - test_ios_rntester:
+          run_unit_tests: true
+          architecture: "OldArch"
+          use_frameworks: "StaticLibraries"
+          ruby_version: "2.6.10"
+          requires:
+            - build_hermes_macos
+          matrix:
+            parameters:
+              jsengine: ["Hermes", "JSC"]

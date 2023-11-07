@@ -13,11 +13,15 @@
     <string name="menubar_description" gender="unknown">Izvēļņu josla</string>
     <string name="menuitem_description" gender="unknown">Izvēlnes opcija</string>
     <string name="progressbar_description" gender="unknown">Progresa josla</string>
+    <string name="radiogroup_description" gender="unknown">Radiopogu kopa</string>
     <string name="scrollbar_description" gender="unknown">Ritināšanas josla</string>
+    <string name="spinbutton_description" gender="unknown">Vērtību poga</string>
     <string name="rn_tab_description" gender="unknown">Cilne</string>
+    <string name="tablist_description" gender="unknown">Ciļņu saraksts</string>
     <string name="timer_description" gender="unknown">Taimeris</string>
     <string name="toolbar_description" gender="unknown">Rīkjosla</string>
     <string name="summary_description" gender="unknown">Kopsavilkums</string>
+    <string name="state_busy_description" gender="unknown">aizņemts</string>
     <string name="state_expanded_description" gender="unknown">izvērsts</string>
     <string name="state_collapsed_description" gender="unknown">sakļauts</string>
     <string name="state_unselected_description" gender="unknown">nav atlasīts</string>
