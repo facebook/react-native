@@ -366,6 +366,12 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeFree(constraintYogaNode);
   YGNodeFree(clonedYogaNode);
 
+  int childCount = YGNodeGetChildCount(self.yogaNode);
+  for (int i = 0; i < childCount; i++) {
+    YGNodeRef child = YGNodeGetChild(self.yogaNode, i);
+    YGNodeSwapChild(self.yogaNode, child, i);
+  }
+
   return measuredSize;
 }
 
