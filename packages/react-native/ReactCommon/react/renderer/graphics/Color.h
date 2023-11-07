@@ -50,8 +50,8 @@ class SharedColor {
 };
 
 bool isColorMeaningful(const SharedColor& color) noexcept;
-SharedColor colorFromComponents(ColorComponents components);
-ColorComponents colorComponentsFromColor(SharedColor color);
+SharedColor colorFromComponents(ColorComponents const& components);
+ColorComponents colorComponentsFromColor(SharedColor const& color);
 
 SharedColor clearColor();
 SharedColor blackColor();

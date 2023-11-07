@@ -17,11 +17,11 @@ bool isColorMeaningful(const SharedColor& color) noexcept {
   return colorComponentsFromColor(color).alpha > 0;
 }
 
-SharedColor colorFromComponents(ColorComponents components) {
+SharedColor colorFromComponents(ColorComponents const& components) {
   return {hostPlatformColorFromComponents(components)};
 }
 
-ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+ColorComponents colorComponentsFromColor(SharedColor const& sharedColor) {
   return colorComponentsFromHostPlatformColor(*sharedColor);
 }
 

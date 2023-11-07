@@ -19,7 +19,8 @@ static const facebook::react::Color UndefinedColor =
     std::numeric_limits<facebook::react::Color>::max();
 }
 
-inline Color hostPlatformColorFromComponents(ColorComponents components) {
+inline Color hostPlatformColorFromComponents(
+    ColorComponents const& components) {
   float ratio = 255;
   return ((int)std::round(components.alpha * ratio) & 0xff) << 24 |
       ((int)std::round(components.red * ratio) & 0xff) << 16 |
@@ -27,7 +28,8 @@ inline Color hostPlatformColorFromComponents(ColorComponents components) {
       ((int)std::round(components.blue * ratio) & 0xff);
 }
 
-inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
+inline ColorComponents colorComponentsFromHostPlatformColor(
+    Color const& color) {
   float ratio = 255;
   return ColorComponents{
       (float)((color >> 16) & 0xff) / ratio,
