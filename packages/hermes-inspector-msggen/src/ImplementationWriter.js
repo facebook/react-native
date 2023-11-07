@@ -8,12 +8,11 @@
  * @format
  */
 
-import {Writable} from 'stream';
-
-import {GeneratedHeader} from './GeneratedHeader';
-import {PropsType, Type} from './Type';
 import {Command} from './Command';
 import {Event} from './Event';
+import {GeneratedHeader} from './GeneratedHeader';
+import {PropsType, Type} from './Type';
+import {Writable} from 'stream';
 
 export class ImplementationWriter {
   stream: Writable;

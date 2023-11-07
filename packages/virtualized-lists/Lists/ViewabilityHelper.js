@@ -11,6 +11,7 @@
 'use strict';
 
 import type {CellMetricProps} from './ListMetricsAggregator';
+
 import ListMetricsAggregator from './ListMetricsAggregator';
 
 const invariant = require('invariant');

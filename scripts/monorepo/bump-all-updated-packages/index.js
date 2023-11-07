@@ -7,25 +7,24 @@
  * @format
  */
 
+const alignPackageVersions = require('../align-package-versions');
+const checkForGitChanges = require('../check-for-git-changes');
+const {
+  COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
+  COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
+  GENERIC_COMMIT_MESSAGE,
+  NO_COMMIT_CHOICE,
+  PUBLISH_PACKAGES_TAG,
+} = require('../constants');
+const forEachPackage = require('../for-each-package');
+const bumpPackageVersion = require('./bump-package-version');
+const detectPackageUnreleasedChanges = require('./bump-utils');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
-
-const alignPackageVersions = require('../align-package-versions');
-const {
-  PUBLISH_PACKAGES_TAG,
-  GENERIC_COMMIT_MESSAGE,
-  NO_COMMIT_CHOICE,
-  COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
-  COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
-} = require('../constants');
-const forEachPackage = require('../for-each-package');
-const checkForGitChanges = require('../check-for-git-changes');
-const bumpPackageVersion = require('./bump-package-version');
-const detectPackageUnreleasedChanges = require('./bump-utils');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 

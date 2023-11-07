@@ -11,9 +11,9 @@
 
 'use strict';
 
-import * as React from 'react';
-import ItemList from '../components/ItemList';
 import {LIST_100_ITEMS} from '../components/itemData';
+import ItemList from '../components/ItemList';
+import * as React from 'react';
 
 const ItemListMemo = React.memo(ItemList);
 

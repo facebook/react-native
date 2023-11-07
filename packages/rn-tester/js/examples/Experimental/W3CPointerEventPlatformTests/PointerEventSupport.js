@@ -12,10 +12,9 @@ import type {PlatformTestHarness} from '../PlatformTest/RNTesterPlatformTestType
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-import {View} from 'react-native';
 import * as React from 'react';
-
 import {useMemo} from 'react';
+import {View} from 'react-native';
 
 // These props are not in the specification but are present in the WPT so we keep them
 // but marked as skipped so we don't prioritize them

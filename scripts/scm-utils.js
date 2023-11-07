@@ -9,10 +9,10 @@
 
 'use strict';
 
-const {cp, echo, exec, exit} = require('shelljs');
 const fs = require('fs');
-const path = require('path');
 const mkdirp = require('mkdirp');
+const path = require('path');
+const {cp, echo, exec, exit} = require('shelljs');
 
 function isGitRepo() {
   try {

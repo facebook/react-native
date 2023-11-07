@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-
 const {StyleSheet, Text, View} = require('react-native');
 
 type ExampleBoxComponentProps = $ReadOnly<{|

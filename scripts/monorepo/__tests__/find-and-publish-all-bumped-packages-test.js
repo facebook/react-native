@@ -7,11 +7,10 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
-
 const {PUBLISH_PACKAGES_TAG} = require('../constants');
-const forEachPackage = require('../for-each-package');
 const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
+const forEachPackage = require('../for-each-package');
+const {spawnSync} = require('child_process');
 
 jest.mock('child_process', () => ({spawnSync: jest.fn()}));
 jest.mock('../for-each-package', () => jest.fn());

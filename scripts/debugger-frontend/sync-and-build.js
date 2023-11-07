@@ -15,7 +15,7 @@ const ansiStyles = require('ansi-styles');
 const chalk = require('chalk');
 const {execSync, spawnSync} = require('child_process');
 const {promises: fs} = require('fs');
-const {tmpdir, hostname, userInfo} = require('os');
+const {hostname, tmpdir, userInfo} = require('os');
 const path = require('path');
 // $FlowFixMe[untyped-import]: TODO type rimraf
 const rimraf = require('rimraf');

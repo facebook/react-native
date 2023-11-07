@@ -8,8 +8,8 @@
  * @format
  */
 
-import {Property} from './Property';
 import {toCppNamespace, toCppType} from './Converters';
+import {Property} from './Property';
 
 export class Event {
   domain: string;

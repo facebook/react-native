@@ -8,10 +8,9 @@
 'use strict';
 
 import * as React from 'react';
-
 import {
-  ScrollView,
   FlatList,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,

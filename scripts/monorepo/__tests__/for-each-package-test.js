@@ -7,10 +7,9 @@
  * @format
  */
 
-const path = require('path');
-const {readdirSync, readFileSync} = require('fs');
-
 const forEachPackage = require('../for-each-package');
+const {readdirSync, readFileSync} = require('fs');
+const path = require('path');
 
 jest.mock('fs', () => ({
   readdirSync: jest.fn(),

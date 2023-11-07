@@ -10,10 +10,9 @@
 
 'use strict';
 
-const {exec} = require('shelljs');
-
-const util = require('util');
 const asyncRequest = require('request');
+const {exec} = require('shelljs');
+const util = require('util');
 const request = util.promisify(asyncRequest);
 
 let circleCIHeaders;

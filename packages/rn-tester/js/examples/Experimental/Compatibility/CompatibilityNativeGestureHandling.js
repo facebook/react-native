@@ -8,10 +8,11 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {ScrollView, View, StyleSheet} from 'react-native';
-import EventfulView from '../W3CPointerEventsEventfulView';
 import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
+
+import EventfulView from '../W3CPointerEventsEventfulView';
+import * as React from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {

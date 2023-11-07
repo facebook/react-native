@@ -58,13 +58,6 @@ class EventEmitter {
 
   const SharedEventTarget& getEventTarget() const;
 
- protected:
-#ifdef ANDROID
-  // We need this temporarily due to lack of Java-counterparts for particular
-  // subclasses.
- public:
-#endif
-
   /*
    * Initiates an event delivery process.
    * Is used by particular subclasses only.

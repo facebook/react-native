@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
 const CURRENT_DIR = __dirname;
 const PATH_TO_TESTER_PACKAGE_MANIFEST = path.join(

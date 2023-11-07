@@ -10,8 +10,8 @@
 
 import {
   UtilsSingleton as Utils,
-  iOSLabel,
   androidWidget,
+  iOSLabel,
 } from '../../helpers/utils';
 
 type ButtonComponentScreenType = {
