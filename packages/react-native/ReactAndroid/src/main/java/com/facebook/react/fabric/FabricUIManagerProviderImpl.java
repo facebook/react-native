@@ -15,14 +15,14 @@ import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.systrace.Systrace;
 
-public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
+public class FabricUIManagerProviderImpl implements JSIModuleProvider<UIManager> {
 
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
-  public FabricJSIModuleProvider(
+  public FabricUIManagerProviderImpl(
       @NonNull ReactApplicationContext reactApplicationContext,
       @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig config,
@@ -35,12 +35,12 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
   @Override
   public UIManager get() {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.get");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.get");
     final EventBeatManager eventBeatManager = new EventBeatManager();
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
 
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.registerBinding");
     final Binding binding = new BindingImpl();
 
     binding.register(
@@ -59,7 +59,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.createUIManager");
 
     FabricUIManager fabricUIManager;
     fabricUIManager =
