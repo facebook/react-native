@@ -7,27 +7,42 @@
 
 package com.facebook.react.fabric;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.systrace.Systrace;
 
-public class FabricUIManagerProviderImpl implements JSIModuleProvider<UIManager> {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public class FabricUIManagerProviderImpl
+    implements JSIModuleProvider<UIManager>, UIManagerProvider {
 
-  @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final ComponentFactory mComponentFactory;
-  @NonNull private final ReactNativeConfig mConfig;
-  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  private final @Nullable ReactApplicationContext mReactApplicationContext;
+  private final ComponentFactory mComponentFactory;
+  private final ReactNativeConfig mConfig;
+  private final ViewManagerRegistry mViewManagerRegistry;
 
   public FabricUIManagerProviderImpl(
-      @NonNull ReactApplicationContext reactApplicationContext,
-      @NonNull ComponentFactory componentFactory,
-      @NonNull ReactNativeConfig config,
-      @NonNull ViewManagerRegistry viewManagerRegistry) {
+      ReactApplicationContext reactApplicationContext,
+      ComponentFactory componentFactory,
+      ReactNativeConfig config,
+      ViewManagerRegistry viewManagerRegistry) {
     mReactApplicationContext = reactApplicationContext;
+    mComponentFactory = componentFactory;
+    mConfig = config;
+    mViewManagerRegistry = viewManagerRegistry;
+  }
+
+  public FabricUIManagerProviderImpl(
+      ComponentFactory componentFactory,
+      ReactNativeConfig config,
+      ViewManagerRegistry viewManagerRegistry) {
+    mReactApplicationContext = null;
     mComponentFactory = componentFactory;
     mConfig = config;
     mViewManagerRegistry = viewManagerRegistry;
@@ -35,18 +50,35 @@ public class FabricUIManagerProviderImpl implements JSIModuleProvider<UIManager>
 
   @Override
   public UIManager get() {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.get");
-    final EventBeatManager eventBeatManager = new EventBeatManager();
-    final FabricUIManager uiManager = createUIManager(eventBeatManager);
+    if (mReactApplicationContext != null) {
+      return createUIManager(mReactApplicationContext);
+    }
+    throw new IllegalStateException(
+        "This method shoulndn't be called without ReactContext initialized");
+  }
+
+  @Override
+  public UIManager createUIManager(ReactApplicationContext reactApplicationContext) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.create");
+    EventBeatManager eventBeatManager = new EventBeatManager();
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.createUIManager");
+
+    FabricUIManager fabricUIManager =
+        new FabricUIManager(reactApplicationContext, mViewManagerRegistry, eventBeatManager);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.registerBinding");
     final Binding binding = new BindingImpl();
 
+    CatalystInstance catalystInstance = reactApplicationContext.getCatalystInstance();
+
     binding.register(
-        mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
-        mReactApplicationContext.getCatalystInstance().getRuntimeScheduler(),
-        uiManager,
+        catalystInstance.getRuntimeExecutor(),
+        catalystInstance.getRuntimeScheduler(),
+        fabricUIManager,
         eventBeatManager,
         mComponentFactory,
         mConfig);
@@ -54,17 +86,6 @@ public class FabricUIManagerProviderImpl implements JSIModuleProvider<UIManager>
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
-    return uiManager;
-  }
-
-  private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.createUIManager");
-
-    FabricUIManager fabricUIManager;
-    fabricUIManager =
-        new FabricUIManager(mReactApplicationContext, mViewManagerRegistry, eventBeatManager);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return fabricUIManager;
   }
 }
