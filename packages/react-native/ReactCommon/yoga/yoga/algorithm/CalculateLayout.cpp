@@ -1612,12 +1612,10 @@ static void calculateLayoutImpl(
 
   const float paddingAndBorderAxisMain =
       paddingAndBorderForAxis(node, mainAxis, ownerWidth);
+  const float paddingAndBorderAxisCross =
+      paddingAndBorderForAxis(node, crossAxis, ownerWidth);
   const float leadingPaddingAndBorderCross =
       node->getInlineStartPaddingAndBorder(crossAxis, direction, ownerWidth);
-  const float trailingPaddingAndBorderCross =
-      node->getInlineEndPaddingAndBorder(crossAxis, direction, ownerWidth);
-  const float paddingAndBorderAxisCross =
-      leadingPaddingAndBorderCross + trailingPaddingAndBorderCross;
 
   MeasureMode measureModeMainDim =
       isMainAxisRow ? widthMeasureMode : heightMeasureMode;
