@@ -60,11 +60,11 @@ CompactValue Node::computeEdgeValueForRow(
     const Style::Edges& edges,
     YGEdge rowEdge,
     YGEdge edge) {
-  if (!edges[rowEdge].isUndefined()) {
+  if (edges[rowEdge].isDefined()) {
     return edges[rowEdge];
-  } else if (!edges[edge].isUndefined()) {
+  } else if (edges[edge].isDefined()) {
     return edges[edge];
-  } else if (!edges[YGEdgeHorizontal].isUndefined()) {
+  } else if (edges[YGEdgeHorizontal].isDefined()) {
     return edges[YGEdgeHorizontal];
   } else {
     return edges[YGEdgeAll];
@@ -74,9 +74,9 @@ CompactValue Node::computeEdgeValueForRow(
 CompactValue Node::computeEdgeValueForColumn(
     const Style::Edges& edges,
     YGEdge edge) {
-  if (!edges[edge].isUndefined()) {
+  if (edges[edge].isDefined()) {
     return edges[edge];
-  } else if (!edges[YGEdgeVertical].isUndefined()) {
+  } else if (edges[YGEdgeVertical].isDefined()) {
     return edges[YGEdgeVertical];
   } else {
     return edges[YGEdgeAll];
@@ -106,7 +106,7 @@ bool Node::isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       ? computeEdgeValueForRow(style_.position(), YGEdgeStart, startEdge)
       : computeEdgeValueForColumn(style_.position(), startEdge);
 
-  return !leadingPosition.isUndefined();
+  return leadingPosition.isDefined();
 }
 
 bool Node::isInlineEndPositionDefined(FlexDirection axis, Direction direction)
@@ -116,7 +116,7 @@ bool Node::isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, endEdge)
       : computeEdgeValueForColumn(style_.position(), endEdge);
 
-  return !trailingPosition.isUndefined();
+  return trailingPosition.isDefined();
 }
 
 float Node::getInlineStartPosition(
@@ -511,7 +511,7 @@ void Node::setPosition(
 }
 
 YGValue Node::getFlexStartMarginValue(FlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
+  if (isRow(axis) && style_.margin()[YGEdgeStart].isDefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
     return style_.margin()[flexStartEdge(axis)];
@@ -519,7 +519,7 @@ YGValue Node::getFlexStartMarginValue(FlexDirection axis) const {
 }
 
 YGValue Node::marginTrailingValue(FlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
+  if (isRow(axis) && style_.margin()[YGEdgeEnd].isDefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
     return style_.margin()[flexEndEdge(axis)];
@@ -531,7 +531,7 @@ YGValue Node::resolveFlexBasisPtr() const {
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
+  if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
     return config_->useWebDefaults() ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -540,7 +540,7 @@ YGValue Node::resolveFlexBasisPtr() const {
 void Node::resolveDimension() {
   const Style& style = getStyle();
   for (auto dim : {Dimension::Width, Dimension::Height}) {
-    if (!style.maxDimension(dim).isUndefined() &&
+    if (style.maxDimension(dim).isDefined() &&
         yoga::inexactEquals(style.maxDimension(dim), style.minDimension(dim))) {
       resolvedDimensions_[yoga::to_underlying(dim)] = style.maxDimension(dim);
     } else {
@@ -598,10 +598,10 @@ float Node::resolveFlexGrow() const {
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexGrow().isUndefined()) {
+  if (style_.flexGrow().isDefined()) {
     return style_.flexGrow().unwrap();
   }
-  if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
+  if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
     return style_.flex().unwrap();
   }
   return Style::DefaultFlexGrow;
@@ -611,10 +611,10 @@ float Node::resolveFlexShrink() const {
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexShrink().isUndefined()) {
+  if (style_.flexShrink().isDefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!config_->useWebDefaults() && !style_.flex().isUndefined() &&
+  if (!config_->useWebDefaults() && style_.flex().isDefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
