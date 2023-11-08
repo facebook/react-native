@@ -59,6 +59,12 @@ YG_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     YGNodeRef node,
     YGNodeCleanupFunc cleanup);
 YG_EXPORT void YGNodeFreeRecursive(YGNodeRef node);
+
+// Frees the Yoga node without disconnecting it from its owner or children.
+// Allows garbage collecting Yoga nodes in parallel when the entire tree is
+// unrechable.
+YG_EXPORT void YGNodeFinalize(YGNodeRef node);
+
 YG_EXPORT void YGNodeReset(YGNodeRef node);
 
 YG_EXPORT void YGNodeInsertChild(YGNodeRef node, YGNodeRef child, size_t index);

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/Yoga-internal.h>
 #include <yoga/Yoga.h>
 
 #include <yoga/algorithm/Cache.h>
@@ -136,10 +135,12 @@ void YGNodeFree(const YGNodeRef nodeRef) {
   }
 
   node->clearChildren();
-  YGNodeDeallocate(node);
+
+  Event::publish<Event::NodeDeallocation>(node, {YGNodeGetConfig(node)});
+  delete resolveRef(node);
 }
 
-void YGNodeDeallocate(const YGNodeRef node) {
+void YGNodeFinalize(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {YGNodeGetConfig(node)});
   delete resolveRef(node);
 }
