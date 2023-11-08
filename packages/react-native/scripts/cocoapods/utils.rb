@@ -228,17 +228,17 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths)
+    def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
         platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
         search_paths = []
 
         if platforms.empty?() || platforms.length() == 1
             base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
-            self.add_search_path_to_result(search_paths, base_path, additional_paths)
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
         else
             platforms.each { |platform|
                 base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
-                self.add_search_path_to_result(search_paths, base_path, additional_paths)
+                self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
             }
         end
         return search_paths
@@ -278,12 +278,14 @@ class ReactNativePodsUtils
 
                 header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
 
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
+                ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon-Samples", "ReactCommon_Samples", ["platform/ios"]))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"], false))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"]))
+                    .each{ |search_path|
+                        header_search_paths = self.add_search_path_if_not_included(header_search_paths, search_path)
+                    }
 
                 config.build_settings["HEADER_SEARCH_PATHS"] = header_search_paths
             end
@@ -483,34 +485,31 @@ class ReactNativePodsUtils
     end
 
     def self.set_codegen_search_paths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Codegen", "React_Codegen", [])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", header_search_paths)
     end
 
     def self.set_reactcommon_searchpaths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-        ])
-
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", header_search_paths)
     end
 
     def self.set_rctfabric_search_paths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", [])
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Graphics", "React_graphics", ["react/renderer/graphics/platform/ios"]))
+            .map { |search_path| "\"#{search_path}\"" }
+
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", header_search_paths)
     end
 
     def self.set_imagemanager_search_path(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/imagemanager/platform/ios"])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
     def self.get_plist_paths_from(user_project)
@@ -598,8 +597,11 @@ class ReactNativePodsUtils
         ]
     end
 
-    def self.add_search_path_to_result(result, base_path, additional_paths)
-        result << base_path
+    def self.add_search_path_to_result(result, base_path, additional_paths, include_base_path)
+        if (include_base_path)
+            result << base_path
+        end
+
         additional_paths.each { |extra_path|
             result << File.join(base_path, extra_path)
         }
