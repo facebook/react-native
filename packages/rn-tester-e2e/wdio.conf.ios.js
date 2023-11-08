@@ -14,12 +14,9 @@ const fs = require('fs');
 exports.config = {
   runner: 'local',
   path: '/',
-
   specs: ['./tests/specs/components/**/*.test.js'],
   exclude: [],
-
   maxInstances: 1,
-
   capabilities: [
     {
       platformName: 'iOS',
@@ -27,13 +24,13 @@ exports.config = {
       'appium:deviceName': 'iPhone 14',
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
+      'appium:newCommandTimeout': 60,
     },
   ],
-  logLevel: 'info',
+  logLevel: 'debug',
   bail: 0,
   waitforTimeout: 10000,
   connectionRetryTimeout: 120000,
-
   connectionRetryCount: 3,
   specFileRetries: 2,
   services: [
@@ -51,6 +48,7 @@ exports.config = {
   reporters: ['spec'],
   framework: 'mocha',
   mochaOpts: {
+    bail: true,
     ui: 'bdd',
     timeout: 40000,
     require: ['@babel/register'],
@@ -65,7 +63,7 @@ exports.config = {
     context,
     {error, result, duration, passed, retries},
   ) {
-    if (!passed || error !== undefined) {
+    if (!passed) {
       const fileName = encodeURIComponent(
         await test.title.replace(/\s+/g, '-'),
       );

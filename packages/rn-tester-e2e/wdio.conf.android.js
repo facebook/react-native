@@ -27,15 +27,10 @@ exports.config = {
       'appium:newCommandTimeout': 240,
     },
   ],
-
   logLevel: 'debug',
-
   bail: 0,
-
   waitforTimeout: 10000,
-
   connectionRetryTimeout: 120000,
-
   connectionRetryCount: 3,
   specFileRetries: 2,
   services: [
@@ -50,9 +45,10 @@ exports.config = {
       },
     ],
   ],
-  framework: 'mocha',
   reporters: ['spec'],
+  framework: 'mocha',
   mochaOpts: {
+    bail: true,
     ui: 'bdd',
     timeout: 40000,
     require: ['@babel/register'],
@@ -67,7 +63,7 @@ exports.config = {
     context,
     {error, result, duration, passed, retries},
   ) {
-    if (!passed || error !== undefined) {
+    if (!passed) {
       const fileName = encodeURIComponent(
         await test.title.replace(/\s+/g, '-'),
       );
