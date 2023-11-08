@@ -12,6 +12,7 @@
 import {fetchJson} from './FetchUtils';
 import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
+import {createAndConnectTarget} from './InspectorProtocolUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
 import invariant from 'invariant';
@@ -247,6 +248,152 @@ describe('inspector proxy React Native reloads', () => {
     } finally {
       device1?.close();
       debugger_?.close();
+    }
+  });
+
+  test('injecting setup messages after a reload', async () => {
+    let device1, debugger_;
+    try {
+      /***
+       * Connect a device with one React Native page.
+       */
+      device1 = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      device1.getPages.mockImplementation(() => [
+        {
+          app: 'bar',
+          id: 'originalPage-initial',
+          // NOTE: 'React' is a magic string used to detect React Native pages.
+          title: 'React Native (mock)',
+          vm: 'vm',
+        },
+      ]);
+      let pageList;
+      await until(async () => {
+        pageList = (await fetchJson(
+          `${serverRef.serverBaseUrl}/json`,
+          // $FlowIgnore[unclear-type]
+        ): any);
+        expect(pageList.length).toBeGreaterThan(0);
+      });
+      invariant(pageList != null, '');
+
+      const syntheticPage = pageList.find(
+        ({title}) =>
+          // NOTE: Magic string used for the synthetic page that has a stable ID
+          title === 'React Native Experimental (Improved Chrome Reloads)',
+      );
+      expect(syntheticPage).not.toBeUndefined();
+
+      // Connect to the synthetic page
+      debugger_ = await createDebuggerMock(
+        syntheticPage.webSocketDebuggerUrl,
+        autoCleanup.signal,
+      );
+
+      /**
+       * Replace our original page with a new one.
+       */
+      device1.getPages.mockImplementation(() => [
+        {
+          app: 'bar',
+          id: 'originalPage-updated',
+          // NOTE: 'React' is a magic string used to detect React Native pages.
+          title: 'React Native (mock)',
+          vm: 'vm',
+        },
+      ]);
+
+      /**
+       * The new page receives setup messages from the proxy.
+       */
+      device1.wrappedEventParsed.mockClear();
+      await until(async () => {
+        expect(device1.wrappedEventParsed).toBeCalledWith({
+          pageId: 'originalPage-updated',
+          wrappedEvent: {
+            method: 'Runtime.enable',
+            id: expect.any(Number),
+          },
+        });
+        expect(device1.wrappedEventParsed).toBeCalledWith({
+          pageId: 'originalPage-updated',
+          wrappedEvent: {
+            method: 'Debugger.enable',
+            id: expect.any(Number),
+          },
+        });
+      });
+
+      /**
+       * When the new page notifies us about the new execution context, the
+       * proxy first injects a notification about the old context(s) going
+       * away, and also asks the new page to resume (under the assumption that
+       * it starts in a paused state).
+       */
+      device1.sendWrappedEvent('originalPage-updated', {
+        method: 'Runtime.executionContextCreated',
+      });
+      debugger_.handle.mockClear();
+      device1.wrappedEventParsed.mockClear();
+      await until(() => {
+        expect(debugger_.handle.mock.calls).toEqual([
+          // NOTE: The messages need to arrive in this exact order.
+          [
+            {
+              method: 'Runtime.executionContextsCleared',
+            },
+          ],
+          [
+            expect.objectContaining({
+              method: 'Runtime.executionContextCreated',
+            }),
+          ],
+        ]);
+      });
+      await until(() => {
+        expect(device1.wrappedEventParsed).toBeCalledWith({
+          pageId: 'originalPage-updated',
+          wrappedEvent: expect.objectContaining({
+            method: 'Debugger.resume',
+            id: expect.any(Number),
+          }),
+        });
+      });
+    } finally {
+      device1?.close();
+      debugger_?.close();
+    }
+  });
+
+  test('device disconnect event results in a nonstandard "reload" message to the debugger', async () => {
+    const {device, debugger_} = await createAndConnectTarget(
+      serverRef,
+      autoCleanup.signal,
+      {
+        app: 'bar-app',
+        id: 'page1',
+        title: 'bar-title',
+        vm: 'bar-vm',
+      },
+    );
+
+    try {
+      device.send({
+        event: 'disconnect',
+        payload: {
+          pageId: 'page1',
+        },
+      });
+      await until(() =>
+        expect(debugger_.handle).toBeCalledWith({
+          method: 'reload',
+        }),
+      );
+    } finally {
+      device.close();
     }
   });
 });
