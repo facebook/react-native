@@ -30,8 +30,7 @@
   ],
   "dependencies": {
     "@babel/parser": "^7.20.0",
-    "@babel/code-frame": "^7.0.0",
-    "flow-parser": "^0.206.0",
+    "hermes-parser": "0.17.1",
     "jscodeshift": "^0.14.0",
     "nullthrows": "^1.1.1"
   },
@@ -48,6 +47,7 @@
     "@babel/preset-env": "^7.20.0",
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
+    "hermes-estree": "0.17.1",
     "invariant": "^2.2.4",
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
