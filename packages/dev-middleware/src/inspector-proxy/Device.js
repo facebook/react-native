@@ -680,6 +680,9 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call] Suppress arvr node-fetch flow error
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+    }
     const text = await response.text();
     // Restrict the length to well below the 500MB limit for nodejs (leaving
     // room some some later manipulation, e.g. base64 or wrapping in JSON)
