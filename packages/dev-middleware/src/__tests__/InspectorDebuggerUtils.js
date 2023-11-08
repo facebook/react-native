@@ -10,8 +10,13 @@
  */
 
 import type {JSONSerializable} from '../inspector-proxy/types';
+import type {
+  CdpMessageToTarget,
+  CdpResponseFromTarget,
+} from './InspectorProtocolUtils';
 
 import nullthrows from 'nullthrows';
+import until from 'wait-for-expect';
 import WebSocket from 'ws';
 
 export class DebuggerAgent {
@@ -77,6 +82,33 @@ export class DebuggerMock extends DebuggerAgent {
 
   __handle(message: JSONSerializable): void {
     this.handle(message);
+  }
+
+  async sendAndGetResponse(
+    message: CdpMessageToTarget,
+  ): Promise<CdpResponseFromTarget> {
+    const originalHandleCallsArray = this.handle.mock.calls;
+    const originalHandleCallCount = originalHandleCallsArray.length;
+    this.send(message);
+    await until(() =>
+      expect(this.handle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: message.id,
+        }),
+      ),
+    );
+    // Find the first matching handle call that wasn't already in the mock calls
+    // array before we sent the message.
+    const newHandleCalls =
+      originalHandleCallsArray === this.handle.mock.calls
+        ? this.handle.mock.calls.slice(originalHandleCallCount)
+        : this.handle.mock.calls;
+    // $FlowIgnore[incompatible-use]
+    // $FlowIgnore[prop-missing]
+    const [response] = newHandleCalls.find(args => args[0].id === message.id);
+    // $FlowIgnore[incompatible-return]
+    // $FlowIgnore[incompatible-indexer]
+    return response;
   }
 }
 
