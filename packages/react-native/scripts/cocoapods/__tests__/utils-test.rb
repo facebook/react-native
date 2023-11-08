@@ -35,6 +35,7 @@ class UtilsTests < Test::Unit::TestCase
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
+        $RN_PLATFORMS = nil
     end
 
     # ======================= #
@@ -902,6 +903,70 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
+    # =============================================== #
+    # Test - Create Header Search Path For Frameworks #
+    # =============================================== #
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndNoExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", [])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers"
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenEmptyPlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = []
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenOnlyOnePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ['iOS']
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenMultiplePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ["iOS", "macOS"]
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks(
+            "PODS_CONFIGURATION_BUILD_DIR",
+            "React-Fabric",
+            "React_Fabric",
+            [
+                "react/renderer/components/view/platform/cxx",
+                "react/renderer/components/view/platform/ios"
+            ]
+        )
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
+        ])
+    end
 end
 
 # ===== #
