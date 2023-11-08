@@ -19,7 +19,10 @@ export class DebuggerAgent {
   _readyPromise: Promise<void>;
 
   constructor(url: string, signal?: AbortSignal) {
-    const ws = new WebSocket(url);
+    const ws = new WebSocket(url, {
+      // The mock server uses a self-signed certificate.
+      rejectUnauthorized: false,
+    });
     this._ws = ws;
     ws.on('message', data => {
       this.__handle(JSON.parse(data.toString()));
