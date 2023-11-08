@@ -14,10 +14,6 @@
     "directory": "packages/dev-middleware"
   },
   "license": "MIT",
-  "exports": {
-    ".": "./src/index.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist"
   ],
