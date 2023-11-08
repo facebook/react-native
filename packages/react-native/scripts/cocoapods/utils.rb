@@ -228,6 +228,22 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths)
+        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+        search_paths = []
+
+        if platforms.empty?() || platforms.length() == 1
+            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths)
+        else
+            platforms.each { |platform|
+                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                self.add_search_path_to_result(search_paths, base_path, additional_paths)
+            }
+        end
+        return search_paths
+    end
+
     def self.update_search_paths(installer)
         return if ENV['USE_FRAMEWORKS'] == nil
 
@@ -556,5 +572,13 @@ class ReactNativePodsUtils
             "libevent",
             "React-hermes",
         ]
+    end
+
+    def self.add_search_path_to_result(result, base_path, additional_paths)
+        result << base_path
+        additional_paths.each { |extra_path|
+            result << File.join(base_path, extra_path)
+        }
+        return result
     end
 end
