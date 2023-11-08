@@ -17,7 +17,12 @@ import {
   sendFromTargetToDebugger,
 } from './InspectorProtocolUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
-import {serveStaticJson, withServerForEachTest} from './ServerUtils';
+import {
+  serveStaticJson,
+  serveStaticText,
+  withServerForEachTest,
+} from './ServerUtils';
+import {createHash} from 'crypto';
 
 // WebSocket is unreliable when using fake timers.
 jest.useRealTimers();
@@ -36,7 +41,7 @@ describe.each(['HTTP', 'HTTPS'])(
   protocol => {
     const serverRef = withServerForEachTest({
       logger: undefined,
-      projectRoot: '',
+      projectRoot: __dirname,
       secure: protocol === 'HTTPS',
     });
     const autoCleanup = withAbortSignalForEachTest();
@@ -222,6 +227,105 @@ describe.each(['HTTP', 'HTTPS'])(
         device.close();
         debugger_.close();
       }
+    });
+
+    describe('Debugger.getScriptSource', () => {
+      test('fetches source from server', async () => {
+        serverRef.app.use('/source', serveStaticText('foo'));
+        const {device, debugger_} = await createAndConnectTarget(
+          serverRef,
+          autoCleanup.signal,
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        );
+        try {
+          await sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              scriptId: 'script1',
+              url: `${serverRef.serverBaseUrl}/source`,
+              startLine: 0,
+              endLine: 0,
+              startColumn: 0,
+              endColumn: 0,
+              hash: createHash('sha256').update('foo').digest('hex'),
+            },
+          });
+          const response = await debugger_.sendAndGetResponse({
+            id: 1,
+            method: 'Debugger.getScriptSource',
+            params: {
+              scriptId: 'script1',
+            },
+          });
+          expect(response.result).toEqual(
+            expect.objectContaining({scriptSource: 'foo'}),
+          );
+          // The device does not receive the getScriptSource request, since it
+          // is handled by the proxy.
+          expect(device.wrappedEventParsed).not.toBeCalledWith({
+            pageId: 'page1',
+            wrappedEvent: expect.objectContaining({
+              method: 'Debugger.getScriptSource',
+            }),
+          });
+        } finally {
+          device.close();
+          debugger_.close();
+        }
+      });
+
+      test('reads source from disk', async () => {
+        const {device, debugger_} = await createAndConnectTarget(
+          serverRef,
+          autoCleanup.signal,
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        );
+        try {
+          await sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              scriptId: 'script1',
+              url: '__fixtures__/mock-source-file.txt',
+              startLine: 0,
+              endLine: 0,
+              startColumn: 0,
+              endColumn: 0,
+              hash: createHash('sha256').update('foo\n').digest('hex'),
+            },
+          });
+          const response = await debugger_.sendAndGetResponse({
+            id: 1,
+            method: 'Debugger.getScriptSource',
+            params: {
+              scriptId: 'script1',
+            },
+          });
+          expect(response.result).toEqual(
+            expect.objectContaining({scriptSource: 'foo\n'}),
+          );
+          // The device does not receive the getScriptSource request, since it
+          // is handled by the proxy.
+          expect(device.wrappedEventParsed).not.toBeCalledWith({
+            pageId: 'page1',
+            wrappedEvent: expect.objectContaining({
+              method: 'Debugger.getScriptSource',
+            }),
+          });
+        } finally {
+          device.close();
+          debugger_.close();
+        }
+      });
     });
   },
 );

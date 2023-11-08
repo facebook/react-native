@@ -149,3 +149,14 @@ export function serveStaticJson(json: JSONSerializable): HandleFunction {
     res.end(JSON.stringify(json));
   };
 }
+
+export function serveStaticText(text: string): HandleFunction {
+  return (req, res, next) => {
+    if (req.method !== 'GET') {
+      next();
+      return;
+    }
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end(text);
+  };
+}
