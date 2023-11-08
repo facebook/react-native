@@ -714,7 +714,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
@@ -770,7 +770,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
@@ -824,7 +824,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
