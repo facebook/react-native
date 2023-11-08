@@ -312,7 +312,7 @@ class YG_EXPORT Style {
   }
 
   CompactValue resolveColumnGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Column)].isUndefined()) {
+    if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
       return gap_[yoga::to_underlying(Gutter::Column)];
     } else {
       return gap_[yoga::to_underlying(Gutter::All)];
@@ -320,7 +320,7 @@ class YG_EXPORT Style {
   }
 
   CompactValue resolveRowGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Row)].isUndefined()) {
+    if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
       return gap_[yoga::to_underlying(Gutter::Row)];
     } else {
       return gap_[yoga::to_underlying(Gutter::All)];
