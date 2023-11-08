@@ -9,7 +9,9 @@
  * @oncall react_native
  */
 
-export async function fetchJson(url: string): Promise<mixed> {
+import type {JSONSerializable} from '../inspector-proxy/types';
+
+export async function fetchJson(url: string): Promise<JSONSerializable> {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} ${response.statusText}`);
