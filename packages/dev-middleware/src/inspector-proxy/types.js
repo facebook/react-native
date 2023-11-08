@@ -138,5 +138,5 @@ export type JSONSerializable =
   | number
   | string
   | null
-  | Array<JSONSerializable>
-  | {[string]: JSONSerializable};
+  | $ReadOnlyArray<JSONSerializable>
+  | {+[string]: JSONSerializable};
