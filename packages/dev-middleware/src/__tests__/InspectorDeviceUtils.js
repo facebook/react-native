@@ -14,6 +14,7 @@ import type {
   DisconnectRequest,
   GetPagesRequest,
   GetPagesResponse,
+  JSONSerializable,
   MessageFromDevice,
   MessageToDevice,
   WrappedEvent,
@@ -67,6 +68,16 @@ export class DeviceAgent {
       this._ws.terminate();
     } catch {}
     this._ws = null;
+  }
+
+  sendWrappedEvent(pageId: string, event: JSONSerializable) {
+    this.send({
+      event: 'wrappedEvent',
+      payload: {
+        pageId,
+        wrappedEvent: JSON.stringify(event),
+      },
+    });
   }
 }
 
