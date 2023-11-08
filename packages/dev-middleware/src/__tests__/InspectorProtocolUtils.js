@@ -23,13 +23,18 @@ import {createDeviceMock} from './InspectorDeviceUtils';
 import {dataUriToBuffer} from 'data-uri-to-buffer';
 import until from 'wait-for-expect';
 
-type CdpMessageFromTarget = $ReadOnly<{
+export type CdpMessageFromTarget = $ReadOnly<{
   method: string,
   id?: number,
   params?: JSONSerializable,
 }>;
 
-type CdpMessageToTarget = $ReadOnly<{
+export type CdpResponseFromTarget = $ReadOnly<{
+  id: number,
+  result: JSONSerializable,
+}>;
+
+export type CdpMessageToTarget = $ReadOnly<{
   method: string,
   id: number,
   params?: JSONSerializable,
