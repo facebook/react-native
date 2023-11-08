@@ -9,6 +9,9 @@
  * @oncall react_native
  */
 
+import type {JSONSerializable} from '../inspector-proxy/types';
+import type {HandleFunction} from 'connect';
+
 import {createDevMiddleware} from '../';
 import connect from 'connect';
 import http from 'http';
@@ -21,28 +24,43 @@ type CreateServerOptions = {
   ...Omit<CreateDevMiddlewareOptions, 'serverBaseUrl'>,
   secure?: boolean,
 };
+type ConnectApp = ReturnType<typeof connect>;
 
 export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
   serverBaseUrl: string,
   serverBaseWsUrl: string,
+  app: ConnectApp,
+  port: number,
 }> {
-  const ref: {serverBaseUrl: string, serverBaseWsUrl: string} = {
+  const EAGER_ACCESS_ERROR_MESSAGE =
+    'The return value of withServerForEachTest is lazily initialized and can only be accessed in tests.';
+  const ref: {
+    serverBaseUrl: string,
+    serverBaseWsUrl: string,
+    app: ConnectApp,
+    port: number,
+  } = {
     // $FlowIgnore[unsafe-getters-setters]
     get serverBaseUrl() {
-      throw new Error(
-        'The return value of withServerForEachTest is lazily initialized and can only be accessed in tests.',
-      );
+      throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
     // $FlowIgnore[unsafe-getters-setters]
     get serverBaseWsUrl() {
-      throw new Error(
-        'The return value of withServerForEachTest is lazily initialized and can only be accessed in tests.',
-      );
+      throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
+    },
+    // $FlowIgnore[unsafe-getters-setters]
+    get app() {
+      throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
+    },
+    // $FlowIgnore[unsafe-getters-setters]
+    get port() {
+      throw new Error(EAGER_ACCESS_ERROR_MESSAGE);
     },
   };
   let server: http$Server | https$Server;
+  let app: ConnectApp;
   beforeEach(async () => {
-    server = await createServer(options);
+    ({server, app} = await createServer(options));
     const serverBaseUrl = baseUrlForServer(
       server,
       options.secure ?? false ? 'https' : 'http',
@@ -53,6 +71,8 @@ export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
     );
     Object.defineProperty(ref, 'serverBaseUrl', {value: serverBaseUrl});
     Object.defineProperty(ref, 'serverBaseWsUrl', {value: serverBaseWsUrl});
+    Object.defineProperty(ref, 'app', {value: app});
+    Object.defineProperty(ref, 'port', {value: server.address().port});
   });
   afterEach(done => {
     server.close(() => done());
@@ -60,9 +80,10 @@ export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
   return ref;
 }
 
-export async function createServer(
-  options: CreateServerOptions,
-): Promise<http$Server | https$Server> {
+export async function createServer(options: CreateServerOptions): Promise<{
+  server: http$Server | https$Server,
+  app: ReturnType<typeof connect>,
+}> {
   const app = connect();
   const {secure = false, ...devMiddlewareOptions} = options;
   let httpServer;
@@ -103,7 +124,7 @@ export async function createServer(
           socket.destroy();
         }
       });
-      resolve(httpServer);
+      resolve({server: httpServer, app});
     });
   });
 }
@@ -116,4 +137,15 @@ export function baseUrlForServer(
   // Assumption: `server` is local and listening on `localhost`. We can't use
   // the IP address because HTTPS requires a hostname.
   return `${scheme}://localhost:${address.port}`;
+}
+
+export function serveStaticJson(json: JSONSerializable): HandleFunction {
+  return (req, res, next) => {
+    if (req.method !== 'GET') {
+      next();
+      return;
+    }
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify(json));
+  };
 }
