@@ -216,11 +216,25 @@ end
 # - spec: the spec that needs to be modified
 # - pod_name: the name of the dependency we had to add to the spec
 # - additional_framework_paths: additional sub paths we had to add to the HEADER_SEARCH_PATH
+# - framework_name: the name of the framework in case it is different from the pod_name
 # - version: the version of the pod_name the spec needs to depend on
 # - base_dir: Base directory from where we need to start looking. Defaults to PODS_CONFIGURATION_BUILD_DIR
 def add_dependency(spec, pod_name, subspec: nil, additional_framework_paths: [], framework_name: nil, version: nil, base_dir: "PODS_CONFIGURATION_BUILD_DIR")
   fixed_framework_name = framework_name != nil ? framework_name : pod_name.gsub("-", "_") # frameworks can't have "-" in their name
   ReactNativePodsUtils.add_dependency(spec, pod_name, base_dir, fixed_framework_name, :additional_paths => additional_framework_paths, :version => version)
+end
+
+# This function generates an array of HEADER_SEARCH_PATH that can be added to the HEADER_SEARCH_PATH property when use_frameworks! is enabled
+#
+# Parameters:
+# - pod_name: the name of the dependency we had to add to the spec
+# - additional_framework_paths: additional sub paths we had to add to the HEADER_SEARCH_PATH
+# - framework_name: the name of the framework in case it is different from the pod_name
+# - base_dir: Base directory from where we need to start looking. Defaults to PODS_CONFIGURATION_BUILD_DIR
+# - include_base_folder: whether the array must include the base import path or only the additional_framework_paths
+def create_header_search_path_for_frameworks(pod_name, additional_framework_paths: [], framework_name: nil, base_dir: "PODS_CONFIGURATION_BUILD_DIR", include_base_folder: true)
+  fixed_framework_name = framework_name != nil ? framework_name : pod_name.gsub("-", "_")
+  return ReactNativePodsUtils.create_header_search_path_for_frameworks(base_dir, pod_name, fixed_framework_name, additional_framework_paths, include_base_folder)
 end
 
 # This function can be used by library developer to prepare their modules for the New Architecture.
