@@ -35,5 +35,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "wait-for-expect": "^3.0.2"
   }
 }
