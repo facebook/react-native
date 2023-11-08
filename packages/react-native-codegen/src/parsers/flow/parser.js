@@ -55,8 +55,7 @@ const {
   getTypeAnnotation,
 } = require('./components/componentsUtils');
 const {flowTranslateTypeAnnotation} = require('./modules');
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
+const {parseFlowAndThrowErrors} = require('./parseFlowAndThrowErrors');
 const fs = require('fs');
 const invariant = require('invariant');
 
@@ -143,10 +142,8 @@ class FlowParser implements Parser {
     return this.parseString(contents, 'path/NativeSampleTurboModule.js');
   }
 
-  getAst(contents: string): $FlowFixMe {
-    return flowParser.parse(contents, {
-      enums: true,
-    });
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
+    return parseFlowAndThrowErrors(contents, {filename});
   }
 
   getFunctionTypeAnnotationParameters(
