@@ -27,8 +27,7 @@ header_search_paths = [
 ]
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" #this is needed to allow the Renderer/Debug access its own files
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the Renderer/Debug access its own files
 end
 
 Pod::Spec.new do |s|
@@ -55,8 +54,8 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "React-debug"
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
   s.dependency 'fmt' , '~> 6.2.1'
+  add_dependency(s, "React-debug")
 end

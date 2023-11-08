@@ -44,9 +44,10 @@ Pod::Spec.new do |s|
   end
 
   s.dependency folly_dep_name, folly_version
-  s.dependency "React-jsi"
   s.dependency "React-nativeconfig"
   s.dependency "React-jsitracing"
+  s.dependency "React-utils"
+  s.dependency "React-jsi"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

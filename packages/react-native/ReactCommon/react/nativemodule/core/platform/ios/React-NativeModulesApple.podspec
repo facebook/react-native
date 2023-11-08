@@ -48,10 +48,12 @@ Pod::Spec.new do |s|
     s.dependency "React-callinvoker"
     s.dependency "React-Core"
     s.dependency "React-cxxreact"
-    s.dependency "React-runtimeexecutor"
     s.dependency "React-jsi"
+    s.dependency "React-runtimeexecutor"
 
     if using_hermes
       s.dependency "hermes-engine"
+    else
+      s.dependency "React-jsc"
     end
 end

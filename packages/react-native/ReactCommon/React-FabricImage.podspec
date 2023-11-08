@@ -27,21 +27,16 @@ header_search_path = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
   header_search_path = header_search_path + [
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fmt/include\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
-    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\"",
-    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
-    "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\""
+    # "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
   ]
 end
 
@@ -69,25 +64,30 @@ Pod::Spec.new do |s|
   end
 
   s.dependency folly_dep_name, folly_version
-  s.dependency "React-graphics", version
+
   s.dependency "React-jsiexecutor", version
   s.dependency "RCTRequired", version
   s.dependency "RCTTypeSafety", version
-  s.dependency "ReactCommon/turbomodule/core", version
-  s.dependency "React-jsi", version
+  s.dependency "React-jsi"
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
   s.dependency 'fmt' , '~> 6.2.1'
   s.dependency "React-ImageManager"
-  s.dependency "React-Fabric"
   s.dependency "React-utils"
-  s.dependency "React-rendererdebug"
   s.dependency "Yoga"
+
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core")
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/components/view/platform/cxx",
+    "react/renderer/imagemanager/platform/ios"
+  ])
+  add_dependency(s, "React-rendererdebug")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   else
-    s.dependency "React-jsi"
+    s.dependency "React-jsc"
   end
 end

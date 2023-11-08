@@ -30,26 +30,15 @@ header_search_paths = [
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
-  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/textlayoutmanager/platform/ios\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/textinput/iostextinput\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-nativeconfig/React_nativeconfig.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\""
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers\""
+  create_header_search_path_for_frameworks("React-RCTFabric", :framework_name => "RCTFabric")
+    .each { |search_path| header_search_paths << "\"#{search_path}\""}
 end
+
+module_name = "RCTFabric"
+header_dir = "React"
 
 Pod::Spec.new do |s|
   s.name                   = "React-RCTFabric"
@@ -64,37 +53,44 @@ Pod::Spec.new do |s|
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.header_dir             = "React"
-  s.module_name            = "RCTFabric"
+  s.header_dir             = header_dir
+  s.module_name            = module_name
   s.framework              = ["JavaScriptCore", "MobileCoreServices"]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
-    "PUBLIC_HEADERS_FOLDER_PATH" => "$(CONTENTS_FOLDER_PATH)/Headers/React"
+    "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
   }: {})
 
-  s.dependency "React-Core", version
-  s.dependency "React-Fabric", version
-  s.dependency "React-RCTImage", version
-  s.dependency "React-ImageManager"
-  s.dependency "React-graphics"
+  s.dependency "React-Core"
+  s.dependency "React-RCTImage"
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "glog"
   s.dependency "Yoga"
   s.dependency "React-RCTText"
-  s.dependency "React-FabricImage"
-  s.dependency "React-debug"
-  s.dependency "React-utils"
-  s.dependency "React-rendererdebug"
-  s.dependency "React-nativeconfig"
-  s.dependency "React-runtimescheduler"
+  s.dependency "React-jsi"
+
+  add_dependency(s, "React-FabricImage")
+  add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/textlayoutmanager/platform/ios",
+    "react/renderer/components/textinput/iostextinput",
+    "react/renderer/components/view/platform/cxx",
+    "react/renderer/imagemanager/platform/ios",
+  ])
+  add_dependency(s, "React-nativeconfig")
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-ImageManager")
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-utils")
+  add_dependency(s, "React-rendererdebug")
+  add_dependency(s, "React-runtimescheduler")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   else
-    s.dependency "React-jsi"
+    s.dependency "React-jsc"
   end
 
   s.test_spec 'Tests' do |test_spec|
