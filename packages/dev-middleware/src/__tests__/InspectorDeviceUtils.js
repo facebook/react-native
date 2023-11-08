@@ -92,6 +92,10 @@ export class DeviceMock extends DeviceAgent {
     | void,
   > = jest.fn();
   +wrappedEvent: JestMockFn<[message: WrappedEvent], void> = jest.fn();
+  +wrappedEventParsed: JestMockFn<
+    [payload: {...WrappedEvent['payload'], wrappedEvent: JSONSerializable}],
+    void,
+  > = jest.fn();
 
   __handle(message: MessageToDevice): void {
     switch (message.event) {
@@ -107,6 +111,10 @@ export class DeviceMock extends DeviceAgent {
         break;
       case 'wrappedEvent':
         this.wrappedEvent(message);
+        this.wrappedEventParsed({
+          ...message.payload,
+          wrappedEvent: JSON.parse(message.payload.wrappedEvent),
+        });
         break;
       default:
         (message: empty);
