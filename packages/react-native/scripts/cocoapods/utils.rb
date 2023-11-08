@@ -244,6 +244,30 @@ class ReactNativePodsUtils
         return search_paths
     end
 
+    # Add a new dependency to an existing spec, configuring also the headers search paths
+    def self.add_dependency(spec, dependency_name, base_folder_for_frameworks, framework_name, additional_paths: [], version: nil, subspec_dependency: nil)
+        # Update Search Path
+        optional_current_search_path = spec.to_hash["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"]
+        current_search_paths = (optional_current_search_path != nil ? optional_current_search_path : "")
+            .split(" ")
+        create_header_search_path_for_frameworks(base_folder_for_frameworks, dependency_name, framework_name, additional_paths)
+            .each { |path|
+                wrapped_path = "\"#{path}\""
+                current_search_paths << wrapped_path
+            }
+        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"]
+        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] = current_search_paths.join(" ")
+        spec.pod_target_xcconfig = current_pod_target_xcconfig
+
+        actual_dependency = subspec_dependency != nil ? "#{dependency_name}/#{subspec_dependency}" : dependency_name
+        # Set Dependency
+        if !version
+            spec.dependency actual_dependency
+        else
+            spec.dependency actual_dependency, version
+        end
+    end
+
     def self.update_search_paths(installer)
         return if ENV['USE_FRAMEWORKS'] == nil
 
