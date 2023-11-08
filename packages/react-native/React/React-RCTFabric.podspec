@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
-    "PUBLIC_HEADERS_FOLDER_PATH" => "$(CONTENTS_FOLDER_PATH)/Headers/React"
+    "PUBLIC_HEADERS_FOLDER_PATH" => "RCTFabric.framework/Headers/React"
   }: {})
 
   s.dependency "React-Core", version
