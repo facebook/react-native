@@ -64,8 +64,10 @@ static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socket
 
 static void sendEventToAllConnections(NSString *event)
 {
-  for (NSString *socketId in socketConnections) {
-    [socketConnections[socketId] sendEventToAllConnections:event];
+  @synchronized (socketConnections) {
+    for (NSString *socketId in socketConnections) {
+      [socketConnections[socketId] sendEventToAllConnections:event];
+    }
   }
 }
 
@@ -101,8 +103,10 @@ static void sendEventToAllConnections(NSString *event)
   // Note, using a static dictionary isn't really the greatest design, but
   // the packager connection does the same thing, so it's at least consistent.
   // This is a static map that holds different inspector clients per the inspectorURL
-  if (socketConnections == nil) {
-    socketConnections = [NSMutableDictionary new];
+  @synchronized (socketConnections) {
+    if (socketConnections == nil) {
+      socketConnections = [NSMutableDictionary new];
+    }
   }
 
   NSString *key = [inspectorURL absoluteString];
@@ -112,17 +116,22 @@ static void sendEventToAllConnections(NSString *event)
     return nil;
   }
   // macOS]
-  RCTInspectorPackagerConnection *connection = socketConnections[key];
-  if (!connection || !connection.isConnected) {
-    connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    // [macOS safety check to avoid a crash
-    if (connection == nil) {
-      RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
-      return nil;
+
+  RCTInspectorPackagerConnection *connection;
+
+  @synchronized (socketConnections) {
+    connection = socketConnections[key];
+    if (!connection || !connection.isConnected) {
+      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+      // [macOS safety check to avoid a crash
+      if (connection == nil) {
+        RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
+        return nil;
+      }
+      // macOS]
+      socketConnections[key] = connection;
+      [connection connect];
     }
-    // macOS]
-    socketConnections[key] = connection;
-    [connection connect];
   }
 
   return connection;
