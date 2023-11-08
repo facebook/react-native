@@ -74,7 +74,7 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
-static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge, RCTBridgeProxy *bridgeProxy)
+static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge)
 {
   Class viewManager = getViewManagerFromComponentName(componentName);
   if (viewManager != nil) {
@@ -100,7 +100,7 @@ static const std::shared_ptr<void> constructCoordinator(
   }
 
   auto componentName = *std::static_pointer_cast<std::string const>(flavor);
-  Class viewManagerClass = getViewManagerClass(componentName, bridge, bridgeProxy);
+  Class viewManagerClass = getViewManagerClass(componentName, bridge);
   assert(viewManagerClass);
 
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
