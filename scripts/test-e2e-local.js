@@ -235,7 +235,7 @@ async function testRNTestProject(circleCIArtifacts) {
       : `${mavenLocalPath}/tmp/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
+`echo "REACT_NATIVE_MAVEN_LOCAL_REPO=${expandedMavenLocal}" >> android/gradle.properties`,
   );
 
   // Update gradle properties to set Hermes as false
