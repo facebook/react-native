@@ -480,7 +480,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(

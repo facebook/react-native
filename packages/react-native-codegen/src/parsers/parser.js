@@ -169,9 +169,11 @@ export interface Parser {
   /**
    * Given the content of a file, it returns an AST.
    * @parameter contents: the content of the file.
+   * @parameter filename: the name of the file, if available.
+   * @throws if there is a syntax error.
    * @returns: the AST of the file.
    */
-  getAst(contents: string): $FlowFixMe;
+  getAst(contents: string, filename?: ?string): $FlowFixMe;
 
   /**
    * Given a FunctionTypeAnnotation, it returns an array of its parameters.
