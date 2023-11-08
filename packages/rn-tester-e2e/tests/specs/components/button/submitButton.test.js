@@ -15,16 +15,28 @@ const {
 
 const submitText = 'Your application has been submitted!';
 
-describe('Test is checking submit button', function () {
-  it('Should view properly submit alert text', async function () {
+describe('Testing Submit Button functionality ', function () {
+  it('Should ensure the Button component is displayed', async function () {
     expect(
       await ComponentsScreen.checkButtonComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the Button component', async function () {
     await ComponentsScreen.clickButtonComponent();
+  });
+
+  it('Should click the Submit Application button', async function () {
     await ButtonComponentScreen.clickSubmitApplication();
+  });
+
+  it('Should verify that the submit alert text is displayed', async function () {
     expect(await ButtonComponentScreen.getSubmitAlertText()).toContain(
       submitText,
     );
+  });
+
+  it('Should click the OK button in the alert', async function () {
     await ButtonComponentScreen.clickOkButton();
   });
 });

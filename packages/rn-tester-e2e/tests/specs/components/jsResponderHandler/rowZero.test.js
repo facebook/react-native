@@ -16,7 +16,7 @@ const {
 // fixed variables
 const roweZeroText = 'I am row 0';
 
-describe('Test is checking row zero JSResponderHandler component', function () {
+describe('Testing row zero of JSResponderHandler Functionality Testis checking row zero JSResponderHandler component', function () {
   it('Should scroll to JSResponderHandler component', async function () {
     await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
   });

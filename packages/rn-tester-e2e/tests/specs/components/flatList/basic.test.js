@@ -13,18 +13,36 @@ const {
   FlatListComponentScreen,
 } = require('../../../screens/components/flatListComponent.screen.js');
 
-describe('Test is checking basic flat list', function () {
-  it('Should view properly search bar of basic flat list', async function () {
+describe('Testing Basic Flat List Functionality', function () {
+  it('Should view properly the FlatList component', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Click on FlatList component', async function () {
     await ComponentsScreen.clickFlatListComponent();
+  });
+
+  it('Should view properly the FlatList Content Inset Screen', async function () {
     expect(
-      await FlatListComponentScreen.checkFlatListBasicScreenIsDisplayed(),
+      await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
     ).toBeTruthy();
-    await FlatListComponentScreen.clickFlatListBasicButton();
+  });
+
+  it('Click on FlatList Content Inset button', async function () {
+    await FlatListComponentScreen.clickFlatListContentInsetButton();
+  });
+
+  it('Should view properly the collapse button', async function () {
     expect(
-      await FlatListComponentScreen.checkSearchBarIsDisplayed(),
+      await FlatListComponentScreen.checkCollapseButtonIsDisplayed(),
+    ).toBeTruthy();
+  });
+
+  it('Should view properly the Content Inset menu', async function () {
+    expect(
+      await FlatListComponentScreen.checkContentInsetMenuIsDisplayed(),
     ).toBeTruthy();
   });
 });

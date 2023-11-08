@@ -13,13 +13,22 @@ const {
   RefreshControlComponentScreen,
 } = require('../../../screens/components/refreshControlComponent.screen.js');
 
-describe('Test is checking RefreshControl component', function () {
-  it('Should view initial row element', async function () {
+describe('Testing if any Initial Row is visible', function () {
+  it('Should scroll until the Refresh Control component is displayed', async function () {
     await RefreshControlComponentScreen.scrollUntilRefreshControlComponentIsDisplayed();
+  });
+
+  it('Should verify that the Refresh Control component is visible', async function () {
     expect(
       await ComponentsScreen.checkRefreshControlComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the Refresh Control component', async function () {
     await ComponentsScreen.clickRefreshControlComponent();
+  });
+
+  it('Should check that the initial row is displayed', async function () {
     expect(
       await RefreshControlComponentScreen.checkInitialRowIsDisplayed(),
     ).toBeTruthy();

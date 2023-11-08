@@ -13,20 +13,38 @@ const {
   FlatListComponentScreen,
 } = require('../../../screens/components/flatListComponent.screen.js');
 
-describe('Test is checking onEndReached flat list', function () {
-  it('Should view properly the last element', async function () {
+describe('Testing onEndReached Flat List Functionality', function () {
+  it('Should display the FlatList component', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the FlatList component', async function () {
     await ComponentsScreen.clickFlatListComponent();
+  });
+
+  it('Should display the FlatList OnEndReached Screen', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListOnEndReachedScreenIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the OnEndReached button', async function () {
     await FlatListComponentScreen.clickFlatListOnEndButton();
+  });
+
+  it('Should display the collapse button after clicking on the OnEndReached button', async function () {
     expect(
       await FlatListComponentScreen.checkCollapseButtonIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the OnStartTest button', async function () {
     await FlatListComponentScreen.clickFlatListOnStartTestButton();
+  });
+
+  it('Should display the ice cream after clicking on the OnStartTest button', async function () {
     expect(
       await FlatListComponentScreen.checkIceCreamIsDisplayed(),
     ).toBeTruthy();

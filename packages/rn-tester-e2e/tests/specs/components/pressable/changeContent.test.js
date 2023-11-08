@@ -16,20 +16,38 @@ const {
 // fixed variables
 const onPressText = 'onPress';
 
-describe('Test is checking pressable component', function () {
-  it('Should view onPress text', async function () {
+describe('Testing Press Me button of Change conent based on Press Functionality', function () {
+  it('Should scroll until the Pressable component is displayed', async function () {
     await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();
+  });
+
+  it('Should ensure the Pressable component is visible', async function () {
     expect(
       await ComponentsScreen.checkPressableComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the Pressable component', async function () {
     await ComponentsScreen.clickPressableComponent();
+  });
+
+  it('Should display the Press Me header', async function () {
     expect(
       await PressableComponentScreen.checkPressMeHeaderIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click the Press Me button', async function () {
     await PressableComponentScreen.clickPressMeButton();
+  });
+
+  it('Should check if onPress text is displayed', async function () {
     expect(
       await PressableComponentScreen.checkOnPressIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should verify the onPress text content', async function () {
     expect(await PressableComponentScreen.getOnPressText()).toContain(
       onPressText,
     );

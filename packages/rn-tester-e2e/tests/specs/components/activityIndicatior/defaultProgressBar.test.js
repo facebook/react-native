@@ -13,23 +13,23 @@ const {
   ActivityIndicatorComponentScreen,
 } = require('../../../screens/components/activityIndicatorComponent.screen.js');
 
-describe('Test is checking default activity indicator component', function () {
+describe('Testing Default Activity Indicator Functionality', function () {
   before(async function (capabilities, specs) {
     //Added it for make sure that metro bundler is completed
     await ComponentsScreen.checkComponentScreenHeaderIsDisplayed();
   });
 
-  it('Should view properly Indicator Component', async function () {
+  it('Should ensure the Activity Indicator component is displayed', async () => {
     expect(
       await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Click Activity Indicator', async function () {
+  it('Should click on the Activity Indicator component', async () => {
     await ComponentsScreen.clickActivityIndicatorComponent();
   });
 
-  it('Should view properly default progress bar', async function () {
+  it('Should check that the default Activity Indicator is visible', async () => {
     expect(
       await ActivityIndicatorComponentScreen.checkDefaultActivityIndicatorIsDisplayed(),
     ).toBeTruthy();

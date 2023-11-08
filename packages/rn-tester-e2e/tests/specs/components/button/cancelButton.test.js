@@ -15,16 +15,28 @@ const {
 
 const cancelText = 'Your application has been cancelled!';
 
-describe('Test is checking cancel button', function () {
-  it('Should view properly submit cancel text', async function () {
+describe('Testing Cancel Button Functionality', function () {
+  it('Should ensure the Button component is displayed', async function () {
     expect(
       await ComponentsScreen.checkButtonComponentIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should click on the Button component', async function () {
     await ComponentsScreen.clickButtonComponent();
+  });
+
+  it('Should click the Cancel Application button', async function () {
     await ButtonComponentScreen.clickCancelApplication();
+  });
+
+  it('Should view properly submit cancel text', async function () {
     expect(await ButtonComponentScreen.getCancelAlertText()).toContain(
       cancelText,
     );
+  });
+
+  it('Should click the OK button', async function () {
     await ButtonComponentScreen.clickOkButton();
   });
 });
