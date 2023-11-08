@@ -73,14 +73,11 @@ describe('inspector proxy CDP transport', () => {
 
         await until(() => expect(device1.wrappedEvent).toBeCalled());
 
-        expect(device1.wrappedEvent).toBeCalledWith({
-          event: 'wrappedEvent',
-          payload: {
-            pageId: 'page1',
-            wrappedEvent: JSON.stringify({
-              method: 'Runtime.enable',
-              id: 0,
-            }),
+        expect(device1.wrappedEventParsed).toBeCalledWith({
+          pageId: 'page1',
+          wrappedEvent: {
+            method: 'Runtime.enable',
+            id: 0,
           },
         });
 
