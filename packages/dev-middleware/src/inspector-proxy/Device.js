@@ -93,6 +93,8 @@ export default class Device {
 
   _deviceEventReporter: ?DeviceEventReporter;
 
+  _pagesPollingIntervalId: ReturnType<typeof setInterval>;
+
   constructor(
     id: string,
     name: string,
@@ -132,6 +134,11 @@ export default class Device {
       }
       this._handleMessageFromDevice(parsedMessage);
     });
+    // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
+    this._pagesPollingIntervalId = setInterval(
+      () => this._sendMessageToDevice({event: 'getPages'}),
+      PAGES_POLLING_INTERVAL,
+    );
     this._deviceSocket.on('close', () => {
       this._deviceEventReporter?.logDisconnection('device');
       // Device disconnected - close debugger connection.
@@ -139,9 +146,8 @@ export default class Device {
         this._debuggerConnection.socket.close();
         this._debuggerConnection = null;
       }
+      clearInterval(this._pagesPollingIntervalId);
     });
-
-    this._setPagesPolling();
   }
 
   getName(): string {
@@ -371,14 +377,6 @@ export default class Device {
       }
       this._deviceSocket.send(JSON.stringify(message));
     } catch (error) {}
-  }
-
-  // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
-  _setPagesPolling() {
-    setInterval(
-      () => this._sendMessageToDevice({event: 'getPages'}),
-      PAGES_POLLING_INTERVAL,
-    );
   }
 
   // We received new React Native Page ID.
