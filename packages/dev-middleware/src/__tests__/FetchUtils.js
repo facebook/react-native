@@ -10,7 +10,9 @@
  */
 
 import type {JSONSerializable} from '../inspector-proxy/types';
+import typeof * as NodeFetch from 'node-fetch';
 
+import https from 'https';
 import {Agent} from 'undici';
 
 /**
@@ -42,4 +44,27 @@ export async function fetchJson<T: JSONSerializable>(url: string): Promise<T> {
     throw new Error(`HTTP ${response.status} ${response.statusText}`);
   }
   return response.json();
+}
+
+export function allowSelfSignedCertsInNodeFetch(): void {
+  jest.mock('node-fetch', () => {
+    const originalModule = jest.requireActual<NodeFetch>('node-fetch');
+    const nodeFetch = originalModule.default;
+    return {
+      __esModule: true,
+      ...originalModule,
+      default: (url, options) => {
+        if (
+          (url instanceof URL && url.protocol === 'https:') ||
+          (typeof url === 'string' && url.startsWith('https:'))
+        ) {
+          const agent = new https.Agent({
+            rejectUnauthorized: false,
+          });
+          return nodeFetch(url.toString(), {agent, ...options});
+        }
+        return nodeFetch(url, options);
+      },
+    };
+  });
 }
