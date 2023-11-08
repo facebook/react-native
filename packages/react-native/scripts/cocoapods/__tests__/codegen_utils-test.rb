@@ -546,14 +546,17 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "FRAMEWORK_SEARCH_PATHS" => [],
             "HEADER_SEARCH_PATHS" =>
             [
-              "\"$(PODS_ROOT)/boost\"",
-              "\"$(PODS_ROOT)/RCT-Folly\"",
-              "\"$(PODS_ROOT)/DoubleConversion\"",
-              "\"$(PODS_ROOT)/fmt/include\"",
-              "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-              "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
-              "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
-              "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+                "\"$(PODS_ROOT)/boost\"",
+                "\"$(PODS_ROOT)/RCT-Folly\"",
+                "\"$(PODS_ROOT)/DoubleConversion\"",
+                "\"$(PODS_ROOT)/fmt/include\"",
+                "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+                "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
+                "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
+                "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+                "\"$(PODS_ROOT)/DoubleConversion\"",
+                "\"$(PODS_ROOT)/fmt/include\"",
+                "\"$(PODS_TARGET_SRCROOT)\"",
             ].join(' ')
           },
           'dependencies': {
@@ -596,7 +599,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"")
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],
