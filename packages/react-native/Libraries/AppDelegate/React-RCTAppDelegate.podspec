@@ -21,7 +21,6 @@ folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
 use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
@@ -43,21 +42,7 @@ header_search_paths = [
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
-] : []).concat(use_frameworks ? [
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RuntimeApple/React_RuntimeApple.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RuntimeCore/React_RuntimeCore.framework/Headers",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-runtimescheduler/React_runtimescheduler.framework/Headers/",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/",
-] : []).map{|p| "\"#{p}\""}.join(" ")
+] : [])
 
 Pod::Spec.new do |s|
   s.name            = "React-RCTAppDelegate"
@@ -87,18 +72,19 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
-  s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-RCTNetwork"
   s.dependency "React-RCTImage"
-  s.dependency "React-NativeModulesApple"
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
-  s.dependency "React-runtimescheduler"
-  s.dependency "React-RCTFabric"
+
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
+  add_dependency(s, "React-NativeModulesApple")
+  add_dependency(s, "React-runtimescheduler")
+  add_dependency(s, "React-RCTFabric", :framework_name => "RCTFabric")
 
   if is_new_arch_enabled
-    s.dependency "React-RuntimeCore"
-    s.dependency "React-RuntimeApple"
+    add_dependency(s, "React-RuntimeCore")
+    add_dependency(s, "React-RuntimeApple")
     if use_hermes
       s.dependency "React-RuntimeHermes"
     end
@@ -111,11 +97,11 @@ Pod::Spec.new do |s|
   end
 
   if is_new_arch_enabled
-    s.dependency "React-Fabric"
-    s.dependency "React-graphics"
-    s.dependency "React-utils"
-    s.dependency "React-debug"
-    s.dependency "React-rendererdebug"
+    add_dependency(s, "React-Fabric", :additional_framework_paths => ["react/renderer/components/view/platform/cxx"])
+    add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+    add_dependency(s, "React-utils")
+    add_dependency(s, "React-debug")
+    add_dependency(s, "React-rendererdebug")
 
     rel_path_from_pods_root_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(Pod::Config.instance.installation_root)
     rel_path_from_pods_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(File.join(Pod::Config.instance.installation_root, 'Pods'))
