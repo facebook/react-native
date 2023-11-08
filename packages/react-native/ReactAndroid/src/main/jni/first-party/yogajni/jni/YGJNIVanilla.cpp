@@ -385,13 +385,6 @@ jni_YGNodeMarkDirtyJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
   YGNodeMarkDirty(_jlong2YGNodeRef(nativePointer));
 }
 
-static void jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(
-    JNIEnv* /*env*/,
-    jobject /*obj*/,
-    jlong nativePointer) {
-  YGNodeMarkDirtyAndPropagateToDescendants(_jlong2YGNodeRef(nativePointer));
-}
-
 static jboolean
 jni_YGNodeIsDirtyJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
   return (jboolean)YGNodeIsDirty(_jlong2YGNodeRef(nativePointer));
@@ -776,9 +769,6 @@ static JNINativeMethod methods[] = {
      "(JFF[J[Lcom/facebook/yoga/YogaNodeJNIBase;)V",
      (void*)jni_YGNodeCalculateLayoutJNI},
     {"jni_YGNodeMarkDirtyJNI", "(J)V", (void*)jni_YGNodeMarkDirtyJNI},
-    {"jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI",
-     "(J)V",
-     (void*)jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI},
     {"jni_YGNodeIsDirtyJNI", "(J)Z", (void*)jni_YGNodeIsDirtyJNI},
     {"jni_YGNodeCopyStyleJNI", "(JJ)V", (void*)jni_YGNodeCopyStyleJNI},
     {"jni_YGNodeStyleGetDirectionJNI",

@@ -640,13 +640,6 @@ void Node::markDirtyAndPropagate() {
   }
 }
 
-void Node::markDirtyAndPropagateDownwards() {
-  isDirty_ = true;
-  for_each(children_.begin(), children_.end(), [](Node* childNode) {
-    childNode->markDirtyAndPropagateDownwards();
-  });
-}
-
 float Node::resolveFlexGrow() const {
   // Root nodes flexGrow should always be 0
   if (owner_ == nullptr) {

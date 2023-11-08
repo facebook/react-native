@@ -92,10 +92,6 @@ bool YGNodeIsDirty(YGNodeConstRef node) {
   return resolveRef(node)->isDirty();
 }
 
-void YGNodeMarkDirtyAndPropagateToDescendants(const YGNodeRef node) {
-  return resolveRef(node)->markDirtyAndPropagateDownwards();
-}
-
 YGNodeRef YGNodeNewWithConfig(const YGConfigConstRef config) {
   auto* node = new yoga::Node{resolveRef(config)};
   yoga::assertFatal(
