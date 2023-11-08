@@ -341,7 +341,6 @@ class YG_EXPORT Node : public ::YGNode {
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void markDirtyAndPropagateDownwards();
 
   // Other methods
   YGValue getFlexStartMarginValue(FlexDirection axis) const;

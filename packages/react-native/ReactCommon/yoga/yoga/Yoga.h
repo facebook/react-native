@@ -94,12 +94,6 @@ YG_EXPORT void YGNodeCalculateLayout(
 // this dirty marking manually.
 YG_EXPORT void YGNodeMarkDirty(YGNodeRef node);
 
-// Marks the current node and all its descendants as dirty.
-//
-// Intended to be used for Yoga benchmarks. Don't use in production, as calling
-// `YGCalculateLayout` will cause the recalculation of each and every node.
-YG_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(YGNodeRef node);
-
 YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
 
 YG_EXPORT bool YGFloatIsUndefined(float value);
