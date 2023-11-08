@@ -9,6 +9,11 @@
  * @oncall react_native
  */
 
+import type {
+  JsonPagesListResponse,
+  JsonVersionResponse,
+} from '../inspector-proxy/types';
+
 import {fetchJson} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
@@ -31,14 +36,18 @@ describe('inspector proxy HTTP API', () => {
 
   describe('/json/version endpoint', () => {
     test('returns version', async () => {
-      const json = await fetchJson(`${serverRef.serverBaseUrl}/json/version`);
+      const json = await fetchJson<JsonVersionResponse>(
+        `${serverRef.serverBaseUrl}/json/version`,
+      );
       expect(json).toMatchSnapshot();
     });
   });
 
   describe.each(['/json', '/json/list'])('%s endpoint', endpoint => {
     test('empty on start', async () => {
-      const json = await fetchJson(`${serverRef.serverBaseUrl}${endpoint}`);
+      const json = await fetchJson<JsonPagesListResponse>(
+        `${serverRef.serverBaseUrl}${endpoint}`,
+      );
       expect(json).toEqual([]);
     });
 
@@ -59,7 +68,7 @@ describe('inspector proxy HTTP API', () => {
 
         jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
-        const jsonBefore = await fetchJson(
+        const jsonBefore = await fetchJson<JsonPagesListResponse>(
           `${serverRef.serverBaseUrl}${endpoint}`,
         );
 
@@ -74,7 +83,7 @@ describe('inspector proxy HTTP API', () => {
 
         jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
-        const jsonAfter = await fetchJson(
+        const jsonAfter = await fetchJson<JsonPagesListResponse>(
           `${serverRef.serverBaseUrl}${endpoint}`,
         );
 
@@ -115,13 +124,13 @@ describe('inspector proxy HTTP API', () => {
 
         jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
-        const jsonBefore = await fetchJson(
+        const jsonBefore = await fetchJson<JsonPagesListResponse>(
           `${serverRef.serverBaseUrl}${endpoint}`,
         );
 
         device1.close();
 
-        const jsonAfter = await fetchJson(
+        const jsonAfter = await fetchJson<JsonPagesListResponse>(
           `${serverRef.serverBaseUrl}${endpoint}`,
         );
 
@@ -171,7 +180,9 @@ describe('inspector proxy HTTP API', () => {
       jest.advanceTimersByTime(10 * PAGES_POLLING_DELAY);
 
       try {
-        const json = await fetchJson(`${serverRef.serverBaseUrl}${endpoint}`);
+        const json = await fetchJson<JsonPagesListResponse>(
+          `${serverRef.serverBaseUrl}${endpoint}`,
+        );
         expect(json).toEqual([
           {
             description: 'bar-app',
@@ -206,6 +217,56 @@ describe('inspector proxy HTTP API', () => {
         device1.close();
         device2.close();
       }
+    });
+
+    describe('HTTP vs HTTPS', () => {
+      const secureServerRef = withServerForEachTest({
+        logger: undefined,
+        projectRoot: '',
+        secure: true,
+      });
+
+      test('uses `wss` scheme and param if server is HTTPS', async () => {
+        const page = {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        };
+
+        let deviceHttp, deviceHttps;
+
+        try {
+          deviceHttp = await createDeviceMock(
+            `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+            autoCleanup.signal,
+          );
+          deviceHttp.getPages.mockImplementation(() => [page]);
+
+          deviceHttps = await createDeviceMock(
+            `${secureServerRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+            autoCleanup.signal,
+          );
+          deviceHttps.getPages.mockImplementation(() => [page]);
+
+          jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+          const [pageHttp] = await fetchJson<JsonPagesListResponse>(
+            `${serverRef.serverBaseUrl}${endpoint}`,
+          );
+          const [pageHttps] = await fetchJson<JsonPagesListResponse>(
+            `${secureServerRef.serverBaseUrl}${endpoint}`,
+          );
+
+          expect(pageHttp.webSocketDebuggerUrl).toMatch(/^ws:\/\//);
+          expect(pageHttps.webSocketDebuggerUrl).toMatch(/^wss:\/\//);
+          expect(pageHttp.devtoolsFrontendUrl).toMatch(/[&?]ws=/);
+          expect(pageHttps.devtoolsFrontendUrl).toMatch(/[&?]wss=/);
+        } finally {
+          deviceHttp?.close();
+          deviceHttps?.close();
+        }
+      });
     });
   });
 });
