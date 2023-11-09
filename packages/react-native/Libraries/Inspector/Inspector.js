@@ -57,8 +57,6 @@ class Inspector extends React.Component<
     ...
   },
 > {
-  _hideTimeoutID: TimeoutID | null = null;
-  _subs: ?Array<() => void>;
   _setTouchedViewData: ?(TouchedViewDataAtPoint) => void;
 
   constructor(props: Props) {
@@ -77,10 +75,6 @@ class Inspector extends React.Component<
   }
 
   componentWillUnmount() {
-    if (this._subs) {
-      this._subs.map(fn => fn());
-    }
-
     this._setTouchedViewData = null;
   }
 
