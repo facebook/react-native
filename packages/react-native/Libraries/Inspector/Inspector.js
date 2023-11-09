@@ -29,13 +29,17 @@ const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 // Required for React DevTools to view/edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
-hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
-hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
+if (hook) {
+  hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
+  hook.nativeStyleEditorValidAttributes = Object.keys(
+    ReactNativeStyleAttributes,
+  );
+}
 
 class Inspector extends React.Component<
   {
     inspectedView: ?HostRef,
-    onRequestRerenderApp: (callback: (instance: ?HostRef) => void) => void,
+    onRequestRerenderApp: () => void,
     ...
   },
   {
@@ -194,9 +198,7 @@ class Inspector extends React.Component<
 
   setTouchTargeting(val: boolean) {
     PressabilityDebug.setEnabled(val);
-    this.props.onRequestRerenderApp(inspectedView => {
-      this.setState({inspectedView});
-    });
+    this.props.onRequestRerenderApp();
   }
 
   setNetworking(val: boolean) {
