@@ -44,6 +44,8 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(" ")
                              }
 
+  s.framework = ["UIKit", "QuartzCore"]
+  
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety"
   s.dependency "React-jsi"

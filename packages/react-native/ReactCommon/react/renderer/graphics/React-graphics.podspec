@@ -53,6 +53,8 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
+  
+  s.framework = "UIKit"
 
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
                              "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
