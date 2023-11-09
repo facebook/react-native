@@ -28,10 +28,17 @@ export type InstanceFromReactDevTools =
 export type ReactDevToolsAgentEvents = {
   drawTraceUpdates: [Array<{node: InstanceFromReactDevTools, color: string}>],
   disableTraceUpdates: [],
+
+  showNativeHighlight: [node: InstanceFromReactDevTools],
+  hideNativeHighlight: [],
+  shutdown: [],
+  startInspectingNative: [],
+  stopInspectingNative: [],
 };
 
 export type ReactDevToolsAgent = {
   selectNode(node: mixed): void,
+  stopInspectingNative(value: boolean): void,
   addListener<Event: $Keys<ReactDevToolsAgentEvents>>(
     event: Event,
     listener: (...ReactDevToolsAgentEvents[Event]) => void,

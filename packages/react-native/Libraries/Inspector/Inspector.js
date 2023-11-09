@@ -11,6 +11,7 @@
 'use strict';
 
 import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
+import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
@@ -36,14 +37,15 @@ if (hook) {
   );
 }
 
+type Props = {
+  inspectedView: ?HostRef,
+  onRequestRerenderApp: () => void,
+  reactDevToolsAgent?: ReactDevToolsAgent,
+};
+
 class Inspector extends React.Component<
+  Props,
   {
-    inspectedView: ?HostRef,
-    onRequestRerenderApp: () => void,
-    ...
-  },
-  {
-    devtoolsAgent: ?Object,
     hierarchy: any,
     panelPos: string,
     inspecting: boolean,
@@ -59,11 +61,10 @@ class Inspector extends React.Component<
   _subs: ?Array<() => void>;
   _setTouchedViewData: ?(TouchedViewDataAtPoint) => void;
 
-  constructor(props: Object) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
-      devtoolsAgent: null,
       hierarchy: null,
       panelPos: 'bottom',
       inspecting: true,
@@ -75,42 +76,17 @@ class Inspector extends React.Component<
     };
   }
 
-  componentDidMount() {
-    hook.on('react-devtools', this._attachToDevtools);
-    // if devtools is already started
-    if (hook.reactDevtoolsAgent) {
-      this._attachToDevtools(hook.reactDevtoolsAgent);
-    }
-  }
-
   componentWillUnmount() {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    hook.off('react-devtools', this._attachToDevtools);
+
     this._setTouchedViewData = null;
   }
 
-  UNSAFE_componentWillReceiveProps(newProps: Object) {
+  UNSAFE_componentWillReceiveProps(newProps: Props) {
     this.setState({inspectedView: newProps.inspectedView});
   }
-
-  _attachToDevtools = (agent: Object) => {
-    agent.addListener('shutdown', this._onAgentShutdown);
-
-    this.setState({
-      devtoolsAgent: agent,
-    });
-  };
-
-  _onAgentShutdown = () => {
-    const agent = this.state.devtoolsAgent;
-    if (agent != null) {
-      agent.removeListener('shutdown', this._onAgentShutdown);
-
-      this.setState({devtoolsAgent: null});
-    }
-  };
 
   setSelection(i: number) {
     const hierarchyItem = this.state.hierarchy[i];
@@ -146,7 +122,7 @@ class Inspector extends React.Component<
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
-      const agent = this.state.devtoolsAgent;
+      const agent = this.props.reactDevToolsAgent;
       if (agent) {
         agent.selectNode(findNodeHandle(touchedViewTag));
         if (closestInstance != null) {
@@ -226,7 +202,7 @@ class Inspector extends React.Component<
         )}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
-            devtoolsIsOpen={!!this.state.devtoolsAgent}
+            devtoolsIsOpen={!!this.props.reactDevToolsAgent}
             inspecting={this.state.inspecting}
             perfing={this.state.perfing}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters

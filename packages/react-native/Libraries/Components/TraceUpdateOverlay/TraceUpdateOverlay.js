@@ -11,7 +11,6 @@
 import type {
   InstanceFromReactDevTools,
   ReactDevToolsAgent,
-  ReactDevToolsGlobalHook,
 } from '../../Types/ReactDevToolsTypes';
 import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 
@@ -26,47 +25,27 @@ import TraceUpdateOverlayNativeComponent, {
 import * as React from 'react';
 
 const {useEffect, useRef, useState} = React;
-const hook: ReactDevToolsGlobalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const isNativeComponentReady =
   Platform.OS === 'android' &&
   UIManager.hasViewManagerConfig('TraceUpdateOverlay');
-let devToolsAgent: ?ReactDevToolsAgent;
 
-export default function TraceUpdateOverlay(): React.Node {
+type Props = {
+  reactDevToolsAgent: ReactDevToolsAgent,
+};
+
+export default function TraceUpdateOverlay({
+  reactDevToolsAgent,
+}: Props): React.Node {
   const [overlayDisabled, setOverlayDisabled] = useState(false);
-  // This effect is designed to be explicitly shown here to avoid re-subscribe from the same
-  // overlay component.
+
   useEffect(() => {
     if (!isNativeComponentReady) {
       return;
     }
 
-    function attachToDevtools(agent: ReactDevToolsAgent) {
-      devToolsAgent = agent;
-      agent.addListener('drawTraceUpdates', onAgentDrawTraceUpdates);
-      agent.addListener('disableTraceUpdates', onAgentDisableTraceUpdates);
-    }
-
-    function subscribe() {
-      hook?.on('react-devtools', attachToDevtools);
-      if (hook?.reactDevtoolsAgent) {
-        attachToDevtools(hook.reactDevtoolsAgent);
-      }
-    }
-
-    function unsubscribe() {
-      hook?.off('react-devtools', attachToDevtools);
-      const agent = devToolsAgent;
-      if (agent != null) {
-        agent.removeListener('drawTraceUpdates', onAgentDrawTraceUpdates);
-        agent.removeListener('disableTraceUpdates', onAgentDisableTraceUpdates);
-        devToolsAgent = null;
-      }
-    }
-
-    function onAgentDrawTraceUpdates(
+    const drawTraceUpdates = (
       nodesToDraw: Array<{node: InstanceFromReactDevTools, color: string}> = [],
-    ) {
+    ) => {
       // If overlay is disabled before, now it's enabled.
       setOverlayDisabled(false);
 
@@ -114,16 +93,24 @@ export default function TraceUpdateOverlay(): React.Node {
           console.error(`Failed to measure updated traces. Error: ${err}`);
         },
       );
-    }
+    };
 
-    function onAgentDisableTraceUpdates() {
+    const disableTraceUpdates = () => {
       // When trace updates are disabled from the backend, we won't receive draw events until it's enabled by the next draw. We can safely remove the overlay as it's not needed now.
       setOverlayDisabled(true);
-    }
+    };
 
-    subscribe();
-    return unsubscribe;
-  }, []); // Only run once when the overlay initially rendered
+    reactDevToolsAgent.addListener('drawTraceUpdates', drawTraceUpdates);
+    reactDevToolsAgent.addListener('disableTraceUpdates', drawTraceUpdates);
+
+    return () => {
+      reactDevToolsAgent.removeListener('drawTraceUpdates', drawTraceUpdates);
+      reactDevToolsAgent.removeListener(
+        'disableTraceUpdates',
+        disableTraceUpdates,
+      );
+    };
+  }, [reactDevToolsAgent]);
 
   const nativeComponentRef =
     useRef<?React.ElementRef<typeof TraceUpdateOverlayNativeComponent>>(null);
