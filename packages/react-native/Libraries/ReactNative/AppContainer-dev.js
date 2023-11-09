@@ -9,13 +9,17 @@
  * @oncall react_native
  */
 
+import type {
+  ReactDevToolsAgent,
+  ReactDevToolsGlobalHook,
+} from '../Types/ReactDevToolsTypes';
 import type {Props} from './AppContainer';
 
 import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
 import View from '../Components/View/View';
 import ViewNativeComponent from '../Components/View/ViewNativeComponent';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import ReactDevToolsOverlay from '../Inspector/DevtoolsOverlay';
+import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
 import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {RootTagContext, createRootTag} from './RootTag';
@@ -23,16 +27,19 @@ import * as React from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
-const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const reactDevToolsHook: ReactDevToolsGlobalHook =
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 type InspectorDeferredProps = {
   inspectedView: React.ElementRef<typeof ViewNativeComponent> | null,
   onInspectedViewRerenderRequest: () => void,
+  reactDevToolsAgent?: ReactDevToolsAgent,
 };
 
 const InspectorDeferred = ({
   inspectedView,
   onInspectedViewRerenderRequest,
+  reactDevToolsAgent,
 }: InspectorDeferredProps) => {
   // D39382967 adds a require cycle: InitializeCore -> AppContainer -> Inspector -> InspectorPanel -> ScrollView -> InitializeCore
   // We can't remove it yet, fallback to dynamic require for now. This is the only reason why this logic is in a separate function.
@@ -42,6 +49,7 @@ const InspectorDeferred = ({
     <Inspector
       inspectedView={inspectedView}
       onRequestRerenderApp={onInspectedViewRerenderRequest}
+      reactDevToolsAgent={reactDevToolsAgent}
     />
   );
 };
@@ -62,8 +70,8 @@ const AppContainer = ({
 
   const [key, setKey] = useState(0);
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
-  const [shouldRenderDebuggingOverlays, setShouldRenderDebuggingOverlays] =
-    useState(reactDevToolsHook?.reactDevtoolsAgent != null);
+  const [reactDevToolsAgent, setReactDevToolsAgent] =
+    useState<ReactDevToolsAgent | void>(reactDevToolsHook?.reactDevtoolsAgent);
 
   useEffect(() => {
     let inspectorSubscription = null;
@@ -75,12 +83,9 @@ const AppContainer = ({
     }
 
     let reactDevToolsAgentListener = null;
-    // Subscribe listener, if agent is not attached yet
-    if (
-      reactDevToolsHook != null &&
-      reactDevToolsHook.reactDevtoolsAgent == null
-    ) {
-      reactDevToolsAgentListener = () => setShouldRenderDebuggingOverlays(true);
+    // If this is first render, subscribe to the event from React DevTools hook
+    if (reactDevToolsHook != null && reactDevToolsAgent == null) {
+      reactDevToolsAgentListener = setReactDevToolsAgent;
       reactDevToolsHook.on?.('react-devtools', reactDevToolsAgentListener);
     }
 
@@ -99,7 +104,7 @@ const AppContainer = ({
 
   let innerView: React.Node = (
     <View
-      collapsable={!shouldRenderDebuggingOverlays && !shouldRenderInspector}
+      collapsable={reactDevToolsAgent == null && !shouldRenderInspector}
       pointerEvents="box-none"
       key={key}
       style={styles.container}
@@ -129,15 +134,21 @@ const AppContainer = ({
       <View style={styles.container} pointerEvents="box-none">
         {innerView}
 
-        {shouldRenderDebuggingOverlays && <TraceUpdateOverlay />}
-        {shouldRenderDebuggingOverlays && (
-          <ReactDevToolsOverlay inspectedView={mainRef} />
+        {reactDevToolsAgent != null && (
+          <TraceUpdateOverlay reactDevToolsAgent={reactDevToolsAgent} />
+        )}
+        {reactDevToolsAgent != null && (
+          <ReactDevToolsOverlay
+            inspectedView={mainRef}
+            reactDevToolsAgent={reactDevToolsAgent}
+          />
         )}
 
         {shouldRenderInspector && (
           <InspectorDeferred
             inspectedView={mainRef}
             onInspectedViewRerenderRequest={onInspectedViewRerenderRequest}
+            reactDevToolsAgent={reactDevToolsAgent}
           />
         )}
 
