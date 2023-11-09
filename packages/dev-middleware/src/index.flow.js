@@ -14,5 +14,5 @@ export {default as createDevMiddleware} from './createDevMiddleware';
 export type {BrowserLauncher, LaunchedBrowser} from './types/BrowserLauncher';
 export type {EventReporter, ReportableEvent} from './types/EventReporter';
 
-export {InspectorProxy as unstable_InspectorProxy} from './inspector-proxy/InspectorProxy';
-export {Device as unstable_Device} from './inspector-proxy/Device';
+export {default as unstable_InspectorProxy} from './inspector-proxy/InspectorProxy';
+export {default as unstable_Device} from './inspector-proxy/Device';
