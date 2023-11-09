@@ -77,6 +77,16 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.getValueWithCallback(callbackValue =>
         this._setResult('callback', callbackValue),
       ),
+    callbackWithSubscription: () => {
+      const subscription =
+        NativeCxxModuleExample?.setValueCallbackWithSubscription(
+          callbackValue =>
+            this._setResult('callbackWithSubscription', callbackValue),
+        );
+      if (subscription) {
+        subscription();
+      }
+    },
     getArray: () =>
       NativeCxxModuleExample?.getArray([
         {a: 1, b: 'foo'},
