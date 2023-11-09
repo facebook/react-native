@@ -14,7 +14,6 @@ import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
 import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
@@ -25,17 +24,6 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
 const React = require('react');
-
-const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-
-// Required for React DevTools to view/edit React Native styles in Flipper.
-// Flipper doesn't inject these values when initializing DevTools.
-if (hook) {
-  hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
-  hook.nativeStyleEditorValidAttributes = Object.keys(
-    ReactNativeStyleAttributes,
-  );
-}
 
 type Props = {
   inspectedView: ?HostRef,

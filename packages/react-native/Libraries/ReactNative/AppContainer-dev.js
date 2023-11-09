@@ -16,6 +16,7 @@ import type {
 import type {Props} from './AppContainer';
 
 import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
+import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
 import ViewNativeComponent from '../Components/View/ViewNativeComponent';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
@@ -29,6 +30,15 @@ const {useEffect, useState, useCallback} = React;
 
 const reactDevToolsHook: ReactDevToolsGlobalHook =
   window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+// Required for React DevTools to view / edit React Native styles in Flipper.
+// Flipper doesn't inject these values when initializing DevTools.
+if (reactDevToolsHook) {
+  reactDevToolsHook.resolveRNStyle = require('../StyleSheet/flattenStyle');
+  reactDevToolsHook.nativeStyleEditorValidAttributes = Object.keys(
+    ReactNativeStyleAttributes,
+  );
+}
 
 type InspectorDeferredProps = {
   inspectedView: React.ElementRef<typeof ViewNativeComponent> | null,
