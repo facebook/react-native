@@ -8,6 +8,11 @@
  * @format
  */
 
+import type {
+  InstanceFromReactDevTools,
+  ReactDevToolsAgent,
+  ReactDevToolsGlobalHook,
+} from '../../Types/ReactDevToolsTypes';
 import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 
 import UIManager from '../../ReactNative/UIManager';
@@ -20,54 +25,12 @@ import TraceUpdateOverlayNativeComponent, {
 } from './TraceUpdateOverlayNativeComponent';
 import * as React from 'react';
 
-type AgentEvents = {
-  drawTraceUpdates: [Array<{node: TraceNode, color: string}>],
-  disableTraceUpdates: [],
-};
-
-interface Agent {
-  addListener<Event: $Keys<AgentEvents>>(
-    event: Event,
-    listener: (...AgentEvents[Event]) => void,
-  ): void;
-  removeListener(event: $Keys<AgentEvents>, listener: () => void): void;
-}
-
-type PublicInstance = {
-  measure?: (
-    (
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      left: number,
-      top: number,
-    ) => void,
-  ) => void,
-};
-
-type TraceNode =
-  | PublicInstance
-  | {
-      canonical?:
-        | PublicInstance // TODO: remove this variant when syncing the new version of the renderer from React to React Native.
-        | {
-            publicInstance?: PublicInstance,
-          },
-    };
-
-type ReactDevToolsGlobalHook = {
-  on: (eventName: string, (agent: Agent) => void) => void,
-  off: (eventName: string, (agent: Agent) => void) => void,
-  reactDevtoolsAgent: Agent,
-};
-
 const {useEffect, useRef, useState} = React;
 const hook: ReactDevToolsGlobalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const isNativeComponentReady =
   Platform.OS === 'android' &&
   UIManager.hasViewManagerConfig('TraceUpdateOverlay');
-let devToolsAgent: ?Agent;
+let devToolsAgent: ?ReactDevToolsAgent;
 
 export default function TraceUpdateOverlay(): React.Node {
   const [overlayDisabled, setOverlayDisabled] = useState(false);
@@ -78,7 +41,7 @@ export default function TraceUpdateOverlay(): React.Node {
       return;
     }
 
-    function attachToDevtools(agent: Agent) {
+    function attachToDevtools(agent: ReactDevToolsAgent) {
       devToolsAgent = agent;
       agent.addListener('drawTraceUpdates', onAgentDrawTraceUpdates);
       agent.addListener('disableTraceUpdates', onAgentDisableTraceUpdates);
@@ -102,7 +65,7 @@ export default function TraceUpdateOverlay(): React.Node {
     }
 
     function onAgentDrawTraceUpdates(
-      nodesToDraw: Array<{node: TraceNode, color: string}> = [],
+      nodesToDraw: Array<{node: InstanceFromReactDevTools, color: string}> = [],
     ) {
       // If overlay is disabled before, now it's enabled.
       setOverlayDisabled(false);
