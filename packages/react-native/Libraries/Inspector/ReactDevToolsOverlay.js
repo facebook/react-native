@@ -10,6 +10,10 @@
 
 import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {
+  InstanceFromReactDevTools,
+  ReactDevToolsAgent,
+} from '../Types/ReactDevToolsTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 import View from '../Components/View/View';
@@ -22,23 +26,23 @@ import * as React from 'react';
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
-const {useEffect, useState, useCallback, useRef} = React;
+const {useEffect, useState, useCallback} = React;
 
-const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-
-export default function DevtoolsOverlay({
-  inspectedView,
-}: {
+type Props = {
   inspectedView: ?HostRef,
-}): React.Node {
+  reactDevToolsAgent: ReactDevToolsAgent,
+};
+
+export default function ReactDevToolsOverlay({
+  inspectedView,
+  reactDevToolsAgent,
+}: Props): React.Node {
   const [inspected, setInspected] = useState<null | {
     frame: {+height: any, +left: any, +top: any, +width: any},
   }>(null);
   const [isInspecting, setIsInspecting] = useState(false);
-  const devToolsAgentRef = useRef(null);
 
   useEffect(() => {
-    let devToolsAgent = null;
     let hideTimeoutId = null;
 
     function onAgentHideNativeHighlight() {
@@ -49,16 +53,16 @@ export default function DevtoolsOverlay({
       }, 100);
     }
 
-    function onAgentShowNativeHighlight(node: any) {
+    function onAgentShowNativeHighlight(node?: InstanceFromReactDevTools) {
       clearTimeout(hideTimeoutId);
 
       // `canonical.publicInstance` => Fabric
       // `canonical` => Legacy Fabric
       // `node` => Legacy renderer
       const component =
-        (node.canonical && node.canonical.publicInstance) ??
+        (node?.canonical && node.canonical.publicInstance) ??
         // TODO: remove this check when syncing the new version of the renderer from React to React Native.
-        node.canonical ??
+        node?.canonical ??
         node;
       if (!component || !component.measure) {
         return;
@@ -72,28 +76,23 @@ export default function DevtoolsOverlay({
     }
 
     function cleanup() {
-      const currentAgent = devToolsAgent;
-      if (currentAgent != null) {
-        currentAgent.removeListener(
-          'hideNativeHighlight',
-          onAgentHideNativeHighlight,
-        );
-        currentAgent.removeListener(
-          'showNativeHighlight',
-          onAgentShowNativeHighlight,
-        );
-        currentAgent.removeListener('shutdown', cleanup);
-        currentAgent.removeListener(
-          'startInspectingNative',
-          onStartInspectingNative,
-        );
-        currentAgent.removeListener(
-          'stopInspectingNative',
-          onStopInspectingNative,
-        );
-        devToolsAgent = null;
-      }
-      devToolsAgentRef.current = null;
+      reactDevToolsAgent.removeListener(
+        'hideNativeHighlight',
+        onAgentHideNativeHighlight,
+      );
+      reactDevToolsAgent.removeListener(
+        'showNativeHighlight',
+        onAgentShowNativeHighlight,
+      );
+      reactDevToolsAgent.removeListener('shutdown', cleanup);
+      reactDevToolsAgent.removeListener(
+        'startInspectingNative',
+        onStartInspectingNative,
+      );
+      reactDevToolsAgent.removeListener(
+        'stopInspectingNative',
+        onStopInspectingNative,
+      );
     }
 
     function onStartInspectingNative() {
@@ -104,40 +103,37 @@ export default function DevtoolsOverlay({
       setIsInspecting(false);
     }
 
-    function _attachToDevtools(agent: Object) {
-      devToolsAgent = agent;
-      devToolsAgentRef.current = agent;
-      agent.addListener('hideNativeHighlight', onAgentHideNativeHighlight);
-      agent.addListener('showNativeHighlight', onAgentShowNativeHighlight);
-      agent.addListener('shutdown', cleanup);
-      agent.addListener('startInspectingNative', onStartInspectingNative);
-      agent.addListener('stopInspectingNative', onStopInspectingNative);
-    }
+    reactDevToolsAgent.addListener(
+      'hideNativeHighlight',
+      onAgentHideNativeHighlight,
+    );
+    reactDevToolsAgent.addListener(
+      'showNativeHighlight',
+      onAgentShowNativeHighlight,
+    );
+    reactDevToolsAgent.addListener('shutdown', cleanup);
+    reactDevToolsAgent.addListener(
+      'startInspectingNative',
+      onStartInspectingNative,
+    );
+    reactDevToolsAgent.addListener(
+      'stopInspectingNative',
+      onStopInspectingNative,
+    );
 
-    hook.on('react-devtools', _attachToDevtools);
-    if (hook.reactDevtoolsAgent) {
-      _attachToDevtools(hook.reactDevtoolsAgent);
-    }
-    return () => {
-      hook.off('react-devtools', _attachToDevtools);
-      cleanup();
-    };
-  }, []);
+    return cleanup;
+  }, [reactDevToolsAgent]);
 
   const findViewForLocation = useCallback(
     (x: number, y: number) => {
-      const agent = devToolsAgentRef.current;
-      if (agent == null) {
-        return;
-      }
       getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
         const {touchedViewTag, closestInstance, frame} = viewData;
         if (closestInstance != null || touchedViewTag != null) {
           // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
           // this makes sure it works for both architectures.
-          agent.selectNode(findNodeHandle(touchedViewTag));
+          reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
           if (closestInstance != null) {
-            agent.selectNode(closestInstance);
+            reactDevToolsAgent.selectNode(closestInstance);
           }
           setInspected({
             frame,
@@ -147,18 +143,14 @@ export default function DevtoolsOverlay({
         return false;
       });
     },
-    [inspectedView],
+    [inspectedView, reactDevToolsAgent],
   );
 
   const stopInspecting = useCallback(() => {
-    const agent = devToolsAgentRef.current;
-    if (agent == null) {
-      return;
-    }
-    agent.stopInspectingNative(true);
+    reactDevToolsAgent.stopInspectingNative(true);
     setIsInspecting(false);
     setInspected(null);
-  }, []);
+  }, [reactDevToolsAgent]);
 
   const onPointerMove = useCallback(
     (e: PointerEvent) => {
@@ -200,6 +192,7 @@ export default function DevtoolsOverlay({
             onResponderMove: onResponderMove,
             onResponderRelease: stopInspecting,
           };
+
     return (
       <View
         nativeID="devToolsInspectorOverlay"
@@ -209,6 +202,7 @@ export default function DevtoolsOverlay({
       </View>
     );
   }
+
   return highlight;
 }
 
