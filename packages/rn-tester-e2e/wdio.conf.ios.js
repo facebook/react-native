@@ -37,6 +37,7 @@ exports.config = {
     [
       'appium',
       {
+        command: 'appium',  
         args: {
           address: 'localhost',
           port: 4723,
