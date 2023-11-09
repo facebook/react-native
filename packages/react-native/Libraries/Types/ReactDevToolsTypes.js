@@ -53,4 +53,6 @@ export type ReactDevToolsGlobalHook = {
   on: (eventName: string, (agent: ReactDevToolsAgent) => void) => void,
   off: (eventName: string, (agent: ReactDevToolsAgent) => void) => void,
   reactDevtoolsAgent?: ReactDevToolsAgent,
+  resolveRNStyle?: mixed,
+  nativeStyleEditorValidAttributes?: Array<string>,
 };
