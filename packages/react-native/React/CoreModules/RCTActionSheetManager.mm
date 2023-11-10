@@ -20,7 +20,7 @@
 
 using namespace facebook::react;
 
-@interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
+@interface RCTActionSheetManager () <NativeActionSheetManagerSpec>
 
 @property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
 
