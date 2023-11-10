@@ -74,18 +74,34 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
-static std::shared_ptr<void> const constructCoordinator(
-    ContextContainer::Shared const &contextContainer,
-    ComponentDescriptor::Flavor const &flavor)
+static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge)
 {
-  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
-  Class viewManagerClass = getViewManagerFromComponentName(componentName);
-  assert(viewManagerClass);
+  Class viewManager = getViewManagerFromComponentName(componentName);
+  if (viewManager != nil) {
+    return viewManager;
+  }
+
+  // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
+  if (bridge != nil) {
+    return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
+  }
+
+  return nil;
+}
+
+static const std::shared_ptr<void> constructCoordinator(
+    const ContextContainer::Shared &contextContainer,
+    const ComponentDescriptor::Flavor &flavor)
+{
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");
   RCTBridge *bridge;
   if (optionalBridge) {
     bridge = unwrapManagedObjectWeakly(optionalBridge.value());
   }
+
+  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
+  Class viewManagerClass = getViewManagerClass(componentName, bridge);
+  assert(viewManagerClass);
 
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
   RCTEventDispatcher *eventDispatcher;
