@@ -60,6 +60,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_experiments?: ExperimentsConfig,
+
+  /**
+   * An interface for using a modified inspector proxy implementation.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_InspectorProxy?: Class<InspectorProxy>,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -74,10 +81,12 @@ export default function createDevMiddleware({
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
+  unstable_InspectorProxy,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
 
-  const inspectorProxy = new InspectorProxy(
+  const InspectorProxyClass = unstable_InspectorProxy ?? InspectorProxy;
+  const inspectorProxy = new InspectorProxyClass(
     projectRoot,
     serverBaseUrl,
     unstable_eventReporter,
