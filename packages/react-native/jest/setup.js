@@ -27,6 +27,12 @@ Object.defineProperties(global, {
     value: id => clearTimeout(id),
     writable: true,
   },
+  nativeFabricUIManager: {
+    configurable: true,
+    enumerable: true,
+    value: {},
+    writable: true,
+  },
   performance: {
     configurable: true,
     enumerable: true,
