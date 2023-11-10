@@ -11,27 +11,26 @@
 # - dir_manager: a class that implements the `Dir` interface. Defaults to `Dir`, the Dependency can be injected for testing purposes.
 # @throws an error if it could not find the codegen folder.
 def build_codegen!(react_native_path, relative_installation_root, dir_manager: Dir)
-    react_native_relpath = "#{basePath(react_native_path, relative_installation_root)}"
-    codegen_repo_path = "#{react_native_relpath}/../react-native-codegen";
-    codegen_npm_path = "#{react_native_relpath}/../@react-native/codegen";
-    codegen_pnpm_path = "#{react_native_relpath}/node_modules/@react-native/codegen";
-    codegen_cli_path = ""
-
-    if dir_manager.exist?(codegen_repo_path)
-      codegen_cli_path = codegen_repo_path
-    elsif dir_manager.exist?(codegen_npm_path)
-      codegen_cli_path = codegen_npm_path
-    elsif dir_manager.exist?(codegen_pnpm_path)
-      codegen_cli_path = codegen_pnpm_path
-    else
-      raise "[codegen] Could not find react-native-codegen"
-    end
-
-    if !dir_manager.exist?("#{codegen_cli_path}/lib")
-      Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
-      system("#{codegen_cli_path}/scripts/oss/build.sh")
-    end
+  react_native_relpath = "#{relative_installation_root}/#{react_native_path}"
+  codegen_json_path = Pod::Executable.execute_command('node', [
+    '-p',
+    "require.resolve('@react-native/codegen/package.json', {paths: ['#{react_native_relpath}']})"
+  ])
+  if codegen_json_path.is_a? String
+    codegen_json_path = codegen_json_path.strip
+    codegen_path = Pathname.new(codegen_json_path).parent.relative_path_from(Pathname.pwd)
+  else
+    # This should only happen under testing
+    codegen_path = "#{react_native_relpath}/../react-native-codegen"
   end
+
+  raise "[Codegen] Could not find react-native-codegen" unless dir_manager.exist?(codegen_path)
+
+  if !dir_manager.exist?("#{codegen_path}/lib")
+    Pod::UI.puts "[Codegen] building #{codegen_path}."
+    system("#{codegen_path}/scripts/oss/build.sh")
+  end
+end
 
 # It generates an empty `ThirdPartyProvider`, required by Fabric to load the components
 #
