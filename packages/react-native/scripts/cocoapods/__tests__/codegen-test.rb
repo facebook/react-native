@@ -89,6 +89,7 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/"+ @prefix + "/../react-native-codegen",
             @base_path + "/"+ @prefix + "/../@react-native/codegen",
+            @base_path + "/"+ @prefix + "/node_modules/@react-native/codegen",
         ])
         assert_equal(Pod::UI.collected_messages, [])
         assert_equal($collected_commands, [])
