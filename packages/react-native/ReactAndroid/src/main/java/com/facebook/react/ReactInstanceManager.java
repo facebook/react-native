@@ -71,6 +71,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
@@ -186,6 +187,7 @@ public class ReactInstanceManager {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
@@ -234,6 +236,7 @@ public class ReactInstanceManager {
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
+      @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
@@ -294,6 +297,7 @@ public class ReactInstanceManager {
       mPackages.addAll(packages);
     }
     mJSIModulePackage = jsiModulePackage;
+    mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize(
@@ -1389,7 +1393,7 @@ public class ReactInstanceManager {
               catalystInstance.getJSCallInvokerHolder(),
               catalystInstance.getNativeMethodCallInvokerHolder());
 
-      catalystInstance.setTurboModuleManager(turboModuleManager);
+      catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
       // Eagerly initialize TurboModules
       for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
@@ -1404,6 +1408,9 @@ public class ReactInstanceManager {
     }
     if (ReactFeatureFlags.enableFabricRenderer) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);
+      if (mUIManagerProvider != null) {
+        catalystInstance.setFabricUIManager(mUIManagerProvider.createUIManager(reactContext));
+      }
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
