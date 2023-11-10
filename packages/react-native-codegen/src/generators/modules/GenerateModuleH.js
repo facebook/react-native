@@ -80,7 +80,7 @@ public:
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public ${hasteModuleName}CxxSpecJSI {
