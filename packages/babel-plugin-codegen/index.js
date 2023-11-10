@@ -76,7 +76,8 @@ function isCodegenDeclaration(declaration) {
   ) {
     return true;
   } else if (
-    declaration.type === 'TypeCastExpression' &&
+    (declaration.type === 'TypeCastExpression' ||
+      declaration.type === 'AsExpression') &&
     declaration.expression &&
     declaration.expression.callee &&
     declaration.expression.callee.name &&

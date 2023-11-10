@@ -17,16 +17,6 @@ class CxxModuleWrapper
   constexpr static const char* const kJavaDescriptor =
       "Lcom/facebook/react/bridge/CxxModuleWrapper;";
 
-  static void registerNatives() {
-    registerHybrid(
-        {makeNativeMethod("makeDsoNative", CxxModuleWrapper::makeDsoNative)});
-  }
-
-  static jni::local_ref<CxxModuleWrapper::javaobject> makeDsoNative(
-      jni::alias_ref<jclass>,
-      const std::string& soPath,
-      const std::string& fname);
-
   std::string getName() override {
     return module_->getName();
   }

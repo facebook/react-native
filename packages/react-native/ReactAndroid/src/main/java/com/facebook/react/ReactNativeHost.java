@@ -21,6 +21,7 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.ChoreographerProvider;
 import java.util.List;
 
 /**
@@ -87,7 +88,8 @@ public abstract class ReactNativeHost {
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
-            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm());
+            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
+            .setChoreographerProvider(getChoreographerProvider());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -211,6 +213,14 @@ public abstract class ReactNativeHost {
    * will try to load JSC first and fallback to Hermes if JSC is not available.
    */
   protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
+
+  /**
+   * Returns a custom implementation of ChoreographerProvider to be used this host. If null - React
+   * will use default direct android.view.Choreographer-based provider.
+   */
+  protected @Nullable ChoreographerProvider getChoreographerProvider() {
     return null;
   }
 }

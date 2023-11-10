@@ -32,9 +32,8 @@ header_search_paths = [
 ]
 
 if ENV["USE_FRAMEWORKS"]
-  header_search_paths = header_search_paths.concat([
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-  ])
+  create_header_search_path_for_frameworks("ReactCommon", :additional_framework_paths => ["react/nativemodule/core"], :include_base_folder => false)
+    .each { |search_path| header_search_paths << "\"#{search_path}\"" }
 end
 
 Pod::Spec.new do |s|

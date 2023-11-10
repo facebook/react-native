@@ -19,18 +19,17 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
-const {cd, cp, echo, exec, exit, mv} = require('shelljs');
-const {execFileSync, spawn} = require('child_process');
-const argv = require('yargs').argv;
-const path = require('path');
-
 const forEachPackage = require('./monorepo/for-each-package');
 const setupVerdaccio = require('./setup-verdaccio');
+const tryExecNTimes = require('./try-n-times');
+const {execFileSync, spawn} = require('child_process');
+const path = require('path');
+const {cd, cp, echo, exec, exit, mv} = require('shelljs');
+const argv = require('yargs').argv;
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
 const REACT_NATIVE_PACKAGE_DIR = path.join(ROOT, 'packages/react-native');
-const tryExecNTimes = require('./try-n-times');
 
 const REACT_NATIVE_TEMP_DIR = exec(
   'mktemp -d /tmp/react-native-XXXXXXXX',

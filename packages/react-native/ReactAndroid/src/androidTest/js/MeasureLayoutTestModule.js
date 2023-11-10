@@ -9,11 +9,11 @@
 
 'use strict';
 
+import {assertEquals} from './Asserts';
 import * as React from 'react';
 import {useEffect, useRef} from 'react';
 import {StyleSheet, UIManager, View, findNodeHandle} from 'react-native';
 import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
-import {assertEquals} from './Asserts';
 
 const styles = StyleSheet.create({
   A: {

@@ -23,7 +23,7 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
 @end
 
 @implementation RCTHost {
@@ -245,6 +245,17 @@ using namespace facebook::react;
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+#pragma mark - RCTInstanceDelegateInternal
+
+- (BOOL)useModernRuntimeScheduler:(RCTHost *)host
+{
+  if ([_hostDelegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
+    return [(id)_hostDelegate useModernRuntimeScheduler:self];
+  }
+
+  return NO;
 }
 
 #pragma mark - RCTContextContainerHandling

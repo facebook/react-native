@@ -1,6 +1,5 @@
 PODS:
   - boost (1.83.0)
-  - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
   - FBReactNativeSpec (1000.0.0):
@@ -10,62 +9,6 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
-  - Flipper (0.201.0):
-    - Flipper-Folly (~> 2.6)
-  - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (3.2.0.1)
-  - Flipper-Fmt (7.1.7)
-  - Flipper-Folly (2.6.10):
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt (= 7.1.7)
-    - Flipper-Glog
-    - libevent (~> 2.1.12)
-    - OpenSSL-Universal (= 1.1.1100)
-  - Flipper-Glog (0.5.0.5)
-  - Flipper-PeerTalk (0.0.4)
-  - FlipperKit (0.201.0):
-    - FlipperKit/Core (= 0.201.0)
-  - FlipperKit/Core (0.201.0):
-    - Flipper (~> 0.201.0)
-    - FlipperKit/CppBridge
-    - FlipperKit/FBCxxFollyDynamicConvert
-    - FlipperKit/FBDefines
-    - FlipperKit/FKPortForwarding
-    - SocketRocket (~> 0.6.0)
-  - FlipperKit/CppBridge (0.201.0):
-    - Flipper (~> 0.201.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.201.0):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.201.0)
-  - FlipperKit/FKPortForwarding (0.201.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.201.0)
-  - FlipperKit/FlipperKitLayoutHelpers (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-  - FlipperKit/FlipperKitLayoutPlugin (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - FlipperKit/FlipperKitLayoutIOSDescriptors
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.201.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitReactPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitNetworkPlugin
   - fmt (9.1.0)
   - glog (0.3.5)
   - hermes-engine (1000.0.0):
@@ -79,7 +22,6 @@ PODS:
   - hermes-engine/Public (1000.0.0)
   - libevent (2.1.12)
   - OCMock (3.9.1)
-  - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2023.08.07.00):
     - boost
     - DoubleConversion
@@ -147,7 +89,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/CoreModulesHeaders (1000.0.0):
     - glog
@@ -161,7 +103,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/Default (1000.0.0):
     - glog
@@ -174,7 +116,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/DevSupport (1000.0.0):
     - glog
@@ -190,7 +132,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTActionSheetHeaders (1000.0.0):
     - glog
@@ -204,7 +146,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTAnimationHeaders (1000.0.0):
     - glog
@@ -218,7 +160,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTBlobHeaders (1000.0.0):
     - glog
@@ -232,7 +174,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTImageHeaders (1000.0.0):
     - glog
@@ -246,7 +188,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTLinkingHeaders (1000.0.0):
     - glog
@@ -260,7 +202,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTNetworkHeaders (1000.0.0):
     - glog
@@ -274,7 +216,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTPushNotificationHeaders (1000.0.0):
     - glog
@@ -288,7 +230,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTSettingsHeaders (1000.0.0):
     - glog
@@ -302,7 +244,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTTextHeaders (1000.0.0):
     - glog
@@ -316,7 +258,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTVibrationHeaders (1000.0.0):
     - glog
@@ -330,7 +272,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-Core/RCTWebSocket (1000.0.0):
     - glog
@@ -344,7 +286,7 @@ PODS:
     - React-perflogger
     - React-runtimescheduler
     - React-utils
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
     - Yoga
   - React-CoreModules (1000.0.0):
     - RCT-Folly (= 2023.08.07.00)
@@ -355,7 +297,7 @@ PODS:
     - React-RCTBlob
     - React-RCTImage (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
-    - SocketRocket (= 0.6.1)
+    - SocketRocket (= 0.7.0)
   - React-cxxreact (1000.0.0):
     - boost (= 1.83.0)
     - DoubleConversion
@@ -1082,6 +1024,7 @@ PODS:
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
     - React-callinvoker
+    - React-cxxreact
     - React-debug
     - React-jsi
     - React-rendererdebug
@@ -1127,7 +1070,7 @@ PODS:
     - glog
     - RCT-Folly (= 2023.08.07.00)
     - React-Core
-  - SocketRocket (0.6.1)
+  - SocketRocket (0.7.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1135,32 +1078,11 @@ DEPENDENCIES:
   - DoubleConversion (from `../react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../react-native/React/FBReactNativeSpec`)
-  - Flipper (= 0.201.0)
-  - Flipper-Boost-iOSX (= 1.76.0.1.11)
-  - Flipper-DoubleConversion (= 3.2.0.1)
-  - Flipper-Fmt (= 7.1.7)
-  - Flipper-Folly (= 2.6.10)
-  - Flipper-Glog (= 0.5.0.5)
-  - Flipper-PeerTalk (= 0.0.4)
-  - FlipperKit (= 0.201.0)
-  - FlipperKit/Core (= 0.201.0)
-  - FlipperKit/CppBridge (= 0.201.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (= 0.201.0)
-  - FlipperKit/FBDefines (= 0.201.0)
-  - FlipperKit/FKPortForwarding (= 0.201.0)
-  - FlipperKit/FlipperKitHighlightOverlay (= 0.201.0)
-  - FlipperKit/FlipperKitLayoutPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitLayoutTextSearchable (= 0.201.0)
-  - FlipperKit/FlipperKitNetworkPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitReactPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.201.0)
-  - FlipperKit/SKIOSNetworkPlugin (= 0.201.0)
   - fmt (from `../react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
   - OCMock (~> 3.9.1)
-  - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../react-native/Libraries/Required`)
@@ -1169,7 +1091,6 @@ DEPENDENCIES:
   - React-callinvoker (from `../react-native/ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../react-native/`)
-  - React-Core/DevSupport (from `../react-native/`)
   - React-Core/RCTWebSocket (from `../react-native/`)
   - React-CoreModules (from `../react-native/React/CoreModules`)
   - React-cxxreact (from `../react-native/ReactCommon/cxxreact`)
@@ -1213,18 +1134,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaAsyncSocket
-    - Flipper
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt
-    - Flipper-Folly
-    - Flipper-Glog
-    - Flipper-PeerTalk
-    - FlipperKit
     - libevent
     - OCMock
-    - OpenSSL-Universal
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1338,72 +1249,62 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 26fad476bfa736552bbfa698a06cc530475c1505
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
-  FBLazyVector: 9344e79343bb9f8e848f07172435b85ef3d19ce0
-  FBReactNativeSpec: b57ae5dc0746e097c54d773c87e59385fe38bbd4
-  Flipper: c7a0093234c4bdd456e363f2f19b2e4b27652d44
-  Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
-  Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
-  Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
-  Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
-  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  FlipperKit: 37525a5d056ef9b93d1578e04bc3ea1de940094f
+  FBLazyVector: 5e0082728c08d087898e5bd2bfddd64b46434aa7
+  FBReactNativeSpec: 1ad92849fdda671091768c1222f657359f8e4d74
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  hermes-engine: f8283a7dd64126593e2c02496f4d4544cd0c86fa
+  hermes-engine: 9872a53f9dae564449360e5e906891296e5601b4
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
-  OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  RCT-Folly: 3edb9330ce752fe48b85e6c8a65506033f95f4b9
-  RCTRequired: 58a606315d9c30ae019583bf89b514adf406a668
-  RCTTypeSafety: 22c950ae3b7dc67f7352a4ad5780c1a2d060d823
-  React: 684f60570280a1089e2f86c3e897f597b4136025
-  React-callinvoker: e98dd17a9f7bd3de3445a95b200e55b8ef0f7b06
+  RCT-Folly: 823c6f6ec910a75d4ad28898b4a11cdee140b92a
+  RCTRequired: 5d4ee33f9ecabd96df91c638073dba7336f3dcba
+  RCTTypeSafety: 548088d70f4f7e995b7cfdfbf7e67d8477788a61
+  React: e41567e2e50601b040c5c3d94460e7f670907af4
+  React-callinvoker: 49620b9ca958a3493acf6206035e80355b17986f
   React-Codegen: 05b37234a5252f99c890f3e2544b278827b613ca
-  React-Core: 01f6d0c4eff384c026b25fb4e33a5b59b8e26118
-  React-CoreModules: 11f07cb493a6c55dd01405e3cc36045270ed7482
-  React-cxxreact: cefac3ca25145fce1e725383839e052973721fde
-  React-debug: 375514cca2580909bf360d1f73275b27c1c957bc
-  React-Fabric: d4f3620fbb1d8f4f2da9c6bb8b7aaa2d2ea5acd2
-  React-FabricImage: 8f861bec1a605f024b0ebed856f00ea70364b388
-  React-graphics: b714fbc01d60ed07c89f7b652e2fa25b190d349e
-  React-hermes: e08763cb79c0c67ece3ccb4315951d35d44fa8e5
-  React-ImageManager: 06930b55fa0f549c948dc7b366a243848b03f9c8
-  React-jserrorhandler: 6e8cffff655dc116533f8350318dbbe3135899b8
-  React-jsi: 919e326d0f0825353d82ecd0ffbcbe9cbde72bc9
-  React-jsiexecutor: 8c542318b863a526643be3746053bff4b108b80a
-  React-jsinspector: 93c9591514a5182d88a510d1046459d3890209dd
-  React-logger: 57b211b4762b788f7db6289444daa57e27625328
-  React-Mapbuffer: a1ec6419486cb9ed06f382e63cf8674776ff70d7
-  React-nativeconfig: 25f9c31c6b8ae78581584d2a8c6af66e81995fab
-  React-NativeModulesApple: 5e84eb3fe10c78d7f98dfb38c02604d2f093ce46
-  React-perflogger: df9fba73a1517ef8c866659358aef4d348bb01ab
-  React-RCTActionSheet: e358d63ef1fb3ec601bc6789cf73413960baf882
-  React-RCTAnimation: 86801dd93de1a6984886fdbac9d71bbd6e476edd
-  React-RCTAppDelegate: 54ad7bd64b4e04be81d405b52b957bb6a2fadedc
-  React-RCTBlob: 0833d07761028aae155a66647d9b012f42b910ab
-  React-RCTFabric: f9de8a62c2449e8df45d25e5dc50d2d3d8cc6bf2
-  React-RCTImage: 047a58cab037ebd13114ff13d590f1cace82a00a
-  React-RCTLinking: e1790c2a66c217d23b78f962e8ad655a42b46a10
-  React-RCTNetwork: 755d036c0c126d50498a6414835e79f6ae18d18f
-  React-RCTPushNotification: 554d1bb05efd1606690bed157e16f6ac4a467058
-  React-RCTSettings: e8fb1dec0674cd63c6b6a89746cbf6f856cf7b77
-  React-RCTTest: 8f0a1a37858d199f2a2b348c03f3edcfa530eda4
-  React-RCTText: f7538cbba18e2ed79f64ca0bcc7a0613462729da
-  React-RCTVibration: 732b58335b7a9b478d4d4b3ed0a989e33dbe2c70
-  React-rendererdebug: 301cead8aa422940d7682747c937b07b74e52bfc
-  React-rncore: aa35c5dfed236db84f46f88d7b8a92b24f44bb3a
-  React-runtimeexecutor: 8550177a1fb48c7febcb51f6b441c5b5c4db38b6
-  React-runtimescheduler: 84a32b7669743e9c7aa817e8da0cd1489cf7c727
-  React-utils: 4b96ce692bfdde955979a089dd778432f478789f
-  ReactCommon: a126a55ff0468e20e13bb401f4f7285366dfbafe
-  ReactCommon-Samples: d232f7617367980798af7dce79b982730ee158a8
+  React-Core: fe43adec3840f4db2bab9befffec418bb1acb8fb
+  React-CoreModules: 06c0d09e74819904aec1cd6ea4712b9c9d5e35a7
+  React-cxxreact: 2baa47536c9a0bb32195b24f4b6d2729cc6b77d5
+  React-debug: 7e5092b548e8f6489c69cc0285d27ce97c099d64
+  React-Fabric: 51609084c65f05da79939c106ad93287afb30abf
+  React-FabricImage: d993ff26546952881312cb176490b705bee4dacc
+  React-graphics: 7a31e16116a218f07692f53a395c171cd4bd4b6e
+  React-hermes: 4b839404046985a93cf8c61f673c5b768c60a001
+  React-ImageManager: 42e149a34cac5ba92a960727a82a0c0715fc08ca
+  React-jserrorhandler: ce9d0badeb2b3719504628287df3c1897045c695
+  React-jsi: d1c79d69e9a08a31b5807b6ef17e9f730d2c5b48
+  React-jsiexecutor: 8f2ae46b222d555d3e4affe5ebc1322c3e642de2
+  React-jsinspector: cf4257bfc9157486a6d54cf7e64859b538d15559
+  React-logger: 1694b569c7ab5e1fab1bc59a26c6190927c1e69e
+  React-Mapbuffer: 3bde1d3225b8b5ed58b13bf5881cd4b3dfab44d7
+  React-nativeconfig: 4463cbf440e7cf8c25472364e5e710153c835c0e
+  React-NativeModulesApple: c2044cdea891744b9f84a0f35ca7dddbcae45cad
+  React-perflogger: e9bf209b1f75699831bd4557f7c0c94563f92a7b
+  React-RCTActionSheet: 8cbf5784922ad21aa10e5c162f2c4bd6084a8c3f
+  React-RCTAnimation: ea348cf2834bc0d2a63c643e2afe1b88ef740942
+  React-RCTAppDelegate: f313fcc26a7511b48b53e16834df08ff0375fbf6
+  React-RCTBlob: e4895c862ef398d7790b70dff6e0ed0f61931006
+  React-RCTFabric: af5400c0c344563048e29cf3ae4112da7971b2d2
+  React-RCTImage: ce4c864ef746af8c7d4a6e6d95304344f92a1ef7
+  React-RCTLinking: feff9e676f09be7edb916b480bfe9f1b3eb438a8
+  React-RCTNetwork: 0e1255aae78fd3db320628dc3fce318ac257f277
+  React-RCTPushNotification: 75afe08a5d93d92136d1980317b6f55ac50d9197
+  React-RCTSettings: 308dce72918c74fe44c429a20872e90c0a3c9629
+  React-RCTTest: bd655a340b128e8cc70a0c465a8800d30ea5e15c
+  React-RCTText: 1470fa88aa5480e9963957e6343208d17d704488
+  React-RCTVibration: b537596c1829a404c5c3811c4f204dcef38756f5
+  React-rendererdebug: a27fe3f6ef6f692d628e0f6ab307500f9476a477
+  React-rncore: fc024c1b5c00f697d1aaf3209ae5b3a7a8009413
+  React-runtimeexecutor: 12ac784b06e4b460877cf8fb5a2a0db4112622fd
+  React-runtimescheduler: 13e872a4ee674fb900446f8a9a4f6c6f3294035d
+  React-utils: d3efd282fe5b5dc3ff16552e230ed090f1a0caf0
+  ReactCommon: 2df8f6bfc1a5d830b30ae85759cf2e60632109e9
+  ReactCommon-Samples: ccc1a24bd0e1e561a99089af35a44777f9ac8716
   ScreenshotManager: 2b23b74d25f5e307f7b4d21173a61a3934e69475
-  SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  Yoga: d2bf25ad906aeac2ec8cf054080f291a22bcc3f5
+  SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  Yoga: f4cb82520dc744c3944d47d805dfccf2cf366e76
 
-PODFILE CHECKSUM: 7d1b558e28efc972a185230c56fef43ed86910a1
+PODFILE CHECKSUM: c0120ff99aea9c7141bc22179e0f6be99c81a601
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.13.0

@@ -23,7 +23,7 @@ class File extends Blob {
    * Constructor for JS consumers.
    */
   constructor(
-    parts: Array<$ArrayBufferView | ArrayBuffer | Blob | string>,
+    parts: Array<Blob | string>,
     name: string,
     options?: BlobOptions,
   ) {

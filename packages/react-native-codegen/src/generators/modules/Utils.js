@@ -11,11 +11,11 @@
 'use strict';
 
 import type {
-  SchemaType,
   NativeModuleAliasMap,
+  NativeModuleEnumMembers,
   NativeModuleObjectTypeAnnotation,
   NativeModuleSchema,
-  NativeModuleEnumMembers,
+  SchemaType,
 } from '../../CodegenSchema';
 
 const invariant = require('invariant');

@@ -11,21 +11,20 @@
 'use strict';
 
 const React = require('react');
-
 const {
   Alert,
   Animated,
+  Button,
   I18nManager,
   Image,
   PixelRatio,
   Platform,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableWithoutFeedback,
-  Switch,
   View,
-  Button,
 } = require('react-native');
 
 type RTLToggleState = {isRTL: boolean, ...};

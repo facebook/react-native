@@ -42,15 +42,16 @@ namespace facebook::react {
 
 namespace {
 
-class JInstanceCallback : public InstanceCallback {
+class InstanceCallbackImpl : public InstanceCallback {
  public:
-  explicit JInstanceCallback(alias_ref<ReactCallback::javaobject> jobj)
+  explicit InstanceCallbackImpl(alias_ref<JInstanceCallback::javaobject> jobj)
       : jobj_(make_global(jobj)) {}
 
   void onBatchComplete() override {
     jni::ThreadScope guard;
     static auto method =
-        ReactCallback::javaClassStatic()->getMethod<void()>("onBatchComplete");
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "onBatchComplete");
     method(jobj_);
   }
 
@@ -59,20 +60,22 @@ class JInstanceCallback : public InstanceCallback {
     // managed by the module, via callJSCallback or callJSFunction.  So,
     // we ensure that it is registered with the JVM.
     jni::ThreadScope guard;
-    static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-        "incrementPendingJSCalls");
+    static auto method =
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "incrementPendingJSCalls");
     method(jobj_);
   }
 
   void decrementPendingJSCalls() override {
     jni::ThreadScope guard;
-    static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-        "decrementPendingJSCalls");
+    static auto method =
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "decrementPendingJSCalls");
     method(jobj_);
   }
 
  private:
-  global_ref<ReactCallback::javaobject> jobj_;
+  global_ref<JInstanceCallback::javaobject> jobj_;
 };
 
 } // namespace
@@ -146,7 +149,7 @@ void log(ReactNativeLogLevel level, const char* message) {
 }
 
 void CatalystInstanceImpl::initializeBridge(
-    jni::alias_ref<ReactCallback::javaobject> callback,
+    jni::alias_ref<JInstanceCallback::javaobject> callback,
     // This executor is actually a factory holder.
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
@@ -187,7 +190,7 @@ void CatalystInstanceImpl::initializeBridge(
       moduleMessageQueue_));
 
   instance_->initializeBridge(
-      std::make_unique<JInstanceCallback>(callback),
+      std::make_unique<InstanceCallbackImpl>(callback),
       jseh->getExecutorFactory(),
       std::make_unique<JMessageQueueThread>(jsQueue),
       moduleRegistry_);

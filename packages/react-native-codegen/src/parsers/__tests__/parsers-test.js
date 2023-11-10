@@ -11,12 +11,12 @@
 
 'use-strict';
 
+import {FlowParser} from '../flow/parser';
+import {TypeScriptParser} from '../typescript/parser';
+
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
-
-import {TypeScriptParser} from '../typescript/parser';
-import {FlowParser} from '../flow/parser';
 
 const hasteModuleName = 'moduleName';
 describe('FlowParser', () => {

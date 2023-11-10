@@ -37,21 +37,6 @@ void RCTSetDispatchW3CPointerEvents(BOOL value)
 }
 
 /*
- * Validate RCTEventEmitter. For experimentation only.
- */
-static BOOL RCTValidateCanSendEventInRCTEventEmitter = NO;
-
-BOOL RCTGetValidateCanSendEventInRCTEventEmitter(void)
-{
-  return RCTValidateCanSendEventInRCTEventEmitter;
-}
-
-void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
-{
-  RCTValidateCanSendEventInRCTEventEmitter = value;
-}
-
-/*
  * Memory Pressure Unloading Level for experimentation only.
  * Default is 15, which is TRIM_MEMORY_RUNNING_CRITICAL.
  */
@@ -65,22 +50,6 @@ int RCTGetMemoryPressureUnloadLevel(void)
 void RCTSetMemoryPressureUnloadLevel(int value)
 {
   RCTMemoryPressureUnloadLevel = value;
-}
-
-/*
- * In Bridge mode, parse the JS stack for unhandled JS errors, to display in RedBox.
- * When false (previous default behavior), a native stack is displayed in the RedBox.
- */
-static BOOL RCTParseUnhandledJSErrorStackNatively = NO;
-
-BOOL RCTGetParseUnhandledJSErrorStackNatively(void)
-{
-  return RCTParseUnhandledJSErrorStackNatively;
-}
-
-void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
-{
-  RCTParseUnhandledJSErrorStackNatively = value;
 }
 
 /*

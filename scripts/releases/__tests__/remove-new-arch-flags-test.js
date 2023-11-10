@@ -8,23 +8,26 @@
  * @oncall react-native
  */
 
-const fs = require('fs');
-const path = require('path');
 const removeNewArchFlags = require('../remove-new-arch-flags');
 const {
-  validReactNativePodsFile,
-  invalidReactNativePodsFile,
-  expectedReactNativePodsFile,
-  validGradlePropertiesFile,
-  invalidGradlePropertiesFile,
   expectedGradlePropertiesFile,
+  expectedReactNativePodsFile,
+  invalidGradlePropertiesFile,
+  invalidReactNativePodsFile,
+  validGradlePropertiesFile,
+  validReactNativePodsFile,
 } = require('./__fixtures__/remove-new-arch-flags-fixture');
+const fs = require('fs');
+const path = require('path');
 
 describe('removeNewArchFlags', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
   it('throws an exception if not run from react-native-github', async () => {
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
     jest.spyOn(process, 'cwd').mockReturnValue('/path/to/react-native');
     expect(removeNewArchFlags).toThrow();
   });

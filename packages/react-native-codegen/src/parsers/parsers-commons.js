@@ -11,69 +11,65 @@
 'use strict';
 
 import type {
-  Nullable,
+  EventTypeAnnotation,
+  EventTypeShape,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  SchemaType,
-  NativeModuleEnumMap,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
   OptionsShape,
   PropTypeAnnotation,
-  EventTypeAnnotation,
-  ObjectTypeAnnotation,
-  EventTypeShape,
+  SchemaType,
 } from '../CodegenSchema.js';
-
-import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
-import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
-  getConfigType,
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-  verifyPlatforms,
-} = require('./utils');
-
-const {
+  throwIfConfigNotfound,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneConfig,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,
+  throwIfTypeAliasIsNotInterface,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfWrongNumberOfCallExpressionArgs,
   throwIfUntypedModule,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneCodegenNativecommands,
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-  throwIfTypeAliasIsNotInterface,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('./error-utils');
-
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
-
+const {
+  createParserErrorCapturer,
+  extractNativeModuleName,
+  getConfigType,
+  isModuleRegistryCall,
+  verifyPlatforms,
+  visit,
+} = require('./utils');
 const invariant = require('invariant');
 
 export type CommandOptions = $ReadOnly<{
@@ -484,7 +480,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
@@ -707,6 +703,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;

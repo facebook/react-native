@@ -11,9 +11,9 @@
 
 const React = require('react');
 const {
+  RefreshControl,
   ScrollView,
   StyleSheet,
-  RefreshControl,
   Text,
   TouchableWithoutFeedback,
   View,

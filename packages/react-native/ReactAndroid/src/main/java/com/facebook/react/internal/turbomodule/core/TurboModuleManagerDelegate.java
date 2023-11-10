@@ -40,6 +40,8 @@ public abstract class TurboModuleManagerDelegate {
 
   public abstract boolean unstable_isModuleRegistered(String moduleName);
 
+  public abstract boolean unstable_isLazyTurboModuleDelegate();
+
   /**
    * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
    * TurboModule, return null.
@@ -70,6 +72,7 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
+  /* Can TurboModule methods that return void execute on the JS thread? */
   public boolean unstable_enableSyncVoidMethods() {
     return false;
   }

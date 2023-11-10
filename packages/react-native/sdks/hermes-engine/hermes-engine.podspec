@@ -60,7 +60,13 @@ Pod::Spec.new do |spec|
         :execution_position => :before_compile,
         :script => <<-EOS
         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$PODS_ROOT"
+
+        CONFIG="Release"
+        if echo $GCC_PREPROCESSOR_DEFINITIONS | grep -q "DEBUG=1"; then
+          CONFIG="Debug"
+        fi
+
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
         EOS
       }
     end

@@ -59,6 +59,12 @@ YG_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     YGNodeRef node,
     YGNodeCleanupFunc cleanup);
 YG_EXPORT void YGNodeFreeRecursive(YGNodeRef node);
+
+// Frees the Yoga node without disconnecting it from its owner or children.
+// Allows garbage collecting Yoga nodes in parallel when the entire tree is
+// unrechable.
+YG_EXPORT void YGNodeFinalize(YGNodeRef node);
+
 YG_EXPORT void YGNodeReset(YGNodeRef node);
 
 YG_EXPORT void YGNodeInsertChild(YGNodeRef node, YGNodeRef child, size_t index);
@@ -93,12 +99,6 @@ YG_EXPORT void YGNodeCalculateLayout(
 // measure functions depend on information not known to Yoga they must perform
 // this dirty marking manually.
 YG_EXPORT void YGNodeMarkDirty(YGNodeRef node);
-
-// Marks the current node and all its descendants as dirty.
-//
-// Intended to be used for Yoga benchmarks. Don't use in production, as calling
-// `YGCalculateLayout` will cause the recalculation of each and every node.
-YG_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(YGNodeRef node);
 
 YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
 

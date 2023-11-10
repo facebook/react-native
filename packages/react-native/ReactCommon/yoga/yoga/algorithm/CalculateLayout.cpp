@@ -61,16 +61,16 @@ static inline bool styleDefinesDimension(
     const yoga::Node* const node,
     const FlexDirection axis,
     const float ownerSize) {
-  bool isUndefined =
-      yoga::isUndefined(node->getResolvedDimension(dimension(axis)).value);
+  bool isDefined =
+      yoga::isDefined(node->getResolvedDimension(dimension(axis)).value);
 
   auto resolvedDimension = node->getResolvedDimension(dimension(axis));
   return !(
       resolvedDimension.unit == YGUnitAuto ||
       resolvedDimension.unit == YGUnitUndefined ||
-      (resolvedDimension.unit == YGUnitPoint && !isUndefined &&
+      (resolvedDimension.unit == YGUnitPoint && isDefined &&
        resolvedDimension.value < 0.0f) ||
-      (resolvedDimension.unit == YGUnitPercent && !isUndefined &&
+      (resolvedDimension.unit == YGUnitPercent && isDefined &&
        (resolvedDimension.value < 0.0f || yoga::isUndefined(ownerSize))));
 }
 
@@ -78,7 +78,7 @@ static inline bool isLayoutDimensionDefined(
     const yoga::Node* const node,
     const FlexDirection axis) {
   const float value = node->getLayout().measuredDimension(dimension(axis));
-  return !yoga::isUndefined(value) && value >= 0.0f;
+  return yoga::isDefined(value) && value >= 0.0f;
 }
 
 static void setChildTrailingPosition(
@@ -88,8 +88,8 @@ static void setChildTrailingPosition(
   const float size = child->getLayout().measuredDimension(dimension(axis));
   child->setLayoutPosition(
       node->getLayout().measuredDimension(dimension(axis)) - size -
-          child->getLayout().position[leadingEdge(axis)],
-      trailingEdge(axis));
+          child->getLayout().position[flexStartEdge(axis)],
+      flexEndEdge(axis));
 }
 
 static void constrainMaxSizeForMode(
@@ -111,7 +111,7 @@ static void constrainMaxSizeForMode(
           : maxSize.unwrap();
       break;
     case MeasureMode::Undefined:
-      if (!maxSize.isUndefined()) {
+      if (maxSize.isDefined()) {
         *mode = MeasureMode::AtMost;
         *size = maxSize.unwrap();
       }
@@ -150,7 +150,7 @@ static void computeFlexBasisForChild(
   const bool isColumnStyleDimDefined =
       styleDefinesDimension(child, FlexDirection::Column, ownerHeight);
 
-  if (!resolvedFlexBasis.isUndefined() && !yoga::isUndefined(mainAxisSize)) {
+  if (resolvedFlexBasis.isDefined() && yoga::isDefined(mainAxisSize)) {
     if (child->getLayout().computedFlexBasis.isUndefined() ||
         (child->getConfig()->isExperimentalFeatureEnabled(
              ExperimentalFeature::WebFlexBasis) &&
@@ -210,7 +210,7 @@ static void computeFlexBasisForChild(
     // major browsers appear to implement the following logic.
     if ((!isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
         node->getStyle().overflow() != Overflow::Scroll) {
-      if (yoga::isUndefined(childWidth) && !yoga::isUndefined(width)) {
+      if (yoga::isUndefined(childWidth) && yoga::isDefined(width)) {
         childWidth = width;
         childWidthMeasureMode = MeasureMode::AtMost;
       }
@@ -218,14 +218,14 @@ static void computeFlexBasisForChild(
 
     if ((isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
         node->getStyle().overflow() != Overflow::Scroll) {
-      if (yoga::isUndefined(childHeight) && !yoga::isUndefined(height)) {
+      if (yoga::isUndefined(childHeight) && yoga::isDefined(height)) {
         childHeight = height;
         childHeightMeasureMode = MeasureMode::AtMost;
       }
     }
 
     const auto& childStyle = child->getStyle();
-    if (!childStyle.aspectRatio().isUndefined()) {
+    if (childStyle.aspectRatio().isDefined()) {
       if (!isMainAxisRow && childWidthMeasureMode == MeasureMode::Exactly) {
         childHeight = marginColumn +
             (childWidth - marginRow) / childStyle.aspectRatio().unwrap();
@@ -242,7 +242,7 @@ static void computeFlexBasisForChild(
     // the cross axis to be measured exactly with the available inner width
 
     const bool hasExactWidth =
-        !yoga::isUndefined(width) && widthMode == MeasureMode::Exactly;
+        yoga::isDefined(width) && widthMode == MeasureMode::Exactly;
     const bool childWidthStretch =
         resolveChildAlignment(node, child) == Align::Stretch &&
         childWidthMeasureMode != MeasureMode::Exactly;
@@ -250,7 +250,7 @@ static void computeFlexBasisForChild(
         childWidthStretch) {
       childWidth = width;
       childWidthMeasureMode = MeasureMode::Exactly;
-      if (!childStyle.aspectRatio().isUndefined()) {
+      if (childStyle.aspectRatio().isDefined()) {
         childHeight =
             (childWidth - marginRow) / childStyle.aspectRatio().unwrap();
         childHeightMeasureMode = MeasureMode::Exactly;
@@ -258,7 +258,7 @@ static void computeFlexBasisForChild(
     }
 
     const bool hasExactHeight =
-        !yoga::isUndefined(height) && heightMode == MeasureMode::Exactly;
+        yoga::isDefined(height) && heightMode == MeasureMode::Exactly;
     const bool childHeightStretch =
         resolveChildAlignment(node, child) == Align::Stretch &&
         childHeightMeasureMode != MeasureMode::Exactly;
@@ -267,7 +267,7 @@ static void computeFlexBasisForChild(
       childHeight = height;
       childHeightMeasureMode = MeasureMode::Exactly;
 
-      if (!childStyle.aspectRatio().isUndefined()) {
+      if (childStyle.aspectRatio().isDefined()) {
         childWidth =
             (childHeight - marginColumn) * childStyle.aspectRatio().unwrap();
         childWidthMeasureMode = MeasureMode::Exactly;
@@ -343,13 +343,13 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified width, compute the width based on
     // the left/right offsets if they're defined.
-    if (child->isLeadingPositionDefined(FlexDirection::Row) &&
-        child->isTrailingPosDefined(FlexDirection::Row)) {
+    if (child->isInlineStartPositionDefined(FlexDirection::Row, direction) &&
+        child->isInlineEndPositionDefined(FlexDirection::Row, direction)) {
       childWidth = node->getLayout().measuredDimension(Dimension::Width) -
-          (node->getLeadingBorder(FlexDirection::Row) +
-           node->getTrailingBorder(FlexDirection::Row)) -
-          (child->getLeadingPosition(FlexDirection::Row, width) +
-           child->getTrailingPosition(FlexDirection::Row, width));
+          (node->getInlineStartBorder(FlexDirection::Row, direction) +
+           node->getInlineEndBorder(FlexDirection::Row, direction)) -
+          (child->getInlineStartPosition(FlexDirection::Row, direction, width) +
+           child->getInlineEndPosition(FlexDirection::Row, direction, width));
       childWidth =
           boundAxis(child, FlexDirection::Row, childWidth, width, width);
     }
@@ -363,13 +363,15 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified height, compute the height based on
     // the top/bottom offsets if they're defined.
-    if (child->isLeadingPositionDefined(FlexDirection::Column) &&
-        child->isTrailingPosDefined(FlexDirection::Column)) {
+    if (child->isInlineStartPositionDefined(FlexDirection::Column, direction) &&
+        child->isInlineEndPositionDefined(FlexDirection::Column, direction)) {
       childHeight = node->getLayout().measuredDimension(Dimension::Height) -
-          (node->getLeadingBorder(FlexDirection::Column) +
-           node->getTrailingBorder(FlexDirection::Column)) -
-          (child->getLeadingPosition(FlexDirection::Column, height) +
-           child->getTrailingPosition(FlexDirection::Column, height));
+          (node->getInlineStartBorder(FlexDirection::Column, direction) +
+           node->getInlineEndBorder(FlexDirection::Column, direction)) -
+          (child->getInlineStartPosition(
+               FlexDirection::Column, direction, height) +
+           child->getInlineEndPosition(
+               FlexDirection::Column, direction, height));
       childHeight =
           boundAxis(child, FlexDirection::Column, childHeight, height, width);
     }
@@ -380,7 +382,7 @@ static void layoutAbsoluteChild(
   // flexible.
   const auto& childStyle = child->getStyle();
   if (yoga::isUndefined(childWidth) ^ yoga::isUndefined(childHeight)) {
-    if (!childStyle.aspectRatio().isUndefined()) {
+    if (childStyle.aspectRatio().isDefined()) {
       if (yoga::isUndefined(childWidth)) {
         childWidth = marginRow +
             (childHeight - marginColumn) * childStyle.aspectRatio().unwrap();
@@ -405,7 +407,7 @@ static void layoutAbsoluteChild(
     // wrap to the size of its owner. This is the same behavior as many browsers
     // implement.
     if (!isMainAxisRow && yoga::isUndefined(childWidth) &&
-        widthMode != MeasureMode::Undefined && !yoga::isUndefined(width) &&
+        widthMode != MeasureMode::Undefined && yoga::isDefined(width) &&
         width > 0) {
       childWidth = width;
       childWidthMeasureMode = MeasureMode::AtMost;
@@ -446,90 +448,85 @@ static void layoutAbsoluteChild(
       depth,
       generationCount);
 
-  if (child->isTrailingPosDefined(mainAxis) &&
-      !child->isLeadingPositionDefined(mainAxis)) {
+  if (child->isFlexEndPositionDefined(mainAxis) &&
+      !child->isFlexStartPositionDefined(mainAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(mainAxis)) -
             child->getLayout().measuredDimension(dimension(mainAxis)) -
-            node->getTrailingBorder(mainAxis) -
-            child->getTrailingMargin(
-                mainAxis, direction, isMainAxisRow ? width : height) -
-            child->getTrailingPosition(
-                mainAxis, isMainAxisRow ? width : height),
-        leadingEdge(mainAxis));
+            node->getFlexEndBorder(mainAxis, direction) -
+            child->getFlexEndMargin(mainAxis, isMainAxisRow ? width : height) -
+            child->getFlexEndPosition(mainAxis, isMainAxisRow ? width : height),
+        flexStartEdge(mainAxis));
   } else if (
-      !child->isLeadingPositionDefined(mainAxis) &&
+      !child->isFlexStartPositionDefined(mainAxis) &&
       node->getStyle().justifyContent() == Justify::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
          child->getLayout().measuredDimension(dimension(mainAxis))) /
             2.0f,
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   } else if (
-      !child->isLeadingPositionDefined(mainAxis) &&
+      !child->isFlexStartPositionDefined(mainAxis) &&
       node->getStyle().justifyContent() == Justify::FlexEnd) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(mainAxis)) -
          child->getLayout().measuredDimension(dimension(mainAxis))),
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isLeadingPositionDefined(mainAxis)) {
+      child->isFlexStartPositionDefined(mainAxis)) {
     child->setLayoutPosition(
-        child->getLeadingPosition(
+        child->getFlexStartPosition(
             mainAxis,
             node->getLayout().measuredDimension(dimension(mainAxis))) +
-            node->getLeadingBorder(mainAxis) +
-            child->getLeadingMargin(
+            node->getFlexStartBorder(mainAxis, direction) +
+            child->getFlexStartMargin(
                 mainAxis,
-                direction,
                 node->getLayout().measuredDimension(dimension(mainAxis))),
-        leadingEdge(mainAxis));
+        flexStartEdge(mainAxis));
   }
 
-  if (child->isTrailingPosDefined(crossAxis) &&
-      !child->isLeadingPositionDefined(crossAxis)) {
+  if (child->isFlexEndPositionDefined(crossAxis) &&
+      !child->isFlexStartPositionDefined(crossAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimension(dimension(crossAxis)) -
             child->getLayout().measuredDimension(dimension(crossAxis)) -
-            node->getTrailingBorder(crossAxis) -
-            child->getTrailingMargin(
-                crossAxis, direction, isMainAxisRow ? height : width) -
-            child->getTrailingPosition(
+            node->getFlexEndBorder(crossAxis, direction) -
+            child->getFlexEndMargin(crossAxis, isMainAxisRow ? height : width) -
+            child->getFlexEndPosition(
                 crossAxis, isMainAxisRow ? height : width),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
 
   } else if (
-      !child->isLeadingPositionDefined(crossAxis) &&
+      !child->isFlexStartPositionDefined(crossAxis) &&
       resolveChildAlignment(node, child) == Align::Center) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(crossAxis)) -
          child->getLayout().measuredDimension(dimension(crossAxis))) /
             2.0f,
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   } else if (
-      !child->isLeadingPositionDefined(crossAxis) &&
+      !child->isFlexStartPositionDefined(crossAxis) &&
       ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
        (node->getStyle().flexWrap() == Wrap::WrapReverse))) {
     child->setLayoutPosition(
         (node->getLayout().measuredDimension(dimension(crossAxis)) -
          child->getLayout().measuredDimension(dimension(crossAxis))),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   } else if (
       node->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isLeadingPositionDefined(crossAxis)) {
+      child->isFlexStartPositionDefined(crossAxis)) {
     child->setLayoutPosition(
-        child->getLeadingPosition(
+        child->getFlexStartPosition(
             crossAxis,
             node->getLayout().measuredDimension(dimension(crossAxis))) +
-            node->getLeadingBorder(crossAxis) +
-            child->getLeadingMargin(
+            node->getFlexStartBorder(crossAxis, direction) +
+            child->getFlexStartMargin(
                 crossAxis,
-                direction,
                 node->getLayout().measuredDimension(dimension(crossAxis))),
-        leadingEdge(crossAxis));
+        flexStartEdge(crossAxis));
   }
 }
 
@@ -674,9 +671,9 @@ static bool measureNodeWithFixedSize(
     const MeasureMode heightMeasureMode,
     const float ownerWidth,
     const float ownerHeight) {
-  if ((!yoga::isUndefined(availableWidth) &&
+  if ((yoga::isDefined(availableWidth) &&
        widthMeasureMode == MeasureMode::AtMost && availableWidth <= 0.0f) ||
-      (!yoga::isUndefined(availableHeight) &&
+      (yoga::isDefined(availableHeight) &&
        heightMeasureMode == MeasureMode::AtMost && availableHeight <= 0.0f) ||
       (widthMeasureMode == MeasureMode::Exactly &&
        heightMeasureMode == MeasureMode::Exactly)) {
@@ -732,7 +729,7 @@ static float calculateAvailableInnerDimension(
   float availableInnerDim = availableDim - paddingAndBorder;
   // Max dimension overrides predefined dimension value; Min dimension in turn
   // overrides both of the above
-  if (!yoga::isUndefined(availableInnerDim)) {
+  if (yoga::isDefined(availableInnerDim)) {
     // We want to make sure our available height does not violate min and max
     // constraints
     const FloatOptional minDimensionOptional =
@@ -876,7 +873,7 @@ static float distributeFreeSpaceSecondPass(
                          .unwrap();
     float updatedMainSize = childFlexBasis;
 
-    if (!yoga::isUndefined(flexLine.layout.remainingFreeSpace) &&
+    if (yoga::isDefined(flexLine.layout.remainingFreeSpace) &&
         flexLine.layout.remainingFreeSpace < 0) {
       flexShrinkScaledFactor =
           -currentLineChild->resolveFlexShrink() * childFlexBasis;
@@ -884,7 +881,7 @@ static float distributeFreeSpaceSecondPass(
       if (flexShrinkScaledFactor != 0) {
         float childSize;
 
-        if (!yoga::isUndefined(flexLine.layout.totalFlexShrinkScaledFactors) &&
+        if (yoga::isDefined(flexLine.layout.totalFlexShrinkScaledFactors) &&
             flexLine.layout.totalFlexShrinkScaledFactors == 0) {
           childSize = childFlexBasis + flexShrinkScaledFactor;
         } else {
@@ -902,7 +899,7 @@ static float distributeFreeSpaceSecondPass(
             availableInnerWidth);
       }
     } else if (
-        !yoga::isUndefined(flexLine.layout.remainingFreeSpace) &&
+        yoga::isDefined(flexLine.layout.remainingFreeSpace) &&
         flexLine.layout.remainingFreeSpace > 0) {
       flexGrowFactor = currentLineChild->resolveFlexGrow();
 
@@ -932,7 +929,7 @@ static float distributeFreeSpaceSecondPass(
     MeasureMode childMainMeasureMode = MeasureMode::Exactly;
 
     const auto& childStyle = currentLineChild->getStyle();
-    if (!childStyle.aspectRatio().isUndefined()) {
+    if (childStyle.aspectRatio().isDefined()) {
       childCrossSize = isMainAxisRow
           ? (childMainSize - marginMain) / childStyle.aspectRatio().unwrap()
           : (childMainSize - marginMain) * childStyle.aspectRatio().unwrap();
@@ -946,7 +943,8 @@ static float distributeFreeSpaceSecondPass(
         measureModeCrossDim == MeasureMode::Exactly &&
         !(isNodeFlexWrap && mainAxisOverflows) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
-        currentLineChild->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
+        currentLineChild->getFlexStartMarginValue(crossAxis).unit !=
+            YGUnitAuto &&
         currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
       childCrossSize = availableInnerCrossDim;
       childCrossMeasureMode = MeasureMode::Exactly;
@@ -992,7 +990,8 @@ static float distributeFreeSpaceSecondPass(
         !styleDefinesDimension(
             currentLineChild, crossAxis, availableInnerCrossDim) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
-        currentLineChild->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
+        currentLineChild->getFlexStartMarginValue(crossAxis).unit !=
+            YGUnitAuto &&
         currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto;
 
     const float childWidth = isMainAxisRow ? childMainSize : childCrossSize;
@@ -1056,7 +1055,7 @@ static void distributeFreeSpaceFirstPass(
           -currentLineChild->resolveFlexShrink() * childFlexBasis;
 
       // Is this child able to shrink?
-      if (!yoga::isUndefined(flexShrinkScaledFactor) &&
+      if (yoga::isDefined(flexShrinkScaledFactor) &&
           flexShrinkScaledFactor != 0) {
         baseMainSize = childFlexBasis +
             flexLine.layout.remainingFreeSpace /
@@ -1068,8 +1067,7 @@ static void distributeFreeSpaceFirstPass(
             baseMainSize,
             availableInnerMainDim,
             availableInnerWidth);
-        if (!yoga::isUndefined(baseMainSize) &&
-            !yoga::isUndefined(boundMainSize) &&
+        if (yoga::isDefined(baseMainSize) && yoga::isDefined(boundMainSize) &&
             baseMainSize != boundMainSize) {
           // By excluding this item's size and flex factor from remaining, this
           // item's min/max constraints should also trigger in the second pass
@@ -1082,12 +1080,12 @@ static void distributeFreeSpaceFirstPass(
         }
       }
     } else if (
-        !yoga::isUndefined(flexLine.layout.remainingFreeSpace) &&
+        yoga::isDefined(flexLine.layout.remainingFreeSpace) &&
         flexLine.layout.remainingFreeSpace > 0) {
       flexGrowFactor = currentLineChild->resolveFlexGrow();
 
       // Is this child able to grow?
-      if (!yoga::isUndefined(flexGrowFactor) && flexGrowFactor != 0) {
+      if (yoga::isDefined(flexGrowFactor) && flexGrowFactor != 0) {
         baseMainSize = childFlexBasis +
             flexLine.layout.remainingFreeSpace /
                 flexLine.layout.totalFlexGrowFactors * flexGrowFactor;
@@ -1098,8 +1096,7 @@ static void distributeFreeSpaceFirstPass(
             availableInnerMainDim,
             availableInnerWidth);
 
-        if (!yoga::isUndefined(baseMainSize) &&
-            !yoga::isUndefined(boundMainSize) &&
+        if (yoga::isDefined(baseMainSize) && yoga::isDefined(boundMainSize) &&
             baseMainSize != boundMainSize) {
           // By excluding this item's size and flex factor from remaining, this
           // item's min/max constraints should also trigger in the second pass
@@ -1198,19 +1195,25 @@ static void justifyMainAxis(
     const float availableInnerWidth,
     const bool performLayout) {
   const auto& style = node->getStyle();
+
   const float leadingPaddingAndBorderMain =
-      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth);
+      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? node->getInlineStartPaddingAndBorder(mainAxis, direction, ownerWidth)
+      : node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
   const float trailingPaddingAndBorderMain =
-      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth);
+      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
+      ? node->getInlineEndPaddingAndBorder(mainAxis, direction, ownerWidth)
+      : node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
+
   const float gap = node->getGapForAxis(mainAxis);
   // If we are using "at most" rules in the main axis, make sure that
   // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == MeasureMode::AtMost &&
       flexLine.layout.remainingFreeSpace > 0) {
-    if (!style.minDimension(dimension(mainAxis)).isUndefined() &&
-        !yoga::resolveValue(
-             style.minDimension(dimension(mainAxis)), mainAxisownerSize)
-             .isUndefined()) {
+    if (style.minDimension(dimension(mainAxis)).isDefined() &&
+        yoga::resolveValue(
+            style.minDimension(dimension(mainAxis)), mainAxisownerSize)
+            .isDefined()) {
       // This condition makes sure that if the size of main dimension(after
       // considering child nodes main dim, leading and trailing padding etc)
       // falls below min dimension, then the remainingFreeSpace is reassigned
@@ -1236,7 +1239,7 @@ static void justifyMainAxis(
   for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
     auto child = node->getChild(i);
     if (child->getStyle().positionType() != PositionType::Absolute) {
-      if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
+      if (child->getFlexStartMarginValue(mainAxis).unit == YGUnitAuto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
       if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
@@ -1298,33 +1301,34 @@ static void justifyMainAxis(
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
-        child->isLeadingPositionDefined(mainAxis)) {
+        child->isInlineStartPositionDefined(mainAxis, direction)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
         // defined, we override the position to whatever the user said (and
         // margin/border).
         child->setLayoutPosition(
-            child->getLeadingPosition(mainAxis, availableInnerMainDim) +
-                node->getLeadingBorder(mainAxis) +
-                child->getLeadingMargin(
+            child->getInlineStartPosition(
+                mainAxis, direction, availableInnerMainDim) +
+                node->getInlineStartBorder(mainAxis, direction) +
+                child->getInlineStartMargin(
                     mainAxis, direction, availableInnerWidth),
-            leadingEdge(mainAxis));
+            flexStartEdge(mainAxis));
       }
     } else {
       // Now that we placed the element, we need to update the variables.
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
       if (childStyle.positionType() != PositionType::Absolute) {
-        if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
+        if (child->getFlexStartMarginValue(mainAxis).unit == YGUnitAuto) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(numberOfAutoMarginsOnCurrentLine);
         }
 
         if (performLayout) {
           child->setLayoutPosition(
-              childLayout.position[leadingEdge(mainAxis)] +
+              childLayout.position[flexStartEdge(mainAxis)] +
                   flexLine.layout.mainDim,
-              leadingEdge(mainAxis));
+              flexStartEdge(mainAxis));
         }
 
         if (child != flexLine.itemsInFlow.back()) {
@@ -1355,7 +1359,7 @@ static void justifyMainAxis(
             // If the child is baseline aligned then the cross dimension is
             // calculated by adding maxAscent and maxDescent from the baseline.
             const float ascent = calculateBaseline(child) +
-                child->getLeadingMargin(
+                child->getInlineStartMargin(
                     FlexDirection::Column, direction, availableInnerWidth);
             const float descent =
                 child->getLayout().measuredDimension(Dimension::Height) +
@@ -1378,9 +1382,10 @@ static void justifyMainAxis(
         }
       } else if (performLayout) {
         child->setLayoutPosition(
-            childLayout.position[leadingEdge(mainAxis)] +
-                node->getLeadingBorder(mainAxis) + leadingMainDim,
-            leadingEdge(mainAxis));
+            childLayout.position[flexStartEdge(mainAxis)] +
+                node->getInlineStartBorder(mainAxis, direction) +
+                leadingMainDim,
+            flexStartEdge(mainAxis));
       }
     }
   }
@@ -1502,35 +1507,42 @@ static void calculateLayoutImpl(
   const YGEdge endEdge = direction == Direction::LTR ? YGEdgeRight : YGEdgeLeft;
 
   const float marginRowLeading =
-      node->getLeadingMargin(flexRowDirection, direction, ownerWidth);
+      node->getInlineStartMargin(flexRowDirection, direction, ownerWidth);
   node->setLayoutMargin(marginRowLeading, startEdge);
   const float marginRowTrailing =
-      node->getTrailingMargin(flexRowDirection, direction, ownerWidth);
+      node->getInlineEndMargin(flexRowDirection, direction, ownerWidth);
   node->setLayoutMargin(marginRowTrailing, endEdge);
   const float marginColumnLeading =
-      node->getLeadingMargin(flexColumnDirection, direction, ownerWidth);
+      node->getInlineStartMargin(flexColumnDirection, direction, ownerWidth);
   node->setLayoutMargin(marginColumnLeading, YGEdgeTop);
   const float marginColumnTrailing =
-      node->getTrailingMargin(flexColumnDirection, direction, ownerWidth);
+      node->getInlineEndMargin(flexColumnDirection, direction, ownerWidth);
   node->setLayoutMargin(marginColumnTrailing, YGEdgeBottom);
 
   const float marginAxisRow = marginRowLeading + marginRowTrailing;
   const float marginAxisColumn = marginColumnLeading + marginColumnTrailing;
 
-  node->setLayoutBorder(node->getLeadingBorder(flexRowDirection), startEdge);
-  node->setLayoutBorder(node->getTrailingBorder(flexRowDirection), endEdge);
-  node->setLayoutBorder(node->getLeadingBorder(flexColumnDirection), YGEdgeTop);
   node->setLayoutBorder(
-      node->getTrailingBorder(flexColumnDirection), YGEdgeBottom);
+      node->getInlineStartBorder(flexRowDirection, direction), startEdge);
+  node->setLayoutBorder(
+      node->getInlineEndBorder(flexRowDirection, direction), endEdge);
+  node->setLayoutBorder(
+      node->getInlineStartBorder(flexColumnDirection, direction), YGEdgeTop);
+  node->setLayoutBorder(
+      node->getInlineEndBorder(flexColumnDirection, direction), YGEdgeBottom);
 
   node->setLayoutPadding(
-      node->getLeadingPadding(flexRowDirection, ownerWidth), startEdge);
+      node->getInlineStartPadding(flexRowDirection, direction, ownerWidth),
+      startEdge);
   node->setLayoutPadding(
-      node->getTrailingPadding(flexRowDirection, ownerWidth), endEdge);
+      node->getInlineEndPadding(flexRowDirection, direction, ownerWidth),
+      endEdge);
   node->setLayoutPadding(
-      node->getLeadingPadding(flexColumnDirection, ownerWidth), YGEdgeTop);
+      node->getInlineStartPadding(flexColumnDirection, direction, ownerWidth),
+      YGEdgeTop);
   node->setLayoutPadding(
-      node->getTrailingPadding(flexColumnDirection, ownerWidth), YGEdgeBottom);
+      node->getInlineEndPadding(flexColumnDirection, direction, ownerWidth),
+      YGEdgeBottom);
 
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(
@@ -1591,12 +1603,10 @@ static void calculateLayoutImpl(
 
   const float paddingAndBorderAxisMain =
       paddingAndBorderForAxis(node, mainAxis, ownerWidth);
-  const float leadingPaddingAndBorderCross =
-      node->getLeadingPaddingAndBorder(crossAxis, ownerWidth);
-  const float trailingPaddingAndBorderCross =
-      node->getTrailingPaddingAndBorder(crossAxis, ownerWidth);
   const float paddingAndBorderAxisCross =
-      leadingPaddingAndBorderCross + trailingPaddingAndBorderCross;
+      paddingAndBorderForAxis(node, crossAxis, ownerWidth);
+  const float leadingPaddingAndBorderCross =
+      node->getInlineStartPaddingAndBorder(crossAxis, direction, ownerWidth);
 
   MeasureMode measureModeMainDim =
       isMainAxisRow ? widthMeasureMode : heightMeasureMode;
@@ -1724,11 +1734,11 @@ static void calculateLayoutImpl(
       const float maxInnerMainDim =
           isMainAxisRow ? maxInnerWidth : maxInnerHeight;
 
-      if (!yoga::isUndefined(minInnerMainDim) &&
+      if (yoga::isDefined(minInnerMainDim) &&
           flexLine.sizeConsumed < minInnerMainDim) {
         availableInnerMainDim = minInnerMainDim;
       } else if (
-          !yoga::isUndefined(maxInnerMainDim) &&
+          yoga::isDefined(maxInnerMainDim) &&
           flexLine.sizeConsumed > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
       } else {
@@ -1736,9 +1746,9 @@ static void calculateLayoutImpl(
             node->hasErrata(Errata::StretchFlexBasis);
 
         if (!useLegacyStretchBehaviour &&
-            ((!yoga::isUndefined(flexLine.layout.totalFlexGrowFactors) &&
+            ((yoga::isDefined(flexLine.layout.totalFlexGrowFactors) &&
               flexLine.layout.totalFlexGrowFactors == 0) ||
-             (!yoga::isUndefined(node->resolveFlexGrow()) &&
+             (yoga::isDefined(node->resolveFlexGrow()) &&
               node->resolveFlexGrow() == 0))) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
@@ -1750,7 +1760,7 @@ static void calculateLayoutImpl(
       }
     }
 
-    if (!sizeBasedOnContent && !yoga::isUndefined(availableInnerMainDim)) {
+    if (!sizeBasedOnContent && yoga::isDefined(availableInnerMainDim)) {
       flexLine.layout.remainingFreeSpace =
           availableInnerMainDim - flexLine.sizeConsumed;
     } else if (flexLine.sizeConsumed < 0) {
@@ -1849,25 +1859,26 @@ static void calculateLayoutImpl(
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
           const bool isChildLeadingPosDefined =
-              child->isLeadingPositionDefined(crossAxis);
+              child->isInlineStartPositionDefined(crossAxis, direction);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
-                child->getLeadingPosition(crossAxis, availableInnerCrossDim) +
-                    node->getLeadingBorder(crossAxis) +
-                    child->getLeadingMargin(
+                child->getInlineStartPosition(
+                    crossAxis, direction, availableInnerCrossDim) +
+                    node->getInlineStartBorder(crossAxis, direction) +
+                    child->getInlineStartMargin(
                         crossAxis, direction, availableInnerWidth),
-                leadingEdge(crossAxis));
+                flexStartEdge(crossAxis));
           }
           // If leading position is not defined or calculations result in Nan,
           // default to border + margin
           if (!isChildLeadingPosDefined ||
               yoga::isUndefined(
-                  child->getLayout().position[leadingEdge(crossAxis)])) {
+                  child->getLayout().position[flexStartEdge(crossAxis)])) {
             child->setLayoutPosition(
-                node->getLeadingBorder(crossAxis) +
-                    child->getLeadingMargin(
+                node->getInlineStartBorder(crossAxis, direction) +
+                    child->getInlineStartMargin(
                         crossAxis, direction, availableInnerWidth),
-                leadingEdge(crossAxis));
+                flexStartEdge(crossAxis));
           }
         } else {
           float leadingCrossDim = leadingPaddingAndBorderCross;
@@ -1881,7 +1892,7 @@ static void calculateLayoutImpl(
           // time, this time forcing the cross-axis size to be the computed
           // cross size for the current line.
           if (alignItem == Align::Stretch &&
-              child->marginLeadingValue(crossAxis).unit != YGUnitAuto &&
+              child->getFlexStartMarginValue(crossAxis).unit != YGUnitAuto &&
               child->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
@@ -1890,7 +1901,7 @@ static void calculateLayoutImpl(
               float childMainSize =
                   child->getLayout().measuredDimension(dimension(mainAxis));
               const auto& childStyle = child->getStyle();
-              float childCrossSize = !childStyle.aspectRatio().isUndefined()
+              float childCrossSize = childStyle.aspectRatio().isDefined()
                   ? child->getMarginForAxis(crossAxis, availableInnerWidth) +
                       (isMainAxisRow
                            ? childMainSize / childStyle.aspectRatio().unwrap()
@@ -1955,7 +1966,7 @@ static void calculateLayoutImpl(
             const float remainingCrossDim = containerCrossAxis -
                 dimensionWithMargin(child, crossAxis, availableInnerWidth);
 
-            if (child->marginLeadingValue(crossAxis).unit == YGUnitAuto &&
+            if (child->getFlexStartMarginValue(crossAxis).unit == YGUnitAuto &&
                 child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
               leadingCrossDim +=
                   yoga::maxOrDefined(0.0f, remainingCrossDim / 2);
@@ -1963,7 +1974,7 @@ static void calculateLayoutImpl(
                 child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
               // No-Op
             } else if (
-                child->marginLeadingValue(crossAxis).unit == YGUnitAuto) {
+                child->getFlexStartMarginValue(crossAxis).unit == YGUnitAuto) {
               leadingCrossDim += yoga::maxOrDefined(0.0f, remainingCrossDim);
             } else if (alignItem == Align::FlexStart) {
               // No-Op
@@ -1975,9 +1986,9 @@ static void calculateLayoutImpl(
           }
           // And we apply the position
           child->setLayoutPosition(
-              child->getLayout().position[leadingEdge(crossAxis)] +
+              child->getLayout().position[flexStartEdge(crossAxis)] +
                   totalLineCrossDim + leadingCrossDim,
-              leadingEdge(crossAxis));
+              flexStartEdge(crossAxis));
         }
       }
     }
@@ -1993,7 +2004,7 @@ static void calculateLayoutImpl(
   if (performLayout && (isNodeFlexWrap || isBaselineLayout(node))) {
     float crossDimLead = 0;
     float currentLead = leadingPaddingAndBorderCross;
-    if (!yoga::isUndefined(availableInnerCrossDim)) {
+    if (yoga::isDefined(availableInnerCrossDim)) {
       const float remainingAlignContentDim =
           availableInnerCrossDim - totalLineCrossDim;
       switch (node->getStyle().alignContent()) {
@@ -2016,6 +2027,18 @@ static void calculateLayoutImpl(
             if (lineCount > 1) {
               crossDimLead =
                   remainingAlignContentDim / static_cast<float>(lineCount);
+            }
+          } else {
+            currentLead += remainingAlignContentDim / 2;
+          }
+          break;
+        case Align::SpaceEvenly:
+          if (availableInnerCrossDim > totalLineCrossDim) {
+            currentLead +=
+                remainingAlignContentDim / static_cast<float>(lineCount + 1);
+            if (lineCount > 1) {
+              crossDimLead =
+                  remainingAlignContentDim / static_cast<float>(lineCount + 1);
             }
           } else {
             currentLead += remainingAlignContentDim / 2;
@@ -2059,7 +2082,7 @@ static void calculateLayoutImpl(
           }
           if (resolveChildAlignment(node, child) == Align::Baseline) {
             const float ascent = calculateBaseline(child) +
-                child->getLeadingMargin(
+                child->getInlineStartMargin(
                     FlexDirection::Column, direction, availableInnerWidth);
             const float descent =
                 child->getLayout().measuredDimension(Dimension::Height) +
@@ -2090,19 +2113,19 @@ static void calculateLayoutImpl(
               case Align::FlexStart: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getLeadingMargin(
+                        child->getInlineStartMargin(
                             crossAxis, direction, availableInnerWidth),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::FlexEnd: {
                 child->setLayoutPosition(
                     currentLead + lineHeight -
-                        child->getTrailingMargin(
+                        child->getInlineEndMargin(
                             crossAxis, direction, availableInnerWidth) -
                         child->getLayout().measuredDimension(
                             dimension(crossAxis)),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::Center: {
@@ -2111,15 +2134,15 @@ static void calculateLayoutImpl(
 
                 child->setLayoutPosition(
                     currentLead + (lineHeight - childHeight) / 2,
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
                 break;
               }
               case Align::Stretch: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getLeadingMargin(
+                        child->getInlineStartMargin(
                             crossAxis, direction, availableInnerWidth),
-                    leadingEdge(crossAxis));
+                    flexStartEdge(crossAxis));
 
                 // Remeasure child with the line height as it as been only
                 // measured with the owners height yet.
@@ -2168,8 +2191,10 @@ static void calculateLayoutImpl(
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine -
                         calculateBaseline(child) +
-                        child->getLeadingPosition(
-                            FlexDirection::Column, availableInnerCrossDim),
+                        child->getInlineStartPosition(
+                            FlexDirection::Column,
+                            direction,
+                            availableInnerCrossDim),
                     YGEdgeTop);
 
                 break;
@@ -2177,6 +2202,7 @@ static void calculateLayoutImpl(
               case Align::Auto:
               case Align::SpaceBetween:
               case Align::SpaceAround:
+              case Align::SpaceEvenly:
                 break;
             }
           }
@@ -2275,9 +2301,9 @@ static void calculateLayoutImpl(
       if (child->getStyle().positionType() != PositionType::Absolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimension(dimension(crossAxis)) -
-                child->getLayout().position[leadingEdge(crossAxis)] -
+                child->getLayout().position[flexStartEdge(crossAxis)] -
                 child->getLayout().measuredDimension(dimension(crossAxis)),
-            leadingEdge(crossAxis));
+            flexStartEdge(crossAxis));
       }
     }
   }
@@ -2656,9 +2682,9 @@ void calculateLayout(
              .unwrap() +
          node->getMarginForAxis(FlexDirection::Row, ownerWidth));
     widthMeasureMode = MeasureMode::Exactly;
-  } else if (!yoga::resolveValue(
-                  style.maxDimension(Dimension::Width), ownerWidth)
-                  .isUndefined()) {
+  } else if (yoga::resolveValue(
+                 style.maxDimension(Dimension::Width), ownerWidth)
+                 .isDefined()) {
     width = yoga::resolveValue(style.maxDimension(Dimension::Width), ownerWidth)
                 .unwrap();
     widthMeasureMode = MeasureMode::AtMost;
@@ -2678,9 +2704,9 @@ void calculateLayout(
              .unwrap() +
          node->getMarginForAxis(FlexDirection::Column, ownerWidth));
     heightMeasureMode = MeasureMode::Exactly;
-  } else if (!yoga::resolveValue(
-                  style.maxDimension(Dimension::Height), ownerHeight)
-                  .isUndefined()) {
+  } else if (yoga::resolveValue(
+                 style.maxDimension(Dimension::Height), ownerHeight)
+                 .isDefined()) {
     height =
         yoga::resolveValue(style.maxDimension(Dimension::Height), ownerHeight)
             .unwrap();

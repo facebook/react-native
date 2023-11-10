@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format strict-local
- * @flow
+ * @flow strict-local
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';

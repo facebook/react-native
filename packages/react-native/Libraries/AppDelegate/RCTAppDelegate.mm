@@ -53,6 +53,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #endif
 
+static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
+  // Hardcoding the Concurrent Root as it it not recommended to
+  // have the concurrentRoot turned off when Fabric is enabled.
+  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
+  return mutableProps;
+#else
+  return initialProps;
+#endif
+}
+
 @interface RCTAppDelegate () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
@@ -80,19 +93,21 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   BOOL enableTM = NO;
   BOOL enableBridgeless = NO;
+  BOOL fabricEnabled = NO;
 #if RCT_NEW_ARCH_ENABLED
   enableTM = self.turboModuleEnabled;
   enableBridgeless = self.bridgelessEnabled;
+  fabricEnabled = [self fabricEnabled];
 #endif
+  NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
   RCTAppSetupPrepareApp(application, enableTM);
 
   UIView *rootView;
-
   if (enableBridgeless) {
 #if RCT_NEW_ARCH_ENABLED
     // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-    RCTSetUseNativeViewConfigsInBridgelessMode([self fabricEnabled]);
+    RCTSetUseNativeViewConfigsInBridgelessMode(fabricEnabled);
 
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
@@ -101,8 +116,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self createReactHost];
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName
-                                                      initialProperties:launchOptions];
+    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
         initWithSurface:surface
@@ -122,7 +136,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
-    NSDictionary *initProps = [self prepareInitialProps];
+
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -144,15 +158,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)prepareInitialProps
 {
-  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
-
-#ifdef RCT_NEW_ARCH_ENABLED
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  initProps[kRNConcurrentRoot] = @([self fabricEnabled]);
-#endif
-
-  return initProps;
+  return self.initialProps;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
@@ -284,14 +290,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (void)createReactHost
 {
   __weak __typeof(self) weakSelf = self;
-  _reactHost = [[RCTHost alloc] initWithBundleURL:[self getBundleURL]
+  _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
                                      hostDelegate:nil
                        turboModuleManagerDelegate:self
                                  jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
                                    return [weakSelf createJSEngineInstance];
                                  }];
   [_reactHost setBundleURLProvider:^NSURL *() {
-    return [weakSelf getBundleURL];
+    return [weakSelf bundleURL];
   }];
   [_reactHost setContextContainerHandler:self];
   [_reactHost start];
@@ -311,9 +317,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 }
 
-- (NSURL *)getBundleURL
+- (NSURL *)bundleURL
 {
-  [NSException raise:@"RCTAppDelegate::getBundleURL not implemented"
+  [NSException raise:@"RCTAppDelegate::bundleURL not implemented"
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
 }

@@ -9,10 +9,10 @@
  */
 
 import {
+  type JsTypeString,
   jsTypeToCppType,
   toCppNamespace,
   toCppType,
-  type JsTypeString,
 } from './Converters';
 
 export class Property {

@@ -148,7 +148,8 @@ void TimerManager::callTimer(uint32_t timerID) {
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
-  // TODL (T96212789): Skip immediate APIs when JSVM microtask queue is used.
+  // TODO (T96212789): Remove when JSVM microtask queue is used everywhere in
+  // bridgeless mode. This is being overwritten in JS in that case.
   runtime.global().setProperty(
       runtime,
       "setImmediate",

@@ -178,8 +178,7 @@ inline size_t textAttributedStringHashLayoutWise(
   auto seed = size_t{0};
 
   for (const auto& fragment : attributedString.getFragments()) {
-    seed =
-        folly::hash::hash_combine(seed, textAttributesHashLayoutWise(fragment));
+    facebook::react::hash_combine(seed, textAttributesHashLayoutWise(fragment));
   }
 
   return seed;
@@ -208,8 +207,7 @@ namespace std {
 template <>
 struct hash<facebook::react::TextMeasureCacheKey> {
   size_t operator()(const facebook::react::TextMeasureCacheKey& key) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         textAttributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.layoutConstraints.maximumSize.width);

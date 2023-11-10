@@ -12,8 +12,5 @@ export let isAsyncDebugging: boolean = false;
 
 if (__DEV__) {
   // These native interfaces don't exist in asynchronous debugging environments.
-  isAsyncDebugging =
-    !global.nativeExtensions &&
-    !global.nativeCallSyncHook &&
-    !global.RN$Bridgeless;
+  isAsyncDebugging = !global.nativeCallSyncHook && !global.RN$Bridgeless;
 }

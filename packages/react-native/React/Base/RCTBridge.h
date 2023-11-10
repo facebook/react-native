@@ -57,6 +57,10 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
 
+// Use a shared queue for executing module methods
+BOOL RCTTurboModuleSharedQueueEnabled(void);
+void RCTEnableTurboModuleSharedQueue(BOOL enabled);
+
 typedef enum {
   kRCTBridgeProxyLoggingLevelNone,
   kRCTBridgeProxyLoggingLevelWarning,

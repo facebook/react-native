@@ -25,8 +25,7 @@ header_search_paths = [
 ]
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" #this is needed to allow the RuntimeScheduler access its own files
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the RuntimeScheduler access its own files
 end
 
 Pod::Spec.new do |s|
@@ -51,17 +50,20 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "React-jsi"
   s.dependency "React-runtimeexecutor"
   s.dependency "React-callinvoker"
-  s.dependency "React-debug"
+  s.dependency "React-cxxreact"
   s.dependency "React-rendererdebug"
   s.dependency "React-utils"
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
+  s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsc"
   end
 
 end

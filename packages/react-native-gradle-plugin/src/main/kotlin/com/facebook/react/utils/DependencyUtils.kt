@@ -36,6 +36,12 @@ internal object DependencyUtils {
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
           repo.content { it.excludeModule("org.webkit", "android-jsc") }
+
+          // If the user provided a react.internal.mavenLocalRepo, do not attempt to load
+          // anything from Maven Central that is react related.
+          if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
+            repo.content { it.excludeGroup("com.facebook.react") }
+          }
         }
         // Android JSC is installed from npm
         mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())

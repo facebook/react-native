@@ -110,7 +110,7 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
       viewId: Int,
       private val payload: WritableMap
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
-    override fun getEventName() = "onIntArrayChanged"
+    override fun getEventName() = "topIntArrayChanged"
 
     override fun getEventData() = payload
   }

@@ -9,9 +9,8 @@
 
 'use strict';
 
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-
 const invariant = require('invariant');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 
 const LoggingTestModule = {
   logToConsole: function (str) {

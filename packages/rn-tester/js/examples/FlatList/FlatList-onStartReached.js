@@ -10,6 +10,7 @@
 
 'use strict';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import BaseFlatListExample, {ITEM_HEIGHT} from './BaseFlatListExample';
 import * as React from 'react';
 import {FlatList} from 'react-native';

@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {EventOccurrence, EventTrackerProps} from './PointerEventSupport';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
-import {EventTracker, mkEvent} from './PointerEventSupport';
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
+import {EventTracker, mkEvent} from './PointerEventSupport';
 import * as React from 'react';
 import {useRef} from 'react';
 import {StyleSheet, View} from 'react-native';

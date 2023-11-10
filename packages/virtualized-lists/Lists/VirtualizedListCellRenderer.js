@@ -8,17 +8,17 @@
  * @format
  */
 
+import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
   LayoutEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
-import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 
-import {View, StyleSheet} from 'react-native';
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';
+import {StyleSheet, View} from 'react-native';
 
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,
@@ -32,7 +32,7 @@ export type Props<ItemT> = {
   inversionStyle: ViewStyleProp,
   item: ItemT,
   onCellLayout?: (event: LayoutEvent, cellKey: string, index: number) => void,
-  onCellFocusCapture?: (event: FocusEvent) => void,
+  onCellFocusCapture?: (cellKey: string) => void,
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (
     cellKeys: Array<?string>,
@@ -115,12 +115,15 @@ export default class CellRenderer<ItemT> extends React.Component<
   }
 
   _onLayout = (nativeEvent: LayoutEvent): void => {
-    this.props.onCellLayout &&
-      this.props.onCellLayout(
-        nativeEvent,
-        this.props.cellKey,
-        this.props.index,
-      );
+    this.props.onCellLayout?.(
+      nativeEvent,
+      this.props.cellKey,
+      this.props.index,
+    );
+  };
+
+  _onCellFocusCapture = (e: FocusEvent): void => {
+    this.props.onCellFocusCapture?.(this.props.cellKey);
   };
 
   _renderElement(
@@ -174,7 +177,6 @@ export default class CellRenderer<ItemT> extends React.Component<
       item,
       index,
       inversionStyle,
-      onCellFocusCapture,
       onCellLayout,
       renderItem,
     } = this.props;
@@ -206,7 +208,7 @@ export default class CellRenderer<ItemT> extends React.Component<
     const result = !CellRendererComponent ? (
       <View
         style={cellStyle}
-        onFocusCapture={onCellFocusCapture}
+        onFocusCapture={this._onCellFocusCapture}
         {...(onCellLayout && {onLayout: this._onLayout})}>
         {element}
         {itemSeparator}
@@ -217,7 +219,7 @@ export default class CellRenderer<ItemT> extends React.Component<
         index={index}
         item={item}
         style={cellStyle}
-        onFocusCapture={onCellFocusCapture}
+        onFocusCapture={this._onCellFocusCapture}
         {...(onCellLayout && {onLayout: this._onLayout})}>
         {element}
         {itemSeparator}

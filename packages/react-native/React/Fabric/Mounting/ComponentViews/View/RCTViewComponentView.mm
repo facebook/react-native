@@ -252,7 +252,7 @@ using namespace facebook::react;
   // `shouldRasterize`
   if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
     self.layer.shouldRasterize = newViewProps.shouldRasterize;
-    self.layer.rasterizationScale = newViewProps.shouldRasterize ? [UIScreen mainScreen].scale : 1.0;
+    self.layer.rasterizationScale = newViewProps.shouldRasterize ? self.traitCollection.displayScale : 1.0;
   }
 
   // `pointerEvents`

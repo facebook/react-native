@@ -28,17 +28,27 @@ export type ReactRenderer = {
     ...
   },
 };
+type AttachedRendererEventPayload = {id: number, renderer: ReactRenderer};
 
-const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const renderers = findRenderers();
+const reactDevToolsHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+invariant(
+  Boolean(reactDevToolsHook),
+  'getInspectorDataForViewAtPoint should not be used if React DevTools hook is not injected',
+);
 
-function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Array.from(hook.renderers.values());
+const renderers: Array<ReactRenderer> = Array.from(
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers.values(),
+);
+
+const appendRenderer = ({renderer}: AttachedRendererEventPayload) =>
+  renderers.push(renderer);
+reactDevToolsHook.on('renderer', appendRenderer);
+
+function validateRenderers(): void {
   invariant(
-    allRenderers.length >= 1,
+    renderers.length > 0,
     'Expected to find at least one React Native renderer on DevTools hook.',
   );
-  return allRenderers;
 }
 
 module.exports = function getInspectorDataForViewAtPoint(
@@ -47,13 +57,15 @@ module.exports = function getInspectorDataForViewAtPoint(
   locationY: number,
   callback: (viewData: TouchedViewDataAtPoint) => boolean,
 ) {
+  validateRenderers();
+
   let shouldBreak = false;
   // Check all renderers for inspector data.
-  for (let i = 0; i < renderers.length; i++) {
+  for (const renderer of renderers) {
     if (shouldBreak) {
       break;
     }
-    const renderer = renderers[i];
+
     if (renderer?.rendererConfig?.getInspectorDataForViewAtPoint != null) {
       renderer.rendererConfig.getInspectorDataForViewAtPoint(
         inspectedView,

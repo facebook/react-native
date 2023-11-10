@@ -30,10 +30,16 @@
     "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
     "open": "^7.0.3",
+    "selfsigned": "^2.4.1",
     "serve-static": "^1.13.1",
     "temp-dir": "^2.0.0"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "data-uri-to-buffer": "^6.0.1",
+    "undici": "^5.27.2",
+    "wait-for-expect": "^3.0.2"
   }
 }

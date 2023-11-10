@@ -54,13 +54,13 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     super();
     final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
-      if (reactPackage instanceof TurboReactPackage) {
-        final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
+      if (reactPackage instanceof BaseReactPackage) {
+        final BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
-            moduleName -> turboPkg.getModule(moduleName, applicationContext);
+            moduleName -> baseReactPackage.getModule(moduleName, applicationContext);
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
-            moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
+            moduleProvider, baseReactPackage.getReactModuleInfoProvider().getReactModuleInfos());
         continue;
       }
 
@@ -82,11 +82,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
             moduleProvider, lazyPkg.getReactModuleInfoProvider().getReactModuleInfos());
-        continue;
-      }
-
-      if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
-        // TODO(T145105887): Output error that ReactPackage was used
         continue;
       }
 
@@ -181,6 +176,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     return (TurboModule) resolvedModule;
+  }
+
+  @Override
+  public boolean unstable_isLazyTurboModuleDelegate() {
+    return false;
   }
 
   @Override

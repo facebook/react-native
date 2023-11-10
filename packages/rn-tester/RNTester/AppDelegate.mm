@@ -127,7 +127,7 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 #endif
 
-- (NSURL *)getBundleURL
+- (NSURL *)bundleURL
 {
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }

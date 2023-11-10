@@ -9,9 +9,9 @@
  * @oncall react_native
  */
 
+import type {Logger} from '../types/Logger';
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
-import type {Logger} from '../types/Logger';
 
 import open from 'open';
 

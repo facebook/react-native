@@ -40,6 +40,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
+import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.SurfaceDelegate;
@@ -210,13 +211,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       cause = cause.getCause();
     }
 
-    if (e instanceof JSException) {
+    if (e instanceof JavascriptException) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      String stack = ((JSException) e).getStack();
-      message.append("\n\n").append(stack);
-
-      // TODO #11638796: convert the stack into something useful
-      showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      showNewError(
+          e.getMessage().toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
     } else {
       showNewJavaError(message.toString(), e);
     }
@@ -695,7 +693,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mDevServerHelper;
   }
 
-  protected ReactInstanceDevHelper getReactInstanceDevHelper() {
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceDevHelper() {
     return mReactInstanceDevHelper;
   }
 

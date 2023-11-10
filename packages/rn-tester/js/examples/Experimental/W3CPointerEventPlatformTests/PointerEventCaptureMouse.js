@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
+import type {ElementRef} from 'react';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import * as React from 'react';
 import {useCallback, useRef} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
-import type {ElementRef} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 // adapted from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_capture_mouse.html
 function PointerEventCaptureMouseTestCase(

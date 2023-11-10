@@ -63,7 +63,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::BaseTraits();
   }
 
-  ShadowNode::Shared createShadowNode(
+  std::shared_ptr<ShadowNode> createShadowNode(
       const ShadowNodeFragment& fragment,
       const ShadowNodeFamily::Shared& family) const override {
     auto shadowNode =

@@ -10,23 +10,22 @@
 
 'use strict';
 
-const nullthrows = require('nullthrows');
-
-const {
-  getImports,
-  getCppArrayTypeForAnnotation,
-  getCppTypeForAnnotation,
-  generateEventStructName,
-} = require('./CppHelpers');
-const {indent, toSafeCppString} = require('../Utils');
-
 import type {
   ComponentShape,
+  EventTypeAnnotation,
   EventTypeShape,
   NamedShape,
-  EventTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
+const {indent, toSafeCppString} = require('../Utils');
+const {
+  generateEventStructName,
+  getCppArrayTypeForAnnotation,
+  getCppTypeForAnnotation,
+  getImports,
+} = require('./CppHelpers');
+const nullthrows = require('nullthrows');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;

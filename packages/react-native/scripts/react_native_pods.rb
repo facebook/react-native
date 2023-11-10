@@ -8,7 +8,6 @@ require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
-require_relative './cocoapods/flipper.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -66,7 +65,6 @@ end
 # - new_arch_enabled: whether the new architecture should be enabled or not.
 # - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
-# - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
 # - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
@@ -76,7 +74,6 @@ def use_react_native! (
   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
-  flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
   ios_folder: 'ios'
@@ -188,12 +185,6 @@ def use_react_native! (
     setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
-  # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
-  if flipper_configuration.flipper_enabled
-    install_flipper_dependencies(prefix)
-    use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
-  end
-
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
     if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
@@ -209,6 +200,41 @@ end
 # Returns: the folly compiler flags
 def folly_flags()
   return NewArchitectureHelper.folly_compiler_flags
+end
+
+# Add a dependency to a spec, making sure that the HEADER_SERACH_PATHS are set properly.
+# This function automate the requirement to specify the HEADER_SEARCH_PATHS which was error prone
+# and hard to pull out properly to begin with.
+# Secondly, it prepares the podspec to work also with other platforms, because this function is
+# able to generate search paths that are compatible with macOS and other platform if specified by
+# the $RN_PLATFORMS variable.
+# To generate Header Search Paths for multiple platforms, define in your Podfile or Ruby infra a
+# $RN_PLATFORMS static variable with the list of supported platforms, for example:
+# `$RN_PLATFORMS = ["iOS", "macOS"]`
+#
+# Parameters:
+# - spec: the spec that needs to be modified
+# - pod_name: the name of the dependency we had to add to the spec
+# - additional_framework_paths: additional sub paths we had to add to the HEADER_SEARCH_PATH
+# - framework_name: the name of the framework in case it is different from the pod_name
+# - version: the version of the pod_name the spec needs to depend on
+# - base_dir: Base directory from where we need to start looking. Defaults to PODS_CONFIGURATION_BUILD_DIR
+def add_dependency(spec, pod_name, subspec: nil, additional_framework_paths: [], framework_name: nil, version: nil, base_dir: "PODS_CONFIGURATION_BUILD_DIR")
+  fixed_framework_name = framework_name != nil ? framework_name : pod_name.gsub("-", "_") # frameworks can't have "-" in their name
+  ReactNativePodsUtils.add_dependency(spec, pod_name, base_dir, fixed_framework_name, :additional_paths => additional_framework_paths, :version => version)
+end
+
+# This function generates an array of HEADER_SEARCH_PATH that can be added to the HEADER_SEARCH_PATH property when use_frameworks! is enabled
+#
+# Parameters:
+# - pod_name: the name of the dependency we had to add to the spec
+# - additional_framework_paths: additional sub paths we had to add to the HEADER_SEARCH_PATH
+# - framework_name: the name of the framework in case it is different from the pod_name
+# - base_dir: Base directory from where we need to start looking. Defaults to PODS_CONFIGURATION_BUILD_DIR
+# - include_base_folder: whether the array must include the base import path or only the additional_framework_paths
+def create_header_search_path_for_frameworks(pod_name, additional_framework_paths: [], framework_name: nil, base_dir: "PODS_CONFIGURATION_BUILD_DIR", include_base_folder: true)
+  fixed_framework_name = framework_name != nil ? framework_name : pod_name.gsub("-", "_")
+  return ReactNativePodsUtils.create_header_search_path_for_frameworks(base_dir, pod_name, fixed_framework_name, additional_framework_paths, include_base_folder)
 end
 
 # This function can be used by library developer to prepare their modules for the New Architecture.
@@ -229,16 +255,6 @@ def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
 end
 
-# It installs the flipper dependencies into the project.
-#
-# Parameters
-# - versions: a dictionary of Flipper Library -> Versions that can be used to customize which version of Flipper to install.
-# - configurations: an array of configuration where to install the dependencies.
-def use_flipper!(versions = {}, configurations: ['Debug'])
-  Pod::UI.warn "use_flipper is deprecated, use the flipper_configuration option in the use_react_native function"
-  use_flipper_pods(versions, :configurations => configurations)
-end
-
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
@@ -255,12 +271,8 @@ def react_native_post_install(
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
-  if ReactNativePodsUtils.has_pod(installer, 'Flipper')
-    flipper_post_install(installer)
-  end
-
-  fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
-  hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
+  fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
+  hermes_enabled = ENV['USE_HERMES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)

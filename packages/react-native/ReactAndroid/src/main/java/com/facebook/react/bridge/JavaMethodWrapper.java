@@ -18,7 +18,7 @@ import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class JavaMethodWrapper implements NativeModule.NativeMethod {
+class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
 
   private abstract static class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {

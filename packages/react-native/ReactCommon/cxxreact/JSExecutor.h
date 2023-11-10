@@ -45,9 +45,6 @@ class ExecutorDelegate {
       folly::dynamic&& args) = 0;
 };
 
-using NativeExtensionsProvider =
-    std::function<folly::dynamic(const std::string&)>;
-
 class JSExecutorFactory {
  public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(

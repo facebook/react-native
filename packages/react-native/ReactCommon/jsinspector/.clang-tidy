@@ -1,6 +1,0 @@
----
-Checks: '>
-clang-diagnostic-*,
-'
-InheritParentConfig: true
-...

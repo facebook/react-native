@@ -638,6 +638,9 @@ public class ReactHostImpl implements ReactHost {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
+    if (DEV) {
+      mDevSupportManager.handleException(e);
+    }
     destroy(method, e);
     mReactHostDelegate.handleInstanceException(e);
   }
@@ -922,6 +925,7 @@ public class ReactHostImpl implements ReactHost {
                     final JSBundleLoader bundleLoader = task.getResult();
                     final BridgelessReactContext reactContext = getOrCreateReactContext();
                     final DevSupportManager devSupportManager = getDevSupportManager();
+                    reactContext.setJSExceptionHandler(devSupportManager);
 
                     log(method, "Creating ReactInstance");
                     final ReactInstance instance =
@@ -1036,6 +1040,7 @@ public class ReactHostImpl implements ReactHost {
 
           final BridgelessReactContext reactContext = getOrCreateReactContext();
           final DevSupportManager devSupportManager = getDevSupportManager();
+          reactContext.setJSExceptionHandler(devSupportManager);
 
           return getJsBundleLoader()
               .onSuccess(
@@ -1741,12 +1746,15 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  public void setJSEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  @Nullable
+  @Override
+  public JSEngineResolutionAlgorithm getJsEngineResolutionAlgorithm() {
+    return mJSEngineResolutionAlgorithm;
   }
 
-  public @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
-    return mJSEngineResolutionAlgorithm;
+  @Override
+  public void setJsEngineResolutionAlgorithm(
+      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
+    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
 }

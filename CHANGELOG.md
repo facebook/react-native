@@ -2,7 +2,7 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
-## v0.73.0-rc.0 / v0.73.0-rc.1
+## v0.73.0-rc.4
 
 ### Breaking
 
@@ -107,7 +107,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Address errors in viewability thresholds on Virtualized list by Math.floor the top and bottom dimensions of a cell item when determining viewability. ([824c1c6d07](https://github.com/facebook/react-native/commit/824c1c6d073ba53aab350bc617169ba04e568b19) by [@lunaleaps](https://github.com/lunaleaps))
 - Change `_onLayout` to update bottom height when frame height is changed ([5059ddc5ce](https://github.com/facebook/react-native/commit/5059ddc5ce623234820f231e5f4d75ea9ddf5a5b) by [@lyqandy](https://github.com/lyqandy))
 - Renaming bridgeless to runtime ([1547b81ec1](https://github.com/facebook/react-native/commit/1547b81ec18f4d66991831d06ce456472456bed5))
-- Upgraded Metro to 0.79.1 ([982f6f99d4](https://github.com/facebook/react-native/commit/982f6f99d43b21b3a81d3388591934d6f83afa63))
+- Update Metro to ^0.80.0, don't pin to exact version ([aed4aed9d5](https://github.com/facebook/react-native/commit/aed4aed9d5b02043291642c9177ceea9df9c7a4a) by [@robhogan](https://github.com/robhogan))
 - Bump Jest version in the new project template from `^29.2.1` to `^29.6.3` ([3c323382fe](https://github.com/facebook/react-native/commit/3c323382fe9ef05832fc44c6e87642de55965a4b) by [@robhogan](https://github.com/robhogan))
 - ReactImagePropertyList.java => ReactImagePropertyList.kt ([cb60e5c67b](https://github.com/facebook/react-native/commit/cb60e5c67b409da1b22e856446183bc7c82d828b) by [@bufgix](https://github.com/bufgix))
 - `BaseViewManagerTest.java` => `BaseViewManagerTest.kt` ([3660b7cf73](https://github.com/facebook/react-native/commit/3660b7cf73a322750fb9cc9aa124da0f5e739c80) by [@retyui](https://github.com/retyui))
@@ -122,6 +122,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Jest globals are now defined using `Object.defineProperties` instead of object property assignment ([cf631ad59f](https://github.com/facebook/react-native/commit/cf631ad59f39bbace1a7c2311a4f66f9494ed0da) by [@yungsters](https://github.com/yungsters))
 - Support mixed props for events in codegen ([b68f53d44f](https://github.com/facebook/react-native/commit/b68f53d44f78c5627905246d8737fe46229f85aa) by [@genkikondo](https://github.com/genkikondo))
 - React-native-codegen: Buck-only: renamed src_prefix kwarg ([9193c4f50c](https://github.com/facebook/react-native/commit/9193c4f50c471193979bab589996d97bab489db4) by [@fkgozali](https://github.com/fkgozali))
+- Bump CLI to 12.0.0 ([126db5eb65](https://github.com/facebook/react-native/commit/126db5eb657ca919becbd14f6915e56262744176))
 
 #### Android specific
 
@@ -283,6 +284,9 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Terminate instead of throwing if TurboModule callback double-called ([dfd445cbc6](https://github.com/facebook/react-native/commit/dfd445cbc69c8bc6c5d1d3d7948472a0a3ae4927) by [@NickGerleman](https://github.com/NickGerleman))
 - Reduce dynamic SchedulerFeatureFlags ([2a58b06863](https://github.com/facebook/react-native/commit/2a58b06863b320403cbbbeb9909e25db9c2aaa4e) by [@kassens](https://github.com/kassens))
 - Enable -Wextra in C++ builds ([99674b360a](https://github.com/facebook/react-native/commit/99674b360a8b1a24545af9c56c9f55b2ec121ff6) by [@NickGerleman](https://github.com/NickGerleman))
+- Update `deprecated-react-native-prop-types` to remove fragile transitive `*` dependencies. ([f00594b262](https://github.com/facebook/react-native/commit/f00594b26203ad2793b40c31d4f882d29daec46e) by [@robhogan](https://github.com/robhogan))
+- Fix `createAnimatedStyle` when providing an undefined transform style ([7e26e0270b](https://github.com/facebook/react-native/commit/7e26e0270b5d9f8490320af563a4943d24d269ea) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bail on hiPri render on missing layout data before checking priority ([817fedb0e7](https://github.com/facebook/react-native/commit/817fedb0e7a5276d86431c65cc886062ed8fe220) by [@NickGerleman](https://github.com/NickGerleman))
 
 #### Android specific
 
@@ -324,6 +328,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Modify ViewManager.receiveCommand to call into delegate ([585057d746](https://github.com/facebook/react-native/commit/585057d7468b5ae8844fa8210df7ad1f8e0ae1e8) by [@genkikondo](https://github.com/genkikondo))
 - Fix crash when Android requests permission with activity that does not implement `PermissionAwareActivity` ([cff4bc8eea](https://github.com/facebook/react-native/commit/cff4bc8eead129738a7040f579a18e3819d28bfd) by [@yungsters](https://github.com/yungsters))
 - Fix issue downloading request body via remote URL ([4b39f44a61](https://github.com/facebook/react-native/commit/4b39f44a612e8f358b7f51cdb97b4d602207a754) by [@daisy1754](https://github.com/daisy1754))
+- Fix textTransform not working in New Architecture ([a2f3fa65bc](https://github.com/facebook/react-native/commit/a2f3fa65bcabf8bb711813292002270481840579) by [@tarunrajput](https://github.com/tarunrajput))
 
 #### iOS specific
 
@@ -352,6 +357,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Debug builds from cli disable idle to stop application going into background ([41d5f4bce2](https://github.com/facebook/react-native/commit/41d5f4bce2850d3a81c0c02961c0768026dd353e) by [@blakef](https://github.com/blakef))
 - Fix RCTImageBlurUtils.m Greyscale Crash ([d6c4f2786c](https://github.com/facebook/react-native/commit/d6c4f2786c1dd8285dbabb7fe872a7d1bddcbe14) by [@OskarEichler](https://github.com/OskarEichler))
 - Logbox footer buttons respect safe area ([6d6b1fdc75](https://github.com/facebook/react-native/commit/6d6b1fdc75d870fa73abc6ee9bf0099f3f15e658) by [@philipheinser](https://github.com/philipheinser))
+- Add support for Components with custom names in the interop layer. ([daedbe6e3e](https://github.com/facebook/react-native/commit/daedbe6e3e4cb4b5fde533bf8205edd89a18c480) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.72.6
 
@@ -1517,6 +1523,19 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 ### Security
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.70.14
+
+### Changed
+- Update JSCodeshift to 0.14 ([5a695dd](https://github.com/facebook/react-native/commit/5a695dd17c5681883018ba8d3c3608032aba14d9) by [@stianjensen](https://github.com/stianjensen))
+
+### Fixed
+
+#### iOS specific
+
+- Fix Gemfile to set the max version of Active support to 7.0.8 ([a1a220b](https://github.com/facebook/react-native/commit/a1a220b6ace4e35b2cda45b869dc0ff4fb8fbdc1) by [@cipolleschi](https://github.com/cipolleschi))
+- Update Xcode 15 patches to be more robust ([735d06c01f](https://github.com/facebook/react-native/commit/735d06c01fe743fad58213e80bca64a0c70ea8ca) by [@cipolleschi](https://github.com/cipolleschi))
+- Make Hermes build properly with Xcode 15 ([5f4a091](https://github.com/facebook/react-native/commit/5f4a091a2ff86bcbcfa6f8fe438d260cca029cd3) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.70.13
 

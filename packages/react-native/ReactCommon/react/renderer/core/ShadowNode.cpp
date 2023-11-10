@@ -243,7 +243,7 @@ void ShadowNode::replaceChild(
   auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && suggestedIndex < size) {
+  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {
