@@ -1117,6 +1117,9 @@ function InternalTextInput(props: Props): React.Node {
     id,
     tabIndex,
     selection: propsSelection,
+    selectionColor,
+    selectionHandleColor,
+    cursorColor,
     ...otherProps
   } = props;
 
@@ -1514,15 +1517,12 @@ function InternalTextInput(props: Props): React.Node {
     }
     // For consistency with iOS set cursor/selectionHandle color as selectionColor
     const colorProps = {
-      selectionColor: props.selectionColor,
+      selectionColor,
       selectionHandleColor:
-        props.selectionHandleColor === undefined
-          ? props.selectionColor
-          : props.selectionHandleColor,
-      cursorColor:
-        props.cursorColor === undefined
-          ? props.selectionColor
-          : props.cursorColor,
+        selectionHandleColor === undefined
+          ? selectionColor
+          : selectionHandleColor,
+      cursorColor: cursorColor === undefined ? selectionColor : cursorColor,
     };
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
