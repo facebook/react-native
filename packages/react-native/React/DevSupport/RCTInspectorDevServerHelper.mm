@@ -61,14 +61,15 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
+static NSLock *connectionsLock = [NSLock new];
 
 static void sendEventToAllConnections(NSString *event)
 {
-  @synchronized (socketConnections) { // [macOS]
-    for (NSString *socketId in socketConnections) {
-      [socketConnections[socketId] sendEventToAllConnections:event];
-    }
+  [connectionsLock lock]; // [macOS]
+  for (NSString *socketId in socketConnections) {
+    [socketConnections[socketId] sendEventToAllConnections:event];
   }
+  [connectionsLock unlock]; // [macOS]
 }
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
@@ -103,11 +104,11 @@ static void sendEventToAllConnections(NSString *event)
   // Note, using a static dictionary isn't really the greatest design, but
   // the packager connection does the same thing, so it's at least consistent.
   // This is a static map that holds different inspector clients per the inspectorURL
-  @synchronized (socketConnections) { // [macOS]
-    if (socketConnections == nil) {
-      socketConnections = [NSMutableDictionary new];
-    }
+  [connectionsLock lock]; // [macOS]
+  if (socketConnections == nil) {
+    socketConnections = [NSMutableDictionary new];
   }
+  [connectionsLock unlock]; // [macOS]
 
   NSString *key = [inspectorURL absoluteString];
   // [macOS safety check to avoid a crash
@@ -119,20 +120,21 @@ static void sendEventToAllConnections(NSString *event)
 
   RCTInspectorPackagerConnection *connection;
 
-  @synchronized (socketConnections) { // [macOS]
-    connection = socketConnections[key];
-    if (!connection || !connection.isConnected) {
-      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-      // [macOS safety check to avoid a crash
-      if (connection == nil) {
-        RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
-        return nil;
-      }
-      // macOS]
+  [connectionsLock lock]; // [macOS]
+  connection = socketConnections[key];
+  if (!connection || !connection.isConnected) {
+    connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    // [macOS safety check to avoid a crash
+    if (connection != nil) {
       socketConnections[key] = connection;
       [connection connect];
+    } else {
+      RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
     }
+    // macOS]
+    
   }
+  [connectionsLock unlock]; // [macOS]
 
   return connection;
 }
