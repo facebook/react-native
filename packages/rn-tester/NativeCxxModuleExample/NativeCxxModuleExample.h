@@ -15,6 +15,7 @@
 #include <AppSpecs/AppSpecsJSI.h>
 #endif
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -107,6 +108,10 @@ class NativeCxxModuleExample
       jsi::Runtime& rt,
       AsyncCallback<std::string> callback);
 
+  std::function<void()> setValueCallbackWithSubscription(
+      jsi::Runtime& rt,
+      AsyncCallback<std::string> callback);
+
   std::vector<std::optional<ObjectStruct>> getArray(
       jsi::Runtime& rt,
       std::vector<std::optional<ObjectStruct>> arg);
@@ -169,6 +174,9 @@ class NativeCxxModuleExample
   ObjectStruct getObjectAssert(jsi::Runtime& rt, ObjectStruct arg);
 
   AsyncPromise<jsi::Value> promiseAssert(jsi::Runtime& rt);
+
+ private:
+  std::optional<AsyncCallback<std::string>> valueCallback_;
 };
 
 } // namespace facebook::react

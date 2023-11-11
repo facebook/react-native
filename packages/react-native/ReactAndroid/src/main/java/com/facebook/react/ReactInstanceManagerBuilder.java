@@ -23,6 +23,7 @@ import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
@@ -68,6 +69,7 @@ public class ReactInstanceManagerBuilder {
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
   private @Nullable JSIModulePackage mJSIModulesPackage;
+  private @Nullable UIManagerProvider mUIManagerProvider;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
@@ -87,6 +89,11 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
       @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
     mJavaScriptExecutorFactory = javaScriptExecutorFactory;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUIManagerProvider(UIManagerProvider uIManagerProvider) {
+    mUIManagerProvider = uIManagerProvider;
     return this;
   }
 
@@ -355,6 +362,7 @@ public class ReactInstanceManagerBuilder {
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
+        mUIManagerProvider,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,
         mSurfaceDelegateFactory,

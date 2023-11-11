@@ -24,13 +24,7 @@ header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
 ]
-
-if ENV['USE_FRAMEWORKS']
-  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"")
-  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"")
-end
 
 Pod::Spec.new do |s|
   s.name                   = "React-CoreModules"
@@ -50,13 +44,15 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(" ")
                              }
   s.framework = "UIKit"
-  s.dependency "React-Codegen", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version
   s.dependency "React-RCTImage", version
-  s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
   s.dependency 'React-RCTBlob'
   s.dependency "SocketRocket", socket_rocket_version
+
+  add_dependency(s, "React-Codegen")
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
+  add_dependency(s, "React-NativeModulesApple")
 end

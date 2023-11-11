@@ -46,7 +46,7 @@ static void appendFloatOptionalIfDefined(
     std::string& base,
     const std::string key,
     const FloatOptional num) {
-  if (!num.isUndefined()) {
+  if (num.isDefined()) {
     appendFormattedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
 }
@@ -177,7 +177,7 @@ void nodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (!style.gap(Gutter::All).isUndefined()) {
+    if (style.gap(Gutter::All).isDefined()) {
       appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
     } else {
       appendNumberIfNotUndefined(str, "column-gap", style.gap(Gutter::Column));

@@ -137,6 +137,10 @@ class YG_EXPORT CompactValue {
         repr_ != ZERO_BITS_PERCENT && std::isnan(yoga::bit_cast<float>(repr_)));
   }
 
+  bool isDefined() const noexcept {
+    return !isUndefined();
+  }
+
   bool isAuto() const noexcept {
     return repr_ == AUTO_BITS;
   }

@@ -22,18 +22,7 @@ folly_version = '2023.08.07.00'
 header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\""
 ]
-
-if ENV["USE_FRAMEWORKS"]
-  header_search_paths = header_search_paths.concat([
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers/build/generated/ios\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers/build/generated/ios\"",
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\""
-  ])
-end
 
 Pod::Spec.new do |s|
   s.name                   = "React-RCTLinking"
@@ -55,8 +44,11 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
 
-  s.dependency "React-Codegen", version
   s.dependency "React-Core/RCTLinkingHeaders", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+
+  add_dependency(s, "React-Codegen", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
+  add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
 end

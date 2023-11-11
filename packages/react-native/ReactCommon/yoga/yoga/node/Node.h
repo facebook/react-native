@@ -199,22 +199,28 @@ class YG_EXPORT Node : public ::YGNode {
       YGEdge edge);
 
   // Methods related to positions, margin, padding and border
+  bool isFlexStartPositionDefined(FlexDirection axis) const;
   bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const;
+  bool isFlexEndPositionDefined(FlexDirection axis) const;
   bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       const;
+  float getFlexStartPosition(FlexDirection axis, float axisSize) const;
   float getInlineStartPosition(
       FlexDirection axis,
       Direction direction,
       float axisSize) const;
+  float getFlexEndPosition(FlexDirection axis, float axisSize) const;
   float getInlineEndPosition(
       FlexDirection axis,
       Direction direction,
       float axisSize) const;
+  float getFlexStartMargin(FlexDirection axis, float widthSize) const;
   float getInlineStartMargin(
       FlexDirection axis,
       Direction direction,
       float widthSize) const;
+  float getFlexEndMargin(FlexDirection axis, float widthSize) const;
   float getInlineEndMargin(
       FlexDirection axis,
       Direction direction,
@@ -335,7 +341,6 @@ class YG_EXPORT Node : public ::YGNode {
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void markDirtyAndPropagateDownwards();
 
   // Other methods
   YGValue getFlexStartMarginValue(FlexDirection axis) const;

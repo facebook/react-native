@@ -142,7 +142,7 @@ class TypeScriptParser implements Parser {
     return this.parseString(contents, 'path/NativeSampleTurboModule.ts');
   }
 
-  getAst(contents: string): $FlowFixMe {
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
     return babelParser.parse(contents, {
       sourceType: 'module',
       plugins: ['typescript'],

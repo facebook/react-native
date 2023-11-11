@@ -824,7 +824,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onCellFocusCapture={e => this._onCellFocusCapture(key)}
+          onCellFocusCapture={this._onCellFocusCapture}
           onUnmount={this._onCellUnmount}
           ref={ref => {
             this._cellRefs[key] = ref;
@@ -1314,10 +1314,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
   };
 
-  _onCellFocusCapture(cellKey: string) {
+  _onCellFocusCapture = (cellKey: string) => {
     this._lastFocusedCellKey = cellKey;
     this._updateCellsToRender();
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     delete this._cellRefs[cellKey];
