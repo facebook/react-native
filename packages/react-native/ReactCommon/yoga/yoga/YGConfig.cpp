@@ -40,13 +40,7 @@ void YGConfigSetPointScaleFactor(
       pixelsInPoint >= 0.0f,
       "Scale factor should not be less than zero");
 
-  // We store points for Pixel as we will use it for rounding
-  if (pixelsInPoint == 0.0f) {
-    // Zero is used to skip rounding
-    resolveRef(config)->setPointScaleFactor(0.0f);
-  } else {
-    resolveRef(config)->setPointScaleFactor(pixelsInPoint);
-  }
+  resolveRef(config)->setPointScaleFactor(pixelsInPoint);
 }
 
 float YGConfigGetPointScaleFactor(const YGConfigConstRef config) {
