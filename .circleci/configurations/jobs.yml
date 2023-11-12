@@ -173,6 +173,8 @@ jobs:
                 path: /tmp/test_log
             - store_artifacts:
                 path: ~/react-native/packages/rn-tester-e2e/reports
+            - store_artifacts:
+                path: ~/react-native/packages/rn-tester-e2e/reports/errorShots
 
   # -------------------------
   #     JOBS: Android E2E Tests
@@ -224,6 +226,8 @@ jobs:
           path: /tmp/test_log
       - store_artifacts:
           path:  ~/react-native/packages/rn-tester-e2e/reports
+      - store_artifacts:
+          path: ~/react-native/packages/rn-tester-e2e/reports/errorShots
 
   # -------------------------
   #    JOBS: Build Android
