@@ -68,7 +68,7 @@ exports.config = {
         await test.title.replace(/\s+/g, '-'),
       );
       const filePath = './reports/errorShots/' + fileName + '.png';
-      await driver.takeScreenshot(filePath);
+      await browser.saveScreenshot(filePath);
     }
   },
 };
