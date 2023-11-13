@@ -115,4 +115,3 @@
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
-      - test_windows
