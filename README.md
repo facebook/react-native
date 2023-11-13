@@ -17,4 +17,8 @@ This project is still at an early stage of development and is not ready for prod
 
 1. Download latest Xcode beta [here](https://developer.apple.com/xcode/).
 2. Install visionOS Simulator runtime. 
-3. Follow the same steps as for running iOS defined in [packages/rn-tester/README.md](./packages/rn-tester/README.md)
+3. (Optional) Using Hermes - Install latest version of CMake (3.28) from `main` branch: 
+```sh
+brew install cmake --HEAD
+```
+4. Follow the same steps as for running iOS defined in [packages/rn-tester/README.md](./packages/rn-tester/README.md)

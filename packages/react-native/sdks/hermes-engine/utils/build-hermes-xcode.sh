@@ -16,8 +16,14 @@ function get_platform_copy_destination {
     if [[ $1 == "macosx" ]]; then
       echo "macosx"
       return
+    elif [[ $1 == "xros" ]]; then
+      echo "xros"
+      return
+    elif [[ $1 == "xrsimulator" ]]; then
+      echo "xros"
+      return
     fi
-    
+
     echo "ios"
 }
 

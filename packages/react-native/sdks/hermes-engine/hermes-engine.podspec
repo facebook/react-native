@@ -12,7 +12,8 @@ react_native_path = File.join(__dir__, "..", "..")
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
 
-source_type = hermes_source_type(version, react_native_path)
+# Temporaily build from source until visionOS supports prebuilt binaries
+source_type = HermesEngineSourceType::BUILD_FROM_GITHUB_MAIN # hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
 
 Pod::Spec.new do |spec|
@@ -35,7 +36,7 @@ Pod::Spec.new do |spec|
                   }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
-  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/visionos/hermes.framework"
+  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
   if HermesEngineSourceType::isPrebuilt(source_type) then
@@ -132,7 +133,7 @@ Pod::Spec.new do |spec|
           :name => '[RN] [2] Build Hermes',
           :input_files => ["#{hermesc_path}/ImportHermesc.cmake"],
           :output_files => [
-            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermes.framework/hermes"
+            "${PODS_ROOT}/hermes-engine/build/xrsimulator/API/hermes/hermes.framework/hermes",
           ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"

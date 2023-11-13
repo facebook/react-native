@@ -6,7 +6,7 @@
 require 'net/http'
 require 'rexml/document'
 
-HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
+HERMES_GITHUB_URL = "https://github.com/callstack/hermes-visionos.git"
 
 module HermesEngineSourceType
     LOCAL_PREBUILT_TARBALL = :local_prebuilt_tarball
