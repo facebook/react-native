@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.touch;
+package com.facebook.react.touch
 
-import android.view.MotionEvent;
-import android.view.ViewGroup;
+import android.view.MotionEvent
+import android.view.ViewGroup
 
 /**
- * Interface definition for a callback to be invoked when a onInterceptTouch is called on a {@link
- * ViewGroup}.
+ * Interface definition for a callback to be invoked when a onInterceptTouch is called on a
+ * [ViewGroup].
  */
-public interface OnInterceptTouchEventListener {
+fun interface OnInterceptTouchEventListener {
 
   /**
    * Called when a onInterceptTouch is invoked on a view group
@@ -22,7 +22,7 @@ public interface OnInterceptTouchEventListener {
    * @param v The view group the onInterceptTouch has been called on
    * @param event The motion event being dispatched down the hierarchy.
    * @return Return true to steal motion event from the children and have the dispatched to this
-   *     view, or return false to allow motion event to be delivered to children view
+   *   view, or return false to allow motion event to be delivered to children view
    */
-  boolean onInterceptTouchEvent(ViewGroup v, MotionEvent event);
+  fun onInterceptTouchEvent(view: ViewGroup, event: MotionEvent): Boolean
 }
