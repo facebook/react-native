@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.surface;
+package com.facebook.react.uimanager;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
