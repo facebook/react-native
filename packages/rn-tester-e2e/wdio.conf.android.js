@@ -25,6 +25,7 @@ exports.config = {
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
       'appium:automationName': 'UiAutomator2',
       'appium:newCommandTimeout': 240,
+      'appium:fullReset': false
     },
   ],
   logLevel: 'debug',
