@@ -24,39 +24,32 @@ type Props = $ReadOnly<{|
   onTouchPoint: (locationX: number, locationY: number) => void,
 |}>;
 
-class InspectorOverlay extends React.Component<Props> {
-  findViewForTouchEvent: (e: PressEvent) => void = (e: PressEvent) => {
+function InspectorOverlay({inspected, onTouchPoint}: Props): React.Node {
+  const findViewForTouchEvent = (e: PressEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
 
-    this.props.onTouchPoint(locationX, locationY);
+    onTouchPoint(locationX, locationY);
   };
 
-  shouldSetResponder: (e: PressEvent) => boolean = (e: PressEvent): boolean => {
-    this.findViewForTouchEvent(e);
+  const handleStartShouldSetResponder = (e: PressEvent): boolean => {
+    findViewForTouchEvent(e);
     return true;
   };
 
-  render(): React.Node {
-    let content = null;
-    if (this.props.inspected) {
-      content = (
-        <ElementBox
-          frame={this.props.inspected.frame}
-          style={this.props.inspected.style}
-        />
-      );
-    }
-
-    return (
-      <View
-        onStartShouldSetResponder={this.shouldSetResponder}
-        onResponderMove={this.findViewForTouchEvent}
-        nativeID="inspectorOverlay" /* TODO: T68258846. */
-        style={[styles.inspector, {height: Dimensions.get('window').height}]}>
-        {content}
-      </View>
-    );
+  let content = null;
+  if (inspected) {
+    content = <ElementBox frame={inspected.frame} style={inspected.style} />;
   }
+
+  return (
+    <View
+      onStartShouldSetResponder={handleStartShouldSetResponder}
+      onResponderMove={findViewForTouchEvent}
+      nativeID="inspectorOverlay" /* TODO: T68258846. */
+      style={[styles.inspector, {height: Dimensions.get('window').height}]}>
+      {content}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
