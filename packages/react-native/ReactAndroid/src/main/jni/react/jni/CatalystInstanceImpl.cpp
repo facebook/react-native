@@ -329,11 +329,13 @@ jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
     auto runtimeScheduler = getRuntimeScheduler();
-    auto runtimeSchedulerCallInvoker =
-        std::make_shared<RuntimeSchedulerCallInvoker>(
-            runtimeScheduler->cthis()->get());
-    jsCallInvokerHolder_ = jni::make_global(
-        CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
+    if (runtimeScheduler) {
+      auto runtimeSchedulerCallInvoker =
+          std::make_shared<RuntimeSchedulerCallInvoker>(
+              runtimeScheduler->cthis()->get());
+      jsCallInvokerHolder_ = jni::make_global(
+          CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
+    }
   }
   return jsCallInvokerHolder_;
 }
