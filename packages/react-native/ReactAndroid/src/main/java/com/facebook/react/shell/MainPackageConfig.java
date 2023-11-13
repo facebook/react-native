@@ -12,7 +12,7 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 /** Configuration for {@link MainReactPackage} */
 public class MainPackageConfig {
 
-  private ImagePipelineConfig mFrescoConfig;
+  private final ImagePipelineConfig mFrescoConfig;
 
   private MainPackageConfig(Builder builder) {
     mFrescoConfig = builder.mFrescoConfig;
