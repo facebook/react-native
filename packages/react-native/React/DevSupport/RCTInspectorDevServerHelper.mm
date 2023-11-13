@@ -132,7 +132,6 @@ static void sendEventToAllConnections(NSString *event)
       RCTLogError(@"failed to initialize RCTInspectorPackagerConnection");
     }
     // macOS]
-    
   }
   [connectionsLock unlock]; // [macOS]
 
