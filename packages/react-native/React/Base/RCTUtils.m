@@ -581,7 +581,7 @@ BOOL RCTRunningInAppExtension(void)
 }
 #endif // [macOS]
 
-UIApplication *__nullable RCTSharedApplication(void)
+RCTUIApplication *__nullable RCTSharedApplication(void) // [macOS]
 {
 #if !TARGET_OS_OSX // [macOS]
   if (RCTRunningInAppExtension()) {
@@ -593,7 +593,7 @@ UIApplication *__nullable RCTSharedApplication(void)
 #endif // macOS]
 }
 
-RCTPlatformWindow *__nullable RCTKeyWindow(void) // [macOS]
+RCTUIWindow *__nullable RCTKeyWindow(void) // [macOS]
 {
 #if !TARGET_OS_OSX // [macOS]
   if (RCTRunningInAppExtension()) {

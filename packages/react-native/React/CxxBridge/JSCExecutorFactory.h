@@ -30,7 +30,11 @@ class JSCExecutorFactory : public JSExecutorFactory {
   JSIExecutor::RuntimeInstaller runtimeInstaller_;
 
   // [macOS
+#if DEBUG
   bool enableDebugger_ = true;
+#else
+  bool enableDebugger_ = false;
+#endif
   std::string debuggerName_ = "JSC React Native";
   // macOS]
 };
