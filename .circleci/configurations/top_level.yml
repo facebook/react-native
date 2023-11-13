@@ -145,7 +145,3 @@ parameters:
   run_nightly_workflow:
     default: false
     type: boolean
-
-  run_prealpha_workflow:
-    default: false
-    type: boolean

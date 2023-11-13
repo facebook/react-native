@@ -24,10 +24,6 @@ parameters:
     default: false
     type: boolean
 
-  run_prealpha_workflow:
-    default: false
-    type: boolean
-
 jobs:
   choose_ci_jobs:
     docker:

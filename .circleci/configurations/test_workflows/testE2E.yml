@@ -3,7 +3,6 @@
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
     jobs:
       - test_e2e_ios:
           ruby_version: "2.7.7"
