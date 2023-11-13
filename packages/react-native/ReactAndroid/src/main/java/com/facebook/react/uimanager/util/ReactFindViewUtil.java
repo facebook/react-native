@@ -115,12 +115,11 @@ public class ReactFindViewUtil {
     Iterator<OnViewFoundListener> iterator = mOnViewFoundListeners.iterator();
     while (iterator.hasNext()) {
       OnViewFoundListener listener = iterator.next();
-      if (nativeId != null && nativeId.equals(listener.getNativeId())) {
+      if (nativeId.equals(listener.getNativeId())) {
         listener.onViewFound(view);
         iterator.remove();
       }
     }
-
     for (Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry :
         mOnMultipleViewsFoundListener.entrySet()) {
       Set<String> nativeIds = entry.getValue();
