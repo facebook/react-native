@@ -10,8 +10,8 @@
 
 'use strict';
 
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
+import type {InspectedElement} from './Inspector';
 
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -19,13 +19,8 @@ const Dimensions = require('../Utilities/Dimensions').default;
 const ElementBox = require('./ElementBox');
 const React = require('react');
 
-type Inspected = $ReadOnly<{|
-  frame?: Object,
-  style?: ViewStyleProp,
-|}>;
-
 type Props = $ReadOnly<{|
-  inspected?: Inspected,
+  inspected?: ?InspectedElement,
   onTouchPoint: (locationX: number, locationY: number) => void,
 |}>;
 

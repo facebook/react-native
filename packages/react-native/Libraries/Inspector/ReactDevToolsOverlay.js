@@ -15,6 +15,7 @@ import type {
   ReactDevToolsAgent,
 } from '../Types/ReactDevToolsTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
+import type {InspectedElement} from './Inspector';
 
 import View from '../Components/View/View';
 import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
@@ -37,9 +38,7 @@ export default function ReactDevToolsOverlay({
   inspectedView,
   reactDevToolsAgent,
 }: Props): React.Node {
-  const [inspected, setInspected] = useState<null | {
-    frame: {+height: any, +left: any, +top: any, +width: any},
-  }>(null);
+  const [inspected, setInspected] = useState<?InspectedElement>(null);
   const [isInspecting, setIsInspecting] = useState(false);
 
   useEffect(() => {
