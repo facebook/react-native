@@ -171,7 +171,7 @@ declare global {
      * @see https://github.com/facebook/metro/pull/822
      * @see https://webpack.js.org/guides/dependency-management/#requirecontext
      */
-    context(
+    context?(
       directory: string,
       useSubdirectories?: boolean,
       regExp?: RegExp,
