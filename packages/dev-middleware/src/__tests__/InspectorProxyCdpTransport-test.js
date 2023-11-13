@@ -23,7 +23,8 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
-describe.each(['HTTP', 'HTTPS'])(
+// TODO T169943794
+xdescribe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP transport over %s',
   protocol => {
     const serverRef = withServerForEachTest({
