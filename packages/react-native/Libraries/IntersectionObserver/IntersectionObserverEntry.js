@@ -66,10 +66,12 @@ export default class IntersectionObserverEntry {
       return 0;
     }
 
-    return (
+    const ratio =
       (intersectionRect.width * intersectionRect.height) /
-      (boundingClientRect.width * boundingClientRect.height)
-    );
+      (boundingClientRect.width * boundingClientRect.height);
+
+    // Prevent rounding errors from making this value greater than 1.
+    return Math.min(ratio, 1);
   }
 
   /**
