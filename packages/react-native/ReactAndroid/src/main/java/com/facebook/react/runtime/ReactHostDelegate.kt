@@ -11,7 +11,6 @@ import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 
@@ -63,7 +62,7 @@ interface ReactHostDelegate {
    * [moduleProvider] is a function that returns the Native Module with the name received as a
    * parameter.
    */
-  fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?): ReactNativeConfig
+  fun getReactNativeConfig(): ReactNativeConfig
 
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
@@ -78,7 +77,7 @@ interface ReactHostDelegate {
       private val exceptionHandler: (error: Exception) -> Unit = {}
   ) : ReactHostDelegate {
 
-    override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?) = reactNativeConfig
+    override fun getReactNativeConfig() = reactNativeConfig
 
     override fun handleInstanceException(error: Exception) = exceptionHandler(error)
   }

@@ -74,7 +74,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
-import kotlin.jvm.functions.Function1;
 
 /**
  * An experimental replacement for {@link com.facebook.react.ReactInstanceManager} responsible for
@@ -280,9 +279,7 @@ final class ReactInstance {
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
-    ReactNativeConfig config =
-        mDelegate.getReactNativeConfig(
-            (Function1<String, NativeModule>) name -> mTurboModuleManager.getModule(name));
+    ReactNativeConfig config = mDelegate.getReactNativeConfig();
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
