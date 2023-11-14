@@ -7,7 +7,6 @@
 #    and:
 #      - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
 #      - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-#      - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
 #
 #  It's setup this way so we can trigger a release via a POST
 #  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
@@ -81,7 +80,6 @@ workflows:
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
     jobs:
       # Run lints on every commit
       - analyze_code
@@ -125,48 +123,11 @@ workflows:
             - build_hermes_macos
             - build_hermesc_windows
 
-  prealpha:
-    when: << pipeline.parameters.run_prealpha_workflow >>
-    jobs:
-      - prepare_hermes_workspace
-      - build_android:
-          release_type: "prealpha"
-      - build_hermesc_linux:
-          requires:
-            - prepare_hermes_workspace
-      - build_hermesc_apple:
-          requires:
-            - prepare_hermes_workspace
-      - build_apple_slices_hermes:
-          requires:
-            - build_hermesc_apple
-          matrix:
-            parameters:
-              flavor: ["Debug", "Release"]
-              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
-      - build_hermesc_windows:
-          requires:
-            - prepare_hermes_workspace
-      - build_hermes_macos:
-          requires:
-            - build_apple_slices_hermes
-          matrix:
-            parameters:
-              flavor: ["Debug", "Release"]
-      - build_npm_package:
-          release_type: "prealpha"
-          requires:
-            - build_android
-            - build_hermesc_linux
-            - build_hermes_macos
-            - build_hermesc_windows
-
   publish_bumped_packages:
     when:
       and:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_prealpha_workflow >> ]
     jobs:
       - find_and_publish_bumped_packages:
           <<: *main_or_stable_only
