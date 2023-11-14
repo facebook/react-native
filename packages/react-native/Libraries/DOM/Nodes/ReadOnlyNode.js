@@ -134,7 +134,9 @@ export default class ReadOnlyNode {
       return null;
     }
 
-    return getPublicInstanceFromInternalInstanceHandle(parentInstanceHandle);
+    return (
+      getPublicInstanceFromInternalInstanceHandle(parentInstanceHandle) ?? null
+    );
   }
 
   get previousSibling(): ReadOnlyNode | null {
@@ -322,9 +324,11 @@ export function getChildNodes(
   const childNodeInstanceHandles = nullthrows(
     getFabricUIManager(),
   ).getChildNodes(shadowNode);
-  return childNodeInstanceHandles.map(instanceHandle =>
-    getPublicInstanceFromInternalInstanceHandle(instanceHandle),
-  );
+  return childNodeInstanceHandles
+    .map(instanceHandle =>
+      getPublicInstanceFromInternalInstanceHandle(instanceHandle),
+    )
+    .filter(Boolean);
 }
 
 function getNodeSiblingsAndPosition(
@@ -348,7 +352,7 @@ function getNodeSiblingsAndPosition(
 
 export function getPublicInstanceFromInternalInstanceHandle(
   instanceHandle: InternalInstanceHandle,
-): ReadOnlyNode {
+): ?ReadOnlyNode {
   const mixedPublicInstance =
     ReactFabric.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
   // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
