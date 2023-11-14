@@ -246,7 +246,7 @@ jsi::Value UIManagerBinding::get(
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  instanceHandle));
+                  std::move(instanceHandle)));
         });
   }
 
