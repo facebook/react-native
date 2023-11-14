@@ -24,8 +24,7 @@ const PAGES_POLLING_DELAY = 1000;
 
 jest.useFakeTimers();
 
-// TODO T169943794
-xdescribe('inspector proxy HTTP API', () => {
+describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     projectRoot: '',
