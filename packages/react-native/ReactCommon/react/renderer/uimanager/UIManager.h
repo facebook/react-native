@@ -135,7 +135,7 @@ class UIManager final : public ShadowTreeDelegate {
       const std::string& componentName,
       SurfaceId surfaceId,
       const RawProps& props,
-      const InstanceHandle::Shared& instanceHandle) const;
+      InstanceHandle::Shared instanceHandle) const;
 
   std::shared_ptr<ShadowNode> cloneNode(
       const ShadowNode& shadowNode,
