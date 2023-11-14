@@ -146,10 +146,8 @@ inline size_t textAttributesHashLayoutWise(
   // Here we are not taking `isAttachment` and `layoutMetrics` into account
   // because they are logically interdependent and this can break an invariant
   // between hash and equivalence functions (and cause cache misses).
-  return folly::hash::hash_combine(
-      0,
-      fragment.string,
-      textAttributesHashLayoutWise(fragment.textAttributes));
+  return facebook::react::hash_combine(
+      fragment.string, textAttributesHashLayoutWise(fragment.textAttributes));
 }
 
 inline bool areAttributedStringsEquivalentLayoutWise(
