@@ -96,6 +96,16 @@ const NativeIntersectionObserverMock = {
       'unexpected duplicate call to unobserve',
     );
     observations.splice(observationIndex, 1);
+
+    pendingRecords = pendingRecords.filter(
+      record =>
+        record.intersectionObserverId !== intersectionObserverId ||
+        record.targetInstanceHandle !==
+          FabricUIManagerMock.__getInstanceHandleFromNode(
+            // $FlowExpectedError[incompatible-call]
+            targetShadowNode,
+          ),
+    );
   },
   connect: (notifyIntersectionObserversCallback: () => void): void => {
     invariant(callback == null, 'unexpected call to connect');
