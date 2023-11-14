@@ -34,11 +34,11 @@ class YG_EXPORT Style {
   template <typename Enum>
   using Values = std::array<CompactValue, ordinalCount<Enum>()>;
 
- public:
   using Dimensions = Values<Dimension>;
   using Edges = Values<YGEdge>;
   using Gutters = Values<Gutter>;
 
+ public:
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
   static constexpr float WebDefaultFlexShrink = 1.0f;
@@ -65,39 +65,6 @@ class YG_EXPORT Style {
     Ref<T, Prop>& operator=(T value) {
       style.*Prop = value;
       return *this;
-    }
-  };
-
-  template <typename Idx, Values<Idx> Style::*Prop>
-  struct IdxRef {
-    struct Ref {
-      Style& style;
-      Idx idx;
-      operator CompactValue() const {
-        return (style.*Prop)[idx];
-      }
-      operator YGValue() const {
-        return (style.*Prop)[idx];
-      }
-      Ref& operator=(CompactValue value) {
-        (style.*Prop)[idx] = value;
-        return *this;
-      }
-    };
-
-    Style& style;
-    IdxRef<Idx, Prop>& operator=(const Values<Idx>& values) {
-      style.*Prop = values;
-      return *this;
-    }
-    operator const Values<Idx>&() const {
-      return style.*Prop;
-    }
-    Ref operator[](Idx idx) {
-      return {style, idx};
-    }
-    CompactValue operator[](Idx idx) const {
-      return (style.*Prop)[idx];
     }
   };
 
@@ -146,9 +113,6 @@ class YG_EXPORT Style {
   FloatOptional aspectRatio_ = {};
 
  public:
-  // for library users needing a type
-  using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
-
   Direction direction() const {
     return getEnumData<Direction>(flags, directionOffset);
   }
@@ -247,32 +211,32 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  const Edges& margin() const {
-    return margin_;
+  CompactValue margin(YGEdge edge) const {
+    return margin_[edge];
   }
-  IdxRef<YGEdge, &Style::margin_> margin() {
-    return {*this};
-  }
-
-  const Edges& position() const {
-    return position_;
-  }
-  IdxRef<YGEdge, &Style::position_> position() {
-    return {*this};
+  void setMargin(YGEdge edge, CompactValue value) {
+    margin_[edge] = value;
   }
 
-  const Edges& padding() const {
-    return padding_;
+  CompactValue position(YGEdge edge) const {
+    return position_[edge];
   }
-  IdxRef<YGEdge, &Style::padding_> padding() {
-    return {*this};
+  void setPosition(YGEdge edge, CompactValue value) {
+    position_[edge] = value;
   }
 
-  const Edges& border() const {
-    return border_;
+  CompactValue padding(YGEdge edge) const {
+    return padding_[edge];
   }
-  IdxRef<YGEdge, &Style::border_> border() {
-    return {*this};
+  void setPadding(YGEdge edge, CompactValue value) {
+    padding_[edge] = value;
+  }
+
+  CompactValue border(YGEdge edge) const {
+    return border_[edge];
+  }
+  void setBorder(YGEdge edge, CompactValue value) {
+    border_[edge] = value;
   }
 
   CompactValue gap(Gutter gutter) const {
