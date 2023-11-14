@@ -35,19 +35,6 @@ void updateStyle(YGNodeRef node, Ref (Style::*prop)(), T value) {
       [prop](Style& s, T x) { (s.*prop)() = x; });
 }
 
-template <typename Ref, typename Idx>
-void updateIndexedStyleProp(
-    YGNodeRef node,
-    Ref (Style::*prop)(),
-    Idx idx,
-    CompactValue value) {
-  updateStyle(
-      resolveRef(node),
-      value,
-      [idx, prop](Style& s, CompactValue x) { return (s.*prop)()[idx] != x; },
-      [idx, prop](Style& s, CompactValue x) { (s.*prop)()[idx] = x; });
-}
-
 template <auto GetterT, auto SetterT, typename IdxT>
 void updateIndexedStyleProp(YGNodeRef node, IdxT idx, CompactValue value) {
   updateStyle(
@@ -237,53 +224,53 @@ YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
 
 void YGNodeStyleSetPosition(YGNodeRef node, YGEdge edge, float points) {
   auto value = CompactValue::ofMaybe<YGUnitPoint>(points);
-  updateIndexedStyleProp<MSVC_HINT(position)>(
-      node, &Style::position, edge, value);
+  updateIndexedStyleProp<&Style::position, &Style::setPosition>(
+      node, edge, value);
 }
 
 void YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float percent) {
   auto value = CompactValue::ofMaybe<YGUnitPercent>(percent);
-  updateIndexedStyleProp<MSVC_HINT(position)>(
-      node, &Style::position, edge, value);
+  updateIndexedStyleProp<&Style::position, &Style::setPosition>(
+      node, edge, value);
 }
 
 YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().position()[edge];
+  return resolveRef(node)->getStyle().position(edge);
 }
 
 void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float points) {
   auto value = CompactValue::ofMaybe<YGUnitPoint>(points);
-  updateIndexedStyleProp<MSVC_HINT(margin)>(node, &Style::margin, edge, value);
+  updateIndexedStyleProp<&Style::margin, &Style::setMargin>(node, edge, value);
 }
 
 void YGNodeStyleSetMarginPercent(YGNodeRef node, YGEdge edge, float percent) {
   auto value = CompactValue::ofMaybe<YGUnitPercent>(percent);
-  updateIndexedStyleProp<MSVC_HINT(margin)>(node, &Style::margin, edge, value);
+  updateIndexedStyleProp<&Style::margin, &Style::setMargin>(node, edge, value);
 }
 
 void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge) {
-  updateIndexedStyleProp<MSVC_HINT(margin)>(
-      node, &Style::margin, edge, CompactValue::ofAuto());
+  updateIndexedStyleProp<&Style::margin, &Style::setMargin>(
+      node, edge, CompactValue::ofAuto());
 }
 
 YGValue YGNodeStyleGetMargin(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().margin()[edge];
+  return resolveRef(node)->getStyle().margin(edge);
 }
 
 void YGNodeStyleSetPadding(YGNodeRef node, YGEdge edge, float points) {
   auto value = CompactValue::ofMaybe<YGUnitPoint>(points);
-  updateIndexedStyleProp<MSVC_HINT(padding)>(
-      node, &Style::padding, edge, value);
+  updateIndexedStyleProp<&Style::padding, &Style::setPadding>(
+      node, edge, value);
 }
 
 void YGNodeStyleSetPaddingPercent(YGNodeRef node, YGEdge edge, float percent) {
   auto value = CompactValue::ofMaybe<YGUnitPercent>(percent);
-  updateIndexedStyleProp<MSVC_HINT(padding)>(
-      node, &Style::padding, edge, value);
+  updateIndexedStyleProp<&Style::padding, &Style::setPadding>(
+      node, edge, value);
 }
 
 YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().padding()[edge];
+  return resolveRef(node)->getStyle().padding(edge);
 }
 
 void YGNodeStyleSetBorder(
@@ -291,11 +278,11 @@ void YGNodeStyleSetBorder(
     const YGEdge edge,
     const float border) {
   auto value = CompactValue::ofMaybe<YGUnitPoint>(border);
-  updateIndexedStyleProp<MSVC_HINT(border)>(node, &Style::border, edge, value);
+  updateIndexedStyleProp<&Style::border, &Style::setBorder>(node, edge, value);
 }
 
 float YGNodeStyleGetBorder(const YGNodeConstRef node, const YGEdge edge) {
-  auto border = resolveRef(node)->getStyle().border()[edge];
+  auto border = resolveRef(node)->getStyle().border(edge);
   if (border.isUndefined() || border.isAuto()) {
     return YGUndefined;
   }
