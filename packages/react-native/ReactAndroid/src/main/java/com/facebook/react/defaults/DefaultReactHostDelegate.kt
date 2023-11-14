@@ -11,7 +11,6 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
@@ -50,7 +49,7 @@ class DefaultReactHostDelegate(
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 
-  override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?) = reactNativeConfig
+  override fun getReactNativeConfig() = reactNativeConfig
 
   override fun handleInstanceException(error: Exception) = exceptionHandler(error)
 }
