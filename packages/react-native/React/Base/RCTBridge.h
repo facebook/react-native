@@ -61,6 +61,9 @@ void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
 BOOL RCTTurboModuleSharedQueueEnabled(void);
 void RCTEnableTurboModuleSharedQueue(BOOL enabled);
 
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
+
 typedef enum {
   kRCTBridgeProxyLoggingLevelNone,
   kRCTBridgeProxyLoggingLevelWarning,

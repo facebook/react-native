@@ -162,6 +162,17 @@ void RCTEnableTurboModuleSharedQueue(BOOL enabled)
   gTurboModuleEnableSharedQueue = enabled;
 }
 
+BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
+{
+  return kDispatchAccessibilityManagerInitOntoMain;
+}
+
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
+{
+  kDispatchAccessibilityManagerInitOntoMain = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 

@@ -181,7 +181,10 @@ RCT_EXPORT_MODULE()
   }
 
   // This dispatch_async avoids a deadlock while configuring native modules
-  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+  dispatch_queue_t accessibilityManagerInitQueue = RCTUIManagerDispatchAccessibilityManagerInitOntoMain()
+      ? dispatch_get_main_queue()
+      : dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+  dispatch_async(accessibilityManagerInitQueue, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
