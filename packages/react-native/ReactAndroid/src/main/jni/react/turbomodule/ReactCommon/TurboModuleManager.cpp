@@ -135,7 +135,8 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
-          javaPart_ = jni::make_weak(javaPart_)](
+          javaPart_ = jni::make_weak(javaPart_),
+          enableSyncVoidMethods](
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
@@ -197,7 +198,7 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
           .nativeMethodCallInvoker = nativeMethodCallInvoker,
-          .shouldVoidMethodsExecuteSync = false};
+          .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -209,8 +210,8 @@ TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
   };
 }
 
-TurboModuleProviderFunctionType TurboModuleManager::createLegacyModuleProvider(
-    bool enableSyncVoidMethods) {
+TurboModuleProviderFunctionType
+TurboModuleManager::createLegacyModuleProvider() {
   return [legacyModuleCache_ = std::weak_ptr<ModuleCache>(legacyModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
@@ -322,7 +323,7 @@ void TurboModuleManager::installJSIBindings(
     TurboModuleBinding::install(
         runtime,
         createTurboModuleProvider(enableSyncVoidMethods),
-        createLegacyModuleProvider(enableSyncVoidMethods));
+        createLegacyModuleProvider());
   });
 }
 
