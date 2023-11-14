@@ -11,11 +11,9 @@
 // flowlint unsafe-getters-setters:off
 
 import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
-import type {InternalInstanceHandle} from '../Renderer/shims/ReactNativeTypes';
 import type {NativeIntersectionObserverEntry} from './NativeIntersectionObserver';
 
 import DOMRectReadOnly from '../DOM/Geometry/DOMRectReadOnly';
-import {getPublicInstanceFromInternalInstanceHandle} from '../DOM/Nodes/ReadOnlyNode';
 
 /**
  * The [`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)
@@ -29,9 +27,17 @@ export default class IntersectionObserverEntry {
   // We lazily compute all the properties from the raw entry provided by the
   // native module, so we avoid unnecessary work.
   _nativeEntry: NativeIntersectionObserverEntry;
+  // There are cases where this cannot be safely derived from the instance
+  // handle in the native entry (when the target is detached), so we need to
+  // keep a reference to it directly.
+  _target: ReactNativeElement;
 
-  constructor(nativeEntry: NativeIntersectionObserverEntry) {
+  constructor(
+    nativeEntry: NativeIntersectionObserverEntry,
+    target: ReactNativeElement,
+  ) {
     this._nativeEntry = nativeEntry;
+    this._target = target;
   }
 
   /**
@@ -113,15 +119,7 @@ export default class IntersectionObserverEntry {
    * The `ReactNativeElement` whose intersection with the root changed.
    */
   get target(): ReactNativeElement {
-    const targetInstanceHandle: InternalInstanceHandle =
-      // $FlowExpectedError[incompatible-type] native modules don't support using InternalInstanceHandle as a type
-      this._nativeEntry.targetInstanceHandle;
-
-    const targetElement =
-      getPublicInstanceFromInternalInstanceHandle(targetInstanceHandle);
-
-    // $FlowExpectedError[incompatible-cast] we know targetElement is a ReactNativeElement, not just a ReadOnlyNode
-    return (targetElement: ReactNativeElement);
+    return this._target;
   }
 
   /**
@@ -135,6 +133,7 @@ export default class IntersectionObserverEntry {
 
 export function createIntersectionObserverEntry(
   entry: NativeIntersectionObserverEntry,
+  target: ReactNativeElement,
 ): IntersectionObserverEntry {
-  return new IntersectionObserverEntry(entry);
+  return new IntersectionObserverEntry(entry, target);
 }
