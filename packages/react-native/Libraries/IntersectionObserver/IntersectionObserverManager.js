@@ -70,6 +70,15 @@ function unsetTargetForInstanceHandle(instanceHandle: mixed): void {
   instanceHandleToTargetMap.delete(key);
 }
 
+// The mapping between ReactNativeElement and their corresponding shadow node
+// also needs to be kept here because React removes the link when unmounting.
+// We also keep the instance handle so we don't have to retrieve it again
+// from the target to unobserve.
+const targetToShadowNodeAndInstanceHandleMap: WeakMap<
+  ReactNativeElement,
+  [ReturnType<typeof getShadowNode>, mixed],
+> = new WeakMap();
+
 /**
  * Registers the given intersection observer and returns a unique ID for it,
  * which is required to start observing targets.
@@ -151,6 +160,13 @@ export function observe({
   // access it even after the instance handle has been unmounted.
   setTargetForInstanceHandle(instanceHandle, target);
 
+  // Same for the mapping between the target and its shadow node
+  // and instance handle.
+  targetToShadowNodeAndInstanceHandleMap.set(target, [
+    targetShadowNode,
+    instanceHandle,
+  ]);
+
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
     isConnected = true;
@@ -182,30 +198,26 @@ export function unobserve(
     return;
   }
 
-  const targetShadowNode = getShadowNode(target);
-  if (targetShadowNode == null) {
+  const targetShadowNodeAndInstanceHandle =
+    targetToShadowNodeAndInstanceHandleMap.get(target);
+  if (targetShadowNodeAndInstanceHandle == null) {
     console.error(
-      'IntersectionObserverManager: could not find reference to host node from target',
+      'IntersectionObserverManager: could not find registration data for target',
     );
     return;
   }
+
+  const [targetShadowNode, instanceHandle] = targetShadowNodeAndInstanceHandle;
 
   NativeIntersectionObserver.unobserve(
     intersectionObserverId,
     targetShadowNode,
   );
 
-  const instanceHandle = getInstanceHandle(target);
-  if (instanceHandle == null) {
-    console.error(
-      'IntersectionObserverManager: could not find reference to instance handle from target',
-    );
-    return;
-  }
-
   // We can guarantee we won't receive any more entries for this target,
-  // so we don't need to keep the mapping anymore.
+  // so we don't need to keep the mappings anymore.
   unsetTargetForInstanceHandle(instanceHandle);
+  targetToShadowNodeAndInstanceHandleMap.delete(target);
 }
 
 /**
