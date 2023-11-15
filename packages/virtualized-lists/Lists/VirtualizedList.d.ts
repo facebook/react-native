@@ -287,6 +287,9 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
   onEndReachedThreshold?: number | null | undefined;
 
   onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+  onCellLayout?:
+    | ((event: LayoutChangeEvent, cellKey: string, cellIndex: number) => void)
+    | undefined;
 
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make

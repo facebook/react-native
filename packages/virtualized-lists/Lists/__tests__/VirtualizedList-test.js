@@ -2271,6 +2271,35 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
   expect(component).toMatchSnapshot();
 });
 
+it('calls onCellLayout with expected args', () => {
+  const onCellLayout = jest.fn();
+  const items = generateItems(10);
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+        onCellLayout={onCellLayout}
+      />,
+    );
+  });
+  simulateCellLayout(component, items, 5, {
+    width: 10,
+    height: 200,
+    x: 0,
+    y: 10,
+  });
+  expect(onCellLayout).toHaveBeenCalledTimes(1);
+  expect(onCellLayout).toHaveBeenCalledWith(
+    {layout: {height: 200, width: 10, x: 0, y: 10}, zoomScale: 1},
+    5,
+    5,
+  );
+});
+
 function generateItems(count, startKey = 0) {
   return Array(count)
     .fill()

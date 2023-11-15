@@ -1298,6 +1298,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     cellKey: string,
     cellIndex: number,
   ): void => {
+    this.props.onCellLayout &&
+      this.props.onCellLayout(e.nativeEvent, cellKey, cellIndex);
     const layoutHasChanged = this._listMetrics.notifyCellLayout({
       cellIndex,
       cellKey,
