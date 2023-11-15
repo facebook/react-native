@@ -67,13 +67,12 @@ class JSEngineTests < Test::Unit::TestCase
         setup_hermes!(:react_native_path => @react_native_path)
 
         # Assert
-        assert_equal($podInvocationCount, 4)
+        assert_equal($podInvocationCount, 3)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
         hermes_engine_pod_invocation = $podInvocation["hermes-engine"]
         assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.podspec")
         assert_equal(hermes_engine_pod_invocation[:tag], "")
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
-        assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
     end
 
 end
