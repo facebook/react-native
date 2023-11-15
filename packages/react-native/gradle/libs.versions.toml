@@ -36,7 +36,6 @@ doubleconversion="1.1.6"
 fmt="9.1.0"
 folly="2023.08.07.00"
 glog="0.3.5"
-libevent="2.1.12"
 gtest="1.12.1"
 
 [libraries]

@@ -67,7 +67,6 @@ def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
 def FMT_VERSION = libs.versions.fmt.get()
 def FOLLY_VERSION = libs.versions.folly.get()
 def GLOG_VERSION = libs.versions.glog.get()
-def LIBEVENT_VERSION = libs.versions.libevent.get()
 def GTEST_VERSION = libs.versions.gtest.get()
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
@@ -324,22 +323,6 @@ task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/fmt")
-}
-
-task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
-    onlyIfModified(true)
-    overwrite(false)
-    retries(5)
-    dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
-}
-
-
-final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTask) {
-    it.dependsOn(dependenciesPath ? [] : [downloadLibevent])
-    it.libeventPath.setFrom(dependenciesPath ?: tarTree(downloadLibevent.dest))
-    it.libeventVersion.set(LIBEVENT_VERSION)
-    it.outputDir.set(new File(thirdPartyNdkDir, "libevent"))
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -603,7 +586,6 @@ android {
             prepareGlog,
             prepareGtest,
             prepareJSC,
-            prepareLibevent,
             preparePrefab
     )
     generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
