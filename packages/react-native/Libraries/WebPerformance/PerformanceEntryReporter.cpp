@@ -8,10 +8,13 @@
 #include "PerformanceEntryReporter.h"
 #include <cxxreact/JSExecutor.h>
 #include <react/renderer/core/EventLogger.h>
+#include <react/utils/CoreFeatures.h>
 #include "NativePerformanceObserver.h"
 
 #include <functional>
 #include <unordered_map>
+
+#include <glog/logging.h>
 
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
@@ -67,7 +70,7 @@ void PerformanceEntryReporter::stopReporting() {
 }
 
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
-  std::scoped_lock lock(entriesMutex_);
+  std::lock_guard lock(entriesMutex_);
   GetPendingEntriesResult res = {
       std::vector<RawPerformanceEntry>(), droppedEntryCount_};
   for (auto& buffer : buffers_) {
@@ -100,7 +103,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
     return;
   }
 
-  std::scoped_lock lock(entriesMutex_);
+  std::lock_guard lock(entriesMutex_);
 
   auto& buffer = buffers_[entry.entryType];
 
@@ -112,7 +115,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   if (buffer.hasNameLookup) {
     auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
     if (overwriteCandidate != nullptr) {
-      std::scoped_lock lock2(nameLookupMutex_);
+      std::lock_guard lock2(nameLookupMutex_);
       auto it = buffer.nameLookup.find(overwriteCandidate);
       if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
         buffer.nameLookup.erase(it);
@@ -130,7 +133,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry& entry) {
   }
 
   if (buffer.hasNameLookup) {
-    std::scoped_lock lock2(nameLookupMutex_);
+    std::lock_guard lock2(nameLookupMutex_);
     buffer.nameLookup.insert(&buffer.entries.back());
   }
 
@@ -166,7 +169,7 @@ void PerformanceEntryReporter::clearEntries(
     auto& buffer = getBuffer(entryType);
     if (!entryName.empty()) {
       if (buffer.hasNameLookup) {
-        std::scoped_lock lock2(nameLookupMutex_);
+        std::lock_guard lock2(nameLookupMutex_);
         RawPerformanceEntry entry{
             std::string(entryName),
             static_cast<int>(entryType),
@@ -178,17 +181,17 @@ void PerformanceEntryReporter::clearEntries(
         buffer.nameLookup.erase(&entry);
       }
 
-      std::scoped_lock lock(entriesMutex_);
+      std::lock_guard lock(entriesMutex_);
       buffer.entries.clear([entryName](const RawPerformanceEntry& entry) {
         return entry.name == entryName;
       });
     } else {
       {
-        std::scoped_lock lock(entriesMutex_);
+        std::lock_guard lock(entriesMutex_);
         buffer.entries.clear();
       }
       {
-        std::scoped_lock lock2(nameLookupMutex_);
+        std::lock_guard lock2(nameLookupMutex_);
         buffer.nameLookup.clear();
       }
     }
@@ -205,7 +208,7 @@ void PerformanceEntryReporter::getEntries(
       getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
     }
   } else {
-    std::scoped_lock lock(entriesMutex_);
+    std::lock_guard lock(entriesMutex_);
     const auto& entries = getBuffer(entryType).entries;
     if (entryName.empty()) {
       entries.getEntries(res);
@@ -264,7 +267,7 @@ double PerformanceEntryReporter::getMarkTime(
       std::nullopt,
       std::nullopt};
 
-  std::scoped_lock lock(nameLookupMutex_);
+  std::lock_guard lock(nameLookupMutex_);
   const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
   auto it = marksBuffer.nameLookup.find(&mark);
   if (it != marksBuffer.nameLookup.end()) {
@@ -274,7 +277,7 @@ double PerformanceEntryReporter::getMarkTime(
   }
 }
 
-void PerformanceEntryReporter::event(
+void PerformanceEntryReporter::logEventEntry(
     std::string name,
     double startTime,
     double duration,
@@ -381,52 +384,86 @@ EventTag PerformanceEntryReporter::onEventStart(std::string_view name) {
 
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::scoped_lock lock(eventsInFlightMutex_);
+    std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(std::make_pair(
         sCurrentEventTag_, EventEntry{reportedName, timeStamp, 0.0}));
   }
   return sCurrentEventTag_;
 }
 
-void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
+void PerformanceEntryReporter::onEventProcessingStart(EventTag tag) {
   if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::scoped_lock lock(eventsInFlightMutex_);
+    std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it != eventsInFlight_.end()) {
-      it->second.dispatchTime = timeStamp;
+      it->second.processingStartTime = timeStamp;
     }
   }
 }
 
-void PerformanceEntryReporter::onEventEnd(EventTag tag) {
+void PerformanceEntryReporter::onEventProcessingEnd(EventTag tag) {
   if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::scoped_lock lock(eventsInFlightMutex_);
+    std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it == eventsInFlight_.end()) {
       return;
     }
     auto& entry = it->second;
-    auto& name = entry.name;
+    entry.processingEndTime = timeStamp;
 
-    // TODO: Define the way to assign interaction IDs to the event chains
-    // (T141358175)
-    const uint32_t interactionId = 0;
-    event(
+    if (CoreFeatures::enableReportEventPaintTime) {
+      // If reporting paint time, don't send the entry just yet and wait for the
+      // mount hook callback to be called
+      return;
+    }
+
+    const auto& name = entry.name;
+
+    logEventEntry(
         std::string(name),
         entry.startTime,
         timeStamp - entry.startTime,
-        entry.dispatchTime,
-        timeStamp,
-        interactionId);
+        entry.processingStartTime,
+        entry.processingEndTime,
+        entry.interactionId);
     eventsInFlight_.erase(it);
+  }
+}
+
+void PerformanceEntryReporter::shadowTreeDidMount(
+    const RootShadowNode::Shared& /*rootShadowNode*/,
+    double mountTime) noexcept {
+  if (!isReporting(PerformanceEntryType::EVENT) ||
+      !CoreFeatures::enableReportEventPaintTime) {
+    return;
+  }
+
+  std::lock_guard lock(eventsInFlightMutex_);
+  auto it = eventsInFlight_.begin();
+  while (it != eventsInFlight_.end()) {
+    const auto& entry = it->second;
+    if (entry.processingEndTime == 0.0 || entry.processingEndTime > mountTime) {
+      // This mount doesn't correspond to the event
+      ++it;
+      continue;
+    }
+
+    logEventEntry(
+        std::string(entry.name),
+        entry.startTime,
+        mountTime - entry.startTime,
+        entry.processingStartTime,
+        entry.processingEndTime,
+        entry.interactionId);
+    it = eventsInFlight_.erase(it);
   }
 }
 
