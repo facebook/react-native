@@ -55,7 +55,7 @@ void EventQueueProcessor::flushEvents(
 
     auto eventLogger = getEventLogger();
     if (eventLogger != nullptr) {
-      eventLogger->onEventDispatch(event.loggingTag);
+      eventLogger->onEventProcessingStart(event.loggingTag);
     }
 
     if (event.eventPayload == nullptr) {
@@ -77,7 +77,7 @@ void EventQueueProcessor::flushEvents(
     }
 
     if (eventLogger != nullptr) {
-      eventLogger->onEventEnd(event.loggingTag);
+      eventLogger->onEventProcessingEnd(event.loggingTag);
     }
 
     if (event.category == RawEvent::Category::ContinuousStart) {
