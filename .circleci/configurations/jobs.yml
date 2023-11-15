@@ -140,8 +140,11 @@ jobs:
           name: Install appium drivers
           command: appium driver install xcuitest@5.6.0
       - run:
-          name: Boot iOS Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+          name: Boot iOS Simulator and Collect Logs
+          command: |
+            source scripts/.tests.env
+            xcrun simctl boot "$IOS_DEVICE" || true
+            xcrun simctl spawn "$IOS_DEVICE" log stream --level=error > /tmp/ios-simulator-logs &
       - with_xcodebuild_cache:
           steps:
             - run:
@@ -171,6 +174,8 @@ jobs:
                   (yarn test-e2e-ios 2>&1 | tee /tmp/test_log) || true
             - store_artifacts:
                 path: /tmp/test_log
+            - store_artifacts:
+                path: /tmp/ios-simulator-logs
             - store_artifacts:
                 path: ~/react-native/packages/rn-tester-e2e/reports
             - store_artifacts:
