@@ -592,7 +592,6 @@ class ReactNativePodsUtils
             "fmt",
             "glog",
             "hermes-engine",
-            "libevent",
             "React-hermes",
         ]
     end
