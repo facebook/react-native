@@ -21,21 +21,6 @@ class ShadowNode;
 class State;
 
 /*
- * This is a collection of fields serving as a specification to create new
- * `ShadowNodeFamily` instances.
- *
- * Do not use this class as a general purpose container to share information
- * about a `ShadowNodeFamily`. Pelase define specific purpose containers in
- * those cases.
- *
- */
-struct ShadowNodeFamilyFragment {
-  const Tag tag;
-  const SurfaceId surfaceId;
-  const std::shared_ptr<const InstanceHandle> instanceHandle;
-};
-
-/*
  * Represents all things that shadow nodes from the same family have in common.
  * To be used inside `ShadowNode` class *only*.
  */
@@ -49,7 +34,8 @@ class ShadowNodeFamily final {
       int /* childIndex */>>;
 
   ShadowNodeFamily(
-      const ShadowNodeFamilyFragment& fragment,
+      Tag tag,
+      SurfaceId surfaceId,
       SharedEventEmitter eventEmitter,
       EventDispatcher::Weak eventDispatcher,
       const ComponentDescriptor& componentDescriptor);

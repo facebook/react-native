@@ -292,7 +292,7 @@ ShadowTree::ShadowTree(
       layoutContext);
 
   auto family = globalRootComponentDescriptor->createFamily(
-      {surfaceId, surfaceId, nullptr});
+      surfaceId, surfaceId, nullptr);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(

@@ -77,7 +77,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
   auto family = componentDescriptor.createFamily(
-      {tag, surfaceId, std::move(instanceHandle)});
+      tag, surfaceId, std::move(instanceHandle));
   const auto props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   const auto state = componentDescriptor.createInitialState(props, family);

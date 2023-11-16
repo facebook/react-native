@@ -127,7 +127,9 @@ class ComponentDescriptor {
    * Creates a shadow node family for particular node.
    */
   virtual ShadowNodeFamily::Shared createFamily(
-      const ShadowNodeFamilyFragment& fragment) const = 0;
+      Tag tag,
+      SurfaceId surfaceId,
+      const std::shared_ptr<const InstanceHandle> instanceHandle) const = 0;
 
  protected:
   friend ShadowNode;
