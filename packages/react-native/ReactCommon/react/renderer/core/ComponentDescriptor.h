@@ -129,7 +129,7 @@ class ComponentDescriptor {
   virtual ShadowNodeFamily::Shared createFamily(
       Tag tag,
       SurfaceId surfaceId,
-      const std::shared_ptr<const InstanceHandle> instanceHandle) const = 0;
+      std::unique_ptr<const InstanceHandle> instanceHandle) const = 0;
 
  protected:
   friend ShadowNode;

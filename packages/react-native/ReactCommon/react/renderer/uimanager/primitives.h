@@ -125,7 +125,7 @@ inline static Tag tagFromValue(const jsi::Value& value) {
   return (Tag)value.getNumber();
 }
 
-inline static InstanceHandle::Shared instanceHandleFromValue(
+inline static std::unique_ptr<const InstanceHandle> instanceHandleFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& instanceHandleValue,
     const jsi::Value& tagValue) {
@@ -133,7 +133,7 @@ inline static InstanceHandle::Shared instanceHandleFromValue(
   if (instanceHandleValue.isNull()) {
     return nullptr;
   }
-  return std::make_shared<InstanceHandle>(
+  return std::make_unique<const InstanceHandle>(
       runtime, instanceHandleValue, tagFromValue(tagValue));
 }
 

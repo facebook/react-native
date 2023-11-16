@@ -13,7 +13,7 @@ namespace facebook::react {
 
 using Tag = EventTarget::Tag;
 
-EventTarget::EventTarget(InstanceHandle::Shared instanceHandle)
+EventTarget::EventTarget(std::unique_ptr<InstanceHandle const> instanceHandle)
     : instanceHandle_(std::move(instanceHandle)),
       strongInstanceHandle_(jsi::Value::null()) {}
 

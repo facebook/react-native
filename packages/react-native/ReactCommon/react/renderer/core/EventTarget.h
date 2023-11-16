@@ -34,7 +34,7 @@ class EventTarget {
   /*
    * Constructs an EventTarget from a weak instance handler and a tag.
    */
-  explicit EventTarget(InstanceHandle::Shared instanceHandle);
+  explicit EventTarget(std::unique_ptr<const InstanceHandle> instanceHandle);
 
   /*
    * Sets the `enabled` flag that allows creating a strong instance handle from
@@ -65,7 +65,7 @@ class EventTarget {
   Tag getTag() const;
 
  private:
-  const InstanceHandle::Shared instanceHandle_;
+  const std::unique_ptr<const InstanceHandle> instanceHandle_;
   mutable bool enabled_{false}; // Protected by `EventEmitter::DispatchMutex()`.
   mutable jsi::Value strongInstanceHandle_; // Protected by `jsi::Runtime &`.
   mutable size_t retainCount_{0}; // Protected by `jsi::Runtime &`.

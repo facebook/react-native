@@ -9,14 +9,11 @@
 
 #include <jsi/jsi.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <memory>
 
 namespace facebook::react {
 
 class InstanceHandle {
  public:
-  using Shared = std::shared_ptr<const InstanceHandle>;
-
   InstanceHandle(
       jsi::Runtime& runtime,
       const jsi::Value& instanceHandle,

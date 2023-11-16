@@ -67,7 +67,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
     const std::string& name,
     SurfaceId surfaceId,
     const RawProps& rawProps,
-    InstanceHandle::Shared instanceHandle) const {
+    std::unique_ptr<const InstanceHandle> instanceHandle) const {
   SystraceSection s("UIManager::createNode", "componentName", name);
 
   auto& componentDescriptor = componentDescriptorRegistry_->at(name);
