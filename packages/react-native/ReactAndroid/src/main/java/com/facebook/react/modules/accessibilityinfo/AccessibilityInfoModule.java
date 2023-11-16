@@ -13,8 +13,6 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -23,6 +21,7 @@ import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.module.annotations.ReactModule;
 
 /**
@@ -58,7 +57,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   // Listener that is notified when the global TRANSITION_ANIMATION_SCALE.
   private final ContentObserver animationScaleObserver =
-      new ContentObserver(new Handler(Looper.getMainLooper())) {
+      new ContentObserver(UiThreadUtil.getUiThreadHandler()) {
         @Override
         public void onChange(boolean selfChange) {
           this.onChange(selfChange, null);
