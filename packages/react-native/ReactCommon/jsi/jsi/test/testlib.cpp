@@ -50,7 +50,8 @@ TEST_P(JSITest, PropNameIDTest) {
       rt, movedQuux, PropNameID::forAscii(rt, std::string("foo"))));
   uint8_t utf8[] = {0xF0, 0x9F, 0x86, 0x97};
   PropNameID utf8PropNameID = PropNameID::forUtf8(rt, utf8, sizeof(utf8));
-  EXPECT_EQ(utf8PropNameID.utf8(rt), u8"\U0001F197");
+  EXPECT_EQ(
+      utf8PropNameID.utf8(rt), reinterpret_cast<const char*>(u8"\U0001F197"));
   EXPECT_TRUE(PropNameID::compare(
       rt, utf8PropNameID, PropNameID::forUtf8(rt, utf8, sizeof(utf8))));
   PropNameID nonUtf8PropNameID = PropNameID::forUtf8(rt, "meow");
@@ -532,7 +533,7 @@ TEST_P(JSITest, FunctionTest) {
                    "s1",
                    String::createFromAscii(rt, "s2"),
                    std::string{"s3"},
-                   std::string{u8"s\u2600"},
+                   std::string{reinterpret_cast<const char*>(u8"s\u2600")},
                    // invalid UTF8 sequence due to unexpected continuation byte
                    std::string{"s\x80"},
                    Object(rt),
@@ -1437,6 +1438,86 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(ho, ho2);
   EXPECT_EQ(1, RD1::numGets);
   EXPECT_EQ(1, RD2::numGets);
+}
+
+TEST_P(JSITest, ArrayBufferSizeTest) {
+  auto ab =
+      eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
+  EXPECT_EQ(ab.size(rt), 10);
+  // Ensure we can safely write some data to the buffer.
+  memset(ab.data(rt), 0xab, 10);
+
+  // Ensure that setting the byteLength property does not change the length.
+  eval("Object.defineProperty(x, 'byteLength', {value: 20})");
+  EXPECT_EQ(ab.size(rt), 10);
+}
+
+namespace {
+
+struct IntState : public NativeState {
+  explicit IntState(int value) : value(value) {}
+  int value;
+};
+
+} // namespace
+
+TEST_P(JSITest, NativeState) {
+  Object holder(rt);
+  EXPECT_FALSE(holder.hasNativeState(rt));
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
+
+  stateValue = std::make_shared<IntState>(21);
+  holder.setNativeState(rt, stateValue);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      21);
+
+  // There's currently way to "delete" the native state of a component fully
+  // Even when reset with nullptr, hasNativeState will still return true
+  holder.setNativeState(rt, nullptr);
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_TRUE(holder.getNativeState(rt) == nullptr);
+}
+
+TEST_P(JSITest, NativeStateSymbolOverrides) {
+  Object holder(rt);
+
+  auto stateValue = std::make_shared<IntState>(42);
+  holder.setNativeState(rt, stateValue);
+
+  // Attempting to change configurable attribute of unconfigurable property
+  try {
+    function(
+        "function (obj) {"
+        "  var mySymbol = Symbol();"
+        "  obj[mySymbol] = 'foo';"
+        "  var allSymbols = Object.getOwnPropertySymbols(obj);"
+        "  for (var sym of allSymbols) {"
+        "    Object.defineProperty(obj, sym, {configurable: true, writable: true});"
+        "    obj[sym] = 'bar';"
+        "  }"
+        "}")
+        .call(rt, holder);
+  } catch (const JSError& ex) {
+    // On JSC this throws, but it doesn't on Hermes
+    std::string exc = ex.what();
+    EXPECT_NE(
+        exc.find(
+            "Attempting to change configurable attribute of unconfigurable property"),
+        std::string::npos);
+  }
+
+  EXPECT_TRUE(holder.hasNativeState(rt));
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<IntState>(holder.getNativeState(rt))->value,
+      42);
 }
 
 INSTANTIATE_TEST_CASE_P(

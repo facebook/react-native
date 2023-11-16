@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
-const path = require('path');
 const {PACKAGES_DIR} = require('./build');
 const {buildConfig, getBabelConfig} = require('./config');
+const path = require('path');
 
 let isRegisteredForMonorepo = false;
 
@@ -44,11 +44,16 @@ function registerForMonorepo() {
 function registerPackage(packageName /*: string */) {
   const packageDir = path.join(PACKAGES_DIR, packageName);
 
-  require('@babel/register')({
+  // Prepare the config object before calling `require('@babel/register')` to
+  // prevent `require` calls within `getBabelConfig` triggering Babel to
+  // attempt to load its config from a babel.config file.
+  const registerConfig = {
     ...getBabelConfig(packageName),
     root: packageDir,
     ignore: [/\/node_modules\//],
-  });
+  };
+
+  require('@babel/register')(registerConfig);
 }
 
 module.exports = {registerForMonorepo};

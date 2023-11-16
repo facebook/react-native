@@ -274,7 +274,7 @@
 }
 
 static YGSize RCTBaseTextInputShadowViewMeasure(
-    YGNodeRef node,
+    YGNodeConstRef node,
     float width,
     YGMeasureMode widthMode,
     float height,
@@ -317,7 +317,7 @@ static YGSize RCTBaseTextInputShadowViewMeasure(
       RCTYogaFloatFromCoreGraphicsFloat(measuredSize.width), RCTYogaFloatFromCoreGraphicsFloat(measuredSize.height)};
 }
 
-static float RCTTextInputShadowViewBaseline(YGNodeRef node, const float width, const float height)
+static float RCTTextInputShadowViewBaseline(YGNodeConstRef node, const float width, const float height)
 {
   RCTBaseTextInputShadowView *shadowTextView = (__bridge RCTBaseTextInputShadowView *)YGNodeGetContext(node);
 

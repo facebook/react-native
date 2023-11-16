@@ -11,7 +11,7 @@ import com.facebook.react.common.ClearableSynchronizedPool;
 import com.facebook.yoga.YogaNode;
 
 /** Static holder for a recycling pool of YogaNodes. */
-public class YogaNodePool {
+class YogaNodePool {
 
   private static final Object sInitLock = new Object();
   private static ClearableSynchronizedPool<YogaNode> sPool;

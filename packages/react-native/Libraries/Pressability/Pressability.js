@@ -132,6 +132,12 @@ export type PressabilityConfig = $ReadOnly<{|
   onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
+   * Whether to prevent any other native components from becoming responder
+   * while this pressable is responder.
+   */
+  blockNativeResponder?: ?boolean,
+
+  /**
    * Returns whether a long press gesture should cancel the press gesture.
    * Defaults to true.
    *
@@ -495,7 +501,7 @@ export default class Pressability {
           this._handleLongPress(event);
         }, delayLongPress + delayPressIn);
 
-        return this._config.cancelable === false;
+        return this._config.blockNativeResponder === true;
       },
 
       onResponderMove: (event: PressEvent): void => {

@@ -22,15 +22,15 @@ void JReactMarker::setLogPerfMarkerIfNeeded() {
   });
 }
 
-void JReactMarker::logMarker(const std::string &marker) {
+void JReactMarker::logMarker(const std::string& marker) {
   static auto cls = javaClassStatic();
   static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
   meth(cls, marker);
 }
 
 void JReactMarker::logMarker(
-    const std::string &marker,
-    const std::string &tag) {
+    const std::string& marker,
+    const std::string& tag) {
   static auto cls = javaClassStatic();
   static auto meth =
       cls->getStaticMethod<void(std::string, std::string)>("logMarker");
@@ -38,8 +38,8 @@ void JReactMarker::logMarker(
 }
 
 void JReactMarker::logMarker(
-    const std::string &marker,
-    const std::string &tag,
+    const std::string& marker,
+    const std::string& tag,
     const int instanceKey) {
   static auto cls = javaClassStatic();
   static auto meth =
@@ -49,21 +49,21 @@ void JReactMarker::logMarker(
 
 void JReactMarker::logPerfMarker(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag) {
+    const char* tag) {
   const int bridgeInstanceKey = 0;
   logPerfMarkerWithInstanceKey(markerId, tag, bridgeInstanceKey);
 }
 
 void JReactMarker::logPerfMarkerBridgeless(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag) {
+    const char* tag) {
   const int bridgelessInstanceKey = 1;
   logPerfMarkerWithInstanceKey(markerId, tag, bridgelessInstanceKey);
 }
 
 void JReactMarker::logPerfMarkerWithInstanceKey(
     const ReactMarker::ReactMarkerId markerId,
-    const char *tag,
+    const char* tag,
     const int instanceKey) {
   switch (markerId) {
     case ReactMarker::APP_STARTUP_START:
@@ -71,6 +71,12 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
       break;
     case ReactMarker::APP_STARTUP_STOP:
       JReactMarker::logMarker("APP_STARTUP_END");
+      break;
+    case ReactMarker::INIT_REACT_RUNTIME_START:
+      JReactMarker::logMarker("INIT_REACT_RUNTIME_START");
+      break;
+    case ReactMarker::INIT_REACT_RUNTIME_STOP:
+      JReactMarker::logMarker("INIT_REACT_RUNTIME_END");
       break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag, instanceKey);
@@ -120,6 +126,12 @@ void JReactMarker::nativeLogMarker(
   } else if (markerNameStr == "APP_STARTUP_END") {
     ReactMarker::logMarkerDone(
         ReactMarker::APP_STARTUP_STOP, (double)markerTime);
+  } else if (markerNameStr == "INIT_REACT_RUNTIME_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::INIT_REACT_RUNTIME_START, (double)markerTime);
+  } else if (markerNameStr == "INIT_REACT_RUNTIME_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::INIT_REACT_RUNTIME_STOP, (double)markerTime);
   } else if (markerNameStr == "RUN_JS_BUNDLE_START") {
     ReactMarker::logMarkerDone(
         ReactMarker::RUN_JS_BUNDLE_START, (double)markerTime);

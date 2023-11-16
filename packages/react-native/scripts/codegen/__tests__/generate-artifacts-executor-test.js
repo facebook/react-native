@@ -10,11 +10,11 @@
 
 'use strict';
 
-const underTest = require('../generate-artifacts-executor');
 const fixtures = require('../__test_fixtures__/fixtures');
-const path = require('path');
-const fs = require('fs');
+const underTest = require('../generate-artifacts-executor');
 const child_process = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const codegenConfigKey = 'codegenConfig';
 const reactNativeDependencyName = 'react-native';
@@ -24,6 +24,12 @@ describe('generateCode', () => {
   afterEach(() => {
     jest.resetModules();
     jest.resetAllMocks();
+  });
+
+  beforeEach(() => {
+    // Silence logs from printDeprecationWarningIfNeeded. Ideally, we should have test assertions on these warnings.
+    jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(console, 'debug').mockImplementation();
   });
 
   it('executeNodes with the right arguments', () => {
@@ -62,7 +68,7 @@ describe('generateCode', () => {
     expect(child_process.execSync).toHaveBeenCalledTimes(1);
     expect(child_process.execSync).toHaveBeenNthCalledWith(
       1,
-      `cp -R ${tmpOutputDir}/* ${iosOutputDir}`,
+      `cp -R ${tmpOutputDir}/* "${iosOutputDir}"`,
     );
 
     expect(fs.mkdirSync).toHaveBeenCalledTimes(2);

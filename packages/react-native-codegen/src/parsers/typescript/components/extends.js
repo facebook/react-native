@@ -11,6 +11,7 @@
 'use strict';
 
 import type {TypeDeclarationMap} from '../../utils';
+
 const {parseTopLevelType} = require('../parseTopLevelType');
 
 function isEvent(typeAnnotation: $FlowFixMe): boolean {

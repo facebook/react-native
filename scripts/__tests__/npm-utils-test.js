@@ -9,13 +9,20 @@
 
 const {
   applyPackageVersions,
+  getNpmInfo,
   getPackageVersionStrByTag,
   publishPackage,
 } = require('../npm-utils');
 
 const execMock = jest.fn();
+const getCurrentCommitMock = jest.fn();
+
 jest.mock('shelljs', () => ({
   exec: execMock,
+}));
+
+jest.mock('./../scm-utils', () => ({
+  getCurrentCommit: getCurrentCommitMock,
 }));
 
 describe('npm-utils', () => {
@@ -102,6 +109,20 @@ describe('npm-utils', () => {
         'npm publish --tag latest --otp otp',
         {cwd: 'path/to/my-package'},
       );
+    });
+  });
+
+  describe('getNpmInfo', () => {
+    it('return the expected format for prealpha', () => {
+      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
+      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
+      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
+
+      const returnedValue = getNpmInfo('prealpha');
+      expect(returnedValue).toMatchObject({
+        version: `0.0.0-prealpha-2023100415`,
+        tag: 'prealpha',
+      });
     });
   });
 });

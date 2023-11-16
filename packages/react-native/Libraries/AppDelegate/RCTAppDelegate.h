@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
 @class RCTBridge;
@@ -50,7 +51,7 @@
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong) UIWindow *window;
@@ -100,8 +101,6 @@
  * By default, it assigns the rootView to the view property of the rootViewController
  * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
  * For example: UISplitViewController requires `setViewController(_:for:)`
- *
- * @return: void
  */
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
@@ -138,7 +137,7 @@
 - (BOOL)bridgelessEnabled;
 
 /// Return the bundle URL for the main bundle.
-- (NSURL *)getBundleURL;
+- (NSURL *)bundleURL;
 
 #endif
 

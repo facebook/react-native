@@ -20,7 +20,7 @@ using dynamic = folly::dynamic;
     try {                                                                     \
       statement;                                                              \
       FAIL() << "Expected JsArgumentException(" << (exstr) << ") not thrown"; \
-    } catch (const JsArgumentException &ex) {                                 \
+    } catch (const JsArgumentException& ex) {                                 \
       EXPECT_EQ(ex.what(), std::string(exstr));                               \
     }                                                                         \
   } while (0) // let any other exception escape, gtest will deal.
@@ -45,8 +45,8 @@ TEST(JsArgumentHelpersTest, args) {
   EXPECT_EQ(jsArgAsObject(args, 5), anObject);
 
   // const args
-  const folly::dynamic &cargs = args;
-  const folly::dynamic &a4 = jsArgAsArray(cargs, 4);
+  const folly::dynamic& cargs = args;
+  const folly::dynamic& a4 = jsArgAsArray(cargs, 4);
   EXPECT_EQ(a4, anArray);
   EXPECT_EQ(jsArgAsObject(cargs, 5), anObject);
 
@@ -85,7 +85,7 @@ TEST(JsArgumentHelpersTest, args) {
     jsArgAsInt(args, 3);
     FAIL() << "Expected JsArgumentException(" << exhead << "..." << extail
            << ") not thrown";
-  } catch (const JsArgumentException &ex) {
+  } catch (const JsArgumentException& ex) {
     const std::string exwhat = ex.what();
 
     EXPECT_GT(exwhat.size(), exhead.size());

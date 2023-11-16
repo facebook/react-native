@@ -17,14 +17,12 @@ import java.util.Map;
 public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final ReactInstanceManager mReactInstanceManager;
 
   private final Map<String, ModuleHolder> mModules = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
       ReactApplicationContext reactApplicationContext, ReactInstanceManager reactInstanceManager) {
     mReactApplicationContext = reactApplicationContext;
-    mReactInstanceManager = reactInstanceManager;
   }
 
   public void processPackage(ReactPackage reactPackage) {
@@ -34,13 +32,12 @@ public class NativeModuleRegistryBuilder {
     if (reactPackage instanceof LazyReactPackage) {
       moduleHolders =
           ((LazyReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
-    } else if (reactPackage instanceof TurboReactPackage) {
+    } else if (reactPackage instanceof BaseReactPackage) {
       moduleHolders =
-          ((TurboReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
+          ((BaseReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
     } else {
       moduleHolders =
-          ReactPackageHelper.getNativeModuleIterator(
-              reactPackage, mReactApplicationContext, mReactInstanceManager);
+          ReactPackageHelper.getNativeModuleIterator(reactPackage, mReactApplicationContext);
     }
 
     for (ModuleHolder moduleHolder : moduleHolders) {

@@ -26,9 +26,6 @@ interface ReactSurface {
   // Returns whether the surface is running or not
   val isRunning: Boolean
 
-  // Returns surface handler
-  val surfaceHandler: SurfaceHandler
-
   // Returns React root view of this surface
   val view: ViewGroup?
 
@@ -46,4 +43,7 @@ interface ReactSurface {
 
   // Clear surface
   fun clear()
+
+  // Detach surface from Host
+  fun detach()
 }

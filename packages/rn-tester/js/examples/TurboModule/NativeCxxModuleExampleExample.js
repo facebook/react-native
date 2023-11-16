@@ -10,21 +10,20 @@
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
-import {
-  DeviceEventEmitter,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  RootTagContext,
-} from 'react-native';
-import * as React from 'react';
 import NativeCxxModuleExample, {
   EnumInt,
   EnumNone,
 } from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
-
 import styles from './TurboModuleExampleCommon';
+import * as React from 'react';
+import {
+  DeviceEventEmitter,
+  FlatList,
+  RootTagContext,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 type State = {|
   testResults: {
@@ -78,6 +77,16 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.getValueWithCallback(callbackValue =>
         this._setResult('callback', callbackValue),
       ),
+    callbackWithSubscription: () => {
+      const subscription =
+        NativeCxxModuleExample?.setValueCallbackWithSubscription(
+          callbackValue =>
+            this._setResult('callbackWithSubscription', callbackValue),
+        );
+      if (subscription) {
+        subscription();
+      }
+    },
     getArray: () =>
       NativeCxxModuleExample?.getArray([
         {a: 1, b: 'foo'},

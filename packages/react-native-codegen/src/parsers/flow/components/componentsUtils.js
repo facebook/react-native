@@ -10,11 +10,13 @@
 
 'use strict';
 
-const {getValueFromTypes} = require('../utils.js');
-const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
-import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
 
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
+const {getValueFromTypes} = require('../utils.js');
+
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotationForArray<+T>(
   name: string,
   typeAnnotation: $FlowFixMe,
@@ -206,6 +208,7 @@ function flattenProperties(
     .filter(Boolean);
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function getTypeAnnotation<+T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,

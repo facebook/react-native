@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /** Helper for computing information about the view hierarchy */
-public class ViewHierarchyUtil {
+class ViewHierarchyUtil {
 
   /** Returns the view instance and depth of the deepest leaf view from the given root view. */
   public static Pair<View, Integer> getDeepestLeaf(View root) {

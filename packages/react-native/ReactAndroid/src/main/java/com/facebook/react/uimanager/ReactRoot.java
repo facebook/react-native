@@ -25,9 +25,6 @@ public interface ReactRoot {
   @Nullable
   Bundle getAppProperties();
 
-  @Nullable
-  String getInitialUITemplate();
-
   String getJSModuleName();
 
   /** Fabric or Default UI Manager, see {@link UIManagerType} */
@@ -42,7 +39,7 @@ public interface ReactRoot {
   void runApplication();
 
   /** Handler for stages {@link com.facebook.react.surface.ReactStage} */
-  void onStage(int stage);
+  void onStage(@ReactStage int stage);
 
   /** Return native view for root */
   ViewGroup getRootViewGroup();

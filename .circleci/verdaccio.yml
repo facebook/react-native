@@ -15,8 +15,8 @@ uplinks:
       maxSockets: 40
       maxFreeSockets: 10
 packages:
-  # Get @react-native/normalize-color from npm registry, since its used in deprecated-react-native-prop-types package
-  '@react-native/normalize-color':
+  # Get @react-native/normalize-colors from npm registry, since its used in deprecated-react-native-prop-types package
+  '@react-native/normalize-colors':
     access: $all
     publish: $authenticated
     proxy: npmjs

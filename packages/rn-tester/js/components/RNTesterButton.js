@@ -10,11 +10,10 @@
 
 'use strict';
 
-const React = require('react');
-
-const {Pressable, StyleSheet, Text} = require('react-native');
-
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
+const React = require('react');
+const {Pressable, StyleSheet, Text} = require('react-native');
 
 type Props = $ReadOnly<{|
   testID?: string,

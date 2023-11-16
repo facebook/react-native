@@ -19,7 +19,7 @@ namespace facebook::react {
 template <typename T>
 class AsyncPromise {
  public:
-  AsyncPromise(jsi::Runtime &rt, const std::shared_ptr<CallInvoker> &jsInvoker)
+  AsyncPromise(jsi::Runtime& rt, const std::shared_ptr<CallInvoker>& jsInvoker)
       : state_(std::make_shared<SharedState>()) {
     auto constructor = rt.global().getPropertyAsFunction(rt, "Promise");
 
@@ -61,7 +61,7 @@ class AsyncPromise {
     }
   }
 
-  jsi::Object get(jsi::Runtime &rt) const {
+  jsi::Object get(jsi::Runtime& rt) const {
     if (auto holder = state_->promiseHolder.lock()) {
       return jsi::Value(rt, holder->promise).asObject(rt);
     } else {
@@ -94,7 +94,7 @@ class AsyncPromise {
 
 template <typename T>
 struct Bridging<AsyncPromise<T>> {
-  static jsi::Object toJs(jsi::Runtime &rt, const AsyncPromise<T> &promise) {
+  static jsi::Object toJs(jsi::Runtime& rt, const AsyncPromise<T>& promise) {
     return promise.get(rt);
   }
 };

@@ -16,7 +16,6 @@ public class ReactModuleInfo {
   private final String mName;
   private final boolean mCanOverrideExistingModule;
   private final boolean mNeedsEagerInit;
-  private final boolean mHasConstants;
   private final boolean mIsCxxModule;
   private final String mClassName;
   private final boolean mIsTurboModule;
@@ -26,16 +25,30 @@ public class ReactModuleInfo {
       String className,
       boolean canOverrideExistingModule,
       boolean needsEagerInit,
-      boolean hasConstants,
       boolean isCxxModule,
       boolean isTurboModule) {
     mName = name;
     mClassName = className;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mNeedsEagerInit = needsEagerInit;
-    mHasConstants = hasConstants;
     mIsCxxModule = isCxxModule;
     mIsTurboModule = isTurboModule;
+  }
+
+  /**
+   * @deprecated use {@link ReactModuleInfo#ReactModuleInfo(String, String, boolean, boolean,
+   *     boolean, boolean)}
+   */
+  @Deprecated
+  public ReactModuleInfo(
+      String name,
+      String className,
+      boolean canOverrideExistingModule,
+      boolean needsEagerInit,
+      boolean hasConstants,
+      boolean isCxxModule,
+      boolean isTurboModule) {
+    this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule);
   }
 
   public String name() {
@@ -54,8 +67,10 @@ public class ReactModuleInfo {
     return mNeedsEagerInit;
   }
 
+  /** @deprecated this is hardcoded to return true, regardless if the module has constants or not */
+  @Deprecated
   public boolean hasConstants() {
-    return mHasConstants;
+    return true;
   }
 
   public boolean isCxxModule() {

@@ -9,13 +9,14 @@
  */
 
 'use strict';
-const {
-  parseTopLevelType,
-  flattenIntersectionType,
-} = require('../parseTopLevelType');
-const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
-import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
+import type {ASTNode, PropAST, TypeDeclarationMap} from '../../utils';
+
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
+const {
+  flattenIntersectionType,
+  parseTopLevelType,
+} = require('../parseTopLevelType');
 
 function getUnionOfLiterals(
   name: string,

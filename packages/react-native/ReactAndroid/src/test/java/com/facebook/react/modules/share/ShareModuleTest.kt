@@ -7,8 +7,8 @@
 
 package com.facebook.react.modules.share
 
-import android.app.Activity
 import android.content.Intent
+import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactTestHelper
@@ -23,19 +23,20 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
 
 @Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class ShareModuleTest {
 
-  private lateinit var activity: Activity
   private lateinit var shareModule: ShareModule
+  private lateinit var activityController: ActivityController<FragmentActivity>
 
   @Before
   fun prepareModules() {
-    activity = Robolectric.setupActivity(Activity::class.java)
-
+    activityController = Robolectric.buildActivity(FragmentActivity::class.java)
+    val activity = activityController.create().start().resume().get()
     val applicationContext = ReactTestHelper.createCatalystContextForTest()
     applicationContext.onNewIntent(activity, Intent())
     shareModule = ShareModule(applicationContext)

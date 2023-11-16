@@ -4,9 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
 export {default as createDevMiddleware} from './createDevMiddleware';
+
+export type {BrowserLauncher, LaunchedBrowser} from './types/BrowserLauncher';
+export type {EventReporter, ReportableEvent} from './types/EventReporter';
+
+export {default as unstable_InspectorProxy} from './inspector-proxy/InspectorProxy';
+export {default as unstable_Device} from './inspector-proxy/Device';

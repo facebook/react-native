@@ -25,6 +25,7 @@
 
 #include <cfenv>
 #include <cmath>
+#include <unordered_set>
 #include <vector>
 
 namespace facebook::react {
@@ -32,7 +33,7 @@ namespace facebook::react {
 constexpr static auto kReactFeatureFlagsJavaDescriptor =
     "com/facebook/react/config/ReactFeatureFlags";
 
-static bool getFeatureFlagValue(const char *name) {
+static bool getFeatureFlagValue(const char* name) {
   static const auto reactFeatureFlagsClass =
       jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
   const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
@@ -40,15 +41,15 @@ static bool getFeatureFlagValue(const char *name) {
 }
 
 FabricMountingManager::FabricMountingManager(
-    std::shared_ptr<const ReactNativeConfig> &config,
-    jni::global_ref<JFabricUIManager::javaobject> &javaUIManager)
+    std::shared_ptr<const ReactNativeConfig>& config,
+    jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
     : javaUIManager_(javaUIManager),
       reduceDeleteCreateMutation_(
           getFeatureFlagValue("reduceDeleteCreateMutation")) {}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
-  allocatedViewRegistry_.emplace(surfaceId, butter::set<Tag>{});
+  allocatedViewRegistry_.emplace(surfaceId, std::unordered_set<Tag>{});
 }
 
 void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
@@ -85,8 +86,8 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
 static inline void updateBufferSizes(
     CppMountItem::Type mountItemType,
     int numInstructions,
-    int &batchMountItemIntsSize,
-    int &batchMountItemObjectsSize) {
+    int& batchMountItemIntsSize,
+    int& batchMountItemObjectsSize) {
   if (numInstructions == 0) {
     return;
   }
@@ -109,20 +110,20 @@ static inline void updateBufferSizes(
 }
 
 static inline void computeBufferSizes(
-    int &batchMountItemIntsSize,
-    int &batchMountItemObjectsSize,
-    std::vector<CppMountItem> &cppCommonMountItems,
-    std::vector<CppMountItem> &cppDeleteMountItems,
-    std::vector<CppMountItem> &cppUpdatePropsMountItems,
-    std::vector<CppMountItem> &cppUpdateStateMountItems,
-    std::vector<CppMountItem> &cppUpdatePaddingMountItems,
-    std::vector<CppMountItem> &cppUpdateLayoutMountItems,
-    std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
+    int& batchMountItemIntsSize,
+    int& batchMountItemObjectsSize,
+    std::vector<CppMountItem>& cppCommonMountItems,
+    std::vector<CppMountItem>& cppDeleteMountItems,
+    std::vector<CppMountItem>& cppUpdatePropsMountItems,
+    std::vector<CppMountItem>& cppUpdateStateMountItems,
+    std::vector<CppMountItem>& cppUpdatePaddingMountItems,
+    std::vector<CppMountItem>& cppUpdateLayoutMountItems,
+    std::vector<CppMountItem>& cppUpdateOverflowInsetMountItems,
+    std::vector<CppMountItem>& cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
-  for (auto const &mountItem : cppCommonMountItems) {
-    const auto &mountItemType = mountItem.type;
+  for (const auto& mountItem : cppCommonMountItems) {
+    const auto& mountItemType = mountItem.type;
 
     if (lastType == mountItemType) {
       numSameType++;
@@ -182,9 +183,9 @@ static inline void computeBufferSizes(
 static inline void writeIntBufferTypePreamble(
     int mountItemType,
     int numItems,
-    _JNIEnv *env,
-    jintArray &intBufferArray,
-    int &intBufferPosition) {
+    _JNIEnv* env,
+    jintArray& intBufferArray,
+    int& intBufferPosition) {
   jint temp[2];
   if (numItems == 1) {
     temp[0] = mountItemType;
@@ -199,11 +200,11 @@ static inline void writeIntBufferTypePreamble(
 }
 
 // TODO: this method will be removed when binding for components are code-gen
-jni::local_ref<jstring> getPlatformComponentName(ShadowView const &shadowView) {
+jni::local_ref<jstring> getPlatformComponentName(const ShadowView& shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
   if (scrollViewComponentName == shadowView.componentName) {
-    const auto &newViewProps =
-        static_cast<const ScrollViewProps &>(*shadowView.props);
+    const auto& newViewProps =
+        static_cast<const ScrollViewProps&>(*shadowView.props);
     if (newViewProps.getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
       return jni::make_jstring("AndroidHorizontalScrollView");
     }
@@ -228,36 +229,23 @@ static inline float scale(Float value, Float pointScaleFactor) {
 }
 
 jni::local_ref<jobject> FabricMountingManager::getProps(
-    ShadowView const &oldShadowView,
-    ShadowView const &newShadowView) {
-  if (CoreFeatures::enableMapBuffer &&
-      newShadowView.traits.check(
-          ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported)) {
-    react_native_assert(
-        newShadowView.props->rawProps.empty() &&
-        "Raw props must be empty when views are using mapbuffer");
-
-    // MapBufferBuilder must be constructed and live in this scope,
-    MapBufferBuilder builder;
-    newShadowView.props->propsDiffMapBuffer(&*oldShadowView.props, builder);
-    return JReadableMapBuffer::createWithContents(builder.build());
-  } else {
-    return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
-  }
+    const ShadowView& oldShadowView,
+    const ShadowView& newShadowView) {
+  return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
 void FabricMountingManager::executeMount(
-    const MountingTransaction &transaction) {
+    const MountingTransaction& transaction) {
   SystraceSection section("FabricMountingManager::executeMount");
 
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+  std::scoped_lock lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
 
   auto env = jni::Environment::current();
 
   auto telemetry = transaction.getTelemetry();
   auto surfaceId = transaction.getSurfaceId();
-  auto &mutations = transaction.getMutations();
+  auto& mutations = transaction.getMutations();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -274,20 +262,26 @@ void FabricMountingManager::executeMount(
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
-    auto const &allocatedViewTags =
+    auto defaultAllocatedViews = std::unordered_set<Tag>{};
+    // Do not remove `defaultAllocatedViews` or initialize
+    // `std::unordered_set<Tag>{}` inline in below ternary expression - if falsy
+    // operand is a value type, the compiler will decide the expression to be a
+    // value type, an unnecessary (sometimes expensive) copy will happen as a
+    // result.
+    const auto& allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
-        : butter::set<Tag>{};
+        : defaultAllocatedViews;
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
 
-    for (const auto &mutation : mutations) {
-      const auto &parentShadowView = mutation.parentShadowView;
-      const auto &oldChildShadowView = mutation.oldChildShadowView;
-      const auto &newChildShadowView = mutation.newChildShadowView;
-      auto &mutationType = mutation.type;
-      auto &index = mutation.index;
+    for (const auto& mutation : mutations) {
+      const auto& parentShadowView = mutation.parentShadowView;
+      const auto& oldChildShadowView = mutation.oldChildShadowView;
+      const auto& newChildShadowView = mutation.newChildShadowView;
+      auto& mutationType = mutation.type;
+      auto& index = mutation.index;
 
       bool isVirtual = mutation.mutatedViewIsVirtual();
       switch (mutationType) {
@@ -305,7 +299,7 @@ void FabricMountingManager::executeMount(
             auto it = std::remove_if(
                 cppDeleteMountItems.begin(),
                 cppDeleteMountItems.end(),
-                [&](auto &deletedMountItem) -> bool {
+                [&](auto& deletedMountItem) -> bool {
                   return deletedMountItem.oldChildShadowView.tag ==
                       newChildShadowView.tag;
                 });
@@ -458,8 +452,8 @@ void FabricMountingManager::executeMount(
     }
 
     if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
-      auto &views = allocatedViewsIterator->second;
-      for (auto const &mutation : mutations) {
+      auto& views = allocatedViewsIterator->second;
+      for (const auto& mutation : mutations) {
         switch (mutation.type) {
           case ShadowViewMutation::Create:
             views.insert(mutation.newChildShadowView.tag);
@@ -506,7 +500,8 @@ void FabricMountingManager::executeMount(
                                           jlong,
                                           jlong,
                                           jlong,
-                                          jlong)>("scheduleMountItem");
+                                          jlong,
+                                          jint)>("scheduleMountItem");
 
   if (batchMountItemIntsSize == 0) {
     auto finishTransactionEndTime = telemetryTimePointNow();
@@ -521,7 +516,8 @@ void FabricMountingManager::executeMount(
         telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
         telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
         telemetryTimePointToMilliseconds(finishTransactionStartTime),
-        telemetryTimePointToMilliseconds(finishTransactionEndTime));
+        telemetryTimePointToMilliseconds(finishTransactionEndTime),
+        telemetry.getAffectedLayoutNodesCount());
     return;
   }
 
@@ -537,8 +533,8 @@ void FabricMountingManager::executeMount(
   int prevMountItemType = -1;
   jint temp[7];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
-    const auto &mountItem = cppCommonMountItems[i];
-    const auto &mountItemType = mountItem.type;
+    const auto& mountItem = cppCommonMountItems[i];
+    const auto& mountItemType = mountItem.type;
 
     // Get type here, and count forward how many items of this type are in a
     // row. Write preamble to any common type here.
@@ -576,7 +572,7 @@ void FabricMountingManager::executeMount(
       jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
       if (mountItem.newChildShadowView.state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
-        StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+        StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
         cStateWrapper->state_ = mountItem.newChildShadowView.state;
       }
 
@@ -623,7 +619,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdatePropsMountItems) {
+    for (const auto& mountItem : cppUpdatePropsMountItems) {
       temp[0] = mountItem.newChildShadowView.tag;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
@@ -639,7 +635,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdateStateMountItems) {
+    for (const auto& mountItem : cppUpdateStateMountItems) {
       temp[0] = mountItem.newChildShadowView.tag;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
@@ -651,7 +647,7 @@ void FabricMountingManager::executeMount(
       jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
       if (state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
-        StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+        StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
         cStateWrapper->state_ = state;
       }
 
@@ -667,7 +663,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdatePaddingMountItems) {
+    for (const auto& mountItem : cppUpdatePaddingMountItems) {
       auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto contentInsets = layoutMetrics.contentInsets;
@@ -694,7 +690,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdateLayoutMountItems) {
+    for (const auto& mountItem : cppUpdateLayoutMountItems) {
       auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
@@ -725,7 +721,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdateOverflowInsetMountItems) {
+    for (const auto& mountItem : cppUpdateOverflowInsetMountItems) {
       auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto overflowInset = layoutMetrics.overflowInset;
@@ -755,7 +751,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppUpdateEventEmitterMountItems) {
+    for (const auto& mountItem : cppUpdateEventEmitterMountItems) {
       temp[0] = mountItem.newChildShadowView.tag;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
@@ -780,7 +776,7 @@ void FabricMountingManager::executeMount(
         intBufferArray,
         intBufferPosition);
 
-    for (const auto &mountItem : cppDeleteMountItems) {
+    for (const auto& mountItem : cppDeleteMountItems) {
       temp[0] = mountItem.oldChildShadowView.tag;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
@@ -808,21 +804,22 @@ void FabricMountingManager::executeMount(
       telemetryTimePointToMilliseconds(telemetry.getLayoutStartTime()),
       telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
       telemetryTimePointToMilliseconds(finishTransactionStartTime),
-      telemetryTimePointToMilliseconds(finishTransactionEndTime));
+      telemetryTimePointToMilliseconds(finishTransactionEndTime),
+      telemetry.getAffectedLayoutNodesCount());
 
   env->DeleteLocalRef(intBufferArray);
 }
 
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
-    ShadowView const &shadowView) {
+    const ShadowView& shadowView) {
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
-    auto &allocatedViews = allocatedViewsIterator->second;
+    auto& allocatedViews = allocatedViewsIterator->second;
     if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
       return;
     }
@@ -843,7 +840,7 @@ void FabricMountingManager::preallocateShadowView(
   jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
   if (shadowView.state != nullptr) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
-    StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+    StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->state_ = shadowView.state;
   }
 
@@ -866,9 +863,9 @@ void FabricMountingManager::preallocateShadowView(
 }
 
 void FabricMountingManager::dispatchCommand(
-    ShadowView const &shadowView,
-    std::string const &commandName,
-    folly::dynamic const &args) {
+    const ShadowView& shadowView,
+    const std::string& commandName,
+    const folly::dynamic& args) {
   static auto dispatchCommand =
       JFabricUIManager::javaClassStatic()
           ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
@@ -885,8 +882,8 @@ void FabricMountingManager::dispatchCommand(
 }
 
 void FabricMountingManager::sendAccessibilityEvent(
-    ShadowView const &shadowView,
-    std::string const &eventType) {
+    const ShadowView& shadowView,
+    const std::string& eventType) {
   static auto sendAccessibilityEventFromJS =
       JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jstring)>(
           "sendAccessibilityEventFromJS");
@@ -897,7 +894,7 @@ void FabricMountingManager::sendAccessibilityEvent(
 }
 
 void FabricMountingManager::setIsJSResponder(
-    ShadowView const &shadowView,
+    const ShadowView& shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
   static auto setJSResponder =

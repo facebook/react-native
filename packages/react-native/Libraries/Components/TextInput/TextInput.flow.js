@@ -99,6 +99,9 @@ type DataDetectorTypesType =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -763,6 +766,11 @@ export type Props = $ReadOnly<{|
    * @platform ios
    */
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a touch is engaged.

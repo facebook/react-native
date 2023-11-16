@@ -11,6 +11,7 @@
 'use strict';
 
 import type {Pojo, PojoProperty, PojoTypeAnnotation} from './PojoCollector';
+
 const {capitalize} = require('../../Utils');
 
 type ImportCollector = ($import: string) => void;

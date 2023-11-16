@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <yoga/YGStyle.h>
+#include <yoga/style/Style.h>
 
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,29 +16,28 @@
 namespace facebook::react {
 
 class YogaStylableProps : public Props {
-  using CompactValue = facebook::yoga::detail::CompactValue;
+  using CompactValue = facebook::yoga::CompactValue;
 
  public:
   YogaStylableProps() = default;
   YogaStylableProps(
-      const PropsParserContext &context,
-      YogaStylableProps const &sourceProps,
-      RawProps const &rawProps,
-      bool shouldSetRawProps = true);
+      const PropsParserContext& context,
+      const YogaStylableProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #ifdef ANDROID
-  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
       const override;
 #endif
 
 #pragma mark - Props
-  YGStyle yogaStyle{};
+  yoga::Style yogaStyle{};
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"
@@ -80,9 +79,9 @@ class YogaStylableProps : public Props {
 
  private:
   void convertRawPropAliases(
-      const PropsParserContext &context,
-      YogaStylableProps const &sourceProps,
-      RawProps const &rawProps);
+      const PropsParserContext& context,
+      const YogaStylableProps& sourceProps,
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react

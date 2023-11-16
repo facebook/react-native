@@ -17,22 +17,22 @@ IntersectionObserverManager::IntersectionObserverManager() = default;
 
 void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
-    const ShadowNode::Shared &shadowNode,
+    const ShadowNode::Shared& shadowNode,
     std::vector<Float> thresholds,
-    UIManager const &uiManager) {
+    const UIManager& uiManager) {
   SystraceSection s("IntersectionObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
 
   // The actual observer lives in the array, so we need to create it there and
   // then get a reference. Otherwise we only update its state in a copy.
-  IntersectionObserver *observer;
+  IntersectionObserver* observer;
 
   // Register observer
   {
     std::unique_lock lock(observersMutex_);
 
-    auto &observers = observersBySurfaceId_[surfaceId];
+    auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(IntersectionObserver{
         intersectionObserverId, shadowNode, std::move(thresholds)});
     observer = &observers.back();
@@ -42,10 +42,10 @@ void IntersectionObserverManager::observe(
   // Ideally, we'd have well defined event loop step to notify observers
   // (like on the Web) and we'd send the initial notification there, but as
   // we don't have it we have to run this check once and manually dispatch.
-  auto &shadowTreeRegistry = uiManager.getShadowTreeRegistry();
+  auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
   MountingCoordinator::Shared mountingCoordinator = nullptr;
   RootShadowNode::Shared rootShadowNode = nullptr;
-  shadowTreeRegistry.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+  shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     mountingCoordinator = shadowTree.getMountingCoordinator();
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
@@ -67,39 +67,55 @@ void IntersectionObserverManager::observe(
 
 void IntersectionObserverManager::unobserve(
     IntersectionObserverObserverId intersectionObserverId,
-    ShadowNode const &shadowNode) {
+    const ShadowNode& shadowNode) {
   SystraceSection s("IntersectionObserverManager::unobserve");
 
-  std::unique_lock lock(observersMutex_);
+  {
+    std::unique_lock lock(observersMutex_);
 
-  auto surfaceId = shadowNode.getSurfaceId();
+    auto surfaceId = shadowNode.getSurfaceId();
 
-  auto observersIt = observersBySurfaceId_.find(surfaceId);
-  if (observersIt == observersBySurfaceId_.end()) {
-    return;
+    auto observersIt = observersBySurfaceId_.find(surfaceId);
+    if (observersIt == observersBySurfaceId_.end()) {
+      return;
+    }
+
+    auto& observers = observersIt->second;
+
+    observers.erase(
+        std::remove_if(
+            observers.begin(),
+            observers.end(),
+            [intersectionObserverId, &shadowNode](const auto& observer) {
+              return observer.getIntersectionObserverId() ==
+                  intersectionObserverId &&
+                  ShadowNode::sameFamily(
+                         observer.getTargetShadowNode(), shadowNode);
+            }),
+        observers.end());
+
+    if (observers.empty()) {
+      observersBySurfaceId_.erase(surfaceId);
+    }
   }
 
-  auto &observers = observersIt->second;
+  {
+    std::unique_lock lock(pendingEntriesMutex_);
 
-  observers.erase(
-      std::remove_if(
-          observers.begin(),
-          observers.end(),
-          [intersectionObserverId, &shadowNode](auto const &observer) {
-            return observer.getIntersectionObserverId() ==
-                intersectionObserverId &&
-                ShadowNode::sameFamily(
-                       observer.getTargetShadowNode(), shadowNode);
-          }),
-      observers.end());
-
-  if (observers.empty()) {
-    observersBySurfaceId_.erase(surfaceId);
+    pendingEntries_.erase(
+        std::remove_if(
+            pendingEntries_.begin(),
+            pendingEntries_.end(),
+            [intersectionObserverId, &shadowNode](const auto& entry) {
+              return entry.intersectionObserverId == intersectionObserverId &&
+                  ShadowNode::sameFamily(*entry.shadowNode, shadowNode);
+            }),
+        pendingEntries_.end());
   }
 }
 
 void IntersectionObserverManager::connect(
-    UIManager &uiManager,
+    UIManager& uiManager,
     std::function<void()> notifyIntersectionObserversCallback) {
   SystraceSection s("IntersectionObserverManager::connect");
   notifyIntersectionObserversCallback_ =
@@ -114,7 +130,7 @@ void IntersectionObserverManager::connect(
   mountHookRegistered_ = true;
 }
 
-void IntersectionObserverManager::disconnect(UIManager &uiManager) {
+void IntersectionObserverManager::disconnect(UIManager& uiManager) {
   SystraceSection s("IntersectionObserverManager::disconnect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
@@ -139,13 +155,13 @@ IntersectionObserverManager::takeRecords() {
 }
 
 void IntersectionObserverManager::shadowTreeDidMount(
-    RootShadowNode::Shared const &rootShadowNode,
+    const RootShadowNode::Shared& rootShadowNode,
     double mountTime) noexcept {
   updateIntersectionObservations(*rootShadowNode, mountTime);
 }
 
 void IntersectionObserverManager::updateIntersectionObservations(
-    RootShadowNode const &rootShadowNode,
+    const RootShadowNode& rootShadowNode,
     double mountTime) {
   SystraceSection s(
       "IntersectionObserverManager::updateIntersectionObservations");
@@ -163,8 +179,8 @@ void IntersectionObserverManager::updateIntersectionObservations(
       return;
     }
 
-    auto &observers = observersIt->second;
-    for (auto &observer : observers) {
+    auto& observers = observersIt->second;
+    for (auto& observer : observers) {
       auto entry =
           observer.updateIntersectionObservation(rootShadowNode, mountTime);
       if (entry) {

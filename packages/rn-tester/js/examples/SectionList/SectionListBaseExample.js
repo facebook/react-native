@@ -8,16 +8,15 @@
  * @format
  */
 
+import * as React from 'react';
 import {
-  Pressable,
   Button,
+  Pressable,
   SectionList,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-
-import * as React from 'react';
 
 const DATA = [
   {

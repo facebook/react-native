@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2021.07.22.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
+folly_version = '2023.08.07.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
@@ -29,12 +29,14 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => min_ios_version_supported }
+  s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "jserrorhandler"
   s.source_files           = "JsErrorHandler.{cpp,h}"
-  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"", "USE_HEADERMAP" => "YES",
-  "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+  s.pod_target_xcconfig = {
+    "USE_HEADERMAP" => "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+  }
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
@@ -43,7 +45,8 @@ Pod::Spec.new do |s|
   end
 
   s.dependency folly_dep_name, folly_version
-  s.dependency "React-jsi", version
-  s.dependency "React-Mapbuffer"
+  s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-Mapbuffer")
 
 end

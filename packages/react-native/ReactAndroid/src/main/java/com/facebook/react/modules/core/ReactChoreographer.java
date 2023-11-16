@@ -7,20 +7,21 @@
 
 package com.facebook.react.modules.core;
 
-import androidx.annotation.GuardedBy;
+import android.view.Choreographer;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.ChoreographerProvider;
 import java.util.ArrayDeque;
 
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks are
- * executed within a given frame. The main difference is that we enforce this is accessed from the
- * UI thread: this is because this ordering cannot be guaranteed across multiple threads.
+ * executed within a given frame. The wrapped Choreographer instance will always be the main thread
+ * one and the API's are safe to use from any thread.
  */
-public class ReactChoreographer {
+public final class ReactChoreographer {
 
   public enum CallbackType {
 
@@ -55,9 +56,9 @@ public class ReactChoreographer {
 
   private static ReactChoreographer sInstance;
 
-  public static void initialize() {
+  public static void initialize(ChoreographerProvider choreographerProvider) {
     if (sInstance == null) {
-      sInstance = new ReactChoreographer();
+      sInstance = new ReactChoreographer(choreographerProvider);
     }
   }
 
@@ -66,38 +67,65 @@ public class ReactChoreographer {
     return sInstance;
   }
 
-  // This needs to be volatile due to double checked locking issue - https://fburl.com/z409owpf
-  private @Nullable volatile ChoreographerCompat mChoreographer;
-  private final ReactChoreographerDispatcher mReactChoreographerDispatcher;
-  private final Object mCallbackQueuesLock = new Object();
+  private @Nullable ChoreographerProvider.Choreographer mChoreographer;
 
-  @GuardedBy("mCallbackQueuesLock")
-  private final ArrayDeque<ChoreographerCompat.FrameCallback>[] mCallbackQueues;
+  private final ArrayDeque<Choreographer.FrameCallback>[] mCallbackQueues;
+
+  private final Choreographer.FrameCallback mFrameCallback =
+      new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+          synchronized (mCallbackQueues) {
+            // Callbacks run once and are then automatically removed, the callback will
+            // be posted again from postFrameCallback
+            mHasPostedCallback = false;
+
+            for (int i = 0; i < mCallbackQueues.length; i++) {
+              ArrayDeque<Choreographer.FrameCallback> callbackQueue = mCallbackQueues[i];
+              int initialLength = callbackQueue.size();
+              for (int callback = 0; callback < initialLength; callback++) {
+                Choreographer.FrameCallback frameCallback = callbackQueue.pollFirst();
+                if (frameCallback != null) {
+                  frameCallback.doFrame(frameTimeNanos);
+                  mTotalCallbacks--;
+                } else {
+                  FLog.e(ReactConstants.TAG, "Tried to execute non-existent frame callback");
+                }
+              }
+            }
+            maybeRemoveFrameCallback();
+          }
+        }
+      };
 
   private int mTotalCallbacks = 0;
   private boolean mHasPostedCallback = false;
 
-  private ReactChoreographer() {
-    mReactChoreographerDispatcher = new ReactChoreographerDispatcher();
+  private ReactChoreographer(ChoreographerProvider choreographerProvider) {
     mCallbackQueues = new ArrayDeque[CallbackType.values().length];
     for (int i = 0; i < mCallbackQueues.length; i++) {
       mCallbackQueues[i] = new ArrayDeque<>();
     }
-    initializeChoreographer(null);
+
+    UiThreadUtil.runOnUiThread(
+        () -> {
+          mChoreographer = choreographerProvider.getChoreographer();
+        });
   }
 
-  public void postFrameCallback(
-      CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
-    synchronized (mCallbackQueuesLock) {
+  public void postFrameCallback(CallbackType type, Choreographer.FrameCallback frameCallback) {
+    synchronized (mCallbackQueues) {
       mCallbackQueues[type.getOrder()].addLast(frameCallback);
       mTotalCallbacks++;
       Assertions.assertCondition(mTotalCallbacks > 0);
+
       if (!mHasPostedCallback) {
         if (mChoreographer == null) {
-          initializeChoreographer(
-              new Runnable() {
-                @Override
-                public void run() {
+          // Schedule on the main thread, at which point the constructor's async work will have
+          // completed
+          UiThreadUtil.runOnUiThread(
+              () -> {
+                synchronized (mCallbackQueues) {
                   postFrameCallbackOnChoreographer();
                 }
               });
@@ -110,33 +138,15 @@ public class ReactChoreographer {
 
   /**
    * This method writes on mHasPostedCallback and it should be called from another method that has
-   * the lock mCallbackQueuesLock
+   * the lock mCallbackQueues
    */
   private void postFrameCallbackOnChoreographer() {
-    mChoreographer.postFrameCallback(mReactChoreographerDispatcher);
+    mChoreographer.postFrameCallback(mFrameCallback);
     mHasPostedCallback = true;
   }
 
-  public void initializeChoreographer(@Nullable final Runnable runnable) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            synchronized (ReactChoreographer.class) {
-              if (mChoreographer == null) {
-                mChoreographer = ChoreographerCompat.getInstance();
-              }
-            }
-            if (runnable != null) {
-              runnable.run();
-            }
-          }
-        });
-  }
-
-  public void removeFrameCallback(
-      CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
-    synchronized (mCallbackQueuesLock) {
+  public void removeFrameCallback(CallbackType type, Choreographer.FrameCallback frameCallback) {
+    synchronized (mCallbackQueues) {
       if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
         mTotalCallbacks--;
         maybeRemoveFrameCallback();
@@ -148,39 +158,15 @@ public class ReactChoreographer {
 
   /**
    * This method reads and writes on mHasPostedCallback and it should be called from another method
-   * that already has the lock mCallbackQueuesLock.
+   * that already has the lock on mCallbackQueues.
    */
   private void maybeRemoveFrameCallback() {
     Assertions.assertCondition(mTotalCallbacks >= 0);
     if (mTotalCallbacks == 0 && mHasPostedCallback) {
       if (mChoreographer != null) {
-        mChoreographer.removeFrameCallback(mReactChoreographerDispatcher);
+        mChoreographer.removeFrameCallback(mFrameCallback);
       }
       mHasPostedCallback = false;
-    }
-  }
-
-  private class ReactChoreographerDispatcher extends ChoreographerCompat.FrameCallback {
-
-    @Override
-    public void doFrame(long frameTimeNanos) {
-      synchronized (mCallbackQueuesLock) {
-        mHasPostedCallback = false;
-        for (int i = 0; i < mCallbackQueues.length; i++) {
-          ArrayDeque<ChoreographerCompat.FrameCallback> callbackQueue = mCallbackQueues[i];
-          int initialLength = callbackQueue.size();
-          for (int callback = 0; callback < initialLength; callback++) {
-            ChoreographerCompat.FrameCallback frameCallback = callbackQueue.pollFirst();
-            if (frameCallback != null) {
-              frameCallback.doFrame(frameTimeNanos);
-              mTotalCallbacks--;
-            } else {
-              FLog.e(ReactConstants.TAG, "Tried to execute non-existent frame callback");
-            }
-          }
-        }
-        maybeRemoveFrameCallback();
-      }
     }
   }
 }

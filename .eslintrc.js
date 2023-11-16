@@ -35,6 +35,23 @@ module.exports = {
       },
     },
     {
+      files: ['*.js', '*.js.flow'],
+      excludedFiles: ['packages/react-native/template/**/*'],
+      rules: {
+        'lint/sort-imports': 1,
+      },
+    },
+    {
+      files: ['package.json'],
+      parser: 'jsonc-eslint-parser',
+    },
+    {
+      files: ['package.json'],
+      rules: {
+        'lint/react-native-manifest': 2,
+      },
+    },
+    {
       files: ['flow-typed/**/*.js'],
       rules: {
         'lint/valid-flow-typed-signature': 2,
@@ -50,7 +67,6 @@ module.exports = {
         'lint/no-haste-imports': 2,
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
-        'lint/sort-imports': 1,
       },
     },
     {

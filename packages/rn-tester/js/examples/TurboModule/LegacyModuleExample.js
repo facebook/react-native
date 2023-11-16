@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('react');
 const {
   default: SampleLegacyModuleExample,
 } = require('./SampleLegacyModuleExample');
+const React = require('react');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'Legacy Native Module';

@@ -13,7 +13,7 @@ yarn install
 
 ### Running on iOS
 
-If you are testing non-fabric component, modify [the fabric_enabled flag in RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile#L24).
+If you are testing non-fabric component, search for and modify the `fabric_enabled` flag in [RNTester's Podfile](https://github.com/facebook/react-native/blob/main/packages/rn-tester/Podfile).
 
 ```ruby
 fabric_enabled = false

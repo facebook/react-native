@@ -20,7 +20,7 @@ module.exports = {
   setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
-    legacyFakeTimers: true,
+    legacyFakeTimers: false,
   },
   snapshotFormat: {
     escapeString: true,
@@ -31,6 +31,7 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/rn-tester/e2e',
   ],

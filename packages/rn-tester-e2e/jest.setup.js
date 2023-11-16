@@ -8,9 +8,10 @@
  * @format
  */
 
-const wdio = require('webdriverio');
 import capabilities from './e2e-config.js';
-import {beforeEach, afterEach, jest} from '@jest/globals';
+import {afterEach, beforeEach, jest} from '@jest/globals';
+
+const wdio = require('webdriverio');
 jest.retryTimes(3);
 
 let driver: any;
@@ -20,19 +21,30 @@ const config = {
   host: 'localhost',
   port: 4723,
   waitforTimeout: 60000,
-  logLevel: 'error',
   capabilities: {
     ...capabilities,
   },
 };
 
 beforeEach(async () => {
+  // $FlowFixMe
+  let testName: any = expect.getState().currentTestName;
+  console.info(
+    '------------------------------------------------------------ Test is starting... ------------------------------------------------------------',
+  );
+  console.info(
+    '------------------------------ Test name: ' +
+      testName +
+      ' ------------------------------',
+  );
   driver = await wdio.remote(config);
 });
 
 afterEach(async () => {
-  console.info('[afterAll] Done with testing!');
   await driver.deleteSession();
+  console.info(
+    '------------------------------------------------------------ Done with testing. ------------------------------------------------------------',
+  );
 });
 
 export {driver};

@@ -8,9 +8,10 @@
  * @flow
  */
 
+import Platform from 'react-native/Libraries/Utilities/Platform';
+
 const React = require('react');
 const ReactNative = require('react-native');
-import Platform from 'react-native/Libraries/Utilities/Platform';
 const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {

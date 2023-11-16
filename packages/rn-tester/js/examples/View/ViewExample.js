@@ -11,13 +11,14 @@
 'use strict';
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  Platform,
 } from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<
@@ -340,6 +341,51 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
       </View>
     );
   }
+}
+
+function LayoutConformanceExample(): React.Node {
+  return (
+    <View style={{flexDirection: 'row', gap: 10}}>
+      <View>
+        <Text>Unset</Text>
+        <LayoutConformanceBox />
+      </View>
+      <View experimental_layoutConformance="classic">
+        <Text>Classic</Text>
+        <LayoutConformanceBox />
+      </View>
+      <View experimental_layoutConformance="strict">
+        <Text>Strict</Text>
+        <LayoutConformanceBox />
+      </View>
+    </View>
+  );
+}
+
+function LayoutConformanceBox(): React.Node {
+  return (
+    <View
+      style={{
+        backgroundColor: 'blue',
+        width: 100,
+        height: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <View
+          style={{
+            height: 50,
+            backgroundColor: 'red',
+            flexGrow: 1,
+          }}
+        />
+      </View>
+    </View>
+  );
 }
 
 export default ({
@@ -846,6 +892,11 @@ export default ({
           </View>
         );
       },
+    },
+    {
+      title: 'Layout conformance',
+      name: 'layout-conformance',
+      render: LayoutConformanceExample,
     },
   ],
 }: RNTesterModule);

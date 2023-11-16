@@ -7,24 +7,24 @@
  * @format
  */
 
+const alignPackageVersions = require('../align-package-versions');
+const checkForGitChanges = require('../check-for-git-changes');
+const {
+  COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
+  COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
+  GENERIC_COMMIT_MESSAGE,
+  NO_COMMIT_CHOICE,
+  PUBLISH_PACKAGES_TAG,
+} = require('../constants');
+const forEachPackage = require('../for-each-package');
+const bumpPackageVersion = require('./bump-package-version');
+const detectPackageUnreleasedChanges = require('./bump-utils');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
-
-const alignPackageVersions = require('../align-package-versions');
-const {
-  PUBLISH_PACKAGES_TAG,
-  GENERIC_COMMIT_MESSAGE,
-  NO_COMMIT_CHOICE,
-  COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
-  COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
-} = require('../constants');
-const forEachPackage = require('../for-each-package');
-const checkForGitChanges = require('../check-for-git-changes');
-const bumpPackageVersion = require('./bump-package-version');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..', '..');
 
@@ -62,34 +62,15 @@ const buildExecutor =
       return;
     }
 
-    const hashOfLastCommitInsidePackage = exec(
-      `git log -n 1 --format=format:%H -- ${packageRelativePathFromRoot}`,
-      {cwd: ROOT_LOCATION, silent: true},
-    ).stdout.trim();
-
-    const hashOfLastCommitThatChangedVersion = exec(
-      `git log -G\\"version\\": --format=format:%H -n 1 -- ${packageRelativePathFromRoot}/package.json`,
-      {cwd: ROOT_LOCATION, silent: true},
-    ).stdout.trim();
-
-    if (hashOfLastCommitInsidePackage === hashOfLastCommitThatChangedVersion) {
-      echo(
-        `\uD83D\uDD0E No changes for package ${chalk.green(
-          packageName,
-        )} since last version bump`,
-      );
-
+    if (
+      !detectPackageUnreleasedChanges(
+        packageRelativePathFromRoot,
+        packageName,
+        ROOT_LOCATION,
+      )
+    ) {
       return;
     }
-
-    echo(`\uD83D\uDCA1 Found changes for ${chalk.yellow(packageName)}:`);
-    exec(
-      `git log --pretty=oneline ${hashOfLastCommitThatChangedVersion}..${hashOfLastCommitInsidePackage} ${packageRelativePathFromRoot}`,
-      {
-        cwd: ROOT_LOCATION,
-      },
-    );
-    echo();
 
     await inquirer
       .prompt([

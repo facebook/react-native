@@ -13,43 +13,39 @@
 
 namespace facebook::react {
 
-char const ViewComponentName[] = "View";
+const char ViewComponentName[] = "View";
 
 ViewShadowNodeProps::ViewShadowNodeProps(
-    PropsParserContext const &context,
-    ViewShadowNodeProps const &sourceProps,
-    RawProps const &rawProps)
-    : ViewProps(
-          context,
-          sourceProps,
-          rawProps,
-          !CoreFeatures::enableMapBuffer){};
+    const PropsParserContext& context,
+    const ViewShadowNodeProps& sourceProps,
+    const RawProps& rawProps)
+    : ViewProps(context, sourceProps, rawProps){};
 
 ViewShadowNode::ViewShadowNode(
-    ShadowNodeFragment const &fragment,
-    ShadowNodeFamily::Shared const &family,
+    const ShadowNodeFragment& fragment,
+    const ShadowNodeFamily::Shared& family,
     ShadowNodeTraits traits)
     : ConcreteViewShadowNode(fragment, family, traits) {
   initialize();
 }
 
 ViewShadowNode::ViewShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
+    const ShadowNode& sourceShadowNode,
+    const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   initialize();
 }
 
 void ViewShadowNode::initialize() noexcept {
-  auto &viewProps = static_cast<ViewProps const &>(*props_);
+  auto& viewProps = static_cast<const ViewProps&>(*props_);
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
       (viewProps.zIndex.has_value() &&
-       viewProps.yogaStyle.positionType() != YGPositionTypeStatic) ||
-      viewProps.yogaStyle.display() == YGDisplayNone ||
+       viewProps.yogaStyle.positionType() != yoga::PositionType::Static) ||
+      viewProps.yogaStyle.display() == yoga::Display::None ||
       viewProps.getClipsContentToBounds() || viewProps.events.bits.any() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
@@ -60,7 +56,7 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !(viewProps.yogaStyle.border() == yoga::Style::Edges{}) ||
       !viewProps.testId.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 

@@ -8,17 +8,18 @@
  * @format
  */
 
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
-  Float,
-  Double,
-  Int32,
   BubblingEventHandler,
+  Double,
+  Float,
+  Int32,
 } from 'react-native/Libraries/Types/CodegenTypes';
+
 import * as React from 'react';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type Event = $ReadOnly<{
   values: $ReadOnlyArray<Int32>,

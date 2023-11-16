@@ -43,7 +43,7 @@ StateWrapperImpl::getStateMapBufferDataImpl() {
   }
 }
 
-void StateWrapperImpl::updateStateImpl(NativeMap *map) {
+void StateWrapperImpl::updateStateImpl(NativeMap* map) {
   if (auto state = state_.lock()) {
     // Get folly::dynamic from map
     auto dynamicMap = map->consume();

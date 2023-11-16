@@ -12,10 +12,10 @@
 
 import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
 
-const React = require('react');
-
 import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
-const {AppState, Text, View, Platform} = require('react-native');
+
+const React = require('react');
+const {AppState, Platform, Text, View} = require('react-native');
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,

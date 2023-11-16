@@ -19,11 +19,13 @@ pushd destroot/Library/Frameworks > /dev/null || exit 1
 
 echo '' > dummy.c
 
-mkdir -p macosx/hermes.framework
-clang dummy.c -dynamiclib -o macosx/hermes.framework/hermes
+platforms=( "macosx" "ios" ) # Add other platforms here if needed
 
-mkdir -p ios/hermes.framework
-clang dummy.c -dynamiclib -o ios/hermes.framework/hermes
+for platform in "${platforms[@]}" 
+do 
+    mkdir -p "${platform}/hermes.framework"
+    clang dummy.c -dynamiclib -o "${platform}/hermes.framework/hermes"
+done
 
 rm dummy.c
 

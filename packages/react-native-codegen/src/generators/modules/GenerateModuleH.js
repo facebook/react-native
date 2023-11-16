@@ -9,30 +9,31 @@
  */
 
 'use strict';
-
 import type {
-  Nullable,
-  SchemaType,
-  NativeModuleTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModulePropertyShape,
+  NamedShape,
+  NativeModuleBaseTypeAnnotation,
+} from '../../CodegenSchema';
+import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModulePropertyShape,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
 
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {getEnumName, toSafeCppString} = require('../Utils');
-
+const {indent} = require('../Utils');
 const {
   createAliasResolver,
-  getModules,
   getAreEnumMembersInteger,
+  getModules,
 } = require('./Utils');
-const {indent} = require('../Utils');
-const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -79,7 +80,7 @@ public:
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public ${hasteModuleName}CxxSpecJSI {
@@ -219,6 +220,18 @@ function createStructsString(
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
 ): string {
+  const getCppType = (
+    v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
+  ) =>
+    translatePrimitiveJSTypeToCpp(
+      moduleName,
+      v.typeAnnotation,
+      false,
+      typeName => `Unsupported type for param "${v.name}". Found: ${typeName}`,
+      resolveAlias,
+      enumMap,
+    );
+
   return Object.keys(aliasMap)
     .map(alias => {
       const value = aliasMap[alias];
@@ -227,28 +240,22 @@ function createStructsString(
       }
       const structName = `${moduleName}Base${alias}`;
       const templateParameterWithTypename = value.properties
-        .map((v, i) => 'typename P' + i)
+        .map((v, i) => `typename P${i}`)
         .join(', ');
       const templateParameter = value.properties
         .map((v, i) => 'P' + i)
         .join(', ');
-      const paramemterConversion = value.properties
-        .map((v, i) => {
-          const translatedParam = translatePrimitiveJSTypeToCpp(
-            moduleName,
-            v.typeAnnotation,
-            false,
-            typeName =>
-              `Unsupported type for param "${v.name}". Found: ${typeName}`,
-            resolveAlias,
-            enumMap,
-          );
-          return `  static ${translatedParam} ${v.name}ToJs(jsi::Runtime &rt, P${i} value) {
+      const debugParameterConversion = value.properties
+        .map(
+          (v, i) => `  static ${getCppType(v)} ${
+            v.name
+          }ToJs(jsi::Runtime &rt, P${i} value) {
     return bridging::toJs(rt, value);
-  }`;
-        })
-        .join('\n');
-      return `#pragma mark - ${structName}
+  }`,
+        )
+        .join('\n\n');
+      return `
+#pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
 struct ${structName} {
@@ -277,28 +284,28 @@ ${value.properties
   }
 
 #ifdef DEBUG
-${paramemterConversion}
+${debugParameterConversion}
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const ${structName}<${templateParameter}> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-      ${value.properties
-        .map((v, i) => {
-          if (v.optional) {
-            return `    if (value.${v.name}) {
-            result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
-          }`;
-          } else {
-            return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
-          }
-        })
-        .join('\n')}
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const ${structName}<${templateParameter}> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+${value.properties
+  .map((v, i) => {
+    if (v.optional) {
+      return `    if (value.${v.name}) {
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+    }`;
+    } else {
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+    }
+  })
+  .join('\n')}
+    return result;
+  }
+};
 
 `;
     })

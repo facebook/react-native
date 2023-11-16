@@ -12,7 +12,7 @@
 using namespace facebook::react;
 
 void RCTMountingTransactionObserverCoordinator::registerViewComponentDescriptor(
-    RCTComponentViewDescriptor const &componentViewDescriptor,
+    const RCTComponentViewDescriptor &componentViewDescriptor,
     SurfaceId surfaceId)
 {
   if (!componentViewDescriptor.observesMountingTransactionWillMount &&
@@ -26,7 +26,7 @@ void RCTMountingTransactionObserverCoordinator::registerViewComponentDescriptor(
 }
 
 void RCTMountingTransactionObserverCoordinator::unregisterViewComponentDescriptor(
-    RCTComponentViewDescriptor const &componentViewDescriptor,
+    const RCTComponentViewDescriptor &componentViewDescriptor,
     SurfaceId surfaceId)
 {
   if (!componentViewDescriptor.observesMountingTransactionWillMount &&
@@ -40,8 +40,8 @@ void RCTMountingTransactionObserverCoordinator::unregisterViewComponentDescripto
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionWillMount(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry) const
+    const MountingTransaction &transaction,
+    const SurfaceTelemetry &surfaceTelemetry) const
 {
   auto surfaceId = transaction.getSurfaceId();
   auto surfaceRegistryIterator = registry_.find(surfaceId);
@@ -49,7 +49,7 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
     return;
   }
   auto &surfaceRegistry = surfaceRegistryIterator->second;
-  for (auto const &componentViewDescriptor : surfaceRegistry) {
+  for (const auto &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionWillMount) {
       [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view mountingTransactionWillMount:transaction
                                                                                  withSurfaceTelemetry:surfaceTelemetry];
@@ -58,8 +58,8 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
 }
 
 void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransactionDidMount(
-    MountingTransaction const &transaction,
-    SurfaceTelemetry const &surfaceTelemetry) const
+    const MountingTransaction &transaction,
+    const SurfaceTelemetry &surfaceTelemetry) const
 {
   auto surfaceId = transaction.getSurfaceId();
   auto surfaceRegistryIterator = registry_.find(surfaceId);
@@ -67,7 +67,7 @@ void RCTMountingTransactionObserverCoordinator::notifyObserversMountingTransacti
     return;
   }
   auto &surfaceRegistry = surfaceRegistryIterator->second;
-  for (auto const &componentViewDescriptor : surfaceRegistry) {
+  for (const auto &componentViewDescriptor : surfaceRegistry) {
     if (componentViewDescriptor.observesMountingTransactionDidMount) {
       [(id<RCTMountingTransactionObserving>)componentViewDescriptor.view mountingTransactionDidMount:transaction
                                                                                 withSurfaceTelemetry:surfaceTelemetry];

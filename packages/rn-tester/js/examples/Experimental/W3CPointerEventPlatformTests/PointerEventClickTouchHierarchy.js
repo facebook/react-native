@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
+import type {EventOccurrence} from './PointerEventSupport';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
+import {EventTracker} from './PointerEventSupport';
+import {mkEvent} from './PointerEventSupport';
 import * as React from 'react';
 import {useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {EventTracker} from './PointerEventSupport';
-import type {EventOccurrence} from './PointerEventSupport';
-import {mkEvent} from './PointerEventSupport';
 
 const eventsToTrack = ['onClick', 'onPointerDown', 'onPointerUp'];
 

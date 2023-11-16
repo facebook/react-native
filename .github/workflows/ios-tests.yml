@@ -1,0 +1,41 @@
+name: ios-tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  test_ios_rntester-Hermes:
+    runs-on: macos-latest-large
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Yarn Install
+        run: yarn install
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '3.2'
+      - name: Cache cocoapods
+        uses: actions/cache@v3
+        with:
+          path: packages/rn-tester/Pods
+          key: ${{ runner.os }}-RNTesterPods-${{ hashFiles('packages/rn-tester/Podfile.lock') }}-${{ hashFiles('packages/rn-tester/Podfile') }}
+      - name: Pod Install
+        run: |
+          cd packages/rn-tester
+          bundle install
+          bundle exec pod install
+      - name: Install XCBeautify
+        run: brew install xcbeautify
+      - name: Build iOS
+        run: ./scripts/objc-test.sh

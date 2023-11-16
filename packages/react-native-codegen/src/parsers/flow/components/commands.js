@@ -11,8 +11,8 @@
 'use strict';
 
 import type {
-  NamedShape,
   CommandTypeAnnotation,
+  NamedShape,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
 

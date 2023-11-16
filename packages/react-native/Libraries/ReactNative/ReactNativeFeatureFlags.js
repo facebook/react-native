@@ -37,11 +37,6 @@ export type FeatureFlags = {|
    */
   animatedShouldUseSingleOp: () => boolean,
   /**
-   * Enables GlobalPerformanceLogger replacement with a WebPerformance API based
-   * implementation
-   */
-  isGlobalWebPerformanceLoggerEnabled: () => boolean,
-  /**
    * Enables access to the host tree in Fabric using DOM-compatible APIs.
    */
   enableAccessToHostTreeInFabric: () => boolean,
@@ -53,10 +48,6 @@ export type FeatureFlags = {|
    * Enables use of setNativeProps in JS driven animations.
    */
   shouldUseSetNativePropsInFabric: () => boolean,
-  /**
-   * Enables native view configs in brdgeless mode.
-   */
-  enableNativeViewConfigsInBridgelessMode: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -65,11 +56,9 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
-  isGlobalWebPerformanceLoggerEnabled: () => false,
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
   shouldUseSetNativePropsInFabric: () => false,
-  enableNativeViewConfigsInBridgelessMode: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

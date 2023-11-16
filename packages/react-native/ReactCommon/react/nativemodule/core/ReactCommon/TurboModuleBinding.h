@@ -26,11 +26,11 @@ class TurboModuleBinding {
    * Thread synchronization must be enforced externally.
    */
   static void install(
-      jsi::Runtime &runtime,
-      TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleProviderFunctionType &&legacyModuleProvider = nullptr);
+      jsi::Runtime& runtime,
+      TurboModuleProviderFunctionType&& moduleProvider,
+      TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr);
 
-  TurboModuleBinding(TurboModuleProviderFunctionType &&moduleProvider);
+  TurboModuleBinding(TurboModuleProviderFunctionType&& moduleProvider);
   virtual ~TurboModuleBinding();
 
  private:
@@ -40,7 +40,7 @@ class TurboModuleBinding {
    * A lookup function exposed to JS to get an instance of a TurboModule
    * for the given name.
    */
-  jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName)
+  jsi::Value getModule(jsi::Runtime& runtime, const std::string& moduleName)
       const;
 
   TurboModuleProviderFunctionType moduleProvider_;

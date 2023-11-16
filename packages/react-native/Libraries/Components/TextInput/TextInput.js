@@ -137,6 +137,9 @@ type DataDetectorTypesType =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -812,6 +815,11 @@ export type Props = $ReadOnly<{|
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
+
+  /**
    * Called when a touch is engaged.
    */
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -1038,8 +1046,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *     return (
  *       <TextInput
  *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
- *         editable = {true}
- *         maxLength = {40}
+ *         editable={true}
+ *         maxLength={40}
  *       />
  *     );
  *   }
@@ -1063,8 +1071,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *        borderBottomWidth: 1 }}
  *      >
  *        <UselessTextInput
- *          multiline = {true}
- *          numberOfLines = {4}
+ *          multiline={true}
+ *          numberOfLines={4}
  *          onChangeText={(text) => this.setState({text})}
  *          value={this.state.text}
  *        />
@@ -1384,25 +1392,37 @@ function InternalTextInput(props: Props): React.Node {
   const accessible = props.accessible !== false;
   const focusable = props.focusable !== false;
 
+  const {
+    editable,
+    hitSlop,
+    onPress,
+    onPressIn,
+    onPressOut,
+    rejectResponderTermination,
+  } = props;
+
   const config = React.useMemo(
     () => ({
+      hitSlop,
       onPress: (event: PressEvent) => {
-        if (props.editable !== false) {
+        onPress?.(event);
+        if (editable !== false) {
           if (inputRef.current != null) {
             inputRef.current.focus();
           }
         }
       },
-      onPressIn: props.onPressIn,
-      onPressOut: props.onPressOut,
-      cancelable:
-        Platform.OS === 'ios' ? !props.rejectResponderTermination : null,
+      onPressIn: onPressIn,
+      onPressOut: onPressOut,
+      cancelable: Platform.OS === 'ios' ? !rejectResponderTermination : null,
     }),
     [
-      props.editable,
-      props.onPressIn,
-      props.onPressOut,
-      props.rejectResponderTermination,
+      editable,
+      hitSlop,
+      onPress,
+      onPressIn,
+      onPressOut,
+      rejectResponderTermination,
     ],
   );
 
@@ -1643,6 +1663,7 @@ const autoCompleteWebToTextContentTypeMap = {
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   TextInputInstance,
+  // $FlowFixMe[incompatible-call]
 > = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
@@ -1665,8 +1686,13 @@ const ExportedForwardRef: React.AbstractComponent<
   let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     style.textAlignVertical =
+      // $FlowFixMe[invalid-computed-prop]
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     delete style.verticalAlign;
   }
 

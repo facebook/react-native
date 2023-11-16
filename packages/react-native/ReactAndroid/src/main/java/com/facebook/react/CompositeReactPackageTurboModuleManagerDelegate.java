@@ -11,11 +11,14 @@ import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated(
+    since =
+        "CompositeReactPackageTurboModuleManagerDelegate is deprecated and will be deleted in the future. Please use ReactPackage interface or BaseReactPackage instead.")
 @DoNotStrip
 public class CompositeReactPackageTurboModuleManagerDelegate
     extends ReactPackageTurboModuleManagerDelegate {

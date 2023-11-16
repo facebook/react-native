@@ -12,9 +12,9 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
-type FilesOutput = Map<string, string>;
-
 const {getModules} = require('./Utils');
+
+type FilesOutput = Map<string, string>;
 
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
@@ -109,7 +109,7 @@ target_compile_options(
   -DLOG_TAG=\\"ReactNative\\"
   -fexceptions
   -frtti
-  -std=c++17
+  -std=c++20
   -Wall
 )
 `;

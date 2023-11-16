@@ -1,0 +1,1 @@
+import*as e from"./changes.js";self.Changes=self.Changes||{},Changes=Changes||{},Changes.ChangesSidebar=e.ChangesSidebar.ChangesSidebar,Changes.ChangesView=e.ChangesView.ChangesView,Changes.ChangesView.RowType=e.ChangesView.RowType,Changes.ChangesView.DiffUILocationRevealer=e.ChangesView.DiffUILocationRevealer;

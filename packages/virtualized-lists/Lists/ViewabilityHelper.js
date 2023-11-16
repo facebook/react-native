@@ -11,6 +11,7 @@
 'use strict';
 
 import type {CellMetricProps} from './ListMetricsAggregator';
+
 import ListMetricsAggregator from './ListMetricsAggregator';
 
 const invariant = require('invariant');
@@ -144,8 +145,9 @@ class ViewabilityHelper {
       if (!metrics) {
         continue;
       }
-      const top = metrics.offset - scrollOffset;
-      const bottom = top + metrics.length;
+      const top = Math.floor(metrics.offset - scrollOffset);
+      const bottom = Math.floor(top + metrics.length);
+
       if (top < viewportHeight && bottom > 0) {
         firstVisible = idx;
         if (

@@ -13,8 +13,7 @@ import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.devsupport.BridgeDevSupportManager;
-import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation;
+import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -28,14 +27,9 @@ public class DevLoadingModule extends NativeDevLoadingViewSpec {
   public DevLoadingModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mJSExceptionHandler = reactContext.getJSExceptionHandler();
-    if (mJSExceptionHandler != null && mJSExceptionHandler instanceof BridgeDevSupportManager) {
+    if (mJSExceptionHandler != null && mJSExceptionHandler instanceof DevSupportManagerBase) {
       mDevLoadingViewManager =
-          ((BridgeDevSupportManager) mJSExceptionHandler).getDevLoadingViewManager();
-      mDevLoadingViewManager =
-          mDevLoadingViewManager != null
-              ? mDevLoadingViewManager
-              : new DefaultDevLoadingViewImplementation(
-                  ((BridgeDevSupportManager) mJSExceptionHandler).getReactInstanceManagerHelper());
+          ((DevSupportManagerBase) mJSExceptionHandler).getDevLoadingViewManager();
     }
   }
 
@@ -46,7 +40,9 @@ public class DevLoadingModule extends NativeDevLoadingViewSpec {
         new Runnable() {
           @Override
           public void run() {
-            mDevLoadingViewManager.showMessage(message);
+            if (mDevLoadingViewManager != null) {
+              mDevLoadingViewManager.showMessage(message);
+            }
           }
         });
   }

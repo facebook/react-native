@@ -45,8 +45,8 @@ void ComponentNameResolverManager::registerNatives() {
 }
 
 void ComponentNameResolverManager::installJSIBindings() {
-  runtimeExecutor_([thizz = this](jsi::Runtime &runtime) {
-    auto viewManagerProvider = [thizz](const std::string &name) -> bool {
+  runtimeExecutor_([thizz = this](jsi::Runtime& runtime) {
+    auto viewManagerProvider = [thizz](const std::string& name) -> bool {
       if (thizz->componentNames_.size() == 0) {
         static auto getComponentNames =
             jni::findClassStatic(ComponentNameResolverManager::

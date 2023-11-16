@@ -17,36 +17,14 @@ namespace facebook::react {
 
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
-static inline YGStyle::Dimensions convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *widthName,
-    char const *heightName,
-    YGStyle::Dimensions const &sourceValue,
-    YGStyle::Dimensions const &defaultValue) {
-  auto dimensions = defaultValue;
-  dimensions[YGDimensionWidth] = convertRawProp(
-      context,
-      rawProps,
-      widthName,
-      sourceValue[YGDimensionWidth],
-      defaultValue[YGDimensionWidth]);
-  dimensions[YGDimensionHeight] = convertRawProp(
-      context,
-      rawProps,
-      heightName,
-      sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionHeight]);
-  return dimensions;
-}
 
-static inline YGStyle::Edges convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    YGStyle::Edges const &sourceValue,
-    YGStyle::Edges const &defaultValue) {
+static inline yoga::Style::Edges convertRawProp(
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const yoga::Style::Edges& sourceValue,
+    const yoga::Style::Edges& defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -123,11 +101,11 @@ static inline YGStyle::Edges convertRawProp(
   return result;
 }
 
-static inline YGStyle::Edges convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    YGStyle::Edges const &sourceValue,
-    YGStyle::Edges const &defaultValue) {
+static inline yoga::Style::Edges convertRawProp(
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style::Edges& sourceValue,
+    const yoga::Style::Edges& defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -168,11 +146,11 @@ static inline YGStyle::Edges convertRawProp(
   return result;
 }
 
-static inline YGStyle convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    YGStyle const &sourceValue) {
-  auto yogaStyle = YGStyle{};
+static inline yoga::Style convertRawProp(
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style& sourceValue) {
+  yoga::Style yogaStyle{};
   yogaStyle.direction() = convertRawProp(
       context,
       rawProps,
@@ -266,26 +244,32 @@ static inline YGStyle convertRawProp(
       sourceValue.padding(),
       yogaStyle.padding());
 
-  yogaStyle.gap()[YGGutterRow] = convertRawProp(
-      context,
-      rawProps,
-      "rowGap",
-      sourceValue.gap()[YGGutterRow],
-      yogaStyle.gap()[YGGutterRow]);
+  yogaStyle.setGap(
+      yoga::Gutter::Row,
+      convertRawProp(
+          context,
+          rawProps,
+          "rowGap",
+          sourceValue.gap(yoga::Gutter::Row),
+          yogaStyle.gap(yoga::Gutter::Row)));
 
-  yogaStyle.gap()[YGGutterColumn] = convertRawProp(
-      context,
-      rawProps,
-      "columnGap",
-      sourceValue.gap()[YGGutterColumn],
-      yogaStyle.gap()[YGGutterColumn]);
+  yogaStyle.setGap(
+      yoga::Gutter::Column,
+      convertRawProp(
+          context,
+          rawProps,
+          "columnGap",
+          sourceValue.gap(yoga::Gutter::Column),
+          yogaStyle.gap(yoga::Gutter::Column)));
 
-  yogaStyle.gap()[YGGutterAll] = convertRawProp(
-      context,
-      rawProps,
-      "gap",
-      sourceValue.gap()[YGGutterAll],
-      yogaStyle.gap()[YGGutterAll]);
+  yogaStyle.setGap(
+      yoga::Gutter::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "gap",
+          sourceValue.gap(yoga::Gutter::All),
+          yogaStyle.gap(yoga::Gutter::All)));
 
   yogaStyle.border() = convertRawProp(
       context,
@@ -294,45 +278,77 @@ static inline YGStyle convertRawProp(
       "Width",
       sourceValue.border(),
       yogaStyle.border());
-  yogaStyle.dimensions() = convertRawProp(
-      context,
-      rawProps,
-      "width",
-      "height",
-      sourceValue.dimensions(),
-      yogaStyle.dimensions());
-  yogaStyle.minDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "minWidth",
-      "minHeight",
-      sourceValue.minDimensions(),
-      yogaStyle.minDimensions());
-  yogaStyle.maxDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "maxWidth",
-      "maxHeight",
-      sourceValue.maxDimensions(),
-      yogaStyle.maxDimensions());
+
+  yogaStyle.setDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "width",
+          sourceValue.dimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "height",
+          sourceValue.dimension(yoga::Dimension::Height),
+          {}));
+
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "minWidth",
+          sourceValue.minDimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "minHeight",
+          sourceValue.minDimension(yoga::Dimension::Height),
+          {}));
+
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxWidth",
+          sourceValue.maxDimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxHeight",
+          sourceValue.maxDimension(yoga::Dimension::Height),
+          {}));
+
   yogaStyle.aspectRatio() = convertRawProp(
       context,
       rawProps,
       "aspectRatio",
       sourceValue.aspectRatio(),
       yogaStyle.aspectRatio());
+
   return yogaStyle;
 }
 
 // This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleCorners<T> const &sourceValue,
-    CascadedRectangleCorners<T> const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleCorners<T>& sourceValue,
+    const CascadedRectangleCorners<T>& defaultValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
@@ -441,12 +457,12 @@ static inline CascadedRectangleCorners<T> convertRawProp(
 
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleEdges<T> const &sourceValue,
-    CascadedRectangleEdges<T> const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleEdges<T>& sourceValue,
+    const CascadedRectangleEdges<T>& defaultValue) {
   CascadedRectangleEdges<T> result;
 
   result.left = convertRawProp(
@@ -547,10 +563,10 @@ static inline CascadedRectangleEdges<T> convertRawProp(
 
 // This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    ViewEvents const &sourceValue,
-    ViewEvents const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const ViewEvents& sourceValue,
+    const ViewEvents& defaultValue) {
   ViewEvents result{};
   using Offset = ViewEvents::Offset;
 
@@ -616,18 +632,31 @@ static inline ViewEvents convertRawProp(
       "onClickCapture",
       sourceValue[Offset::ClickCapture],
       defaultValue[Offset::ClickCapture]);
-  result[Offset::GotPointerCapture] = convertRawProp(
+  result[Offset::PointerDown] = convertRawProp(
       context,
       rawProps,
-      "onGotPointerCapture",
-      sourceValue[Offset::GotPointerCapture],
-      defaultValue[Offset::GotPointerCapture]);
-  result[Offset::LostPointerCapture] = convertRawProp(
+      "onPointerDown",
+      sourceValue[Offset::PointerDown],
+      defaultValue[Offset::PointerDown]);
+  result[Offset::PointerDownCapture] = convertRawProp(
       context,
       rawProps,
-      "onLostPointerCapture",
-      sourceValue[Offset::LostPointerCapture],
-      defaultValue[Offset::LostPointerCapture]);
+      "onPointerDownCapture",
+      sourceValue[Offset::PointerDownCapture],
+      defaultValue[Offset::PointerDownCapture]);
+  result[Offset::PointerUp] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUp",
+      sourceValue[Offset::PointerUp],
+      defaultValue[Offset::PointerUp]);
+  result[Offset::PointerUpCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUpCapture",
+      sourceValue[Offset::PointerUpCapture],
+      defaultValue[Offset::PointerUpCapture]);
+  // TODO: gotPointerCapture & lostPointerCapture
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(
