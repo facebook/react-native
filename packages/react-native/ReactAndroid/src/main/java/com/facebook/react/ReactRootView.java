@@ -51,7 +51,6 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSPointerDispatcher;
@@ -60,6 +59,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -598,7 +598,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onStage(int stage) {
+  public void onStage(@ReactStage int stage) {
     switch (stage) {
       case ReactStage.ON_ATTACH_TO_INSTANCE:
         onAttachedToReactInstance();
