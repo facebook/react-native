@@ -52,7 +52,7 @@ class JSResponderHandler : OnInterceptTouchEventListener {
     viewParentBlockingNativeResponder = null
   }
 
-  override fun onInterceptTouchEvent(v: ViewGroup, event: MotionEvent): Boolean {
+  override fun onInterceptTouchEvent(view: ViewGroup, event: MotionEvent): Boolean {
     val currentJSResponder = currentJSResponder
     return if (currentJSResponder != JS_RESPONDER_UNSET && event.action != MotionEvent.ACTION_UP) {
       // Don't intercept ACTION_UP events. If we return true here than UP event will not be
@@ -61,7 +61,7 @@ class JSResponderHandler : OnInterceptTouchEventListener {
       // Therefore since "UP" event is the last event in a gesture, we should just let it reach the
       // original target that is a child view of {@param v}.
       // http://developer.android.com/reference/android/view/ViewGroup.html#onInterceptTouchEvent(android.view.MotionEvent)
-      v.id == currentJSResponder
+      view.id == currentJSResponder
     } else {
       false
     }
