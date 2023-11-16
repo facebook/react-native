@@ -612,7 +612,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   for (const auto &activePointer : activePointers) {
     PointerEvent pointerEvent = CreatePointerEventFromActivePointer(activePointer, eventType, _rootComponentView);
-    [self handleIncomingPointerEvent:pointerEvent onView:activePointer.componentView];
 
     SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(
         activePointer.componentView,
@@ -630,19 +629,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
         case RCTPointerEventTypeEnd: {
           eventEmitter->onPointerUp(pointerEvent);
-
           if (pointerEvent.isPrimary && pointerEvent.button == 0 && IsPointerWithinInitialTree(activePointer)) {
             eventEmitter->onClick(pointerEvent);
-          }
-
-          if (activePointer.shouldLeaveWhenReleased) {
-            [self handleIncomingPointerEvent:pointerEvent onView:nil];
           }
           break;
         }
         case RCTPointerEventTypeCancel: {
           eventEmitter->onPointerCancel(pointerEvent);
-          [self handleIncomingPointerEvent:pointerEvent onView:nil];
           break;
         }
       }
@@ -764,109 +757,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   PointerEvent event = CreatePointerEventFromIncompleteHoverData(
       pointerId, pointerType, clientLocation, screenLocation, offsetLocation, modifierFlags);
 
-  [self handleIncomingPointerEvent:event onView:targetView];
   SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, offsetLocation);
   if (eventEmitter != nil) {
-    eventEmitter->onPointerMove(event);
-  }
-}
-
-#pragma mark - Shared pointer handlers
-
-/**
- * Private method which is used for tracking the location of pointer events to manage the entering/leaving events.
- * The primary idea is that a pointer's presence & movement is dicated by a variety of underlying events such as down,
- * move, and up — and they should all be treated the same when it comes to tracking the entering & leaving of pointers
- * to views. This method accomplishes that by receiving the pointer event, the target view (can be null in cases when
- * the event indicates that the pointer has left the screen entirely), and a block/callback where the underlying event
- * should be fired.
- */
-- (NSOrderedSet<RCTReactTaggedView *> *)handleIncomingPointerEvent:(PointerEvent)event
-                                                            onView:(nullable UIView *)targetView
-{
-  NSInteger pointerId = event.pointerId;
-  CGPoint clientLocation = CGPointMake(event.clientPoint.x, event.clientPoint.y);
-
-  NSOrderedSet<RCTReactTaggedView *> *currentlyHoveredViews =
-      [_currentlyHoveredViewsPerPointer objectForKey:@(pointerId)];
-  if (currentlyHoveredViews == nil) {
-    currentlyHoveredViews = [NSOrderedSet orderedSet];
-  }
-
-  RCTReactTaggedView *targetTaggedView = [RCTReactTaggedView wrap:targetView];
-  RCTReactTaggedView *prevTargetTaggedView = [currentlyHoveredViews firstObject];
-  UIView *prevTargetView = prevTargetTaggedView.view;
-
-  NSOrderedSet<RCTReactTaggedView *> *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
-
-  // Out
-  if (prevTargetView != nil && prevTargetTaggedView.tag != targetTaggedView.tag) {
-    SharedTouchEventEmitter eventEmitter =
-        GetTouchEmitterFromView(prevTargetView, [_rootComponentView convertPoint:clientLocation toView:prevTargetView]);
-    if (eventEmitter != nil) {
-      eventEmitter->onPointerOut(event);
+    switch (recognizer.state) {
+      case UIGestureRecognizerStateEnded:
+        eventEmitter->onPointerLeave(event);
+      default:
+        eventEmitter->onPointerMove(event);
     }
   }
-
-  // Leaving
-
-  // pointerleave events need to be emitted from the deepest target to the root but
-  // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
-  // so we first iterate from the root to the target, collecting the views which need events fired for, of which
-  // we reverse iterate (now from target to root), actually emitting the events.
-  NSMutableOrderedSet<UIView *> *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
-
-  for (RCTReactTaggedView *taggedView in [currentlyHoveredViews reverseObjectEnumerator]) {
-    UIView *componentView = taggedView.view;
-
-    BOOL shouldEmitEvent = componentView != nil;
-
-    if (shouldEmitEvent && ![eventPathViews containsObject:taggedView]) {
-      [viewsToEmitLeaveEventsTo addObject:componentView];
-    }
-  }
-
-  for (UIView *componentView in [viewsToEmitLeaveEventsTo reverseObjectEnumerator]) {
-    SharedTouchEventEmitter eventEmitter =
-        GetTouchEmitterFromView(componentView, [_rootComponentView convertPoint:clientLocation toView:componentView]);
-    if (eventEmitter != nil) {
-      eventEmitter->onPointerLeave(event);
-    }
-  }
-
-  // Over
-  if (targetView != nil && prevTargetTaggedView.tag != targetTaggedView.tag) {
-    SharedTouchEventEmitter eventEmitter =
-        GetTouchEmitterFromView(targetView, [_rootComponentView convertPoint:clientLocation toView:targetView]);
-    if (eventEmitter != nil) {
-      eventEmitter->onPointerOver(event);
-    }
-  }
-
-  // Entering
-
-  // We only want to emit events to JS if there is a view that is currently listening to said event
-  // so we only send those event to the JS side if the element which has been entered is itself listening,
-  // or if one of its parents is listening in case those listeners care about the capturing phase. Adding the ability
-  // for native to distinguish between capturing listeners and not could be an optimization to further reduce the number
-  // of events we send to JS
-  for (RCTReactTaggedView *taggedView in [eventPathViews reverseObjectEnumerator]) {
-    UIView *componentView = taggedView.view;
-
-    BOOL shouldEmitEvent = componentView != nil;
-
-    if (shouldEmitEvent && ![currentlyHoveredViews containsObject:taggedView]) {
-      SharedTouchEventEmitter eventEmitter =
-          GetTouchEmitterFromView(componentView, [_rootComponentView convertPoint:clientLocation toView:componentView]);
-      if (eventEmitter != nil) {
-        eventEmitter->onPointerEnter(event);
-      }
-    }
-  }
-
-  [_currentlyHoveredViewsPerPointer setObject:eventPathViews forKey:@(pointerId)];
-
-  return eventPathViews;
 }
 
 @end
