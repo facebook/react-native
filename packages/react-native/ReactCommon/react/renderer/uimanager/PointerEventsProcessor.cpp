@@ -12,7 +12,9 @@ namespace facebook::react {
 static ShadowNode::Shared getShadowNodeFromEventTarget(
     jsi::Runtime& runtime,
     const EventTarget& target) {
+  target.retain(runtime);
   auto instanceHandle = target.getInstanceHandle(runtime);
+  target.release(runtime);
   if (instanceHandle.isObject()) {
     auto handleObj = instanceHandle.asObject(runtime);
     if (handleObj.hasProperty(runtime, "stateNode")) {
@@ -230,13 +232,11 @@ void PointerEventsProcessor::interceptPointerEvent(
     }
   }
 
-  eventTarget->retain(runtime);
   auto shadowNode = getShadowNodeFromEventTarget(runtime, *eventTarget);
   if (shadowNode != nullptr &&
       shouldEmitPointerEvent(*shadowNode, type, uiManager)) {
     eventDispatcher(runtime, eventTarget, type, priority, pointerEvent);
   }
-  eventTarget->release(runtime);
 
   // Implicit pointer capture release
   if (overrideTarget != nullptr &&
@@ -354,7 +354,6 @@ void PointerEventsProcessor::processPendingPointerCapture(
   if (hasActiveOverride && activeOverrideTag != pendingOverrideTag) {
     auto retargeted = retargetPointerEvent(event, *activeOverride, uiManager);
 
-    retargeted.target->retain(runtime);
     auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
     if (shadowNode != nullptr &&
         shouldEmitPointerEvent(
@@ -366,13 +365,11 @@ void PointerEventsProcessor::processPendingPointerCapture(
           ReactEventPriority::Discrete,
           retargeted.event);
     }
-    retargeted.target->release(runtime);
   }
 
   if (hasPendingOverride && activeOverrideTag != pendingOverrideTag) {
     auto retargeted = retargetPointerEvent(event, *pendingOverride, uiManager);
 
-    retargeted.target->retain(runtime);
     auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
     if (shadowNode != nullptr &&
         shouldEmitPointerEvent(
@@ -384,7 +381,6 @@ void PointerEventsProcessor::processPendingPointerCapture(
           ReactEventPriority::Discrete,
           retargeted.event);
     }
-    retargeted.target->release(runtime);
   }
 
   if (!hasPendingOverride) {

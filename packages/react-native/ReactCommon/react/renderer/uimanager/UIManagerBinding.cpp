@@ -97,7 +97,8 @@ void UIManagerBinding::dispatchEvent(
     const EventPayload& eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
-  if (eventPayload.getType() == EventPayloadType::PointerEvent) {
+  if (eventTarget != nullptr &&
+      eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
     auto dispatchCallback = [this](
                                 jsi::Runtime& runtime,
@@ -105,8 +106,10 @@ void UIManagerBinding::dispatchEvent(
                                 const std::string& type,
                                 ReactEventPriority priority,
                                 const EventPayload& eventPayload) {
+      eventTarget->retain(runtime);
       this->dispatchEventToJS(
           runtime, eventTarget, type, priority, eventPayload);
+      eventTarget->release(runtime);
     };
     pointerEventsProcessor_.interceptPointerEvent(
         runtime,
