@@ -22,8 +22,6 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -176,7 +174,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   @NonNull private final AtomicBoolean mMountNotificationScheduled = new AtomicBoolean(false);
-  @NonNull private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @ThreadConfined(UI)
   @NonNull
@@ -1238,30 +1235,31 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       if (!mountNotificationScheduled) {
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
-        mMainThreadHandler.postAtFrontOfQueue(
-            new Runnable() {
-              @Override
-              public void run() {
-                mMountNotificationScheduled.set(false);
+        UiThreadUtil.getUiThreadHandler()
+            .postAtFrontOfQueue(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    mMountNotificationScheduled.set(false);
 
-                final @Nullable Binding binding = mBinding;
-                if (mountItems == null || binding == null) {
-                  return;
-                }
+                    final @Nullable Binding binding = mBinding;
+                    if (mountItems == null || binding == null) {
+                      return;
+                    }
 
-                // Collect surface IDs for all the mount items
-                List<Integer> surfaceIds = new ArrayList();
-                for (MountItem mountItem : mountItems) {
-                  if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
-                    surfaceIds.add(mountItem.getSurfaceId());
+                    // Collect surface IDs for all the mount items
+                    List<Integer> surfaceIds = new ArrayList();
+                    for (MountItem mountItem : mountItems) {
+                      if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
+                        surfaceIds.add(mountItem.getSurfaceId());
+                      }
+                    }
+
+                    for (int surfaceId : surfaceIds) {
+                      binding.reportMount(surfaceId);
+                    }
                   }
-                }
-
-                for (int surfaceId : surfaceIds) {
-                  binding.reportMount(surfaceId);
-                }
-              }
-            });
+                });
       }
     }
 

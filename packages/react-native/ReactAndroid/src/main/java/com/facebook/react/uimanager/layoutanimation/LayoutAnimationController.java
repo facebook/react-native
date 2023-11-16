@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager.layoutanimation;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +34,6 @@ public class LayoutAnimationController {
   private boolean mShouldAnimateLayout;
   private long mMaxAnimationDuration = -1;
   @Nullable private Runnable mCompletionRunnable;
-
-  @Nullable private static Handler sCompletionHandler;
 
   public void initializeFromConfig(
       final @Nullable ReadableMap config, final Callback completionCallback) {
@@ -216,13 +213,10 @@ public class LayoutAnimationController {
   }
 
   private void scheduleCompletionCallback(long delayMillis) {
-    if (sCompletionHandler == null) {
-      sCompletionHandler = new Handler(Looper.getMainLooper());
-    }
-
     if (mCompletionRunnable != null) {
-      sCompletionHandler.removeCallbacks(mCompletionRunnable);
-      sCompletionHandler.postDelayed(mCompletionRunnable, delayMillis);
+      Handler completionHandler = UiThreadUtil.getUiThreadHandler();
+      completionHandler.removeCallbacks(mCompletionRunnable);
+      completionHandler.postDelayed(mCompletionRunnable, delayMillis);
     }
   }
 }
