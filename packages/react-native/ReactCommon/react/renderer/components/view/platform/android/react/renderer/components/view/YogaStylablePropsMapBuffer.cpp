@@ -13,28 +13,22 @@
 
 namespace facebook::react {
 
-MapBuffer convertBorderWidths(const yoga::Style& style) {
+MapBuffer convertBorderWidths(const yoga::Style::Edges& border) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
-      builder, EDGE_TOP, optionalFloatFromYogaValue(style.border(YGEdgeTop)));
+      builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));
   putOptionalFloat(
-      builder,
-      EDGE_RIGHT,
-      optionalFloatFromYogaValue(style.border(YGEdgeRight)));
+      builder, EDGE_RIGHT, optionalFloatFromYogaValue(border[YGEdgeRight]));
   putOptionalFloat(
-      builder,
-      EDGE_BOTTOM,
-      optionalFloatFromYogaValue(style.border(YGEdgeBottom)));
+      builder, EDGE_BOTTOM, optionalFloatFromYogaValue(border[YGEdgeBottom]));
   putOptionalFloat(
-      builder, EDGE_LEFT, optionalFloatFromYogaValue(style.border(YGEdgeLeft)));
+      builder, EDGE_LEFT, optionalFloatFromYogaValue(border[YGEdgeLeft]));
   putOptionalFloat(
-      builder,
-      EDGE_START,
-      optionalFloatFromYogaValue(style.border(YGEdgeStart)));
+      builder, EDGE_START, optionalFloatFromYogaValue(border[YGEdgeStart]));
   putOptionalFloat(
-      builder, EDGE_END, optionalFloatFromYogaValue(style.border(YGEdgeEnd)));
+      builder, EDGE_END, optionalFloatFromYogaValue(border[YGEdgeEnd]));
   putOptionalFloat(
-      builder, EDGE_ALL, optionalFloatFromYogaValue(style.border(YGEdgeAll)));
+      builder, EDGE_ALL, optionalFloatFromYogaValue(border[YGEdgeAll]));
   return builder.build();
 }
 
@@ -60,18 +54,9 @@ void YogaStylableProps::propsDiffMapBuffer(
     const auto& oldStyle = oldProps.yogaStyle;
     const auto& newStyle = newProps.yogaStyle;
 
-    bool areBordersEqual = [&]() {
-      for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
-        if (oldStyle.border(static_cast<YGEdge>(edge)) !=
-            newStyle.border(static_cast<YGEdge>(edge))) {
-          return false;
-        }
-      }
-      return true;
-    }();
-
-    if (!areBordersEqual) {
-      builder.putMapBuffer(YG_BORDER_WIDTH, convertBorderWidths(newStyle));
+    if (!(oldStyle.border() == newStyle.border())) {
+      builder.putMapBuffer(
+          YG_BORDER_WIDTH, convertBorderWidths(newStyle.border()));
     }
 
     if (oldStyle.overflow() != newStyle.overflow()) {

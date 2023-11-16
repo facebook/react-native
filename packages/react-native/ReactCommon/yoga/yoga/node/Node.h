@@ -65,12 +65,6 @@ class YG_EXPORT Node : public ::YGNode {
     style_.alignContent() = Align::Stretch;
   }
 
-  template <auto Field>
-  CompactValue computeEdgeValueForColumn(YGEdge edge) const;
-
-  template <auto Field>
-  CompactValue computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const;
-
   // DANGER DANGER DANGER!
   // If the node assigned to has children, we'd either have to deallocate
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
@@ -194,6 +188,15 @@ class YG_EXPORT Node : public ::YGNode {
   YGValue getResolvedDimension(Dimension dimension) const {
     return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
+
+  static CompactValue computeEdgeValueForColumn(
+      const Style::Edges& edges,
+      YGEdge edge);
+
+  static CompactValue computeEdgeValueForRow(
+      const Style::Edges& edges,
+      YGEdge rowEdge,
+      YGEdge edge);
 
   // Methods related to positions, margin, padding and border
   bool isFlexStartPositionDefined(FlexDirection axis) const;

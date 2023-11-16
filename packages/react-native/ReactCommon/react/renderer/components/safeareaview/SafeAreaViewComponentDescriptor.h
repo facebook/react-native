@@ -20,12 +20,12 @@ class SafeAreaViewComponentDescriptor final
     : public ConcreteComponentDescriptor<SafeAreaViewShadowNode> {
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
   void adopt(ShadowNode& shadowNode) const override {
-    auto& yogaLayoutableShadowNode =
+    auto& layoutableShadowNode =
         static_cast<YogaLayoutableShadowNode&>(shadowNode);
     auto& stateData = static_cast<const SafeAreaViewShadowNode::ConcreteState&>(
                           *shadowNode.getState())
                           .getData();
-    yogaLayoutableShadowNode.setPadding(stateData.padding);
+    layoutableShadowNode.setPadding(stateData.padding);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }

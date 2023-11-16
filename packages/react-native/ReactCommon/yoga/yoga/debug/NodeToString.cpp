@@ -23,6 +23,12 @@ static void indent(std::string& base, uint32_t level) {
   }
 }
 
+static bool areFourValuesEqual(const Style::Edges& four) {
+  return yoga::inexactEquals(four[0], four[1]) &&
+      yoga::inexactEquals(four[0], four[2]) &&
+      yoga::inexactEquals(four[0], four[3]);
+}
+
 static void appendFormattedString(std::string& str, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -80,13 +86,31 @@ static void appendNumberIfNotZero(
   }
 }
 
-template <auto Field>
-static void
-appendEdges(std::string& base, const std::string& key, const Style& style) {
-  for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
-    std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
-    appendNumberIfNotZero(base, str, (style.*Field)(static_cast<YGEdge>(edge)));
+static void appendEdges(
+    std::string& base,
+    const std::string& key,
+    const Style::Edges& edges) {
+  if (areFourValuesEqual(edges)) {
+    auto edgeValue = yoga::Node::computeEdgeValueForColumn(edges, YGEdgeLeft);
+    appendNumberIfNotUndefined(base, key, edgeValue);
+  } else {
+    for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
+      std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
+      appendNumberIfNotZero(base, str, edges[static_cast<size_t>(edge)]);
+    }
   }
+}
+
+static void appendEdgeIfNotUndefined(
+    std::string& base,
+    const std::string& str,
+    const Style::Edges& edges,
+    const YGEdge edge) {
+  // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
+  auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
+      ? yoga::Node::computeEdgeValueForRow(edges, edge, edge)
+      : yoga::Node::computeEdgeValueForColumn(edges, edge);
+  appendNumberIfNotUndefined(base, str, value);
 }
 
 void nodeToString(
@@ -149,9 +173,9 @@ void nodeToString(
     if (style.display() != yoga::Node{}.getStyle().display()) {
       appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
-    appendEdges<&Style::margin>(str, "margin", style);
-    appendEdges<&Style::padding>(str, "padding", style);
-    appendEdges<&Style::border>(str, "border", style);
+    appendEdges(str, "margin", style.margin());
+    appendEdges(str, "padding", style.padding());
+    appendEdges(str, "border", style.border());
 
     if (style.gap(Gutter::All).isDefined()) {
       appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
@@ -176,7 +200,10 @@ void nodeToString(
           str, "position: %s; ", toString(style.positionType()));
     }
 
-    appendEdges<&Style::position>(str, "position", style);
+    appendEdgeIfNotUndefined(str, "left", style.position(), YGEdgeLeft);
+    appendEdgeIfNotUndefined(str, "right", style.position(), YGEdgeRight);
+    appendEdgeIfNotUndefined(str, "top", style.position(), YGEdgeTop);
+    appendEdgeIfNotUndefined(str, "bottom", style.position(), YGEdgeBottom);
     appendFormattedString(str, "\" ");
 
     if (node->hasMeasureFunc()) {

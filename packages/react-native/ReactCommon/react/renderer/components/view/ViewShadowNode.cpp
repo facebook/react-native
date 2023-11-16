@@ -54,17 +54,9 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.removeClippedSubviews ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
-  bool hasBorder = [&]() {
-    for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
-      if (viewProps.yogaStyle.border(static_cast<YGEdge>(edge)).isDefined()) {
-        return true;
-      }
-    }
-    return false;
-  }();
-
   bool formsView = formsStackingContext ||
-      isColorMeaningful(viewProps.backgroundColor) || hasBorder ||
+      isColorMeaningful(viewProps.backgroundColor) ||
+      !(viewProps.yogaStyle.border() == yoga::Style::Edges{}) ||
       !viewProps.testId.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 

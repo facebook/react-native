@@ -395,7 +395,7 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    yoga::CompactValue& result) {
+    yoga::Style::ValueRepr& result) {
   if (value.hasType<Float>()) {
     result = yoga::CompactValue::ofMaybe<YGUnitPoint>((float)value);
     return;
@@ -428,7 +428,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     YGValue& result) {
-  yoga::CompactValue ygValue{};
+  yoga::Style::ValueRepr ygValue{};
   fromRawValue(context, value, ygValue);
   result = ygValue;
 }
@@ -776,6 +776,40 @@ inline std::string toString(const yoga::FloatOptional& value) {
   }
 
   return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
+}
+
+inline std::string toString(const yoga::Style::Dimensions& value) {
+  return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
+}
+
+inline std::string toString(const yoga::Style::Edges& value) {
+  static std::array<std::string, 9> names = {
+      {"left",
+       "top",
+       "right",
+       "bottom",
+       "start",
+       "end",
+       "horizontal",
+       "vertical",
+       "all"}};
+
+  auto result = std::string{};
+  auto separator = std::string{", "};
+
+  for (size_t i = 0; i < names.size(); i++) {
+    YGValue v = value[i];
+    if (v.unit == YGUnitUndefined) {
+      continue;
+    }
+    result += names[i] + ": " + toString(v) + separator;
+  }
+
+  if (!result.empty()) {
+    result.erase(result.length() - separator.length());
+  }
+
+  return "{" + result + "}";
 }
 
 inline std::string toString(const LayoutConformance& value) {

@@ -7,10 +7,8 @@
 
 #include <stdexcept>
 
-#include <yoga/config/Config.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
-#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
