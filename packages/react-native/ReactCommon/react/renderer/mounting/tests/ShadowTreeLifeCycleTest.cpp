@@ -51,7 +51,7 @@ static void testShadowNodeTreeLifeCycle(
     allNodes.clear();
 
     auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+        rootComponentDescriptor.createFamily(Tag(1), SurfaceId(1), nullptr);
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
@@ -202,7 +202,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     allNodes.clear();
 
     auto family =
-        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
+        rootComponentDescriptor.createFamily(Tag(1), SurfaceId(1), nullptr);
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(

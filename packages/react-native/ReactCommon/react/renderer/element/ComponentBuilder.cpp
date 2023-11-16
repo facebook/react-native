@@ -26,8 +26,8 @@ ShadowNode::Unshared ComponentBuilder::build(
     children.push_back(build(childFragment));
   }
 
-  auto family = componentDescriptor.createFamily(ShadowNodeFamilyFragment{
-      elementFragment.tag, elementFragment.surfaceId, nullptr});
+  auto family = componentDescriptor.createFamily(
+      elementFragment.tag, elementFragment.surfaceId, nullptr);
 
   auto initialState =
       componentDescriptor.createInitialState(elementFragment.props, family);
