@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {RNTesterModuleInfo} from './types/RNTesterTypes';
+
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -28,7 +30,14 @@ import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
-const RNTesterApp = (): React.Node => {
+const RNTesterApp = ({
+  testList,
+}: {
+  testList?: {
+    components?: Array<RNTesterModuleInfo>,
+    apis?: Array<RNTesterModuleInfo>,
+  },
+}): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
@@ -44,8 +53,8 @@ const RNTesterApp = (): React.Node => {
   } = state;
 
   const examplesList = React.useMemo(
-    () => getExamplesListWithRecentlyUsed({recentlyUsed}),
-    [recentlyUsed],
+    () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
+    [recentlyUsed, testList],
   );
 
   const handleBackPress = React.useCallback(() => {
