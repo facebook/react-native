@@ -208,7 +208,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     }));
   }
 
-  _renderResult(name: Examples): React.Node {
+  _renderResult(name: Examples | ErrorExamples): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
