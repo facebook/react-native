@@ -130,6 +130,8 @@ export class VirtualizedList<ItemT> extends React.Component<
 
   recordInteraction: () => void;
 
+  getScrollableNode: () => number | undefined;
+
   getScrollRef: () =>
     | React.ElementRef<typeof ScrollView>
     | React.ElementRef<typeof View>
