@@ -416,6 +416,11 @@ export interface TextInputAndroidProps {
   verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle' | undefined;
 }
 
+export interface SpeechTextWithTime {
+  currentTime: number;
+  currentText: string;
+}
+
 /**
  * @see TextInputProps.onFocus
  */

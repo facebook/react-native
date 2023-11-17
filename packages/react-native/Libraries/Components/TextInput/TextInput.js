@@ -453,6 +453,17 @@ type AndroidProps = $ReadOnly<{|
   underlineColorAndroid?: ?ColorValue,
 |}>;
 
+export type SpeechTextWithTime = {
+  /**
+   * Current time in iteration _onChange.
+   */
+  currentTime: number,
+  /**
+   * Current text in iteration  _onChange.
+   */
+  currentText: string,
+};
+
 export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
@@ -1115,6 +1126,9 @@ function InternalTextInput(props: Props): React.Node {
   } = props;
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
+  const prevSpeechTextWithTimeRef = useRef<
+  React.MutableRefObject<SpeechTextWithTime>,
+  >({currentTime: 0, currentText: ''});
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const selection: ?Selection =
@@ -1285,8 +1299,33 @@ function InternalTextInput(props: Props): React.Node {
 
   const _onChange = (event: ChangeEvent) => {
     const currentText = event.nativeEvent.text;
-    props.onChange && props.onChange(event);
-    props.onChangeText && props.onChangeText(currentText);
+    const multiline = props.multiline ?? false;
+
+    if (multiline) {
+      const DELAY_BETWEEN_ON_CHANGE = 100;
+      const currentTime = new Date().getTime();
+
+      const isCurrentTextEmpty = currentText === "￼";
+      const timeDifferenceBetweenIteration = currentTime - prevSpeechTextWithTimeRef.current?.currentTime;
+      const isChangeBelowThreshold = timeDifferenceBetweenIteration < DELAY_BETWEEN_ON_CHANGE;
+      const isPrevTextFilled =
+        prevSpeechTextWithTimeRef.current?.currentText.length > 1;
+      const isSpeechToTextPotentialEmptyOnChange = isChangeBelowThreshold &&
+        isPrevTextFilled &&
+        isCurrentTextEmpty;
+
+      if (isSpeechToTextPotentialEmptyOnChange) {
+        return;
+      } else {
+        props.onChange && props.onChange(event);
+        props.onChangeText && props.onChangeText(currentText);
+
+        prevSpeechTextWithTimeRef.current = {currentTime, currentText};
+      }
+    } else {
+      props.onChange && props.onChange(event);
+      props.onChangeText && props.onChangeText(currentText);
+    }
 
     if (inputRef.current == null) {
       // calling `props.onChange` or `props.onChangeText`
