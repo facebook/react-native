@@ -173,12 +173,7 @@ const SharedEventEmitter& ShadowNode::getEventEmitter() const {
 }
 
 jsi::Value ShadowNode::getInstanceHandle(jsi::Runtime& runtime) const {
-  auto instanceHandle = family_->instanceHandle_;
-  if (instanceHandle == nullptr) {
-    return jsi::Value::null();
-  }
-
-  return instanceHandle->getInstanceHandle(runtime);
+  return family_->eventEmitter_->getEventTarget()->getInstanceHandle(runtime);
 }
 
 Tag ShadowNode::getTag() const {
