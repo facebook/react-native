@@ -49,13 +49,4 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
-
-
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_sources_path,
-    :js_srcs_dir => "#{react_native_sources_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-    :output_dir => "#{react_native_dependency_path}/ReactCommon"
-  })
 end

@@ -378,23 +378,12 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
 
 function generateNativeCodegenFiles(
   libraries,
-  fabricEnabled,
   iosOutputDir,
   node,
   codegenCliPath,
   schemaPaths,
 ) {
-  let fabricEnabledTypes = ['components', 'all'];
   libraries.forEach(library => {
-    if (
-      !fabricEnabled &&
-      fabricEnabledTypes.indexOf(library.config.type) >= 0
-    ) {
-      console.log(
-        `[Codegen] ${library.config.name} skipped because fabric is not enabled.`,
-      );
-      return;
-    }
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), library.config.name));
     const pathToSchema = generateSchema(tmpDir, library, node, codegenCliPath);
     generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
@@ -408,44 +397,37 @@ function generateNativeCodegenFiles(
   });
 }
 
-function createComponentProvider(
-  fabricEnabled,
-  schemaPaths,
-  node,
-  iosOutputDir,
-) {
-  if (fabricEnabled) {
-    console.log('\n\n>>>>> Creating component provider');
-    // Save the list of spec paths to a temp file.
-    const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
-    const fd = fs.openSync(schemaListTmpPath, 'w');
-    fs.writeSync(fd, JSON.stringify(schemaPaths));
-    fs.closeSync(fd);
-    console.log(`Generated schema list: ${schemaListTmpPath}`);
+function createComponentProvider(schemaPaths, node, iosOutputDir) {
+  console.log('\n\n>>>>> Creating component provider');
+  // Save the list of spec paths to a temp file.
+  const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
+  const fd = fs.openSync(schemaListTmpPath, 'w');
+  fs.writeSync(fd, JSON.stringify(schemaPaths));
+  fs.closeSync(fd);
+  console.log(`Generated schema list: ${schemaListTmpPath}`);
 
-    const outputDir = path.join(
+  const outputDir = path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    'React',
+    'Fabric',
+  );
+
+  // Generate FabricComponentProvider.
+  // Only for iOS at this moment.
+  executeNodeScript(node, [
+    `${path.join(
       REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-      'React',
-      'Fabric',
-    );
-
-    // Generate FabricComponentProvider.
-    // Only for iOS at this moment.
-    executeNodeScript(node, [
-      `${path.join(
-        REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-        'scripts',
-        'generate-provider-cli.js',
-      )}`,
-      '--platform',
-      'ios',
-      '--schemaListPath',
-      schemaListTmpPath,
-      '--outputDir',
-      outputDir,
-    ]);
-    console.log(`Generated provider in: ${outputDir}`);
-  }
+      'scripts',
+      'generate-provider-cli.js',
+    )}`,
+    '--platform',
+    'ios',
+    '--schemaListPath',
+    schemaListTmpPath,
+    '--outputDir',
+    outputDir,
+  ]);
+  console.log(`Generated provider in: ${outputDir}`);
 }
 
 function findCodegenEnabledLibraries(
@@ -541,7 +523,6 @@ function execute(
   codegenConfigFilename,
   codegenConfigKey,
   baseCodegenConfigFileDir,
-  fabricEnabled,
 ) {
   if (!isAppRootValid(appRootDir)) {
     return;
@@ -568,14 +549,13 @@ function execute(
 
     generateNativeCodegenFiles(
       libraries,
-      fabricEnabled,
       iosOutputDir,
       node,
       codegenCliPath,
       schemaPaths,
     );
 
-    createComponentProvider(fabricEnabled, schemaPaths, node, iosOutputDir);
+    createComponentProvider(schemaPaths, node, iosOutputDir);
     cleanupEmptyFilesAndFolders(iosOutputDir);
   } catch (err) {
     console.error(err);

@@ -561,14 +561,12 @@ class CodegenUtilsTests < Test::Unit::TestCase
           },
           'dependencies': {
             "DoubleConversion": [],
-            "FBReactNativeSpec":  [],
             "RCT-Folly": [],
             "RCTRequired": [],
             "RCTTypeSafety": [],
             "React-Core": [],
             "React-jsi": [],
             "React-jsiexecutor": [],
-            "React-rncore": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
@@ -583,7 +581,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         specs[:dependencies].merge!({
             'React-graphics': [],
-            'React-rncore':  [],
             'React-Fabric': [],
             'React-utils': [],
             'React-debug': [],
