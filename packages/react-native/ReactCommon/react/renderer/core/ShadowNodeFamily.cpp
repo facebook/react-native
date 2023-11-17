@@ -26,7 +26,6 @@ ShadowNodeFamily::ShadowNodeFamily(
     : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
-      instanceHandle_(fragment.instanceHandle),
       eventEmitter_(std::move(eventEmitter)),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),

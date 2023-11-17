@@ -133,11 +133,6 @@ class ShadowNodeFamily final {
   const SurfaceId surfaceId_;
 
   /*
-   * Weak reference to the React instance handle
-   */
-  InstanceHandle::Shared const instanceHandle_;
-
-  /*
    * `EventEmitter` associated with all nodes of the family.
    */
   const SharedEventEmitter eventEmitter_;
