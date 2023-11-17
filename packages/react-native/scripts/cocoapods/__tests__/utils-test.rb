@@ -16,6 +16,7 @@ require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
 require_relative "./test_utils/XcodeprojMock.rb"
 require_relative "./test_utils/XcodebuildMock.rb"
+require_relative "./test_utils/SpecMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -36,6 +37,7 @@ class UtilsTests < Test::Unit::TestCase
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
+        $RN_PLATFORMS = nil
     end
 
     # ======================= #
@@ -834,7 +836,7 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
             assert_equal(expected_search_path, received_search_path)
         end
 
@@ -995,6 +997,172 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
+    # =============================================== #
+    # Test - Create Header Search Path For Frameworks #
+    # =============================================== #
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndNoExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", [])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers"
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenNoPlatformsAndExtraPath_createsPlainSearchPath
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenEmptyPlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = []
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenOnlyOnePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ['iOS']
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"])
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+        ])
+    end
+
+    def test_creatHeaderSearchPathForFrameworks_whenMultiplePlatformsAndExtraPath_createsPlainSearchPath
+        $RN_PLATFORMS = ["iOS", "macOS"]
+
+        result = ReactNativePodsUtils.create_header_search_path_for_frameworks(
+            "PODS_CONFIGURATION_BUILD_DIR",
+            "React-Fabric",
+            "React_Fabric",
+            [
+                "react/renderer/components/view/platform/cxx",
+                "react/renderer/components/view/platform/ios"
+            ]
+        )
+
+        assert_equal(result, [
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers/react/renderer/components/view/platform/ios",
+        ])
+    end
+
+    # ===================== #
+    # TEST - Add Dependency #
+    # ===================== #
+    def test_addDependency_whenNoHeaderSearchPathAndNoVersion_addsThem
+        spec = SpecMock.new
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric"}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependency_whenNoHeaderSearchPathAndVersion_addsThem
+        spec = SpecMock.new
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependency_whenHeaderSearchPathAndVersion_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {"HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersion_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => [])
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersionWithAdditionalPaths_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => ["react/renderer/components/view/platform/ios"])
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" =>  "\"$(PODS_ROOT)/RCT-Folly\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios\""})
+    end
+
+    def test_addDependencies_whenHeaderSearchPathAndVersionWithAdditionalPathsAndPlatforms_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+        $RN_PLATFORMS = ['iOS', 'macOS']
+
+        ReactNativePodsUtils.add_dependency(spec, "React-Fabric", "PODS_CONFIGURATION_BUILD_DIR", "React_Fabric", :additional_paths => [], :version => '1000.0.0')
+        ReactNativePodsUtils.add_dependency(spec, "React-RCTFabric", "PODS_CONFIGURATION_BUILD_DIR", "RCTFabric", :additional_paths => ["react/renderer/components/view/platform/ios"])
+
+        expected_search_paths = [
+            "$(PODS_ROOT)/RCT-Folly",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-iOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-iOS/RCTFabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-iOS/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric-macOS/React_Fabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-macOS/RCTFabric.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric-macOS/RCTFabric.framework/Headers/react/renderer/components/view/platform/ios"
+        ]
+        .map { |sp| return "\"#{sp}\"" }
+        .join(" ")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "React-Fabric", "version" => '1000.0.0'}, {:dependency_name => "React-RCTFabric" }])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" => expected_search_paths})
+    end
+
+    def test_addDependencies_whenSubspecsAndHeaderSearchPathAndVersionWithAdditionalPathsAndPlatforms_addsThemMaintainingTheSearchPaths
+        spec = SpecMock.new
+        spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"] = "\"$(PODS_ROOT)/RCT-Folly\""
+        $RN_PLATFORMS = ['iOS', 'macOS']
+
+        ReactNativePodsUtils.add_dependency(spec, "ReactCommon", "PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", :additional_paths => ["react/nativemodule/core"], :subspec_dependency => 'turbomodule/core')
+
+        expected_search_paths = [
+            "$(PODS_ROOT)/RCT-Folly",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-iOS/ReactCommon.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-iOS/ReactCommon.framework/Headers/react/nativemodule/core",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-macOS/ReactCommon.framework/Headers",
+            "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-macOS/ReactCommon.framework/Headers/react/nativemodule/core",
+        ]
+        .map { |sp| return "\"#{sp}\"" }
+        .join(" ")
+
+        assert_equal(spec.dependencies, [{:dependency_name => "ReactCommon/turbomodule/core"}])
+        assert_equal(spec.to_hash["pod_target_xcconfig"], {
+            "HEADER_SEARCH_PATHS" => expected_search_paths})
+    end
 end
 
 # ===== #
