@@ -75,17 +75,6 @@ class NewArchitectureHelper
                 end
             end
 
-            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
-            # This helps with backward compatibility.
-            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
-                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
-                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
-                target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
-                end
-            end
-
             target_installation_result.native_target.build_configurations.each do |config|
                 if config.name == "Release"
                     current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
@@ -138,27 +127,28 @@ class NewArchitectureHelper
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
-            spec.dependency "React-RCTFabric" # This is for Fabric Component
-            spec.dependency "React-Codegen"
+        end
 
-            spec.dependency "RCTRequired"
-            spec.dependency "RCTTypeSafety"
-            spec.dependency "ReactCommon/turbomodule/bridging"
-            spec.dependency "ReactCommon/turbomodule/core"
-            spec.dependency "React-NativeModulesApple"
-            spec.dependency "Yoga"
-            spec.dependency "React-Fabric"
-            spec.dependency "React-graphics"
-            spec.dependency "React-utils"
-            spec.dependency "React-debug"
-            spec.dependency "React-ImageManager"
-            spec.dependency "React-rendererdebug"
+        spec.dependency "React-RCTFabric" # This is for Fabric Component
+        spec.dependency "React-Codegen"
 
-            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-                spec.dependency "hermes-engine"
-            else
-                spec.dependency "React-jsi"
-            end
+        spec.dependency "RCTRequired"
+        spec.dependency "RCTTypeSafety"
+        spec.dependency "ReactCommon/turbomodule/bridging"
+        spec.dependency "ReactCommon/turbomodule/core"
+        spec.dependency "React-NativeModulesApple"
+        spec.dependency "Yoga"
+        spec.dependency "React-Fabric"
+        spec.dependency "React-graphics"
+        spec.dependency "React-utils"
+        spec.dependency "React-debug"
+        spec.dependency "React-ImageManager"
+        spec.dependency "React-rendererdebug"
+
+        if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+            spec.dependency "hermes-engine"
+        else
+            spec.dependency "React-jsi"
         end
 
         spec.pod_target_xcconfig = current_config

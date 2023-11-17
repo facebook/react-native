@@ -318,6 +318,22 @@ class ReactNativePodsUtils
             end
     end
 
+    def self.set_dynamic_frameworks_flags(installer)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+
+            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
+            # This helps with backward compatibility.
+            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
+                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
+                target_installation_result.native_target.build_configurations.each do |config|
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
+                end
+            end
+        end
+    end
+
     # ========= #
     # Utilities #
     # ========= #

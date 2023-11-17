@@ -159,13 +159,6 @@ class CodegenUtils
           });
         end
 
-        if new_arch_disabled
-          spec[:dependencies].merge!({
-            'React-rncore': [],
-            'FBReactNativeSpec': [],
-          })
-        end
-
         if script_phases
           Pod::UI.puts "[Codegen] Adding script_phases to React-Codegen."
           spec[:'script_phases'] = script_phases

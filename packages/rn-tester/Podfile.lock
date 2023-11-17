@@ -2,13 +2,6 @@ PODS:
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
-  - FBReactNativeSpec (1000.0.0):
-    - RCT-Folly (= 2023.08.07.00)
-    - RCTRequired (= 1000.0.0)
-    - RCTTypeSafety (= 1000.0.0)
-    - React-Core (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
   - fmt (9.1.0)
   - glog (0.3.5)
   - hermes-engine (1000.0.0):
@@ -20,6 +13,44 @@ PODS:
   - hermes-engine/inspector (1000.0.0)
   - hermes-engine/inspector_chrome (1000.0.0)
   - hermes-engine/Public (1000.0.0)
+  - MyNativeView (0.0.1):
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2023.08.07.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - NativeCxxModuleExample (0.0.1):
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2023.08.07.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - OCMock (3.9.1)
   - RCT-Folly (2023.08.07.00):
     - boost
@@ -58,7 +89,6 @@ PODS:
   - React-callinvoker (1000.0.0)
   - React-Codegen (1000.0.0):
     - DoubleConversion
-    - FBReactNativeSpec
     - glog
     - hermes-engine
     - RCT-Folly
@@ -72,7 +102,6 @@ PODS:
     - React-jsiexecutor
     - React-NativeModulesApple
     - React-rendererdebug
-    - React-rncore
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -1097,8 +1126,23 @@ PODS:
     - React-perflogger (= 1000.0.0)
   - ScreenshotManager (0.0.1):
     - glog
+    - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
 
@@ -1106,10 +1150,11 @@ DEPENDENCIES:
   - boost (from `../react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../react-native/Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `../react-native/React/FBReactNativeSpec`)
   - fmt (from `../react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - MyNativeView (from `NativeComponentExample`)
+  - NativeCxxModuleExample (from `NativeCxxModuleExample`)
   - OCMock (~> 3.9.1)
   - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1172,8 +1217,6 @@ EXTERNAL SOURCES:
     :podspec: "../react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
     :path: "../react-native/Libraries/FBLazyVector"
-  FBReactNativeSpec:
-    :path: "../react-native/React/FBReactNativeSpec"
   fmt:
     :podspec: "../react-native/third-party-podspecs/fmt.podspec"
   glog:
@@ -1181,6 +1224,10 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: ''
+  MyNativeView:
+    :path: NativeComponentExample
+  NativeCxxModuleExample:
+    :path: NativeCxxModuleExample
   RCT-Folly:
     :podspec: "../react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1278,17 +1325,18 @@ SPEC CHECKSUMS:
   boost: 26fad476bfa736552bbfa698a06cc530475c1505
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   FBLazyVector: f4492a543c5a8fa1502d3a5867e3f7252497cfe8
-  FBReactNativeSpec: 03da6018f583d64c5944bc4afffb12368e3642a8
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 2788dfc2ed3699d11b14e815f0c608fc8d770d6b
+  MyNativeView: 1fb0d21fda6ef12fd5f425f9888c81345a86a3e7
+  NativeCxxModuleExample: 19d10636011c914264a5922c6f0f22a2e8fd0910
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: 823c6f6ec910a75d4ad28898b4a11cdee140b92a
   RCTRequired: 82c56a03b3efd524bfdb581a906add903f78f978
   RCTTypeSafety: 5f57d4ae5dfafc85a0f575d756c909b584722c52
   React: cb6dc75e09f32aeddb4d8fb58a394a67219a92fe
   React-callinvoker: bae59cbd6affd712bbfc703839dad868ff35069d
-  React-Codegen: 20baee7c8f2303bc5f34d9e72f93ca55de6cbde3
+  React-Codegen: c1e6ea0005a6ecf187d2772f14e5386f1c1f4853
   React-Core: f09ea29184cc7f33015a0748588fcfe1d43b3dd1
   React-CoreModules: ad1b7cb8efe5f3c7e88548b6ea6aad8507774471
   React-cxxreact: 04bf6a12caa850f5d2c7bd6d66dfecd4741989b5
@@ -1321,16 +1369,16 @@ SPEC CHECKSUMS:
   React-RCTText: d9925903524a7b179cf7803162a98038e0bfb4fd
   React-RCTVibration: 14322c13fb0c5cc2884b714b11d277dc7fc326c4
   React-rendererdebug: 2e58409db231638bc3e78143d8844066a3302939
-  React-rncore: 63aced0ca8aff46f8e762663ca4afebb5eedb627
+  React-rncore: e903b3d2819a25674403c548ec103f34bf02ba2b
   React-runtimeexecutor: e1c32bc249dd3cf3919cb4664fd8dc84ef70cff7
   React-runtimescheduler: 6529d155a98010b6e8f0a3a86d4184b89a886633
   React-utils: 87ed8c079c9991831112fe716f2686c430699fc3
   ReactCommon: 4511ea0e8f349de031de7cad88c2ecf871ab69f9
   ReactCommon-Samples: cfc3383af93a741319e038977c2ae1082e4ff49e
-  ScreenshotManager: 2b23b74d25f5e307f7b4d21173a61a3934e69475
+  ScreenshotManager: 753da20873c2ada484bdee4143a7248084d3fd35
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 455fa6867657b570a05655dd515c8c6588618fa8
 
-PODFILE CHECKSUM: c0120ff99aea9c7141bc22179e0f6be99c81a601
+PODFILE CHECKSUM: 426f495a1ad44f3cabea3b7dd2b66a0b71083e26
 
 COCOAPODS: 1.13.0
