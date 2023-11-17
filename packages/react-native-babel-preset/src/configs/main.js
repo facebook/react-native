@@ -112,15 +112,17 @@ const getPreset = (src, options) => {
       {useBuiltIns: true},
     ]);
   }
-  if (!isHermes && (isNull || hasClass || src.indexOf('...') !== -1)) {
-    extraPlugins.push(
-      [require('@babel/plugin-transform-spread')],
-      [
-        require('@babel/plugin-proposal-object-rest-spread'),
-        // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-        {loose: true, useBuiltIns: true},
-      ],
-    );
+  if (isNull || hasClass || src.indexOf('...') !== -1) {
+    if (!isHermes) {
+      extraPlugins.push([require('@babel/plugin-transform-spread')]);
+    }
+    // Include this transform for Hermes until destructured
+    // rest params are supported: (...{bar}) => bar
+    extraPlugins.push([
+      require('@babel/plugin-proposal-object-rest-spread'),
+      // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
+      {loose: true, useBuiltIns: true},
+    ]);
   }
   if (isNull || src.indexOf('async') !== -1) {
     extraPlugins.push([
