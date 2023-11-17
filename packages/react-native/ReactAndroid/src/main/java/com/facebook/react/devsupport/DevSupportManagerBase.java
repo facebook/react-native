@@ -365,15 +365,16 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           }
         });
 
-    if (mDevSettings.isDeviceDebugEnabled()) {
-      // On-device JS debugging (CDP). Render action to open debugger frontend.
+    if (mDevSettings.isRemoteJSDebugEnabled()) {
+      // [Deprecated in React Native 0.73] Remote JS debugging. Handle reload
+      // via external JS executor. This capability will be removed in a future
+      // release.
+      mDevSettings.setRemoteJSDebugEnabled(false);
+      handleReloadJS();
+    }
 
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (mDevSettings.isRemoteJSDebugEnabled()) {
-        mDevSettings.setRemoteJSDebugEnabled(false);
-        handleReloadJS();
-      }
+    if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
           () ->
