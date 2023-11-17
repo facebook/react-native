@@ -50,6 +50,7 @@ class ShadowNodeFamily final {
 
   ShadowNodeFamily(
       const ShadowNodeFamilyFragment& fragment,
+      SharedEventEmitter eventEmitter,
       EventDispatcher::Weak eventDispatcher,
       const ComponentDescriptor& componentDescriptor);
 
