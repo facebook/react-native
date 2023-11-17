@@ -11,7 +11,7 @@
 #import <mach/mach.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
-#import <stdatomic.h>
+#import <atomic>
 
 #import <UIKit/UIKit.h>
 
@@ -42,7 +42,7 @@ static NSString *const kProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
-static atomic_bool RCTProfileProfiling = ATOMIC_VAR_INIT(NO);
+static std::atomic<int> RCTProfileProfiling = 0;
 
 static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;
@@ -73,7 +73,7 @@ static systrace_arg_t *newSystraceArgsFromDictionary(NSDictionary<NSString *, NS
     return NULL;
   }
 
-  systrace_arg_t *systrace_args = malloc(sizeof(systrace_arg_t) * args.count);
+  systrace_arg_t *systrace_args = (systrace_arg_t *)malloc(sizeof(systrace_arg_t) * args.count);
   if (systrace_args) {
     __block size_t i = 0;
     [args enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
@@ -128,9 +128,9 @@ static NSDictionary *RCTProfileGetMemoryUsage(void)
 
 #pragma mark - Module hooks
 
-static const char *RCTProfileProxyClassName(Class class)
+static const char *RCTProfileProxyClassName(Class proxyClass)
 {
-  return [kProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
+  return [kProfilePrefix stringByAppendingString:NSStringFromClass(proxyClass)].UTF8String;
 }
 
 static dispatch_group_t RCTProfileGetUnhookGroup(void)
@@ -220,7 +220,7 @@ static void RCTProfileHookUIManager(RCTUIManager *uiManager)
     Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:rootTag:));
 
     if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
-      originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);
+      originalCreateView = (__typeof(originalCreateView))method_getImplementation(createView);
       method_setImplementation(createView, (IMP)RCTProfileCreateView);
     }
   });

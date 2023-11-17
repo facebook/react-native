@@ -166,9 +166,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
   _minimumSize = minimumSize;
   __block NSNumber *tag = self.reactTag;
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   RCTExecuteOnUIManagerQueue(^{
-    __strong typeof(self) strongSelf = weakSelf;
+    __strong __typeof(self) strongSelf = weakSelf;
     if (strongSelf && strongSelf->_bridge.isValid) {
       RCTRootShadowView *shadowView = (RCTRootShadowView *)[strongSelf->_bridge.uiManager shadowViewForReactTag:tag];
       shadowView.minimumSize = minimumSize;
@@ -385,6 +385,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [_contentView invalidate];
 }
 
+- (UIView *)contentView
+{
+  return _contentView;
+}
 @end
 
 @implementation RCTRootView (Deprecated)

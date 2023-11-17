@@ -1195,10 +1195,10 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
     return;
   }
 
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
 
   void (^mountingBlock)(void) = ^{
-    typeof(self) strongSelf = weakSelf;
+    __typeof(self) strongSelf = weakSelf;
 
     @try {
       for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
