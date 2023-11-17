@@ -50,7 +50,7 @@ function registerPackage(packageName /*: string */) {
   const registerConfig = {
     ...getBabelConfig(packageName),
     root: packageDir,
-    ignore: [/\/node_modules\//],
+    ignore: [/[/\\]node_modules[/\\]/],
   };
 
   require('@babel/register')(registerConfig);
