@@ -1301,17 +1301,15 @@ static void justifyMainAxis(
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
-        child->isInlineStartPositionDefined(mainAxis, direction)) {
+        child->isFlexStartPositionDefined(mainAxis)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
         // defined, we override the position to whatever the user said (and
         // margin/border).
         child->setLayoutPosition(
-            child->getInlineStartPosition(
-                mainAxis, direction, availableInnerMainDim) +
-                node->getInlineStartBorder(mainAxis, direction) +
-                child->getInlineStartMargin(
-                    mainAxis, direction, availableInnerWidth),
+            child->getFlexStartPosition(mainAxis, availableInnerMainDim) +
+                node->getFlexStartBorder(mainAxis, direction) +
+                child->getFlexStartMargin(mainAxis, availableInnerWidth),
             flexStartEdge(mainAxis));
       }
     } else {
@@ -1383,8 +1381,7 @@ static void justifyMainAxis(
       } else if (performLayout) {
         child->setLayoutPosition(
             childLayout.position[flexStartEdge(mainAxis)] +
-                node->getInlineStartBorder(mainAxis, direction) +
-                leadingMainDim,
+                node->getFlexStartBorder(mainAxis, direction) + leadingMainDim,
             flexStartEdge(mainAxis));
       }
     }
@@ -1859,14 +1856,12 @@ static void calculateLayoutImpl(
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
           const bool isChildLeadingPosDefined =
-              child->isInlineStartPositionDefined(crossAxis, direction);
+              child->isFlexStartPositionDefined(crossAxis);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
-                child->getInlineStartPosition(
-                    crossAxis, direction, availableInnerCrossDim) +
-                    node->getInlineStartBorder(crossAxis, direction) +
-                    child->getInlineStartMargin(
-                        crossAxis, direction, availableInnerWidth),
+                child->getFlexStartPosition(crossAxis, availableInnerCrossDim) +
+                    node->getFlexStartBorder(crossAxis, direction) +
+                    child->getFlexStartMargin(crossAxis, availableInnerWidth),
                 flexStartEdge(crossAxis));
           }
           // If leading position is not defined or calculations result in Nan,
@@ -1875,9 +1870,8 @@ static void calculateLayoutImpl(
               yoga::isUndefined(
                   child->getLayout().position[flexStartEdge(crossAxis)])) {
             child->setLayoutPosition(
-                node->getInlineStartBorder(crossAxis, direction) +
-                    child->getInlineStartMargin(
-                        crossAxis, direction, availableInnerWidth),
+                node->getFlexStartBorder(crossAxis, direction) +
+                    child->getFlexStartMargin(crossAxis, availableInnerWidth),
                 flexStartEdge(crossAxis));
           }
         } else {
@@ -2113,16 +2107,16 @@ static void calculateLayoutImpl(
               case Align::FlexStart: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getInlineStartMargin(
-                            crossAxis, direction, availableInnerWidth),
+                        child->getFlexStartMargin(
+                            crossAxis, availableInnerWidth),
                     flexStartEdge(crossAxis));
                 break;
               }
               case Align::FlexEnd: {
                 child->setLayoutPosition(
                     currentLead + lineHeight -
-                        child->getInlineEndMargin(
-                            crossAxis, direction, availableInnerWidth) -
+                        child->getFlexEndMargin(
+                            crossAxis, availableInnerWidth) -
                         child->getLayout().measuredDimension(
                             dimension(crossAxis)),
                     flexStartEdge(crossAxis));
@@ -2140,8 +2134,8 @@ static void calculateLayoutImpl(
               case Align::Stretch: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getInlineStartMargin(
-                            crossAxis, direction, availableInnerWidth),
+                        child->getFlexStartMargin(
+                            crossAxis, availableInnerWidth),
                     flexStartEdge(crossAxis));
 
                 // Remeasure child with the line height as it as been only
