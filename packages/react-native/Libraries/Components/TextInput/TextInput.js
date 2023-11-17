@@ -1127,7 +1127,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
   const prevSpeechTextWithTimeRef = useRef<
-  React.MutableRefObject<SpeechTextWithTime>,
+    React.MutableRefObject<SpeechTextWithTime>,
   >({currentTime: 0, currentText: ''});
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1305,14 +1305,15 @@ function InternalTextInput(props: Props): React.Node {
       const DELAY_BETWEEN_ON_CHANGE = 100;
       const currentTime = new Date().getTime();
 
-      const isCurrentTextEmpty = currentText === "￼";
-      const timeDifferenceBetweenIteration = currentTime - prevSpeechTextWithTimeRef.current?.currentTime;
-      const isChangeBelowThreshold = timeDifferenceBetweenIteration < DELAY_BETWEEN_ON_CHANGE;
+      const isCurrentTextEmpty = currentText === '￼';
+      const timeDifferenceBetweenIteration =
+        currentTime - prevSpeechTextWithTimeRef.current?.currentTime;
+      const isChangeBelowThreshold =
+        timeDifferenceBetweenIteration < DELAY_BETWEEN_ON_CHANGE;
       const isPrevTextFilled =
         prevSpeechTextWithTimeRef.current?.currentText.length > 1;
-      const isSpeechToTextPotentialEmptyOnChange = isChangeBelowThreshold &&
-        isPrevTextFilled &&
-        isCurrentTextEmpty;
+      const isSpeechToTextPotentialEmptyOnChange =
+        isChangeBelowThreshold && isPrevTextFilled && isCurrentTextEmpty;
 
       if (isSpeechToTextPotentialEmptyOnChange) {
         return;
