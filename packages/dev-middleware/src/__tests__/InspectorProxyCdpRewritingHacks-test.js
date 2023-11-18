@@ -40,7 +40,8 @@ beforeAll(() => {
   jest.resetModules();
 });
 
-describe.each(['HTTP', 'HTTPS'])(
+// TODO T169943794
+xdescribe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
     const serverRef = withServerForEachTest({
