@@ -48,6 +48,7 @@
     "React.podspec",
     "React",
     "ReactAndroid",
+    "ReactApple",
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",

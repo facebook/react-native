@@ -129,6 +129,8 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "glog"
 
+  add_dependency(s, "RCTDeprecation")
+
   if use_hermes
     s.dependency 'React-hermes'
     s.dependency 'hermes-engine'
