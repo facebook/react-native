@@ -45,6 +45,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final boolean mEnableTurboModuleSyncVoidMethods =
       ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
 
+  private final boolean mIsLazy = ReactFeatureFlags.enableTurboModuleStableAPI;
+
+  // Lazy Props
+  private List<ReactPackage> mPackages;
+  private ReactApplicationContext mReactContext;
+
   protected ReactPackageTurboModuleManagerDelegate() {
     super();
   }
@@ -52,6 +58,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
+    if (mIsLazy) {
+      mPackages = packages;
+      mReactContext = reactApplicationContext;
+      return;
+    }
+
     final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof BaseReactPackage) {
@@ -130,21 +142,65 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Override
   public boolean unstable_shouldEnableLegacyModuleInterop() {
+    if (mIsLazy) {
+      return false;
+    }
+
     return mShouldEnableLegacyModuleInterop;
   }
 
   @Override
   public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    if (mIsLazy) {
+      return false;
+    }
+
     return mShouldRouteTurboModulesThroughLegacyModuleInterop;
   }
 
   public boolean unstable_enableSyncVoidMethods() {
+    if (mIsLazy) {
+      return false;
+    }
+
     return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable
   @Override
   public TurboModule getModule(String moduleName) {
+    if (mIsLazy) {
+      /*
+       * Returns first TurboModule found with the name received as a parameter. There's no
+       * warning or error if there are more than one TurboModule registered with the same name in
+       * different packages. This method relies on the order of insertion of ReactPackage into
+       * mPackages. Usually the size of mPackages is very small (2 or 3 packages in the majority of
+       * the cases)
+       */
+      for (ReactPackage reactPackage : mPackages) {
+        if (reactPackage instanceof BaseReactPackage) {
+          BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
+          try {
+            TurboModule nativeModule =
+                (TurboModule) baseReactPackage.getModule(moduleName, mReactContext);
+            if (nativeModule != null) {
+              return nativeModule;
+            }
+          } catch (IllegalArgumentException ex) {
+            /*
+             TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+             this happens, it's safe to ignore the exception because a later TurboReactPackage could
+             provide the module.
+            */
+          }
+        } else {
+          throw new IllegalArgumentException(
+              "ReactPackage must be an instance of TurboReactPackage");
+        }
+      }
+      return null;
+    }
+
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
@@ -180,11 +236,15 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Override
   public boolean unstable_isLazyTurboModuleDelegate() {
-    return false;
+    return mIsLazy;
   }
 
   @Override
   public boolean unstable_isModuleRegistered(String moduleName) {
+    if (mIsLazy) {
+      throw new UnsupportedOperationException("unstable_isModuleRegistered is not supported");
+    }
+
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
       if (moduleInfo != null && moduleInfo.isTurboModule()) {
@@ -196,6 +256,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Override
   public boolean unstable_isLegacyModuleRegistered(String moduleName) {
+    if (mIsLazy) {
+      return false;
+    }
+
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
       if (moduleInfo != null && !moduleInfo.isTurboModule()) {
@@ -208,6 +272,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
+    if (mIsLazy) {
+      throw new UnsupportedOperationException("Legacy Modules are not supported");
+    }
+
     if (!unstable_shouldEnableLegacyModuleInterop()) {
       return null;
     }
@@ -247,6 +315,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Override
   public List<String> getEagerInitModuleNames() {
+    if (mIsLazy) {
+      throw new UnsupportedOperationException(
+          "Running delegate in lazy mode. Please override getEagerInitModuleNames() and return a list of module names that need to be initialized eagerly.");
+    }
+
     List<String> moduleNames = new ArrayList<>();
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       for (final ReactModuleInfo moduleInfo : mPackageModuleInfos.get(moduleProvider).values()) {
