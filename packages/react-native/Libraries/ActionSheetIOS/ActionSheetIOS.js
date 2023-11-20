@@ -123,16 +123,9 @@ const ActionSheetIOS = {
    * See https://reactnative.dev/docs/actionsheetios#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
-    options: {|
-      +message?: ?string,
-      +url?: ?string,
-      +subject?: ?string,
-      +anchor?: ?number,
-      +userInterfaceStyle?: 'light' | 'dark',
-      +excludedActivityTypes: ?Array<string>,
-    |},
-    failureCallback: (error: Error) => void,
-    successCallback: (success: boolean, method: string) => void,
+    options: Object,
+    failureCallback: Function,
+    successCallback: Function,
   ) {
     invariant(
       typeof options === 'object' && options !== null,
