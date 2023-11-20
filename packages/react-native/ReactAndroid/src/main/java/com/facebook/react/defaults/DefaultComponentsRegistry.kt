@@ -27,6 +27,10 @@ private constructor(componentFactory: ComponentFactory) {
 
   @DoNotStrip private external fun initHybrid(componentFactory: ComponentFactory): HybridData
 
+  init {
+    DefaultSoLoader.maybeLoadSoLibrary()
+  }
+
   companion object {
     @JvmStatic
     @DoNotStrip
