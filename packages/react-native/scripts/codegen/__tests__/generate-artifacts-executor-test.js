@@ -120,7 +120,6 @@ describe('extractLibrariesFromJSON', () => {
     );
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
-      library: 'my-app',
       config: {
         name: 'AppModules',
         type: 'all',
@@ -155,7 +154,6 @@ describe('extractLibrariesFromJSON', () => {
     );
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
-      library: reactNativeDependencyName,
       config: {
         name: 'react-native',
         type: 'all',
@@ -179,7 +177,6 @@ describe('extractLibrariesFromJSON', () => {
     );
     expect(libraries.length).toBe(3);
     expect(libraries[0]).toEqual({
-      library: myDependency,
       config: {
         name: 'react-native',
         type: 'all',
@@ -188,7 +185,6 @@ describe('extractLibrariesFromJSON', () => {
       libraryPath: myDependencyPath,
     });
     expect(libraries[1]).toEqual({
-      library: myDependency,
       config: {
         name: 'my-component',
         type: 'components',
@@ -197,7 +193,6 @@ describe('extractLibrariesFromJSON', () => {
       libraryPath: myDependencyPath,
     });
     expect(libraries[2]).toEqual({
-      library: myDependency,
       config: {
         name: 'my-module',
         type: 'module',
@@ -272,12 +267,10 @@ describe('findCodegenEnabledLibraries', () => {
 
     expect(libraries).toEqual([
       {
-        library: 'react-native',
         config: {},
         libraryPath: baseCodegenConfigFileDir,
       },
       {
-        library: 'react-native-foo',
         config: {name: 'RNFooSpec', type: 'modules', jsSrcsDir: 'src'},
         libraryPath: path.join(projectDir, 'library-foo'),
       },

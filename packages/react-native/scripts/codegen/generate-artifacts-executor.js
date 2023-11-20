@@ -105,13 +105,10 @@ function extractLibrariesFromConfigurationArray(
   configFile,
   codegenConfigKey,
   libraries,
-  dependency,
   dependencyPath,
 ) {
-  console.log(`[Codegen] Found ${dependency}`);
   configFile[codegenConfigKey].libraries.forEach(config => {
     const libraryConfig = {
-      library: dependency,
       config,
       libraryPath: dependencyPath,
     };
@@ -142,11 +139,10 @@ function extractLibrariesFromJSON(
     return;
   }
 
+  console.log(`[Codegen] Found ${dependency}`);
   if (configFile[codegenConfigKey].libraries == null) {
-    console.log(`[Codegen] Found ${dependency}`);
     var config = configFile[codegenConfigKey];
     libraries.push({
-      library: dependency,
       config,
       libraryPath: dependencyPath,
     });
@@ -156,13 +152,12 @@ function extractLibrariesFromJSON(
       configFile,
       codegenConfigKey,
       libraries,
-      dependency,
       dependencyPath,
     );
   }
 }
 
-function handleReactNativeCodeLibraries(
+function handleReactNativeCoreLibraries(
   libraries,
   codegenConfigFilename,
   codegenConfigKey,
@@ -397,7 +392,7 @@ function generateNativeCodegenFiles(
   });
 }
 
-function createComponentProvider(schemaPaths, node, iosOutputDir) {
+function createComponentProvider(schemaPaths, node) {
   console.log('\n\n>>>>> Creating component provider');
   // Save the list of spec paths to a temp file.
   const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
@@ -440,7 +435,7 @@ function findCodegenEnabledLibraries(
   const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
   const libraries = [];
 
-  handleReactNativeCodeLibraries(
+  handleReactNativeCoreLibraries(
     libraries,
     codegenConfigFilename,
     codegenConfigKey,
@@ -554,7 +549,7 @@ function execute(
       schemaPaths,
     );
 
-    createComponentProvider(schemaPaths, node, iosOutputDir);
+    createComponentProvider(schemaPaths, node);
     cleanupEmptyFilesAndFolders(iosOutputDir);
   } catch (err) {
     console.error(err);
