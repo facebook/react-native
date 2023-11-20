@@ -19,4 +19,5 @@ target_link_libraries(react_newarchdefaults
         fabricjni
         react_nativemodule_core
         react_codegen_rncore
+        react_cxxreactpackage
         jsi)
