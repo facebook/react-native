@@ -31,6 +31,7 @@ export interface ShareActionSheetIOSOptions {
   url?: string | undefined;
   subject?: string | undefined;
   anchor?: number | undefined;
+  userInterfaceStyle?: 'light' | 'dark' | undefined;
   /** The activities to exclude from the ActionSheet.
    * For example: ['com.apple.UIKit.activity.PostToTwitter']
    */

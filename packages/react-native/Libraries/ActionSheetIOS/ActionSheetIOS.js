@@ -49,7 +49,7 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
-      +userInterfaceStyle?: string,
+      +userInterfaceStyle?: 'light' | 'dark',
       +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
@@ -123,9 +123,16 @@ const ActionSheetIOS = {
    * See https://reactnative.dev/docs/actionsheetios#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
-    options: Object,
-    failureCallback: Function,
-    successCallback: Function,
+    options: {|
+      +message?: ?string,
+      +url?: ?string,
+      +subject?: ?string,
+      +anchor?: ?number,
+      +userInterfaceStyle?: 'light' | 'dark',
+      +excludedActivityTypes: ?Array<string>,
+    |},
+    failureCallback: (error: Error) => void,
+    successCallback: (success: boolean, method: string) => void,
   ) {
     invariant(
       typeof options === 'object' && options !== null,
