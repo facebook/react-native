@@ -399,7 +399,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
                 "arguments"=> ["~/app/ios/../node_modules/react-native/scripts/generate-codegen-artifacts.js",
                     "-p", "~/app",
                     "-o", Pod::Config.instance.installation_root,
-                    "-e", "false",
                     "-c", ""]
             }
         ])

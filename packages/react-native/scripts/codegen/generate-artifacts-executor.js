@@ -511,7 +511,6 @@ function cleanupEmptyFilesAndFolders(filepath) {
  * @parameter codegenConfigFilename: the file that contains the codeGen configuration. The default is `package.json`.
  * @parameter codegenConfigKey: the key in the codegenConfigFile that controls the codegen.
  * @parameter baseCodegenConfigFileDir: the directory of the codeGenConfigFile.
- * @parameter fabricEnabled: whether fabric is enabled or not.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.

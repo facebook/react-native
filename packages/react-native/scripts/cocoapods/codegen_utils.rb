@@ -325,7 +325,6 @@ class CodegenUtils
           "#{relative_installation_root}/#{react_native_path}/scripts/generate-codegen-artifacts.js",
           "-p", "#{app_path}",
           "-o", Pod::Config.instance.installation_root,
-          "-e", "#{fabric_enabled}",
           "-c", "#{config_file_dir}",
         ])
       Pod::UI.puts out;
