@@ -21,13 +21,32 @@ import com.facebook.react.bridge.ReactApplicationContext
  * is hosted inside the React Native framework
  */
 class DefaultTurboModuleManagerDelegate
-private constructor(context: ReactApplicationContext, packages: List<ReactPackage>) :
-    ReactPackageTurboModuleManagerDelegate(context, packages) {
+private constructor(
+    context: ReactApplicationContext,
+    packages: List<ReactPackage>,
+    private val eagerlyInitializedModules: List<String>,
+) : ReactPackageTurboModuleManagerDelegate(context, packages) {
 
   @DoNotStrip external override fun initHybrid(): HybridData?
 
+  override fun getEagerInitModuleNames(): List<String> {
+    if (unstable_isLazyTurboModuleDelegate()) {
+      return eagerlyInitializedModules
+    }
+
+    // Use ReactModuleInfo to get the eager init module names
+    return super.getEagerInitModuleNames()
+  }
+
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
+    private var eagerInitModuleNames: List<String> = emptyList()
+
+    fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
+      this.eagerInitModuleNames = eagerInitModuleNames
+      return this
+    }
+
     override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
-        DefaultTurboModuleManagerDelegate(context, packages)
+        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames)
   }
 }
