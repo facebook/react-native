@@ -1407,9 +1407,10 @@ public class ReactInstanceManager {
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
     if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
       if (mUIManagerProvider != null) {
         catalystInstance.setFabricUIManager(mUIManagerProvider.createUIManager(reactContext));
+      } else {
+        catalystInstance.getJSIModule(JSIModuleType.UIManager);
       }
     }
     if (mBridgeIdleDebugListener != null) {
