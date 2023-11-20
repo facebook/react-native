@@ -20,7 +20,7 @@ exports.config = {
   capabilities: [
     {
       platformName: 'iOS',
-      'appium:platformVersion': '15.5',
+      'appium:platformVersion': '16.4',
       'appium:deviceName': 'iPhone 14',
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
@@ -29,7 +29,7 @@ exports.config = {
     },
   ],
   logLevel: 'debug',
-  bail: 0,
+  bail: 10, //reduce time of failed builds
   waitforTimeout: 10000,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
