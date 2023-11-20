@@ -8,7 +8,6 @@
 package com.facebook.react.defaults
 
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.soloader.SoLoader
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -27,8 +26,7 @@ object DefaultNewArchitectureEntryPoint {
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = false,
-      dynamicLibraryName: String = "appmodules",
+      bridgelessEnabled: Boolean = false
   ) {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
@@ -42,23 +40,21 @@ object DefaultNewArchitectureEntryPoint {
     this.privateConcurrentReactEnabled = fabricEnabled
     this.privateBridgelessEnabled = bridgelessEnabled
 
-    SoLoader.loadLibrary("react_newarchdefaults")
-    SoLoader.loadLibrary(dynamicLibraryName)
+    DefaultSoLoader.maybeLoadSoLibrary()
   }
 
   @Deprecated(
       message =
           "Calling DefaultNewArchitectureEntryPoint.load() with different fabricEnabled and concurrentReactEnabled is deprecated. Please use a single flag for both Fabric and Concurrent React",
-      replaceWith = ReplaceWith("load(turboModulesEnabled, fabricEnabled, dynamicLibraryName)"),
+      replaceWith = ReplaceWith("load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)"),
       level = DeprecationLevel.WARNING)
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
       bridgelessEnabled: Boolean = false,
       @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean = true,
-      dynamicLibraryName: String = "appmodules",
   ) {
-    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled, dynamicLibraryName)
+    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
   }
 
   private var privateFabricEnabled: Boolean = false

@@ -49,4 +49,9 @@ private constructor(
     override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
         DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames)
   }
+
+  @Synchronized
+  override fun maybeLoadOtherSoLibraries() {
+    DefaultSoLoader.maybeLoadSoLibrary()
+  }
 }
