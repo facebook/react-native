@@ -106,6 +106,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("src/main/jni/react/newarchdefaults", "")
             ),
             new PrefabPreprocessingEntry(
+                "react_cxxreactpackage",
+                new Pair("src/main/jni/react/runtime/cxxreactpackage", "")
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_animations",
                 new Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")
             ),
@@ -530,6 +534,7 @@ android {
                     "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_cxxreactpackage",
                     "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
@@ -649,6 +654,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_cxxreactpackage {
+            headers(new File(prefabHeadersDir, "react_cxxreactpackage").absolutePath)
         }
         react_render_animations {
             headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
