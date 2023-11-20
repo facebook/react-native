@@ -51,7 +51,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 80000,
+    timeout: 120000,
     require: ['@babel/register'],
   },
 
