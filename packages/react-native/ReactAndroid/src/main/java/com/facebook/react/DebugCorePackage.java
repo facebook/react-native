@@ -43,13 +43,12 @@ class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandR
   public DebugCorePackage() {}
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
       case JSCHeapCapture.NAME:
         return new JSCHeapCapture(reactContext);
       default:
-        throw new IllegalArgumentException(
-            "In DebugCorePackage, could not find Native module for " + name);
+        return null;
     }
   }
 
