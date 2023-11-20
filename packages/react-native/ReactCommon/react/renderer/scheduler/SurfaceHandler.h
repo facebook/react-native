@@ -189,7 +189,7 @@ class SurfaceHandler {
   struct Link {
     Status status{Status::Unregistered};
     const UIManager* uiManager{};
-    const ShadowTree* shadowTree{};
+    std::weak_ptr<const ShadowTree> shadowTree;
   };
 
   /*

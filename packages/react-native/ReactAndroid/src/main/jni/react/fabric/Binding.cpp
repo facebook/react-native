@@ -132,8 +132,12 @@ void Binding::startSurface(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
-      animationDriver_);
+  auto mountingCoordinator = surfaceHandler.getMountingCoordinator();
+  if (!mountingCoordinator) {
+    return;
+  }
+
+  mountingCoordinator->setMountingOverrideDelegate(animationDriver_);
 
   {
     SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");

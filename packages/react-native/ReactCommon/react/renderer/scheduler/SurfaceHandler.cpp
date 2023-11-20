@@ -72,14 +72,14 @@ void SurfaceHandler::start() const noexcept {
     parameters = parameters_;
   }
 
-  auto shadowTree = std::make_unique<ShadowTree>(
+  auto shadowTree = std::make_shared<ShadowTree>(
       parameters.surfaceId,
       parameters.layoutConstraints,
       parameters.layoutContext,
       *link_.uiManager,
       *parameters.contextContainer);
 
-  link_.shadowTree = shadowTree.get();
+  link_.shadowTree = std::weak_ptr(shadowTree);
 
   link_.uiManager->startSurface(
       std::move(shadowTree),
@@ -93,14 +93,14 @@ void SurfaceHandler::start() const noexcept {
 }
 
 void SurfaceHandler::stop() const noexcept {
-  auto shadowTree = ShadowTree::Unique{};
+  std::shared_ptr<ShadowTree> shadowTree;
   {
     std::unique_lock lock(linkMutex_);
     react_native_assert(
         link_.status == Status::Running && "Surface must be running.");
 
     link_.status = Status::Registered;
-    link_.shadowTree = nullptr;
+    link_.shadowTree.reset();
     shadowTree = link_.uiManager->stopSurface(parameters_.surfaceId);
   }
 
@@ -197,9 +197,10 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
   std::shared_lock lock(linkMutex_);
   react_native_assert(
       link_.status != Status::Unregistered && "Surface must be registered.");
-  react_native_assert(
-      link_.shadowTree && "`link_.shadowTree` must not be null.");
-  return link_.shadowTree->getMountingCoordinator();
+  if (auto shadowTree = link_.shadowTree.lock()) {
+    return shadowTree->getMountingCoordinator();
+  }
+  return nullptr;
 }
 
 #pragma mark - Layout
@@ -213,11 +214,11 @@ Size SurfaceHandler::measure(
     return layoutConstraints.clamp({0, 0});
   }
 
-  react_native_assert(
-      link_.shadowTree && "`link_.shadowTree` must not be null.");
+  auto shadowTree = link_.shadowTree.lock();
 
-  auto currentRootShadowNode =
-      link_.shadowTree->getCurrentRevision().rootShadowNode;
+  react_native_assert(shadowTree && "`link_.shadowTree` must not be null.");
+
+  auto currentRootShadowNode = shadowTree->getCurrentRevision().rootShadowNode;
 
   PropsParserContext propsParserContext{
       parameters_.surfaceId, *parameters_.contextContainer.get()};
@@ -254,9 +255,9 @@ void SurfaceHandler::constraintLayout(
     PropsParserContext propsParserContext{
         parameters_.surfaceId, *parameters_.contextContainer.get()};
 
-    react_native_assert(
-        link_.shadowTree && "`link_.shadowTree` must not be null.");
-    link_.shadowTree->commit(
+    auto shadowTree = link_.shadowTree.lock();
+    react_native_assert(shadowTree && "`link_.shadowTree` must not be null.");
+    shadowTree->commit(
         [&](const RootShadowNode& oldRootShadowNode) {
           return oldRootShadowNode.clone(
               propsParserContext, layoutConstraints, layoutContext);
@@ -281,27 +282,27 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
   SystraceSection s("SurfaceHandler::applyDisplayMode");
   react_native_assert(
       link_.status == Status::Running && "Surface must be running.");
-  react_native_assert(
-      link_.shadowTree && "`link_.shadowTree` must not be null.");
+  auto shadowTree = link_.shadowTree.lock();
+  react_native_assert(shadowTree && "`link_.shadowTree` must not be null.");
 
   switch (displayMode) {
     case DisplayMode::Visible:
-      link_.shadowTree->setCommitMode(ShadowTree::CommitMode::Normal);
+      shadowTree->setCommitMode(ShadowTree::CommitMode::Normal);
       break;
     case DisplayMode::Suspended:
-      link_.shadowTree->setCommitMode(ShadowTree::CommitMode::Suspended);
+      shadowTree->setCommitMode(ShadowTree::CommitMode::Suspended);
       break;
     case DisplayMode::Hidden:
-      link_.shadowTree->setCommitMode(ShadowTree::CommitMode::Normal);
+      shadowTree->setCommitMode(ShadowTree::CommitMode::Normal);
       // Getting a current revision.
-      auto revision = link_.shadowTree->getCurrentRevision();
+      auto revision = shadowTree->getCurrentRevision();
       // Committing an empty tree to force mounting to disassemble view
       // hierarchy.
-      link_.shadowTree->commitEmptyTree();
-      link_.shadowTree->setCommitMode(ShadowTree::CommitMode::Suspended);
+      shadowTree->commitEmptyTree();
+      shadowTree->setCommitMode(ShadowTree::CommitMode::Suspended);
       // Committing the current revision back. It will be mounted only when
       // `DisplayMode` is changed back to `Normal`.
-      link_.shadowTree->commit(
+      shadowTree->commit(
           [&](const RootShadowNode& /*oldRootShadowNode*/) {
             return std::static_pointer_cast<RootShadowNode>(
                 revision.rootShadowNode->ShadowNode::clone({}));

@@ -106,7 +106,7 @@ class UIManager final : public ShadowTreeDelegate {
 #pragma mark - Surface Start & Stop
 
   void startSurface(
-      ShadowTree::Unique&& shadowTree,
+      std::shared_ptr<ShadowTree> shadowTree,
       const std::string& moduleName,
       const folly::dynamic& props,
       DisplayMode displayMode) const;
@@ -117,7 +117,7 @@ class UIManager final : public ShadowTreeDelegate {
       const folly::dynamic& props,
       DisplayMode displayMode) const;
 
-  ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
+  std::shared_ptr<ShadowTree> stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 

@@ -192,7 +192,7 @@ void UIManager::setIsJSResponder(
 }
 
 void UIManager::startSurface(
-    ShadowTree::Unique&& shadowTree,
+    std::shared_ptr<ShadowTree> shadowTree,
     const std::string& moduleName,
     const folly::dynamic& props,
     DisplayMode displayMode) const {
@@ -221,7 +221,7 @@ void UIManager::setSurfaceProps(
   });
 }
 
-ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
+std::shared_ptr<ShadowTree> UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.

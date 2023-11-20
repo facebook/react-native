@@ -16,13 +16,14 @@ ShadowTreeRegistry::~ShadowTreeRegistry() {
       registry_.empty() && "Deallocation of non-empty `ShadowTreeRegistry`.");
 }
 
-void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree>&& shadowTree) const {
+void ShadowTreeRegistry::add(std::shared_ptr<ShadowTree> shadowTree) const {
   std::unique_lock lock(mutex_);
 
-  registry_.emplace(shadowTree->getSurfaceId(), std::move(shadowTree));
+  auto surfaceId = shadowTree->getSurfaceId();
+  registry_.emplace(surfaceId, std::move(shadowTree));
 }
 
-std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
+std::shared_ptr<ShadowTree> ShadowTreeRegistry::remove(
     SurfaceId surfaceId) const {
   std::unique_lock lock(mutex_);
 
@@ -31,7 +32,7 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
     return {};
   }
 
-  auto shadowTree = std::unique_ptr<ShadowTree>(iterator->second.release());
+  auto shadowTree = iterator->second;
   registry_.erase(iterator);
   return shadowTree;
 }

@@ -28,7 +28,7 @@ class ShadowTreeRegistry final {
    * The ownership of the instance is also transferred to the registry.
    * Can be called from any thread.
    */
-  void add(std::unique_ptr<ShadowTree>&& shadowTree) const;
+  void add(std::shared_ptr<ShadowTree> shadowTree) const;
 
   /*
    * Removes a `ShadowTree` instance with given `surfaceId` from the registry
@@ -37,7 +37,7 @@ class ShadowTreeRegistry final {
    * Returns `nullptr` if a `ShadowTree` with given `surfaceId` was not found.
    * Can be called from any thread.
    */
-  std::unique_ptr<ShadowTree> remove(SurfaceId surfaceId) const;
+  std::shared_ptr<ShadowTree> remove(SurfaceId surfaceId) const;
 
   /*
    * Finds a `ShadowTree` instance with a given `surfaceId` in the registry and
@@ -62,7 +62,7 @@ class ShadowTreeRegistry final {
 
  private:
   mutable std::shared_mutex mutex_;
-  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
+  mutable std::unordered_map<SurfaceId, std::shared_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };
 
