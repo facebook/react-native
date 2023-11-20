@@ -32,12 +32,6 @@ const argv = yargs
     description:
       'The key that contains the codegen configuration in the config file.',
   })
-  .option('e', {
-    alias: 'fabricEnabled',
-    default: true,
-    description: 'A flag to control whether to generate fabric components.',
-    boolean: 'e',
-  })
   .option('c', {
     alias: 'configFileDir',
     default: '',
@@ -55,7 +49,6 @@ const argv = yargs
 const CODEGEN_CONFIG_FILENAME = argv.f;
 const CODEGEN_CONFIG_FILE_DIR = argv.c;
 const CODEGEN_CONFIG_KEY = argv.k;
-const CODEGEN_FABRIC_ENABLED = argv.e;
 const NODE = argv.n;
 
 const appRoot = argv.path;
@@ -68,5 +61,4 @@ executor.execute(
   CODEGEN_CONFIG_FILENAME,
   CODEGEN_CONFIG_KEY,
   CODEGEN_CONFIG_FILE_DIR,
-  CODEGEN_FABRIC_ENABLED,
 );
