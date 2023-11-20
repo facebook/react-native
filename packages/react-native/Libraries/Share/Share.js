@@ -32,6 +32,7 @@ type Options = {
   tintColor?: string,
   subject?: string,
   anchor?: number,
+  userInterfaceStyle?: 'light' | 'dark',
   ...
 };
 
@@ -135,6 +136,7 @@ class Share {
             anchor:
               typeof options.anchor === 'number' ? options.anchor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
+            userInterfaceStyle: options.userInterfaceStyle,
           },
           error => reject(error),
           (success, activityType) => {

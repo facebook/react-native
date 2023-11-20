@@ -25,6 +25,7 @@ export type ShareOptions = {
   tintColor?: ColorValue | undefined;
   subject?: string | undefined;
   anchor?: number | undefined;
+  userInterfaceStyle?: 'light' | 'dark' | undefined;
 };
 
 export type ShareAction = {
