@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 #import <react/renderer/mapbuffer/MapBuffer.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
 
 #import "RCTContextContainerHandling.h"
@@ -68,7 +68,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 @interface RCTInstance : NSObject
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad

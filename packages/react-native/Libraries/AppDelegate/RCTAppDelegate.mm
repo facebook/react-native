@@ -38,7 +38,7 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -293,8 +293,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
                                      hostDelegate:nil
                        turboModuleManagerDelegate:self
-                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
-                                   return [weakSelf createJSEngineInstance];
+                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
+                                   return [weakSelf createJSRuntimeFactory];
                                  }];
   [_reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
@@ -303,7 +303,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [_reactHost start];
 }
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)createJSEngineInstance
+- (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
 #if RCT_USE_HERMES
   return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);

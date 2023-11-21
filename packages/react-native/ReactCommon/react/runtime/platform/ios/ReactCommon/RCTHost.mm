@@ -147,7 +147,7 @@ using namespace facebook::react;
     [_instance invalidate];
   }
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
@@ -214,7 +214,7 @@ using namespace facebook::react;
   }
 
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
@@ -301,10 +301,10 @@ using namespace facebook::react;
   return surfaces;
 }
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)_provideJSEngine
+- (std::shared_ptr<facebook::react::JSRuntimeFactory>)_provideJSEngine
 {
   RCTAssert(_jsEngineProvider, @"_jsEngineProvider must be non-nil");
-  std::shared_ptr<facebook::react::JSEngineInstance> jsEngine = _jsEngineProvider();
+  std::shared_ptr<facebook::react::JSRuntimeFactory> jsEngine = _jsEngineProvider();
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;

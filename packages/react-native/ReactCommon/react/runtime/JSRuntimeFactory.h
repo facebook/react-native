@@ -14,14 +14,14 @@
 namespace facebook::react {
 
 /**
- * Interface for a class that creates and owns an instance of a JS VM
+ * Interface for a class that creates instances of a JS VM
  */
-class JSEngineInstance {
+class JSRuntimeFactory {
  public:
   virtual std::unique_ptr<jsi::Runtime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept = 0;
 
-  virtual ~JSEngineInstance() = default;
+  virtual ~JSRuntimeFactory() = default;
 };
 
 } // namespace facebook::react

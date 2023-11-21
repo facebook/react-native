@@ -23,7 +23,7 @@ static __weak ShimRCTInstance *weakShim = nil;
         [RCTInstance class],
         [ShimRCTInstance class],
         @selector(initWithDelegate:
-                  jsEngineInstance:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
     RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
     RCTSwizzleInstanceSelector(
         [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -38,7 +38,7 @@ static __weak ShimRCTInstance *weakShim = nil;
       [RCTInstance class],
       [ShimRCTInstance class],
       @selector(initWithDelegate:
-                jsEngineInstance:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
   RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
   RCTSwizzleInstanceSelector(
       [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -47,7 +47,7 @@ static __weak ShimRCTInstance *weakShim = nil;
 }
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
