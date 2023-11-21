@@ -23,6 +23,11 @@
 #endif
 #endif
 
+// FB-internal imports
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <RCTFBAppInit/RCTFBAppInit.h>
+#endif
+
 #if BUNDLE_PATH
 NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterTestBundle.js";
 #else
@@ -33,6 +38,11 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+  // FB-internal app init setup.
+  RCTFBAppInitApplicationDidFinishLaunching(launchOptions);
+#endif
+
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
