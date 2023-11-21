@@ -104,21 +104,18 @@ function printDeprecationWarningIfNeeded(dependency) {
 function extractLibrariesFromConfigurationArray(
   configFile,
   codegenConfigKey,
-  libraries,
   dependencyPath,
 ) {
-  configFile[codegenConfigKey].libraries.forEach(config => {
-    const libraryConfig = {
+  return configFile[codegenConfigKey].libraries.map(config => {
+    return {
       config,
       libraryPath: dependencyPath,
     };
-    libraries.push(libraryConfig);
   });
 }
 
 function extractLibrariesFromJSON(
   configFile,
-  libraries,
   codegenConfigKey,
   dependency,
   dependencyPath,
@@ -136,29 +133,29 @@ function extractLibrariesFromJSON(
     if (isBlocking) {
       throw `[Codegen] Error: Could not find codegen config for ${dependency} .`;
     }
-    return;
+    return [];
   }
 
   console.log(`[Codegen] Found ${dependency}`);
   if (configFile[codegenConfigKey].libraries == null) {
     var config = configFile[codegenConfigKey];
-    libraries.push({
-      config,
-      libraryPath: dependencyPath,
-    });
+    return [
+      {
+        config,
+        libraryPath: dependencyPath,
+      },
+    ];
   } else {
     printDeprecationWarningIfNeeded(dependency);
-    extractLibrariesFromConfigurationArray(
+    return extractLibrariesFromConfigurationArray(
       configFile,
       codegenConfigKey,
-      libraries,
       dependencyPath,
     );
   }
 }
 
 function handleReactNativeCoreLibraries(
-  libraries,
   codegenConfigFilename,
   codegenConfigKey,
 ) {
@@ -173,11 +170,10 @@ function handleReactNativeCoreLibraries(
     throw '[Codegen] Error: Could not find config file for react-native.';
   }
   const reactNativeConfigFile = JSON.parse(fs.readFileSync(reactNativePkgJson));
-  extractLibrariesFromJSON(reactNativeConfigFile, libraries, codegenConfigKey);
+  return extractLibrariesFromJSON(reactNativeConfigFile, codegenConfigKey);
 }
 
 function handleThirdPartyLibraries(
-  libraries,
   baseCodegenConfigFileDir,
   dependencies,
   codegenConfigFilename,
@@ -192,31 +188,30 @@ function handleThirdPartyLibraries(
   );
 
   // Handle third-party libraries
-  Object.keys(dependencies).forEach(dependency => {
+  return Object.keys(dependencies).flatMap(dependency => {
     if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
       // react-native should already be added.
-      return;
+      return [];
     }
     const codegenConfigFileDir = path.join(configDir, dependency);
     const configFilePath = path.join(
       codegenConfigFileDir,
       codegenConfigFilename,
     );
-    if (fs.existsSync(configFilePath)) {
-      const configFile = JSON.parse(fs.readFileSync(configFilePath));
-      extractLibrariesFromJSON(
-        configFile,
-        libraries,
-        codegenConfigKey,
-        dependency,
-        codegenConfigFileDir,
-      );
+    if (!fs.existsSync(configFilePath)) {
+      return [];
     }
+    const configFile = JSON.parse(fs.readFileSync(configFilePath));
+    return extractLibrariesFromJSON(
+      configFile,
+      codegenConfigKey,
+      dependency,
+      codegenConfigFileDir,
+    );
   });
 }
 
 function handleLibrariesFromReactNativeConfig(
-  libraries,
   codegenConfigKey,
   codegenConfigFilename,
   appRootDir,
@@ -229,54 +224,51 @@ function handleLibrariesFromReactNativeConfig(
 
   const rnConfigFilePath = path.resolve(appRootDir, rnConfigFileName);
 
-  if (fs.existsSync(rnConfigFilePath)) {
-    const rnConfig = require(rnConfigFilePath);
-
-    if (rnConfig.dependencies != null) {
-      Object.keys(rnConfig.dependencies).forEach(name => {
-        const dependencyConfig = rnConfig.dependencies[name];
-
-        if (dependencyConfig.root) {
-          const codegenConfigFileDir = path.resolve(
-            appRootDir,
-            dependencyConfig.root,
-          );
-          const configFilePath = path.join(
-            codegenConfigFileDir,
-            codegenConfigFilename,
-          );
-          const pkgJsonPath = path.join(codegenConfigFileDir, 'package.json');
-
-          if (fs.existsSync(configFilePath)) {
-            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath));
-            const configFile = JSON.parse(fs.readFileSync(configFilePath));
-            extractLibrariesFromJSON(
-              configFile,
-              libraries,
-              codegenConfigKey,
-              pkgJson.name,
-              codegenConfigFileDir,
-            );
-          }
-        }
-      });
-    }
+  if (!fs.existsSync(rnConfigFilePath)) {
+    return [];
   }
+  const rnConfig = require(rnConfigFilePath);
+
+  if (rnConfig.dependencies == null) {
+    return [];
+  }
+  return Object.keys(rnConfig.dependencies).flatMap(name => {
+    const dependencyConfig = rnConfig.dependencies[name];
+
+    if (!dependencyConfig.root) {
+      return [];
+    }
+    const codegenConfigFileDir = path.resolve(
+      appRootDir,
+      dependencyConfig.root,
+    );
+    const configFilePath = path.join(
+      codegenConfigFileDir,
+      codegenConfigFilename,
+    );
+    if (!fs.existsSync(configFilePath)) {
+      return [];
+    }
+    const pkgJsonPath = path.join(codegenConfigFileDir, 'package.json');
+    const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath));
+    const configFile = JSON.parse(fs.readFileSync(configFilePath));
+
+    return extractLibrariesFromJSON(
+      configFile,
+      codegenConfigKey,
+      pkgJson.name,
+      codegenConfigFileDir,
+    );
+  });
 }
 
-function handleInAppLibraries(
-  libraries,
-  pkgJson,
-  codegenConfigKey,
-  appRootDir,
-) {
+function handleInAppLibraries(pkgJson, codegenConfigKey, appRootDir) {
   console.log(
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
-  extractLibrariesFromJSON(
+  return extractLibrariesFromJSON(
     pkgJson,
-    libraries,
     codegenConfigKey,
     pkgJson.name,
     appRootDir,
@@ -433,29 +425,21 @@ function findCodegenEnabledLibraries(
 ) {
   const pkgJson = readPackageJSON(appRootDir);
   const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
-  const libraries = [];
-
-  handleReactNativeCoreLibraries(
-    libraries,
-    codegenConfigFilename,
-    codegenConfigKey,
-  );
-  handleThirdPartyLibraries(
-    libraries,
-    baseCodegenConfigFileDir,
-    dependencies,
-    codegenConfigFilename,
-    codegenConfigKey,
-  );
-  handleLibrariesFromReactNativeConfig(
-    libraries,
-    codegenConfigKey,
-    codegenConfigFilename,
-    appRootDir,
-  );
-  handleInAppLibraries(libraries, pkgJson, codegenConfigKey, appRootDir);
-
-  return libraries;
+  return [
+    ...handleReactNativeCoreLibraries(codegenConfigFilename, codegenConfigKey),
+    ...handleThirdPartyLibraries(
+      baseCodegenConfigFileDir,
+      dependencies,
+      codegenConfigFilename,
+      codegenConfigKey,
+    ),
+    ...handleLibrariesFromReactNativeConfig(
+      codegenConfigKey,
+      codegenConfigFilename,
+      appRootDir,
+    ),
+    ...handleInAppLibraries(pkgJson, codegenConfigKey, appRootDir),
+  ];
 }
 
 // It removes all the empty files and empty folders
