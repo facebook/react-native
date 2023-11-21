@@ -90,6 +90,11 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderTopLeftRadius: true,
           resizeMethod: true,
           src: true,
+          // NOTE: New Architecture expects this to be called `source`,
+          // regardless of the platform, therefore propagate it as well.
+          // For the backwards compatibility reasons, we keep both `src`
+          // and `source`, which will be identical at this stage.
+          source: true,
           borderRadius: true,
           headers: true,
           shouldNotifyLoadEvents: true,
