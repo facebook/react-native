@@ -230,23 +230,27 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
             size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+          try {
+            validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto instanceHandle =
-              instanceHandleFromValue(runtime, arguments[4], arguments[0]);
-          if (!instanceHandle) {
-            react_native_assert(false);
-            return jsi::Value::undefined();
+            auto instanceHandle =
+                instanceHandleFromValue(runtime, arguments[4], arguments[0]);
+            if (!instanceHandle) {
+              react_native_assert(false);
+              return jsi::Value::undefined();
+            }
+
+            return valueFromShadowNode(
+                runtime,
+                uiManager->createNode(
+                    tagFromValue(arguments[0]),
+                    stringFromValue(runtime, arguments[1]),
+                    surfaceIdFromValue(runtime, arguments[2]),
+                    RawProps(runtime, arguments[3]),
+                    std::move(instanceHandle)));
+          } catch (const std::logic_error& ex) {
+            LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->createNode(
-                  tagFromValue(arguments[0]),
-                  stringFromValue(runtime, arguments[1]),
-                  surfaceIdFromValue(runtime, arguments[2]),
-                  RawProps(runtime, arguments[3]),
-                  std::move(instanceHandle)));
         });
   }
 
