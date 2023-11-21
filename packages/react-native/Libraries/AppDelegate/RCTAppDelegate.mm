@@ -27,7 +27,7 @@
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
-#if USE_HERMES
+#if RCT_USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
 #else
 #import <ReactCommon/RCTJscInstance.h>
@@ -305,7 +305,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (std::shared_ptr<facebook::react::JSEngineInstance>)createJSEngineInstance
 {
-#if USE_HERMES
+#if RCT_USE_HERMES
   return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
 #else
   return std::make_shared<facebook::react::RCTJscInstance>();
