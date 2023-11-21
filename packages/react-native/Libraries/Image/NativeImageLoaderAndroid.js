@@ -12,24 +12,17 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
+export type ImageSize = {
+  width: number,
+  height: number,
+  ...
+};
+
 export interface Spec extends TurboModule {
   +abortRequest: (requestId: number) => void;
   +getConstants: () => {||};
-  +getSize: (uri: string) => Promise<
-    $ReadOnly<{
-      width: number,
-      height: number,
-      ...
-    }>,
-  >;
-  +getSizeWithHeaders: (
-    uri: string,
-    headers: Object,
-  ) => Promise<{
-    width: number,
-    height: number,
-    ...
-  }>;
+  +getSize: (uri: string) => Promise<ImageSize>;
+  +getSizeWithHeaders: (uri: string, headers: Object) => Promise<ImageSize>;
   +prefetchImage: (uri: string, requestId: number) => Promise<boolean>;
   +queryCache: (uris: Array<string>) => Promise<Object>;
 }
