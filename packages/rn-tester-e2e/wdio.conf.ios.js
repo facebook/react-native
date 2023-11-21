@@ -24,12 +24,12 @@ exports.config = {
       'appium:deviceName': 'iPhone 14',
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
-      'appium:newCommandTimeout': 60,
+      'appium:newCommandTimeout': 120,
       'appium:fullReset': false
     },
   ],
   logLevel: 'debug',
-  bail: 10, //reduce time of failed builds
+  bail: 3, //reduce time of failed builds
   waitforTimeout: 10000,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
