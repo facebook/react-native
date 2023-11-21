@@ -9,11 +9,8 @@
 
 #include <react/renderer/components/text/conversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-
-#ifdef ANDROID
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
 
 #include <utility>
 
@@ -68,7 +65,6 @@ AndroidTextInputState::AndroidTextInputState(
                                         previousState.defaultThemePaddingBottom)
                                     .getDouble()){};
 
-#ifdef ANDROID
 folly::dynamic AndroidTextInputState::getDynamic() const {
   // Java doesn't need all fields, so we don't pass them all along.
   folly::dynamic newState = folly::dynamic::object();
@@ -103,7 +99,5 @@ MapBuffer AndroidTextInputState::getMapBuffer() const {
   }
   return builder.build();
 }
-
-#endif
 
 } // namespace facebook::react
