@@ -29,7 +29,7 @@ Props::Shared UnimplementedViewComponentDescriptor::cloneProps(
   // We have to clone `Props` object one more time to make sure that we have
   // an unshared (and non-`const`) copy of it which we can mutate.
   RawProps emptyRawProps{};
-  emptyRawProps.parse(rawPropsParser_, context);
+  emptyRawProps.parse(rawPropsParser_);
   auto unimplementedViewProps = std::make_shared<UnimplementedViewProps>(
       context,
       static_cast<const UnimplementedViewProps&>(*clonedProps),

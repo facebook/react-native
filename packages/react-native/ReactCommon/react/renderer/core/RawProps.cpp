@@ -47,9 +47,7 @@ RawProps::RawProps(folly::dynamic dynamic) noexcept {
   dynamic_ = std::move(dynamic);
 }
 
-void RawProps::parse(
-    const RawPropsParser& parser,
-    const PropsParserContext& /*unused*/) const noexcept {
+void RawProps::parse(const RawPropsParser& parser) const noexcept {
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
