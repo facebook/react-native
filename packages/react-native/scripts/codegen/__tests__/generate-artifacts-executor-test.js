@@ -83,24 +83,16 @@ describe('generateCode', () => {
 
 describe('extractLibrariesFromJSON', () => {
   it('throws if in react-native and no dependencies found', () => {
-    let libraries = [];
     let configFile = {};
     expect(() => {
-      underTest._extractLibrariesFromJSON(
-        configFile,
-        libraries,
-        codegenConfigKey,
-      );
+      underTest._extractLibrariesFromJSON(configFile, codegenConfigKey);
     }).toThrow();
   });
 
   it('it skips if not into react-native and no dependencies found', () => {
-    let libraries = [];
     let configFile = {};
-
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      libraries,
       codegenConfigKey,
       'some-node-module',
       'node_modules/some',
@@ -109,11 +101,9 @@ describe('extractLibrariesFromJSON', () => {
   });
 
   it('extracts a single dependency when config has no libraries', () => {
-    let libraries = [];
     let configFile = fixtures.noLibrariesConfigFile;
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      libraries,
       codegenConfigKey,
       'my-app',
       '.',
@@ -131,11 +121,9 @@ describe('extractLibrariesFromJSON', () => {
 
   it("extract codegenConfig when it's empty", () => {
     const configFile = {codegenConfig: {libraries: []}};
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
       codegenConfigKey,
-      libraries,
       reactNativeDependencyName,
       rootPath,
     );
@@ -144,10 +132,8 @@ describe('extractLibrariesFromJSON', () => {
 
   it('extract codegenConfig when dependency is one', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      libraries,
       codegenConfigKey,
       reactNativeDependencyName,
       rootPath,
@@ -167,10 +153,8 @@ describe('extractLibrariesFromJSON', () => {
     const configFile = fixtures.multipleLibrariesCodegenConfig;
     const myDependency = 'my-dependency';
     const myDependencyPath = path.join(__dirname, myDependency);
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      libraries,
       codegenConfigKey,
       myDependency,
       myDependencyPath,
