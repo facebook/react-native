@@ -16,7 +16,6 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const codegenConfigKey = 'codegenConfig';
 const reactNativeDependencyName = 'react-native';
 const rootPath = path.join(__dirname, '../../..');
 
@@ -85,7 +84,7 @@ describe('extractLibrariesFromJSON', () => {
   it('throws if in react-native and no dependencies found', () => {
     let configFile = {};
     expect(() => {
-      underTest._extractLibrariesFromJSON(configFile, codegenConfigKey);
+      underTest._extractLibrariesFromJSON(configFile);
     }).toThrow();
   });
 
@@ -93,7 +92,6 @@ describe('extractLibrariesFromJSON', () => {
     let configFile = {};
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      codegenConfigKey,
       'some-node-module',
       'node_modules/some',
     );
@@ -104,7 +102,6 @@ describe('extractLibrariesFromJSON', () => {
     let configFile = fixtures.noLibrariesConfigFile;
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      codegenConfigKey,
       'my-app',
       '.',
     );
@@ -123,7 +120,6 @@ describe('extractLibrariesFromJSON', () => {
     const configFile = {codegenConfig: {libraries: []}};
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      codegenConfigKey,
       reactNativeDependencyName,
       rootPath,
     );
@@ -134,7 +130,6 @@ describe('extractLibrariesFromJSON', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      codegenConfigKey,
       reactNativeDependencyName,
       rootPath,
     );
@@ -155,7 +150,6 @@ describe('extractLibrariesFromJSON', () => {
     const myDependencyPath = path.join(__dirname, myDependency);
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      codegenConfigKey,
       myDependency,
       myDependencyPath,
     );
