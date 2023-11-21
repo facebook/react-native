@@ -154,7 +154,7 @@ TEST(RawPropsTest, handleProps) {
   const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto props = std::make_shared<Props>(parserContext, Props(), raw);
 
@@ -171,7 +171,7 @@ TEST(RawPropsTest, handleRawPropsSingleString) {
   const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   auto parser = RawPropsParser();
   parser.prepare<Props>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   std::string value = (std::string)*raw.at("nativeID", nullptr, nullptr);
 
@@ -186,7 +186,7 @@ TEST(RawPropsTest, handleRawPropsSingleFloat) {
       RawProps(folly::dynamic::object("floatValue", (float)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleFloat>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto value = (float)*raw.at("floatValue", nullptr, nullptr);
 
@@ -201,7 +201,7 @@ TEST(RawPropsTest, handleRawPropsSingleDouble) {
       RawProps(folly::dynamic::object("doubleValue", (double)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleDouble>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto value = (double)*raw.at("doubleValue", nullptr, nullptr);
 
@@ -215,7 +215,7 @@ TEST(RawPropsTest, handleRawPropsSingleInt) {
   const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   int value = (int)*raw.at("intValue", nullptr, nullptr);
 
@@ -229,7 +229,7 @@ TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
   const auto& raw = RawProps(folly::dynamic::object("intValue", (int)42.42));
   auto parser = RawPropsParser();
   parser.prepare<PropsSingleInt>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
@@ -247,7 +247,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -269,7 +269,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -299,7 +299,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_NEAR((double)*raw.at("doubleValue", nullptr, nullptr), 17.42, 0.0001);
@@ -326,7 +326,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
   EXPECT_EQ(raw.at("doubleValue", nullptr, nullptr), nullptr);
@@ -346,7 +346,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   // Before D18662135, looking up an invalid key would trigger
   // an infinite loop. This is out of contract, so we should only
@@ -363,7 +363,7 @@ TEST(RawPropsTest, handlePropsMultiLookup) {
   const auto& raw = RawProps(folly::dynamic::object("floatValue", (float)10.0));
   auto parser = RawPropsParser();
   parser.prepare<PropsMultiLookup>();
-  raw.parse(parser, parserContext);
+  raw.parse(parser);
 
   auto props = std::make_shared<PropsMultiLookup>(
       parserContext, PropsMultiLookup(), raw);

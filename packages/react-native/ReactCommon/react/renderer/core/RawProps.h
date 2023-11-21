@@ -70,8 +70,7 @@ class RawProps final {
   RawProps(const RawProps& other) noexcept = delete;
   RawProps& operator=(const RawProps& other) noexcept = delete;
 
-  void parse(const RawPropsParser& parser, const PropsParserContext&)
-      const noexcept;
+  void parse(const RawPropsParser& parser) const noexcept;
 
   /*
    * Deprecated. Do not use.

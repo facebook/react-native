@@ -105,7 +105,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    rawProps.parse(rawPropsParser_, context);
+    rawProps.parse(rawPropsParser_);
 
     // Call old-style constructor
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
