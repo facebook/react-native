@@ -40,7 +40,7 @@ class Utils {
     let {width, height} = await driver.getWindowSize();
     let elementIsFound;
     try {
-      elementIsFound = await $(locator).isDisplayed();
+      elementIsFound = await $(locator).isClickable();
       while (!(await elementIsFound)) {
         driver.touchPerform([
           {
