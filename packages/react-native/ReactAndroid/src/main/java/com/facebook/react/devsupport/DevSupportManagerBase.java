@@ -942,6 +942,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @Override
   public void startInspector() {
+    UiThreadUtil.assertOnUiThread();
     if (mIsDevSupportEnabled) {
       mDevServerHelper.openInspectorConnection();
     }
@@ -949,6 +950,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @Override
   public void stopInspector() {
+    UiThreadUtil.assertOnUiThread();
     mDevServerHelper.closeInspectorConnection();
   }
 
@@ -1045,9 +1047,12 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void onPackagerReloadCommand() {
-              // Disable debugger to resume the JsVM & avoid thread locks while reloading
-              mDevServerHelper.disableDebugger();
-              UiThreadUtil.runOnUiThread(() -> handleReloadJS());
+              UiThreadUtil.runOnUiThread(
+                  () -> {
+                    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+                    mDevServerHelper.disableDebugger();
+                    handleReloadJS();
+                  });
             }
 
             @Override

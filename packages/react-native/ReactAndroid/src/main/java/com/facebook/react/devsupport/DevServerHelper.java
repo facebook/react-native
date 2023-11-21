@@ -210,16 +210,10 @@ public class DevServerHelper {
       FLog.w(ReactConstants.TAG, "Inspector connection already open, nooping.");
       return;
     }
-    new AsyncTask<Void, Void, Void>() {
-      @Override
-      protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection =
-            new InspectorPackagerConnection(
-                getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
-        mInspectorPackagerConnection.connect();
-        return null;
-      }
-    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    mInspectorPackagerConnection =
+        new InspectorPackagerConnection(
+            getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
+    mInspectorPackagerConnection.connect();
   }
 
   public void disableDebugger() {
@@ -229,16 +223,10 @@ public class DevServerHelper {
   }
 
   public void closeInspectorConnection() {
-    new AsyncTask<Void, Void, Void>() {
-      @Override
-      protected Void doInBackground(Void... params) {
-        if (mInspectorPackagerConnection != null) {
-          mInspectorPackagerConnection.closeQuietly();
-          mInspectorPackagerConnection = null;
-        }
-        return null;
-      }
-    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    if (mInspectorPackagerConnection != null) {
+      mInspectorPackagerConnection.closeQuietly();
+      mInspectorPackagerConnection = null;
+    }
   }
 
   public String getWebsocketProxyURL() {
