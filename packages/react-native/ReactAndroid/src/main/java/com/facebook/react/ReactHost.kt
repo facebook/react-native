@@ -44,6 +44,9 @@ interface ReactHost {
   /** [ReactQueueConfiguration] for caller to post jobs in React Native threads */
   val reactQueueConfiguration: ReactQueueConfiguration?
 
+  /** [JSEngineResolutionAlgorithm] used by this host. */
+  var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
+
   /** To be called when back button is pressed */
   fun onBackPressed(): Boolean
 

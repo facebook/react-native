@@ -7,12 +7,12 @@
 
 #import <cxxreact/MessageQueueThread.h>
 #import <jsi/jsi.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 
 namespace facebook {
 namespace react {
 
-class RCTJscInstance : public JSEngineInstance {
+class RCTJscInstance : public JSRuntimeFactory {
  public:
   RCTJscInstance();
 

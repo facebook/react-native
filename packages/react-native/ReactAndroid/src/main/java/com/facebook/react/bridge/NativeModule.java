@@ -33,6 +33,9 @@ public interface NativeModule {
   /** This method is called after {@link ReactApplicationContext} has been created. */
   void initialize();
 
+  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
+  void invalidate();
+
   /**
    * Return true if you intend to override some other native module that was registered e.g. as part
    * of a different package (such as the core one). Trying to override without returning true from
@@ -40,7 +43,9 @@ public interface NativeModule {
    * default all modules return false.
    */
   @DeprecatedInNewArchitecture()
-  boolean canOverrideExistingModule();
+  default boolean canOverrideExistingModule() {
+    return false;
+  }
 
   /**
    * Allow NativeModule to clean up. Called before {CatalystInstance#onHostDestroy}
@@ -48,8 +53,5 @@ public interface NativeModule {
    * @deprecated use {@link #invalidate()} instead.
    */
   @Deprecated(since = "Use invalidate method instead", forRemoval = true)
-  void onCatalystInstanceDestroy();
-
-  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
-  void invalidate();
+  default void onCatalystInstanceDestroy() {}
 }

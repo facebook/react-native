@@ -10,9 +10,11 @@ package com.facebook.react.bridge;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import java.util.Collection;
 import java.util.List;
 
@@ -134,4 +136,19 @@ public interface CatalystInstance
    * hasNativeModule, and getNativeModules can also return TurboModules.
    */
   void setTurboModuleManager(JSIModule getter);
+
+  @DeprecatedInNewArchitecture(
+      message =
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+  void setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry);
+
+  @DeprecatedInNewArchitecture(
+      message =
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+  void setFabricUIManager(UIManager fabricUIManager);
+
+  @DeprecatedInNewArchitecture(
+      message =
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+  UIManager getFabricUIManager();
 }

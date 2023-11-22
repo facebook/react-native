@@ -8,13 +8,12 @@
  * @flow
  */
 
-const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-import RNTPressableRow from './RNTPressableRow';
-const React = require('react');
-
-const {Platform, SectionList, StyleSheet, Text, View} = require('react-native');
-
 import {RNTesterThemeContext} from './RNTesterTheme';
+import RNTPressableRow from './RNTPressableRow';
+
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
+const React = require('react');
+const {Platform, SectionList, StyleSheet, Text, View} = require('react-native');
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */

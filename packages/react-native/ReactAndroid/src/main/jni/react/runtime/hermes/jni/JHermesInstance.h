@@ -14,14 +14,14 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <react/config/ReactNativeConfig.h>
-#include <react/runtime/JSEngineInstance.h>
+#include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/hermes/HermesInstance.h>
-#include "../../jni/JJSEngineInstance.h"
+#include "../../jni/JJSRuntimeFactory.h"
 
 namespace facebook::react {
 
 class JHermesInstance
-    : public jni::HybridClass<JHermesInstance, JJSEngineInstance> {
+    : public jni::HybridClass<JHermesInstance, JJSRuntimeFactory> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/runtime/hermes/HermesInstance;";

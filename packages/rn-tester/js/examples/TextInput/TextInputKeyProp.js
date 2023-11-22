@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {View, TextInput} = require('react-native');
+const {TextInput, View} = require('react-native');
 const {useEffect, useState} = React;
 
 function TextInputKeyProp() {

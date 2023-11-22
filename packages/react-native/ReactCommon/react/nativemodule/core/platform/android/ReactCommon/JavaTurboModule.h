@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <functional>
 #include <string>
-#include <unordered_set>
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>

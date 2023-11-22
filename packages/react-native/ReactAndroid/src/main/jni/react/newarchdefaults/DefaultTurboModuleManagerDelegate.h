@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include <ReactCommon/CxxReactPackage.h>
 #include <ReactCommon/JavaTurboModule.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
@@ -22,7 +23,9 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jhybridobject>,
+      jni::alias_ref<CxxReactPackage::javaobject>);
 
   static void registerNatives();
 
@@ -46,6 +49,11 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
  private:
   friend HybridBase;
   using HybridBase::HybridBase;
+
+  jni::global_ref<CxxReactPackage::javaobject> cxxReactPackage_;
+
+  DefaultTurboModuleManagerDelegate(
+      jni::alias_ref<CxxReactPackage::javaobject>);
 };
 
 } // namespace facebook::react

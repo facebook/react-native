@@ -9,9 +9,9 @@
 
 'use strict';
 
+const {applyPackageVersions} = require('./npm-utils');
 const fs = require('fs');
 const path = require('path');
-const {applyPackageVersions} = require('./npm-utils');
 
 /**
  * Updates the react-native template package.json with

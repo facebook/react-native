@@ -11,7 +11,7 @@
 'use strict';
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 export function SectionList_contentInset(): React.Node {
   const [initialContentInset, toggledContentInset] = [44, 88];

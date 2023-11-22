@@ -12,9 +12,9 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
-type FilesOutput = Map<string, string>;
-
 const {getModules} = require('./Utils');
+
+type FilesOutput = Map<string, string>;
 
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,

@@ -10,33 +10,30 @@
 
 'use strict';
 import type {
-  NativeModuleBaseTypeAnnotation,
   NamedShape,
+  NativeModuleBaseTypeAnnotation,
 } from '../../CodegenSchema';
-
 import type {
-  Nullable,
-  SchemaType,
-  NativeModuleTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModulePropertyShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModulePropertyShape,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
 
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {getEnumName, toSafeCppString} = require('../Utils');
-
+const {indent} = require('../Utils');
 const {
   createAliasResolver,
-  getModules,
   getAreEnumMembersInteger,
+  getModules,
 } = require('./Utils');
-const {indent} = require('../Utils');
-const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -83,7 +80,7 @@ public:
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public ${hasteModuleName}CxxSpecJSI {

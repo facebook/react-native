@@ -69,7 +69,7 @@ export default class Device {
   _deviceSocket: WS;
 
   // Stores last list of device's pages.
-  _pages: Array<Page>;
+  _pages: $ReadOnlyArray<Page>;
 
   // Stores information about currently connected debugger (if any).
   _debuggerConnection: ?DebuggerInfo = null;
@@ -92,6 +92,8 @@ export default class Device {
   _projectRoot: string;
 
   _deviceEventReporter: ?DeviceEventReporter;
+
+  _pagesPollingIntervalId: ReturnType<typeof setInterval>;
 
   constructor(
     id: string,
@@ -132,6 +134,11 @@ export default class Device {
       }
       this._handleMessageFromDevice(parsedMessage);
     });
+    // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
+    this._pagesPollingIntervalId = setInterval(
+      () => this._sendMessageToDevice({event: 'getPages'}),
+      PAGES_POLLING_INTERVAL,
+    );
     this._deviceSocket.on('close', () => {
       this._deviceEventReporter?.logDisconnection('device');
       // Device disconnected - close debugger connection.
@@ -139,9 +146,8 @@ export default class Device {
         this._debuggerConnection.socket.close();
         this._debuggerConnection = null;
       }
+      clearInterval(this._pagesPollingIntervalId);
     });
-
-    this._setPagesPolling();
   }
 
   getName(): string {
@@ -152,7 +158,7 @@ export default class Device {
     return this._app;
   }
 
-  getPagesList(): Array<Page> {
+  getPagesList(): $ReadOnlyArray<Page> {
     if (this._lastConnectedReactNativePage) {
       const reactNativeReloadablePage = {
         id: REACT_NATIVE_RELOADABLE_PAGE_ID,
@@ -216,18 +222,18 @@ export default class Device {
         pageId: this._debuggerConnection?.pageId ?? null,
         frontendUserAgent: metadata.userAgent,
       });
-      const handled = this._interceptMessageFromDebugger(
+      const processedReq = this._interceptMessageFromDebugger(
         debuggerRequest,
         debuggerInfo,
         socket,
       );
 
-      if (!handled) {
+      if (processedReq) {
         this._sendMessageToDevice({
           event: 'wrappedEvent',
           payload: {
             pageId: this._mapToDevicePageId(pageId),
-            wrappedEvent: JSON.stringify(debuggerRequest),
+            wrappedEvent: JSON.stringify(processedReq),
           },
         });
       }
@@ -371,14 +377,6 @@ export default class Device {
       }
       this._deviceSocket.send(JSON.stringify(message));
     } catch (error) {}
-  }
-
-  // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
-  _setPagesPolling() {
-    setInterval(
-      () => this._sendMessageToDevice({event: 'getPages'}),
-      PAGES_POLLING_INTERVAL,
-    );
   }
 
   // We received new React Native Page ID.
@@ -545,46 +543,51 @@ export default class Device {
     req: DebuggerRequest,
     debuggerInfo: DebuggerInfo,
     socket: WS,
-  ): boolean {
+  ): ?DebuggerRequest {
     if (req.method === 'Debugger.setBreakpointByUrl') {
-      this._processDebuggerSetBreakpointByUrl(req, debuggerInfo);
+      return this._processDebuggerSetBreakpointByUrl(req, debuggerInfo);
     } else if (req.method === 'Debugger.getScriptSource') {
       this._processDebuggerGetScriptSource(req, socket);
-      return true;
+      return null;
     }
-    return false;
+    return req;
   }
 
   _processDebuggerSetBreakpointByUrl(
     req: SetBreakpointByUrlRequest,
     debuggerInfo: DebuggerInfo,
-  ) {
+  ): SetBreakpointByUrlRequest {
     // If we replaced Android emulator's address to localhost we need to change it back.
     if (debuggerInfo.originalSourceURLAddress != null) {
-      if (req.params.url != null) {
-        req.params.url = req.params.url.replace(
+      const processedReq = {...req, params: {...req.params}};
+      if (processedReq.params.url != null) {
+        processedReq.params.url = processedReq.params.url.replace(
           'localhost',
           debuggerInfo.originalSourceURLAddress,
         );
 
         if (
-          req.params.url &&
-          req.params.url.startsWith(FILE_PREFIX) &&
+          processedReq.params.url &&
+          processedReq.params.url.startsWith(FILE_PREFIX) &&
           debuggerInfo.prependedFilePrefix
         ) {
           // Remove fake URL prefix if we modified URL in _processMessageFromDevice.
           // $FlowFixMe[incompatible-use]
-          req.params.url = req.params.url.slice(FILE_PREFIX.length);
+          processedReq.params.url = processedReq.params.url.slice(
+            FILE_PREFIX.length,
+          );
         }
       }
-      if (req.params.urlRegex != null) {
-        req.params.urlRegex = req.params.urlRegex.replace(
+      if (processedReq.params.urlRegex != null) {
+        processedReq.params.urlRegex = processedReq.params.urlRegex.replace(
           /localhost/g,
           // $FlowFixMe[incompatible-call]
           debuggerInfo.originalSourceURLAddress,
         );
       }
+      return processedReq;
     }
+    return req;
   }
 
   _processDebuggerGetScriptSource(req: GetScriptSourceRequest, socket: WS) {
@@ -677,6 +680,9 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call] Suppress arvr node-fetch flow error
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+    }
     const text = await response.text();
     // Restrict the length to well below the 500MB limit for nodejs (leaving
     // room some some later manipulation, e.g. base64 or wrapping in JSON)

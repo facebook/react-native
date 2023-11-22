@@ -19,6 +19,7 @@
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Gutter.h>
 #include <yoga/enums/Justify.h>
@@ -312,7 +313,7 @@ class YG_EXPORT Style {
   }
 
   CompactValue resolveColumnGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Column)].isUndefined()) {
+    if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
       return gap_[yoga::to_underlying(Gutter::Column)];
     } else {
       return gap_[yoga::to_underlying(Gutter::All)];
@@ -320,7 +321,7 @@ class YG_EXPORT Style {
   }
 
   CompactValue resolveRowGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Row)].isUndefined()) {
+    if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
       return gap_[yoga::to_underlying(Gutter::Row)];
     } else {
       return gap_[yoga::to_underlying(Gutter::All)];

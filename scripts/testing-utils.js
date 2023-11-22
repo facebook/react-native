@@ -9,23 +9,20 @@
 
 'use strict';
 
-const {exec, cp} = require('shelljs');
-const fs = require('fs');
-const os = require('os');
-const {spawn} = require('node:child_process');
-const path = require('path');
-
-const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
-
-const {
-  generateAndroidArtifacts,
-  generateiOSArtifacts,
-} = require('./release-utils');
-
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
 } = require('../packages/react-native/scripts/hermes/hermes-utils.js');
+const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
+const {
+  generateAndroidArtifacts,
+  generateiOSArtifacts,
+} = require('./release-utils');
+const fs = require('fs');
+const {spawn} = require('node:child_process');
+const os = require('os');
+const path = require('path');
+const {cp, exec} = require('shelljs');
 
 /*
  * Android related utils - leverages android tooling

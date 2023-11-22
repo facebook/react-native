@@ -50,6 +50,12 @@ class RawProps final {
    */
   RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
+  explicit RawProps(const RawProps& rawProps) noexcept;
+  RawProps& operator=(const RawProps& other) noexcept;
+
+  RawProps(RawProps&& other) noexcept = default;
+  RawProps& operator=(RawProps&& other) noexcept = default;
+
   /*
    * Creates an object with given `folly::dynamic` object.
    * Deprecated. Do not use.
@@ -58,20 +64,7 @@ class RawProps final {
    */
   explicit RawProps(folly::dynamic dynamic) noexcept;
 
-  /*
-   * Not moveable.
-   */
-  RawProps(RawProps&& other) noexcept = delete;
-  RawProps& operator=(RawProps&& other) noexcept = delete;
-
-  /*
-   * Not copyable.
-   */
-  RawProps(const RawProps& other) noexcept = delete;
-  RawProps& operator=(const RawProps& other) noexcept = delete;
-
-  void parse(const RawPropsParser& parser, const PropsParserContext&)
-      const noexcept;
+  void parse(const RawPropsParser& parser) noexcept;
 
   /*
    * Deprecated. Do not use.

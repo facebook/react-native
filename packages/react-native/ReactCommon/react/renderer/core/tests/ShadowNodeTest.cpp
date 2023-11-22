@@ -37,14 +37,11 @@ class ShadowNodeTest : public ::testing::Test {
 
     auto traits = TestShadowNode::BaseTraits();
 
-    auto familyAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 11,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyAA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 11,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeAA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -53,14 +50,11 @@ class ShadowNodeTest : public ::testing::Test {
         familyAA,
         traits);
 
-    auto familyABA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 12,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyABA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 12,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeABA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -69,14 +63,11 @@ class ShadowNodeTest : public ::testing::Test {
         familyABA,
         traits);
 
-    auto familyABB = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 13,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyABB = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 13,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeABB_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -88,14 +79,11 @@ class ShadowNodeTest : public ::testing::Test {
     auto nodeABChildren = std::make_shared<ShadowNode::ListOfShared>(
         ShadowNode::ListOfShared{nodeABA_, nodeABB_});
 
-    auto familyAB = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 15,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyAB = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 15,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeAB_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -104,14 +92,11 @@ class ShadowNodeTest : public ::testing::Test {
         familyAB,
         traits);
 
-    auto familyAC = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 16,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyAC = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 16,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeAC_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -123,14 +108,11 @@ class ShadowNodeTest : public ::testing::Test {
     auto nodeAChildren = std::make_shared<ShadowNode::ListOfShared>(
         ShadowNode::ListOfShared{nodeAA_, nodeAB_, nodeAC_});
 
-    auto familyA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 17,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 17,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeA_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -139,14 +121,11 @@ class ShadowNodeTest : public ::testing::Test {
         familyA,
         traits);
 
-    auto familyZ = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 18,
-            /* .surfaceId = */ surfaceId_,
-            /* .instanceHandle = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
+    auto familyZ = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+        /* .tag = */ 18,
+        /* .surfaceId = */ surfaceId_,
+        /* .instanceHandle = */ nullptr,
+    });
     nodeZ_ = std::make_shared<TestShadowNode>(
         ShadowNodeFragment{
             /* .props = */ props,
@@ -234,14 +213,11 @@ TEST_F(ShadowNodeTest, handleCloneFunction) {
 }
 
 TEST_F(ShadowNodeTest, handleState) {
-  auto family = std::make_shared<ShadowNodeFamily>(
-      ShadowNodeFamilyFragment{
-          /* .tag = */ 9,
-          /* .surfaceId = */ surfaceId_,
-          /* .instanceHandle = */ nullptr,
-      },
-      eventDispatcher_,
-      componentDescriptor_);
+  auto family = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
+      /* .tag = */ 9,
+      /* .surfaceId = */ surfaceId_,
+      /* .instanceHandle = */ nullptr,
+  });
 
   auto traits = TestShadowNode::BaseTraits();
 

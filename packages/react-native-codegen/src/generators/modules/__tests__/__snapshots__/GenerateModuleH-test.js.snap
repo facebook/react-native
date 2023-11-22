@@ -41,7 +41,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -111,7 +111,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -359,7 +359,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -462,7 +462,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -599,7 +599,7 @@ public:
 protected:
   AliasTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{AliasTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public AliasTurboModuleCxxSpecJSI {
@@ -934,7 +934,7 @@ public:
 protected:
   NativeCameraRollManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeCameraRollManagerCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeCameraRollManagerCxxSpecJSI {
@@ -1170,7 +1170,7 @@ public:
 protected:
   NativeExceptionsManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeExceptionsManagerCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeExceptionsManagerCxxSpecJSI {
@@ -1373,7 +1373,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -1548,7 +1548,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -1595,7 +1595,7 @@ public:
 protected:
   NativeSampleTurboModule2CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModule2CxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModule2CxxSpecJSI {

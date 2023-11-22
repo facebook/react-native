@@ -8,9 +8,8 @@
  * @flow strict-local
  */
 
-import {AppRegistry} from 'react-native';
-
 import RNTesterApp from './RNTesterAppShared';
+import {AppRegistry} from 'react-native';
 
 AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
 

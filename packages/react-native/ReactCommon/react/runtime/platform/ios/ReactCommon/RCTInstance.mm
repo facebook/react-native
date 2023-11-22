@@ -67,7 +67,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 @implementation RCTInstance {
   std::unique_ptr<ReactInstance> _reactInstance;
-  std::shared_ptr<JSEngineInstance> _jsEngineInstance;
+  std::shared_ptr<JSRuntimeFactory> _jsRuntimeFactory;
   __weak id<RCTTurboModuleManagerDelegate> _appTMMDelegate;
   __weak id<RCTInstanceDelegate> _delegate;
   RCTSurfacePresenter *_surfacePresenter;
@@ -86,7 +86,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #pragma mark - Public
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
@@ -98,7 +98,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [_performanceLogger markStartForTag:RCTPLReactInstanceInit];
 
     _delegate = delegate;
-    _jsEngineInstance = jsEngineInstance;
+    _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
@@ -149,7 +149,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
     // Clean up all the Resources
     self->_reactInstance = nullptr;
-    self->_jsEngineInstance = nullptr;
+    self->_jsRuntimeFactory = nullptr;
     self->_appTMMDelegate = nil;
     self->_delegate = nil;
     self->_displayLink = nil;
@@ -223,7 +223,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsEngineInstance->createJSRuntime(_jsThreadManager.jsMessageThread),
+      _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
       jsErrorHandlingFunc,

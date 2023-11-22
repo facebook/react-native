@@ -103,7 +103,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
-  private volatile @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
+  private @Nullable TurboModuleRegistry mTurboModuleRegistry;
+  private @Nullable UIManager mFabricUIManager;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -351,6 +352,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
         () -> {
           mNativeModuleRegistry.notifyJSInstanceDestroy();
           mJSIModuleRegistry.notifyJSInstanceDestroy();
+          if (mFabricUIManager != null) {
+            mFabricUIManager.invalidate();
+          }
           boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
           if (!mBridgeIdleListeners.isEmpty()) {
             for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
@@ -568,6 +572,21 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public void setTurboModuleManager(JSIModule module) {
     mTurboModuleRegistry = (TurboModuleRegistry) module;
+  }
+
+  @Override
+  public void setTurboModuleRegistry(TurboModuleRegistry turboModuleRegistry) {
+    mTurboModuleRegistry = turboModuleRegistry;
+  }
+
+  @Override
+  public void setFabricUIManager(UIManager fabricUIManager) {
+    mFabricUIManager = fabricUIManager;
+  }
+
+  @Override
+  public UIManager getFabricUIManager() {
+    return mFabricUIManager;
   }
 
   private void decrementPendingJSCalls() {

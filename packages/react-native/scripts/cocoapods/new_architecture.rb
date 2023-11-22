@@ -5,6 +5,8 @@
 
 require 'json'
 
+require_relative "./utils"
+
 class NewArchitectureHelper
     @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1"
 
@@ -73,17 +75,6 @@ class NewArchitectureHelper
                 end
             end
 
-            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
-            # This helps with backward compatibility.
-            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
-                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
-                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
-                target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
-                end
-            end
-
             target_installation_result.native_target.build_configurations.each do |config|
                 if config.name == "Release"
                     current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
@@ -108,18 +99,19 @@ class NewArchitectureHelper
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
             header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
-            header_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\""
+            ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"]))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-utils", "React_utils", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-debug", "React_debug", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-ImageManager", "React_ImageManager", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-rendererdebug", "React_rendererdebug", []))
+                .each { |search_path|
+                    header_search_paths << "\"#{search_path}\""
+                }
         end
         header_search_paths_string = header_search_paths.join(" ")
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
@@ -135,27 +127,28 @@ class NewArchitectureHelper
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
-            spec.dependency "React-RCTFabric" # This is for Fabric Component
-            spec.dependency "React-Codegen"
+        end
 
-            spec.dependency "RCTRequired"
-            spec.dependency "RCTTypeSafety"
-            spec.dependency "ReactCommon/turbomodule/bridging"
-            spec.dependency "ReactCommon/turbomodule/core"
-            spec.dependency "React-NativeModulesApple"
-            spec.dependency "Yoga"
-            spec.dependency "React-Fabric"
-            spec.dependency "React-graphics"
-            spec.dependency "React-utils"
-            spec.dependency "React-debug"
-            spec.dependency "React-ImageManager"
-            spec.dependency "React-rendererdebug"
+        spec.dependency "React-RCTFabric" # This is for Fabric Component
+        spec.dependency "React-Codegen"
 
-            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-                spec.dependency "hermes-engine"
-            else
-                spec.dependency "React-jsi"
-            end
+        spec.dependency "RCTRequired"
+        spec.dependency "RCTTypeSafety"
+        spec.dependency "ReactCommon/turbomodule/bridging"
+        spec.dependency "ReactCommon/turbomodule/core"
+        spec.dependency "React-NativeModulesApple"
+        spec.dependency "Yoga"
+        spec.dependency "React-Fabric"
+        spec.dependency "React-graphics"
+        spec.dependency "React-utils"
+        spec.dependency "React-debug"
+        spec.dependency "React-ImageManager"
+        spec.dependency "React-rendererdebug"
+
+        if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+            spec.dependency "hermes-engine"
+        else
+            spec.dependency "React-jsi"
         end
 
         spec.pod_target_xcconfig = current_config

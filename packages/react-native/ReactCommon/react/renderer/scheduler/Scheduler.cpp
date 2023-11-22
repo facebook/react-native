@@ -157,6 +157,9 @@ Scheduler::Scheduler(
       reactNativeConfig_->getBool(
           "react_fabric:enable_granular_shadow_tree_state_reconciliation");
 
+  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
+      "rn_responsiveness_performance:enable_paint_time_reporting");
+
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
         componentDescriptorRegistry_);

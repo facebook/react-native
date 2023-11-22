@@ -8,10 +8,10 @@
  */
 
 const {
-  parseVersion,
-  isReleaseBranch,
-  validateBuildType,
   isNightly,
+  isReleaseBranch,
+  parseVersion,
+  validateBuildType,
 } = require('../version-utils');
 
 let execResult = null;

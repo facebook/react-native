@@ -8,10 +8,11 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
 import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {height: '30%', width: '100%', backgroundColor: 'black'},

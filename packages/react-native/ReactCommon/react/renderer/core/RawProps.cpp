@@ -26,7 +26,7 @@ RawProps::RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept {
     return;
   }
 
-  mode_ = mode_ = Mode::JSI;
+  mode_ = Mode::JSI;
   runtime_ = &runtime;
   value_ = jsi::Value(runtime, value);
 }
@@ -47,9 +47,28 @@ RawProps::RawProps(folly::dynamic dynamic) noexcept {
   dynamic_ = std::move(dynamic);
 }
 
-void RawProps::parse(
-    const RawPropsParser& parser,
-    const PropsParserContext& /*unused*/) const noexcept {
+RawProps::RawProps(const RawProps& other) noexcept {
+  mode_ = other.mode_;
+  if (mode_ == Mode::JSI) {
+    runtime_ = other.runtime_;
+    value_ = jsi::Value(*runtime_, other.value_);
+  } else if (mode_ == Mode::Dynamic) {
+    dynamic_ = other.dynamic_;
+  }
+}
+
+RawProps& RawProps::operator=(const RawProps& other) noexcept {
+  mode_ = other.mode_;
+  if (mode_ == Mode::JSI) {
+    runtime_ = other.runtime_;
+    value_ = jsi::Value(*runtime_, other.value_);
+  } else if (mode_ == Mode::Dynamic) {
+    dynamic_ = other.dynamic_;
+  }
+  return *this;
+}
+
+void RawProps::parse(const RawPropsParser& parser) noexcept {
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);

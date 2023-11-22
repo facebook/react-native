@@ -9,11 +9,11 @@
  * @oncall react_native
  */
 
-const forEachPackage = require('./for-each-package');
 const {publishPackage} = require('../npm-utils');
-const path = require('path');
-const {writeFileSync} = require('fs');
 const {getPackageVersionStrByTag} = require('../npm-utils');
+const forEachPackage = require('./for-each-package');
+const {writeFileSync} = require('fs');
+const path = require('path');
 
 /**
  * Get the latest version of each monorepo package and publishes a new package if there have been updates.

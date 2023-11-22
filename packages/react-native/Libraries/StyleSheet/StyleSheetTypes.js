@@ -626,7 +626,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   /** `direction` specifies the directional flow of the user interface.
    *  The default is `inherit`, except for root node which will have
    *  value based on the current locale.
-   *  See https://yogalayout.com/docs/layout-direction
+   *  See https://yogalayout.dev/docs/layout-direction
    *  for more details.
    *  @platform ios
    */

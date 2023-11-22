@@ -9,12 +9,12 @@
 
 'use strict';
 
+const {applyPackageVersions, getNpmInfo} = require('./npm-utils');
+const updateTemplatePackage = require('./update-template-package');
+const {parseVersion, validateBuildType} = require('./version-utils');
 const fs = require('fs');
 const {cat, echo, exit, sed} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion, validateBuildType} = require('./version-utils');
-const updateTemplatePackage = require('./update-template-package');
-const {applyPackageVersions, getNpmInfo} = require('./npm-utils');
 
 /**
  * This script updates relevant React Native files with supplied version:

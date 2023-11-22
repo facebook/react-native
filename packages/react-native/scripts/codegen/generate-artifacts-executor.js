@@ -12,11 +12,11 @@
 /**
  * This script crawls through a React Native application's dependencies and invokes the codegen
  * for any libraries that require it.
- * To enable codegen support, the library should include a config in the codegenConfigKey key
- * in a codegenConfigFilename file.
+ * To enable codegen support, the library should include a config in the codegenConfig key
+ * in a package.json file.
  */
 
-const {execSync, execFileSync} = require('child_process');
+const {execFileSync, execSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -37,7 +37,7 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
 };
-const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
+const REACT_NATIVE = 'react-native';
 
 // HELPERS
 
@@ -58,12 +58,16 @@ function isAppRootValid(appRootDir) {
   return true;
 }
 
-function readPackageJSON(appRootDir) {
-  return JSON.parse(fs.readFileSync(path.join(appRootDir, 'package.json')));
+function readPkgJsonInDirectory(dir) {
+  const pkgJsonPath = path.join(dir, 'package.json');
+  if (!fs.existsSync(pkgJsonPath)) {
+    throw `[Codegen] Error: ${pkgJsonPath} does not exist.`;
+  }
+  return JSON.parse(fs.readFileSync(pkgJsonPath));
 }
 
 function printDeprecationWarningIfNeeded(dependency) {
-  if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
+  if (dependency === REACT_NATIVE) {
     return;
   }
   console.log(`[Codegen] CodegenConfig Deprecated Setup for ${dependency}.
@@ -101,93 +105,57 @@ function printDeprecationWarningIfNeeded(dependency) {
 }
 
 // Reading Libraries
-function extractLibrariesFromConfigurationArray(
-  configFile,
-  codegenConfigKey,
-  libraries,
-  dependency,
-  dependencyPath,
-) {
-  console.log(`[Codegen] Found ${dependency}`);
-  configFile[codegenConfigKey].libraries.forEach(config => {
-    const libraryConfig = {
-      library: dependency,
+function extractLibrariesFromConfigurationArray(configFile, dependencyPath) {
+  return configFile.codegenConfig.libraries.map(config => {
+    return {
       config,
       libraryPath: dependencyPath,
     };
-    libraries.push(libraryConfig);
   });
 }
 
-function extractLibrariesFromJSON(
-  configFile,
-  libraries,
-  codegenConfigKey,
-  dependency,
-  dependencyPath,
-) {
+function extractLibrariesFromJSON(configFile, dependency, dependencyPath) {
   var isBlocking = false;
   if (dependency == null) {
-    dependency = REACT_NATIVE_DEPENDENCY_NAME;
+    dependency = REACT_NATIVE;
     dependencyPath = REACT_NATIVE_PACKAGE_ROOT_FOLDER;
     // If we are exploring the ReactNative libraries, we want to raise an error
     // if the codegen is not properly configured.
     isBlocking = true;
   }
 
-  if (configFile[codegenConfigKey] == null) {
+  if (configFile.codegenConfig == null) {
     if (isBlocking) {
       throw `[Codegen] Error: Could not find codegen config for ${dependency} .`;
     }
-    return;
+    return [];
   }
 
-  if (configFile[codegenConfigKey].libraries == null) {
-    console.log(`[Codegen] Found ${dependency}`);
-    var config = configFile[codegenConfigKey];
-    libraries.push({
-      library: dependency,
-      config,
-      libraryPath: dependencyPath,
-    });
+  console.log(`[Codegen] Found ${dependency}`);
+  if (configFile.codegenConfig.libraries == null) {
+    const config = configFile.codegenConfig;
+    return [
+      {
+        config,
+        libraryPath: dependencyPath,
+      },
+    ];
   } else {
     printDeprecationWarningIfNeeded(dependency);
-    extractLibrariesFromConfigurationArray(
-      configFile,
-      codegenConfigKey,
-      libraries,
-      dependency,
-      dependencyPath,
-    );
+    return extractLibrariesFromConfigurationArray(configFile, dependencyPath);
   }
 }
 
-function handleReactNativeCodeLibraries(
-  libraries,
-  codegenConfigFilename,
-  codegenConfigKey,
-) {
+function handleReactNativeCoreLibraries() {
   // Handle react-native core libraries.
   // This is required when react-native is outside of node_modules.
   console.log('[Codegen] Processing react-native core libraries');
-  const reactNativePkgJson = path.join(
-    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-    codegenConfigFilename,
+  return extractLibrariesFromJSON(
+    readPkgJsonInDirectory(REACT_NATIVE_PACKAGE_ROOT_FOLDER),
   );
-  if (!fs.existsSync(reactNativePkgJson)) {
-    throw '[Codegen] Error: Could not find config file for react-native.';
-  }
-  const reactNativeConfigFile = JSON.parse(fs.readFileSync(reactNativePkgJson));
-  extractLibrariesFromJSON(reactNativeConfigFile, libraries, codegenConfigKey);
 }
 
-function handleThirdPartyLibraries(
-  libraries,
-  baseCodegenConfigFileDir,
-  dependencies,
-  codegenConfigFilename,
-  codegenConfigKey,
-) {
+function handleThirdPartyLibraries(baseCodegenConfigFileDir, dependencies) {
   // Determine which of these are codegen-enabled libraries
   const configDir =
     baseCodegenConfigFileDir ||
@@ -197,35 +165,26 @@ function handleThirdPartyLibraries(
   );
 
   // Handle third-party libraries
-  Object.keys(dependencies).forEach(dependency => {
-    if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
+  return Object.keys(dependencies).flatMap(dependency => {
+    if (dependency === REACT_NATIVE) {
       // react-native should already be added.
-      return;
+      return [];
     }
-    const codegenConfigFileDir = path.join(configDir, dependency);
-    const configFilePath = path.join(
+    let configFile;
+    try {
+      configFile = readPkgJsonInDirectory(codegenConfigFileDir);
+    } catch {
+      return [];
+    }
+    return extractLibrariesFromJSON(
+      configFile,
+      dependency,
       codegenConfigFileDir,
-      codegenConfigFilename,
     );
-    if (fs.existsSync(configFilePath)) {
-      const configFile = JSON.parse(fs.readFileSync(configFilePath));
-      extractLibrariesFromJSON(
-        configFile,
-        libraries,
-        codegenConfigKey,
-        dependency,
-        codegenConfigFileDir,
-      );
-    }
   });
 }
 
-function handleLibrariesFromReactNativeConfig(
-  libraries,
-  codegenConfigKey,
-  codegenConfigFilename,
-  appRootDir,
-) {
+function handleLibrariesFromReactNativeConfig(appRootDir) {
   const rnConfigFileName = 'react-native.config.js';
 
   console.log(
@@ -234,58 +193,45 @@ function handleLibrariesFromReactNativeConfig(
 
   const rnConfigFilePath = path.resolve(appRootDir, rnConfigFileName);
 
-  if (fs.existsSync(rnConfigFilePath)) {
-    const rnConfig = require(rnConfigFilePath);
-
-    if (rnConfig.dependencies != null) {
-      Object.keys(rnConfig.dependencies).forEach(name => {
-        const dependencyConfig = rnConfig.dependencies[name];
-
-        if (dependencyConfig.root) {
-          const codegenConfigFileDir = path.resolve(
-            appRootDir,
-            dependencyConfig.root,
-          );
-          const configFilePath = path.join(
-            codegenConfigFileDir,
-            codegenConfigFilename,
-          );
-          const pkgJsonPath = path.join(codegenConfigFileDir, 'package.json');
-
-          if (fs.existsSync(configFilePath)) {
-            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath));
-            const configFile = JSON.parse(fs.readFileSync(configFilePath));
-            extractLibrariesFromJSON(
-              configFile,
-              libraries,
-              codegenConfigKey,
-              pkgJson.name,
-              codegenConfigFileDir,
-            );
-          }
-        }
-      });
-    }
+  if (!fs.existsSync(rnConfigFilePath)) {
+    return [];
   }
+  const rnConfig = require(rnConfigFilePath);
+
+  if (rnConfig.dependencies == null) {
+    return [];
+  }
+  return Object.keys(rnConfig.dependencies).flatMap(name => {
+    const dependencyConfig = rnConfig.dependencies[name];
+
+    if (!dependencyConfig.root) {
+      return [];
+    }
+    const codegenConfigFileDir = path.resolve(
+      appRootDir,
+      dependencyConfig.root,
+    );
+    let configFile;
+    try {
+      configFile = readPkgJsonInDirectory(codegenConfigFileDir);
+    } catch {
+      return [];
+    }
+
+    return extractLibrariesFromJSON(
+      configFile,
+      configFile.name,
+      codegenConfigFileDir,
+    );
+  });
 }
 
-function handleInAppLibraries(
-  libraries,
-  pkgJson,
-  codegenConfigKey,
-  appRootDir,
-) {
+function handleInAppLibraries(pkgJson, appRootDir) {
   console.log(
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
-  extractLibrariesFromJSON(
-    pkgJson,
-    libraries,
-    codegenConfigKey,
-    pkgJson.name,
-    appRootDir,
-  );
+  return extractLibrariesFromJSON(pkgJson, pkgJson.name, appRootDir);
 }
 
 // CodeGen
@@ -378,23 +324,12 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
 
 function generateNativeCodegenFiles(
   libraries,
-  fabricEnabled,
   iosOutputDir,
   node,
   codegenCliPath,
   schemaPaths,
 ) {
-  let fabricEnabledTypes = ['components', 'all'];
   libraries.forEach(library => {
-    if (
-      !fabricEnabled &&
-      fabricEnabledTypes.indexOf(library.config.type) >= 0
-    ) {
-      console.log(
-        `[Codegen] ${library.config.name} skipped because fabric is not enabled.`,
-      );
-      return;
-    }
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), library.config.name));
     const pathToSchema = generateSchema(tmpDir, library, node, codegenCliPath);
     generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
@@ -408,77 +343,48 @@ function generateNativeCodegenFiles(
   });
 }
 
-function createComponentProvider(
-  fabricEnabled,
-  schemaPaths,
-  node,
-  iosOutputDir,
-) {
-  if (fabricEnabled) {
-    console.log('\n\n>>>>> Creating component provider');
-    // Save the list of spec paths to a temp file.
-    const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
-    const fd = fs.openSync(schemaListTmpPath, 'w');
-    fs.writeSync(fd, JSON.stringify(schemaPaths));
-    fs.closeSync(fd);
-    console.log(`Generated schema list: ${schemaListTmpPath}`);
+function createComponentProvider(schemaPaths, node) {
+  console.log('\n\n>>>>> Creating component provider');
+  // Save the list of spec paths to a temp file.
+  const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
+  const fd = fs.openSync(schemaListTmpPath, 'w');
+  fs.writeSync(fd, JSON.stringify(schemaPaths));
+  fs.closeSync(fd);
+  console.log(`Generated schema list: ${schemaListTmpPath}`);
 
-    const outputDir = path.join(
+  const outputDir = path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    'React',
+    'Fabric',
+  );
+
+  // Generate FabricComponentProvider.
+  // Only for iOS at this moment.
+  executeNodeScript(node, [
+    `${path.join(
       REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-      'React',
-      'Fabric',
-    );
-
-    // Generate FabricComponentProvider.
-    // Only for iOS at this moment.
-    executeNodeScript(node, [
-      `${path.join(
-        REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-        'scripts',
-        'generate-provider-cli.js',
-      )}`,
-      '--platform',
-      'ios',
-      '--schemaListPath',
-      schemaListTmpPath,
-      '--outputDir',
-      outputDir,
-    ]);
-    console.log(`Generated provider in: ${outputDir}`);
-  }
+      'scripts',
+      'generate-provider-cli.js',
+    )}`,
+    '--platform',
+    'ios',
+    '--schemaListPath',
+    schemaListTmpPath,
+    '--outputDir',
+    outputDir,
+  ]);
+  console.log(`Generated provider in: ${outputDir}`);
 }
 
-function findCodegenEnabledLibraries(
-  appRootDir,
-  baseCodegenConfigFileDir,
-  codegenConfigFilename,
-  codegenConfigKey,
-) {
-  const pkgJson = readPackageJSON(appRootDir);
+function findCodegenEnabledLibraries(appRootDir, baseCodegenConfigFileDir) {
+  const pkgJson = readPkgJsonInDirectory(appRootDir);
   const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
-  const libraries = [];
-
-  handleReactNativeCodeLibraries(
-    libraries,
-    codegenConfigFilename,
-    codegenConfigKey,
-  );
-  handleThirdPartyLibraries(
-    libraries,
-    baseCodegenConfigFileDir,
-    dependencies,
-    codegenConfigFilename,
-    codegenConfigKey,
-  );
-  handleLibrariesFromReactNativeConfig(
-    libraries,
-    codegenConfigKey,
-    codegenConfigFilename,
-    appRootDir,
-  );
-  handleInAppLibraries(libraries, pkgJson, codegenConfigKey, appRootDir);
-
-  return libraries;
+  return [
+    ...handleReactNativeCoreLibraries(),
+    ...handleThirdPartyLibraries(baseCodegenConfigFileDir, dependencies),
+    ...handleLibrariesFromReactNativeConfig(appRootDir),
+    ...handleInAppLibraries(pkgJson, appRootDir),
+  ];
 }
 
 // It removes all the empty files and empty folders
@@ -523,26 +429,15 @@ function cleanupEmptyFilesAndFolders(filepath) {
  * - setups the CLI to generate the code
  * - generate the code
  *
- * @parameter appRootDir: the directory with the app source code, where the `codegenConfigFilename` lives.
+ * @parameter appRootDir: the directory with the app source code, where the package.json lives.
  * @parameter outputPath: the base output path for the CodeGen.
  * @parameter node: the path to the node executable, used to run the codegen scripts.
- * @parameter codegenConfigFilename: the file that contains the codeGen configuration. The default is `package.json`.
- * @parameter codegenConfigKey: the key in the codegenConfigFile that controls the codegen.
  * @parameter baseCodegenConfigFileDir: the directory of the codeGenConfigFile.
- * @parameter fabricEnabled: whether fabric is enabled or not.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(
-  appRootDir,
-  outputPath,
-  node,
-  codegenConfigFilename,
-  codegenConfigKey,
-  baseCodegenConfigFileDir,
-  fabricEnabled,
-) {
+function execute(appRootDir, outputPath, node, baseCodegenConfigFileDir) {
   if (!isAppRootValid(appRootDir)) {
     return;
   }
@@ -551,8 +446,6 @@ function execute(
     const libraries = findCodegenEnabledLibraries(
       appRootDir,
       baseCodegenConfigFileDir,
-      codegenConfigFilename,
-      codegenConfigKey,
     );
 
     if (libraries.length === 0) {
@@ -568,14 +461,13 @@ function execute(
 
     generateNativeCodegenFiles(
       libraries,
-      fabricEnabled,
       iosOutputDir,
       node,
       codegenCliPath,
       schemaPaths,
     );
 
-    createComponentProvider(fabricEnabled, schemaPaths, node, iosOutputDir);
+    createComponentProvider(schemaPaths, node);
     cleanupEmptyFilesAndFolders(iosOutputDir);
   } catch (err) {
     console.error(err);

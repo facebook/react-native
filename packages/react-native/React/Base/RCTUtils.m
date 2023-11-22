@@ -302,14 +302,14 @@ static CGFloat screenScale;
 void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 }
 
 CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 
   return screenScale;

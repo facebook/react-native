@@ -42,7 +42,7 @@ public:
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
@@ -105,7 +105,7 @@ public:
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
@@ -160,7 +160,7 @@ public:
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
@@ -451,7 +451,7 @@ public:
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
@@ -542,7 +542,7 @@ public:
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
@@ -629,7 +629,7 @@ public:
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
@@ -687,7 +687,7 @@ public:
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
@@ -765,7 +765,7 @@ public:
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
@@ -861,7 +861,7 @@ public:
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
@@ -932,7 +932,7 @@ public:
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
@@ -1036,7 +1036,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -1228,7 +1228,7 @@ public:
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
@@ -1420,7 +1420,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
@@ -1614,7 +1614,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
@@ -1808,7 +1808,7 @@ public:
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
@@ -1951,7 +1951,7 @@ public:
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {
@@ -2030,7 +2030,7 @@ public:
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeArrayTurboModuleCxxSpecJSI {
@@ -2093,7 +2093,7 @@ public:
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeBooleanTurboModuleCxxSpecJSI {
@@ -2148,7 +2148,7 @@ public:
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeCallbackTurboModuleCxxSpecJSI {
@@ -2439,7 +2439,7 @@ public:
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeEnumTurboModuleCxxSpecJSI {
@@ -2530,7 +2530,7 @@ public:
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNullableTurboModuleCxxSpecJSI {
@@ -2617,7 +2617,7 @@ public:
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeNumberTurboModuleCxxSpecJSI {
@@ -2675,7 +2675,7 @@ public:
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeObjectTurboModuleCxxSpecJSI {
@@ -2753,7 +2753,7 @@ public:
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeOptionalObjectTurboModuleCxxSpecJSI {
@@ -2849,7 +2849,7 @@ public:
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePartialAnnotationTurboModuleCxxSpecJSI {
@@ -2920,7 +2920,7 @@ public:
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativePromiseTurboModuleCxxSpecJSI {
@@ -3024,7 +3024,7 @@ public:
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
@@ -3216,7 +3216,7 @@ public:
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleArraysCxxSpecJSI {
@@ -3408,7 +3408,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableCxxSpecJSI {
@@ -3602,7 +3602,7 @@ public:
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleNullableAndOptionalCxxSpecJSI {
@@ -3796,7 +3796,7 @@ public:
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeSampleTurboModuleOptionalCxxSpecJSI {
@@ -3939,7 +3939,7 @@ public:
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public NativeStringTurboModuleCxxSpecJSI {

@@ -19,6 +19,8 @@
 #include "BoundedConsumableBuffer.h"
 #include "NativePerformanceObserver.h"
 
+#include <react/renderer/uimanager/UIManagerMountHook.h>
+
 namespace facebook::react {
 
 struct PerformanceEntryHash {
@@ -67,7 +69,7 @@ enum class PerformanceEntryType {
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
     (size_t)PerformanceEntryType::_COUNT;
 
-class PerformanceEntryReporter : public EventLogger {
+class PerformanceEntryReporter : public EventLogger, public UIManagerMountHook {
  public:
   PerformanceEntryReporter(const PerformanceEntryReporter&) = delete;
   void operator=(const PerformanceEntryReporter&) = delete;
@@ -132,7 +134,7 @@ class PerformanceEntryReporter : public EventLogger {
       PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
       std::string_view entryName = {}) const;
 
-  void event(
+  void logEventEntry(
       std::string name,
       double startTime,
       double duration,
@@ -141,8 +143,12 @@ class PerformanceEntryReporter : public EventLogger {
       uint32_t interactionId);
 
   EventTag onEventStart(std::string_view name) override;
-  void onEventDispatch(EventTag tag) override;
-  void onEventEnd(EventTag tag) override;
+  void onEventProcessingStart(EventTag tag) override;
+  void onEventProcessingEnd(EventTag tag) override;
+
+  void shadowTreeDidMount(
+      const RootShadowNode::Shared& rootShadowNode,
+      double mountTime) noexcept override;
 
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
@@ -164,7 +170,12 @@ class PerformanceEntryReporter : public EventLogger {
   struct EventEntry {
     std::string_view name;
     double startTime{0.0};
-    double dispatchTime{0.0};
+    double processingStartTime{0.0};
+    double processingEndTime{0.0};
+
+    // TODO: Define the way to assign interaction IDs to the event chains
+    // (T141358175)
+    uint32_t interactionId{0};
   };
 
   // Registry to store the events that are currently ongoing.

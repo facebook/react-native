@@ -33,8 +33,10 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.header_dir             = "jserrorhandler"
   s.source_files           = "JsErrorHandler.{cpp,h}"
-  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"", "USE_HEADERMAP" => "YES",
-  "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig = {
+    "USE_HEADERMAP" => "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+  }
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
@@ -43,7 +45,8 @@ Pod::Spec.new do |s|
   end
 
   s.dependency folly_dep_name, folly_version
-  s.dependency "React-jsi", version
-  s.dependency "React-Mapbuffer"
+  s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-Mapbuffer")
 
 end

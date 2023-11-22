@@ -9,13 +9,13 @@
 
 'use strict';
 
-const {exec} = require('shelljs');
-const {parseVersion} = require('./version-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
+const {parseVersion} = require('./version-utils');
+const {exec} = require('shelljs');
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {

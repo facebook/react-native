@@ -11,11 +11,11 @@
 'use strict';
 
 import type {
-  NamedShape,
+  CommandParamTypeAnnotation,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   SchemaType,
-  CommandParamTypeAnnotation,
 } from '../../CodegenSchema';
 
 type FilesOutput = Map<string, string>;

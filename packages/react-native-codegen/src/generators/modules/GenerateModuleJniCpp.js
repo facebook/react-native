@@ -11,18 +11,18 @@
 'use strict';
 
 import type {
-  Nullable,
   NamedShape,
-  SchemaType,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleReturnTypeAnnotation,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
-const {createAliasResolver, getModules} = require('./Utils');
+
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 

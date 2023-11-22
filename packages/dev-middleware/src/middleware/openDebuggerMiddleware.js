@@ -9,16 +9,16 @@
  * @oncall react_native
  */
 
-import type {NextHandleFunction} from 'connect';
-import type {IncomingMessage, ServerResponse} from 'http';
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
 import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
+import type {NextHandleFunction} from 'connect';
+import type {IncomingMessage, ServerResponse} from 'http';
 
-import url from 'url';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import url from 'url';
 
 const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 

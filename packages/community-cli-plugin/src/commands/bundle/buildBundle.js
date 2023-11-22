@@ -10,17 +10,17 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
-import type {RequestOptions} from 'metro/src/shared/types.flow';
 import type {ConfigT} from 'metro-config';
+import type {RequestOptions} from 'metro/src/shared/types.flow';
 
+import loadMetroConfig from '../../utils/loadMetroConfig';
+import saveAssets from './saveAssets';
+import {logger} from '@react-native-community/cli-tools';
+import chalk from 'chalk';
 import Server from 'metro/src/Server';
 import metroBundle from 'metro/src/shared/output/bundle';
 import metroRamBundle from 'metro/src/shared/output/RamBundle';
 import path from 'path';
-import chalk from 'chalk';
-import saveAssets from './saveAssets';
-import loadMetroConfig from '../../utils/loadMetroConfig';
-import {logger} from '@react-native-community/cli-tools';
 
 export type BundleCommandArgs = {
   assetsDest?: string,

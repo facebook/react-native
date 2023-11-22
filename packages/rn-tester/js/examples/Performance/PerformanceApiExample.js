@@ -13,9 +13,9 @@
 import type MemoryInfo from 'react-native/Libraries/WebPerformance/MemoryInfo';
 import type ReactNativeStartupTiming from 'react-native/Libraries/WebPerformance/ReactNativeStartupTiming';
 
-import * as React from 'react';
-import {StyleSheet, View, Text, Button} from 'react-native';
 import RNTesterPage from '../../components/RNTesterPage';
+import * as React from 'react';
+import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/Libraries/WebPerformance/Performance';
 
 const {useState, useCallback} = React;

@@ -67,6 +67,10 @@ class CoreFeatures {
   // Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler
   // (execution).
   static bool enableMicrotasks;
+
+  // Report paint time inside the Event Timing API implementation
+  // (PerformanceObserver).
+  static bool enableReportEventPaintTime;
 };
 
 } // namespace facebook::react

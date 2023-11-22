@@ -62,12 +62,12 @@ UIManager::~UIManager() {
                << ").";
 }
 
-ShadowNode::Shared UIManager::createNode(
+std::shared_ptr<ShadowNode> UIManager::createNode(
     Tag tag,
     const std::string& name,
     SurfaceId surfaceId,
-    const RawProps& rawProps,
-    const InstanceHandle::Shared& instanceHandle) const {
+    RawProps rawProps,
+    InstanceHandle::Shared instanceHandle) const {
   SystraceSection s("UIManager::createNode", "componentName", name);
 
   auto& componentDescriptor = componentDescriptorRegistry_->at(name);
@@ -76,11 +76,10 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  const auto fragment =
-      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
-  auto family = componentDescriptor.createFamily(fragment);
-  const auto props =
-      componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
+  auto family = componentDescriptor.createFamily(
+      {tag, surfaceId, std::move(instanceHandle)});
+  const auto props = componentDescriptor.cloneProps(
+      propsParserContext, nullptr, std::move(rawProps));
   const auto state = componentDescriptor.createInitialState(props, family);
 
   auto shadowNode = componentDescriptor.createShadowNode(
@@ -109,10 +108,10 @@ ShadowNode::Shared UIManager::createNode(
   return shadowNode;
 }
 
-ShadowNode::Shared UIManager::cloneNode(
+std::shared_ptr<ShadowNode> UIManager::cloneNode(
     const ShadowNode& shadowNode,
     const ShadowNode::SharedListOfShared& children,
-    const RawProps* rawProps) const {
+    RawProps rawProps) const {
   SystraceSection s(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
@@ -123,24 +122,22 @@ ShadowNode::Shared UIManager::cloneNode(
   auto& family = shadowNode.getFamily();
   auto props = ShadowNodeFragment::propsPlaceholder();
 
-  if (rawProps != nullptr) {
-    if (family.nativeProps_DEPRECATED != nullptr) {
-      // Values in `rawProps` patch (take precedence over)
-      // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-      // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
-      // was previously in `nativeProps_DEPRECATED`.
-      family.nativeProps_DEPRECATED =
-          std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED, (folly::dynamic)*rawProps));
+  if (family.nativeProps_DEPRECATED != nullptr) {
+    // Values in `rawProps` patch (take precedence over)
+    // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
+    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
+    // was previously in `nativeProps_DEPRECATED`.
+    family.nativeProps_DEPRECATED =
+        std::make_unique<folly::dynamic>(mergeDynamicProps(
+            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
 
-      props = componentDescriptor.cloneProps(
-          propsParserContext,
-          shadowNode.getProps(),
-          RawProps(*family.nativeProps_DEPRECATED));
-    } else {
-      props = componentDescriptor.cloneProps(
-          propsParserContext, shadowNode.getProps(), *rawProps);
-    }
+    props = componentDescriptor.cloneProps(
+        propsParserContext,
+        shadowNode.getProps(),
+        RawProps(*family.nativeProps_DEPRECATED));
+  } else {
+    props = componentDescriptor.cloneProps(
+        propsParserContext, shadowNode.getProps(), std::move(rawProps));
   }
 
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
@@ -458,7 +455,7 @@ void UIManager::dispatchCommand(
 
 void UIManager::setNativeProps_DEPRECATED(
     const ShadowNode::Shared& shadowNode,
-    const RawProps& rawProps) const {
+    RawProps rawProps) const {
   auto& family = shadowNode->getFamily();
   if (family.nativeProps_DEPRECATED) {
     // Values in `rawProps` patch (take precedence over)
@@ -475,6 +472,8 @@ void UIManager::setNativeProps_DEPRECATED(
 
   shadowTreeRegistry_.visit(
       family.getSurfaceId(), [&](const ShadowTree& shadowTree) {
+        // The lambda passed to `commit` may be executed multiple times.
+        // We need to create fresh copy of the `RawProps` object each time.
         shadowTree.commit(
             [&](RootShadowNode const& oldRootShadowNode) {
               auto rootNode = oldRootShadowNode.cloneTree(
@@ -487,7 +486,7 @@ void UIManager::setNativeProps_DEPRECATED(
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
                         getNewestCloneOfShadowNode(*shadowNode)->getProps(),
-                        rawProps);
+                        RawProps(rawProps));
 
                     return oldShadowNode.clone({/* .props = */ props});
                   });

@@ -60,11 +60,8 @@ def pods(target_name, options = {})
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
-
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    pod 'MyNativeView', :path => "NativeComponentExample"
-    pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
-  end
+  pod 'MyNativeView', :path => "NativeComponentExample"
+  pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
 end
 
 target 'RNTester' do

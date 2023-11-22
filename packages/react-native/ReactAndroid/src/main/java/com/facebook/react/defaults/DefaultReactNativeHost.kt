@@ -21,7 +21,7 @@ import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.fabric.FabricJSIModuleProvider
+import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.uimanager.ViewManagerRegistry
 
@@ -63,7 +63,7 @@ protected constructor(
                   val viewManagers =
                       reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
                   val viewManagerRegistry = ViewManagerRegistry(viewManagers)
-                  return FabricJSIModuleProvider(
+                  return FabricUIManagerProviderImpl(
                       reactApplicationContext,
                       componentFactory,
                       ReactNativeConfig.DEFAULT_CONFIG,

@@ -11,9 +11,9 @@
 
 import type {AssetData} from 'metro/src/Assets';
 
-import path from 'path';
-import fs from 'fs';
 import assetPathUtils from './assetPathUtils';
+import fs from 'fs';
+import path from 'path';
 
 export function cleanAssetCatalog(catalogDir: string): void {
   const files = fs

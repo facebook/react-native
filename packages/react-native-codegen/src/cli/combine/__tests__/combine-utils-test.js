@@ -11,7 +11,7 @@
 
 'use-strict';
 
-const {parseArgs, filterJSFile} = require('../combine-utils.js');
+const {filterJSFile, parseArgs} = require('../combine-utils.js');
 
 describe('parseArgs', () => {
   const nodeBin = 'node';

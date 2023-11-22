@@ -11,13 +11,14 @@
 'use strict';
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  Platform,
 } from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<

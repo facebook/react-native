@@ -11,14 +11,14 @@
 'use strict';
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
-import * as React from 'react';
 
+import * as React from 'react';
 import {
+  DynamicColorIOS,
+  Platform,
+  PlatformColor,
   StyleSheet,
   View,
-  PlatformColor,
-  Platform,
-  DynamicColorIOS,
 } from 'react-native';
 
 const styles = StyleSheet.create({

@@ -12,10 +12,10 @@
 import type {Config} from '@react-native-community/cli-types';
 import type {ConfigT, InputConfigT, YargArguments} from 'metro-config';
 
-import path from 'path';
-import {loadConfig, mergeConfig, resolveConfig} from 'metro-config';
-import {CLIError, logger} from '@react-native-community/cli-tools';
 import {reactNativePlatformResolver} from './metroPlatformResolver';
+import {CLIError, logger} from '@react-native-community/cli-tools';
+import {loadConfig, mergeConfig, resolveConfig} from 'metro-config';
+import path from 'path';
 
 export type {Config};
 

@@ -11,6 +11,10 @@
 
 namespace facebook::react {
 
+DefaultTurboModuleManagerDelegate::DefaultTurboModuleManagerDelegate(
+    jni::alias_ref<CxxReactPackage::javaobject> cxxReactPackage)
+    : cxxReactPackage_(jni::make_global(cxxReactPackage)){};
+
 std::function<std::shared_ptr<TurboModule>(
     const std::string&,
     const std::shared_ptr<CallInvoker>&)>
@@ -22,8 +26,10 @@ std::function<std::shared_ptr<TurboModule>(
     DefaultTurboModuleManagerDelegate::javaModuleProvider{nullptr};
 
 jni::local_ref<DefaultTurboModuleManagerDelegate::jhybriddata>
-DefaultTurboModuleManagerDelegate::initHybrid(jni::alias_ref<jhybridobject>) {
-  return makeCxxInstance();
+DefaultTurboModuleManagerDelegate::initHybrid(
+    jni::alias_ref<jhybridobject>,
+    jni::alias_ref<CxxReactPackage::javaobject> cxxReactPackage) {
+  return makeCxxInstance(cxxReactPackage);
 }
 
 void DefaultTurboModuleManagerDelegate::registerNatives() {
@@ -36,6 +42,13 @@ void DefaultTurboModuleManagerDelegate::registerNatives() {
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
     const std::string& name,
     const std::shared_ptr<CallInvoker>& jsInvoker) {
+  if (cxxReactPackage_) {
+    auto module = cxxReactPackage_->cthis()->getModule(name, jsInvoker);
+    if (module) {
+      return module;
+    }
+  }
+
   auto moduleProvider = DefaultTurboModuleManagerDelegate::cxxModuleProvider;
   if (moduleProvider) {
     return moduleProvider(name, jsInvoker);

@@ -9,6 +9,8 @@
 
 'use strict';
 
+const {failIfTagExists} = require('./release-utils');
+const {isReleaseBranch, parseVersion} = require('./version-utils');
 /**
  * This script prepares a release package to be pushed to npm
  * It is triggered to run on CircleCI
@@ -20,8 +22,6 @@
  */
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
-const {isReleaseBranch, parseVersion} = require('./version-utils');
-const {failIfTagExists} = require('./release-utils');
 
 const argv = yargs
   .option('r', {

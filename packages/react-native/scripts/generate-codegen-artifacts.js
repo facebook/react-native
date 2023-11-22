@@ -21,23 +21,6 @@ const argv = yargs
     alias: 'outputPath',
     description: 'Path where generated artifacts will be output to',
   })
-  .option('f', {
-    alias: 'configFilename',
-    default: 'package.json',
-    description: 'The file that contains the codegen configuration.',
-  })
-  .option('k', {
-    alias: 'configKey',
-    default: 'codegenConfig',
-    description:
-      'The key that contains the codegen configuration in the config file.',
-  })
-  .option('e', {
-    alias: 'fabricEnabled',
-    default: true,
-    description: 'A flag to control whether to generate fabric components.',
-    boolean: 'e',
-  })
   .option('c', {
     alias: 'configFileDir',
     default: '',
@@ -52,21 +35,9 @@ const argv = yargs
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
-const CODEGEN_CONFIG_FILENAME = argv.f;
-const CODEGEN_CONFIG_FILE_DIR = argv.c;
-const CODEGEN_CONFIG_KEY = argv.k;
-const CODEGEN_FABRIC_ENABLED = argv.e;
-const NODE = argv.n;
-
-const appRoot = argv.path;
-const outputPath = argv.outputPath;
-
 executor.execute(
-  appRoot,
-  outputPath,
-  NODE,
-  CODEGEN_CONFIG_FILENAME,
-  CODEGEN_CONFIG_KEY,
-  CODEGEN_CONFIG_FILE_DIR,
-  CODEGEN_FABRIC_ENABLED,
+  argv.path,
+  argv.outputPath,
+  argv.nodeBinary,
+  argv.configFileDir,
 );

@@ -73,6 +73,9 @@ export interface Spec extends TurboModule {
   +getUnion: (x: UnionFloat, y: UnionString, z: UnionObject) => string;
   +getValue: (x: number, y: string, z: ObjectStruct) => ValueStruct;
   +getValueWithCallback: (callback: (value: string) => void) => void;
+  +setValueCallbackWithSubscription: (
+    callback: (value: string) => void,
+  ) => () => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;

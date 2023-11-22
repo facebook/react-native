@@ -71,6 +71,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
@@ -87,6 +88,8 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.AndroidChoreographerProvider;
+import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -96,9 +99,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -184,6 +187,7 @@ public class ReactInstanceManager {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
@@ -232,10 +236,12 @@ public class ReactInstanceManager {
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
+      @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable ChoreographerProvider choreographerProvider) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -291,9 +297,13 @@ public class ReactInstanceManager {
       mPackages.addAll(packages);
     }
     mJSIModulePackage = jsiModulePackage;
+    mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
-    ReactChoreographer.initialize();
+    ReactChoreographer.initialize(
+        choreographerProvider != null
+            ? choreographerProvider
+            : AndroidChoreographerProvider.getInstance());
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
@@ -1383,7 +1393,7 @@ public class ReactInstanceManager {
               catalystInstance.getJSCallInvokerHolder(),
               catalystInstance.getNativeMethodCallInvokerHolder());
 
-      catalystInstance.setTurboModuleManager(turboModuleManager);
+      catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
       // Eagerly initialize TurboModules
       for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
@@ -1397,7 +1407,11 @@ public class ReactInstanceManager {
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
     if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
+      if (mUIManagerProvider != null) {
+        catalystInstance.setFabricUIManager(mUIManagerProvider.createUIManager(reactContext));
+      } else {
+        catalystInstance.getJSIModule(JSIModuleType.UIManager);
+      }
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

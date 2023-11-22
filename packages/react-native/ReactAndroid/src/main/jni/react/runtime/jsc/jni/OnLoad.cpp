@@ -10,12 +10,12 @@
 #include <jsc/JSCRuntime.h>
 #include <jsi/jsi.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/runtime/JSEngineInstance.h>
-#include <react/runtime/jni/JJSEngineInstance.h>
+#include <react/runtime/JSRuntimeFactory.h>
+#include <react/runtime/jni/JJSRuntimeFactory.h>
 
 namespace facebook::react {
 
-class JSCInstance : public jni::HybridClass<JSCInstance, JJSEngineInstance> {
+class JSCInstance : public jni::HybridClass<JSCInstance, JJSRuntimeFactory> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/runtime/JSCInstance;";

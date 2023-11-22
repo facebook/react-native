@@ -9,9 +9,9 @@
  * @oncall react_native
  */
 
-const path = require('path');
 const {PACKAGES_DIR} = require('./build');
 const {buildConfig, getBabelConfig} = require('./config');
+const path = require('path');
 
 let isRegisteredForMonorepo = false;
 

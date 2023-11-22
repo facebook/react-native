@@ -11,9 +11,9 @@
 
 import getAssetDestPathAndroid from '../getAssetDestPathAndroid';
 
-jest.dontMock('../getAssetDestPathAndroid').dontMock('../assetPathUtils');
-
 const path = require('path');
+
+jest.dontMock('../getAssetDestPathAndroid').dontMock('../assetPathUtils');
 
 describe('getAssetDestPathAndroid', () => {
   test('should use the right destination folder', () => {

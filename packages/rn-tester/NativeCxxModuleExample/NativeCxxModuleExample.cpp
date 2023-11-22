@@ -20,6 +20,18 @@ void NativeCxxModuleExample::getValueWithCallback(
   callback({"value from callback!"});
 }
 
+std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
+    jsi::Runtime& rt,
+    AsyncCallback<std::string> callback) {
+  valueCallback_ = std::make_optional(callback);
+  return [&]() {
+    if (valueCallback_.has_value()) {
+      valueCallback_.value()({"value from callback on clean up!"});
+      valueCallback_ = std::nullopt;
+    }
+  };
+}
+
 std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
     jsi::Runtime& rt,
     std::vector<std::optional<ObjectStruct>> arg) {

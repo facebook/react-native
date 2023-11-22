@@ -29,6 +29,7 @@ import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.Arrays;
@@ -149,7 +150,7 @@ public class ReactTestHelper {
                     new Runnable() {
                       @Override
                       public void run() {
-                        ReactChoreographer.initialize();
+                        ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
                         instance.initialize();
                       }
                     });

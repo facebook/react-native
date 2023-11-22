@@ -44,6 +44,7 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.internal.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
@@ -73,7 +74,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
-import kotlin.jvm.functions.Function1;
 
 /**
  * An experimental replacement for {@link com.facebook.react.ReactInstanceManager} responsible for
@@ -137,7 +137,7 @@ final class ReactInstance {
     MessageQueueThread nativeModulesMessageQueueThread =
         mQueueConfiguration.getNativeModulesQueueThread();
 
-    ReactChoreographer.initialize();
+    ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
     if (useDevSupport) {
       devSupportManager.startInspector();
     }
@@ -167,7 +167,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJsEngineInstance();
+    JSRuntimeFactory jsRuntimeFactory = mDelegate.getJsRuntimeFactory();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -177,7 +177,7 @@ final class ReactInstance {
     boolean useModernRuntimeScheduler = ReactFeatureFlags.useModernRuntimeScheduler;
     mHybridData =
         initHybrid(
-            jsEngineInstance,
+            jsRuntimeFactory,
             jsMessageQueueThread,
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
@@ -279,9 +279,7 @@ final class ReactInstance {
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
-    ReactNativeConfig config =
-        mDelegate.getReactNativeConfig(
-            (Function1<String, NativeModule>) name -> mTurboModuleManager.getModule(name));
+    ReactNativeConfig config = mDelegate.getReactNativeConfig();
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
@@ -434,7 +432,7 @@ final class ReactInstance {
 
   @DoNotStrip
   private native HybridData initHybrid(
-      JSEngineInstance jsEngineInstance,
+      JSRuntimeFactory jsRuntimeFactory,
       MessageQueueThread jsMessageQueueThread,
       MessageQueueThread nativeModulesMessageQueueThread,
       JavaTimerManager timerManager,

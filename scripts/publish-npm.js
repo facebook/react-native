@@ -9,16 +9,16 @@
 
 'use strict';
 
-const {echo, exit} = require('shelljs');
-const {publishPackage, getNpmInfo} = require('./npm-utils');
 const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
-const setReactNativeVersion = require('./set-rn-version');
-const removeNewArchFlags = require('./releases/remove-new-arch-flags');
+const {getNpmInfo, publishPackage} = require('./npm-utils');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
+const removeNewArchFlags = require('./releases/remove-new-arch-flags');
+const setReactNativeVersion = require('./set-rn-version');
 const path = require('path');
+const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
 
 /**
