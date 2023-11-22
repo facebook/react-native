@@ -105,7 +105,7 @@ class ComponentDescriptor {
   virtual Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
-      const RawProps& rawProps) const = 0;
+      RawProps rawProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial

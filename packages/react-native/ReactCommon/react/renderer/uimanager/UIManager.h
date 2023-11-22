@@ -134,13 +134,13 @@ class UIManager final : public ShadowTreeDelegate {
       Tag tag,
       const std::string& componentName,
       SurfaceId surfaceId,
-      const RawProps& props,
+      RawProps props,
       InstanceHandle::Shared instanceHandle) const;
 
   std::shared_ptr<ShadowNode> cloneNode(
       const ShadowNode& shadowNode,
-      const ShadowNode::SharedListOfShared& children = nullptr,
-      const RawProps* rawProps = nullptr) const;
+      const ShadowNode::SharedListOfShared& children,
+      RawProps rawProps) const;
 
   void appendChild(
       const ShadowNode::Shared& parentShadowNode,
@@ -183,7 +183,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   void setNativeProps_DEPRECATED(
       const ShadowNode::Shared& shadowNode,
-      const RawProps& rawProps) const;
+      RawProps rawProps) const;
 
   void sendAccessibilityEvent(
       const ShadowNode::Shared& shadowNode,
