@@ -70,6 +70,10 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     return BaseShadowNodeT::BaseTraits();
   }
 
+  static ShadowNodeTraits::Trait IdentifierTrait() {
+    return BaseShadowNodeT::IdentifierTrait();
+  }
+
   static UnsharedConcreteProps Props(
       const PropsParserContext& context,
       const RawProps& rawProps,
