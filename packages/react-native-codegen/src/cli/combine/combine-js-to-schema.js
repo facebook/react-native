@@ -51,6 +51,7 @@ function combineSchemas(files: Array<string>): SchemaType {
 function expandDirectoriesIntoFiles(
   fileList: Array<string>,
   platform: ?string,
+  exclude: ?RegExp,
 ): Array<string> {
   return fileList
     .flatMap(file => {
@@ -66,14 +67,19 @@ function expandDirectoriesIntoFiles(
         // windowsPathsNoEscape: true,
       });
     })
-    .filter(element => filterJSFile(element, platform));
+    .filter(element => filterJSFile(element, platform, exclude));
 }
 
 function combineSchemasInFileList(
   fileList: Array<string>,
   platform: ?string,
+  exclude: ?RegExp,
 ): SchemaType {
-  const expandedFileList = expandDirectoriesIntoFiles(fileList, platform);
+  const expandedFileList = expandDirectoriesIntoFiles(
+    fileList,
+    platform,
+    exclude,
+  );
   const combined = combineSchemas(expandedFileList);
   if (Object.keys(combined.modules).length === 0) {
     console.error(
@@ -87,8 +93,9 @@ function combineSchemasInFileListAndWriteToFile(
   fileList: Array<string>,
   platform: ?string,
   outfile: string,
+  exclude: ?RegExp,
 ): void {
-  const combined = combineSchemasInFileList(fileList, platform);
+  const combined = combineSchemasInFileList(fileList, platform, exclude);
   const formattedSchema = JSON.stringify(combined, null, 2);
   fs.writeFileSync(outfile, formattedSchema);
 }

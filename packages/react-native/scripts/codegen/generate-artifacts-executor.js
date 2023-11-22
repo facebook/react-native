@@ -267,7 +267,11 @@ function generateSchemaInfo(library) {
     library: library,
     schema: utils
       .getCombineJSToSchema()
-      .combineSchemasInFileList([pathToJavaScriptSources], 'ios'),
+      .combineSchemasInFileList(
+        [pathToJavaScriptSources],
+        'ios',
+        /NativeSampleTurboModule/,
+      ),
   };
 }
 
