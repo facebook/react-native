@@ -147,15 +147,6 @@ class ReactNativePodsUtils
 
     end
 
-    def self.apply_flags_for_fabric(installer, fabric_enabled: false)
-        fabric_flag = "-DRN_FABRIC_ENABLED"
-        if fabric_enabled
-            self.add_compiler_flag_to_project(installer, fabric_flag)
-        else
-            self.remove_compiler_flag_from_project(installer, fabric_flag)
-        end
-    end
-
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
