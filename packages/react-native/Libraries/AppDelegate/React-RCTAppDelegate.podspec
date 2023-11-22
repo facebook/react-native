@@ -80,42 +80,33 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
   add_dependency(s, "React-runtimescheduler")
   add_dependency(s, "React-RCTFabric", :framework_name => "RCTFabric")
-
-  if is_new_arch_enabled
-    add_dependency(s, "React-RuntimeCore")
-    add_dependency(s, "React-RuntimeApple")
-    if use_hermes
-      s.dependency "React-RuntimeHermes"
-    end
-  end
+  add_dependency(s, "React-RuntimeCore")
+  add_dependency(s, "React-RuntimeApple")
+  add_dependency(s, "React-Fabric", :additional_framework_paths => ["react/renderer/components/view/platform/cxx"])
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-utils")
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-rendererdebug")
 
   if use_hermes
     s.dependency "React-hermes"
+    s.dependency "React-RuntimeHermes"
   else
     s.dependency "React-jsc"
   end
 
-  if is_new_arch_enabled
-    add_dependency(s, "React-Fabric", :additional_framework_paths => ["react/renderer/components/view/platform/cxx"])
-    add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
-    add_dependency(s, "React-utils")
-    add_dependency(s, "React-debug")
-    add_dependency(s, "React-rendererdebug")
+  rel_path_from_pods_root_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(Pod::Config.instance.installation_root)
+  rel_path_from_pods_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(File.join(Pod::Config.instance.installation_root, 'Pods'))
 
-    rel_path_from_pods_root_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(Pod::Config.instance.installation_root)
-    rel_path_from_pods_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(File.join(Pod::Config.instance.installation_root, 'Pods'))
-
-
-    s.script_phases = {
-      :name => "Generate Legacy Components Interop",
-      :script => "
+  s.script_phases = {
+    :name => "Generate Legacy Components Interop",
+    :script => "
 WITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
 source $WITH_ENVIRONMENT
 ${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{rel_path_from_pods_to_app} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
-      ",
-      :execution_position => :before_compile,
-      :input_files => ["#{rel_path_from_pods_root_to_app}/react-native.config.js"],
-      :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
-    }
-  end
+    ",
+    :execution_position => :before_compile,
+    :input_files => ["#{rel_path_from_pods_root_to_app}/react-native.config.js"],
+    :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
+  }
 end
