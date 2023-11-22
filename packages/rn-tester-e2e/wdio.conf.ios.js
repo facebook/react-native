@@ -32,7 +32,7 @@ exports.config = {
   bail: 3, //reduce time of failed builds
   waitforTimeout: 10000,
   connectionRetryTimeout: 120000,
-  connectionRetryCount: 3,
+  connectionRetryCount: 2,
   specFileRetries: 2,
   services: [
     [
@@ -51,8 +51,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 120000,
-    require: ['@babel/register'],
+    timeout: 120000
   },
 
   beforeSession: async function (config, capabilities, specs) {

@@ -6,29 +6,28 @@
   "description": "React Native E2E tester app.",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester-e2e",
   "repository": {
-  "type": "git",
-  "url": "git@github.com:facebook/react-native.git",
-  "directory": "packages/rn-tester-e2e"
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/rn-tester-e2e"
   },
   "scripts": {
     "test-e2e-ios": "npx wdio wdio.conf.ios.js",
     "test-e2e-android": "npx wdio wdio.conf.android.js"
   },
   "devDependencies": {
-    "eslint": "^8.23.1",
-    "webdriverio": "^7.32.0",
     "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
-    "@babel/register": "^7.20.0",
-    "@types/mocha": "^10.0.3",
-    "@wdio/appium-service": "^7.32.0",
-    "@wdio/cli": "^7.32.0",
-    "@wdio/local-runner": "^7.32.0",
-    "@wdio/mocha-framework": "^7.32.0",
-    "@wdio/spec-reporter": "^7.32.0",
+    "@babel/preset-env": "^7.20.0",
+    "@wdio/appium-service": "^8.10.5",
+    "@wdio/cli": "^8.10.5",
+    "@wdio/local-runner": "^8.10.5",
+    "@wdio/mocha-framework": "8.10.4",
+    "@wdio/spec-reporter": "8.8.7",
     "appium": "2.0.0",
-    "appium-uiautomator2-driver": "2.29.0",
-    "appium-xcuitest-driver": "5.6.0"
+    "appium-uiautomator2-driver": "^2.29.0",
+    "appium-xcuitest-driver": "^5.6.0",
+    "eslint": "^8.23.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
   }
 }

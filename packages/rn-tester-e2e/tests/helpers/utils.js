@@ -14,11 +14,8 @@ type PlatformsReference = {
 };
 
 class Utils {
-  async checkElementExistence(
-    locator: string,
-    timeout: number = browser.config.waitforTimeout,
-  ): Promise<boolean> {
-    await $(locator).waitForDisplayed({timeout: timeout});
+  async checkElementExistence(locator: string): Promise<boolean> {
+    await $(locator).waitForDisplayed();
     return $(locator).isDisplayed();
   }
 
@@ -67,7 +64,7 @@ class Utils {
             action: 'release',
           },
         ]);
-        elementIsFound = await $(locator).isDisplayed();
+        elementIsFound = await $(locator).isClickable();
       }
     } catch (err) {
       console.log('Element is not found');
