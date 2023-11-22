@@ -13,7 +13,6 @@ def get_script_phases_with_codegen_discovery(options)
         'RCT_SCRIPT_APP_PATH' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:relative_app_root]}",
         'RCT_SCRIPT_CONFIG_FILE_DIR' => "#{options[:relative_config_file_dir] != '' ? "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:relative_config_file_dir]}" : ''}",
         'RCT_SCRIPT_OUTPUT_DIR' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT",
-        'RCT_SCRIPT_FABRIC_ENABLED' => "#{options[:fabric_enabled]}",
         'RCT_SCRIPT_TYPE' => "withCodegenDiscovery",
     }
     return get_script_template(options[:react_native_path], export_vars)
