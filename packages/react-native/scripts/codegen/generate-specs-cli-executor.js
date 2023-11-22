@@ -13,7 +13,6 @@ const utils = require('./codegen-utils');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const RNCodegen = utils.getCodegen();
 
 const GENERATORS = {
   all: {
@@ -94,7 +93,7 @@ function generateSpec(
   createFolderIfDefined(composePath('react/renderer/components/'));
   createFolderIfDefined(composePath('./'));
 
-  RNCodegen.generate(
+  utils.getCodegen().generate(
     {
       libraryName,
       schema,
