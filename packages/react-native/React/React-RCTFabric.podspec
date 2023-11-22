@@ -58,7 +58,7 @@ Pod::Spec.new do |s|
   s.framework              = ["JavaScriptCore", "MobileCoreServices"]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
-    "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
+    "OTHER_CFLAGS" => "$(inherited) " + folly_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
