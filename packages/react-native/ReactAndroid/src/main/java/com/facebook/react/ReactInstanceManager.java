@@ -1408,7 +1408,9 @@ public class ReactInstanceManager {
     }
     if (ReactFeatureFlags.enableFabricRenderer) {
       if (mUIManagerProvider != null) {
-        catalystInstance.setFabricUIManager(mUIManagerProvider.createUIManager(reactContext));
+        UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+        uiManager.initialize();
+        catalystInstance.setFabricUIManager(uiManager);
       } else {
         catalystInstance.getJSIModule(JSIModuleType.UIManager);
       }
