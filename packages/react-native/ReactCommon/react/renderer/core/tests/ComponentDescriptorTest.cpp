@@ -26,8 +26,9 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
 
   auto family = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
@@ -58,8 +59,9 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
   auto family = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
       /* .surfaceId = */ 1,
@@ -91,8 +93,9 @@ TEST(ComponentDescriptorTest, appendChild) {
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  const auto& raw = RawProps(folly::dynamic::object("nativeID", "abc"));
-  Props::Shared props = descriptor->cloneProps(parserContext, nullptr, raw);
+  auto rawProps = RawProps(folly::dynamic::object("nativeID", "abc"));
+  Props::Shared props =
+      descriptor->cloneProps(parserContext, nullptr, std::move(rawProps));
   auto family1 = descriptor->createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 1,
       /* .surfaceId = */ 1,

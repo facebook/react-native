@@ -95,7 +95,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
-      const RawProps& rawProps) const override {
+      RawProps rawProps) const override {
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the

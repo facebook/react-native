@@ -271,7 +271,9 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0])));
+                  *shadowNodeFromValue(runtime, arguments[0]),
+                  nullptr,
+                  RawProps()));
         });
   }
 
@@ -351,7 +353,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
-                            : ShadowNode::emptySharedShadowNodeSharedList()));
+                            : ShadowNode::emptySharedShadowNodeSharedList(),
+                  RawProps()));
         });
   }
 
@@ -369,13 +372,12 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          RawProps rawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  &rawProps));
+                  RawProps(runtime, arguments[1])));
         });
   }
 
@@ -396,7 +398,6 @@ jsi::Value UIManagerBinding::get(
           // validateArgumentCount(runtime, methodName, paramCount, count);
 
           bool hasChildrenArg = count == 3;
-          RawProps rawProps(runtime, arguments[hasChildrenArg ? 2 : 1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -404,7 +405,7 @@ jsi::Value UIManagerBinding::get(
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  &rawProps));
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
         });
   }
 
