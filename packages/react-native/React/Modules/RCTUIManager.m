@@ -615,9 +615,9 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
     __block NSUInteger completionsCalled = 0;
 
-    NSInteger index = 0;
-    for (NSNumber *reactTag in reactTags) {
-      RCTFrameData frameData = frameDataArray[index++];
+    for (NSInteger index = count - 1; index >= 0; index--) {
+      NSNumber *reactTag = reactTags[index];
+      RCTFrameData frameData = frameDataArray[index];
 
       UIView *view = viewRegistry[reactTag];
       CGRect frame = frameData.frame;
