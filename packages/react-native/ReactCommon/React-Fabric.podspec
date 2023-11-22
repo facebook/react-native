@@ -115,7 +115,7 @@ Pod::Spec.new do |s|
   s.subspec "componentregistry" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/componentregistry/**/*.{m,mm,cpp,h}"
+    ss.source_files         = "react/renderer/componentregistry/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/componentregistry"
   end
 
