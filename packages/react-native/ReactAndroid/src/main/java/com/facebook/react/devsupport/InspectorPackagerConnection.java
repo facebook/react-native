@@ -8,10 +8,12 @@
 package com.facebook.react.devsupport;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Inspector;
-import com.facebook.react.bridge.UiThreadUtil;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,6 @@ public class InspectorPackagerConnection {
 
   public InspectorPackagerConnection(
       String url, String packageName, BundleStatusProvider bundleStatusProvider) {
-    UiThreadUtil.assertOnUiThread();
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
     mPackageName = packageName;
@@ -43,12 +44,10 @@ public class InspectorPackagerConnection {
   }
 
   public void connect() {
-    UiThreadUtil.assertOnUiThread();
     mConnection.connect();
   }
 
   public void closeQuietly() {
-    UiThreadUtil.assertOnUiThread();
     mConnection.close();
   }
 
@@ -60,7 +59,7 @@ public class InspectorPackagerConnection {
     }
   }
 
-  void handleProxyMessage(JSONObject message) throws JSONException {
+  void handleProxyMessage(JSONObject message) throws JSONException, IOException {
     String event = message.getString("event");
     switch (event) {
       case "getPages":
@@ -76,8 +75,7 @@ public class InspectorPackagerConnection {
         handleDisconnect(message.getJSONObject("payload"));
         break;
       default:
-        FLog.e(TAG, "Unknown event: " + event);
-        break;
+        throw new IllegalArgumentException("Unknown event: " + event);
     }
   }
 
@@ -92,8 +90,7 @@ public class InspectorPackagerConnection {
     final String pageId = payload.getString("pageId");
     Inspector.LocalConnection inspectorConnection = mInspectorConnections.remove(pageId);
     if (inspectorConnection != null) {
-      FLog.w(TAG, "Already connected: " + pageId);
-      return;
+      throw new IllegalStateException("Already connected: " + pageId);
     }
 
     try {
@@ -194,65 +191,49 @@ public class InspectorPackagerConnection {
 
     private OkHttpClient mHttpClient;
     private @Nullable WebSocket mWebSocket;
+    private final Handler mHandler;
     private boolean mClosed;
     private boolean mSuppressConnectionErrors;
 
     public Connection(String url) {
       mUrl = url;
+      mHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            mWebSocket = webSocket;
-          });
+      mWebSocket = webSocket;
     }
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            if (mWebSocket != null) {
-              abort("Websocket exception", t);
-            }
-            if (!mClosed) {
-              reconnect();
-            }
-          });
+      if (mWebSocket != null) {
+        abort("Websocket exception", t);
+      }
+      if (!mClosed) {
+        reconnect();
+      }
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
       try {
-        JSONObject parsed = new JSONObject(text);
-        UiThreadUtil.runOnUiThread(
-            () -> {
-              try {
-                handleProxyMessage(parsed);
-              } catch (JSONException e) {
-                FLog.w(TAG, "Error handling inspector message", e);
-              }
-            });
-      } catch (JSONException e) {
-        FLog.w(TAG, "Unrecognized inspector message, string was not valid JSON: " + text, e);
+        handleProxyMessage(new JSONObject(text));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 
     @Override
     public void onClosed(WebSocket webSocket, int code, String reason) {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            mWebSocket = null;
-            closeAllConnections();
-            if (!mClosed) {
-              reconnect();
-            }
-          });
+      mWebSocket = null;
+      closeAllConnections();
+      if (!mClosed) {
+        reconnect();
+      }
     }
 
     public void connect() {
-      UiThreadUtil.assertOnUiThread();
       if (mClosed) {
         throw new IllegalStateException("Can't connect closed client");
       }
@@ -277,18 +258,20 @@ public class InspectorPackagerConnection {
         FLog.w(TAG, "Couldn't connect to packager, will silently retry");
         mSuppressConnectionErrors = true;
       }
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            // check that we haven't been closed in the meantime
-            if (!mClosed) {
-              connect();
+      mHandler.postDelayed(
+          new Runnable() {
+            @Override
+            public void run() {
+              // check that we haven't been closed in the meantime
+              if (!mClosed) {
+                connect();
+              }
             }
           },
           RECONNECT_DELAY_MS);
     }
 
     public void close() {
-      UiThreadUtil.assertOnUiThread();
       mClosed = true;
       if (mWebSocket != null) {
         try {
