@@ -38,6 +38,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['draw'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
-  'TraceUpdateOverlay',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('TraceUpdateOverlay', {
+  paperComponentName: 'RCTTraceUpdateOverlay',
+}): HostComponent<NativeProps>);
