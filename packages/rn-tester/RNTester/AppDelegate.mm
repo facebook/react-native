@@ -16,11 +16,9 @@
 #import <React/RCTPushNotificationManager.h>
 #endif
 
-#if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
-#endif
 #endif
 
 // FB-internal imports
@@ -88,11 +86,9 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
-#ifdef RCT_NEW_ARCH_ENABLED
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-#endif
   return nullptr;
 }
 
@@ -129,7 +125,6 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
-#if RCT_NEW_ARCH_ENABLED
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
@@ -141,6 +136,5 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 {
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
-#endif
 
 @end
