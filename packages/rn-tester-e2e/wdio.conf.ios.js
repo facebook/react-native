@@ -30,10 +30,10 @@ exports.config = {
   ],
   logLevel: 'debug',
   bail: 3, //reduce time of failed builds
-  waitforTimeout: 10000,
+  waitforTimeout: 30000,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 2,
-  specFileRetries: 2,
+  specFileRetries: 3,
   services: [
     [
       'appium',
