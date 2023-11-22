@@ -11,9 +11,11 @@
 
 'use strict';
 
-const {combineSchemasInFileList} = require('./combine-js-to-schema');
+const {
+  combineSchemasInFileListAndWriteToFile,
+} = require('./combine-js-to-schema');
 const {parseArgs} = require('./combine-utils');
 
 const {platform, outfile, fileList} = parseArgs(process.argv);
 
-combineSchemasInFileList(fileList, platform, outfile);
+combineSchemasInFileListAndWriteToFile(fileList, platform, outfile);

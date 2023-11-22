@@ -72,8 +72,7 @@ function expandDirectoriesIntoFiles(
 function combineSchemasInFileList(
   fileList: Array<string>,
   platform: ?string,
-  outfile: string,
-): void {
+): SchemaType {
   const expandedFileList = expandDirectoriesIntoFiles(fileList, platform);
   const combined = combineSchemas(expandedFileList);
   if (Object.keys(combined.modules).length === 0) {
@@ -81,6 +80,15 @@ function combineSchemasInFileList(
       'No modules to process in combine-js-to-schema-cli. If this is unexpected, please check if you set up your NativeComponent correctly. See combine-js-to-schema.js for how codegen finds modules.',
     );
   }
+  return combined;
+}
+
+function combineSchemasInFileListAndWriteToFile(
+  fileList: Array<string>,
+  platform: ?string,
+  outfile: string,
+): void {
+  const combined = combineSchemasInFileList(fileList, platform);
   const formattedSchema = JSON.stringify(combined, null, 2);
   fs.writeFileSync(outfile, formattedSchema);
 }
@@ -88,4 +96,5 @@ function combineSchemasInFileList(
 module.exports = {
   combineSchemas,
   combineSchemasInFileList,
+  combineSchemasInFileListAndWriteToFile,
 };
