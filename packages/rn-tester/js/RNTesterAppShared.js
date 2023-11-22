@@ -6,8 +6,11 @@ const RNTesterApp = () => {
     'From vincenzoddragon+five@gmail.com  From vincenzoddrlxagon+five@gmail.com';
   return (
     <View style={styles.container}>
-      <View style={{alignSelf: 'flex-start', backgroundColor: 'red'}}>
-        <Text numberOfLines={1} style={{backgroundColor: 'pink'}}>
+      <View style={styles.flexBrokenStyle}>
+        <Text
+          textBreakStrategy="simple"
+          numberOfLines={1}
+          style={{backgroundColor: 'pink'}}>
           {email}
         </Text>
       </View>
@@ -23,5 +26,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
     backgroundColor: 'yellow',
+  },
+  flexBrokenStyle: {
+    flexDirection: 'row',
+  },
+  flexBrokenStyle2: {
+    alignSelf: 'flex-start',
   },
 });
