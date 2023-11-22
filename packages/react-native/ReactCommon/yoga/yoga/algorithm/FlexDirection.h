@@ -11,6 +11,7 @@
 
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/enums/Dimension.h>
+#include <yoga/enums/Direction.h>
 #include <yoga/enums/FlexDirection.h>
 
 namespace facebook::yoga {

@@ -391,55 +391,55 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yoga::Style result{baseStyle};
 
   // Aliases with precedence
-  if (!props.insetInlineEnd.isUndefined()) {
-    result.position()[YGEdgeEnd] = props.insetInlineEnd;
+  if (props.insetInlineEnd.isDefined()) {
+    result.setPosition(YGEdgeEnd, props.insetInlineEnd);
   }
-  if (!props.insetInlineStart.isUndefined()) {
-    result.position()[YGEdgeStart] = props.insetInlineStart;
+  if (props.insetInlineStart.isDefined()) {
+    result.setPosition(YGEdgeStart, props.insetInlineStart);
   }
-  if (!props.marginInline.isUndefined()) {
-    result.margin()[YGEdgeHorizontal] = props.marginInline;
+  if (props.marginInline.isDefined()) {
+    result.setMargin(YGEdgeHorizontal, props.marginInline);
   }
-  if (!props.marginInlineStart.isUndefined()) {
-    result.margin()[YGEdgeStart] = props.marginInlineStart;
+  if (props.marginInlineStart.isDefined()) {
+    result.setMargin(YGEdgeStart, props.marginInlineStart);
   }
-  if (!props.marginInlineEnd.isUndefined()) {
-    result.margin()[YGEdgeEnd] = props.marginInlineEnd;
+  if (props.marginInlineEnd.isDefined()) {
+    result.setMargin(YGEdgeEnd, props.marginInlineEnd);
   }
-  if (!props.marginBlock.isUndefined()) {
-    result.margin()[YGEdgeVertical] = props.marginBlock;
+  if (props.marginBlock.isDefined()) {
+    result.setMargin(YGEdgeVertical, props.marginBlock);
   }
-  if (!props.paddingInline.isUndefined()) {
-    result.padding()[YGEdgeHorizontal] = props.paddingInline;
+  if (props.paddingInline.isDefined()) {
+    result.setPadding(YGEdgeHorizontal, props.paddingInline);
   }
-  if (!props.paddingInlineStart.isUndefined()) {
-    result.padding()[YGEdgeStart] = props.paddingInlineStart;
+  if (props.paddingInlineStart.isDefined()) {
+    result.setPadding(YGEdgeStart, props.paddingInlineStart);
   }
-  if (!props.paddingInlineEnd.isUndefined()) {
-    result.padding()[YGEdgeEnd] = props.paddingInlineEnd;
+  if (props.paddingInlineEnd.isDefined()) {
+    result.setPadding(YGEdgeEnd, props.paddingInlineEnd);
   }
-  if (!props.paddingBlock.isUndefined()) {
-    result.padding()[YGEdgeVertical] = props.paddingBlock;
+  if (props.paddingBlock.isDefined()) {
+    result.setPadding(YGEdgeVertical, props.paddingBlock);
   }
 
   // Aliases without precedence
-  if (CompactValue(result.position()[YGEdgeBottom]).isUndefined()) {
-    result.position()[YGEdgeBottom] = props.insetBlockEnd;
+  if (result.position(YGEdgeBottom).isUndefined()) {
+    result.setPosition(YGEdgeBottom, props.insetBlockEnd);
   }
-  if (CompactValue(result.position()[YGEdgeTop]).isUndefined()) {
-    result.position()[YGEdgeTop] = props.insetBlockStart;
+  if (result.position(YGEdgeTop).isUndefined()) {
+    result.setPosition(YGEdgeTop, props.insetBlockStart);
   }
-  if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
-    result.margin()[YGEdgeTop] = props.marginBlockStart;
+  if (result.margin(YGEdgeTop).isUndefined()) {
+    result.setMargin(YGEdgeTop, props.marginBlockStart);
   }
-  if (CompactValue(result.margin()[YGEdgeBottom]).isUndefined()) {
-    result.margin()[YGEdgeBottom] = props.marginBlockEnd;
+  if (result.margin(YGEdgeBottom).isUndefined()) {
+    result.setMargin(YGEdgeBottom, props.marginBlockEnd);
   }
-  if (CompactValue(result.padding()[YGEdgeTop]).isUndefined()) {
-    result.padding()[YGEdgeTop] = props.paddingBlockStart;
+  if (result.padding(YGEdgeTop).isUndefined()) {
+    result.setPadding(YGEdgeTop, props.paddingBlockStart);
   }
-  if (CompactValue(result.padding()[YGEdgeBottom]).isUndefined()) {
-    result.padding()[YGEdgeBottom] = props.paddingBlockEnd;
+  if (result.padding(YGEdgeBottom).isUndefined()) {
+    result.setPadding(YGEdgeBottom, props.paddingBlockEnd);
   }
 
   return result;
@@ -549,18 +549,18 @@ void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   auto rightPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
   auto bottomPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
 
-  if (leftPadding != style.padding()[YGEdgeLeft] ||
-      topPadding != style.padding()[YGEdgeTop] ||
-      rightPadding != style.padding()[YGEdgeRight] ||
-      bottomPadding != style.padding()[YGEdgeBottom]) {
-    style.padding()[YGEdgeTop] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top);
-    style.padding()[YGEdgeLeft] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left);
-    style.padding()[YGEdgeRight] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
-    style.padding()[YGEdgeBottom] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
+  if (leftPadding != style.padding(YGEdgeLeft) ||
+      topPadding != style.padding(YGEdgeTop) ||
+      rightPadding != style.padding(YGEdgeRight) ||
+      bottomPadding != style.padding(YGEdgeBottom)) {
+    style.setPadding(
+        YGEdgeTop, yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top));
+    style.setPadding(
+        YGEdgeLeft, yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left));
+    style.setPadding(
+        YGEdgeRight, yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right));
+    style.setPadding(
+        YGEdgeBottom, yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom));
     yogaNode_.setStyle(style);
     yogaNode_.setDirty(true);
   }
@@ -883,40 +883,36 @@ void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
     const YogaLayoutableShadowNode& shadowNode) {
   auto yogaStyle = shadowNode.yogaNode_.getStyle();
 
-  const yoga::Style::Edges& position = yogaStyle.position();
-  const yoga::Style::Edges& padding = yogaStyle.padding();
-  const yoga::Style::Edges& margin = yogaStyle.margin();
-
   // Swap Yoga node values, position, padding and margin.
 
-  if (yogaStyle.position()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.position()[YGEdgeStart] = position[YGEdgeLeft];
-    yogaStyle.position()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.position(YGEdgeLeft).isDefined()) {
+    yogaStyle.setPosition(YGEdgeStart, yogaStyle.position(YGEdgeLeft));
+    yogaStyle.setPosition(YGEdgeLeft, yoga::CompactValue::ofUndefined());
   }
 
-  if (yogaStyle.position()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.position()[YGEdgeEnd] = position[YGEdgeRight];
-    yogaStyle.position()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.position(YGEdgeRight).isDefined()) {
+    yogaStyle.setPosition(YGEdgeEnd, yogaStyle.position(YGEdgeRight));
+    yogaStyle.setPosition(YGEdgeRight, yoga::CompactValue::ofUndefined());
   }
 
-  if (yogaStyle.padding()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.padding()[YGEdgeStart] = padding[YGEdgeLeft];
-    yogaStyle.padding()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.padding(YGEdgeLeft).isDefined()) {
+    yogaStyle.setPadding(YGEdgeStart, yogaStyle.padding(YGEdgeLeft));
+    yogaStyle.setPadding(YGEdgeLeft, yoga::CompactValue::ofUndefined());
   }
 
-  if (yogaStyle.padding()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.padding()[YGEdgeEnd] = padding[YGEdgeRight];
-    yogaStyle.padding()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.padding(YGEdgeRight).isDefined()) {
+    yogaStyle.setPadding(YGEdgeEnd, yogaStyle.padding(YGEdgeRight));
+    yogaStyle.setPadding(YGEdgeRight, yoga::CompactValue::ofUndefined());
   }
 
-  if (yogaStyle.margin()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.margin()[YGEdgeStart] = margin[YGEdgeLeft];
-    yogaStyle.margin()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.margin(YGEdgeLeft).isDefined()) {
+    yogaStyle.setMargin(YGEdgeStart, yogaStyle.margin(YGEdgeLeft));
+    yogaStyle.setMargin(YGEdgeLeft, yoga::CompactValue::ofUndefined());
   }
 
-  if (yogaStyle.margin()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.margin()[YGEdgeEnd] = margin[YGEdgeRight];
-    yogaStyle.margin()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.margin(YGEdgeRight).isDefined()) {
+    yogaStyle.setMargin(YGEdgeEnd, yogaStyle.margin(YGEdgeRight));
+    yogaStyle.setMargin(YGEdgeRight, yoga::CompactValue::ofUndefined());
   }
 
   shadowNode.yogaNode_.setStyle(yogaStyle);
@@ -969,16 +965,14 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
     props.borderStyles.right.reset();
   }
 
-  const yoga::Style::Edges& border = props.yogaStyle.border();
-
-  if (props.yogaStyle.border()[YGEdgeLeft] != YGValueUndefined) {
-    props.yogaStyle.border()[YGEdgeStart] = border[YGEdgeLeft];
-    props.yogaStyle.border()[YGEdgeLeft] = YGValueUndefined;
+  if (props.yogaStyle.border(YGEdgeLeft).isDefined()) {
+    props.yogaStyle.setBorder(YGEdgeStart, props.yogaStyle.border(YGEdgeLeft));
+    props.yogaStyle.setBorder(YGEdgeLeft, yoga::CompactValue::ofUndefined());
   }
 
-  if (props.yogaStyle.border()[YGEdgeRight] != YGValueUndefined) {
-    props.yogaStyle.border()[YGEdgeEnd] = border[YGEdgeRight];
-    props.yogaStyle.border()[YGEdgeRight] = YGValueUndefined;
+  if (props.yogaStyle.border(YGEdgeRight).isDefined()) {
+    props.yogaStyle.setBorder(YGEdgeEnd, props.yogaStyle.border(YGEdgeRight));
+    props.yogaStyle.setBorder(YGEdgeRight, yoga::CompactValue::ofUndefined());
   }
 }
 
