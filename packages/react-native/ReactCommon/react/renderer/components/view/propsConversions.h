@@ -143,6 +143,24 @@ static inline yoga::Style::Edges convertRawProp(
       "end",
       sourceValue[YGEdgeEnd],
       defaultValue[YGEdgeEnd]);
+  result[YGEdgeHorizontal] = convertRawProp(
+      context,
+      rawProps,
+      "insetInline",
+      sourceValue[YGEdgeHorizontal],
+      defaultValue[YGEdgeHorizontal]);
+  result[YGEdgeVertical] = convertRawProp(
+      context,
+      rawProps,
+      "insetBlock",
+      sourceValue[YGEdgeVertical],
+      defaultValue[YGEdgeVertical]);
+  result[YGEdgeAll] = convertRawProp(
+      context,
+      rawProps,
+      "inset",
+      sourceValue[YGEdgeAll],
+      defaultValue[YGEdgeAll]);
   return result;
 }
 

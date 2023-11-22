@@ -391,15 +391,6 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yoga::Style result{baseStyle};
 
   // Aliases with precedence
-  if (!props.inset.isUndefined()) {
-    result.position()[YGEdgeAll] = props.inset;
-  }
-  if (!props.insetBlock.isUndefined()) {
-    result.position()[YGEdgeVertical] = props.insetBlock;
-  }
-  if (!props.insetInline.isUndefined()) {
-    result.position()[YGEdgeHorizontal] = props.insetInline;
-  }
   if (!props.insetInlineEnd.isUndefined()) {
     result.position()[YGEdgeEnd] = props.insetInlineEnd;
   }
