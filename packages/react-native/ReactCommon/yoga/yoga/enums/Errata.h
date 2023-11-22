@@ -26,16 +26,6 @@ enum class Errata : uint32_t {
 
 YG_DEFINE_ENUM_FLAG_OPERATORS(Errata)
 
-template <>
-constexpr inline int32_t ordinalCount<Errata>() {
-  return 6;
-} 
-
-template <>
-constexpr inline int32_t bitCount<Errata>() {
-  return 3;
-} 
-
 constexpr inline Errata scopedEnum(YGErrata unscoped) {
   return static_cast<Errata>(unscoped);
 }
