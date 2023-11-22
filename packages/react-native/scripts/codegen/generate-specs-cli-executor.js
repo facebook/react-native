@@ -70,18 +70,15 @@ function validateLibraryType(libraryType) {
   }
 }
 
-function generateSpec(
+function generateSpecFromInMemorySchema(
   platform,
-  schemaPath,
+  schema,
   outputDirectory,
   libraryName,
   packageName,
   libraryType,
 ) {
   validateLibraryType(libraryType);
-
-  let schema = readAndParseSchema(schemaPath);
-
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
   function composePath(intermediate) {
     return path.join(outputDirectory, intermediate, libraryName);
@@ -121,6 +118,25 @@ function generateSpec(
   }
 }
 
+function generateSpec(
+  platform,
+  schemaPath,
+  outputDirectory,
+  libraryName,
+  packageName,
+  libraryType,
+) {
+  generateSpecFromInMemorySchema(
+    platform,
+    readAndParseSchema(schemaPath),
+    outputDirectory,
+    libraryName,
+    packageName,
+    libraryType,
+  );
+}
+
 module.exports = {
   execute: generateSpec,
+  generateSpecFromInMemorySchema: generateSpecFromInMemorySchema,
 };

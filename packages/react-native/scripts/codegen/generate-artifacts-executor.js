@@ -256,31 +256,28 @@ function computeIOSOutputDir(outputPath, appRootDir) {
   return path.join(outputPath ? outputPath : appRootDir, 'build/generated/ios');
 }
 
-function generateSchema(tmpDir, library) {
-  const pathToSchema = path.join(tmpDir, 'schema.json');
+function generateSchema(library) {
   const pathToJavaScriptSources = path.join(
     library.libraryPath,
     library.config.jsSrcsDir,
   );
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
-  utils
+  return utils
     .getCombineJSToSchema()
-    .combineSchemasInFileList([pathToJavaScriptSources], 'ios', pathToSchema);
-  console.log(`[Codegen] Generated schema: ${pathToSchema}`);
-  return pathToSchema;
+    .combineSchemasInFileList([pathToJavaScriptSources], 'ios');
 }
 
-function generateCode(iosOutputDir, library, tmpDir, pathToSchema) {
+function generateCode(iosOutputDir, library, tmpDir, schema) {
   // ...then generate native code artifacts.
   const libraryTypeArg = library.config.type ? `${library.config.type}` : '';
 
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  generateSpecsCLIExecutor.execute(
+  generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
     'ios',
-    pathToSchema,
+    schema,
     tmpOutputDir,
     library.config.name,
     'com.facebook.fbreact.specs',
@@ -295,22 +292,24 @@ function generateCode(iosOutputDir, library, tmpDir, pathToSchema) {
   console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 
-function generateNativeCodegenFiles(libraries, iosOutputDir, schemaPaths) {
+function generateNativeCodegenFiles(libraries, iosOutputDir) {
+  const schemas = {};
   libraries.forEach(library => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), library.config.name));
-    const pathToSchema = generateSchema(tmpDir, library);
-    generateCode(iosOutputDir, library, tmpDir, pathToSchema);
+    const schema = generateSchema(library);
+    generateCode(iosOutputDir, library, tmpDir, schema);
 
     // Filter the react native core library out.
     // In the future, core library and third party library should
     // use the same way to generate/register the fabric components.
     if (!isReactNativeCoreLibrary(library.config.name)) {
-      schemaPaths[library.config.name] = pathToSchema;
+      schemas[library.config.name] = schema;
     }
   });
+  return schemas;
 }
 
-function createComponentProvider(schemaPaths) {
+function createComponentProvider(schemas) {
   console.log('\n\n>>>>> Creating component provider');
   const outputDir = path.join(
     REACT_NATIVE_PACKAGE_ROOT_FOLDER,
@@ -318,11 +317,6 @@ function createComponentProvider(schemaPaths) {
     'Fabric',
   );
   mkdirp.sync(outputDir);
-  const schemas = {};
-  for (const libraryName of Object.keys(schemaPaths)) {
-    const tmpSchemaText = fs.readFileSync(schemaPaths[libraryName], 'utf-8');
-    schemas[libraryName] = JSON.parse(tmpSchemaText);
-  }
   utils.getCodegen().generateFromSchemas(
     {
       schemas: schemas,
@@ -413,13 +407,11 @@ function execute(appRootDir, outputPath, baseCodegenConfigFileDir) {
       return;
     }
 
-    const schemaPaths = {};
-
     const iosOutputDir = computeIOSOutputDir(outputPath, appRootDir);
 
-    generateNativeCodegenFiles(libraries, iosOutputDir, schemaPaths);
+    const schemas = generateNativeCodegenFiles(libraries, iosOutputDir);
 
-    createComponentProvider(schemaPaths);
+    createComponentProvider(schemas);
     cleanupEmptyFilesAndFolders(iosOutputDir);
   } catch (err) {
     console.error(err);
