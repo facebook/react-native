@@ -19,6 +19,7 @@
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Gutter.h>
 #include <yoga/enums/Justify.h>
