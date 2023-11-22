@@ -32,7 +32,7 @@ exports.config = {
   bail: 3, //reduce time of failed builds
   waitforTimeout: 30000,
   connectionRetryTimeout: 120000,
-  connectionRetryCount: 2,
+  connectionRetryCount: 3,
   specFileRetries: 3,
   services: [
     [
