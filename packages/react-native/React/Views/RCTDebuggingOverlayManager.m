@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTraceUpdateOverlayManager.h"
-#import "RCTTraceUpdateOverlay.h"
+#import "RCTDebuggingOverlayManager.h"
+#import "RCTDebuggingOverlay.h"
 
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
 #import "RCTBridge.h"
 
-@implementation RCTTraceUpdateOverlayManager
+@implementation RCTDebuggingOverlayManager
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [RCTTraceUpdateOverlay new];
+  return [RCTDebuggingOverlay new];
 }
 
 RCT_EXPORT_METHOD(draw : (nonnull NSNumber *)viewTag nodes : (NSString *)serializedNodes)
@@ -27,10 +27,10 @@ RCT_EXPORT_METHOD(draw : (nonnull NSNumber *)viewTag nodes : (NSString *)seriali
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
 
-    if ([view isKindOfClass:[RCTTraceUpdateOverlay class]]) {
-      [(RCTTraceUpdateOverlay *)view draw:serializedNodes];
+    if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
+      [(RCTDebuggingOverlay *)view draw:serializedNodes];
     } else {
-      RCTLogError(@"Expected view to be RCTTraceUpdateOverlay, got %@", NSStringFromClass([view class]));
+      RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
     }
   }];
 }

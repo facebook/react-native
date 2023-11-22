@@ -9,7 +9,7 @@
 
 #import <React/RCTView.h>
 
-@interface RCTTraceUpdateOverlay : RCTView
+@interface RCTDebuggingOverlay : RCTView
 
 - (void)draw:(NSString *)serializedNodes;
 

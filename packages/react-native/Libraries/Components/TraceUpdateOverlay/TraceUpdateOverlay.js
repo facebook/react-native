@@ -8,18 +8,18 @@
  * @format
  */
 
+import type {Overlay} from '../../Debugging/DebuggingOverlayNativeComponent';
 import type {
   InstanceFromReactDevTools,
   ReactDevToolsAgent,
 } from '../../Types/ReactDevToolsTypes';
-import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 
+import TraceUpdateOverlayNativeComponent, {
+  Commands,
+} from '../../Debugging/DebuggingOverlayNativeComponent';
 import processColor from '../../StyleSheet/processColor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
-import TraceUpdateOverlayNativeComponent, {
-  Commands,
-} from './TraceUpdateOverlayNativeComponent';
 import * as React from 'react';
 
 const {useEffect, useRef, useState} = React;

@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTraceUpdateOverlayComponentView.h"
+#import "RCTDebuggingOverlayComponentView.h"
 
+#import <React/RCTDebuggingOverlay.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
-#import <React/RCTTraceUpdateOverlay.h>
 
 #import <react/renderer/components/rncore/ComponentDescriptors.h>
 #import <react/renderer/components/rncore/EventEmitters.h>
@@ -19,17 +19,17 @@
 
 using namespace facebook::react;
 
-@implementation RCTTraceUpdateOverlayComponentView {
-  RCTTraceUpdateOverlay *_overlay;
+@implementation RCTDebuggingOverlayComponentView {
+  RCTDebuggingOverlay *_overlay;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TraceUpdateOverlayProps>();
+    static const auto defaultProps = std::make_shared<const DebuggingOverlayProps>();
     _props = defaultProps;
 
-    _overlay = [[RCTTraceUpdateOverlay alloc] initWithFrame:self.bounds];
+    _overlay = [[RCTDebuggingOverlay alloc] initWithFrame:self.bounds];
 
     self.contentView = _overlay;
   }
@@ -41,7 +41,7 @@ using namespace facebook::react;
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return concreteComponentDescriptorProvider<TraceUpdateOverlayComponentDescriptor>();
+  return concreteComponentDescriptorProvider<DebuggingOverlayComponentDescriptor>();
 }
 
 #pragma mark - Native commands
@@ -49,14 +49,14 @@ using namespace facebook::react;
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
 {
   if (![commandName isEqualToString:@"draw"]) {
-    RCTLogError(@"%@ received unsupported command %@", @"TraceUpdateOverlay", commandName);
+    RCTLogError(@"%@ received unsupported command %@", @"DebuggingOverlay", commandName);
     return;
   }
 
   NSObject *arg0 = args[0];
 #if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(
-          arg0, [NSString class], @"string", @"TraceUpdateOverlay", commandName, @"1st")) {
+          arg0, [NSString class], @"string", @"DebuggingOverlay", commandName, @"1st")) {
     return;
   }
 #endif
@@ -67,7 +67,7 @@ using namespace facebook::react;
 
 @end
 
-Class<RCTComponentViewProtocol> RCTTraceUpdateOverlayCls(void)
+Class<RCTComponentViewProtocol> RCTDebuggingOverlayCls(void)
 {
-  return RCTTraceUpdateOverlayComponentView.class;
+  return RCTDebuggingOverlayComponentView.class;
 }

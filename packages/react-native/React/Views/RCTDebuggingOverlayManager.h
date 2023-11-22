@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTViewManager.h>
 
-#import <React/RCTViewComponentView.h>
-
-@interface RCTTraceUpdateOverlayComponentView : RCTViewComponentView
+@interface RCTDebuggingOverlayManager : RCTViewManager
 
 @end
