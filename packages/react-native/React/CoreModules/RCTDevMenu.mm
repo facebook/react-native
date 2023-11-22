@@ -283,8 +283,7 @@ RCT_EXPORT_MODULE()
 
   [items addObject:[RCTDevMenuItem
                        buttonItemWithTitleBlock:^NSString * {
-                         return devSettings.isElementInspectorShown ? @"Hide Element Inspector"
-                                                                    : @"Show Element Inspector";
+                         return @"Toggle Element Inspector";
                        }
                        handler:^{
                          [devSettings toggleElementInspector];
