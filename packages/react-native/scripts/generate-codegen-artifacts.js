@@ -27,17 +27,7 @@ const argv = yargs
     description:
       'Path where codegen config files are located (e.g. node_modules dir).',
   })
-  .option('n', {
-    alias: 'nodeBinary',
-    default: 'node',
-    description: 'Path to the node executable.',
-  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
-executor.execute(
-  argv.path,
-  argv.outputPath,
-  argv.nodeBinary,
-  argv.configFileDir,
-);
+executor.execute(argv.path, argv.outputPath, argv.configFileDir);
