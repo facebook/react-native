@@ -12,26 +12,41 @@
 'use strict';
 
 const path = require('path');
+const util = require('util');
 
 function parseArgs(args: string[]): {
   platform: ?string,
   outfile: string,
   fileList: string[],
+  exclude: ?RegExp,
 } {
-  if (args.length > 2 && ['-p', '--platform'].indexOf(args[2]) >= 0) {
-    const [outfile, ...fileList] = args.slice(4);
-    return {
-      platform: args[3],
-      outfile,
-      fileList,
-    };
-  }
+  const parsedArgs = util.parseArgs({
+    args: args.slice(2),
+    options: {
+      platform: {
+        short: 'p',
+        type: 'string',
+      },
+      exclude: {
+        short: 'e',
+        type: 'string',
+      },
+    },
+    allowPositionals: true,
+  });
 
-  const [outfile, ...fileList] = args.slice(2);
+  const {
+    values: {platform, exclude},
+    positionals: files,
+  } = parsedArgs;
+
+  const [outfile, ...fileList] = files;
+
   return {
-    platform: null,
+    platform: platform ?? null,
     outfile,
     fileList,
+    exclude: exclude != null && exclude !== '' ? new RegExp(exclude) : null,
   };
 }
 
@@ -43,19 +58,21 @@ function parseArgs(args: string[]): {
  * Returns: `true` if the file can be used to generate some code; `false` otherwise
  *
  */
-function filterJSFile(file: string, currentPlatform: ?string): boolean {
+function filterJSFile(
+  file: string,
+  currentPlatform: ?string,
+  excludeRegExp: ?RegExp,
+): boolean {
   const isSpecFile = /^(Native.+|.+NativeComponent)/.test(path.basename(file));
   const isNotNativeUIManager = !file.endsWith('NativeUIManager.js');
-  const isNotNativeSampleTurboModule = !file.endsWith(
-    'NativeSampleTurboModule.js',
-  );
   const isNotTest = !file.includes('__tests');
+  const isNotExcluded = excludeRegExp == null || !excludeRegExp.test(file);
   const isNotTSTypeDefinition = !file.endsWith('.d.ts');
 
   const isValidCandidate =
     isSpecFile &&
     isNotNativeUIManager &&
-    isNotNativeSampleTurboModule &&
+    isNotExcluded &&
     isNotTest &&
     isNotTSTypeDefinition;
 

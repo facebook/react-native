@@ -16,6 +16,8 @@ const {
 } = require('./combine-js-to-schema');
 const {parseArgs} = require('./combine-utils');
 
-const {platform, outfile, fileList} = parseArgs(process.argv);
+const parsedArgs = parseArgs(process.argv);
 
-combineSchemasInFileListAndWriteToFile(fileList, platform, outfile);
+const {platform, outfile, fileList, exclude} = parsedArgs;
+
+combineSchemasInFileListAndWriteToFile(fileList, platform, outfile, exclude);
