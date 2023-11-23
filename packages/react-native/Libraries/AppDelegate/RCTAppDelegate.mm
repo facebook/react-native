@@ -23,7 +23,7 @@
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
-#if RCT_USE_HERMES
+#if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
 #else
 #import <ReactCommon/RCTJscInstance.h>
@@ -291,7 +291,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (std::shared_ptr<facebook::react::JSEngineInstance>)createJSEngineInstance
 {
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
 #else
   return std::make_shared<facebook::react::RCTJscInstance>();
