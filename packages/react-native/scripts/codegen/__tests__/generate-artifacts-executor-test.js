@@ -173,12 +173,7 @@ describe('findCodegenEnabledLibraries', () => {
       },
     }));
 
-    const libraries = findCodegenEnabledLibraries(
-      `${projectDir}/app`,
-      baseCodegenConfigFileDir,
-      `package.json`,
-      'codegenConfig',
-    );
+    const libraries = findCodegenEnabledLibraries(`${projectDir}/app`);
 
     expect(libraries).toEqual([
       {

@@ -21,13 +21,7 @@ const argv = yargs
     alias: 'outputPath',
     description: 'Path where generated artifacts will be output to',
   })
-  .option('c', {
-    alias: 'configFileDir',
-    default: '',
-    description:
-      'Path where codegen config files are located (e.g. node_modules dir).',
-  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
-executor.execute(argv.path, argv.outputPath, argv.configFileDir);
+executor.execute(argv.path, argv.outputPath);

@@ -11,7 +11,6 @@ def snap_get_script_phases_with_codegen_discovery_with_config_file_dir()
 
     export RCT_SCRIPT_RN_DIR=$RCT_SCRIPT_POD_INSTALLATION_ROOT/../..
     export RCT_SCRIPT_APP_PATH=$RCT_SCRIPT_POD_INSTALLATION_ROOT/
-    export RCT_SCRIPT_CONFIG_FILE_DIR=$RCT_SCRIPT_POD_INSTALLATION_ROOT/node_modules
     export RCT_SCRIPT_OUTPUT_DIR=$RCT_SCRIPT_POD_INSTALLATION_ROOT
     export RCT_SCRIPT_TYPE=withCodegenDiscovery
 
@@ -29,7 +28,6 @@ def snap_get_script_phases_with_codegen_discovery_without_config_file_dir()
 
     export RCT_SCRIPT_RN_DIR=$RCT_SCRIPT_POD_INSTALLATION_ROOT/../..
     export RCT_SCRIPT_APP_PATH=$RCT_SCRIPT_POD_INSTALLATION_ROOT/
-    export RCT_SCRIPT_CONFIG_FILE_DIR=
     export RCT_SCRIPT_OUTPUT_DIR=$RCT_SCRIPT_POD_INSTALLATION_ROOT
     export RCT_SCRIPT_TYPE=withCodegenDiscovery
 
