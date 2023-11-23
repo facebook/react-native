@@ -100,6 +100,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   SharedColor placeholderTextColor{};
   bool secureTextEntry{false};
   SharedColor selectionColor{};
+  SharedColor selectionHandleColor{};
   std::string value{};
   std::string defaultValue{};
   bool selectTextOnFocus{false};
