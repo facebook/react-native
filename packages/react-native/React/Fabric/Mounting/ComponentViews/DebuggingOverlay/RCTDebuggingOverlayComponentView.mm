@@ -27,9 +27,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const DebuggingOverlayProps>();
-    _props = defaultProps;
-
+    _props = DebuggingOverlayShadowNode::defaultSharedProps();
     _overlay = [[RCTDebuggingOverlay alloc] initWithFrame:self.bounds];
 
     self.contentView = _overlay;

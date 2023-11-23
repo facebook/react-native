@@ -50,8 +50,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const InputAccessoryProps>();
-    _props = defaultProps;
+    _props = InputAccessoryShadowNode::defaultSharedProps();
     _contentView = [RCTInputAccessoryContentView new];
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_contentView];
