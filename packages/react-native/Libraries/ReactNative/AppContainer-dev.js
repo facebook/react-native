@@ -18,7 +18,6 @@ import type {Props} from './AppContainer';
 import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
-import ViewNativeComponent from '../Components/View/ViewNativeComponent';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
 import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
@@ -41,13 +40,13 @@ if (reactDevToolsHook) {
 }
 
 type InspectorDeferredProps = {
-  inspectedView: React.ElementRef<typeof ViewNativeComponent> | null,
+  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
   onInspectedViewRerenderRequest: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
 
 const InspectorDeferred = ({
-  inspectedView,
+  inspectedViewRef,
   onInspectedViewRerenderRequest,
   reactDevToolsAgent,
 }: InspectorDeferredProps) => {
@@ -57,7 +56,7 @@ const InspectorDeferred = ({
 
   return (
     <Inspector
-      inspectedView={inspectedView}
+      inspectedViewRef={inspectedViewRef}
       onRequestRerenderApp={onInspectedViewRerenderRequest}
       reactDevToolsAgent={reactDevToolsAgent}
     />
@@ -74,9 +73,7 @@ const AppContainer = ({
   showArchitectureIndicator,
   WrapperComponent,
 }: Props): React.Node => {
-  const [mainRef, setMainRef] = useState<React.ElementRef<
-    typeof ViewNativeComponent,
-  > | null>(null);
+  const innerViewRef = React.useRef<React.ElementRef<typeof View> | null>(null);
 
   const [key, setKey] = useState(0);
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
@@ -118,7 +115,7 @@ const AppContainer = ({
       pointerEvents="box-none"
       key={key}
       style={styles.container}
-      ref={setMainRef}>
+      ref={innerViewRef}>
       {children}
     </View>
   );
@@ -149,14 +146,14 @@ const AppContainer = ({
         )}
         {reactDevToolsAgent != null && (
           <ReactDevToolsOverlay
-            inspectedView={mainRef}
+            inspectedViewRef={innerViewRef}
             reactDevToolsAgent={reactDevToolsAgent}
           />
         )}
 
         {shouldRenderInspector && (
           <InspectorDeferred
-            inspectedView={mainRef}
+            inspectedViewRef={innerViewRef}
             onInspectedViewRerenderRequest={onInspectedViewRerenderRequest}
             reactDevToolsAgent={reactDevToolsAgent}
           />

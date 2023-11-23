@@ -16,7 +16,6 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
-import type {HostRef} from './getInspectorDataForViewAtPoint';
 
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
@@ -47,13 +46,13 @@ export type InspectedElement = $ReadOnly<{
 export type ElementsHierarchy = InspectorData['hierarchy'];
 
 type Props = {
-  inspectedView: ?HostRef,
+  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
   onRequestRerenderApp: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
 
 function Inspector({
-  inspectedView,
+  inspectedViewRef,
   onRequestRerenderApp,
   reactDevToolsAgent,
 }: Props): React.Node {
@@ -126,7 +125,7 @@ function Inspector({
     };
 
     getInspectorDataForViewAtPoint(
-      inspectedView,
+      inspectedViewRef.current,
       locationX,
       locationY,
       viewData => {
