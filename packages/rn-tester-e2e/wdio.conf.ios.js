@@ -17,11 +17,12 @@ exports.config = {
   specs: ['./tests/specs/components/**/*.test.js'],
   exclude: [],
   maxInstances: 1,
+  port: 4723,
   capabilities: [
     {
       platformName: 'iOS',
-      'appium:platformVersion': '16.4',
-      'appium:deviceName': 'iPhone 14',
+      'appium:platformVersion': '17.0',
+      'appium:deviceName': 'iPhone 15',
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
       'appium:newCommandTimeout': 240,
@@ -38,10 +39,6 @@ exports.config = {
     [
       'appium',
       {
-        args: {
-          address: 'localhost',
-          port: 4723,
-        },
         logPath: './reports',
       },
     ],
