@@ -19,7 +19,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.traceupdateoverlay.TraceUpdateOverlayManager;
+import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -96,8 +96,7 @@ class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandR
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
-      appendMap(
-          viewManagers, TraceUpdateOverlayManager.REACT_CLASS, TraceUpdateOverlayManager::new);
+      appendMap(viewManagers, DebuggingOverlayManager.REACT_CLASS, DebuggingOverlayManager::new);
 
       mViewManagers = viewManagers;
     }
