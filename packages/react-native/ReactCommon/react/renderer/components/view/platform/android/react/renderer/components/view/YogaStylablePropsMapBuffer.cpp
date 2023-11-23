@@ -16,27 +16,25 @@ namespace facebook::react {
 MapBuffer convertBorderWidths(const yoga::Style& style) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
-      builder, EDGE_TOP, optionalFloatFromYogaValue(style.border()[YGEdgeTop]));
+      builder, EDGE_TOP, optionalFloatFromYogaValue(style.border(YGEdgeTop)));
   putOptionalFloat(
       builder,
       EDGE_RIGHT,
-      optionalFloatFromYogaValue(style.border()[YGEdgeRight]));
+      optionalFloatFromYogaValue(style.border(YGEdgeRight)));
   putOptionalFloat(
       builder,
       EDGE_BOTTOM,
-      optionalFloatFromYogaValue(style.border()[YGEdgeBottom]));
+      optionalFloatFromYogaValue(style.border(YGEdgeBottom)));
   putOptionalFloat(
-      builder,
-      EDGE_LEFT,
-      optionalFloatFromYogaValue(style.border()[YGEdgeLeft]));
+      builder, EDGE_LEFT, optionalFloatFromYogaValue(style.border(YGEdgeLeft)));
   putOptionalFloat(
       builder,
       EDGE_START,
-      optionalFloatFromYogaValue(style.border()[YGEdgeStart]));
+      optionalFloatFromYogaValue(style.border(YGEdgeStart)));
   putOptionalFloat(
-      builder, EDGE_END, optionalFloatFromYogaValue(style.border()[YGEdgeEnd]));
+      builder, EDGE_END, optionalFloatFromYogaValue(style.border(YGEdgeEnd)));
   putOptionalFloat(
-      builder, EDGE_ALL, optionalFloatFromYogaValue(style.border()[YGEdgeAll]));
+      builder, EDGE_ALL, optionalFloatFromYogaValue(style.border(YGEdgeAll)));
   return builder.build();
 }
 
@@ -64,8 +62,8 @@ void YogaStylableProps::propsDiffMapBuffer(
 
     bool areBordersEqual = true;
     for (auto edge : yoga::ordinals<yoga::Edge>()) {
-      if (oldStyle.border()[yoga::unscopedEnum(edge)] !=
-          newStyle.border()[yoga::unscopedEnum(edge)]) {
+      if (oldStyle.border(yoga::unscopedEnum(edge)) !=
+          newStyle.border(yoga::unscopedEnum(edge))) {
         areBordersEqual = false;
         break;
       }
