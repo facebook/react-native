@@ -62,11 +62,10 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TextInputProps>();
+    const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
     _props = defaultProps;
-    auto &props = *defaultProps;
 
-    _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+    _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
