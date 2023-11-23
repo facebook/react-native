@@ -227,7 +227,12 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeRight, "right");   \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeBottom, "bottom"); \
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeStart, "start");   \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeEnd, "end");
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeEnd, "end");       \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      position, YGEdgeHorizontal, "insetInline");                         \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      position, YGEdgeVertical, "insetBlock");                            \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(position, YGEdgeAll, "inset");
 
 void YogaStylableProps::setProp(
     const PropsParserContext& context,
@@ -267,11 +272,8 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
 
     // Aliases
-    RAW_SET_PROP_SWITCH_CASE(inset, "inset");
-    RAW_SET_PROP_SWITCH_CASE(insetBlock, "insetBlock");
     RAW_SET_PROP_SWITCH_CASE(insetBlockEnd, "insetBlockEnd");
     RAW_SET_PROP_SWITCH_CASE(insetBlockStart, "insetBlockStart");
-    RAW_SET_PROP_SWITCH_CASE(insetInline, "insetInline");
     RAW_SET_PROP_SWITCH_CASE(insetInlineEnd, "insetInlineEnd");
     RAW_SET_PROP_SWITCH_CASE(insetInlineStart, "insetInlineStart");
     RAW_SET_PROP_SWITCH_CASE(marginInline, "marginInline");
@@ -387,18 +389,6 @@ void YogaStylableProps::convertRawPropAliases(
     const PropsParserContext& context,
     const YogaStylableProps& sourceProps,
     const RawProps& rawProps) {
-  inset = convertRawProp(
-      context,
-      rawProps,
-      "inset",
-      sourceProps.inset,
-      CompactValue::ofUndefined());
-  insetBlock = convertRawProp(
-      context,
-      rawProps,
-      "insetBlock",
-      sourceProps.insetBlock,
-      CompactValue::ofUndefined());
   insetBlockEnd = convertRawProp(
       context,
       rawProps,
@@ -410,12 +400,6 @@ void YogaStylableProps::convertRawPropAliases(
       rawProps,
       "insetBlockStart",
       sourceProps.insetBlockStart,
-      CompactValue::ofUndefined());
-  insetInline = convertRawProp(
-      context,
-      rawProps,
-      "insetInline",
-      sourceProps.insetInline,
       CompactValue::ofUndefined());
   insetInlineEnd = convertRawProp(
       context,
