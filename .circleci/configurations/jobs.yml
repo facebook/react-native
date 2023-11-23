@@ -140,6 +140,10 @@ jobs:
           name: Install appium drivers
           command: appium driver install xcuitest@5.6.0
       - run:
+          name: Start Appium server
+          command: appium --base-path /
+          background: true
+      - run:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
       - with_xcodebuild_cache:
