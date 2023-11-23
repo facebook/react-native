@@ -17,7 +17,6 @@ import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 import UIManager from '../../ReactNative/UIManager';
 import processColor from '../../StyleSheet/processColor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import TraceUpdateOverlayNativeComponent, {
   Commands,
@@ -26,7 +25,6 @@ import * as React from 'react';
 
 const {useEffect, useRef, useState} = React;
 const isNativeComponentReady =
-  Platform.OS === 'android' &&
   UIManager.hasViewManagerConfig('TraceUpdateOverlay');
 
 type Props = {
@@ -39,13 +37,13 @@ export default function TraceUpdateOverlay({
   const [overlayDisabled, setOverlayDisabled] = useState(false);
 
   useEffect(() => {
-    if (!isNativeComponentReady) {
-      return;
-    }
-
     const drawTraceUpdates = (
       nodesToDraw: Array<{node: InstanceFromReactDevTools, color: string}> = [],
     ) => {
+      if (!isNativeComponentReady) {
+        return;
+      }
+
       // If overlay is disabled before, now it's enabled.
       setOverlayDisabled(false);
 

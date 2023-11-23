@@ -26,6 +26,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"ScrollView", RCTScrollViewCls},
     {"Switch", RCTSwitchCls},
     {"TextInput", RCTTextInputCls},
+    {"TraceUpdateOverlay", RCTTraceUpdateOverlayCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"View", RCTViewCls},
     {"Image", RCTImageCls},
