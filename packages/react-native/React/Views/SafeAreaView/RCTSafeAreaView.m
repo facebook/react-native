@@ -57,7 +57,12 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
-  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+  // Relayout with different padding may result in a close but slightly different result, amplified by Yoga rounding to
+  // physical pixel grid. To avoid infinite relayout, allow one physical pixel of difference, along with small amount of
+  // extra tolerance for FP error.
+  CGFloat tolerance = 1.0 / RCTScreenScale() + 0.01;
+
+  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, tolerance)) {
     return;
   }
 
