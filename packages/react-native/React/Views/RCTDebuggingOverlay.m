@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTraceUpdateOverlay.h"
+#import "RCTDebuggingOverlay.h"
 
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-@implementation RCTTraceUpdateOverlay
+@implementation RCTDebuggingOverlay
 
 - (void)draw:(NSString *)serializedNodes
 {
@@ -24,7 +24,7 @@
   id deserializedNodes = RCTJSONParse(serializedNodes, &error);
 
   if (error) {
-    RCTLogError(@"Failed to parse serialized nodes passed to RCTTraceUpdatesOverlay");
+    RCTLogError(@"Failed to parse serialized nodes passed to RCTDebuggingOverlay");
     return;
   }
 

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.traceupdateoverlay;
+package com.facebook.react.views.debuggingoverlay;
 
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
@@ -16,22 +16,22 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.views.traceupdateoverlay.TraceUpdateOverlay.Overlay;
+import com.facebook.react.views.debuggingoverlay.DebuggingOverlay.Overlay;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@ReactModule(name = TraceUpdateOverlayManager.REACT_CLASS)
-public class TraceUpdateOverlayManager extends SimpleViewManager<TraceUpdateOverlay> {
-  public static final String REACT_CLASS = "TraceUpdateOverlay";
+@ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
+public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay> {
+  public static final String REACT_CLASS = "DebuggingOverlay";
 
-  public TraceUpdateOverlayManager() {}
+  public DebuggingOverlayManager() {}
 
   @Override
   public void receiveCommand(
-      TraceUpdateOverlay view, String commandId, @Nullable ReadableArray args) {
+      DebuggingOverlay view, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "draw":
         if (args == null) {
@@ -67,13 +67,13 @@ public class TraceUpdateOverlayManager extends SimpleViewManager<TraceUpdateOver
         ReactSoftExceptionLogger.logSoftException(
             REACT_CLASS,
             new ReactNoCrashSoftException(
-                "Received unexpected command in TraceUpdateOverlayManager"));
+                "Received unexpected command in DebuggingOverlayManager"));
     }
   }
 
   @Override
-  public TraceUpdateOverlay createViewInstance(ThemedReactContext context) {
-    return new TraceUpdateOverlay(context);
+  public DebuggingOverlay createViewInstance(ThemedReactContext context) {
+    return new DebuggingOverlay(context);
   }
 
   @Override

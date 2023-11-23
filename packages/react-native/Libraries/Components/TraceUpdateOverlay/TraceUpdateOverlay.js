@@ -8,24 +8,24 @@
  * @format
  */
 
+import type {Overlay} from '../../Debugging/DebuggingOverlayNativeComponent';
 import type {
   InstanceFromReactDevTools,
   ReactDevToolsAgent,
 } from '../../Types/ReactDevToolsTypes';
-import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 
+import DebuggingOverlayNativeComponent, {
+  Commands,
+} from '../../Debugging/DebuggingOverlayNativeComponent';
 import UIManager from '../../ReactNative/UIManager';
 import processColor from '../../StyleSheet/processColor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
-import TraceUpdateOverlayNativeComponent, {
-  Commands,
-} from './TraceUpdateOverlayNativeComponent';
 import * as React from 'react';
 
 const {useEffect, useRef, useState} = React;
 const isNativeComponentReady =
-  UIManager.hasViewManagerConfig('TraceUpdateOverlay');
+  UIManager.hasViewManagerConfig('DebuggingOverlay');
 
 type Props = {
   reactDevToolsAgent: ReactDevToolsAgent,
@@ -111,13 +111,13 @@ export default function TraceUpdateOverlay({
   }, [reactDevToolsAgent]);
 
   const nativeComponentRef =
-    useRef<?React.ElementRef<typeof TraceUpdateOverlayNativeComponent>>(null);
+    useRef<?React.ElementRef<typeof DebuggingOverlayNativeComponent>>(null);
 
   return (
     !overlayDisabled &&
     isNativeComponentReady && (
       <View pointerEvents="none" style={styles.overlay}>
-        <TraceUpdateOverlayNativeComponent
+        <DebuggingOverlayNativeComponent
           ref={nativeComponentRef}
           style={styles.overlay}
         />

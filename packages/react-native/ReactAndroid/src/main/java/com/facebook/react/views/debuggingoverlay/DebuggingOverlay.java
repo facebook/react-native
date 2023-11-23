@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.traceupdateoverlay;
+package com.facebook.react.views.debuggingoverlay;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraceUpdateOverlay extends View {
+public class DebuggingOverlay extends View {
   private final Paint mOverlayPaint = new Paint();
   private List<Overlay> mOverlays = new ArrayList<Overlay>();
 
@@ -43,7 +43,7 @@ public class TraceUpdateOverlay extends View {
     }
   }
 
-  public TraceUpdateOverlay(Context context) {
+  public DebuggingOverlay(Context context) {
     super(context);
     mOverlayPaint.setStyle(Paint.Style.STROKE);
     mOverlayPaint.setStrokeWidth(6);

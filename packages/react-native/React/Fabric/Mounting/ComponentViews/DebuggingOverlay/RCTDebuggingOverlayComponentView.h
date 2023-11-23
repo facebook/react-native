@@ -11,6 +11,6 @@
 
 #import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
 
-@interface RCTTraceUpdateOverlayComponentView : RCTViewComponentView <RCTTraceUpdateOverlayViewProtocol>
+@interface RCTDebuggingOverlayComponentView : RCTViewComponentView <RCTDebuggingOverlayViewProtocol>
 
 @end
