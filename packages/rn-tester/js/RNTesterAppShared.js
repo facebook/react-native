@@ -26,7 +26,13 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
+import {
+  BackHandler,
+  Linking,
+  StyleSheet,
+  View,
+  useColorScheme,
+} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
@@ -112,6 +118,45 @@ const RNTesterApp = ({
     },
     [dispatch],
   );
+
+  // Setup Linking event subscription
+  const handleOpenUrlRequest = React.useCallback(
+    ({url}: {url: string, ...}) => {
+      // Supported URL pattern(s):
+      // *  rntester://example/<key>
+      const match = /^rntester:\/\/example\/(.+)$/.exec(url);
+      if (!match) {
+        console.warn(
+          `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
+        );
+        return;
+      }
+
+      const key = match[1];
+      const exampleModule = RNTesterList.Modules[key];
+      if (exampleModule == null) {
+        console.warn(
+          `handleOpenUrlRequest: Unable to find requested module with key: '${key}'`,
+        );
+        return;
+      }
+
+      console.log(`handleOpenUrlRequest: Opening example '${key}'`);
+
+      dispatch({
+        type: RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST,
+        data: {
+          key,
+          title: exampleModule.title || key,
+        },
+      });
+    },
+    [dispatch],
+  );
+  React.useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
+    return () => subscription.remove();
+  }, [handleOpenUrlRequest]);
 
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
 
