@@ -35,7 +35,7 @@ class JHermesInstance
   JHermesInstance(std::shared_ptr<const ReactNativeConfig> reactNativeConfig)
       : reactNativeConfig_(reactNativeConfig){};
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime(
+  std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
 
   ~JHermesInstance() {}

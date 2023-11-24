@@ -26,7 +26,7 @@ class RCTHermesInstance : public JSRuntimeFactory {
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       CrashManagerProvider crashManagerProvider);
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime(
+  std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
   ~RCTHermesInstance(){};

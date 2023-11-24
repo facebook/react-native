@@ -16,7 +16,7 @@ class RCTJscInstance : public JSRuntimeFactory {
  public:
   RCTJscInstance();
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime(
+  std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
   ~RCTJscInstance(){};
