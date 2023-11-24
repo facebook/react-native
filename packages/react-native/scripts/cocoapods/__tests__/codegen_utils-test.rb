@@ -585,6 +585,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'React-graphics': [],
             'React-rncore':  [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-utils': [],
             'React-debug': [],
             'React-rendererdebug': [],
@@ -604,6 +605,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-utils': [],
             'React-debug': [],
             'React-rendererdebug': [],
