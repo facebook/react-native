@@ -126,6 +126,7 @@ workflows:
   publish_bumped_packages:
     when:
       and:
+        - equal: [ 'https://github.com/facebook/react-native', << pipeline.project.git_url >> ]
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:

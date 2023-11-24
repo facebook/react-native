@@ -34,6 +34,7 @@ exports[`TouchableOpacity renders correctly 1`] = `
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <Text>
     Touchable
@@ -75,6 +76,7 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <Text>
     Touchable
@@ -116,6 +118,7 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <Text>
     Touchable

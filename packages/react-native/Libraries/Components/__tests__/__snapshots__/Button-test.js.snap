@@ -35,6 +35,7 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -101,6 +102,7 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -167,6 +169,7 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -234,6 +237,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -296,6 +300,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -357,6 +362,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -419,6 +425,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -481,6 +488,7 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={
@@ -547,6 +555,7 @@ exports[`<Button /> should render as expected 1`] = `
       "opacity": 1,
     }
   }
+  visionos_hoverEffect="highlight"
 >
   <View
     style={

@@ -1,6 +1,7 @@
   test_ios:
     when:
       and:
+        - equal: [ true, false ] # Disable for visionOS
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:

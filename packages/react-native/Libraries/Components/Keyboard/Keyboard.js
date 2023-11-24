@@ -14,8 +14,8 @@ import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
-import NativeKeyboardObserver from './NativeKeyboardObserver';
 import warnOnce from '../../Utilities/warnOnce';
+import NativeKeyboardObserver from './NativeKeyboardObserver';
 
 export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
 
@@ -161,7 +161,7 @@ class Keyboard {
     context?: mixed,
   ): EventSubscription {
     if (Platform.isVisionOS) {
-      return;
+      return {remove() {}};
     }
 
     return this._emitter.addListener(eventType, listener);

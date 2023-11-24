@@ -1,12 +1,18 @@
 name: ios-tests
 
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - "*"
+
+# For visionOS we run iOS tests every night
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - "*"
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   test_ios_rntester-Hermes:

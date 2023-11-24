@@ -31,6 +31,7 @@ exports[`<Pressable /> should render as expected: should deep render when mocked
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -67,6 +68,7 @@ exports[`<Pressable /> should render as expected: should deep render when not mo
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -115,6 +117,7 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -151,6 +154,7 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -203,6 +207,7 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -239,6 +244,7 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -293,6 +299,7 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -329,6 +336,7 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -391,6 +399,7 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>
@@ -427,6 +436,7 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
   onResponderTerminate={[Function]}
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
+  visionos_hoverEffect="highlight"
 >
   <View />
 </View>

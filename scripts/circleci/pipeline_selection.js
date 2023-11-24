@@ -155,6 +155,23 @@ function _computeAndSavePipelineParameters(
     return;
   }
 
+  // Custom config for visionOS
+  if (pipelineType === 'VISION_OS') {
+    const params = {
+      run_all: false,
+      run_ios: false,
+      run_android: false,
+      run_js: true,
+      run_e2e: false,
+    };
+
+    const stringifiedParams = JSON.stringify(params, null, 2);
+    fs.writeFileSync(filePath, stringifiedParams);
+    console.info(`Generated params:\n${stringifiedParams}`);
+
+    return;
+  }
+
   console.log(`Should run e2e? ${shouldRunE2E}`);
   if (pipelineType === 'ALL') {
     fs.writeFileSync(
@@ -243,5 +260,5 @@ function filterJobs(outputPath) {
       return;
     }
   }
-  _computeAndSavePipelineParameters('ALL', outputPath, shouldRunE2E);
+  _computeAndSavePipelineParameters('VISION_OS', outputPath, shouldRunE2E);
 }
