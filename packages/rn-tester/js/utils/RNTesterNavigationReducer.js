@@ -18,6 +18,7 @@ export const RNTesterNavigationActionsType = {
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
   MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
   EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
+  EXAMPLE_OPEN_URL_REQUEST: 'EXAMPLE_OPEN_URL_REQUEST',
 };
 
 const getUpdatedRecentlyUsed = ({
@@ -98,6 +99,14 @@ export const RNTesterNavigationReducer = (
           state.activeModuleExampleKey != null ? state.activeModuleKey : null,
         activeModuleTitle:
           state.activeModuleExampleKey != null ? state.activeModuleTitle : null,
+      };
+
+    case RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST:
+      return {
+        ...state,
+        activeModuleKey: key,
+        activeModuleTitle: title,
+        activeModuleExampleKey: null,
       };
 
     default:
