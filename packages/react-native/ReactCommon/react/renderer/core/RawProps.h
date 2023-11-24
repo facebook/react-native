@@ -74,6 +74,15 @@ class RawProps final {
   explicit operator folly::dynamic() const noexcept;
 
   /*
+   * Once called, Yoga style props will be filtered out during conversion to
+   * folly::dynamic. folly::dynamic conversion is only used on Android and props
+   * specific to Yoga do not need to be send over JNI to Android.
+   * This is a performance optimisation to minimise traffic between C++ and
+   * Java.
+   */
+  void filterYogaStylePropsInDynamicConversion() noexcept;
+
+  /*
    * Returns `true` if the object is empty.
    * Empty `RawProps` does not have any stored data.
    */
@@ -124,6 +133,8 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
+
+  bool ignoreYogaStyleProps_{false};
 };
 
 } // namespace facebook::react
