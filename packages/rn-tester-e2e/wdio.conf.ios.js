@@ -17,7 +17,6 @@ exports.config = {
   specs: ['./tests/specs/components/**/*.test.js'],
   exclude: [],
   maxInstances: 1,
-  port: 4723,
   capabilities: [
     {
       platformName: 'iOS',
@@ -39,7 +38,9 @@ exports.config = {
     [
       'appium',
       {
+        port: 4723,
         logPath: './reports',
+        'session-override': true
       },
     ],
   ],
@@ -48,7 +49,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 120000
+    timeout: 80000
   },
 
   beforeSession: async function (config, capabilities, specs) {
