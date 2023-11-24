@@ -34,6 +34,7 @@ module.exports = {
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/rn-tester/e2e',
+    '<rootDir>/packages/rn-tester/Pods',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
