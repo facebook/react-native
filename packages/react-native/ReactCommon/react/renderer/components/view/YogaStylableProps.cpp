@@ -19,134 +19,19 @@
 
 namespace facebook::react {
 
-namespace {
-inline RawProps filterYogaProps(const RawProps& rawProps) {
-  const static std::unordered_set<std::string> yogaStylePropNames = {
-      {"direction",
-       "flexDirection",
-       "justifyContent",
-       "alignContent",
-       "alignItems",
-       "alignSelf",
-       "position",
-       "flexWrap",
-       "display",
-       "flex",
-       "flexGrow",
-       "flexShrink",
-       "flexBasis",
-       "margin",
-       "padding",
-       "rowGap",
-       "columnGap",
-       "gap",
-       // TODO: T163711275 also filter out width/height when SVG no longer read
-       // them from RawProps
-       "minWidth",
-       "maxWidth",
-       "minHeight",
-       "maxHeight",
-       "aspectRatio",
-
-       // edges
-       "left",
-       "right",
-       "top",
-       "bottom",
-       "start",
-       "end",
-
-       // variants of inset
-       "inset",
-       "insetStart",
-       "insetEnd",
-       "insetInline",
-       "insetInlineStart",
-       "insetInlineEnd",
-       "insetBlock",
-       "insetBlockEnd",
-       "insetBlockStart",
-       "insetVertical",
-       "insetHorizontal",
-       "insetTop",
-       "insetBottom",
-       "insetLeft",
-       "insetRight",
-
-       // variants of margin
-       "marginStart",
-       "marginEnd",
-       "marginInline",
-       "marginInlineStart",
-       "marginInlineEnd",
-       "marginBlock",
-       "marginBlockStart",
-       "marginBlockEnd",
-       "marginVertical",
-       "marginHorizontal",
-       "marginTop",
-       "marginBottom",
-       "marginLeft",
-       "marginRight",
-
-       // variants of padding
-       "paddingStart",
-       "paddingEnd",
-       "paddingInline",
-       "paddingInlineStart",
-       "paddingInlineEnd",
-       "paddingBlock",
-       "paddingBlockStart",
-       "paddingBlockEnd",
-       "paddingVertical",
-       "paddingHorizontal",
-       "paddingTop",
-       "paddingBottom",
-       "paddingLeft",
-       "paddingRight"}};
-
-  auto filteredRawProps = (folly::dynamic)rawProps;
-
-  auto it = filteredRawProps.items().begin();
-  while (it != filteredRawProps.items().end()) {
-    auto key = it->first.asString();
-    if (yogaStylePropNames.find(key) != yogaStylePropNames.end()) {
-      it = filteredRawProps.erase(it);
-    } else {
-      ++it;
-    }
-  }
-
-  return RawProps(std::move(filteredRawProps));
-}
-} // namespace
-
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext& context,
     const YogaStylableProps& sourceProps,
     const RawProps& rawProps)
     : Props() {
-  if (CoreFeatures::excludeYogaFromRawProps) {
-    const auto filteredRawProps = filterYogaProps(rawProps);
-    initialize(context, sourceProps, filteredRawProps);
+  initialize(context, sourceProps, rawProps);
 
-    yogaStyle = CoreFeatures::enablePropIteratorSetter
-        ? sourceProps.yogaStyle
-        : convertRawProp(context, filteredRawProps, sourceProps.yogaStyle);
+  yogaStyle = CoreFeatures::enablePropIteratorSetter
+      ? sourceProps.yogaStyle
+      : convertRawProp(context, rawProps, sourceProps.yogaStyle);
 
-    if (!CoreFeatures::enablePropIteratorSetter) {
-      convertRawPropAliases(context, sourceProps, filteredRawProps);
-    }
-  } else {
-    initialize(context, sourceProps, rawProps);
-
-    yogaStyle = CoreFeatures::enablePropIteratorSetter
-        ? sourceProps.yogaStyle
-        : convertRawProp(context, rawProps, sourceProps.yogaStyle);
-
-    if (!CoreFeatures::enablePropIteratorSetter) {
-      convertRawPropAliases(context, sourceProps, rawProps);
-    }
+  if (!CoreFeatures::enablePropIteratorSetter) {
+    convertRawPropAliases(context, sourceProps, rawProps);
   }
 };
 
