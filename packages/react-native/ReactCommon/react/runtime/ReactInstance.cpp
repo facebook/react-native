@@ -26,7 +26,7 @@
 namespace facebook::react {
 
 ReactInstance::ReactInstance(
-    std::unique_ptr<jsi::Runtime> runtime,
+    std::unique_ptr<JSRuntime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
@@ -36,7 +36,7 @@ ReactInstance::ReactInstance(
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(jsErrorHandlingFunc),
       hasFatalJsError_(std::make_shared<bool>(false)) {
-  auto runtimeExecutor = [weakRuntime = std::weak_ptr<jsi::Runtime>(runtime_),
+  auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
                           weakJsMessageQueueThread =
@@ -63,20 +63,20 @@ ReactInstance::ReactInstance(
       sharedJsMessageQueueThread->runOnQueue(
           [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
             if (auto strongRuntime = weakRuntime.lock()) {
+              jsi::Runtime& jsiRuntime = strongRuntime->getRuntime();
               SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
               try {
-                callback(*strongRuntime);
+                callback(jsiRuntime);
 
                 // If we have first-class support for microtasks,
                 // they would've been called as part of the previous callback.
                 if (!CoreFeatures::enableMicrotasks) {
                   if (auto strongTimerManager = weakTimerManager.lock()) {
-                    strongTimerManager->callReactNativeMicrotasks(
-                        *strongRuntime);
+                    strongTimerManager->callReactNativeMicrotasks(jsiRuntime);
                   }
                 }
               } catch (jsi::JSError& originalError) {
-                handleJSError(*strongRuntime, originalError, true);
+                handleJSError(jsiRuntime, originalError, true);
               }
             }
           });

@@ -30,9 +30,9 @@ class JSCInstance : public jni::HybridClass<JSCInstance, JJSRuntimeFactory> {
     });
   }
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime(
+  std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
-    return jsc::makeJSCRuntime();
+    return std::make_unique<JSIRuntimeHolder>(jsc::makeJSCRuntime());
   }
 
  private:
