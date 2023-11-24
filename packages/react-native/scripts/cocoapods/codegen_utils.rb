@@ -144,6 +144,7 @@ class CodegenUtils
             'React-graphics': [],
             'React-rendererdebug': [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-debug': [],
             'React-utils': [],
           });

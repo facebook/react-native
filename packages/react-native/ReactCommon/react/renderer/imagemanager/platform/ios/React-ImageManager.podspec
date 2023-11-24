@@ -56,7 +56,6 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly/Fabric"
   s.dependency "React-Core/Default"
-  s.dependency "React-RCTImage"
   s.dependency "glog"
 
   add_dependency(s, "React-Fabric")
