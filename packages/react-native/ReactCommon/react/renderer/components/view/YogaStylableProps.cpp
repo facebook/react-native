@@ -81,45 +81,45 @@ static inline T const getFieldValue(
   REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                   \
       field, setter, yoga::Gutter::All, gapStr);
 
-#define REBUILD_FIELD_YG_EDGES(field, setter, prefix, suffix)       \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeLeft, prefix "Left" suffix);             \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeTop, prefix "Top" suffix);               \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeRight, prefix "Right" suffix);           \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeBottom, prefix "Bottom" suffix);         \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeStart, prefix "Start" suffix);           \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeEnd, prefix "End" suffix);               \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeHorizontal, prefix "Horizontal" suffix); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeVertical, prefix "Vertical" suffix);     \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                             \
-      field, setter, YGEdgeAll, prefix "" suffix);
+#define REBUILD_FIELD_YG_EDGES(field, setter, prefix, suffix)             \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Left, prefix "Left" suffix);             \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Top, prefix "Top" suffix);               \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Right, prefix "Right" suffix);           \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Bottom, prefix "Bottom" suffix);         \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Start, prefix "Start" suffix);           \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::End, prefix "End" suffix);               \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Horizontal, prefix "Horizontal" suffix); \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::Vertical, prefix "Vertical" suffix);     \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                                   \
+      field, setter, yoga::Edge::All, prefix "" suffix);
 
-#define REBUILD_FIELD_YG_EDGES_POSITION()                      \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeLeft, "left");              \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeTop, "top");                \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeRight, "right");            \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeBottom, "bottom");          \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeStart, "start");            \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeEnd, "end");                \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeHorizontal, "insetInline"); \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeVertical, "insetBlock");    \
-  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                        \
-      position, setPosition, YGEdgeAll, "inset");
+#define REBUILD_FIELD_YG_EDGES_POSITION()                            \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Left, "left");              \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Top, "top");                \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Right, "right");            \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Bottom, "bottom");          \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Start, "start");            \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::End, "end");                \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Horizontal, "insetInline"); \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::Vertical, "insetBlock");    \
+  REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(                              \
+      position, setPosition, yoga::Edge::All, "inset");
 
 void YogaStylableProps::setProp(
     const PropsParserContext& context,
@@ -234,148 +234,148 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
           "flexBasis", yogaStyle.flexBasis(), defaultYogaStyle.flexBasis()),
       debugStringConvertibleItem(
           "marginLeft",
-          yogaStyle.margin(YGEdgeLeft),
-          defaultYogaStyle.margin(YGEdgeLeft)),
+          yogaStyle.margin(yoga::Edge::Left),
+          defaultYogaStyle.margin(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "marginTop",
-          yogaStyle.margin(YGEdgeTop),
-          defaultYogaStyle.margin(YGEdgeTop)),
+          yogaStyle.margin(yoga::Edge::Top),
+          defaultYogaStyle.margin(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "marginRight",
-          yogaStyle.margin(YGEdgeRight),
-          defaultYogaStyle.margin(YGEdgeRight)),
+          yogaStyle.margin(yoga::Edge::Right),
+          defaultYogaStyle.margin(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "marginBottom",
-          yogaStyle.margin(YGEdgeBottom),
-          defaultYogaStyle.margin(YGEdgeBottom)),
+          yogaStyle.margin(yoga::Edge::Bottom),
+          defaultYogaStyle.margin(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "marginStart",
-          yogaStyle.margin(YGEdgeStart),
-          defaultYogaStyle.margin(YGEdgeStart)),
+          yogaStyle.margin(yoga::Edge::Start),
+          defaultYogaStyle.margin(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "marginEnd",
-          yogaStyle.margin(YGEdgeEnd),
-          defaultYogaStyle.margin(YGEdgeEnd)),
+          yogaStyle.margin(yoga::Edge::End),
+          defaultYogaStyle.margin(yoga::Edge::End)),
       debugStringConvertibleItem(
           "marginHorizontal",
-          yogaStyle.margin(YGEdgeHorizontal),
-          defaultYogaStyle.margin(YGEdgeHorizontal)),
+          yogaStyle.margin(yoga::Edge::Horizontal),
+          defaultYogaStyle.margin(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "marginVertical",
-          yogaStyle.margin(YGEdgeVertical),
-          defaultYogaStyle.margin(YGEdgeVertical)),
+          yogaStyle.margin(yoga::Edge::Vertical),
+          defaultYogaStyle.margin(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "margin",
-          yogaStyle.margin(YGEdgeAll),
-          defaultYogaStyle.margin(YGEdgeAll)),
+          yogaStyle.margin(yoga::Edge::All),
+          defaultYogaStyle.margin(yoga::Edge::All)),
       debugStringConvertibleItem(
           "left",
-          yogaStyle.position(YGEdgeLeft),
-          defaultYogaStyle.position(YGEdgeLeft)),
+          yogaStyle.position(yoga::Edge::Left),
+          defaultYogaStyle.position(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "top",
-          yogaStyle.position(YGEdgeTop),
-          defaultYogaStyle.position(YGEdgeTop)),
+          yogaStyle.position(yoga::Edge::Top),
+          defaultYogaStyle.position(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "right",
-          yogaStyle.position(YGEdgeRight),
-          defaultYogaStyle.position(YGEdgeRight)),
+          yogaStyle.position(yoga::Edge::Right),
+          defaultYogaStyle.position(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "bottom",
-          yogaStyle.position(YGEdgeBottom),
-          defaultYogaStyle.position(YGEdgeBottom)),
+          yogaStyle.position(yoga::Edge::Bottom),
+          defaultYogaStyle.position(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "start",
-          yogaStyle.position(YGEdgeStart),
-          defaultYogaStyle.position(YGEdgeStart)),
+          yogaStyle.position(yoga::Edge::Start),
+          defaultYogaStyle.position(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "end",
-          yogaStyle.position(YGEdgeEnd),
-          defaultYogaStyle.position(YGEdgeEnd)),
+          yogaStyle.position(yoga::Edge::End),
+          defaultYogaStyle.position(yoga::Edge::End)),
       debugStringConvertibleItem(
           "inseInline",
-          yogaStyle.position(YGEdgeHorizontal),
-          defaultYogaStyle.position(YGEdgeHorizontal)),
+          yogaStyle.position(yoga::Edge::Horizontal),
+          defaultYogaStyle.position(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "insetBlock",
-          yogaStyle.position(YGEdgeVertical),
-          defaultYogaStyle.position(YGEdgeVertical)),
+          yogaStyle.position(yoga::Edge::Vertical),
+          defaultYogaStyle.position(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "inset",
-          yogaStyle.position(YGEdgeAll),
-          defaultYogaStyle.position(YGEdgeAll)),
+          yogaStyle.position(yoga::Edge::All),
+          defaultYogaStyle.position(yoga::Edge::All)),
       debugStringConvertibleItem(
           "paddingLeft",
-          yogaStyle.padding(YGEdgeLeft),
-          defaultYogaStyle.padding(YGEdgeLeft)),
+          yogaStyle.padding(yoga::Edge::Left),
+          defaultYogaStyle.padding(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "paddingTop",
-          yogaStyle.padding(YGEdgeTop),
-          defaultYogaStyle.padding(YGEdgeTop)),
+          yogaStyle.padding(yoga::Edge::Top),
+          defaultYogaStyle.padding(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "paddingRight",
-          yogaStyle.padding(YGEdgeRight),
-          defaultYogaStyle.padding(YGEdgeRight)),
+          yogaStyle.padding(yoga::Edge::Right),
+          defaultYogaStyle.padding(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "paddingBottom",
-          yogaStyle.padding(YGEdgeBottom),
-          defaultYogaStyle.padding(YGEdgeBottom)),
+          yogaStyle.padding(yoga::Edge::Bottom),
+          defaultYogaStyle.padding(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "paddingStart",
-          yogaStyle.padding(YGEdgeStart),
-          defaultYogaStyle.padding(YGEdgeStart)),
+          yogaStyle.padding(yoga::Edge::Start),
+          defaultYogaStyle.padding(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "paddingEnd",
-          yogaStyle.padding(YGEdgeEnd),
-          defaultYogaStyle.padding(YGEdgeEnd)),
+          yogaStyle.padding(yoga::Edge::End),
+          defaultYogaStyle.padding(yoga::Edge::End)),
       debugStringConvertibleItem(
           "paddingHorizontal",
-          yogaStyle.padding(YGEdgeHorizontal),
-          defaultYogaStyle.padding(YGEdgeHorizontal)),
+          yogaStyle.padding(yoga::Edge::Horizontal),
+          defaultYogaStyle.padding(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "paddingVertical",
-          yogaStyle.padding(YGEdgeVertical),
-          defaultYogaStyle.padding(YGEdgeVertical)),
+          yogaStyle.padding(yoga::Edge::Vertical),
+          defaultYogaStyle.padding(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "padding",
-          yogaStyle.padding(YGEdgeAll),
-          defaultYogaStyle.padding(YGEdgeAll)),
+          yogaStyle.padding(yoga::Edge::All),
+          defaultYogaStyle.padding(yoga::Edge::All)),
       debugStringConvertibleItem(
           "borderLeftWidth",
-          yogaStyle.border(YGEdgeLeft),
-          defaultYogaStyle.border(YGEdgeLeft)),
+          yogaStyle.border(yoga::Edge::Left),
+          defaultYogaStyle.border(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "borderTopWidth",
-          yogaStyle.border(YGEdgeTop),
-          defaultYogaStyle.border(YGEdgeTop)),
+          yogaStyle.border(yoga::Edge::Top),
+          defaultYogaStyle.border(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "borderRightWidth",
-          yogaStyle.border(YGEdgeRight),
-          defaultYogaStyle.border(YGEdgeRight)),
+          yogaStyle.border(yoga::Edge::Right),
+          defaultYogaStyle.border(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "borderBottomWidth",
-          yogaStyle.border(YGEdgeBottom),
-          defaultYogaStyle.border(YGEdgeBottom)),
+          yogaStyle.border(yoga::Edge::Bottom),
+          defaultYogaStyle.border(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "borderStartWidth",
-          yogaStyle.border(YGEdgeStart),
-          defaultYogaStyle.border(YGEdgeStart)),
+          yogaStyle.border(yoga::Edge::Start),
+          defaultYogaStyle.border(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "borderEndWidth",
-          yogaStyle.border(YGEdgeEnd),
-          defaultYogaStyle.border(YGEdgeEnd)),
+          yogaStyle.border(yoga::Edge::End),
+          defaultYogaStyle.border(yoga::Edge::End)),
       debugStringConvertibleItem(
           "borderHorizontalWidth",
-          yogaStyle.border(YGEdgeHorizontal),
-          defaultYogaStyle.border(YGEdgeHorizontal)),
+          yogaStyle.border(yoga::Edge::Horizontal),
+          defaultYogaStyle.border(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "borderVerticalWidth",
-          yogaStyle.border(YGEdgeVertical),
-          defaultYogaStyle.border(YGEdgeVertical)),
+          yogaStyle.border(yoga::Edge::Vertical),
+          defaultYogaStyle.border(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "bordeWidth",
-          yogaStyle.border(YGEdgeAll),
-          defaultYogaStyle.border(YGEdgeAll)),
+          yogaStyle.border(yoga::Edge::All),
+          defaultYogaStyle.border(yoga::Edge::All)),
       debugStringConvertibleItem(
           "width",
           yogaStyle.dimension(yoga::Dimension::Width),

@@ -9,8 +9,6 @@
 
 #include <stdarg.h>
 
-#include <yoga/YGEnums.h>
-
 #include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
@@ -85,7 +83,7 @@ static void
 appendEdges(std::string& base, const std::string& key, const Style& style) {
   for (auto edge : ordinals<Edge>()) {
     std::string str = key + "-" + toString(edge);
-    appendNumberIfNotZero(base, str, (style.*Field)(unscopedEnum(edge)));
+    appendNumberIfNotZero(base, str, (style.*Field)(edge));
   }
 }
 
@@ -104,9 +102,9 @@ void nodeToString(
     appendFormattedString(
         str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
-        str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
+        str, "top: %g; ", node->getLayout().position(Edge::Top));
     appendFormattedString(
-        str, "left: %g;", node->getLayout().position[YGEdgeLeft]);
+        str, "left: %g;", node->getLayout().position(Edge::Left));
     appendFormattedString(str, "\" ");
   }
 

@@ -227,32 +227,32 @@ class YG_EXPORT Style {
     return {*this};
   }
 
-  Style::Length margin(YGEdge edge) const {
-    return margin_[edge];
+  Style::Length margin(Edge edge) const {
+    return margin_[yoga::to_underlying(edge)];
   }
-  void setMargin(YGEdge edge, Style::Length value) {
-    margin_[edge] = value;
-  }
-
-  Style::Length position(YGEdge edge) const {
-    return position_[edge];
-  }
-  void setPosition(YGEdge edge, Style::Length value) {
-    position_[edge] = value;
+  void setMargin(Edge edge, Style::Length value) {
+    margin_[yoga::to_underlying(edge)] = value;
   }
 
-  Style::Length padding(YGEdge edge) const {
-    return padding_[edge];
+  Style::Length position(Edge edge) const {
+    return position_[yoga::to_underlying(edge)];
   }
-  void setPadding(YGEdge edge, Style::Length value) {
-    padding_[edge] = value;
+  void setPosition(Edge edge, Style::Length value) {
+    position_[yoga::to_underlying(edge)] = value;
   }
 
-  Style::Length border(YGEdge edge) const {
-    return border_[edge];
+  Style::Length padding(Edge edge) const {
+    return padding_[yoga::to_underlying(edge)];
   }
-  void setBorder(YGEdge edge, Style::Length value) {
-    border_[edge] = value;
+  void setPadding(Edge edge, Style::Length value) {
+    padding_[yoga::to_underlying(edge)] = value;
+  }
+
+  Style::Length border(Edge edge) const {
+    return border_[yoga::to_underlying(edge)];
+  }
+  void setBorder(Edge edge, Style::Length value) {
+    border_[yoga::to_underlying(edge)] = value;
   }
 
   Style::Length gap(Gutter gutter) const {
