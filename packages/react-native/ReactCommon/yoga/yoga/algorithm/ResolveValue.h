@@ -10,7 +10,7 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/numeric/FloatOptional.h>
-#include <yoga/style/CompactValue.h>
+#include <yoga/style/Style.h>
 
 namespace facebook::yoga {
 
@@ -25,7 +25,7 @@ inline FloatOptional resolveValue(const YGValue value, const float ownerSize) {
   }
 }
 
-inline FloatOptional resolveValue(CompactValue value, float ownerSize) {
+inline FloatOptional resolveValue(Style::Length value, float ownerSize) {
   return resolveValue((YGValue)value, ownerSize);
 }
 

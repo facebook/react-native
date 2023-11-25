@@ -13,7 +13,6 @@
 
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
-#include <yoga/style/CompactValue.h>
 
 #include <unordered_map>
 
@@ -106,27 +105,23 @@ class AndroidTextInputComponentDescriptor final
           !textInputProps.hasPaddingLeft &&
           !textInputProps.hasPaddingHorizontal) {
         changedPadding = true;
-        style.setPadding(
-            YGEdgeStart, yoga::CompactValue::of<YGUnitPoint>(theme.start));
+        style.setPadding(YGEdgeStart, yoga::value::points(theme.start));
       }
       if (!textInputProps.hasPadding && !textInputProps.hasPaddingEnd &&
           !textInputProps.hasPaddingRight &&
           !textInputProps.hasPaddingHorizontal) {
         changedPadding = true;
-        style.setPadding(
-            YGEdgeEnd, yoga::CompactValue::of<YGUnitPoint>(theme.end));
+        style.setPadding(YGEdgeEnd, yoga::value::points(theme.end));
       }
       if (!textInputProps.hasPadding && !textInputProps.hasPaddingTop &&
           !textInputProps.hasPaddingVertical) {
         changedPadding = true;
-        style.setPadding(
-            YGEdgeTop, yoga::CompactValue::of<YGUnitPoint>(theme.top));
+        style.setPadding(YGEdgeTop, yoga::value::points(theme.top));
       }
       if (!textInputProps.hasPadding && !textInputProps.hasPaddingBottom &&
           !textInputProps.hasPaddingVertical) {
         changedPadding = true;
-        style.setPadding(
-            YGEdgeBottom, yoga::CompactValue::of<YGUnitPoint>(theme.bottom));
+        style.setPadding(YGEdgeBottom, yoga::value::points(theme.bottom));
       }
 
       // If the TextInput initially does not have paddingLeft or paddingStart, a
@@ -137,12 +132,12 @@ class AndroidTextInputComponentDescriptor final
       if ((textInputProps.hasPadding || textInputProps.hasPaddingLeft ||
            textInputProps.hasPaddingHorizontal) &&
           !textInputProps.hasPaddingStart) {
-        style.setPadding(YGEdgeStart, yoga::CompactValue::ofUndefined());
+        style.setPadding(YGEdgeStart, yoga::value::undefined());
       }
       if ((textInputProps.hasPadding || textInputProps.hasPaddingRight ||
            textInputProps.hasPaddingHorizontal) &&
           !textInputProps.hasPaddingEnd) {
-        style.setPadding(YGEdgeEnd, yoga::CompactValue::ofUndefined());
+        style.setPadding(YGEdgeEnd, yoga::value::undefined());
       }
 
       // Note that this is expensive: on every adopt, we need to set the Yoga

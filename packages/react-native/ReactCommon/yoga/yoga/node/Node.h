@@ -20,7 +20,6 @@
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
-#include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
 
 // Tag struct used to form the opaque YGNodeRef for the public C API
@@ -66,10 +65,10 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   template <auto Field>
-  CompactValue computeEdgeValueForColumn(YGEdge edge) const;
+  Style::Length computeEdgeValueForColumn(YGEdge edge) const;
 
   template <auto Field>
-  CompactValue computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const;
+  Style::Length computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const;
 
   // DANGER DANGER DANGER!
   // If the node assigned to has children, we'd either have to deallocate
@@ -327,7 +326,7 @@ class YG_EXPORT Node : public ::YGNode {
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float dimensionValue, Dimension dimension);
+  void setLayoutDimension(float LengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
   void setLayoutMargin(float margin, YGEdge edge);
   void setLayoutBorder(float border, YGEdge edge);

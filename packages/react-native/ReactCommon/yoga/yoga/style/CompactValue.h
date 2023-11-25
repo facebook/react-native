@@ -52,6 +52,10 @@ class YG_EXPORT CompactValue {
 
   template <YGUnit Unit>
   static CompactValue of(float value) noexcept {
+    if (yoga::isUndefined(value) || std::isinf(value)) {
+      return ofUndefined();
+    }
+
     if (value == 0.0f || (value < LOWER_BOUND && value > -LOWER_BOUND)) {
       constexpr auto zero =
           Unit == YGUnitPercent ? ZERO_BITS_PERCENT : ZERO_BITS_POINT;
@@ -69,16 +73,6 @@ class YG_EXPORT CompactValue {
     data -= BIAS;
     data |= unitBit;
     return {data};
-  }
-
-  template <YGUnit Unit>
-  static CompactValue ofMaybe(float value) noexcept {
-    return std::isnan(value) || std::isinf(value) ? ofUndefined()
-                                                  : of<Unit>(value);
-  }
-
-  static constexpr CompactValue ofZero() noexcept {
-    return CompactValue{ZERO_BITS_POINT};
   }
 
   static constexpr CompactValue ofUndefined() noexcept {
@@ -168,10 +162,6 @@ template <>
 CompactValue CompactValue::of<YGUnitUndefined>(float) noexcept = delete;
 template <>
 CompactValue CompactValue::of<YGUnitAuto>(float) noexcept = delete;
-template <>
-CompactValue CompactValue::ofMaybe<YGUnitUndefined>(float) noexcept = delete;
-template <>
-CompactValue CompactValue::ofMaybe<YGUnitAuto>(float) noexcept = delete;
 
 constexpr bool operator==(CompactValue a, CompactValue b) noexcept {
   return a.repr_ == b.repr_;

@@ -58,7 +58,7 @@ void Node::print() {
 
 // TODO: Edge value resolution should be moved to `yoga::Style`
 template <auto Field>
-CompactValue Node::computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const {
+Style::Length Node::computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const {
   if ((style_.*Field)(rowEdge).isDefined()) {
     return (style_.*Field)(rowEdge);
   } else if ((style_.*Field)(edge).isDefined()) {
@@ -72,7 +72,7 @@ CompactValue Node::computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const {
 
 // TODO: Edge value resolution should be moved to `yoga::Style`
 template <auto Field>
-CompactValue Node::computeEdgeValueForColumn(YGEdge edge) const {
+Style::Length Node::computeEdgeValueForColumn(YGEdge edge) const {
   if ((style_.*Field)(edge).isDefined()) {
     return (style_.*Field)(edge);
   } else if ((style_.*Field)(YGEdgeVertical).isDefined()) {
@@ -497,8 +497,8 @@ void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float dimensionValue, Dimension dimension) {
-  layout_.setDimension(dimension, dimensionValue);
+void Node::setLayoutDimension(float LengthValue, Dimension dimension) {
+  layout_.setDimension(dimension, LengthValue);
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or
