@@ -417,98 +417,98 @@ void YogaStylableProps::convertRawPropAliases(
       rawProps,
       "insetBlockEnd",
       sourceProps.insetBlockEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   insetBlockStart = convertRawProp(
       context,
       rawProps,
       "insetBlockStart",
       sourceProps.insetBlockStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   insetInlineEnd = convertRawProp(
       context,
       rawProps,
       "insetInlineEnd",
       sourceProps.insetInlineEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   insetInlineStart = convertRawProp(
       context,
       rawProps,
       "insetInlineStart",
       sourceProps.insetInlineStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginInline = convertRawProp(
       context,
       rawProps,
       "marginInline",
       sourceProps.marginInline,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginInlineStart = convertRawProp(
       context,
       rawProps,
       "marginInlineStart",
       sourceProps.marginInlineStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginInlineEnd = convertRawProp(
       context,
       rawProps,
       "marginInlineEnd",
       sourceProps.marginInlineEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginBlock = convertRawProp(
       context,
       rawProps,
       "marginBlock",
       sourceProps.marginBlock,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginBlockStart = convertRawProp(
       context,
       rawProps,
       "marginBlockStart",
       sourceProps.marginBlockStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   marginBlockEnd = convertRawProp(
       context,
       rawProps,
       "marginBlockEnd",
       sourceProps.marginBlockEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
 
   paddingInline = convertRawProp(
       context,
       rawProps,
       "paddingInline",
       sourceProps.paddingInline,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   paddingInlineStart = convertRawProp(
       context,
       rawProps,
       "paddingInlineStart",
       sourceProps.paddingInlineStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   paddingInlineEnd = convertRawProp(
       context,
       rawProps,
       "paddingInlineEnd",
       sourceProps.paddingInlineEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   paddingBlock = convertRawProp(
       context,
       rawProps,
       "paddingBlock",
       sourceProps.paddingBlock,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   paddingBlockStart = convertRawProp(
       context,
       rawProps,
       "paddingBlockStart",
       sourceProps.paddingBlockStart,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
   paddingBlockEnd = convertRawProp(
       context,
       rawProps,
       "paddingBlockEnd",
       sourceProps.paddingBlockEnd,
-      CompactValue::ofUndefined());
+      yoga::value::undefined());
 }
 
 } // namespace facebook::react
