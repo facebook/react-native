@@ -13,13 +13,9 @@
 
 namespace facebook::react {
 
-static bool hasValue(
-    const RawProps& rawProps,
-    bool defaultValue,
-    const char* name,
-    const char* prefix,
-    const char* suffix) {
-  auto rawValue = rawProps.at(name, prefix, suffix);
+static bool
+hasValue(const RawProps& rawProps, bool defaultValue, const char* name) {
+  auto rawValue = rawProps.at(name, nullptr, nullptr);
 
   // No change to prop - use default
   if (rawValue == nullptr) {
@@ -217,47 +213,35 @@ AndroidTextInputProps::AndroidTextInputProps(
           convertRawProp(context, rawProps, sourceProps.paragraphAttributes, {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
-      hasPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "", "padding", "")),
+      hasPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "padding")),
       hasPaddingHorizontal(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingHorizontal : hasValue(
           rawProps,
           sourceProps.hasPaddingHorizontal,
-          "Horizontal",
-          "padding",
-          "")),
+          "paddingHorizontal")),
       hasPaddingVertical(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingVertical : hasValue(
           rawProps,
           sourceProps.hasPaddingVertical,
-          "Vertical",
-          "padding",
-          "")),
+          "paddingVertical")),
       hasPaddingLeft(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingLeft : hasValue(
           rawProps,
           sourceProps.hasPaddingLeft,
-          "Left",
-          "padding",
-          "")),
+          "paddingLeft")),
       hasPaddingTop(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingTop :
-          hasValue(rawProps, sourceProps.hasPaddingTop, "Top", "padding", "")),
+          hasValue(rawProps, sourceProps.hasPaddingTop, "paddingTop")),
       hasPaddingRight(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingRight : hasValue(
           rawProps,
           sourceProps.hasPaddingRight,
-          "Right",
-          "padding",
-          "")),
+          "paddingRight")),
       hasPaddingBottom(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingBottom : hasValue(
           rawProps,
           sourceProps.hasPaddingBottom,
-          "Bottom",
-          "padding",
-          "")),
+          "paddingBottom")),
       hasPaddingStart(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingStart : hasValue(
           rawProps,
           sourceProps.hasPaddingStart,
-          "Start",
-          "padding",
-          "")),
+          "paddingStart")),
       hasPaddingEnd(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingEnd :
-          hasValue(rawProps, sourceProps.hasPaddingEnd, "End", "padding", "")) {
+          hasValue(rawProps, sourceProps.hasPaddingEnd, "paddingEnd")) {
 }
 
 void AndroidTextInputProps::setProp(
