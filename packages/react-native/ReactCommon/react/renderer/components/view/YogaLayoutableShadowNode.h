@@ -22,8 +22,6 @@
 namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
-  using CompactValue = facebook::yoga::CompactValue;
-
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared = std::vector<Shared>;
