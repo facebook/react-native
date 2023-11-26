@@ -103,8 +103,8 @@ class LayoutTest : public ::testing::Test {
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
                     yogaStyle.positionType() = yoga::PositionType::Absolute;
-                    yogaStyle.setPosition(YGEdgeLeft, yoga::value::points(10));
-                    yogaStyle.setPosition(YGEdgeTop, yoga::value::points(10));
+                    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(10));
+                    yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(10));
                     yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(30));
                     yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(90));
 
@@ -136,8 +136,8 @@ class LayoutTest : public ::testing::Test {
                         }
 
                         yogaStyle.positionType() = yoga::PositionType::Absolute;
-                        yogaStyle.setPosition(YGEdgeLeft, yoga::value::points(10));
-                        yogaStyle.setPosition(YGEdgeTop, yoga::value::points(10));
+                        yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(10));
+                        yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(10));
                         yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(110));
                         yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(20));
                         return sharedProps;
@@ -151,8 +151,8 @@ class LayoutTest : public ::testing::Test {
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
                             yogaStyle.positionType() = yoga::PositionType::Absolute;
-                            yogaStyle.setPosition(YGEdgeLeft, yoga::value::points(70));
-                            yogaStyle.setPosition(YGEdgeTop, yoga::value::points(-50));
+                            yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(70));
+                            yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(-50));
                             yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(30));
                             yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(60));
                             return sharedProps;
@@ -166,8 +166,8 @@ class LayoutTest : public ::testing::Test {
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
                         yogaStyle.positionType() = yoga::PositionType::Absolute;
-                        yogaStyle.setPosition(YGEdgeLeft, yoga::value::points(-60));
-                        yogaStyle.setPosition(YGEdgeTop, yoga::value::points(50));
+                        yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(-60));
+                        yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(50));
                         yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(70));
                         yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(20));
                         return sharedProps;

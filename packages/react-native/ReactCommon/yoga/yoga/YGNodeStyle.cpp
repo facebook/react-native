@@ -223,49 +223,49 @@ YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
 
 void YGNodeStyleSetPosition(YGNodeRef node, YGEdge edge, float points) {
   updateIndexedStyleProp<&Style::position, &Style::setPosition>(
-      node, edge, value::points(points));
+      node, scopedEnum(edge), value::points(points));
 }
 
 void YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float percent) {
   updateIndexedStyleProp<&Style::position, &Style::setPosition>(
-      node, edge, value::percent(percent));
+      node, scopedEnum(edge), value::percent(percent));
 }
 
 YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().position(edge);
+  return resolveRef(node)->getStyle().position(scopedEnum(edge));
 }
 
 void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float points) {
   updateIndexedStyleProp<&Style::margin, &Style::setMargin>(
-      node, edge, value::points(points));
+      node, scopedEnum(edge), value::points(points));
 }
 
 void YGNodeStyleSetMarginPercent(YGNodeRef node, YGEdge edge, float percent) {
   updateIndexedStyleProp<&Style::margin, &Style::setMargin>(
-      node, edge, value::percent(percent));
+      node, scopedEnum(edge), value::percent(percent));
 }
 
 void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge) {
   updateIndexedStyleProp<&Style::margin, &Style::setMargin>(
-      node, edge, value::ofAuto());
+      node, scopedEnum(edge), value::ofAuto());
 }
 
 YGValue YGNodeStyleGetMargin(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().margin(edge);
+  return resolveRef(node)->getStyle().margin(scopedEnum(edge));
 }
 
 void YGNodeStyleSetPadding(YGNodeRef node, YGEdge edge, float points) {
   updateIndexedStyleProp<&Style::padding, &Style::setPadding>(
-      node, edge, value::points(points));
+      node, scopedEnum(edge), value::points(points));
 }
 
 void YGNodeStyleSetPaddingPercent(YGNodeRef node, YGEdge edge, float percent) {
   updateIndexedStyleProp<&Style::padding, &Style::setPadding>(
-      node, edge, value::percent(percent));
+      node, scopedEnum(edge), value::percent(percent));
 }
 
 YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge) {
-  return resolveRef(node)->getStyle().padding(edge);
+  return resolveRef(node)->getStyle().padding(scopedEnum(edge));
 }
 
 void YGNodeStyleSetBorder(
@@ -273,11 +273,11 @@ void YGNodeStyleSetBorder(
     const YGEdge edge,
     const float border) {
   updateIndexedStyleProp<&Style::border, &Style::setBorder>(
-      node, edge, value::points(border));
+      node, scopedEnum(edge), value::points(border));
 }
 
 float YGNodeStyleGetBorder(const YGNodeConstRef node, const YGEdge edge) {
-  auto border = resolveRef(node)->getStyle().border(edge);
+  auto border = resolveRef(node)->getStyle().border(scopedEnum(edge));
   if (border.isUndefined() || border.isAuto()) {
     return YGUndefined;
   }

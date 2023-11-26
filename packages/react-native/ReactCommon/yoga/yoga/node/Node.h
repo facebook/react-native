@@ -16,6 +16,7 @@
 #include <yoga/config/Config.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
@@ -52,10 +53,10 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction,
       const float axisSize) const;
 
-  YGEdge getInlineStartEdgeUsingErrata(
+  Edge getInlineStartEdgeUsingErrata(
       FlexDirection flexDirection,
       Direction direction) const;
-  YGEdge getInlineEndEdgeUsingErrata(
+  Edge getInlineEndEdgeUsingErrata(
       FlexDirection flexDirection,
       Direction direction) const;
 
@@ -65,10 +66,10 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   template <auto Field>
-  Style::Length computeEdgeValueForColumn(YGEdge edge) const;
+  Style::Length computeEdgeValueForColumn(Edge edge) const;
 
   template <auto Field>
-  Style::Length computeEdgeValueForRow(YGEdge rowEdge, YGEdge edge) const;
+  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
 
   // DANGER DANGER DANGER!
   // If the node assigned to has children, we'd either have to deallocate
@@ -328,10 +329,10 @@ class YG_EXPORT Node : public ::YGNode {
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float LengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
-  void setLayoutMargin(float margin, YGEdge edge);
-  void setLayoutBorder(float border, YGEdge edge);
-  void setLayoutPadding(float padding, YGEdge edge);
-  void setLayoutPosition(float position, YGEdge edge);
+  void setLayoutMargin(float margin, Edge edge);
+  void setLayoutBorder(float border, Edge edge);
+  void setLayoutPadding(float padding, Edge edge);
+  void setLayoutPosition(float position, Edge edge);
   void setPosition(
       const Direction direction,
       const float mainSize,

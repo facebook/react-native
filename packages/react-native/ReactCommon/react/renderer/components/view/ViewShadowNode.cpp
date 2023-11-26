@@ -41,7 +41,7 @@ void ViewShadowNode::initialize() noexcept {
 
   auto hasBorder = [&]() {
     for (auto edge : yoga::ordinals<yoga::Edge>()) {
-      if (viewProps.yogaStyle.border(yoga::unscopedEnum(edge)).isDefined()) {
+      if (viewProps.yogaStyle.border(edge).isDefined()) {
         return true;
       }
     }

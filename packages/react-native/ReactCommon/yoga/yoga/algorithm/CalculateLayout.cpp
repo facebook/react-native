@@ -89,7 +89,7 @@ static void setChildTrailingPosition(
   const float size = child->getLayout().measuredDimension(dimension(axis));
   child->setLayoutPosition(
       node->getLayout().measuredDimension(dimension(axis)) - size -
-          child->getLayout().position[flexStartEdge(axis)],
+          child->getLayout().position(flexStartEdge(axis)),
       flexEndEdge(axis));
 }
 
@@ -553,12 +553,13 @@ static void measureNodeWithMeasureFunc(
     availableHeight = YGUndefined;
   }
 
-  const auto& padding = node->getLayout().padding;
-  const auto& border = node->getLayout().border;
-  const float paddingAndBorderAxisRow = padding[YGEdgeLeft] +
-      padding[YGEdgeRight] + border[YGEdgeLeft] + border[YGEdgeRight];
-  const float paddingAndBorderAxisColumn = padding[YGEdgeTop] +
-      padding[YGEdgeBottom] + border[YGEdgeTop] + border[YGEdgeBottom];
+  const auto& layout = node->getLayout();
+  const float paddingAndBorderAxisRow = layout.padding(Edge::Left) +
+      layout.padding(Edge::Right) + layout.border(Edge::Left) +
+      layout.border(Edge::Right);
+  const float paddingAndBorderAxisColumn = layout.padding(Edge::Top) +
+      layout.padding(Edge::Bottom) + layout.border(Edge::Top) +
+      layout.border(Edge::Bottom);
 
   // We want to make sure we don't call measure with negative size
   const float innerWidth = yoga::isUndefined(availableWidth)
@@ -643,14 +644,13 @@ static void measureNodeWithoutChildren(
     const SizingMode heightSizingMode,
     const float ownerWidth,
     const float ownerHeight) {
-  const auto& padding = node->getLayout().padding;
-  const auto& border = node->getLayout().border;
+  const auto& layout = node->getLayout();
 
   float width = availableWidth;
   if (widthSizingMode == SizingMode::MaxContent ||
       widthSizingMode == SizingMode::FitContent) {
-    width = padding[YGEdgeLeft] + padding[YGEdgeRight] + border[YGEdgeLeft] +
-        border[YGEdgeRight];
+    width = layout.padding(Edge::Left) + layout.padding(Edge::Right) +
+        layout.border(Edge::Left) + layout.border(Edge::Right);
   }
   node->setLayoutMeasuredDimension(
       boundAxis(node, FlexDirection::Row, width, ownerWidth, ownerWidth),
@@ -659,8 +659,8 @@ static void measureNodeWithoutChildren(
   float height = availableHeight;
   if (heightSizingMode == SizingMode::MaxContent ||
       heightSizingMode == SizingMode::FitContent) {
-    height = padding[YGEdgeTop] + padding[YGEdgeBottom] + border[YGEdgeTop] +
-        border[YGEdgeBottom];
+    height = layout.padding(Edge::Top) + layout.padding(Edge::Bottom) +
+        layout.border(Edge::Top) + layout.border(Edge::Bottom);
   }
   node->setLayoutMeasuredDimension(
       boundAxis(node, FlexDirection::Column, height, ownerHeight, ownerWidth),
@@ -1330,7 +1330,7 @@ static void justifyMainAxis(
 
         if (performLayout) {
           child->setLayoutPosition(
-              childLayout.position[flexStartEdge(mainAxis)] +
+              childLayout.position(flexStartEdge(mainAxis)) +
                   flexLine.layout.mainDim,
               flexStartEdge(mainAxis));
         }
@@ -1386,7 +1386,7 @@ static void justifyMainAxis(
         }
       } else if (performLayout) {
         child->setLayoutPosition(
-            childLayout.position[flexStartEdge(mainAxis)] +
+            childLayout.position(flexStartEdge(mainAxis)) +
                 node->getInlineStartBorder(mainAxis, direction) +
                 leadingMainDim,
             flexStartEdge(mainAxis));
@@ -1497,9 +1497,8 @@ static void calculateLayoutImpl(
   const FlexDirection flexColumnDirection =
       resolveDirection(FlexDirection::Column, direction);
 
-  const YGEdge startEdge =
-      direction == Direction::LTR ? YGEdgeLeft : YGEdgeRight;
-  const YGEdge endEdge = direction == Direction::LTR ? YGEdgeRight : YGEdgeLeft;
+  const Edge startEdge = direction == Direction::LTR ? Edge::Left : Edge::Right;
+  const Edge endEdge = direction == Direction::LTR ? Edge::Right : Edge::Left;
 
   const float marginRowLeading =
       node->getInlineStartMargin(flexRowDirection, direction, ownerWidth);
@@ -1509,10 +1508,10 @@ static void calculateLayoutImpl(
   node->setLayoutMargin(marginRowTrailing, endEdge);
   const float marginColumnLeading =
       node->getInlineStartMargin(flexColumnDirection, direction, ownerWidth);
-  node->setLayoutMargin(marginColumnLeading, YGEdgeTop);
+  node->setLayoutMargin(marginColumnLeading, Edge::Top);
   const float marginColumnTrailing =
       node->getInlineEndMargin(flexColumnDirection, direction, ownerWidth);
-  node->setLayoutMargin(marginColumnTrailing, YGEdgeBottom);
+  node->setLayoutMargin(marginColumnTrailing, Edge::Bottom);
 
   const float marginAxisRow = marginRowLeading + marginRowTrailing;
   const float marginAxisColumn = marginColumnLeading + marginColumnTrailing;
@@ -1522,9 +1521,9 @@ static void calculateLayoutImpl(
   node->setLayoutBorder(
       node->getInlineEndBorder(flexRowDirection, direction), endEdge);
   node->setLayoutBorder(
-      node->getInlineStartBorder(flexColumnDirection, direction), YGEdgeTop);
+      node->getInlineStartBorder(flexColumnDirection, direction), Edge::Top);
   node->setLayoutBorder(
-      node->getInlineEndBorder(flexColumnDirection, direction), YGEdgeBottom);
+      node->getInlineEndBorder(flexColumnDirection, direction), Edge::Bottom);
 
   node->setLayoutPadding(
       node->getInlineStartPadding(flexRowDirection, direction, ownerWidth),
@@ -1534,10 +1533,10 @@ static void calculateLayoutImpl(
       endEdge);
   node->setLayoutPadding(
       node->getInlineStartPadding(flexColumnDirection, direction, ownerWidth),
-      YGEdgeTop);
+      Edge::Top);
   node->setLayoutPadding(
       node->getInlineEndPadding(flexColumnDirection, direction, ownerWidth),
-      YGEdgeBottom);
+      Edge::Bottom);
 
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(
@@ -1868,7 +1867,7 @@ static void calculateLayoutImpl(
           // default to border + margin
           if (!isChildLeadingPosDefined ||
               yoga::isUndefined(
-                  child->getLayout().position[flexStartEdge(crossAxis)])) {
+                  child->getLayout().position(flexStartEdge(crossAxis)))) {
             child->setLayoutPosition(
                 node->getInlineStartBorder(crossAxis, direction) +
                     child->getInlineStartMargin(
@@ -1981,7 +1980,7 @@ static void calculateLayoutImpl(
           }
           // And we apply the position
           child->setLayoutPosition(
-              child->getLayout().position[flexStartEdge(crossAxis)] +
+              child->getLayout().position(flexStartEdge(crossAxis)) +
                   totalLineCrossDim + leadingCrossDim,
               flexStartEdge(crossAxis));
         }
@@ -2190,7 +2189,7 @@ static void calculateLayoutImpl(
                             FlexDirection::Column,
                             direction,
                             availableInnerCrossDim),
-                    YGEdgeTop);
+                    Edge::Top);
 
                 break;
               }
@@ -2296,7 +2295,7 @@ static void calculateLayoutImpl(
       if (child->getStyle().positionType() != PositionType::Absolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimension(dimension(crossAxis)) -
-                child->getLayout().position[flexStartEdge(crossAxis)] -
+                child->getLayout().position(flexStartEdge(crossAxis)) -
                 child->getLayout().measuredDimension(dimension(crossAxis)),
             flexStartEdge(crossAxis));
       }

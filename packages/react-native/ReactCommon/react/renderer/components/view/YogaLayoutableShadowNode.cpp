@@ -392,54 +392,54 @@ void YogaLayoutableShadowNode::updateYogaProps() {
 
   // Aliases with precedence
   if (props.insetInlineEnd.isDefined()) {
-    result.setPosition(YGEdgeEnd, props.insetInlineEnd);
+    result.setPosition(yoga::Edge::End, props.insetInlineEnd);
   }
   if (props.insetInlineStart.isDefined()) {
-    result.setPosition(YGEdgeStart, props.insetInlineStart);
+    result.setPosition(yoga::Edge::Start, props.insetInlineStart);
   }
   if (props.marginInline.isDefined()) {
-    result.setMargin(YGEdgeHorizontal, props.marginInline);
+    result.setMargin(yoga::Edge::Horizontal, props.marginInline);
   }
   if (props.marginInlineStart.isDefined()) {
-    result.setMargin(YGEdgeStart, props.marginInlineStart);
+    result.setMargin(yoga::Edge::Start, props.marginInlineStart);
   }
   if (props.marginInlineEnd.isDefined()) {
-    result.setMargin(YGEdgeEnd, props.marginInlineEnd);
+    result.setMargin(yoga::Edge::End, props.marginInlineEnd);
   }
   if (props.marginBlock.isDefined()) {
-    result.setMargin(YGEdgeVertical, props.marginBlock);
+    result.setMargin(yoga::Edge::Vertical, props.marginBlock);
   }
   if (props.paddingInline.isDefined()) {
-    result.setPadding(YGEdgeHorizontal, props.paddingInline);
+    result.setPadding(yoga::Edge::Horizontal, props.paddingInline);
   }
   if (props.paddingInlineStart.isDefined()) {
-    result.setPadding(YGEdgeStart, props.paddingInlineStart);
+    result.setPadding(yoga::Edge::Start, props.paddingInlineStart);
   }
   if (props.paddingInlineEnd.isDefined()) {
-    result.setPadding(YGEdgeEnd, props.paddingInlineEnd);
+    result.setPadding(yoga::Edge::End, props.paddingInlineEnd);
   }
   if (props.paddingBlock.isDefined()) {
-    result.setPadding(YGEdgeVertical, props.paddingBlock);
+    result.setPadding(yoga::Edge::Vertical, props.paddingBlock);
   }
 
   // Aliases without precedence
-  if (result.position(YGEdgeBottom).isUndefined()) {
-    result.setPosition(YGEdgeBottom, props.insetBlockEnd);
+  if (result.position(yoga::Edge::Bottom).isUndefined()) {
+    result.setPosition(yoga::Edge::Bottom, props.insetBlockEnd);
   }
-  if (result.position(YGEdgeTop).isUndefined()) {
-    result.setPosition(YGEdgeTop, props.insetBlockStart);
+  if (result.position(yoga::Edge::Top).isUndefined()) {
+    result.setPosition(yoga::Edge::Top, props.insetBlockStart);
   }
-  if (result.margin(YGEdgeTop).isUndefined()) {
-    result.setMargin(YGEdgeTop, props.marginBlockStart);
+  if (result.margin(yoga::Edge::Top).isUndefined()) {
+    result.setMargin(yoga::Edge::Top, props.marginBlockStart);
   }
-  if (result.margin(YGEdgeBottom).isUndefined()) {
-    result.setMargin(YGEdgeBottom, props.marginBlockEnd);
+  if (result.margin(yoga::Edge::Bottom).isUndefined()) {
+    result.setMargin(yoga::Edge::Bottom, props.marginBlockEnd);
   }
-  if (result.padding(YGEdgeTop).isUndefined()) {
-    result.setPadding(YGEdgeTop, props.paddingBlockStart);
+  if (result.padding(yoga::Edge::Top).isUndefined()) {
+    result.setPadding(yoga::Edge::Top, props.paddingBlockStart);
   }
-  if (result.padding(YGEdgeBottom).isUndefined()) {
-    result.setPadding(YGEdgeBottom, props.paddingBlockEnd);
+  if (result.padding(yoga::Edge::Bottom).isUndefined()) {
+    result.setPadding(yoga::Edge::Bottom, props.paddingBlockEnd);
   }
 
   return result;
@@ -545,14 +545,14 @@ void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   auto rightPadding = yoga::value::points(padding.right);
   auto bottomPadding = yoga::value::points(padding.bottom);
 
-  if (leftPadding != style.padding(YGEdgeLeft) ||
-      topPadding != style.padding(YGEdgeTop) ||
-      rightPadding != style.padding(YGEdgeRight) ||
-      bottomPadding != style.padding(YGEdgeBottom)) {
-    style.setPadding(YGEdgeTop, yoga::value::points(padding.top));
-    style.setPadding(YGEdgeLeft, yoga::value::points(padding.left));
-    style.setPadding(YGEdgeRight, yoga::value::points(padding.right));
-    style.setPadding(YGEdgeBottom, yoga::value::points(padding.bottom));
+  if (leftPadding != style.padding(yoga::Edge::Left) ||
+      topPadding != style.padding(yoga::Edge::Top) ||
+      rightPadding != style.padding(yoga::Edge::Right) ||
+      bottomPadding != style.padding(yoga::Edge::Bottom)) {
+    style.setPadding(yoga::Edge::Top, yoga::value::points(padding.top));
+    style.setPadding(yoga::Edge::Left, yoga::value::points(padding.left));
+    style.setPadding(yoga::Edge::Right, yoga::value::points(padding.right));
+    style.setPadding(yoga::Edge::Bottom, yoga::value::points(padding.bottom));
     yogaNode_.setStyle(style);
     yogaNode_.setDirty(true);
   }
@@ -873,34 +873,37 @@ void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
 
   // Swap Yoga node values, position, padding and margin.
 
-  if (yogaStyle.position(YGEdgeLeft).isDefined()) {
-    yogaStyle.setPosition(YGEdgeStart, yogaStyle.position(YGEdgeLeft));
-    yogaStyle.setPosition(YGEdgeLeft, yoga::value::undefined());
+  if (yogaStyle.position(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setPosition(
+        yoga::Edge::Start, yogaStyle.position(yoga::Edge::Left));
+    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.position(YGEdgeRight).isDefined()) {
-    yogaStyle.setPosition(YGEdgeEnd, yogaStyle.position(YGEdgeRight));
-    yogaStyle.setPosition(YGEdgeRight, yoga::value::undefined());
+  if (yogaStyle.position(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setPosition(
+        yoga::Edge::End, yogaStyle.position(yoga::Edge::Right));
+    yogaStyle.setPosition(yoga::Edge::Right, yoga::value::undefined());
   }
 
-  if (yogaStyle.padding(YGEdgeLeft).isDefined()) {
-    yogaStyle.setPadding(YGEdgeStart, yogaStyle.padding(YGEdgeLeft));
-    yogaStyle.setPadding(YGEdgeLeft, yoga::value::undefined());
+  if (yogaStyle.padding(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setPadding(
+        yoga::Edge::Start, yogaStyle.padding(yoga::Edge::Left));
+    yogaStyle.setPadding(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.padding(YGEdgeRight).isDefined()) {
-    yogaStyle.setPadding(YGEdgeEnd, yogaStyle.padding(YGEdgeRight));
-    yogaStyle.setPadding(YGEdgeRight, yoga::value::undefined());
+  if (yogaStyle.padding(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setPadding(yoga::Edge::End, yogaStyle.padding(yoga::Edge::Right));
+    yogaStyle.setPadding(yoga::Edge::Right, yoga::value::undefined());
   }
 
-  if (yogaStyle.margin(YGEdgeLeft).isDefined()) {
-    yogaStyle.setMargin(YGEdgeStart, yogaStyle.margin(YGEdgeLeft));
-    yogaStyle.setMargin(YGEdgeLeft, yoga::value::undefined());
+  if (yogaStyle.margin(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setMargin(yoga::Edge::Start, yogaStyle.margin(yoga::Edge::Left));
+    yogaStyle.setMargin(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.margin(YGEdgeRight).isDefined()) {
-    yogaStyle.setMargin(YGEdgeEnd, yogaStyle.margin(YGEdgeRight));
-    yogaStyle.setMargin(YGEdgeRight, yoga::value::undefined());
+  if (yogaStyle.margin(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setMargin(yoga::Edge::End, yogaStyle.margin(yoga::Edge::Right));
+    yogaStyle.setMargin(yoga::Edge::Right, yoga::value::undefined());
   }
 
   shadowNode.yogaNode_.setStyle(yogaStyle);
@@ -953,14 +956,16 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
     props.borderStyles.right.reset();
   }
 
-  if (props.yogaStyle.border(YGEdgeLeft).isDefined()) {
-    props.yogaStyle.setBorder(YGEdgeStart, props.yogaStyle.border(YGEdgeLeft));
-    props.yogaStyle.setBorder(YGEdgeLeft, yoga::value::undefined());
+  if (props.yogaStyle.border(yoga::Edge::Left).isDefined()) {
+    props.yogaStyle.setBorder(
+        yoga::Edge::Start, props.yogaStyle.border(yoga::Edge::Left));
+    props.yogaStyle.setBorder(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (props.yogaStyle.border(YGEdgeRight).isDefined()) {
-    props.yogaStyle.setBorder(YGEdgeEnd, props.yogaStyle.border(YGEdgeRight));
-    props.yogaStyle.setBorder(YGEdgeRight, yoga::value::undefined());
+  if (props.yogaStyle.border(yoga::Edge::Right).isDefined()) {
+    props.yogaStyle.setBorder(
+        yoga::Edge::End, props.yogaStyle.border(yoga::Edge::Right));
+    props.yogaStyle.setBorder(yoga::Edge::Right, yoga::value::undefined());
   }
 }
 

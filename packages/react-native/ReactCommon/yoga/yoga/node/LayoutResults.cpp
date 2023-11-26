@@ -13,11 +13,11 @@
 namespace facebook::yoga {
 
 bool LayoutResults::operator==(LayoutResults layout) const {
-  bool isEqual = yoga::inexactEquals(position, layout.position) &&
+  bool isEqual = yoga::inexactEquals(position_, layout.position_) &&
       yoga::inexactEquals(dimensions_, layout.dimensions_) &&
-      yoga::inexactEquals(margin, layout.margin) &&
-      yoga::inexactEquals(border, layout.border) &&
-      yoga::inexactEquals(padding, layout.padding) &&
+      yoga::inexactEquals(margin_, layout.margin_) &&
+      yoga::inexactEquals(border_, layout.border_) &&
+      yoga::inexactEquals(padding_, layout.padding_) &&
       direction() == layout.direction() &&
       hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
