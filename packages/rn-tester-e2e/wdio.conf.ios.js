@@ -39,8 +39,7 @@ exports.config = {
       'appium',
       {
         port: 4723,
-        logPath: './reports',
-        'session-override': true
+        logPath: './reports'
       },
     ],
   ],
@@ -68,5 +67,9 @@ exports.config = {
       const filePath = './reports/errorShots/' + fileName + '.png';
       await browser.saveScreenshot(filePath);
     }
+  },
+
+  afterSuite: async function (config, capabilities, specs) {
+    await browser.deleteSession()
   },
 };
