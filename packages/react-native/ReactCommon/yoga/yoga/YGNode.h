@@ -186,6 +186,19 @@ typedef struct YGSize {
 } YGSize;
 
 /**
+ * Returns the computed dimensions of the node, following the contraints of
+ * `widthMode` and `heightMode`:
+ *
+ * YGMeasureModeUndefined: The parent has not imposed any constraint on the
+ * child. It can be whatever size it wants.
+ *
+ * YGMeasureModeAtMost: The child can be as large as it wants up to the
+ * specified size.
+ *
+ * YGMeasureModeExactly: The parent has determined an exact size for the
+ * child. The child is going to be given those bounds regardless of how big it
+ * wants to be.
+ *
  * @returns the size of the leaf node, measured under the given contraints.
  */
 typedef YGSize (*YGMeasureFunc)(
