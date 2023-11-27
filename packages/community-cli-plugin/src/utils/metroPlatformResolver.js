@@ -13,8 +13,15 @@ import type {CustomResolver} from 'metro-resolver';
 
 /**
  * This is an implementation of a metro resolveRequest option which will remap react-native imports
- * to different npm packages based on the platform requested.  This allows a single metro instance/config
+ * to different npm packages based on the platform requested. This allows a single metro instance/config
  * to produce bundles for multiple out of tree platforms at a time.
+ *
+ * This resolver also supports custom `variant` option, which is intended to be used for resolving
+ * different variants of the same platform, like "visionos" or "tvos" based on "ios".
+ *
+ * Ex (in the devserver query string):
+ * - `?platform=ios&resolver.variant=visionos`
+ * - `?platform=ios&resolver.variant=tvos`
  *
  * @param platformImplementations
  * A map of platform to npm package that implements that platform
@@ -29,13 +36,19 @@ export function reactNativePlatformResolver(platformImplementations: {
   [platform: string]: string,
 }): CustomResolver {
   return (context, moduleName, platform) => {
+    let platformOrVariant: string | null =
+      // $FlowFixMe
+      context.customResolverOptions.variant || platform;
     let modifiedModuleName = moduleName;
-    if (platform != null && platformImplementations[platform]) {
+    if (
+      platformOrVariant != null &&
+      platformImplementations[platformOrVariant]
+    ) {
       if (moduleName === 'react-native') {
-        modifiedModuleName = platformImplementations[platform];
+        modifiedModuleName = platformImplementations[platformOrVariant];
       } else if (moduleName.startsWith('react-native/')) {
         modifiedModuleName = `${
-          platformImplementations[platform]
+          platformImplementations[platformOrVariant]
         }/${modifiedModuleName.slice('react-native/'.length)}`;
       }
     }
