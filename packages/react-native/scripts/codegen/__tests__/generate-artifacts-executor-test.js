@@ -14,34 +14,12 @@ const fixtures = require('../__test_fixtures__/fixtures');
 const underTest = require('../generate-artifacts-executor');
 const path = require('path');
 
-const reactNativeDependencyName = 'react-native';
 const rootPath = path.join(__dirname, '../../..');
 
 describe('extractLibrariesFromJSON', () => {
-  it('throws if in react-native and no dependencies found', () => {
-    let configFile = {};
-    expect(() => {
-      underTest._extractLibrariesFromJSON(configFile);
-    }).toThrow();
-  });
-
-  it('it skips if not into react-native and no dependencies found', () => {
-    let configFile = {};
-    let libraries = underTest._extractLibrariesFromJSON(
-      configFile,
-      'some-node-module',
-      'node_modules/some',
-    );
-    expect(libraries.length).toBe(0);
-  });
-
   it('extracts a single dependency when config has no libraries', () => {
     let configFile = fixtures.noLibrariesConfigFile;
-    let libraries = underTest._extractLibrariesFromJSON(
-      configFile,
-      'my-app',
-      '.',
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, '.');
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
       config: {
@@ -53,23 +31,15 @@ describe('extractLibrariesFromJSON', () => {
     });
   });
 
-  it("extract codegenConfig when it's empty", () => {
+  it("doesn't extract libraries when they are present but empty", () => {
     const configFile = {codegenConfig: {libraries: []}};
-    let libraries = underTest._extractLibrariesFromJSON(
-      configFile,
-      reactNativeDependencyName,
-      rootPath,
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(0);
   });
 
-  it('extract codegenConfig when dependency is one', () => {
+  it('extracts libraries when they are present and not empty', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
-    let libraries = underTest._extractLibrariesFromJSON(
-      configFile,
-      reactNativeDependencyName,
-      rootPath,
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
       config: {
@@ -87,7 +57,6 @@ describe('extractLibrariesFromJSON', () => {
     const myDependencyPath = path.join(__dirname, myDependency);
     let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      myDependency,
       myDependencyPath,
     );
     expect(libraries.length).toBe(3);

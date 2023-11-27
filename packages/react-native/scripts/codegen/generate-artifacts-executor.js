@@ -110,24 +110,11 @@ function extractLibrariesFromConfigurationArray(configFile, dependencyPath) {
   });
 }
 
-function extractLibrariesFromJSON(configFile, dependency, dependencyPath) {
-  var isBlocking = false;
-  if (dependency == null) {
-    dependency = REACT_NATIVE;
-    dependencyPath = REACT_NATIVE_PACKAGE_ROOT_FOLDER;
-    // If we are exploring the ReactNative libraries, we want to raise an error
-    // if the codegen is not properly configured.
-    isBlocking = true;
-  }
-
+function extractLibrariesFromJSON(configFile, dependencyPath) {
   if (configFile.codegenConfig == null) {
-    if (isBlocking) {
-      throw `[Codegen] Error: Could not find codegen config for ${dependency} .`;
-    }
     return [];
   }
-
-  console.log(`[Codegen] Found ${dependency}`);
+  console.log(`[Codegen] Found ${configFile.name}`);
   if (configFile.codegenConfig.libraries == null) {
     const config = configFile.codegenConfig;
     return [
@@ -137,43 +124,30 @@ function extractLibrariesFromJSON(configFile, dependency, dependencyPath) {
       },
     ];
   } else {
-    printDeprecationWarningIfNeeded(dependency);
+    printDeprecationWarningIfNeeded(configFile.name);
     return extractLibrariesFromConfigurationArray(configFile, dependencyPath);
   }
 }
 
-function handleReactNativeCoreLibraries() {
-  // Handle react-native core libraries.
-  // This is required when react-native is outside of node_modules.
-  console.log('[Codegen] Processing react-native core libraries');
-  return extractLibrariesFromJSON(
-    readPkgJsonInDirectory(REACT_NATIVE_PACKAGE_ROOT_FOLDER),
-  );
-}
-
 function handleThirdPartyLibraries(pkgJson) {
-  const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
+  const dependencies = {
+    ...pkgJson.dependencies,
+    ...pkgJson.devDependencies,
+    ...pkgJson.peerDependencies,
+  };
   // Determine which of these are codegen-enabled libraries
   console.log(
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the project dependencies.',
   );
   // Handle third-party libraries
   return Object.keys(dependencies).flatMap(dependency => {
-    if (dependency === REACT_NATIVE) {
-      // react-native should already be added.
-      return [];
-    }
     try {
       const configFilePath = require.resolve(
         path.join(dependency, 'package.json'),
       );
       const configFile = JSON.parse(fs.readFileSync(configFilePath));
       const codegenConfigFileDir = path.dirname(configFilePath);
-      return extractLibrariesFromJSON(
-        configFile,
-        dependency,
-        codegenConfigFileDir,
-      );
+      return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
     } catch (e) {
       return [];
     }
@@ -185,7 +159,7 @@ function handleInAppLibraries(pkgJson, appRootDir) {
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
-  return extractLibrariesFromJSON(pkgJson, pkgJson.name, appRootDir);
+  return extractLibrariesFromJSON(pkgJson, appRootDir);
 }
 
 // CodeGen
@@ -299,7 +273,6 @@ function createComponentProvider(schemas) {
 function findCodegenEnabledLibraries(appRootDir) {
   const pkgJson = readPkgJsonInDirectory(appRootDir);
   return [
-    ...handleReactNativeCoreLibraries(),
     ...handleThirdPartyLibraries(pkgJson),
     ...handleInAppLibraries(pkgJson, appRootDir),
   ];
