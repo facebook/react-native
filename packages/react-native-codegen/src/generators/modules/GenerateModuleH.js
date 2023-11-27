@@ -232,33 +232,36 @@ function createStructsString(
       enumMap,
     );
 
-  return Object.keys(aliasMap)
-    .map(alias => {
-      const value = aliasMap[alias];
-      if (value.properties.length === 0) {
-        return '';
-      }
-      const structName = `${moduleName}Base${alias}`;
-      const templateParameterWithTypename = value.properties
-        .map((v, i) => `typename P${i}`)
-        .join(', ');
-      const templateParameter = value.properties
-        .map((v, i) => 'P' + i)
-        .join(', ');
-      const debugParameterConversion = value.properties
-        .map(
-          (v, i) => `  static ${getCppType(v)} ${
-            v.name
-          }ToJs(jsi::Runtime &rt, P${i} value) {
+  // TODO: T171006733 [Begin] Remove deprecated Cxx TMs structs after a new release.
+  return (
+    Object.keys(aliasMap)
+      .map(alias => {
+        const value = aliasMap[alias];
+        if (value.properties.length === 0) {
+          return '';
+        }
+        const structName = `${moduleName}Base${alias}`;
+        const structNameNew = `${moduleName}${alias}`;
+        const templateParameterWithTypename = value.properties
+          .map((v, i) => `typename P${i}`)
+          .join(', ');
+        const templateParameter = value.properties
+          .map((v, i) => 'P' + i)
+          .join(', ');
+        const debugParameterConversion = value.properties
+          .map(
+            (v, i) => `  static ${getCppType(v)} ${
+              v.name
+            }ToJs(jsi::Runtime &rt, P${i} value) {
     return bridging::toJs(rt, value);
   }`,
-        )
-        .join('\n\n');
-      return `
+          )
+          .join('\n\n');
+        return `
 #pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
-struct ${structName} {
+struct [[deprecated("Use ${structNameNew} instead.")]] ${structName} {
 ${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
   bool operator==(const ${structName} &other) const {
     return ${value.properties
@@ -268,7 +271,7 @@ ${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
 };
 
 template <${templateParameterWithTypename}>
-struct ${structName}Bridging {
+struct [[deprecated("Use ${structNameNew}Bridging instead.")]] ${structName}Bridging {
   static ${structName}<${templateParameter}> fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
@@ -308,8 +311,87 @@ ${value.properties
 };
 
 `;
-    })
-    .join('\n');
+      })
+      .join('\n') +
+    // TODO: T171006733 [End] Remove deprecated Cxx TMs structs after a new release.
+    Object.keys(aliasMap)
+      .map(alias => {
+        const value = aliasMap[alias];
+        if (value.properties.length === 0) {
+          return '';
+        }
+        const structName = `${moduleName}${alias}`;
+        const templateParameterWithTypename = value.properties
+          .map((v, i) => `typename P${i}`)
+          .join(', ');
+        const debugParameterConversion = value.properties
+          .map(
+            (v, i) => `  static ${getCppType(v)} ${
+              v.name
+            }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
+    return bridging::toJs(rt, value);
+  }`,
+          )
+          .join('\n\n');
+        return `
+#pragma mark - ${structName}
+
+template <${templateParameterWithTypename}>
+struct ${structName} {
+${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
+  bool operator==(const ${structName} &other) const {
+    return ${value.properties
+      .map(v => `${v.name} == other.${v.name}`)
+      .join(' && ')};
+  }
+};
+
+template <typename T>
+struct ${structName}Bridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+${value.properties
+  .map(
+    (v, i) =>
+      `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
+  )
+  .join(',\n')}};
+    return result;
+  }
+
+#ifdef DEBUG
+${debugParameterConversion}
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+${value.properties
+  .map((v, i) => {
+    if (v.optional) {
+      return `    if (value.${v.name}) {
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+    }`;
+    } else {
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+    }
+  })
+  .join('\n')}
+    return result;
+  }
+};
+
+`;
+      })
+      .join('\n')
+  );
 }
 
 type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';
