@@ -45,15 +45,6 @@ function isReactNativeCoreLibrary(libraryName) {
   return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
-function isAppRootValid(appRootDir) {
-  if (appRootDir == null) {
-    console.error('Missing path to React Native application');
-    process.exitCode = 1;
-    return false;
-  }
-  return true;
-}
-
 function readPkgJsonInDirectory(dir) {
   const pkgJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(pkgJsonPath)) {
@@ -129,7 +120,7 @@ function extractLibrariesFromJSON(configFile, dependencyPath) {
   }
 }
 
-function handleThirdPartyLibraries(pkgJson) {
+function findExternalLibraries(pkgJson) {
   const dependencies = {
     ...pkgJson.dependencies,
     ...pkgJson.devDependencies,
@@ -154,12 +145,12 @@ function handleThirdPartyLibraries(pkgJson) {
   });
 }
 
-function handleInAppLibraries(pkgJson, appRootDir) {
+function findProjectRootLibraries(pkgJson, projectRoot) {
   console.log(
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
-  return extractLibrariesFromJSON(pkgJson, appRootDir);
+  return extractLibrariesFromJSON(pkgJson, projectRoot);
 }
 
 // CodeGen
@@ -184,8 +175,11 @@ function buildCodegenIfNeeded() {
   });
 }
 
-function computeIOSOutputDir(outputPath, appRootDir) {
-  return path.join(outputPath ? outputPath : appRootDir, 'build/generated/ios');
+function computeIOSOutputDir(outputPath, projectRoot) {
+  return path.join(
+    outputPath ? outputPath : projectRoot,
+    'build/generated/ios',
+  );
 }
 
 function generateSchemaInfo(library) {
@@ -270,11 +264,11 @@ function createComponentProvider(schemas) {
   console.log(`Generated provider in: ${outputDir}`);
 }
 
-function findCodegenEnabledLibraries(appRootDir) {
-  const pkgJson = readPkgJsonInDirectory(appRootDir);
+function findCodegenEnabledLibraries(projectRoot) {
+  const pkgJson = readPkgJsonInDirectory(projectRoot);
   return [
-    ...handleThirdPartyLibraries(pkgJson),
-    ...handleInAppLibraries(pkgJson, appRootDir),
+    ...findExternalLibraries(pkgJson),
+    ...findProjectRootLibraries(pkgJson, projectRoot),
   ];
 }
 
@@ -320,28 +314,24 @@ function cleanupEmptyFilesAndFolders(filepath) {
  * - setups the CLI to generate the code
  * - generate the code
  *
- * @parameter appRootDir: the directory with the app source code, where the package.json lives.
+ * @parameter projectRoot: the directory with the app source code, where the package.json lives.
  * @parameter outputPath: the base output path for the CodeGen.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(appRootDir, outputPath) {
-  if (!isAppRootValid(appRootDir)) {
-    return;
-  }
-
+function execute(projectRoot, outputPath) {
   buildCodegenIfNeeded();
 
   try {
-    const libraries = findCodegenEnabledLibraries(appRootDir);
+    const libraries = findCodegenEnabledLibraries(projectRoot);
 
     if (libraries.length === 0) {
       console.log('[Codegen] No codegen-enabled libraries found.');
       return;
     }
 
-    const iosOutputDir = computeIOSOutputDir(outputPath, appRootDir);
+    const iosOutputDir = computeIOSOutputDir(outputPath, projectRoot);
 
     const schemaInfos = generateSchemaInfos(libraries);
     generateNativeCode(iosOutputDir, schemaInfos);

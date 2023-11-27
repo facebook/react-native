@@ -15,11 +15,11 @@ const yargs = require('yargs');
 const argv = yargs
   .option('p', {
     alias: 'path',
-    description: 'Path to React Native application',
+    description: 'Path to the React Native project root.',
   })
   .option('o', {
     alias: 'outputPath',
-    description: 'Path where generated artifacts will be output to',
+    description: 'Path where generated artifacts will be output to.',
   })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
