@@ -24,35 +24,27 @@ namespace facebook::react {
 
 #pragma mark - Structs
 using ConstantsStruct =
-    NativeCxxModuleExampleCxxBaseConstantsStruct<bool, int32_t, std::string>;
+    NativeCxxModuleExampleCxxConstantsStruct<bool, int32_t, std::string>;
 
 template <>
 struct Bridging<ConstantsStruct>
-    : NativeCxxModuleExampleCxxBaseConstantsStructBridging<
-          bool,
-          int32_t,
-          std::string> {};
+    : NativeCxxModuleExampleCxxConstantsStructBridging<ConstantsStruct> {};
 
-using ObjectStruct = NativeCxxModuleExampleCxxBaseObjectStruct<
+using ObjectStruct = NativeCxxModuleExampleCxxObjectStruct<
     int32_t,
     std::string,
     std::optional<std::string>>;
 
 template <>
 struct Bridging<ObjectStruct>
-    : NativeCxxModuleExampleCxxBaseObjectStructBridging<
-          int32_t,
-          std::string,
-          std::optional<std::string>> {};
+    : NativeCxxModuleExampleCxxObjectStructBridging<ObjectStruct> {};
 
 using ValueStruct =
-    NativeCxxModuleExampleCxxBaseValueStruct<double, std::string, ObjectStruct>;
+    NativeCxxModuleExampleCxxValueStruct<double, std::string, ObjectStruct>;
 
 template <>
-struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
-                                   double,
-                                   std::string,
-                                   ObjectStruct> {};
+struct Bridging<ValueStruct>
+    : NativeCxxModuleExampleCxxValueStructBridging<ValueStruct> {};
 
 #pragma mark - enums
 enum CustomEnumInt { A = 23, B = 42 };
