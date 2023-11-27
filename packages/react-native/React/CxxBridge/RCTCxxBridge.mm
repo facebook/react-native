@@ -41,15 +41,7 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
-#ifndef RCT_USE_HERMES
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-#define RCT_USE_HERMES 1
-#else
-#define RCT_USE_HERMES 0
-#endif
-#endif
-
-#if RCT_USE_HERMES
+#if USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
@@ -423,7 +415,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     if (!executorFactory) {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
-#if RCT_USE_HERMES
+#if USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
 #else
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
