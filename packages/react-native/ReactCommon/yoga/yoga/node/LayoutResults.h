@@ -9,7 +9,6 @@
 
 #include <array>
 
-#include <yoga/bits/NumericBitfield.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
