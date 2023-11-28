@@ -28,12 +28,13 @@ private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
     private val eagerlyInitializedModules: List<String>,
-    private val cxxReactPackage: CxxReactPackage?,
-) : ReactPackageTurboModuleManagerDelegate(context, packages) {
+    cxxReactPackage: CxxReactPackage?,
+) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackage)) {
 
-  @DoNotStrip override fun initHybrid() = initHybrid(cxxReactPackage)
-
-  external fun initHybrid(cxxReactPackage: CxxReactPackage?): HybridData?
+  override fun initHybrid(): HybridData? {
+    throw UnsupportedOperationException(
+        "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
+  }
 
   override fun getEagerInitModuleNames(): List<String> {
     if (unstable_isLazyTurboModuleDelegate()) {
@@ -62,8 +63,11 @@ private constructor(
         DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackage)
   }
 
-  @Synchronized
-  override fun maybeLoadOtherSoLibraries() {
-    DefaultSoLoader.maybeLoadSoLibrary()
+  companion object {
+    init {
+      DefaultSoLoader.maybeLoadSoLibrary()
+    }
+
+    @DoNotStrip @JvmStatic external fun initHybrid(cxxReactPackage: CxxReactPackage?): HybridData?
   }
 }
