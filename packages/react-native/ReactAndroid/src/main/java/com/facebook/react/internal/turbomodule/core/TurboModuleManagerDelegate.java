@@ -31,6 +31,11 @@ public abstract class TurboModuleManagerDelegate {
     mHybridData = initHybrid();
   }
 
+  protected TurboModuleManagerDelegate(HybridData hybridData) {
+    maybeLoadOtherSoLibraries();
+    mHybridData = hybridData;
+  }
+
   /**
    * Create and return a TurboModule Java object with name `moduleName`. If `moduleName` isn't a
    * TurboModule, return null.
@@ -77,5 +82,7 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
+  // TODO(T171231381): Consider removing this method: could we just use the static initializer
+  // of derived classes instead?
   protected synchronized void maybeLoadOtherSoLibraries() {}
 }

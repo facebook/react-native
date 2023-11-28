@@ -10,6 +10,7 @@ package com.facebook.react;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -53,13 +54,22 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private List<ReactPackage> mPackages;
   private ReactApplicationContext mReactContext;
 
-  protected ReactPackageTurboModuleManagerDelegate() {
-    super();
-  }
-
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
+    initialize(reactApplicationContext, packages);
+  }
+
+  protected ReactPackageTurboModuleManagerDelegate(
+      ReactApplicationContext reactApplicationContext,
+      List<ReactPackage> packages,
+      HybridData hybridData) {
+    super(hybridData);
+    initialize(reactApplicationContext, packages);
+  }
+
+  private void initialize(
+      ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     if (mIsLazy) {
       mPackages = packages;
       mReactContext = reactApplicationContext;

@@ -27,7 +27,7 @@ std::function<std::shared_ptr<TurboModule>(
 
 jni::local_ref<DefaultTurboModuleManagerDelegate::jhybriddata>
 DefaultTurboModuleManagerDelegate::initHybrid(
-    jni::alias_ref<jhybridobject>,
+    jni::alias_ref<jclass> jClass,
     jni::alias_ref<CxxReactPackage::javaobject> cxxReactPackage) {
   return makeCxxInstance(cxxReactPackage);
 }
@@ -43,9 +43,12 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
     const std::string& name,
     const std::shared_ptr<CallInvoker>& jsInvoker) {
   if (cxxReactPackage_) {
-    auto module = cxxReactPackage_->cthis()->getModule(name, jsInvoker);
-    if (module) {
-      return module;
+    auto cppPart = cxxReactPackage_->cthis();
+    if (cppPart) {
+      auto module = cppPart->getModule(name, jsInvoker);
+      if (module) {
+        return module;
+      }
     }
   }
 
