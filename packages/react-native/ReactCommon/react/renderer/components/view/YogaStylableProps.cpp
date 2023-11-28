@@ -59,6 +59,12 @@ static inline T const getFieldValue(
 #define REBUILD_FIELD_SWITCH_CASE_YSP(field) \
   REBUILD_FIELD_SWITCH_CASE2(field, #field)
 
+#define REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(field, setter)              \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(#field): {                           \
+    yogaStyle.setter(getFieldValue(context, value, ygDefaults.field())); \
+    return;                                                              \
+  }
+
 #define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, setter, index, fieldName) \
   case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                             \
     yogaStyle.setter(                                                         \
@@ -141,13 +147,13 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_SWITCH_CASE_YSP(flexWrap);
     REBUILD_FIELD_SWITCH_CASE_YSP(overflow);
     REBUILD_FIELD_SWITCH_CASE_YSP(display);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flex);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flexGrow);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flexShrink);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flexBasis);
+    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flex, setFlex);
+    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexGrow, setFlexGrow);
+    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexShrink, setFlexShrink);
+    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexBasis, setFlexBasis);
     REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
     REBUILD_FIELD_YG_GUTTER(gap, setGap, "rowGap", "columnGap", "gap");
-    REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio);
+    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(aspectRatio, setAspectRatio);
     REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
     REBUILD_FIELD_YG_DIMENSION(
         minDimension, setMinDimension, "minWidth", "minHeight");
