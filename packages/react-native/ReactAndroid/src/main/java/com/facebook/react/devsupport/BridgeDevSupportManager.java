@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import android.content.Context;
@@ -58,202 +57,136 @@ import java.util.concurrent.TimeoutException;
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  */
-public final class BridgeDevSupportManager extends DevSupportManagerBase {
-  private boolean mIsSamplingProfilerEnabled = false;
-  private ReactInstanceDevHelper mReactInstanceManagerHelper;
-  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
+public class BridgeDevSupportManager extends DevSupportManagerBase {
 
-  public BridgeDevSupportManager(
-      Context applicationContext,
-      ReactInstanceDevHelper reactInstanceManagerHelper,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler,
-      @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      int minNumShakes,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
-    super(
-        applicationContext,
-        reactInstanceManagerHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        redBoxHandler,
-        devBundleDownloadListener,
-        minNumShakes,
-        customPackagerCommandHandlers,
-        surfaceDelegateFactory,
-        devLoadingViewManager);
+    public boolean mIsSamplingProfilerEnabled = false;
 
-    if (getDevSettings().isStartSamplingProfilerOnInit()) {
-      // Only start the profiler. If its already running, there is an error
-      if (!mIsSamplingProfilerEnabled) {
-        toggleJSSamplingProfiler();
-      } else {
-        Toast.makeText(
-                applicationContext,
-                "JS Sampling Profiler was already running, so did not start the sampling profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      }
-    }
+    public ReactInstanceDevHelper mReactInstanceManagerHelper;
 
-    expo_transformer_remove: addCustomDevOption(
-        mIsSamplingProfilerEnabled ? "Disable Sampling Profiler" : "Enable Sampling Profiler",
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            toggleJSSamplingProfiler();
-          }
-        });
-  }
+    @Nullable
+    public DevLoadingViewManager mDevLoadingViewManager;
 
-  @Override
-  protected String getUniqueTag() {
-    return "Bridge";
-  }
-
-  @Override
-  public void loadSplitBundleFromServer(
-      final String bundlePath, final DevSplitBundleCallback callback) {
-    fetchSplitBundleAndCreateBundleLoader(
-        bundlePath,
-        new CallbackWithBundleLoader() {
-          @Override
-          public void onSuccess(JSBundleLoader bundleLoader) {
-            bundleLoader.loadScript(getCurrentContext().getCatalystInstance());
-            getCurrentContext()
-                .getJSModule(HMRClient.class)
-                .registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
-            callback.onSuccess();
-          }
-
-          @Override
-          public void onError(String url, Throwable cause) {
-            callback.onError(url, cause);
-          }
-        });
-  }
-
-  private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final SimpleSettableFuture<Boolean> future) {
-    return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
-      @Override
-      public void onSuccess() {
-        future.set(true);
-        hideDevLoadingView();
-      }
-
-      @Override
-      public void onFailure(final Throwable cause) {
-        hideDevLoadingView();
-        FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
-        future.setException(
-            new IOException(
-                getApplicationContext().getString(com.facebook.react.R.string.reactandroid_catalyst_debug_error),
-                cause));
-      }
-    };
-  }
-
-  private void reloadJSInProxyMode() {
-    // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
-    // anyway
-    getDevServerHelper().launchJSDevtools();
-
-    JavaJSExecutor.Factory factory =
-        new JavaJSExecutor.Factory() {
-          @Override
-          public JavaJSExecutor create() throws Exception {
-            WebsocketJavaScriptExecutor executor = new WebsocketJavaScriptExecutor();
-            SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
-            executor.connect(
-                getDevServerHelper().getWebsocketProxyURL(), getExecutorConnectCallback(future));
-            // TODO(t9349129) Don't use timeout
-            try {
-              future.get(90, TimeUnit.SECONDS);
-              return executor;
-            } catch (ExecutionException e) {
-              throw (Exception) e.getCause();
-            } catch (InterruptedException | TimeoutException e) {
-              throw new RuntimeException(e);
+    public BridgeDevSupportManager(Context applicationContext, ReactInstanceDevHelper reactInstanceManagerHelper, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, @Nullable RedBoxHandler redBoxHandler, @Nullable DevBundleDownloadListener devBundleDownloadListener, int minNumShakes, @Nullable Map<String, RequestHandler> customPackagerCommandHandlers, @Nullable SurfaceDelegateFactory surfaceDelegateFactory, @Nullable DevLoadingViewManager devLoadingViewManager) {
+        super(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager);
+        if (getDevSettings().isStartSamplingProfilerOnInit()) {
+            // Only start the profiler. If its already running, there is an error
+            if (!mIsSamplingProfilerEnabled) {
+                toggleJSSamplingProfiler();
+            } else {
+                Toast.makeText(applicationContext, "JS Sampling Profiler was already running, so did not start the sampling profiler", Toast.LENGTH_LONG).show();
             }
-          }
+        }
+        // code removed by ReactAndroidCodeTransformer
+        ;
+    }
+
+    @Override
+    protected String getUniqueTag() {
+        return "Bridge";
+    }
+
+    @Override
+    public void loadSplitBundleFromServer(final String bundlePath, final DevSplitBundleCallback callback) {
+        fetchSplitBundleAndCreateBundleLoader(bundlePath, new CallbackWithBundleLoader() {
+
+            @Override
+            public void onSuccess(JSBundleLoader bundleLoader) {
+                bundleLoader.loadScript(getCurrentContext().getCatalystInstance());
+                getCurrentContext().getJSModule(HMRClient.class).registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onError(String url, Throwable cause) {
+                callback.onError(url, cause);
+            }
+        });
+    }
+
+    private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(final SimpleSettableFuture<Boolean> future) {
+        return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
+
+            @Override
+            public void onSuccess() {
+                future.set(true);
+                hideDevLoadingView();
+            }
+
+            @Override
+            public void onFailure(final Throwable cause) {
+                hideDevLoadingView();
+                FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
+                future.setException(new IOException(getApplicationContext().getString(com.facebook.react.R.string.reactandroid_catalyst_debug_error), cause));
+            }
         };
-    getReactInstanceDevHelper().onReloadWithJSDebugger(factory);
-  }
-
-  @Override
-  public void handleReloadJS() {
-
-    UiThreadUtil.assertOnUiThread();
-
-    ReactMarker.logMarker(
-        ReactMarkerConstants.RELOAD,
-        getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
-
-    // dismiss redbox if exists
-    hideRedboxDialog();
-
-    if (getDevSettings().isRemoteJSDebugEnabled()) {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
-      showDevLoadingViewForRemoteJSEnabled();
-      reloadJSInProxyMode();
-    } else {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
-      String bundleURL =
-          getDevServerHelper()
-              .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-      reloadJSFromServer(bundleURL);
     }
-  }
 
-  /** Starts of stops the sampling profiler */
-  private void toggleJSSamplingProfiler() {
-    JavaScriptExecutorFactory javaScriptExecutorFactory =
-        getReactInstanceDevHelper().getJavaScriptExecutorFactory();
-    if (!mIsSamplingProfilerEnabled) {
-      try {
-        javaScriptExecutorFactory.startSamplingProfiler();
-        Toast.makeText(getApplicationContext(), "Starting Sampling Profiler", Toast.LENGTH_SHORT)
-            .show();
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                getApplicationContext(),
-                javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = true;
-      }
-    } else {
-      try {
-        final String outputPath =
-            File.createTempFile(
-                    "sampling-profiler-trace", ".cpuprofile", getApplicationContext().getCacheDir())
-                .getPath();
-        javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
-        Toast.makeText(
-                getApplicationContext(),
-                "Saved results from Profiler to " + outputPath,
-                Toast.LENGTH_LONG)
-            .show();
-      } catch (IOException e) {
-        FLog.e(
-            ReactConstants.TAG,
-            "Could not create temporary file for saving results from Sampling Profiler");
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                getApplicationContext(),
-                javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = false;
-      }
+    private void reloadJSInProxyMode() {
+        // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
+        // anyway
+        getDevServerHelper().launchJSDevtools();
+        JavaJSExecutor.Factory factory = new JavaJSExecutor.Factory() {
+
+            @Override
+            public JavaJSExecutor create() throws Exception {
+                WebsocketJavaScriptExecutor executor = new WebsocketJavaScriptExecutor();
+                SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
+                executor.connect(getDevServerHelper().getWebsocketProxyURL(), getExecutorConnectCallback(future));
+                // TODO(t9349129) Don't use timeout
+                try {
+                    future.get(90, TimeUnit.SECONDS);
+                    return executor;
+                } catch (ExecutionException e) {
+                    throw (Exception) e.getCause();
+                } catch (InterruptedException | TimeoutException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        getReactInstanceDevHelper().onReloadWithJSDebugger(factory);
     }
-  }
+
+    @Override
+    public void handleReloadJS() {
+        UiThreadUtil.assertOnUiThread();
+        ReactMarker.logMarker(ReactMarkerConstants.RELOAD, getDevSettings().getPackagerConnectionSettings().getDebugServerHost());
+        // dismiss redbox if exists
+        hideRedboxDialog();
+        if (getDevSettings().isRemoteJSDebugEnabled()) {
+            PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
+            showDevLoadingViewForRemoteJSEnabled();
+            reloadJSInProxyMode();
+        } else {
+            PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
+            String bundleURL = getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+            reloadJSFromServer(bundleURL);
+        }
+    }
+
+    /** Starts of stops the sampling profiler */
+    private void toggleJSSamplingProfiler() {
+        JavaScriptExecutorFactory javaScriptExecutorFactory = getReactInstanceDevHelper().getJavaScriptExecutorFactory();
+        if (!mIsSamplingProfilerEnabled) {
+            try {
+                javaScriptExecutorFactory.startSamplingProfiler();
+                Toast.makeText(getApplicationContext(), "Starting Sampling Profiler", Toast.LENGTH_SHORT).show();
+            } catch (UnsupportedOperationException e) {
+                Toast.makeText(getApplicationContext(), javaScriptExecutorFactory.toString() + " does not support Sampling Profiler", Toast.LENGTH_LONG).show();
+            } finally {
+                mIsSamplingProfilerEnabled = true;
+            }
+        } else {
+            try {
+                final String outputPath = File.createTempFile("sampling-profiler-trace", ".cpuprofile", getApplicationContext().getCacheDir()).getPath();
+                javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
+                Toast.makeText(getApplicationContext(), "Saved results from Profiler to " + outputPath, Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                FLog.e(ReactConstants.TAG, "Could not create temporary file for saving results from Sampling Profiler");
+            } catch (UnsupportedOperationException e) {
+                Toast.makeText(getApplicationContext(), javaScriptExecutorFactory.toString() + "does not support Sampling Profiler", Toast.LENGTH_LONG).show();
+            } finally {
+                mIsSamplingProfilerEnabled = false;
+            }
+        }
+    }
 }

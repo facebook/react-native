@@ -22,7 +22,7 @@ import kotlin.Pair
 
 import de.undercouch.gradle.tasks.download.Download
 
-version = VERSION_NAME
+version = '50.0.0'
 group = "com.facebook.react"
 
 // We download various C++ open-source dependencies into downloads.
@@ -36,7 +36,7 @@ def reactNativeRootDir = projectDir.parent
 
 // We put the publishing version from gradle.properties inside ext. so other
 // subprojects can access it as well.
-ext.publishing_version = VERSION_NAME
+ext.publishing_version = '50.0.0'
 
 // This is the version of CMake we're requesting to the Android SDK to use.
 // If missing it will be downloaded automatically. Only CMake versions shipped with the
@@ -396,7 +396,7 @@ task prepareKotlinBuildScriptModel {
 // As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
 // This is not the case for users of React Native, as we ship a compiled version of the codegen.
 final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
-    it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
+    it.codegenDir.set(file("${project(':packages:react-native:ReactAndroid').projectDir.parent}/../react-native-codegen"))
     it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
     it.onlyIf {
         // For build from source scenario, we don't need to build the codegen at all.
