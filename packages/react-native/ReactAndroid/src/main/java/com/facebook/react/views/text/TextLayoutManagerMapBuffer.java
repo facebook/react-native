@@ -404,7 +404,10 @@ public class TextLayoutManagerMapBuffer {
       calculatedWidth = width;
     } else {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        float lineWidth = layout.getLineWidth(lineIndex);
+        boolean endsWithNewLine =
+            text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        float lineWidth =
+            endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {
           calculatedWidth = lineWidth;
         }
