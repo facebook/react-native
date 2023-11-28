@@ -7,6 +7,10 @@
 
 package com.facebook.react.views.text;
 
+import android.content.res.Resources;
+import static androidx.core.content.res.TypedArrayUtils.getText;
+
+import android.content.res.Resources;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -14,6 +18,8 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -125,30 +131,36 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               mNumberOfLines == UNSET
                   ? layout.getLineCount()
                   : Math.min(mNumberOfLines, layout.getLineCount());
-
-          // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
-          // text that is wrapping), compute width using the longest line.
           float layoutWidth = 0;
-          if (widthMode == YogaMeasureMode.EXACTLY) {
-            layoutWidth = width;
-          } else {
-            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              boolean endsWithNewLine =
-                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-              float lineWidth =
-                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-              if (lineWidth > layoutWidth) {
-                layoutWidth = lineWidth;
+            // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
+            // text that is wrapping), compute width using the longest line.
+            if (widthMode == YogaMeasureMode.EXACTLY) {
+              layoutWidth = width;
+            } else {
+              TextPaint textPaint = sTextPaintInstance;
+              float textWidth = textPaint.measureText(text.toString());
+              if (lineCount == 1 && textWidth > width ) {
+                layoutWidth = width;
+              } else {
+                for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+                  boolean endsWithNewLine =
+                    text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+                  float lineWidth =
+                    endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+                  if (lineWidth > layoutWidth) {
+                    layoutWidth = lineWidth;
+                  }
+                }
+              }
+              if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
+                layoutWidth = width;
               }
             }
-            if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
-              layoutWidth = width;
-            }
-          }
 
-          if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            layoutWidth = (float) Math.ceil(layoutWidth);
-          }
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+              layoutWidth = (float) Math.ceil(layoutWidth);
+            }
+
           float layoutHeight = height;
           if (heightMode != YogaMeasureMode.EXACTLY) {
             layoutHeight = layout.getLineBottom(lineCount - 1);
@@ -156,7 +168,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               layoutHeight = height;
             }
           }
-
           return YogaMeasureOutput.make(layoutWidth, layoutHeight);
         }
       };
