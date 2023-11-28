@@ -35,6 +35,15 @@ void updateStyle(YGNodeRef node, Ref (Style::*prop)(), ValueT value) {
       [prop](Style& s, ValueT x) { (s.*prop)() = x; });
 }
 
+template <auto GetterT, auto SetterT, typename ValueT>
+void updateStyle(YGNodeRef node, ValueT value) {
+  updateStyle(
+      resolveRef(node),
+      value,
+      [](Style& s, ValueT x) { return (s.*GetterT)() != x; },
+      [](Style& s, ValueT x) { (s.*SetterT)(x); });
+}
+
 template <auto GetterT, auto SetterT, typename IdxT, typename ValueT>
 void updateIndexedStyleProp(YGNodeRef node, IdxT idx, ValueT value) {
   updateStyle(
@@ -162,7 +171,7 @@ YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
 }
 
 void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
-  updateStyle<MSVC_HINT(flex)>(node, &Style::flex, FloatOptional{flex});
+  updateStyle<&Style::flex, &Style::setFlex>(node, FloatOptional{flex});
 }
 
 float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
@@ -173,8 +182,8 @@ float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
 }
 
 void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
-  updateStyle<MSVC_HINT(flexGrow)>(
-      node, &Style::flexGrow, FloatOptional{flexGrow});
+  updateStyle<&Style::flexGrow, &Style::setFlexGrow>(
+      node, FloatOptional{flexGrow});
 }
 
 float YGNodeStyleGetFlexGrow(const YGNodeConstRef nodeRef) {
@@ -185,8 +194,8 @@ float YGNodeStyleGetFlexGrow(const YGNodeConstRef nodeRef) {
 }
 
 void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
-  updateStyle<MSVC_HINT(flexShrink)>(
-      node, &Style::flexShrink, FloatOptional{flexShrink});
+  updateStyle<&Style::flexShrink, &Style::setFlexShrink>(
+      node, FloatOptional{flexShrink});
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeConstRef nodeRef) {
@@ -198,19 +207,19 @@ float YGNodeStyleGetFlexShrink(const YGNodeConstRef nodeRef) {
 }
 
 void YGNodeStyleSetFlexBasis(const YGNodeRef node, const float flexBasis) {
-  updateStyle<MSVC_HINT(flexBasis)>(
-      node, &Style::flexBasis, value::points(flexBasis));
+  updateStyle<&Style::flexBasis, &Style::setFlexBasis>(
+      node, value::points(flexBasis));
 }
 
 void YGNodeStyleSetFlexBasisPercent(
     const YGNodeRef node,
     const float flexBasisPercent) {
-  updateStyle<MSVC_HINT(flexBasis)>(
-      node, &Style::flexBasis, value::percent(flexBasisPercent));
+  updateStyle<&Style::flexBasis, &Style::setFlexBasis>(
+      node, value::percent(flexBasisPercent));
 }
 
 void YGNodeStyleSetFlexBasisAuto(const YGNodeRef node) {
-  updateStyle<MSVC_HINT(flexBasis)>(node, &Style::flexBasis, value::ofAuto());
+  updateStyle<&Style::flexBasis, &Style::setFlexBasis>(node, value::ofAuto());
 }
 
 YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
@@ -303,8 +312,8 @@ float YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
 }
 
 void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
-  updateStyle<MSVC_HINT(aspectRatio)>(
-      node, &Style::aspectRatio, FloatOptional{aspectRatio});
+  updateStyle<&Style::aspectRatio, &Style::setAspectRatio>(
+      node, FloatOptional{aspectRatio});
 }
 
 float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {

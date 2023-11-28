@@ -68,18 +68,6 @@ class YG_EXPORT Style {
     }
   };
 
-  template <typename T, T Style::*Prop>
-  struct Ref {
-    Style& style;
-    operator T() const {
-      return style.*Prop;
-    }
-    Ref<T, Prop>& operator=(T value) {
-      style.*Prop = value;
-      return *this;
-    }
-  };
-
   Style() {
     alignContent() = Align::FlexStart;
     alignItems() = Align::Stretch;
@@ -202,29 +190,29 @@ class YG_EXPORT Style {
   FloatOptional flex() const {
     return flex_;
   }
-  Ref<FloatOptional, &Style::flex_> flex() {
-    return {*this};
+  void setFlex(FloatOptional value) {
+    flex_ = value;
   }
 
   FloatOptional flexGrow() const {
     return flexGrow_;
   }
-  Ref<FloatOptional, &Style::flexGrow_> flexGrow() {
-    return {*this};
+  void setFlexGrow(FloatOptional value) {
+    flexGrow_ = value;
   }
 
   FloatOptional flexShrink() const {
     return flexShrink_;
   }
-  Ref<FloatOptional, &Style::flexShrink_> flexShrink() {
-    return {*this};
+  void setFlexShrink(FloatOptional value) {
+    flexShrink_ = value;
   }
 
   Style::Length flexBasis() const {
     return flexBasis_;
   }
-  Ref<Style::Length, &Style::flexBasis_> flexBasis() {
-    return {*this};
+  void setFlexBasis(Style::Length value) {
+    flexBasis_ = value;
   }
 
   Style::Length margin(Edge edge) const {
@@ -283,12 +271,11 @@ class YG_EXPORT Style {
     maxDimensions_[yoga::to_underlying(axis)] = value;
   }
 
-  // Yoga specific properties, not compatible with flexbox specification
   FloatOptional aspectRatio() const {
     return aspectRatio_;
   }
-  Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() {
-    return {*this};
+  void setAspectRatio(FloatOptional value) {
+    aspectRatio_ = value;
   }
 
   Length resolveColumnGap() const {
