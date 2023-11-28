@@ -61,8 +61,8 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction) const;
 
   void useWebDefaults() {
-    style_.flexDirection() = FlexDirection::Row;
-    style_.alignContent() = Align::Stretch;
+    style_.setFlexDirection(FlexDirection::Row);
+    style_.setAlignContent(Align::Stretch);
   }
 
   template <auto Field>
