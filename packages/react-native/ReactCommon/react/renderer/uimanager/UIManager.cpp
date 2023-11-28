@@ -122,22 +122,24 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
   auto& family = shadowNode.getFamily();
   auto props = ShadowNodeFragment::propsPlaceholder();
 
-  if (family.nativeProps_DEPRECATED != nullptr) {
-    // Values in `rawProps` patch (take precedence over)
-    // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-    // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
-    // was previously in `nativeProps_DEPRECATED`.
-    family.nativeProps_DEPRECATED =
-        std::make_unique<folly::dynamic>(mergeDynamicProps(
-            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+  if (!rawProps.isEmpty()) {
+    if (family.nativeProps_DEPRECATED != nullptr) {
+      // Values in `rawProps` patch (take precedence over)
+      // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
+      // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
+      // was previously in `nativeProps_DEPRECATED`.
+      family.nativeProps_DEPRECATED =
+          std::make_unique<folly::dynamic>(mergeDynamicProps(
+              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
 
-    props = componentDescriptor.cloneProps(
-        propsParserContext,
-        shadowNode.getProps(),
-        RawProps(*family.nativeProps_DEPRECATED));
-  } else {
-    props = componentDescriptor.cloneProps(
-        propsParserContext, shadowNode.getProps(), std::move(rawProps));
+      props = componentDescriptor.cloneProps(
+          propsParserContext,
+          shadowNode.getProps(),
+          RawProps(*family.nativeProps_DEPRECATED));
+    } else {
+      props = componentDescriptor.cloneProps(
+          propsParserContext, shadowNode.getProps(), std::move(rawProps));
+    }
   }
 
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
