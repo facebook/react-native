@@ -35,15 +35,13 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   }
 
   @ReactProp(name = ViewProps.COLOR)
-  fun setColor(view: MyNativeView, color: String) {
-    view.setBackgroundColor(Color.parseColor(color))
+  fun setColor(view: MyNativeView, color: String?) {
+    color?.let { view.setBackgroundColor(Color.parseColor(it)) }
   }
 
   @ReactProp(name = "cornerRadius")
-  fun setCornerRadius(view: MyNativeView, cornerRadius: Float) {
-    if (cornerRadius !== null) {
-      view.setCornerRadius(cornerRadius)
-    }
+  fun setCornerRadius(view: MyNativeView, cornerRadius: Float?) {
+    cornerRadius?.let { view.setCornerRadius(it) }
   }
 
   override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)
