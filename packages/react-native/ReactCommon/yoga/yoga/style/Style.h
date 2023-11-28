@@ -270,7 +270,8 @@ class YG_EXPORT Style {
   Align alignContent_ : bitCount<Align>() = Align::FlexStart;
   Align alignItems_ : bitCount<Align>() = Align::Stretch;
   Align alignSelf_ : bitCount<Align>() = Align::Auto;
-  PositionType positionType_ : bitCount<PositionType>() = PositionType::Static;
+  PositionType positionType_
+      : bitCount<PositionType>() = PositionType::Relative;
   Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
   Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
   Display display_ : bitCount<Display>() = Display::Flex;
