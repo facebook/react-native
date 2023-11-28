@@ -16,19 +16,13 @@ const {
 describe('Testing first item visibility of ScrollViewSimpleExample Component', function () {
   it('Should scroll until the Scroll View Simple Example component is displayed', async function () {
     await ScrollViewSimpleExampleComponentScreen.scrollUntilScrollViewSimpleExampleComponentIsDisplayed();
-  });
-
-  it('Should check that the Scroll View Simple Example component is visible', async function () {
     expect(
       await ComponentsScreen.checkScrollViewSimpleExampleComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the Scroll View Simple Example component', async function () {
+  it('Should click on the Scroll View Simple Example component and verify if displayed', async function () {
     await ComponentsScreen.clickScrollViewSimpleExampleComponent();
-  });
-
-  it('Should verify that the Scroll View items are displayed', async function () {
     expect(
       await ScrollViewSimpleExampleComponentScreen.checkScrollViewItemsDisplayed(),
     ).toBeTruthy();

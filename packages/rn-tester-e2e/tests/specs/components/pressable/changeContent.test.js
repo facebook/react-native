@@ -19,29 +19,20 @@ const onPressText = 'onPress';
 describe('Testing Press Me button of Change conent based on Press Functionality', function () {
   it('Should scroll until the Pressable component is displayed', async function () {
     await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();
-  });
-
-  it('Should ensure the Pressable component is visible', async function () {
     expect(
       await ComponentsScreen.checkPressableComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the Pressable component', async function () {
+  it('Should open the Pressable component and heck if header is displayed', async function () {
     await ComponentsScreen.clickPressableComponent();
-  });
-
-  it('Should display the Press Me header', async function () {
     expect(
       await PressableComponentScreen.checkPressMeHeaderIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the Press Me button', async function () {
+  it('Should click the Press Me button and check if onPress text is displayed', async function () {
     await PressableComponentScreen.clickPressMeButton();
-  });
-
-  it('Should check if onPress text is displayed', async function () {
     expect(
       await PressableComponentScreen.checkOnPressIsDisplayed(),
     ).toBeTruthy();

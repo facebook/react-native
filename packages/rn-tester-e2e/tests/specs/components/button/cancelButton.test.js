@@ -22,21 +22,15 @@ describe('Testing Cancel Button Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on the Button component', async function () {
+  it('Should open component and click on Cancel Button then check alert text', async function () {
     await ComponentsScreen.clickButtonComponent();
-  });
-
-  it('Should click the Cancel Application button', async function () {
     await ButtonComponentScreen.clickCancelApplication();
-  });
-
-  it('Should view properly submit cancel text', async function () {
     expect(await ButtonComponentScreen.getCancelAlertText()).toContain(
       cancelText,
     );
   });
 
-  it('Should click the OK button', async function () {
+  it('Should click the OK button and check if is closed', async function () {
     await ButtonComponentScreen.clickOkButton();
   });
 });

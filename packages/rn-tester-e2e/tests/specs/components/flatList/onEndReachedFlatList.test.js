@@ -20,31 +20,22 @@ describe('Testing onEndReached Flat List Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on the FlatList component', async function () {
+  it('Should click on the FlatList component then check if FlatList OnEndReached button is displayed', async function () {
     await ComponentsScreen.clickFlatListComponent();
-  });
-
-  it('Should display the FlatList OnEndReached Screen', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListOnEndReachedScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the OnEndReached button', async function () {
+  it('Should click on the OnEndReached button then check if component screen is displayed', async function () {
     await FlatListComponentScreen.clickFlatListOnEndButton();
-  });
-
-  it('Should display the collapse button after clicking on the OnEndReached button', async function () {
     expect(
       await FlatListComponentScreen.checkCollapseButtonIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the OnStartTest button', async function () {
+  it('Should click on the OnStartTest button and check if ice cream is displayed after click', async function () {
     await FlatListComponentScreen.clickFlatListOnStartTestButton();
-  });
-
-  it('Should display the ice cream after clicking on the OnStartTest button', async function () {
     expect(
       await FlatListComponentScreen.checkIceCreamIsDisplayed(),
     ).toBeTruthy();

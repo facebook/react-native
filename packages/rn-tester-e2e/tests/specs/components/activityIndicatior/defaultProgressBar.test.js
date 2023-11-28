@@ -25,11 +25,8 @@ describe('Testing Default Activity Indicator Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on the Activity Indicator component', async () => {
+  it('Should open Activity Indicator component screen and check if displayed', async () => {
     await ComponentsScreen.clickActivityIndicatorComponent();
-  });
-
-  it('Should check that the default Activity Indicator is visible', async () => {
     expect(
       await ActivityIndicatorComponentScreen.checkDefaultActivityIndicatorIsDisplayed(),
     ).toBeTruthy();

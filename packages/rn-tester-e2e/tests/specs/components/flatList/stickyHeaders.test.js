@@ -14,31 +14,22 @@ const {
 } = require('../../../screens/components/flatListComponent.screen.js');
 
 describe('Testing Sticky Headers Flat List Functionality', function () {
-  it('Should display the FlatList component', async function () {
+  it('Should check if FlatList component si displayed then click on it', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
-  });
-
-  it('Should click on the FlatList component', async function () {
     await ComponentsScreen.clickFlatListComponent();
   });
 
-  it('Should scroll until the Nested element is displayed', async function () {
+  it('Should scroll until the Nested component button is displayed', async function () {
     await FlatListComponentScreen.scrollUntilNestedIsDisplayed();
-  });
-
-  it('Should display the FlatList Sticky Headers Screen', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListStickyHeadersScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the Sticky Headers button', async function () {
+  it('Should click the Sticky Headers button and check if sticky pizza is displayed after click', async function () {
     await FlatListComponentScreen.clickFlatListStickyHeadersButton();
-  });
-
-  it('Should display the sticky pizza after clicking the Sticky Headers button', async function () {
     expect(
       await FlatListComponentScreen.checkStickyPizzaIsDisplayed(),
     ).toBeTruthy();

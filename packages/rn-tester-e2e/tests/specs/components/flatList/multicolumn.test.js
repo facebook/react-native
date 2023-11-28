@@ -14,31 +14,22 @@ const {
 } = require('../../../screens/components/flatListComponent.screen.js');
 
 describe('Testing MultiColumn Functionality', function () {
-  it('Should display the FlatList component', async function () {
+  it('Should display the FlatList component and open it', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
-  });
-
-  it('Should click on the FlatList component', async function () {
     await ComponentsScreen.clickFlatListComponent();
   });
 
   it('Should scroll until the nested element is displayed', async function () {
     await FlatListComponentScreen.scrollUntilNestedIsDisplayed();
-  });
-
-  it('Should display the FlatList MultiColumn Screen after scrolling', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListMultiColumnScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the FlatList MultiColumn button', async function () {
+  it('Should open the FlatList MultiColumn button and check if list header is displayed', async function () {
     await FlatListComponentScreen.clickFlatListMultiColumnButton();
-  });
-
-  it('Should display the list header after clicking the FlatList MultiColumn button', async function () {
     expect(
       await FlatListComponentScreen.checkListHeaderIsDisplayed(),
     ).toBeTruthy();

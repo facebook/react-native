@@ -14,21 +14,15 @@ const {
 } = require('../../../screens/components/newAppComponent.screen.js');
 
 describe('Testing New App Screen Header Visibility', function () {
-  it('Should scroll until the New App Header component is displayed', async function () {
+  it('Should scroll until the New App Header component and check displayed', async function () {
     await NewAppComponentScreen.scrollUntilNewAppHeaderComponentIsDisplayed();
-  });
-
-  it('Should check that the New App Screen component is displayed', async function () {
     expect(
       await ComponentsScreen.checkNewAppScreenComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the New App Screen component', async function () {
+  it('Should open the New App Screen component and verify if displayed correctly', async function () {
     await ComponentsScreen.clickNewAppScreenComponent();
-  });
-
-  it('Should verify that the New App Header is displayed', async function () {
     expect(
       await NewAppComponentScreen.checkNewAppHeaderIsDisplayed(),
     ).toBeTruthy();

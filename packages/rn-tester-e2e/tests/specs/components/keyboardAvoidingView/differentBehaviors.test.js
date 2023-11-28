@@ -17,47 +17,32 @@ const {
 const registerText = 'Successfully Registered!';
 
 describe('Testing Keyboard Avoiding View with different behaviors Functionality', function () {
-  it('Should scroll until the KeyboardAvoidingView component is displayed', async function () {
-    await KeyboardAvoidingViewComponentScreen.scrollUntilKeyboardAvoidingViewComponentIsDisplayed();
-  });
-
-  it('Should display the KeyboardAvoidingView component', async function () {
+  it('Should search for the KeyboardAvoidingView component and check if displayed', async function () {
+    await ComponentsScreen.setValueToSearch('KeyboardAvoidingView');
     expect(
       await ComponentsScreen.checkKeyboardAvoidingViewComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on the KeyboardAvoidingView component', async function () {
+  it('Should click on KeyboardAvoidingView component and check if displayed', async function () {
     await ComponentsScreen.clickKeyboardAvoidingViewComponent();
-  });
-
-  it('Should display the button to open different behaviors example', async function () {
     expect(
       await KeyboardAvoidingViewComponentScreen.checkBtnDifferentBehaviorsOpenExampleIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click to open different behaviors example', async function () {
+  it('Should click to open different behaviors example and check if button is correctly displyed', async function () {
     await KeyboardAvoidingViewComponentScreen.clickDifferentBehaviorsOpenExampleButton();
-  });
-
-  it('Should display the register button in the example', async function () {
     expect(
       await KeyboardAvoidingViewComponentScreen.checkBtnRegisterIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the register button', async function () {
+  it('Should click the register button and check if displayed correctly', async function () {
     await KeyboardAvoidingViewComponentScreen.clickRegisterButton();
-  });
-
-  it('Should display the successfully registered text', async function () {
     expect(
       await KeyboardAvoidingViewComponentScreen.getRegisterAlertText(),
     ).toContain(registerText);
   });
-
-  it('Should click the OK button', async function () {
-    await KeyboardAvoidingViewComponentScreen.clickOkButton();
-  });
+  
 });

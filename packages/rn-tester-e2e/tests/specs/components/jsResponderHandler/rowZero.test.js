@@ -17,24 +17,21 @@ const {
 const roweZeroText = 'I am row 0';
 
 describe('Testing row zero of JSResponderHandler Functionality Testis checking row zero JSResponderHandler component', function () {
-  it('Should scroll to JSResponderHandler component', async function () {
+  it('Should scroll to JSResponderHandler component and check component visibility', async function () {
     await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
-  });
-
-  it('Should check visiblity of component element', async function () {
     expect(
       await ComponentsScreen.checkJSResponderHandlerComponentIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click on component element', async function () {
+  it('Should click on component element and check visibility of row zero element', async function () {
     await ComponentsScreen.clickJSResponderHandlerComponent();
-  });
-
-  it('Should view properly row zero element', async function () {
     expect(
       await JSResponderHandlerComponentScreen.checkRowZeroLabelIsDisplayed(),
     ).toBeTruthy();
+  });
+
+  it('Should check text of row zero element text', async function () {
     expect(await JSResponderHandlerComponentScreen.getRowZeroText()).toContain(
       roweZeroText,
     );

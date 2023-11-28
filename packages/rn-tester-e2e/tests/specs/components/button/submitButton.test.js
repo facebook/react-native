@@ -22,15 +22,9 @@ describe('Testing Submit Button functionality ', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on the Button component', async function () {
+  it('Should open component and click on Submit Button then check alert text', async function () {
     await ComponentsScreen.clickButtonComponent();
-  });
-
-  it('Should click the Submit Application button', async function () {
     await ButtonComponentScreen.clickSubmitApplication();
-  });
-
-  it('Should verify that the submit alert text is displayed', async function () {
     expect(await ButtonComponentScreen.getSubmitAlertText()).toContain(
       submitText,
     );

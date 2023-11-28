@@ -29,6 +29,11 @@ class Utils {
     return $(locator).getText();
   }
 
+  async setElementText(locator: string, text: string): Promise<void> {
+    await $(locator).waitForDisplayed();
+    return $(locator).setValue(text);
+  }
+
   platformSelect(platforms: PlatformsReference): string {
     return platforms[browser.capabilities.platformName.toLowerCase()];
   }

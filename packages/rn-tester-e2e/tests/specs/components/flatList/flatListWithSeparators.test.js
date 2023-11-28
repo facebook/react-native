@@ -20,25 +20,16 @@ describe('Testing Flat List with Separators Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on FlatList component', async function () {
+  it('Should click on FlatList component and search for component', async function () {
     await ComponentsScreen.clickFlatListComponent();
-  });
-
-  it('Should scroll until nested element is displayed', async function () {
-    await FlatListComponentScreen.scrollUntilNestedIsDisplayed();
-  });
-
-  it('Should display the FlatList with Separators Screen after scrolling', async function () {
+    await ComponentsScreen.setValueToSearch('FlatList with Separators');
     expect(
       await FlatListComponentScreen.checkFlatListWithSeparatorsScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the FlatList with Separators button', async function () {
+  it('Should open the FlatList with Separators and check if button is correctly displyed', async function () {
     await FlatListComponentScreen.clickFlatListWithSeparatorsButton();
-  });
-
-  it('Should display the separator after clicking the FlatList with Separators button', async function () {
     expect(
       await FlatListComponentScreen.checkSeparatorIsDisplayed(),
     ).toBeTruthy();

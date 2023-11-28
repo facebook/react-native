@@ -20,27 +20,18 @@ describe('Testing Content Inset Flat List Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on FlatList component', async function () {
+  it('Should click on FlatList component and check if displayed', async function () {
     await ComponentsScreen.clickFlatListComponent();
-  });
-
-  it('Should display the FlatList Content Inset Screen after clicking FlatList component', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click the FlatList Content Inset button', async function () {
+  it('Should click the FlatList Content Inset button and check if component is displayed correctly', async function () {
     await FlatListComponentScreen.clickFlatListContentInsetButton();
-  });
-
-  it('Should display the collapse button after clicking FlatList Content Inset button', async function () {
     expect(
       await FlatListComponentScreen.checkCollapseButtonIsDisplayed(),
     ).toBeTruthy();
-  });
-
-  it('Should display the Content Inset menu after clicking FlatList Content Inset button', async function () {
     expect(
       await FlatListComponentScreen.checkContentInsetMenuIsDisplayed(),
     ).toBeTruthy();

@@ -30,6 +30,7 @@ const refreshControlComponentLabel =
   'RefreshControl Adds pull-to-refresh support to a scrollview.';
 const scrollViewSimpleExampleComponentLabel =
   'ScrollViewSimpleExample Component that enables scrolling through child components.';
+const searchInputLabel = 'Search...';
 
 type ComponentsScreenType = {
   componentScreenHeaderElement: string,
@@ -43,6 +44,7 @@ type ComponentsScreenType = {
   pressableComponentLabelElement: string,
   refreshControlComponentLabelElement: string,
   scrollViewSimpleExampleComponentLabelElement: string,
+  searchInputLabelElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
   checkKeyboardAvoidingViewComponentIsDisplayed: () => Promise<boolean>,
@@ -63,6 +65,7 @@ type ComponentsScreenType = {
   clickPressableComponent: () => Promise<void>,
   clickRefreshControlComponent: () => Promise<void>,
   clickScrollViewSimpleExampleComponent: () => Promise<void>,
+  setValueToSearch: () => Promise<void>
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -110,6 +113,10 @@ export const ComponentsScreen: ComponentsScreenType = {
   scrollViewSimpleExampleComponentLabelElement: Utils.platformSelect({
     ios: iOSLabel(scrollViewSimpleExampleComponentLabel),
     android: `~${scrollViewSimpleExampleComponentLabel}`,
+  }),
+  searchInputLabelElement: Utils.platformSelect({
+    ios: iOSLabel(searchInputLabel),
+    android: `~${searchInputLabel}`,
   }),
   // Methods to interact with top level elements in the list
   checkComponentScreenHeaderIsDisplayed: async function (
@@ -233,4 +240,10 @@ export const ComponentsScreen: ComponentsScreenType = {
   ): Promise<void> {
     await Utils.clickElement(this.scrollViewSimpleExampleComponentLabelElement);
   },
+  setValueToSearch: async function (
+    this: ComponentsScreenType,
+    searchInput: string
+  ): Promise<void> {
+    await Utils.setElementText(this.searchInputLabelElement, searchInput)
+  }
 };

@@ -67,9 +67,5 @@ exports.config = {
       const filePath = './reports/errorShots/' + fileName + '.png';
       await browser.saveScreenshot(filePath);
     }
-  },
-
-  afterSuite: async function (config, capabilities, specs) {
-    await browser.deleteSession()
-  },
+  }
 };

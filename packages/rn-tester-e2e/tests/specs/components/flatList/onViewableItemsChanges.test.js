@@ -14,31 +14,22 @@ const {
 } = require('../../../screens/components/flatListComponent.screen.js');
 
 describe('Testing onViewableItemsChanges Flat List Functionality', function () {
-  it('Should display the FlatList component', async function () {
+  it('Should display the FlatList component then click on it', async function () {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
-  });
-
-  it('Should click on the FlatList component', async function () {
     await ComponentsScreen.clickFlatListComponent();
   });
 
-  it('Should scroll until onViewableItemsChanged is displayed', async function () {
+  it('Should scroll until onViewableItemsChanged component button is displayed', async function () {
     await FlatListComponentScreen.scrollUntilOnViewableItemsChangedIsDisplayed();
-  });
-
-  it('Should display the FlatList onViewableItemsChanged Screen', async function () {
     expect(
       await FlatListComponentScreen.checkFlatListOnViewableItemsChangedScreenIsDisplayed(),
     ).toBeTruthy();
   });
 
-  it('Should click onViewableItemsChanged button', async function () {
+  it('Should click onViewableItemsChanged button and check if pizza is displayed after click', async function () {
     await FlatListComponentScreen.clickFlatListOnViewableItemsChangedButton();
-  });
-
-  it('Should display the pizza after clicking onViewableItemsChanged button', async function () {
     expect(await FlatListComponentScreen.checkPizzaIsDisplayed()).toBeTruthy();
   });
 });
