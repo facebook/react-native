@@ -23,6 +23,8 @@
 
 namespace facebook::react {
 
+class YogaLayoutableShadowNode;
+
 /*
  * Default template-based implementation of ComponentDescriptor.
  * Use your `ShadowNode` type as a template argument and override any methods
@@ -105,9 +107,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    if (CoreFeatures::excludeYogaFromRawProps) {
-      if (ShadowNodeT::IdentifierTrait() ==
-          ShadowNodeTraits::Trait::YogaLayoutableKind) {
+    if constexpr (std::is_base_of_v<YogaLayoutableShadowNode, ShadowNodeT>) {
+      if (CoreFeatures::excludeYogaFromRawProps) {
         rawProps.filterYogaStylePropsInDynamicConversion();
       }
     }
