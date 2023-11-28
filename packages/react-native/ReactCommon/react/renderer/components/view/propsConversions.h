@@ -79,26 +79,30 @@ static inline yoga::Style convertRawProp(
       yogaStyle.overflow());
   yogaStyle.display() = convertRawProp(
       context, rawProps, "display", sourceValue.display(), yogaStyle.display());
-  yogaStyle.flex() = convertRawProp(
-      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
-  yogaStyle.flexGrow() = convertRawProp(
+
+  yogaStyle.setFlex(convertRawProp(
+      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex()));
+
+  yogaStyle.setFlexGrow(convertRawProp(
       context,
       rawProps,
       "flexGrow",
       sourceValue.flexGrow(),
-      yogaStyle.flexGrow());
-  yogaStyle.flexShrink() = convertRawProp(
+      yogaStyle.flexGrow()));
+
+  yogaStyle.setFlexShrink(convertRawProp(
       context,
       rawProps,
       "flexShrink",
       sourceValue.flexShrink(),
-      yogaStyle.flexShrink());
-  yogaStyle.flexBasis() = convertRawProp(
+      yogaStyle.flexShrink()));
+
+  yogaStyle.setFlexBasis(convertRawProp(
       context,
       rawProps,
       "flexBasis",
       sourceValue.flexBasis(),
-      yogaStyle.flexBasis());
+      yogaStyle.flexBasis()));
 
   yogaStyle.setMargin(
       yoga::Edge::Left,
@@ -502,12 +506,12 @@ static inline yoga::Style convertRawProp(
           sourceValue.maxDimension(yoga::Dimension::Height),
           {}));
 
-  yogaStyle.aspectRatio() = convertRawProp(
+  yogaStyle.setAspectRatio(convertRawProp(
       context,
       rawProps,
       "aspectRatio",
       sourceValue.aspectRatio(),
-      yogaStyle.aspectRatio());
+      yogaStyle.aspectRatio()));
 
   return yogaStyle;
 }
