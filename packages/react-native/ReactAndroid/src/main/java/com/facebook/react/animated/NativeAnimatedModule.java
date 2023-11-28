@@ -25,7 +25,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
@@ -248,13 +247,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                 return;
               }
 
-              if (!ReactFeatureFlags.enableOnDemandReactChoreographer
-                  || nodesManager != null && nodesManager.hasActiveAnimations()) {
-                Assertions.assertNotNull(mReactChoreographer)
-                    .postFrameCallback(
-                        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-                        mAnimatedFrameCallback);
-              }
+              // TODO: Would be great to avoid adding this callback in case there are no active
+              // animations and no outstanding tasks on the operations queue. Apparently frame
+              // callbacks can only be posted from the UI thread and therefore we cannot schedule
+              // them directly from other threads.
+              Assertions.assertNotNull(mReactChoreographer)
+                  .postFrameCallback(
+                      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+                      mAnimatedFrameCallback);
             } catch (Exception ex) {
               throw new RuntimeException(ex);
             }
@@ -1116,7 +1116,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_START_ANIMATING_NODE:
-                  enqueueFrameCallback();
                   animatedNodesManager.startAnimatingNode(
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);
                   break;
