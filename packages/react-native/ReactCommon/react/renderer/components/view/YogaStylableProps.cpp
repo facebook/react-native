@@ -49,21 +49,14 @@ static inline T const getFieldValue(
   return defaultValue;
 }
 
-#define REBUILD_FIELD_SWITCH_CASE2(field, fieldName)                       \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                          \
-    yogaStyle.field() = getFieldValue(context, value, ygDefaults.field()); \
-    return;                                                                \
-  }
-
-// @lint-ignore CLANGTIDY cppcoreguidelines-macro-usage
-#define REBUILD_FIELD_SWITCH_CASE_YSP(field) \
-  REBUILD_FIELD_SWITCH_CASE2(field, #field)
-
-#define REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(field, setter)              \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(#field): {                           \
+#define REBUILD_FIELD_SWITCH_CASE2(field, setter, fieldName)             \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                        \
     yogaStyle.setter(getFieldValue(context, value, ygDefaults.field())); \
     return;                                                              \
   }
+
+#define REBUILD_FIELD_SWITCH_CASE_YSP(field, setter) \
+  REBUILD_FIELD_SWITCH_CASE2(field, setter, #field)
 
 #define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, setter, index, fieldName) \
   case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                             \
@@ -138,22 +131,22 @@ void YogaStylableProps::setProp(
   Props::setProp(context, hash, propName, value);
 
   switch (hash) {
-    REBUILD_FIELD_SWITCH_CASE_YSP(direction);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flexDirection);
-    REBUILD_FIELD_SWITCH_CASE_YSP(justifyContent);
-    REBUILD_FIELD_SWITCH_CASE_YSP(alignContent);
-    REBUILD_FIELD_SWITCH_CASE_YSP(alignItems);
-    REBUILD_FIELD_SWITCH_CASE_YSP(alignSelf);
-    REBUILD_FIELD_SWITCH_CASE_YSP(flexWrap);
-    REBUILD_FIELD_SWITCH_CASE_YSP(overflow);
-    REBUILD_FIELD_SWITCH_CASE_YSP(display);
-    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flex, setFlex);
-    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexGrow, setFlexGrow);
-    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexShrink, setFlexShrink);
-    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(flexBasis, setFlexBasis);
-    REBUILD_FIELD_SWITCH_CASE2(positionType, "position");
+    REBUILD_FIELD_SWITCH_CASE_YSP(direction, setDirection);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexDirection, setFlexDirection);
+    REBUILD_FIELD_SWITCH_CASE_YSP(justifyContent, setJustifyContent);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignContent, setAlignContent);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignItems, setAlignItems);
+    REBUILD_FIELD_SWITCH_CASE_YSP(alignSelf, setAlignSelf);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexWrap, setFlexWrap);
+    REBUILD_FIELD_SWITCH_CASE_YSP(overflow, setOverflow);
+    REBUILD_FIELD_SWITCH_CASE_YSP(display, setDisplay);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flex, setFlex);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexGrow, setFlexGrow);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexShrink, setFlexShrink);
+    REBUILD_FIELD_SWITCH_CASE_YSP(flexBasis, setFlexBasis);
+    REBUILD_FIELD_SWITCH_CASE2(positionType, setPositionType, "position");
     REBUILD_FIELD_YG_GUTTER(gap, setGap, "rowGap", "columnGap", "gap");
-    REBUILD_FIELD_SWITCH_CASE_YSP_SETTER(aspectRatio, setAspectRatio);
+    REBUILD_FIELD_SWITCH_CASE_YSP(aspectRatio, setAspectRatio);
     REBUILD_FIELD_YG_DIMENSION(dimension, setDimension, "width", "height");
     REBUILD_FIELD_YG_DIMENSION(
         minDimension, setMinDimension, "minWidth", "minHeight");

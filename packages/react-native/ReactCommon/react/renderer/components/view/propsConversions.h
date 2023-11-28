@@ -23,62 +23,76 @@ static inline yoga::Style convertRawProp(
     const RawProps& rawProps,
     const yoga::Style& sourceValue) {
   yoga::Style yogaStyle{};
-  yogaStyle.direction() = convertRawProp(
+
+  yogaStyle.setDirection(convertRawProp(
       context,
       rawProps,
       "direction",
       sourceValue.direction(),
-      yogaStyle.direction());
-  yogaStyle.flexDirection() = convertRawProp(
+      yogaStyle.direction()));
+
+  yogaStyle.setFlexDirection(convertRawProp(
       context,
       rawProps,
       "flexDirection",
       sourceValue.flexDirection(),
-      yogaStyle.flexDirection());
-  yogaStyle.justifyContent() = convertRawProp(
+      yogaStyle.flexDirection()));
+
+  yogaStyle.setJustifyContent(convertRawProp(
       context,
       rawProps,
       "justifyContent",
       sourceValue.justifyContent(),
-      yogaStyle.justifyContent());
-  yogaStyle.alignContent() = convertRawProp(
+      yogaStyle.justifyContent()));
+
+  yogaStyle.setAlignContent(convertRawProp(
       context,
       rawProps,
       "alignContent",
       sourceValue.alignContent(),
-      yogaStyle.alignContent());
-  yogaStyle.alignItems() = convertRawProp(
+      yogaStyle.alignContent()));
+
+  yogaStyle.setAlignItems(convertRawProp(
       context,
       rawProps,
       "alignItems",
       sourceValue.alignItems(),
-      yogaStyle.alignItems());
-  yogaStyle.alignSelf() = convertRawProp(
+      yogaStyle.alignItems()));
+
+  yogaStyle.setAlignSelf(convertRawProp(
       context,
       rawProps,
       "alignSelf",
       sourceValue.alignSelf(),
-      yogaStyle.alignSelf());
-  yogaStyle.positionType() = convertRawProp(
+      yogaStyle.alignSelf()));
+
+  yogaStyle.setPositionType(convertRawProp(
       context,
       rawProps,
       "position",
       sourceValue.positionType(),
-      yogaStyle.positionType());
-  yogaStyle.flexWrap() = convertRawProp(
+      yogaStyle.positionType()));
+
+  yogaStyle.setFlexWrap(convertRawProp(
       context,
       rawProps,
       "flexWrap",
       sourceValue.flexWrap(),
-      yogaStyle.flexWrap());
-  yogaStyle.overflow() = convertRawProp(
+      yogaStyle.flexWrap()));
+
+  yogaStyle.setOverflow(convertRawProp(
       context,
       rawProps,
       "overflow",
       sourceValue.overflow(),
-      yogaStyle.overflow());
-  yogaStyle.display() = convertRawProp(
-      context, rawProps, "display", sourceValue.display(), yogaStyle.display());
+      yogaStyle.overflow()));
+
+  yogaStyle.setDisplay(convertRawProp(
+      context,
+      rawProps,
+      "display",
+      sourceValue.display(),
+      yogaStyle.display()));
 
   yogaStyle.setFlex(convertRawProp(
       context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex()));
@@ -463,6 +477,7 @@ static inline yoga::Style convertRawProp(
           "width",
           sourceValue.dimension(yoga::Dimension::Width),
           {}));
+
   yogaStyle.setDimension(
       yoga::Dimension::Height,
       convertRawProp(
@@ -480,6 +495,7 @@ static inline yoga::Style convertRawProp(
           "minWidth",
           sourceValue.minDimension(yoga::Dimension::Width),
           {}));
+
   yogaStyle.setMinDimension(
       yoga::Dimension::Height,
       convertRawProp(
@@ -497,6 +513,7 @@ static inline yoga::Style convertRawProp(
           "maxWidth",
           sourceValue.maxDimension(yoga::Dimension::Width),
           {}));
+
   yogaStyle.setMaxDimension(
       yoga::Dimension::Height,
       convertRawProp(

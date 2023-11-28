@@ -89,7 +89,7 @@ class LayoutTest : public ::testing::Test {
                 auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                 auto &props = *sharedProps;
                 auto &yogaStyle = props.yogaStyle;
-                yogaStyle.positionType() = yoga::PositionType::Absolute;
+                yogaStyle.setPositionType(yoga::PositionType::Absolute);
                 yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(50));
                 yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(50));
                 return sharedProps;
@@ -102,7 +102,7 @@ class LayoutTest : public ::testing::Test {
                     auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *sharedProps;
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.positionType() = yoga::PositionType::Absolute;
+                    yogaStyle.setPositionType(yoga::PositionType::Absolute);
                     yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(10));
                     yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(10));
                     yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(30));
@@ -132,10 +132,10 @@ class LayoutTest : public ::testing::Test {
                         auto &yogaStyle = props.yogaStyle;
 
                         if (testCase == CLIPPING) {
-                          yogaStyle.overflow() = yoga::Overflow::Hidden;
+                          yogaStyle.setOverflow(yoga::Overflow::Hidden);
                         }
 
-                        yogaStyle.positionType() = yoga::PositionType::Absolute;
+                        yogaStyle.setPositionType(yoga::PositionType::Absolute);
                         yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(10));
                         yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(10));
                         yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(110));
@@ -150,7 +150,7 @@ class LayoutTest : public ::testing::Test {
                             auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                             auto &props = *sharedProps;
                             auto &yogaStyle = props.yogaStyle;
-                            yogaStyle.positionType() = yoga::PositionType::Absolute;
+                            yogaStyle.setPositionType(yoga::PositionType::Absolute);
                             yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(70));
                             yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(-50));
                             yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(30));
@@ -165,7 +165,7 @@ class LayoutTest : public ::testing::Test {
                         auto sharedProps = std::make_shared<ViewShadowNodeProps>();
                         auto &props = *sharedProps;
                         auto &yogaStyle = props.yogaStyle;
-                        yogaStyle.positionType() = yoga::PositionType::Absolute;
+                        yogaStyle.setPositionType(yoga::PositionType::Absolute);
                         yogaStyle.setPosition(yoga::Edge::Left, yoga::value::points(-60));
                         yogaStyle.setPosition(yoga::Edge::Top, yoga::value::points(50));
                         yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(70));
