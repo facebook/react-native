@@ -15,10 +15,11 @@ import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
+import useMergeRefs from '../Utilities/useMergeRefs';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import {
   unstable_getImageComponentDecorator,
-  useWrapRefWithImageAttachedCallbacks,
+  useRefWithImageAttachedCallbacks,
 } from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
@@ -199,7 +200,15 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
     const resizeMode =
       objectFit || props.resizeMode || style?.resizeMode || 'cover';
 
-    const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
+    const imageAttachedCallbacksRef = useRefWithImageAttachedCallbacks();
+
+    const actualRef =
+      useMergeRefs<React.ElementRef<AbstractImageAndroid> | null>(
+        // $FlowFixMe[incompatible-call]
+        forwardedRef,
+        // $FlowFixMe[incompatible-call]
+        imageAttachedCallbacksRef,
+      );
 
     return (
       <ImageAnalyticsTagContext.Consumer>
