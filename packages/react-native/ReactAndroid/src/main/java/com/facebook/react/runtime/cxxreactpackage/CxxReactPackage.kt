@@ -22,11 +22,8 @@ abstract class CxxReactPackage {
   protected abstract fun initHybrid(): HybridData
 
   protected constructor() {
-    maybeLoadOtherSoLibraries()
     mHybridData = initHybrid()
   }
-
-  @Synchronized protected open fun maybeLoadOtherSoLibraries(): Unit {}
 
   companion object {
     init {
