@@ -20,10 +20,14 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.MapBuilder
+import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.ViewManagerRegistry
+import com.facebook.react.uimanager.events.BatchEventDispatchedListener
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
+import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import kotlin.collections.Map
 import kotlin.math.abs
 import org.assertj.core.api.Assertions.assertThat
@@ -45,6 +49,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.Mockito.`when` as whenever
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 /** Tests the animated nodes graph traversal algorithm from {@link NativeAnimatedNodesManager}. */
 @RunWith(RobolectricTestRunner::class)
@@ -54,9 +59,13 @@ class NativeAnimatedNodeTraversalTest {
   private lateinit var reactApplicationContextMock: ReactApplicationContext
   private lateinit var catalystInstanceMock: CatalystInstance
   private lateinit var uiManagerMock: UIManagerModule
+  private lateinit var underTest: FabricUIManager
   private lateinit var eventDispatcherMock: EventDispatcher
   private lateinit var nativeAnimatedNodesManager: NativeAnimatedNodesManager
   private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var reactContext: ReactApplicationContext
+  private lateinit var viewManagerRegistry: ViewManagerRegistry
+  private lateinit var batchEventDispatchedListener: BatchEventDispatchedListener
 
   private fun nextFrameTime(): Long {
     frameTimeNanos += FRAME_LEN_NANOS
@@ -72,6 +81,10 @@ class NativeAnimatedNodeTraversalTest {
     frameTimeNanos = INITIAL_FRAME_TIME_NANOS
 
     reactApplicationContextMock = mock(ReactApplicationContext::class.java)
+    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    viewManagerRegistry = ViewManagerRegistry(emptyList())
+    batchEventDispatchedListener = FakeBatchEventDispatchedListener()
+    underTest = FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener)
     whenever(reactApplicationContextMock.hasActiveReactInstance()).thenAnswer { true }
     whenever(reactApplicationContextMock.hasCatalystInstance()).thenAnswer { true }
     whenever(reactApplicationContextMock.catalystInstance).thenAnswer { catalystInstanceMock }
@@ -83,6 +96,7 @@ class NativeAnimatedNodeTraversalTest {
     whenever(catalystInstanceMock.getJSIModule(any(JSIModuleType::class.java))).thenAnswer {
       uiManagerMock
     }
+    whenever(catalystInstanceMock.fabricUIManager).thenAnswer { underTest }
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java)).thenAnswer {
       uiManagerMock
     }
