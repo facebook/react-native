@@ -14,7 +14,6 @@
 
 #include <yoga/Yoga.h>
 
-#include <yoga/bits/NumericBitfield.h>
 #include <yoga/enums/Align.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
@@ -55,123 +54,74 @@ class YG_EXPORT Style {
   static constexpr float DefaultFlexShrink = 0.0f;
   static constexpr float WebDefaultFlexShrink = 1.0f;
 
-  Style() {
-    setAlignContent(Align::FlexStart);
-    setAlignItems(Align::Stretch);
-  }
-  ~Style() = default;
-
- private:
-  using Dimensions = std::array<Style::Length, ordinalCount<Dimension>()>;
-  using Edges = std::array<Style::Length, ordinalCount<Edge>()>;
-  using Gutters = std::array<Style::Length, ordinalCount<Gutter>()>;
-
-  static constexpr uint8_t directionOffset = 0;
-  static constexpr uint8_t flexdirectionOffset =
-      directionOffset + minimumBitCount<Direction>();
-  static constexpr uint8_t justifyContentOffset =
-      flexdirectionOffset + minimumBitCount<FlexDirection>();
-  static constexpr uint8_t alignContentOffset =
-      justifyContentOffset + minimumBitCount<Justify>();
-  static constexpr uint8_t alignItemsOffset =
-      alignContentOffset + minimumBitCount<Align>();
-  static constexpr uint8_t alignSelfOffset =
-      alignItemsOffset + minimumBitCount<Align>();
-  static constexpr uint8_t positionTypeOffset =
-      alignSelfOffset + minimumBitCount<Align>();
-  static constexpr uint8_t flexWrapOffset =
-      positionTypeOffset + minimumBitCount<PositionType>();
-  static constexpr uint8_t overflowOffset =
-      flexWrapOffset + minimumBitCount<Wrap>();
-  static constexpr uint8_t displayOffset =
-      overflowOffset + minimumBitCount<Overflow>();
-
-  uint32_t flags_ = 0;
-
-  FloatOptional flex_ = {};
-  FloatOptional flexGrow_ = {};
-  FloatOptional flexShrink_ = {};
-  Style::Length flexBasis_ = value::ofAuto();
-  Edges margin_ = {};
-  Edges position_ = {};
-  Edges padding_ = {};
-  Edges border_ = {};
-  Gutters gap_ = {};
-  Dimensions dimensions_{value::ofAuto(), value::ofAuto()};
-  Dimensions minDimensions_ = {};
-  Dimensions maxDimensions_ = {};
-  // Yoga specific properties, not compatible with flexbox specification
-  FloatOptional aspectRatio_ = {};
-
- public:
   Direction direction() const {
-    return getEnumData<Direction>(flags_, directionOffset);
+    return direction_;
   }
   void setDirection(Direction value) {
-    setEnumData<Direction>(flags_, directionOffset, value);
+    direction_ = value;
   }
 
   FlexDirection flexDirection() const {
-    return getEnumData<FlexDirection>(flags_, flexdirectionOffset);
+    return flexDirection_;
   }
   void setFlexDirection(FlexDirection value) {
-    setEnumData<FlexDirection>(flags_, flexdirectionOffset, value);
+    flexDirection_ = value;
   }
 
   Justify justifyContent() const {
-    return getEnumData<Justify>(flags_, justifyContentOffset);
+    return justifyContent_;
   }
   void setJustifyContent(Justify value) {
-    setEnumData<Justify>(flags_, justifyContentOffset, value);
+    justifyContent_ = value;
   }
 
   Align alignContent() const {
-    return getEnumData<Align>(flags_, alignContentOffset);
+    return alignContent_;
   }
   void setAlignContent(Align value) {
-    setEnumData<Align>(flags_, alignContentOffset, value);
+    alignContent_ = value;
   }
 
   Align alignItems() const {
-    return getEnumData<Align>(flags_, alignItemsOffset);
+    return alignItems_;
   }
   void setAlignItems(Align value) {
-    setEnumData<Align>(flags_, alignItemsOffset, value);
+    alignItems_ = value;
   }
 
   Align alignSelf() const {
-    return getEnumData<Align>(flags_, alignSelfOffset);
+    return alignSelf_;
   }
   void setAlignSelf(Align value) {
-    setEnumData<Align>(flags_, alignSelfOffset, value);
+    alignSelf_ = value;
   }
 
   PositionType positionType() const {
-    return getEnumData<PositionType>(flags_, positionTypeOffset);
+    return positionType_;
   }
   void setPositionType(PositionType value) {
-    setEnumData<PositionType>(flags_, positionTypeOffset, value);
+    positionType_ = value;
   }
 
   Wrap flexWrap() const {
-    return getEnumData<Wrap>(flags_, flexWrapOffset);
+    return flexWrap_;
   }
   void setFlexWrap(Wrap value) {
-    setEnumData<Wrap>(flags_, flexWrapOffset, value);
+    flexWrap_ = value;
   }
 
   Overflow overflow() const {
-    return getEnumData<Overflow>(flags_, overflowOffset);
+    return overflow_;
   }
   void setOverflow(Overflow value) {
-    setEnumData<Overflow>(flags_, overflowOffset, value);
+    overflow_ = value;
   }
 
   Display display() const {
-    return getEnumData<Display>(flags_, displayOffset);
+    return display_;
   }
   void setDisplay(Display value) {
-    setEnumData<Display>(flags_, displayOffset, value);
+    display_ = value;
   }
 
   FloatOptional flex() const {
@@ -282,7 +232,14 @@ class YG_EXPORT Style {
   }
 
   bool operator==(const Style& other) const {
-    return flags_ == other.flags_ && inexactEquals(flex_, other.flex_) &&
+    return direction_ == other.direction_ &&
+        flexDirection_ == other.flexDirection_ &&
+        justifyContent_ == other.justifyContent_ &&
+        alignContent_ == other.alignContent_ &&
+        alignItems_ == other.alignItems_ && alignSelf_ == other.alignSelf_ &&
+        positionType_ == other.positionType_ && flexWrap_ == other.flexWrap_ &&
+        overflow_ == other.overflow_ && display_ == other.display_ &&
+        inexactEquals(flex_, other.flex_) &&
         inexactEquals(flexGrow_, other.flexGrow_) &&
         inexactEquals(flexShrink_, other.flexShrink_) &&
         inexactEquals(flexBasis_, other.flexBasis_) &&
@@ -300,6 +257,37 @@ class YG_EXPORT Style {
   bool operator!=(const Style& other) const {
     return !(*this == other);
   }
+
+ private:
+  using Dimensions = std::array<Style::Length, ordinalCount<Dimension>()>;
+  using Edges = std::array<Style::Length, ordinalCount<Edge>()>;
+  using Gutters = std::array<Style::Length, ordinalCount<Gutter>()>;
+
+  Direction direction_ : bitCount<Direction>() = Direction::Inherit;
+  FlexDirection flexDirection_
+      : bitCount<FlexDirection>() = FlexDirection::Column;
+  Justify justifyContent_ : bitCount<Justify>() = Justify::FlexStart;
+  Align alignContent_ : bitCount<Align>() = Align::FlexStart;
+  Align alignItems_ : bitCount<Align>() = Align::Stretch;
+  Align alignSelf_ : bitCount<Align>() = Align::Auto;
+  PositionType positionType_ : bitCount<PositionType>() = PositionType::Static;
+  Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
+  Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
+  Display display_ : bitCount<Display>() = Display::Flex;
+
+  FloatOptional flex_{};
+  FloatOptional flexGrow_{};
+  FloatOptional flexShrink_{};
+  Style::Length flexBasis_{value::ofAuto()};
+  Edges margin_{};
+  Edges position_{};
+  Edges padding_{};
+  Edges border_{};
+  Gutters gap_{};
+  Dimensions dimensions_{value::ofAuto(), value::ofAuto()};
+  Dimensions minDimensions_{};
+  Dimensions maxDimensions_{};
+  FloatOptional aspectRatio_{};
 };
 
 } // namespace facebook::yoga
