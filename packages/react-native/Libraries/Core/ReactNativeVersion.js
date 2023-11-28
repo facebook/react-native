@@ -13,5 +13,5 @@ exports.version = {
   major: 0,
   minor: 73,
   patch: 0,
-  prerelease: 'rc.5',
+  prerelease: 'rc.6',
 };
