@@ -39,7 +39,7 @@ struct JBinding : public jni::JavaClass<JBinding> {
             "Lcom/facebook/react/fabric/Binding;";
 };
 
-class Binding : public jni::HybridClass<Binding>,
+class Binding : public jni::HybridClass<Binding, JBinding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
