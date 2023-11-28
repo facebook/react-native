@@ -55,22 +55,9 @@ class YG_EXPORT Style {
   static constexpr float DefaultFlexShrink = 0.0f;
   static constexpr float WebDefaultFlexShrink = 1.0f;
 
-  template <typename T>
-  struct BitfieldRef {
-    Style& style;
-    uint8_t offset;
-    operator T() const {
-      return getEnumData<T>(style.flags, offset);
-    }
-    BitfieldRef<T>& operator=(T x) {
-      setEnumData<T>(style.flags, offset, x);
-      return *this;
-    }
-  };
-
   Style() {
-    alignContent() = Align::FlexStart;
-    alignItems() = Align::Stretch;
+    setAlignContent(Align::FlexStart);
+    setAlignItems(Align::Stretch);
   }
   ~Style() = default;
 
@@ -99,7 +86,7 @@ class YG_EXPORT Style {
   static constexpr uint8_t displayOffset =
       overflowOffset + minimumBitCount<Overflow>();
 
-  uint32_t flags = 0;
+  uint32_t flags_ = 0;
 
   FloatOptional flex_ = {};
   FloatOptional flexGrow_ = {};
@@ -118,73 +105,73 @@ class YG_EXPORT Style {
 
  public:
   Direction direction() const {
-    return getEnumData<Direction>(flags, directionOffset);
+    return getEnumData<Direction>(flags_, directionOffset);
   }
-  BitfieldRef<Direction> direction() {
-    return {*this, directionOffset};
+  void setDirection(Direction value) {
+    setEnumData<Direction>(flags_, directionOffset, value);
   }
 
   FlexDirection flexDirection() const {
-    return getEnumData<FlexDirection>(flags, flexdirectionOffset);
+    return getEnumData<FlexDirection>(flags_, flexdirectionOffset);
   }
-  BitfieldRef<FlexDirection> flexDirection() {
-    return {*this, flexdirectionOffset};
+  void setFlexDirection(FlexDirection value) {
+    setEnumData<FlexDirection>(flags_, flexdirectionOffset, value);
   }
 
   Justify justifyContent() const {
-    return getEnumData<Justify>(flags, justifyContentOffset);
+    return getEnumData<Justify>(flags_, justifyContentOffset);
   }
-  BitfieldRef<Justify> justifyContent() {
-    return {*this, justifyContentOffset};
+  void setJustifyContent(Justify value) {
+    setEnumData<Justify>(flags_, justifyContentOffset, value);
   }
 
   Align alignContent() const {
-    return getEnumData<Align>(flags, alignContentOffset);
+    return getEnumData<Align>(flags_, alignContentOffset);
   }
-  BitfieldRef<Align> alignContent() {
-    return {*this, alignContentOffset};
+  void setAlignContent(Align value) {
+    setEnumData<Align>(flags_, alignContentOffset, value);
   }
 
   Align alignItems() const {
-    return getEnumData<Align>(flags, alignItemsOffset);
+    return getEnumData<Align>(flags_, alignItemsOffset);
   }
-  BitfieldRef<Align> alignItems() {
-    return {*this, alignItemsOffset};
+  void setAlignItems(Align value) {
+    setEnumData<Align>(flags_, alignItemsOffset, value);
   }
 
   Align alignSelf() const {
-    return getEnumData<Align>(flags, alignSelfOffset);
+    return getEnumData<Align>(flags_, alignSelfOffset);
   }
-  BitfieldRef<Align> alignSelf() {
-    return {*this, alignSelfOffset};
+  void setAlignSelf(Align value) {
+    setEnumData<Align>(flags_, alignSelfOffset, value);
   }
 
   PositionType positionType() const {
-    return getEnumData<PositionType>(flags, positionTypeOffset);
+    return getEnumData<PositionType>(flags_, positionTypeOffset);
   }
-  BitfieldRef<PositionType> positionType() {
-    return {*this, positionTypeOffset};
+  void setPositionType(PositionType value) {
+    setEnumData<PositionType>(flags_, positionTypeOffset, value);
   }
 
   Wrap flexWrap() const {
-    return getEnumData<Wrap>(flags, flexWrapOffset);
+    return getEnumData<Wrap>(flags_, flexWrapOffset);
   }
-  BitfieldRef<Wrap> flexWrap() {
-    return {*this, flexWrapOffset};
+  void setFlexWrap(Wrap value) {
+    setEnumData<Wrap>(flags_, flexWrapOffset, value);
   }
 
   Overflow overflow() const {
-    return getEnumData<Overflow>(flags, overflowOffset);
+    return getEnumData<Overflow>(flags_, overflowOffset);
   }
-  BitfieldRef<Overflow> overflow() {
-    return {*this, overflowOffset};
+  void setOverflow(Overflow value) {
+    setEnumData<Overflow>(flags_, overflowOffset, value);
   }
 
   Display display() const {
-    return getEnumData<Display>(flags, displayOffset);
+    return getEnumData<Display>(flags_, displayOffset);
   }
-  BitfieldRef<Display> display() {
-    return {*this, displayOffset};
+  void setDisplay(Display value) {
+    setEnumData<Display>(flags_, displayOffset, value);
   }
 
   FloatOptional flex() const {
@@ -295,7 +282,7 @@ class YG_EXPORT Style {
   }
 
   bool operator==(const Style& other) const {
-    return flags == other.flags && inexactEquals(flex_, other.flex_) &&
+    return flags_ == other.flags_ && inexactEquals(flex_, other.flex_) &&
         inexactEquals(flexGrow_, other.flexGrow_) &&
         inexactEquals(flexShrink_, other.flexShrink_) &&
         inexactEquals(flexBasis_, other.flexBasis_) &&
