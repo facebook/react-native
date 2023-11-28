@@ -34,6 +34,11 @@ class ReactNativeConfig;
 class Scheduler;
 class SurfaceHandlerBinding;
 
+struct JBinding : public jni::JavaClass<JBinding> {
+    constexpr static auto kJavaDescriptor =
+            "Lcom/facebook/react/fabric/Binding;";
+};
+
 class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {

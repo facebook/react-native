@@ -161,7 +161,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FabricSoLoader.staticInit();
   }
 
-  @Nullable private BindingImpl mBinding;
+  @Nullable private Binding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
@@ -834,7 +834,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  public void setBinding(BindingImpl binding) {
+  public void setBinding(Binding binding) {
     mBinding = binding;
   }
 
