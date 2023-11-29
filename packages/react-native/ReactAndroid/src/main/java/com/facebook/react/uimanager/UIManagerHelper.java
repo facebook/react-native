@@ -17,6 +17,7 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -52,7 +53,7 @@ public class UIManagerHelper {
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
-      @Nullable UIManager uiManager = context.getFabricUIManager();
+      @Nullable UIManager uiManager = (UIManager) context.getJSIModule(JSIModuleType.UIManager);
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
@@ -84,7 +85,7 @@ public class UIManagerHelper {
     CatalystInstance catalystInstance = context.getCatalystInstance();
     try {
       return uiManagerType == FABRIC
-          ? context.getFabricUIManager()
+          ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
           : catalystInstance.getNativeModule(UIManagerModule.class);
     } catch (IllegalArgumentException ex) {
       // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode

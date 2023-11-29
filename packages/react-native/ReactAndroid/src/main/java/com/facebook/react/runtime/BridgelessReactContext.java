@@ -21,7 +21,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
-import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -83,11 +82,6 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     throw new UnsupportedOperationException(
         "getJSIModule is not implemented for bridgeless mode. Trying to get module: "
             + moduleType.name());
-  }
-
-  @Override
-  public @Nullable UIManager getFabricUIManager() {
-    return mReactHost.getUIManager();
   }
 
   @Override
