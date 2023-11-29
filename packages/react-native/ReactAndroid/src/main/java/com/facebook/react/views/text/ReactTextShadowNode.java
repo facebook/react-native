@@ -135,7 +135,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             TextPaint textPaint = sTextPaintInstance;
             float textWidth = textPaint.measureText(text.toString());
             if (lineCount == 1 && textWidth > width) {
-              layoutWidth = width;
+              layoutWidth = textWidth;
             } else {
               for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
                 boolean endsWithNewLine =
