@@ -23,6 +23,8 @@ class YogaStylableProps : public Props {
       const YogaStylableProps& sourceProps,
       const RawProps& rawProps);
 
+  static const yoga::Style& defaultStyle();
+
   void setProp(
       const PropsParserContext& context,
       RawPropsPropNameHash hash,
@@ -35,7 +37,7 @@ class YogaStylableProps : public Props {
 #endif
 
 #pragma mark - Props
-  yoga::Style yogaStyle{};
+  yoga::Style yogaStyle{defaultStyle()};
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"
