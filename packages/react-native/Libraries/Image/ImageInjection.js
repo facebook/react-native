@@ -14,6 +14,7 @@ import type {
   Image as ImageComponent,
 } from './ImageTypes.flow';
 
+import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useRef} from 'react';
 
@@ -52,24 +53,37 @@ export function unstable_unregisterImageAttachedCallback(
   imageAttachedCallbacks.delete(callback);
 }
 
-export function useRefWithImageAttachedCallbacks(): React.RefSetter<ImageInstance> {
+export function useWrapRefWithImageAttachedCallbacks(
+  forwardedRef: React.RefSetter<ImageInstance>,
+): React.RefSetter<ImageInstance> {
   const pendingCleanupCallbacks = useRef<Array<() => void>>([]);
 
-  const ref = useRef((node: ImageInstance | null) => {
-    if (node == null) {
-      if (pendingCleanupCallbacks.current.length > 0) {
-        pendingCleanupCallbacks.current.forEach(cb => cb());
-        pendingCleanupCallbacks.current = [];
-      }
-    } else {
-      imageAttachedCallbacks.forEach(imageAttachedCallback => {
-        const maybeCleanupCallback = imageAttachedCallback(node);
-        if (maybeCleanupCallback != null) {
-          pendingCleanupCallbacks.current.push(maybeCleanupCallback);
-        }
-      });
-    }
-  });
+  const imageAttachedCallbacksRef =
+    useRef<?(node: ImageInstance | null) => void>(null);
 
-  return ref.current;
+  if (imageAttachedCallbacksRef.current == null) {
+    imageAttachedCallbacksRef.current = (node: ImageInstance | null): void => {
+      if (node == null) {
+        if (pendingCleanupCallbacks.current.length > 0) {
+          pendingCleanupCallbacks.current.forEach(cb => cb());
+          pendingCleanupCallbacks.current = [];
+        }
+      } else {
+        imageAttachedCallbacks.forEach(imageAttachedCallback => {
+          const maybeCleanupCallback = imageAttachedCallback(node);
+          if (maybeCleanupCallback != null) {
+            pendingCleanupCallbacks.current.push(maybeCleanupCallback);
+          }
+        });
+      }
+    };
+  }
+
+  // `useMergeRefs` returns a stable ref if its arguments don't change.
+  return useMergeRefs<ImageInstance | null>(
+    // $FlowFixMe[incompatible-call]
+    forwardedRef,
+    // $FlowFixMe[incompatible-call]
+    imageAttachedCallbacksRef.current,
+  );
 }
