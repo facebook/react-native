@@ -108,7 +108,7 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
       Props,
       Instance,
     >(intermediatePropsForScrollView);
-    const ref = useMergeRefs<Instance | null>(scrollViewRef, forwardedRef);
+    const ref = useMergeRefs<Instance>(scrollViewRef, forwardedRef);
 
     return (
       // $FlowFixMe[incompatible-use] Investigate useAnimatedProps return value

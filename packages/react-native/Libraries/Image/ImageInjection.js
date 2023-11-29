@@ -80,10 +80,8 @@ export function useWrapRefWithImageAttachedCallbacks(
   }
 
   // `useMergeRefs` returns a stable ref if its arguments don't change.
-  return useMergeRefs<ImageInstance | null>(
-    // $FlowFixMe[incompatible-call]
+  return useMergeRefs<ImageInstance>(
     forwardedRef,
-    // $FlowFixMe[incompatible-call]
     imageAttachedCallbacksRef.current,
   );
 }
