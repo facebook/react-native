@@ -1278,14 +1278,12 @@ public class ReactInstanceManager {
           uiManager.stopSurface(surfaceId);
         } else {
           FLog.w(ReactConstants.TAG, "Failed to stop surface, UIManager has already gone away");
-          reactRoot.getRootViewGroup().removeAllViews();
         }
       } else {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new RuntimeException(
                 "detachRootViewFromInstance called with ReactRootView with invalid id"));
-        reactRoot.getRootViewGroup().removeAllViews();
       }
     } else {
       reactContext
@@ -1294,8 +1292,7 @@ public class ReactInstanceManager {
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
 
-    // The view is no longer attached, so mark it as such by resetting its ID.
-    reactRoot.getRootViewGroup().setId(View.NO_ID);
+    clearReactRoot(reactRoot);
   }
 
   @ThreadConfined(UI)
