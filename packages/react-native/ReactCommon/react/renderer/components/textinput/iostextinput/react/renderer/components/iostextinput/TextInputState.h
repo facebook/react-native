@@ -11,12 +11,6 @@
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
-
 namespace facebook::react {
 
 /*
@@ -54,16 +48,6 @@ class TextInputState final {
   std::shared_ptr<const TextLayoutManager> layoutManager;
 
   size_t mostRecentEventCount{0};
-
-#ifdef ANDROID
-  TextInputState(
-      const TextInputState& previousState,
-      const folly::dynamic& data);
-
-  folly::dynamic getDynamic() const;
-
-  MapBuffer getMapBuffer() const;
-#endif
 };
 
 } // namespace facebook::react

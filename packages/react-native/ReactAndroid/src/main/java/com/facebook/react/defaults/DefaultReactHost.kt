@@ -54,13 +54,13 @@ object DefaultReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
           JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-      val jsEngineInstance = if (isHermesEnabled) HermesInstance() else JSCInstance()
+      val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultReactHostDelegate =
           DefaultReactHostDelegate(
               jsMainModulePath = jsMainModulePath,
               jsBundleLoader = jsBundleLoader,
               reactPackages = packageList,
-              jsEngineInstance = jsEngineInstance,
+              jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()

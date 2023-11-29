@@ -53,6 +53,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
    */
   const SharedColor cursorColor{};
   const SharedColor selectionColor{};
+  const SharedColor selectionHandleColor{};
   // TODO: Rename to `tintColor` and make universal.
   const SharedColor underlineColorAndroid{};
 

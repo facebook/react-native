@@ -52,19 +52,10 @@ export function unstable_unregisterImageAttachedCallback(
   imageAttachedCallbacks.delete(callback);
 }
 
-type ProxyRef = (ImageInstance | null) => void;
-
-export function useWrapRefWithImageAttachedCallbacks(
-  forwardedRef?: React.Ref<ImageComponent>,
-): ProxyRef {
+export function useRefWithImageAttachedCallbacks(): React.RefSetter<ImageInstance> {
   const pendingCleanupCallbacks = useRef<Array<() => void>>([]);
-  const proxyRef = useRef<ProxyRef>(node => {
-    if (typeof forwardedRef === 'function') {
-      forwardedRef(node);
-    } else if (typeof forwardedRef === 'object' && forwardedRef != null) {
-      forwardedRef.current = node;
-    }
 
+  const ref = useRef((node: ImageInstance | null) => {
     if (node == null) {
       if (pendingCleanupCallbacks.current.length > 0) {
         pendingCleanupCallbacks.current.forEach(cb => cb());
@@ -80,5 +71,5 @@ export function useWrapRefWithImageAttachedCallbacks(
     }
   });
 
-  return proxyRef.current;
+  return ref.current;
 }

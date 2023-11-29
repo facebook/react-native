@@ -251,9 +251,9 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
 
   mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.padding()[YGEdgeAll] = YGValue{42, YGUnitPoint};
-    yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
-    yogaStyle.positionType() = yoga::PositionType::Absolute;
+    yogaStyle.setPadding(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setPositionType(yoga::PositionType::Absolute);
     props.shadowRadius = 42;
     props.shadowOffset = Size{42, 42};
     props.backgroundColor = clearColor();
@@ -262,14 +262,14 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     props.zIndex = 42;
-    yogaStyle.margin()[YGEdgeAll] = YGValue{42, YGUnitPoint};
+    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
     props.shadowColor = clearColor();
     props.shadowOpacity = 0.42;
   });
 
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
 
     props.borderRadii.all = 42;
     props.borderColors.all = blackColor();
@@ -456,7 +456,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
 
   mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 42;
   });
 
@@ -538,37 +538,37 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 9001;
   });
 
   mutateViewShadowNodeProps_(nodeBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 9000;
   });
 
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8999;
   });
 
   mutateViewShadowNodeProps_(nodeBBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8998;
   });
 
   mutateViewShadowNodeProps_(nodeBC_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8997;
   });
 
   mutateViewShadowNodeProps_(nodeBD_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 8996;
   });
 
@@ -652,7 +652,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Relative;
+    yogaStyle.setPositionType(yoga::PositionType::Relative);
     props.zIndex = 42;
   });
 
@@ -680,7 +680,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.positionType() = yoga::PositionType::Static;
+    yogaStyle.setPositionType(yoga::PositionType::Static);
     props.zIndex = {};
   });
 
@@ -764,7 +764,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   mutateViewShadowNodeProps_(nodeBB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.display() = yoga::Display::None;
+    yogaStyle.setDisplay(yoga::Display::None);
   });
 
   testViewTree_([](const StubViewTree& viewTree) {

@@ -12,10 +12,11 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-export type ImageSize = {|
+export type ImageSize = {
   width: number,
   height: number,
-|};
+  ...
+};
 
 export interface Spec extends TurboModule {
   +abortRequest: (requestId: number) => void;

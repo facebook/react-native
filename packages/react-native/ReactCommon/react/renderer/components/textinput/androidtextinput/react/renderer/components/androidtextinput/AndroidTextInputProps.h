@@ -50,7 +50,6 @@ static inline std::string toString(
   return "[Object AndroidTextInputTextShadowOffsetStruct]";
 }
 
-#ifdef ANDROID
 inline folly::dynamic toDynamic(
     const AndroidTextInputTextShadowOffsetStruct& value) {
   folly::dynamic dynamicValue = folly::dynamic::object();
@@ -58,7 +57,6 @@ inline folly::dynamic toDynamic(
   dynamicValue["height"] = value.height;
   return dynamicValue;
 }
-#endif
 
 class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
  public:
@@ -102,6 +100,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   SharedColor placeholderTextColor{};
   bool secureTextEntry{false};
   SharedColor selectionColor{};
+  SharedColor selectionHandleColor{};
   std::string value{};
   std::string defaultValue{};
   bool selectTextOnFocus{false};

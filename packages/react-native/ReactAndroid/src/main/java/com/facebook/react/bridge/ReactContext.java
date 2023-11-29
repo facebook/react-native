@@ -26,6 +26,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -552,6 +553,25 @@ public class ReactContext extends ContextWrapper {
           "Unable to retrieve a JSIModule if CatalystInstance is not active.");
     }
     return mCatalystInstance.getJSIModule(moduleType);
+  }
+
+  @DeprecatedInNewArchitecture(
+      message =
+          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+  /**
+   * Get the UIManager for Fabric from the CatalystInstance.
+   *
+   * @return The UIManager when CatalystInstance is active.
+   */
+  public @Nullable UIManager getFabricUIManager() {
+    if (!hasActiveReactInstance()) {
+      throw new IllegalStateException(
+          "Unable to retrieve a UIManager if CatalystInstance is not active.");
+    }
+    UIManager uiManager = mCatalystInstance.getFabricUIManager();
+    return uiManager != null
+        ? uiManager
+        : (UIManager) mCatalystInstance.getJSIModule(JSIModuleType.UIManager);
   }
 
   /**

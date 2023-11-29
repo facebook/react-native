@@ -230,23 +230,27 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
             size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+          try {
+            validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto instanceHandle =
-              instanceHandleFromValue(runtime, arguments[4], arguments[0]);
-          if (!instanceHandle) {
-            react_native_assert(false);
-            return jsi::Value::undefined();
+            auto instanceHandle =
+                instanceHandleFromValue(runtime, arguments[4], arguments[0]);
+            if (!instanceHandle) {
+              react_native_assert(false);
+              return jsi::Value::undefined();
+            }
+
+            return valueFromShadowNode(
+                runtime,
+                uiManager->createNode(
+                    tagFromValue(arguments[0]),
+                    stringFromValue(runtime, arguments[1]),
+                    surfaceIdFromValue(runtime, arguments[2]),
+                    RawProps(runtime, arguments[3]),
+                    std::move(instanceHandle)));
+          } catch (const std::logic_error& ex) {
+            LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->createNode(
-                  tagFromValue(arguments[0]),
-                  stringFromValue(runtime, arguments[1]),
-                  surfaceIdFromValue(runtime, arguments[2]),
-                  RawProps(runtime, arguments[3]),
-                  std::move(instanceHandle)));
         });
   }
 
@@ -267,7 +271,9 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0])));
+                  *shadowNodeFromValue(runtime, arguments[0]),
+                  nullptr,
+                  RawProps()));
         });
   }
 
@@ -347,7 +353,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
-                            : ShadowNode::emptySharedShadowNodeSharedList()));
+                            : ShadowNode::emptySharedShadowNodeSharedList(),
+                  RawProps()));
         });
   }
 
@@ -365,13 +372,12 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          RawProps rawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  &rawProps));
+                  RawProps(runtime, arguments[1])));
         });
   }
 
@@ -392,7 +398,6 @@ jsi::Value UIManagerBinding::get(
           // validateArgumentCount(runtime, methodName, paramCount, count);
 
           bool hasChildrenArg = count == 3;
-          RawProps rawProps(runtime, arguments[hasChildrenArg ? 2 : 1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -400,7 +405,7 @@ jsi::Value UIManagerBinding::get(
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  &rawProps));
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
         });
   }
 

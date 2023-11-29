@@ -103,6 +103,8 @@ def use_react_native! (
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
+  build_codegen!(prefix, relative_path_from_current)
+
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
@@ -127,7 +129,8 @@ def use_react_native! (
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
-  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
+  pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
+  pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
@@ -173,15 +176,7 @@ def use_react_native! (
   # If the New Arch is turned off, we will use the Old Renderer, though.
   # RNTester always installed Fabric, this change is required to make the template work.
   setup_fabric!(:react_native_path => prefix)
-
-  if !fabric_enabled
-    relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-    build_codegen!(prefix, relative_installation_root)
-  end
-
-  if NewArchitectureHelper.new_arch_enabled
-    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
-  end
+  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
@@ -280,7 +275,6 @@ def react_native_post_install(
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
-  ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)

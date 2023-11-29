@@ -12,7 +12,7 @@ module yoga [system] {
         header "YGMacros.h"
         header "YGNode.h"
         header "YGNodeLayout.h"
-        header "YGNodeStye.h"
+        header "YGNodeStyle.h"
         header "YGPixelGrid.h"
         header "YGValue.h"
         header "Yoga.h"

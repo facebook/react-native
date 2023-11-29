@@ -167,7 +167,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJsEngineInstance();
+    JSRuntimeFactory jsRuntimeFactory = mDelegate.getJsRuntimeFactory();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -177,7 +177,7 @@ final class ReactInstance {
     boolean useModernRuntimeScheduler = ReactFeatureFlags.useModernRuntimeScheduler;
     mHybridData =
         initHybrid(
-            jsEngineInstance,
+            jsRuntimeFactory,
             jsMessageQueueThread,
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
@@ -432,7 +432,7 @@ final class ReactInstance {
 
   @DoNotStrip
   private native HybridData initHybrid(
-      JSEngineInstance jsEngineInstance,
+      JSRuntimeFactory jsRuntimeFactory,
       MessageQueueThread jsMessageQueueThread,
       MessageQueueThread nativeModulesMessageQueueThread,
       JavaTimerManager timerManager,

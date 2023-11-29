@@ -143,8 +143,11 @@ public class MountingManager {
 
       surfaceMountingManager.stopSurface();
 
-      if (surfaceMountingManager == mMostRecentSurfaceMountingManager) {
+      if (mMostRecentSurfaceMountingManager == surfaceMountingManager) {
         mMostRecentSurfaceMountingManager = null;
+      }
+      if (mLastQueriedSurfaceMountingManager == surfaceMountingManager) {
+        mLastQueriedSurfaceMountingManager = null;
       }
     } else {
       ReactSoftExceptionLogger.logSoftException(

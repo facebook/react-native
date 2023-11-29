@@ -93,25 +93,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
     # ========================== #
     # Test - GetReactCodegenSpec #
     # ========================== #
-
-    def testGetReactCodegenSpec_whenFabricDisabledAndNoScriptPhases_generatesAPodspec
-        # Arrange
-        FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
-
-        # Act
-        podspec = CodegenUtils.new().get_react_codegen_spec(
-            'package.json',
-            :fabric_enabled => false,
-            :hermes_enabled => true,
-            :script_phases => nil,
-            :file_manager => FileMock
-        )
-
-        # Assert
-        assert_equal(podspec, get_podspec_no_fabric_no_script())
-        assert_equal(Pod::UI.collected_messages, [])
-    end
-
     def testGetReactCodegenSpec_whenFabricEnabledAndScriptPhases_generatesAPodspec
         # Arrange
         FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
@@ -119,7 +100,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
-            :fabric_enabled => true,
             :hermes_enabled => true,
             :script_phases => "echo Test Script Phase",
             :file_manager => FileMock
@@ -138,7 +118,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
-            :fabric_enabled => true,
+
             :hermes_enabled => true,
             :script_phases => nil,
             :file_manager => FileMock
@@ -380,11 +360,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
             :app_path => app_path,
             :config_file_dir => "",
             :config_key => "codegenConfig",
-            :fabric_enabled => false,
             :react_native_path => "../node_modules/react-native"}
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
-            :fabric_enabled => false,
             :folly_version=>"2023.08.07.00",
             :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
@@ -399,7 +377,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
                 "arguments"=> ["~/app/ios/../node_modules/react-native/scripts/generate-codegen-artifacts.js",
                     "-p", "~/app",
                     "-o", Pod::Config.instance.installation_root,
-                    "-e", "false",
                     "-c", ""]
             }
         ])
@@ -582,6 +559,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-utils': [],
             'React-debug': [],
             'React-rendererdebug': [],
@@ -601,6 +579,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-utils': [],
             'React-debug': [],
             'React-rendererdebug': [],

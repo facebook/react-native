@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -51,7 +52,7 @@ class CoreReactPackage extends TurboReactPackage {
   }
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
       case AndroidInfoModule.NAME:
         return new AndroidInfoModule(reactContext);
@@ -68,8 +69,7 @@ class CoreReactPackage extends TurboReactPackage {
       case ExceptionsManagerModule.NAME:
         return new ExceptionsManagerModule(mDevSupportManager);
       default:
-        throw new IllegalArgumentException(
-            "In BridgelessReactPackage, could not find Native module for " + name);
+        return null;
     }
   }
 

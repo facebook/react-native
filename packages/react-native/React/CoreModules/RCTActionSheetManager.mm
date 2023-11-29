@@ -100,9 +100,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
   NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
 
-  UIViewController *controller = RCTPresentedViewController();
-
   dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *controller = RCTPresentedViewController();
+
     if (controller == nil) {
       RCTLogError(
           @"Tried to display action sheet but there is no application window. options: %@", @{

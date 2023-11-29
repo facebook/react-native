@@ -59,6 +59,10 @@ class ShadowNode : public Sealable,
     return ShadowNodeTraits{};
   }
 
+  static ShadowNodeTraits::Trait IdentifierTrait() {
+    return ShadowNodeTraits::Trait::None;
+  }
+
 #pragma mark - Constructors
 
   /*

@@ -68,6 +68,7 @@ PODS:
     - DoubleConversion
     - fmt (= 9.1.0)
     - glog
+  - RCTDeprecation (1000.0.0)
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
@@ -109,6 +110,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default (= 1000.0.0)
     - React-cxxreact
     - React-hermes
@@ -123,6 +125,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -137,6 +140,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-cxxreact
     - React-hermes
     - React-jsi
@@ -150,6 +154,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default (= 1000.0.0)
     - React-Core/RCTWebSocket (= 1000.0.0)
     - React-cxxreact
@@ -166,6 +171,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -180,6 +186,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -194,6 +201,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -208,6 +216,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -222,6 +231,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -236,6 +246,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -250,6 +261,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -264,6 +276,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -278,6 +291,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -292,6 +306,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default
     - React-cxxreact
     - React-hermes
@@ -306,6 +321,7 @@ PODS:
     - glog
     - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
+    - RCTDeprecation
     - React-Core/Default (= 1000.0.0)
     - React-cxxreact
     - React-hermes
@@ -917,6 +933,7 @@ PODS:
     - DoubleConversion
     - fmt (= 9.1.0)
     - glog
+    - hermes-engine
     - RCT-Folly (= 2023.08.07.00)
   - React-jsiexecutor (1000.0.0):
     - DoubleConversion
@@ -1158,6 +1175,7 @@ DEPENDENCIES:
   - OCMock (~> 3.9.1)
   - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
+  - RCTDeprecation (from `../react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../react-native/Libraries/Required`)
   - RCTTypeSafety (from `../react-native/Libraries/TypeSafety`)
   - React (from `../react-native/`)
@@ -1230,6 +1248,8 @@ EXTERNAL SOURCES:
     :path: NativeCxxModuleExample
   RCT-Folly:
     :podspec: "../react-native/third-party-podspecs/RCT-Folly.podspec"
+  RCTDeprecation:
+    :path: "../react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
     :path: "../react-native/Libraries/Required"
   RCTTypeSafety:
@@ -1327,17 +1347,18 @@ SPEC CHECKSUMS:
   FBLazyVector: f4492a543c5a8fa1502d3a5867e3f7252497cfe8
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  hermes-engine: 2788dfc2ed3699d11b14e815f0c608fc8d770d6b
+  hermes-engine: 3cf266f7eba66a16bcc83d939def2899e6d1a717
   MyNativeView: 1fb0d21fda6ef12fd5f425f9888c81345a86a3e7
   NativeCxxModuleExample: 19d10636011c914264a5922c6f0f22a2e8fd0910
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: 823c6f6ec910a75d4ad28898b4a11cdee140b92a
+  RCTDeprecation: 3808e36294137f9ee5668f4df2e73dc079cd1dcf
   RCTRequired: 82c56a03b3efd524bfdb581a906add903f78f978
   RCTTypeSafety: 5f57d4ae5dfafc85a0f575d756c909b584722c52
   React: cb6dc75e09f32aeddb4d8fb58a394a67219a92fe
   React-callinvoker: bae59cbd6affd712bbfc703839dad868ff35069d
   React-Codegen: c1e6ea0005a6ecf187d2772f14e5386f1c1f4853
-  React-Core: f09ea29184cc7f33015a0748588fcfe1d43b3dd1
+  React-Core: aaf2be188dfb2c342bc504042a92bfff31e2048f
   React-CoreModules: ad1b7cb8efe5f3c7e88548b6ea6aad8507774471
   React-cxxreact: 04bf6a12caa850f5d2c7bd6d66dfecd4741989b5
   React-debug: 296b501a90c41f83961f58c6d96a01330d499da5
@@ -1347,7 +1368,7 @@ SPEC CHECKSUMS:
   React-hermes: f192759ffeb9714917e9c39850ac349d8ea982d8
   React-ImageManager: 691c4a56320ab9ab10482cd6306b3a4da004b79c
   React-jserrorhandler: 79fb3a8860fb1ea22dc77765aac15775593d4f8f
-  React-jsi: 3c1d8048abf3eaca913944bd9835333bb7b415d4
+  React-jsi: 81f4e5b414c992c16c02e22e975a45aeb2b166e4
   React-jsiexecutor: 1212e26a01ce4de7443123f0ce090ec1affb3220
   React-jsinspector: c867db3338992200616103b2f0ca6882c0c0482d
   React-logger: 8486d7a1d32b972414b1d34a93470ee2562c6ee2
@@ -1377,7 +1398,7 @@ SPEC CHECKSUMS:
   ReactCommon-Samples: cfc3383af93a741319e038977c2ae1082e4ff49e
   ScreenshotManager: 753da20873c2ada484bdee4143a7248084d3fd35
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: 455fa6867657b570a05655dd515c8c6588618fa8
+  Yoga: dcc90b6f6863e467adabdd4f4bd963da1faddf1d
 
 PODFILE CHECKSUM: 426f495a1ad44f3cabea3b7dd2b66a0b71083e26
 

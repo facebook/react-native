@@ -34,13 +34,13 @@ class ReactHostDelegateTest {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
     val turboModuleManagerDelegateBuilderMock: ReactPackageTurboModuleManagerDelegate.Builder =
         Mockito.mock(ReactPackageTurboModuleManagerDelegate.Builder::class.java)
-    val hermesInstance: JSEngineInstance = Mockito.mock(HermesInstance::class.java)
+    val hermesInstance: JSRuntimeFactory = Mockito.mock(HermesInstance::class.java)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
     val delegate =
         DefaultReactHostDelegate(
             jsMainModulePath = jsMainModulePathMocked,
             jsBundleLoader = jsBundleLoader,
-            jsEngineInstance = hermesInstance,
+            jsRuntimeFactory = hermesInstance,
             turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
 
     assertThat(delegate.jsMainModulePath).isEqualTo(jsMainModulePathMocked)

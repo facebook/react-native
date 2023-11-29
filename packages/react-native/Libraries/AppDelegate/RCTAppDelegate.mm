@@ -13,7 +13,6 @@
 #import "RCTAppSetupUtils.h"
 #import "RCTLegacyInteropComponents.h"
 
-#if RCT_NEW_ARCH_ENABLED
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
 #else
@@ -38,7 +37,7 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -51,19 +50,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 @end
 
-#endif
-
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
-#ifdef RCT_NEW_ARCH_ENABLED
   NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
   // Hardcoding the Concurrent Root as it it not recommended to
   // have the concurrentRoot turned off when Fabric is enabled.
   mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
   return mutableProps;
-#else
-  return initialProps;
-#endif
 }
 
 @interface RCTAppDelegate () <RCTCxxBridgeDelegate> {
@@ -72,12 +65,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTAppDelegate {
-#if RCT_NEW_ARCH_ENABLED
   RCTHost *_reactHost;
-#endif
 }
 
-#if RCT_NEW_ARCH_ENABLED
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -87,25 +77,20 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   }
   return self;
 }
-#endif
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  BOOL enableTM = NO;
-  BOOL enableBridgeless = NO;
-  BOOL fabricEnabled = NO;
-#if RCT_NEW_ARCH_ENABLED
-  enableTM = self.turboModuleEnabled;
-  enableBridgeless = self.bridgelessEnabled;
-  fabricEnabled = [self fabricEnabled];
-#endif
+  BOOL enableTM = self.turboModuleEnabled;
+  ;
+  BOOL enableBridgeless = self.bridgelessEnabled;
+  BOOL fabricEnabled = self.fabricEnabled;
+
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
   RCTAppSetupPrepareApp(application, enableTM);
 
   UIView *rootView;
   if (enableBridgeless) {
-#if RCT_NEW_ARCH_ENABLED
     // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
     RCTSetUseNativeViewConfigsInBridgelessMode(fabricEnabled);
 
@@ -123,7 +108,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
-#endif
   } else {
     if (!self.bridge) {
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -170,10 +154,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = NO;
-#if RCT_NEW_ARCH_ENABLED
-  enableFabric = self.fabricEnabled;
-#endif
+  BOOL enableFabric = self.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 
   rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -223,7 +204,37 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 #endif
 }
 
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)turboModuleEnabled
+{
 #if RCT_NEW_ARCH_ENABLED
+  return YES;
+#else
+  return NO;
+#endif
+}
+
+- (BOOL)fabricEnabled
+{
+#if RCT_NEW_ARCH_ENABLED
+  return YES;
+#else
+  return NO;
+#endif
+}
+
+- (BOOL)bridgelessEnabled
+{
+  return NO;
+}
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{};
+}
 
 #pragma mark - RCTTurboModuleManagerDelegate
 
@@ -254,30 +265,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
 }
 
-#pragma mark - RCTComponentViewFactoryComponentProvider
-
-- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
-{
-  return @{};
-}
-
-#pragma mark - New Arch Enabled settings
-
-- (BOOL)turboModuleEnabled
-{
-  return YES;
-}
-
-- (BOOL)fabricEnabled
-{
-  return YES;
-}
-
-- (BOOL)bridgelessEnabled
-{
-  return NO;
-}
-
 #pragma mark - New Arch Utilities
 
 - (void)unstable_registerLegacyComponents
@@ -293,8 +280,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
                                      hostDelegate:nil
                        turboModuleManagerDelegate:self
-                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
-                                   return [weakSelf createJSEngineInstance];
+                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
+                                   return [weakSelf createJSRuntimeFactory];
                                  }];
   [_reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
@@ -303,7 +290,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [_reactHost start];
 }
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)createJSEngineInstance
+- (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
 #if USE_HERMES
   return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
@@ -323,7 +310,5 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
 }
-
-#endif
 
 @end

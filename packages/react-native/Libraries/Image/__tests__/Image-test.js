@@ -45,6 +45,67 @@ describe('<Image />', () => {
     expect(instance).toMatchSnapshot();
   });
 
+  it('should invoke original ref callbacks correctly when using image attached callbacks', () => {
+    jest.dontMock('../Image');
+
+    let imageInstanceFromCallback = null;
+    let imageInstanceFromRef1 = null;
+    let imageInstanceFromRef2 = null;
+
+    const callback = jest.fn((instance: ElementRef<typeof Image>) => {
+      imageInstanceFromCallback = instance;
+
+      return () => {
+        imageInstanceFromCallback = null;
+      };
+    });
+
+    ImageInjection.unstable_registerImageAttachedCallback(callback);
+
+    expect(imageInstanceFromCallback).toBe(null);
+
+    let testRenderer;
+
+    const ref1 = jest.fn(instance => {
+      imageInstanceFromRef1 = instance;
+    });
+
+    act(() => {
+      testRenderer = create(<Image source={{uri: 'foo-bar.jpg'}} ref={ref1} />);
+    });
+
+    expect(imageInstanceFromCallback).not.toBe(null);
+    expect(imageInstanceFromRef1).not.toBe(null);
+    expect(imageInstanceFromCallback).toBe(imageInstanceFromRef1);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(ref1).toHaveBeenCalledTimes(1);
+
+    const ref2 = jest.fn(
+      (instance: React.ElementRef<typeof Image> | null): void => {
+        imageInstanceFromRef2 = instance;
+      },
+    );
+
+    act(() => {
+      testRenderer.update(<Image source={{uri: 'foo-bar.jpg'}} ref={ref2} />);
+    });
+
+    expect(imageInstanceFromCallback).not.toBe(null);
+    expect(imageInstanceFromRef1).toBe(null);
+    expect(imageInstanceFromRef2).not.toBe(null);
+    expect(imageInstanceFromCallback).toBe(imageInstanceFromRef2);
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(ref1).toHaveBeenCalledTimes(2);
+    expect(ref2).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      testRenderer.update(<Image source={{uri: 'foo-bar.jpg'}} ref={ref2} />);
+    });
+
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(ref2).toHaveBeenCalledTimes(1);
+  });
+
   it('should call image attached callbacks (basic)', () => {
     jest.dontMock('../Image');
 

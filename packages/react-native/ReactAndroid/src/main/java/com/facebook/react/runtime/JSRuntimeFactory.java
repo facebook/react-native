@@ -13,14 +13,14 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class JSEngineInstance {
+public abstract class JSRuntimeFactory {
   static {
     SoLoader.loadLibrary("rninstance");
   }
 
   @DoNotStrip private final HybridData mHybridData;
 
-  protected JSEngineInstance(HybridData hybridData) {
+  protected JSRuntimeFactory(HybridData hybridData) {
     mHybridData = hybridData;
   }
 }

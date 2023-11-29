@@ -20,7 +20,7 @@ using NativeIntersectionObserverIntersectionObserverId = int32_t;
 using RectAsTuple = std::tuple<Float, Float, Float, Float>;
 
 using NativeIntersectionObserverObserveOptions =
-    NativeIntersectionObserverCxxBaseNativeIntersectionObserverObserveOptions<
+    NativeIntersectionObserverCxxNativeIntersectionObserverObserveOptions<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
         // targetShadowNode
@@ -30,16 +30,11 @@ using NativeIntersectionObserverObserveOptions =
 
 template <>
 struct Bridging<NativeIntersectionObserverObserveOptions>
-    : NativeIntersectionObserverCxxBaseNativeIntersectionObserverObserveOptionsBridging<
-          // intersectionObserverId
-          NativeIntersectionObserverIntersectionObserverId,
-          // targetShadowNode
-          jsi::Object,
-          // thresholds
-          std::vector<Float>> {};
+    : NativeIntersectionObserverCxxNativeIntersectionObserverObserveOptionsBridging<
+          NativeIntersectionObserverObserveOptions> {};
 
 using NativeIntersectionObserverEntry =
-    NativeIntersectionObserverCxxBaseNativeIntersectionObserverEntry<
+    NativeIntersectionObserverCxxNativeIntersectionObserverEntry<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
         // targetInstanceHandle
@@ -57,21 +52,8 @@ using NativeIntersectionObserverEntry =
 
 template <>
 struct Bridging<NativeIntersectionObserverEntry>
-    : NativeIntersectionObserverCxxBaseNativeIntersectionObserverEntryBridging<
-          // intersectionObserverId
-          NativeIntersectionObserverIntersectionObserverId,
-          // targetInstanceHandle
-          jsi::Value,
-          // targetRect
-          RectAsTuple,
-          // rootRect
-          RectAsTuple,
-          // intersectionRect
-          std::optional<RectAsTuple>,
-          // isIntersectingAboveThresholds
-          bool,
-          // time
-          double> {};
+    : NativeIntersectionObserverCxxNativeIntersectionObserverEntryBridging<
+          NativeIntersectionObserverEntry> {};
 
 class NativeIntersectionObserver
     : public NativeIntersectionObserverCxxSpec<NativeIntersectionObserver>,
