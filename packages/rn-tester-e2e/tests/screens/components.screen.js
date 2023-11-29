@@ -8,7 +8,7 @@
  * @format
  */
 
-import {UtilsSingleton as Utils, iOSLabel} from '../helpers/utils';
+import {UtilsSingleton as Utils, iOSLabel, androidWidget} from '../helpers/utils';
 
 // root level screen in RNTester: Components
 
@@ -116,7 +116,7 @@ export const ComponentsScreen: ComponentsScreenType = {
   }),
   searchInputLabelElement: Utils.platformSelect({
     ios: iOSLabel(searchInputLabel),
-    android: `~${searchInputLabel}`,
+    android: androidWidget('EditText', 'text', searchInputLabel),
   }),
   // Methods to interact with top level elements in the list
   checkComponentScreenHeaderIsDisplayed: async function (
