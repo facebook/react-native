@@ -28,8 +28,8 @@ private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
     private val eagerlyInitializedModules: List<String>,
-    cxxReactPackage: CxxReactPackage?,
-) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackage)) {
+    cxxReactPackages: List<CxxReactPackage>,
+) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
   override fun initHybrid(): HybridData? {
     throw UnsupportedOperationException(
@@ -47,20 +47,20 @@ private constructor(
 
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var eagerInitModuleNames: List<String> = emptyList()
-    private var cxxReactPackage: CxxReactPackage? = null
+    private var cxxReactPackages: MutableList<CxxReactPackage> = mutableListOf()
 
     fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
       this.eagerInitModuleNames = eagerInitModuleNames
       return this
     }
 
-    fun setCxxReactPackage(cxxReactPackage: CxxReactPackage): Builder {
-      this.cxxReactPackage = cxxReactPackage
+    fun addCxxReactPackage(cxxReactPackage: CxxReactPackage): Builder {
+      this.cxxReactPackages.add(cxxReactPackage)
       return this
     }
 
     override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
-        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackage)
+        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackages)
   }
 
   companion object {
@@ -68,6 +68,8 @@ private constructor(
       DefaultSoLoader.maybeLoadSoLibrary()
     }
 
-    @DoNotStrip @JvmStatic external fun initHybrid(cxxReactPackage: CxxReactPackage?): HybridData?
+    @DoNotStrip
+    @JvmStatic
+    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData?
   }
 }
