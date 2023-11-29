@@ -24,14 +24,14 @@ exports.config = {
       'appium:deviceName': 'Android Emulator',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
       'appium:automationName': 'UiAutomator2',
-      'appium:newCommandTimeout': 240,
+      'appium:newCommandTimeout': 120,
       'appium:fullReset': false
     },
   ],
   logLevel: 'debug',
   bail: 3, //reduce time of failed builds
   waitforTimeout: 30000,
-  connectionRetryTimeout: 120000,
+  connectionRetryTimeout: 30000,
   connectionRetryCount: 3,
   specFileRetries: 3,
   services: [
@@ -51,7 +51,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 80000
+    timeout: 50000
   },
 
   beforeSession: async function (config, capabilities, specs) {
