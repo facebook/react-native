@@ -182,4 +182,7 @@ public class ReactFeatureFlags {
    *  when there is work to do.
    */
   public static boolean enableOnDemandReactChoreographer = false;
+
+  /** When enabled, the default value of the position style property is relative. */
+  public static boolean positionRelativeDefault = false;
 }

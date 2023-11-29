@@ -23,5 +23,6 @@ bool CoreFeatures::enableClonelessStateProgression = false;
 bool CoreFeatures::excludeYogaFromRawProps = false;
 bool CoreFeatures::enableMicrotasks = false;
 bool CoreFeatures::enableReportEventPaintTime = false;
+bool CoreFeatures::positionRelativeDefault = false;
 
 } // namespace facebook::react
