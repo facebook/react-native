@@ -6,6 +6,23 @@
  */
 'use strict';
 
+/**
+ * @typedef {{
+ *   configuration: string;
+ *   packager: boolean;
+ *   port: number;
+ *   projectPath: string;
+ *   scheme?: string;
+ *   terminal: string | undefined;
+ *   verbose: boolean;
+ * }} Options
+ *
+ * @typedef {{
+ *   name: string;
+ *   isWorkspace: boolean;
+ * }} XcodeProject
+ */
+
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -19,10 +36,10 @@ const {
 
 /**
  * @param {string[]} _
- * @param {Object.<string, *>} ctx
- * @param {{configuration: string, scheme?: string, projectPath: string, packager: boolean, verbose: boolean, port: number, terminal: string | undefined}} args
+ * @param {Record<string, unknown>} _ctx
+ * @param {Options} args
  */
-function runMacOS(_, ctx, args) {
+function runMacOS(_, _ctx, args) {
   if (!fs.existsSync(args.projectPath)) {
     throw new CLIError(
       'macOS project folder not found. Are you sure this is a React Native project?',
@@ -53,9 +70,9 @@ function runMacOS(_, ctx, args) {
 }
 
 /**
- * @param {{name: string, isWorkspace: boolean}} xcodeProject
+ * @param {XcodeProject} xcodeProject
  * @param {string} scheme
- * @param {{configuration: string, scheme?: string, projectPath: string, packager: boolean, verbose: boolean, port: number, terminal: string | undefined}} args
+ * @param {Options} args
  */
 async function run(xcodeProject, scheme, args) {
   await buildProject(xcodeProject, scheme, args);
@@ -99,9 +116,9 @@ async function run(xcodeProject, scheme, args) {
 }
 
 /**
- * @param {{name: string, isWorkspace: boolean}} xcodeProject
+ * @param {XcodeProject} xcodeProject
  * @param {string} scheme
- * @param {{configuration: string, scheme?: string, projectPath: string, packager: boolean, verbose: boolean, port: number, terminal: string | undefined}} args
+ * @param {Options} args
  */
 function buildProject(xcodeProject, scheme, args) {
   return new Promise((resolve, reject) => {
@@ -176,7 +193,7 @@ function buildProject(xcodeProject, scheme, args) {
 }
 
 /**
- * @param {{name: string, isWorkspace: boolean}} xcodeProject
+ * @param {XcodeProject} xcodeProject
  * @param {string} configuration
  * @param {string} scheme
  * @returns {{ FULL_PRODUCT_NAME: string, INFOPLIST_PATH: string, TARGET_BUILD_DIR: string }}
@@ -224,10 +241,8 @@ function xcprettyAvailable() {
 }
 
 /**
- * @param {Object} args
- * @param {boolean} args.packager
- * @param {string|undefined} args.terminal
- * @param {number} args.port
+ * @param {Options} args
+ * @returns {import('child_process').ProcessEnvOptions}
  */
 function getProcessOptions({packager, terminal, port}) {
   if (packager) {
