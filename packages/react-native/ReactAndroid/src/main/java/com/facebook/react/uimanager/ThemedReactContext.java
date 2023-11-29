@@ -15,6 +15,7 @@ import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UIManager;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides
@@ -115,5 +116,13 @@ public class ThemedReactContext extends ReactContext {
       return mReactApplicationContext.getJSIModule(moduleType);
     }
     return super.getJSIModule(moduleType);
+  }
+
+  @Override
+  public UIManager getFabricUIManager() {
+    if (isBridgeless()) {
+      return mReactApplicationContext.getFabricUIManager();
+    }
+    return super.getFabricUIManager();
   }
 }
