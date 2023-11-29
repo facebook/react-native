@@ -43,6 +43,12 @@ If not, remember to disable it in `Podfile`.
 8. Open `YourApp/visionos/YourApp.xcworkspace` using Xcode 15 Beta.
 9. Build the app by clicking the "Run" button in Xcode.
 
+## Platform guidelines
+
+We suggest you read [Human Interface Guidelines for visionOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos) when creating visionOS apps.
+
+It's important not to cover the translucent background with a solid color, as it helps to ground apps and make them feel like part of the environment.
+
 ## Contributing
 
 1. Follow the same steps as in the `New project creation` section.
