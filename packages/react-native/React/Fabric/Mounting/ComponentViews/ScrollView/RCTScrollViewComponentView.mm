@@ -133,11 +133,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     [self.scrollViewDelegateSplitter addDelegate:self];
 
-    if (CoreFeatures::disableScrollEventThrottleRequirement) {
-      _scrollEventThrottle = 0;
-    } else {
-      _scrollEventThrottle = INFINITY;
-    }
+    _scrollEventThrottle = 0;
   }
 
   return self;
