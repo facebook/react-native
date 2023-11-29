@@ -19,10 +19,13 @@ describe('Testing onViewableItemsChanges Flat List Functionality', function () {
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickFlatListComponent();
+    expect(
+      await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
+    ).toBeTruthy();
   });
 
-  it('Should scroll until onViewableItemsChanged component button is displayed', async function () {
-    await FlatListComponentScreen.scrollUntilOnViewableItemsChangedIsDisplayed();
+  it('Should search for onViewableItemsChanged and check if button is displayed', async function () {
+    await ComponentsScreen.setValueToSearch('onViewableItemsChanged');
     expect(
       await FlatListComponentScreen.checkFlatListOnViewableItemsChangedScreenIsDisplayed(),
     ).toBeTruthy();

@@ -19,10 +19,13 @@ describe('Testing Inverted Flat List Functionality', function () {
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickFlatListComponent();
+    expect(
+      await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
+    ).toBeTruthy();
   });
 
-  it('Should scroll until onViewableItemsChanged is displayed', async function () {
-    await FlatListComponentScreen.scrollUntilOnViewableItemsChangedIsDisplayed();
+  it('Should search for onViewableItemsChanged and check if displayed', async function () {
+    await ComponentsScreen.setValueToSearch('Inverted');
     expect(
       await FlatListComponentScreen.checkFlatListInvertedScreenIsDisplayed(),
     ).toBeTruthy();

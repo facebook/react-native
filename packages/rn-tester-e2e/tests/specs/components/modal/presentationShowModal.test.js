@@ -15,7 +15,7 @@ const {
 
 describe('Testing Show Modal button of Modal Presentation Functionality', function () {
   it('Should scroll until the Modal component check if it is displayed', async function () {
-    await ModalComponentScreen.scrollUntilModalComponentIsDisplayed();
+    await ComponentsScreen.setValueToSearch('Modal');
     expect(
       await ComponentsScreen.checkModalComponentIsDisplayed(),
     ).toBeTruthy();

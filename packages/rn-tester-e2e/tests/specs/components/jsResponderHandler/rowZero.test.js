@@ -17,8 +17,8 @@ const {
 const roweZeroText = 'I am row 0';
 
 describe('Testing row zero of JSResponderHandler Functionality Testis checking row zero JSResponderHandler component', function () {
-  it('Should scroll to JSResponderHandler component and check component visibility', async function () {
-    await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
+  it('Should search for JSResponderHandler component and check component visibility', async function () {
+    await ComponentsScreen.setValueToSearch('JSResponderHandler');
     expect(
       await ComponentsScreen.checkJSResponderHandlerComponentIsDisplayed(),
     ).toBeTruthy();

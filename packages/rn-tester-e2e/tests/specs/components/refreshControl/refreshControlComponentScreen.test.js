@@ -14,8 +14,8 @@ const {
 } = require('../../../screens/components/refreshControlComponent.screen.js');
 
 describe('Testing if any Initial Row is visible', function () {
-  it('Should scroll until the Refresh Control component is displayed', async function () {
-    await RefreshControlComponentScreen.scrollUntilRefreshControlComponentIsDisplayed();
+  it('Should search for the Refresh Control component and check if displayed', async function () {
+    await ComponentsScreen.setValueToSearch('RefreshControl');
     expect(
       await ComponentsScreen.checkRefreshControlComponentIsDisplayed(),
     ).toBeTruthy();

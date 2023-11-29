@@ -19,10 +19,13 @@ describe('Testing Sticky Headers Flat List Functionality', function () {
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickFlatListComponent();
+    expect(
+      await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
+    ).toBeTruthy();
   });
 
-  it('Should scroll until the Nested component button is displayed', async function () {
-    await FlatListComponentScreen.scrollUntilNestedIsDisplayed();
+  it('Should search for Nested component and check if button is displayed', async function () {
+    await ComponentsScreen.setValueToSearch('Sticky Headers');
     expect(
       await FlatListComponentScreen.checkFlatListStickyHeadersScreenIsDisplayed(),
     ).toBeTruthy();

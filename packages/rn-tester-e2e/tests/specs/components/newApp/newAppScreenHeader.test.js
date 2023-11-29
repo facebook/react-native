@@ -14,8 +14,8 @@ const {
 } = require('../../../screens/components/newAppComponent.screen.js');
 
 describe('Testing New App Screen Header Visibility', function () {
-  it('Should scroll until the New App Header component and check displayed', async function () {
-    await NewAppComponentScreen.scrollUntilNewAppHeaderComponentIsDisplayed();
+  it('Should search for New App Header component and check if displayed', async function () {
+    await ComponentsScreen.setValueToSearch('New App Screen');
     expect(
       await ComponentsScreen.checkNewAppScreenComponentIsDisplayed(),
     ).toBeTruthy();

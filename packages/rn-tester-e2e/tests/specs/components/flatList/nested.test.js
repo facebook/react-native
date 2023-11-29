@@ -19,10 +19,13 @@ describe('Testing Nested Flat List Functionality', function () {
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickFlatListComponent();
+    expect(
+      await FlatListComponentScreen.checkFlatListContentInsetScreenIsDisplayed(),
+    ).toBeTruthy();
   });
 
-  it('Should scroll until the nested element is displayed', async function () {
-    await FlatListComponentScreen.scrollUntilNestedIsDisplayed();
+  it('Should search for nested and check if element is displayed', async function () {
+    await ComponentsScreen.setValueToSearch('Nested');
     expect(
       await FlatListComponentScreen.checkFlatListNestedScreenIsDisplayed(),
     ).toBeTruthy();
