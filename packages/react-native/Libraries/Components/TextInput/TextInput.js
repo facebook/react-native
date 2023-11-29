@@ -1287,10 +1287,7 @@ function InternalTextInput(props: Props): React.Node {
     [mostRecentEventCount, viewCommands],
   );
 
-  const ref = useMergeRefs<TextInputInstance | null>(
-    setLocalRef,
-    props.forwardedRef,
-  );
+  const ref = useMergeRefs<TextInputInstance>(setLocalRef, props.forwardedRef);
 
   const _onChange = (event: ChangeEvent) => {
     const currentText = event.nativeEvent.text;
