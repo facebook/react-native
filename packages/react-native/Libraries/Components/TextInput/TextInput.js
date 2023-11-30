@@ -1575,7 +1575,7 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
         style={style}
-        text={children ? null : text}
+        text={children === undefined ? text : ''}
         textBreakStrategy={props.textBreakStrategy}
       />
     );
