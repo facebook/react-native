@@ -216,6 +216,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     }
 
     BoringLayout boringLayout = null;
+    boolean requiresBoringLayout = false;
     if (boring != null) {
       boringLayout =
           BoringLayout.make(
@@ -227,6 +228,11 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               0.f,
               boring,
               mIncludeFontPadding);
+      requiresBoringLayout =
+          boringLayout != null
+              && boringLayout.getLineCount() == 1
+              && mAdjustsFontSizeToFit != true
+              && boring.width > width;
     }
 
     if (boring == null
@@ -252,9 +258,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       layout = builder.build();
 
     } else if (boring != null
-        && (unconstrainedWidth
-            || boring.width <= width
-            || (boringLayout != null && boringLayout.getLineCount() == 1 && mAdjustsFontSizeToFit != true))) {
+        && (unconstrainedWidth || boring.width <= width || requiresBoringLayout)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout = boringLayout;
