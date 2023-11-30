@@ -362,7 +362,7 @@ public class MountItemDispatcher {
       }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
-      surfaceMountingManager.executeOnViewAttach(item);
+      surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);
     }
