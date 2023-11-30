@@ -125,7 +125,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
-        assert_nil(yoga_release_config.build_settings["OTHER_CFLAGS"], nil)
+        assert_nil(yoga_release_config.build_settings["OTHER_CFLAGS"])
     end
 
     # =================================== #
