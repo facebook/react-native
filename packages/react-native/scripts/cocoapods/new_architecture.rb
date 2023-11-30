@@ -73,6 +73,9 @@ class NewArchitectureHelper
                     else
                         config.build_settings['OTHER_CPLUSPLUSFLAGS'] = config.build_settings['OTHER_CPLUSPLUSFLAGS'] + @@new_arch_cpp_flags
                     end
+                    unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include? '$(inherited)'
+                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = '$(inherited) ' + config.build_settings['OTHER_CPLUSPLUSFLAGS']
+                    end
                 end
             end
         end
