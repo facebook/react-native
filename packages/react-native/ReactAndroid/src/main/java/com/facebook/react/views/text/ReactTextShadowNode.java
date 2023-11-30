@@ -215,24 +215,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         break;
     }
 
-    BoringLayout boringLayout = null;
-    boolean requiresBoringLayout = false;
+    boolean renderSingleLineTextWithBoringLayout = false;
     if (boring != null) {
-      boringLayout =
-          BoringLayout.make(
-              text,
-              textPaint,
-              Math.max(boring.width, 0),
-              alignment,
-              1.f,
-              0.f,
-              boring,
-              mIncludeFontPadding);
-      requiresBoringLayout =
-          boringLayout != null
-              && boringLayout.getLineCount() == 1
-              && mAdjustsFontSizeToFit != true
-              && boring.width > width;
+      renderSingleLineTextWithBoringLayout =
+          mNumberOfLines == 1 && mAdjustsFontSizeToFit != true && boring.width > width;
     }
 
     if (boring == null
@@ -258,10 +244,19 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       layout = builder.build();
 
     } else if (boring != null
-        && (unconstrainedWidth || boring.width <= width || requiresBoringLayout)) {
+        && (unconstrainedWidth || boring.width <= width || renderSingleLineTextWithBoringLayout)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
-      layout = boringLayout;
+      layout =
+          BoringLayout.make(
+              text,
+              textPaint,
+              Math.max(boring.width, 0),
+              alignment,
+              1.f,
+              0.f,
+              boring,
+              mIncludeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
       // Android 11+ introduces changes in text width calculation which leads to cases
