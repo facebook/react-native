@@ -9,6 +9,7 @@
 
 'use strict';
 
+const {getPlatformResolver} = require('@callstack/out-of-tree-platforms');
 const {getDefaultConfig} = require('@react-native/metro-config');
 const {mergeConfig} = require('metro-config');
 const path = require('path');
@@ -36,6 +37,9 @@ const config = {
     extraNodeModules: {
       'react-native': path.resolve(__dirname, '../react-native'),
     },
+    resolveRequest: getPlatformResolver({
+      platformNameMap: [{visionos: '@callstack/react-native-visionos'}],
+    }),
   },
 };
 
