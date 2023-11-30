@@ -16,6 +16,7 @@ require_relative "./test_utils/TargetDefinitionMock.rb"
 require_relative "./test_utils/XcodeprojMock.rb"
 require_relative "./test_utils/XcodebuildMock.rb"
 require_relative "./test_utils/SpecMock.rb"
+require_relative "./test_utils/InstallerMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -1008,6 +1009,57 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(spec.to_hash["pod_target_xcconfig"], {
             "HEADER_SEARCH_PATHS" => expected_search_paths})
     end
+
+    def test_add_flag_to_config_field_with_inheritance
+        # Arrange
+        first_config = BuildConfigurationMock.new("EmptyConfig")
+        second_config = BuildConfigurationMock.new("InitializedConfig", {
+            "OTHER_CPLUSPLUSFLAGS" => "INIT_FLAG"
+        })
+        third_config = BuildConfigurationMock.new("TwiceProcessedConfig");
+        test_flag = " -DTEST_FLAG=1"
+    
+        # Act
+        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(first_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(second_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(third_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(third_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
+    
+        # Assert
+        assert_equal("$(inherited)" + test_flag, first_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("INIT_FLAG" + test_flag, second_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, third_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+    end
+    
+    def test_add_ndebug_flag_to_pods_in_release
+        # Arrange
+        xcconfig = XCConfigMock.new("Config")
+        default_debug_config = BuildConfigurationMock.new("Debug")
+        default_release_config = BuildConfigurationMock.new("Release")
+        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug")
+        custom_debug_config2 = BuildConfigurationMock.new("Custom")
+        custom_release_config1 = BuildConfigurationMock.new("CustomRelease")
+        custom_release_config2 = BuildConfigurationMock.new("Production")
+    
+        installer = prepare_installer_for_cpp_flags(
+            [ xcconfig ],
+            {
+                "Default" => [ default_debug_config, default_release_config ],
+                "Custom1" => [ custom_debug_config1, custom_release_config1 ],
+                "Custom2" => [ custom_debug_config2, custom_release_config2 ]
+            }
+        )
+        # Act
+        ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+    
+        # Assert
+        assert_equal(nil, default_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", default_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(nil, custom_debug_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(nil, custom_debug_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
+    end
 end
 
 # ===== #
@@ -1050,3 +1102,31 @@ def prepare_Code_Signing_build_configuration(name, param)
         "CODE_SIGNING_ALLOWED" => param
     })
 end
+
+def prepare_pod_target_installation_results_mock(name, configs)
+    target = TargetMock.new(name, configs)
+    return TargetInstallationResultMock.new(target, target)
+end
+
+def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
+    xcconfigs_map = {}
+    xcconfigs.each do |config|
+        xcconfigs_map[config.name.to_s] = config
+    end
+
+    pod_target_installation_results_map = {}
+    build_configs.each do |name, build_configs|
+        pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
+            name.to_s, build_configs
+        )
+    end
+
+    return InstallerMock.new(
+        PodsProjectMock.new,
+        [
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+        ],
+        :pod_target_installation_results => pod_target_installation_results_map
+    )
+end
+

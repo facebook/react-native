@@ -67,15 +67,6 @@ class NewArchitectureHelper
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
                 end
             end
-
-            target_installation_result.native_target.build_configurations.each do |config|
-                if config.name == "Release"
-                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
-                    current_cflags = config.build_settings['OTHER_CFLAGS'] != nil ? config.build_settings['OTHER_CFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CFLAGS'] = current_cflags + ndebug_flag
-                end
-            end
         end
     end
 

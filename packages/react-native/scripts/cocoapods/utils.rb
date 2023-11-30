@@ -616,27 +616,26 @@ class ReactNativePodsUtils
 
     def self.add_ndebug_flag_to_pods_in_release(installer)
         ndebug_flag = " -DNDEBUG"
-        installer.aggregate_targets.each do |aggregate_target|
-            aggregate_target.xcconfigs.each do |config_name, config_file|
-                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
                 unless is_release
                     next
                 end
-
-                self.add_to_or_create_attribute(config_file.attributes, 'OTHER_CFLAGS', ndebug_flag);
-                self.add_to_or_create_attribute(config_file.attributes, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
-
-                xcconfig_path = aggregate_target.xcconfig_path(config_name)
-                config_file.save_as(xcconfig_path)
+                self.add_flag_to_config_field_with_inheritance(config, 'OTHER_CFLAGS', ndebug_flag);
+                self.add_flag_to_config_field_with_inheritance(config, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
             end
         end
     end
 
-    def self.add_to_or_create_config_attribute_with_inheritance(attributes, attribute_name, attribute_value)
-        if attributes[attribute_name] == nil
-            attributes[attribute_name] = attribute_value + " $(inherited)"
+    def self.add_flag_to_config_field_with_inheritance(config, field, flag)
+        if config.build_settings[field] == nil
+            config.build_settings[field] = "$(inherited)" + flag
         else
-            attributes[attribute_name] = attributes[attribute_name] + attribute_value
+            # add only if it's not included already
+            unless config.build_settings[field].include?(flag)
+                config.build_settings[field] = config.build_settings[field] + flag
+            end
         end
     end
 end
