@@ -20,7 +20,7 @@ describe('Testing Flat List with Separators Functionality', function () {
     ).toBeTruthy();
   });
 
-  it('Should click on FlatList component and search for component', async function () {
+  it('Should open FlatList component and search for FlatList with Separators', async function () {
     await ComponentsScreen.clickFlatListComponent();
     await ComponentsScreen.setValueToSearch('FlatList with Separators');
     expect(

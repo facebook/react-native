@@ -17,8 +17,8 @@ const {
 const onPressText = 'onPress';
 
 describe('Testing Press Me button of Change conent based on Press Functionality', function () {
-  it('Should scroll until the Pressable component is displayed', async function () {
-    await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();
+  it('Should search for Pressable component and check if is displayed', async function () {
+    await ComponentsScreen.setValueToSearch('Pressable');
     expect(
       await ComponentsScreen.checkPressableComponentIsDisplayed(),
     ).toBeTruthy();
