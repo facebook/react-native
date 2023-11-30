@@ -132,19 +132,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           if (widthMode == YogaMeasureMode.EXACTLY) {
             layoutWidth = width;
           } else {
-            TextPaint textPaint = sTextPaintInstance;
-            float textWidth = textPaint.measureText(text.toString());
-            if (lineCount == 1 && textWidth > width) {
-              layoutWidth = textWidth;
-            } else {
-              for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-                boolean endsWithNewLine =
-                    text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-                float lineWidth =
-                    endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-                if (lineWidth > layoutWidth) {
-                  layoutWidth = lineWidth;
-                }
+            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+              boolean endsWithNewLine =
+                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+              float lineWidth =
+                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+              if (lineWidth > layoutWidth) {
+                layoutWidth = lineWidth;
               }
             }
             if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
@@ -221,6 +215,20 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         break;
     }
 
+    BoringLayout boringLayout = null;
+    if (boring != null) {
+      boringLayout =
+          BoringLayout.make(
+              text,
+              textPaint,
+              Math.max(boring.width, 0),
+              alignment,
+              1.f,
+              0.f,
+              boring,
+              mIncludeFontPadding);
+    }
+
     if (boring == null
         && (unconstrainedWidth
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -243,19 +251,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       }
       layout = builder.build();
 
-    } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+    } else if (boring != null
+        && (unconstrainedWidth
+            || boring.width <= width
+            || (boringLayout != null && boringLayout.getLineCount() == 1 && mAdjustsFontSizeToFit != true))) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
-      layout =
-          BoringLayout.make(
-              text,
-              textPaint,
-              Math.max(boring.width, 0),
-              alignment,
-              1.f,
-              0.f,
-              boring,
-              mIncludeFontPadding);
+      layout = boringLayout;
     } else {
       // Is used for multiline, boring text and the width is known.
       // Android 11+ introduces changes in text width calculation which leads to cases
