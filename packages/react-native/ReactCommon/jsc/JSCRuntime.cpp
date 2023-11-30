@@ -233,6 +233,7 @@ class JSCRuntime : public jsi::Runtime {
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
 
  private:
   // Basically convenience casts
@@ -1391,6 +1392,8 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   checkException(exc);
   return res;
 }
+
+void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
 
 jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {
