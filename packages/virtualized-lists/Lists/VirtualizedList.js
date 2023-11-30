@@ -1711,6 +1711,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       visibleLength,
       zoomScale,
     };
+    this._listMetrics.notifyListContentLayout({
+      layout: {
+        width: e.nativeEvent.contentSize.width,
+        height: e.nativeEvent.contentSize.height
+      },
+      orientation: this._orientation(),
+    });
     if (this.state.pendingScrollUpdateCount > 0) {
       this.setState(state => ({
         pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
