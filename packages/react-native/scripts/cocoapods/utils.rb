@@ -613,4 +613,30 @@ class ReactNativePodsUtils
         }
         return result
     end
+
+    def self.add_ndebug_flag_to_pods_in_release(installer)
+        ndebug_flag = " -DNDEBUG"
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+
+                self.add_to_or_create_attribute(config_file.attributes, 'OTHER_CFLAGS', ndebug_flag);
+                self.add_to_or_create_attribute(config_file.attributes, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+
+                xcconfig_path = aggregate_target.xcconfig_path(config_name)
+                config_file.save_as(xcconfig_path)
+            end
+        end
+    end
+
+    def self.add_to_or_create_config_attribute_with_inheritance(attributes, attribute_name, attribute_value)
+        if attributes[attribute_name] == nil
+            attributes[attribute_name] = attribute_value + " $(inherited)"
+        else
+            attributes[attribute_name] = attributes[attribute_name] + attribute_value
+        end
+    end
 end
