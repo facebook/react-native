@@ -58,7 +58,7 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
     ),
   },
 };
-const REACT_NATIVE = 'react-native';
+const REACT_NATIVE = '@callstack/react-native-visionos';
 
 // HELPERS
 

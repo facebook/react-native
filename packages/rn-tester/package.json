@@ -29,7 +29,8 @@
   },
   "peerDependencies": {
     "react": "18.2.0",
-    "react-native": "*"
+    "react-native": "*",
+    "@callstack/react-native-visionos": "*"
   },
   "codegenConfig": {
     "name": "AppSpecs",
