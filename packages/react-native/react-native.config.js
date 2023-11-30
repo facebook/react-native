@@ -54,6 +54,11 @@ module.exports = {
     codegenCommand,
   ],
   platforms: {
+    visionos: {
+      npmPackageName: '@callstack/react-native-visionos',
+      projectConfig: ios.projectConfig,
+      dependencyConfig: ios.dependencyConfig,
+    },
     ios: {
       projectConfig: ios.projectConfig,
       dependencyConfig: ios.dependencyConfig,

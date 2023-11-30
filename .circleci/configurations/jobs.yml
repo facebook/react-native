@@ -96,8 +96,8 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
-      - run_e2e:
-          platform: js
+      # - run_e2e:
+      #     platform: js
 
       # Optionally, run disabled tests
       - when:

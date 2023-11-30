@@ -1,11 +1,11 @@
 {
-  "name": "react-native",
+  "name": "@callstack/react-native-visionos",
   "version": "1000.0.0",
-  "description": "A framework for building native apps using React",
+  "description": "React Native for visionOS",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "https://github.com/callstack/react-native-visionos.git",
     "directory": "packages/react-native"
   },
   "homepage": "https://reactnative.dev/",
