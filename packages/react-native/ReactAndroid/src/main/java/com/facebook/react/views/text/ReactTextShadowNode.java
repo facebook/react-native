@@ -215,9 +215,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         break;
     }
 
-    boolean renderSingleLineTextWithBoringLayout = false;
+    boolean avoidCalculatingTextBreakSingleLine = false;
     if (boring != null) {
-      renderSingleLineTextWithBoringLayout =
+      avoidCalculatingTextBreakSingleLine =
           mNumberOfLines == 1 && mAdjustsFontSizeToFit != true && boring.width > width;
     }
 
@@ -244,7 +244,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       layout = builder.build();
 
     } else if (boring != null
-        && (unconstrainedWidth || boring.width <= width || renderSingleLineTextWithBoringLayout)) {
+        && (unconstrainedWidth || boring.width <= width || avoidCalculatingTextBreakSingleLine)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
