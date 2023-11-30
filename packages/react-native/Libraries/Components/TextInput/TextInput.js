@@ -1154,7 +1154,7 @@ function InternalTextInput(props: Props): React.Node {
         : RCTSinglelineTextInputNativeCommands;
   }
 
-  const children = React.Children.map(props.children, (child) => {
+  const childrenValue = React.Children.map(props.children, child => {
     if (React.isValidElement(child)) {
       const textValue = child.props.text;
       return textValue;
@@ -1163,8 +1163,8 @@ function InternalTextInput(props: Props): React.Node {
   })?.[0];
 
   const text =
-    typeof children === 'string'
-      ? children
+    typeof childrenValue === 'string'
+      ? childrenValue
       : typeof props.value === 'string'
       ? props.value
       : typeof props.defaultValue === 'string'
@@ -1180,9 +1180,9 @@ function InternalTextInput(props: Props): React.Node {
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
       setLastNativeText(props.value);
-    } else if (lastNativeText !== children && typeof children === 'string') {
-      nativeUpdate.text = children;
-      setLastNativeText(children);
+    } else if (lastNativeText !== childrenValue && typeof childrenValue === 'string') {
+      nativeUpdate.text = childrenValue;
+      setLastNativeText(childrenValue);
     }
 
     if (
@@ -1217,6 +1217,7 @@ function InternalTextInput(props: Props): React.Node {
     selection,
     lastNativeSelection,
     text,
+    childrenValue,
     viewCommands,
   ]);
 
