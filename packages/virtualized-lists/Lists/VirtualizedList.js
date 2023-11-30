@@ -1714,7 +1714,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._listMetrics.notifyListContentLayout({
       layout: {
         width: e.nativeEvent.contentSize.width,
-        height: e.nativeEvent.contentSize.height
+        height: e.nativeEvent.contentSize.height,
       },
       orientation: this._orientation(),
     });
