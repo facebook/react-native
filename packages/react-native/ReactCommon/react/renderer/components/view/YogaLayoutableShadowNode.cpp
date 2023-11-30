@@ -470,8 +470,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
   for (size_t i = 0; i < yogaLayoutableChildren_.size(); i++) {
     const auto& child = *yogaLayoutableChildren_[i];
     auto childLayoutMetrics = child.getLayoutMetrics();
-    auto childErrata =
-        YGConfigGetErrata(const_cast<yoga::Config*>(&child.yogaConfig_));
+    auto childErrata = YGConfigGetErrata(&child.yogaConfig_);
 
     if (child.yogaTreeHasBeenConfigured_ &&
         childLayoutMetrics.pointScaleFactor == pointScaleFactor &&
