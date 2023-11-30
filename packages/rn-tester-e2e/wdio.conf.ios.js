@@ -31,7 +31,7 @@ exports.config = {
   logLevel: 'debug',
   bail: 3, //reduce time of failed builds
   waitforTimeout: 30000,
-  connectionRetryTimeout: 30000,
+  connectionRetryTimeout: 50000,
   connectionRetryCount: 3,
   specFileRetries: 3,
   services: [
