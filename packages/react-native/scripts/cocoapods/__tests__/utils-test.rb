@@ -1010,25 +1010,46 @@ class UtilsTests < Test::Unit::TestCase
             "HEADER_SEARCH_PATHS" => expected_search_paths})
     end
 
-    def test_add_flag_to_config_field_with_inheritance
+    def test_add_flag_to_map_with_inheritance_whenUsedWithBuildConfigBuildSettings
         # Arrange
-        first_config = BuildConfigurationMock.new("EmptyConfig")
-        second_config = BuildConfigurationMock.new("InitializedConfig", {
+        empty_config = BuildConfigurationMock.new("EmptyConfig")
+        initialized_config = BuildConfigurationMock.new("InitializedConfig", {
             "OTHER_CPLUSPLUSFLAGS" => "INIT_FLAG"
         })
-        third_config = BuildConfigurationMock.new("TwiceProcessedConfig");
+        twiceProcessed_config = BuildConfigurationMock.new("TwiceProcessedConfig");
         test_flag = " -DTEST_FLAG=1"
     
         # Act
-        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(first_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
-        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(second_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
-        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(third_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
-        ReactNativePodsUtils.add_flag_to_config_field_with_inheritance(third_config, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(empty_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_config.build_settings, "OTHER_CPLUSPLUSFLAGS", test_flag)
     
         # Assert
-        assert_equal("$(inherited)" + test_flag, first_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
-        assert_equal("INIT_FLAG" + test_flag, second_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
-        assert_equal("$(inherited)" + test_flag, third_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, empty_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("INIT_FLAG" + test_flag, initialized_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, twiceProcessed_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+    end
+
+    def test_add_flag_to_map_with_inheritance_whenUsedWithXCConfigAttributes
+        # Arrange
+        empty_xcconfig = XCConfigMock.new("EmptyConfig")
+        initialized_xcconfig = XCConfigMock.new("InitializedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => "INIT_FLAG"
+        })
+        twiceProcessed_xcconfig = XCConfigMock.new("TwiceProcessedConfig");
+        test_flag = " -DTEST_FLAG=1"
+
+        # Act
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(empty_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+
+        # Assert
+        assert_equal("$(inherited)" + test_flag, empty_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("INIT_FLAG" + test_flag, initialized_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)" + test_flag, twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
     end
     
     def test_add_ndebug_flag_to_pods_in_release

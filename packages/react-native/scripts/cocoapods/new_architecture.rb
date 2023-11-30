@@ -12,7 +12,7 @@ class NewArchitectureHelper
 
     @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
 
-    @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
+    @@new_arch_cpp_flags = " -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
     @@cplusplus_version = "c++20"
 
@@ -52,7 +52,11 @@ class NewArchitectureHelper
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                if config_file.attributes['OTHER_CPLUSPLUSFLAGS'] == nil
+                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                else
+                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + @@new_arch_cpp_flags
+                end
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
@@ -64,7 +68,11 @@ class NewArchitectureHelper
             # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
             if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                    if config.build_settings['OTHER_CPLUSPLUSFLAGS'] == nil
+                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                    else
+                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = config.build_settings['OTHER_CPLUSPLUSFLAGS'] + @@new_arch_cpp_flags
+                    end
                 end
             end
         end
@@ -110,7 +118,11 @@ class NewArchitectureHelper
         spec.dependency "glog"
 
         if new_arch_enabled
-            current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
+            if current_config["OTHER_CPLUSPLUSFLAGS"] == nil
+                current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
+            else
+                current_config["OTHER_CPLUSPLUSFLAGS"] = current_config["OTHER_CPLUSPLUSFLAGS"] + @@new_arch_cpp_flags
+            end
         end
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
