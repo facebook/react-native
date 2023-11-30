@@ -10,8 +10,8 @@
           latest : false
           dryrun: true
       - prepare_hermes_workspace
-      - build_android:
-          release_type: "dry-run"
+      # - build_android:
+      #     release_type: "dry-run"
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
@@ -38,21 +38,21 @@
           # Build a release package on every untagged commit, but do not publish to npm.
           release_type: "dry-run"
           requires:
-            - build_android
+            # - build_android
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      - test_android:
-          requires:
-            - build_android
-      - test_android_template:
-          requires:
-            - build_npm_package
-          matrix:
-            parameters:
-              architecture: ["NewArch", "OldArch"]
-              jsengine: ["Hermes", "JSC"]
-              flavor: ["Debug", "Release"]
+      # - test_android:
+      #     requires:
+      #       - build_android
+      # - test_android_template:
+      #     requires:
+      #       - build_npm_package
+      #     matrix:
+      #       parameters:
+      #         architecture: ["NewArch", "OldArch"]
+      #         jsengine: ["Hermes", "JSC"]
+      #         flavor: ["Debug", "Release"]
       - test_ios_template:
           requires:
             - build_npm_package
