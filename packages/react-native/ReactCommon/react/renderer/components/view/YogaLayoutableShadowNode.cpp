@@ -497,7 +497,8 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
       case LayoutConformance::Classic:
         return YGErrataAll;
       case LayoutConformance::Strict:
-        return YGErrataNone;
+        // This is temporary until the default position type is relative
+        return YGErrataPositionStaticBehavesLikeRelative;
       case LayoutConformance::Undefined:
         return defaultErrata;
     }
