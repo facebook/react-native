@@ -650,6 +650,9 @@ class ReactNativePodsUtils
             unless map[field].include?(flag)
                 map[field] = map[field] + flag
             end
+            unless map[field].include?("$(inherited)")
+                map[field] = "$(inherited) " + map[field]
+            end
         end
     end
 end

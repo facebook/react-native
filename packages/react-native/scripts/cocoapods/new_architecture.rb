@@ -52,11 +52,7 @@ class NewArchitectureHelper
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                if config_file.attributes['OTHER_CPLUSPLUSFLAGS'] == nil
-                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-                else
-                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + @@new_arch_cpp_flags
-                end
+                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
@@ -68,14 +64,7 @@ class NewArchitectureHelper
             # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
             if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
-                    if config.build_settings['OTHER_CPLUSPLUSFLAGS'] == nil
-                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-                    else
-                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = config.build_settings['OTHER_CPLUSPLUSFLAGS'] + @@new_arch_cpp_flags
-                    end
-                    unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include? '$(inherited)'
-                        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = '$(inherited) ' + config.build_settings['OTHER_CPLUSPLUSFLAGS']
-                    end
+                    ReactNativePodsUtils.add_flag_to_map_with_inheritance(config.build_settings, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
                 end
             end
         end
@@ -121,11 +110,7 @@ class NewArchitectureHelper
         spec.dependency "glog"
 
         if new_arch_enabled
-            if current_config["OTHER_CPLUSPLUSFLAGS"] == nil
-                current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
-            else
-                current_config["OTHER_CPLUSPLUSFLAGS"] = current_config["OTHER_CPLUSPLUSFLAGS"] + @@new_arch_cpp_flags
-            end
+            ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
         end
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
