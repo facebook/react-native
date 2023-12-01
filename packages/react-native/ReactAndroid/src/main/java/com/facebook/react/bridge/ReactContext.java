@@ -564,10 +564,6 @@ public class ReactContext extends ContextWrapper {
    * @return The UIManager when CatalystInstance is active.
    */
   public @Nullable UIManager getFabricUIManager() {
-    if (!hasActiveReactInstance()) {
-      throw new IllegalStateException(
-          "Unable to retrieve a UIManager if CatalystInstance is not active.");
-    }
     UIManager uiManager = mCatalystInstance.getFabricUIManager();
     return uiManager != null
         ? uiManager
