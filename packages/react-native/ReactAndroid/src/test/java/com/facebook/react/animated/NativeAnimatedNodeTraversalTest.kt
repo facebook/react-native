@@ -83,6 +83,7 @@ class NativeAnimatedNodeTraversalTest {
     whenever(catalystInstanceMock.getJSIModule(any(JSIModuleType::class.java))).thenAnswer {
       uiManagerMock
     }
+    whenever(catalystInstanceMock.getFabricUIManager()).thenAnswer { uiManagerMock }
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java)).thenAnswer {
       uiManagerMock
     }
