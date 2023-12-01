@@ -35,8 +35,7 @@ export default function createAnimatedComponent<TProps: {...}, TInstance>(
         // $FlowFixMe[incompatible-call]
         props,
       );
-      // $FlowFixMe[incompatible-call]
-      const ref = useMergeRefs<TInstance | null>(callbackRef, forwardedRef);
+      const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 
       // Some components require explicit passthrough values for animation
       // to work properly. For example, if an animated component is

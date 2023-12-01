@@ -470,8 +470,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
   for (size_t i = 0; i < yogaLayoutableChildren_.size(); i++) {
     const auto& child = *yogaLayoutableChildren_[i];
     auto childLayoutMetrics = child.getLayoutMetrics();
-    auto childErrata =
-        YGConfigGetErrata(const_cast<yoga::Config*>(&child.yogaConfig_));
+    auto childErrata = YGConfigGetErrata(&child.yogaConfig_);
 
     if (child.yogaTreeHasBeenConfigured_ &&
         childLayoutMetrics.pointScaleFactor == pointScaleFactor &&
@@ -605,13 +604,11 @@ void YogaLayoutableShadowNode::layoutTree(
   react_native_assert(!std::isinf(minimumSize.width));
   react_native_assert(!std::isinf(minimumSize.height));
 
-  // Internally Yoga uses three different measurement modes controlling layout
-  // constraints: `Undefined`, `Exactly`, and `AtMost`. These modes are an
-  // implementation detail and are not defined in `CSS Flexible Box Layout
-  // Module`. Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
-  // does not allow to specify the measure modes explicitly. Instead, it infers
-  // these from styles associated with the root node.
-  // To pass the actual layout constraints to Yoga we represent them as
+  // Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
+  // does not allow to specify sizing modes (see
+  // https://www.w3.org/TR/css-sizing-3/#auto-box-sizes) explicitly. Instead, it
+  // infers these from styles associated with the root node. To pass the actual
+  // layout constraints to Yoga we represent them as
   // `(min/max)(Height/Width)` style properties. Also, we pass `ownerWidth` &
   // `ownerHeight` to allow proper calculation of relative (e.g. specified in
   // percents) style values.

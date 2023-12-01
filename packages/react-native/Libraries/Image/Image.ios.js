@@ -15,11 +15,10 @@ import type {AbstractImageIOS, ImageIOS} from './ImageTypes.flow';
 import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import useMergeRefs from '../Utilities/useMergeRefs';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import {
   unstable_getImageComponentDecorator,
-  useRefWithImageAttachedCallbacks,
+  useWrapRefWithImageAttachedCallbacks,
 } from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
@@ -162,14 +161,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
-  const imageAttachedCallbacksRef = useRefWithImageAttachedCallbacks();
-
-  const actualRef = useMergeRefs<React.ElementRef<AbstractImageIOS> | null>(
-    // $FlowFixMe[incompatible-call]
-    forwardedRef,
-    // $FlowFixMe[incompatible-call]
-    imageAttachedCallbacksRef,
-  );
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
   return (
     <ImageAnalyticsTagContext.Consumer>

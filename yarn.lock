@@ -5143,23 +5143,23 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-api-translator@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.17.1.tgz#fee650b8c975338aea46be9e40464bcab81fbedf"
-  integrity sha512-TzOWylttBRQ8zco5Nmu7+11c45WpLgO1BPXe9R0nCoUo6x2IU4baC1AjnQEistsrMkG+Imlp2q3TFk6pRcJp0w==
+flow-api-translator@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.18.0.tgz#c8fe149c3211638bba565d4ebbde10f05424acc2"
+  integrity sha512-X6LMMTGsYtJWJmaye0W10UOFQoxVQxm5nJkUDcX6nT3O0KpsV/5SNo7uf4KWzNGnb4u60p1IKx7ghBRJbUqV1w==
   dependencies:
     "@babel/code-frame" "^7.16.0"
     "@typescript-eslint/visitor-keys" "^5.42.0"
     flow-enums-runtime "^0.0.6"
-    hermes-eslint "0.17.1"
-    hermes-estree "0.17.1"
-    hermes-parser "0.17.1"
-    hermes-transform "0.17.1"
+    hermes-eslint "0.18.0"
+    hermes-estree "0.18.0"
+    hermes-parser "0.18.0"
+    hermes-transform "0.18.0"
 
-flow-bin@^0.222.0:
-  version "0.222.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.222.0.tgz#b4ca588c77fbd79db1edf38615cd04d114c1e933"
-  integrity sha512-U2047+pOX1EutHGykcjtamAlP8UIHrxbkexB5zPVQ8PH+WcVmD4PtRE6J8Jc3S6odyo0AqVnQsI4rE/2x2fGmQ==
+flow-bin@^0.223.0:
+  version "0.223.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.223.0.tgz#38fb6efd6c202b774d01834ded0620eb8eebad89"
+  integrity sha512-E+GmTcBTPIRfnX/Dk19zJewX9grxoVQU+RG3Ypd/Os0OkUSOF7K3Sxo2I+8Oz1EpnPMGhnbM4WRAUuY0JaHRsw==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
@@ -5543,24 +5543,24 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hermes-eslint@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/hermes-eslint/-/hermes-eslint-0.17.1.tgz#e5e43091082dc53a060e0b002324e68943104b71"
-  integrity sha512-g3z4L84pHKrBMRtbfifalpbNbNear0cEygAe+geCmCj1GUrqQu+RDeBZOYERHv0HOq0aDxjTZhj3m4fD/YVUwg==
+hermes-eslint@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/hermes-eslint/-/hermes-eslint-0.18.0.tgz#16e7d5c7742f709d814d6a5a5d955803e81b328d"
+  integrity sha512-NIh8Utqk32+voL1b4ngCRnMQ0XCRzFbon7IG25lhnSYCTezX5besIK+79pUHw1YEDZVGrVrMxeIYxXiamLzcUQ==
   dependencies:
     esrecurse "^4.3.0"
-    hermes-estree "0.17.1"
-    hermes-parser "0.17.1"
+    hermes-estree "0.18.0"
+    hermes-parser "0.18.0"
 
 hermes-estree@0.17.0:
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.17.0.tgz#4b1b0d8131826178f0af79a317ceaca3723e9012"
   integrity sha512-bW9+bMZqnro+0+l6dUqTJW0VaNUvs4HRHh/J7VotTGnMmhBFRIcJz6ZxrRE7xIXmK7S5bJE9qrEooSiig4N70g==
 
-hermes-estree@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.17.1.tgz#902806a900c185720424ffcf958027821d23c051"
-  integrity sha512-EdUJms+eRE40OQxysFlPr1mPpvUbbMi7uDAKlScBw8o3tQY22BZ5yx56OYyp1bVaBm+7Cjc3NQz24sJEFXkPxg==
+hermes-estree@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/hermes-estree/-/hermes-estree-0.18.0.tgz#6c202d8c78ddefadf3eb595a584dfa55b51a0508"
+  integrity sha512-WaIudIVKo5QWFqz1ta53HqSDuVxYST/MUuP9X7dqUpbHse3E2gzJq/7hEtgx84hh2XSNWN1AhYho3ThOA85uCA==
 
 hermes-parser@0.17.0:
   version "0.17.0"
@@ -5569,12 +5569,12 @@ hermes-parser@0.17.0:
   dependencies:
     hermes-estree "0.17.0"
 
-hermes-parser@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.17.1.tgz#8b5cbaff235fed28487812ad718f9c7182d0db0f"
-  integrity sha512-yErtFLMEL6490fFJPurNn23OI2ciGAtaUfKUg9VPdcde9CmItCjOVQkJt1Xzawv5kuRzeIx0RE2E2Q9TbIgdzA==
+hermes-parser@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/hermes-parser/-/hermes-parser-0.18.0.tgz#dd9878f70e9ca2570e7626181ae0465115f7f78d"
+  integrity sha512-DIIM6vsy30BU5hNkOXh6MR2r4ZAxVhbfyTnmfo/rqUf3KySlNWn9fWiOcpuGAdDN2o5sdPCpu6cep3a23d1Klw==
   dependencies:
-    hermes-estree "0.17.1"
+    hermes-estree "0.18.0"
 
 hermes-profile-transformer@^0.0.6:
   version "0.0.6"
@@ -5583,17 +5583,17 @@ hermes-profile-transformer@^0.0.6:
   dependencies:
     source-map "^0.7.3"
 
-hermes-transform@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/hermes-transform/-/hermes-transform-0.17.1.tgz#8dc60f4744137b936c15aac9231a951268450600"
-  integrity sha512-0QlknKahueDHeswUjruzyvdfqtaw4OC4JuWYNWqAr8HP+1YGx3J2lwsGuQeaJhkC04eh9lhO9cc5/xfJLBr74A==
+hermes-transform@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/hermes-transform/-/hermes-transform-0.18.0.tgz#e5718960ddf5c2c938397523085c0ac58159cc20"
+  integrity sha512-jbzeRDseWlUNhErS0ovt6/IpNcSEtYEytg6LTFox+4qDbrX5Tg6AO5xdNwMLgxPxD/03xAicBZL44/yI+4YXgA==
   dependencies:
     "@babel/code-frame" "^7.16.0"
     esquery "^1.4.0"
     flow-enums-runtime "^0.0.6"
-    hermes-eslint "0.17.1"
-    hermes-estree "0.17.1"
-    hermes-parser "0.17.1"
+    hermes-eslint "0.18.0"
+    hermes-estree "0.18.0"
+    hermes-parser "0.18.0"
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
@@ -7877,14 +7877,14 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier-plugin-hermes-parser@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.17.1.tgz#f7c461fe875f7a365442fc69a51434b7e3ff88e4"
-  integrity sha512-ULX366DyQrrFW//a6Zgj0r/CF4a4Ijg+TCaplOtYCPCu4qThUp9XrMRSYWeB0lacD1lmWFqRDFL5R8Oxmhpw3A==
+prettier-plugin-hermes-parser@0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-hermes-parser/-/prettier-plugin-hermes-parser-0.18.0.tgz#00b6d979f8068c4fab72500c1abb5a8dcc107645"
+  integrity sha512-gU/K9jjJYDzdn1PLJdjhaHk+27POGrSbxVxBUOVm9qOiIpnwW1IeYA3sHg2PpCJLUQyJM7R6jiesQgPgvUHkmA==
   dependencies:
-    hermes-estree "0.17.1"
-    hermes-parser "0.17.1"
-    prettier-plugin-hermes-parser "0.17.1"
+    hermes-estree "0.18.0"
+    hermes-parser "0.18.0"
+    prettier-plugin-hermes-parser "0.18.0"
 
 prettier@2.8.8:
   version "2.8.8"
