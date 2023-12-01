@@ -53,11 +53,13 @@ jobs:
           command: yarn install
       - when:
           condition:
-            or:
-              - equal: [ main, << pipeline.git.branch >> ]
-              - matches:
-                  pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
-                  value: << pipeline.git.branch >>
+            and:
+              - equal: [ "https://github.com/facebook/react-native", << pipeline.project.git_url >> ]
+              - or:
+                - equal: [ main, << pipeline.git.branch >> ]
+                - matches:
+                    pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
+                    value: << pipeline.git.branch >>
           steps:
             - run:
                 name: "[Main or Stable] Create input for config to test everything"
