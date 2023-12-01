@@ -1154,13 +1154,21 @@ function InternalTextInput(props: Props): React.Node {
         : RCTSinglelineTextInputNativeCommands;
   }
 
-  const childrenValue = React.Children.map(props.children, child => {
+  let childrenValue = props.children;
+  const childCount = React.Children.count(childrenValue);
+  if (childCount > 1 || Object.prototype.toString.call(childrenValue) === '[object Array]') {
+    childrenValue = <Text>{childrenValue}</Text>;
+  }
+  
+  childrenValue = React.Children.map(childrenValue, child => {
     if (React.isValidElement(child)) {
-      const textValue = child.props && child.props.text;
-      return textValue;
+      const string = React.Children.map(child.props.children, innerChild => innerChild.props?.children)?.join('');
+      return string;
+    } else {
+      const string = child;
+      return string;
     }
-    return null;
-  })?.[0];
+  })?.join('');
 
   const text =
     typeof childrenValue === 'string'
