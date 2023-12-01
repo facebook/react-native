@@ -53,3 +53,15 @@ It's important not to cover the translucent background with a solid color, as it
 
 1. Follow the same steps as in the `New project creation` section.
 2. Checkout `rn-tester` [README.md](./packages/rn-tester/README.md) to build React Native from source.
+
+## Release process
+
+We use a script called `oot-release.js` which automatically releases `visionos` packages and aligns versions of dependencies with React Native core.
+
+Usage:
+
+```sh
+node ./scripts/oot-release.js --new-version "<visionos-version>" --react-native-version "<react-native-version>" --one-time-password "<otp>"
+```
+
+To test releases and template we use [Verdaccio](https://verdaccio.org/).
