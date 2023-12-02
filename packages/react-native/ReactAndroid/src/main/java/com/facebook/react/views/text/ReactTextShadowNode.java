@@ -132,13 +132,17 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           if (widthMode == YogaMeasureMode.EXACTLY) {
             layoutWidth = width;
           } else {
-            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              boolean endsWithNewLine =
-                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-              float lineWidth =
-                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-              if (lineWidth > layoutWidth) {
-                layoutWidth = lineWidth;
+            if (mNumberOfLines == 1) { // add other conditions (to skip with adjustFontSizeToFit)
+              layoutWidth = layout.getWidth();
+            } else {
+              for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+                boolean endsWithNewLine =
+                    text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+                float lineWidth =
+                    endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+                if (lineWidth > layoutWidth) {
+                  layoutWidth = lineWidth;
+                }
               }
             }
             if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
@@ -243,8 +247,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       }
       layout = builder.build();
 
-    } else if (boring != null
-        && (unconstrainedWidth || boring.width <= width || avoidCalculatingTextBreakSingleLine)) {
+    } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
@@ -277,6 +280,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
       }
+
+      builder.setEllipsizedWidth(180);
       layout = builder.build();
     }
     return layout;
