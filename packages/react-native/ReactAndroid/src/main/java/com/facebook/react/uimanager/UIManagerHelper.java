@@ -52,10 +52,6 @@ public class UIManagerHelper {
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
     if (context.isBridgeless()) {
-      if (!context.hasActiveReactInstance()) {
-        throw new IllegalStateException(
-            "Unable to retrieve a UIManager if CatalystInstance is not active.");
-      }
       @Nullable UIManager uiManager = context.getFabricUIManager();
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
