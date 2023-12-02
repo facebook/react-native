@@ -1154,19 +1154,19 @@ function InternalTextInput(props: Props): React.Node {
         : RCTSinglelineTextInputNativeCommands;
   }
 
-  let childrenValue = props.children;
-  const childCount = React.Children.count(childrenValue);
-  if (childCount > 1 || Object.prototype.toString.call(childrenValue) === '[object Array]') {
-    childrenValue = <Text>{childrenValue}</Text>;
+  let childrenProp = props.children;
+  if (Object.prototype.toString.call(childrenProp) === '[object Array]') {
+    childrenProp = <Text>{childrenProp}</Text>;
   }
   
-  childrenValue = React.Children.map(childrenValue, child => {
+  const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
-      const string = React.Children.map(child.props.children, innerChild => innerChild.props?.children)?.join('');
+      const string = React.Children.map(child.props.children, innerChild => {
+        return innerChild.props?.children
+      })?.join('');
       return string;
     } else {
-      const string = child;
-      return string;
+      return child;
     }
   })?.join('');
 
@@ -1185,12 +1185,14 @@ function InternalTextInput(props: Props): React.Node {
   useLayoutEffect(() => {
     const nativeUpdate: {text?: string, selection?: Selection} = {};
 
-    if (lastNativeText !== props.value && typeof props.value === 'string') {
-      nativeUpdate.text = props.value;
-      setLastNativeText(props.value);
-    } else if (lastNativeText !== childrenValue && typeof childrenValue === 'string') {
-      nativeUpdate.text = childrenValue;
-      setLastNativeText(childrenValue);
+    if (lastNativeText !== props.value && 
+      typeof props.value === 'string') {
+        nativeUpdate.text = props.value;
+        setLastNativeText(props.value);
+    } else if (lastNativeText !== childrenValue && 
+      typeof childrenValue === 'string') {
+        nativeUpdate.text = childrenValue;
+        setLastNativeText(childrenValue);
     }
 
     if (
