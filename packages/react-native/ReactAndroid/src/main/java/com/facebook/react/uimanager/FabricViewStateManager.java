@@ -24,23 +24,31 @@ import com.facebook.react.bridge.WritableMap;
  * retrying the UpdateState call until it succeeds; or you call setState again; or the View layer is
  * updated with a newer StateWrapper.
  */
+@Deprecated(
+    since =
+        "Deprecated class since v0.73.0, please use com.facebook.react.uimanager.StateWrapper instead.",
+    forRemoval = true)
 public class FabricViewStateManager {
   private static final String TAG = "FabricViewStateManager";
 
+  @Deprecated
   public interface HasFabricViewStateManager {
     FabricViewStateManager getFabricViewStateManager();
   }
 
+  @Deprecated
   public interface StateUpdateCallback {
     WritableMap getStateUpdate();
   }
 
   @Nullable private StateWrapper mStateWrapper = null;
 
+  @Deprecated
   public void setStateWrapper(StateWrapper stateWrapper) {
     mStateWrapper = stateWrapper;
   }
 
+  @Deprecated
   public boolean hasStateWrapper() {
     return mStateWrapper != null;
   }
@@ -75,10 +83,12 @@ public class FabricViewStateManager {
     stateWrapper.updateState(stateUpdate);
   }
 
+  @Deprecated
   public void setState(final StateUpdateCallback stateUpdateCallback) {
     setState(mStateWrapper, stateUpdateCallback, 0);
   }
 
+  @Deprecated
   public @Nullable ReadableMap getStateData() {
     return mStateWrapper != null ? mStateWrapper.getStateData() : null;
   }

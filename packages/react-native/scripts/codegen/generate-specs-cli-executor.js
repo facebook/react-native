@@ -9,11 +9,10 @@
 
 'use strict';
 
+const utils = require('./codegen-utils');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const utils = require('./codegen-utils');
-const RNCodegen = utils.getCodegen();
 
 const GENERATORS = {
   all: {
@@ -71,18 +70,15 @@ function validateLibraryType(libraryType) {
   }
 }
 
-function generateSpec(
+function generateSpecFromInMemorySchema(
   platform,
-  schemaPath,
+  schema,
   outputDirectory,
   libraryName,
   packageName,
   libraryType,
 ) {
   validateLibraryType(libraryType);
-
-  let schema = readAndParseSchema(schemaPath);
-
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
   function composePath(intermediate) {
     return path.join(outputDirectory, intermediate, libraryName);
@@ -94,7 +90,7 @@ function generateSpec(
   createFolderIfDefined(composePath('react/renderer/components/'));
   createFolderIfDefined(composePath('./'));
 
-  RNCodegen.generate(
+  utils.getCodegen().generate(
     {
       libraryName,
       schema,
@@ -122,6 +118,25 @@ function generateSpec(
   }
 }
 
+function generateSpec(
+  platform,
+  schemaPath,
+  outputDirectory,
+  libraryName,
+  packageName,
+  libraryType,
+) {
+  generateSpecFromInMemorySchema(
+    platform,
+    readAndParseSchema(schemaPath),
+    outputDirectory,
+    libraryName,
+    packageName,
+    libraryType,
+  );
+}
+
 module.exports = {
   execute: generateSpec,
+  generateSpecFromInMemorySchema: generateSpecFromInMemorySchema,
 };

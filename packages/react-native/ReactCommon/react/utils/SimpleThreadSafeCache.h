@@ -29,7 +29,7 @@ class SimpleThreadSafeCache {
    * generator function, stores it inside a cache and returns it.
    * Can be called from any thread.
    */
-  ValueT get(const KeyT &key, std::function<ValueT(const KeyT &key)> generator)
+  ValueT get(const KeyT& key, std::function<ValueT(const KeyT& key)> generator)
       const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
@@ -47,7 +47,7 @@ class SimpleThreadSafeCache {
    * If the value wasn't found in the cache, returns empty optional.
    * Can be called from any thread.
    */
-  std::optional<ValueT> get(const KeyT &key) const {
+  std::optional<ValueT> get(const KeyT& key) const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
     if (iterator == map_.end()) {
@@ -61,7 +61,7 @@ class SimpleThreadSafeCache {
    * Sets a key-value pair in the LRU cache.
    * Can be called from any thread.
    */
-  void set(const KeyT &key, const ValueT &value) const {
+  void set(const KeyT& key, const ValueT& value) const {
     std::lock_guard<std::mutex> lock(mutex_);
     map_.set(std::move(key), std::move(value));
   }

@@ -17,7 +17,7 @@ namespace facebook {
 static char sAssertBuf[ASSERT_BUF_SIZE];
 static AssertHandler gAssertHandler;
 
-void assertInternal(const char *formatstr...) {
+void assertInternal(const char* formatstr...) {
   va_list va_args;
   va_start(va_args, formatstr);
   vsnprintf(sAssertBuf, sizeof(sAssertBuf), formatstr, va_args);
@@ -27,7 +27,7 @@ void assertInternal(const char *formatstr...) {
   }
   FBLOG(LOG_FATAL, "fbassert", "%s", sAssertBuf);
   // crash at this specific address so that we can find our crashes easier
-  *(int *)0xdeadb00c = 0;
+  *(int*)0xdeadb00c = 0;
   // let the compiler know we won't reach the end of the function
   __builtin_unreachable();
 }

@@ -17,7 +17,7 @@
 namespace facebook::react {
 
 using NativeMutationObserverObserveOptions =
-    NativeMutationObserverCxxBaseNativeMutationObserverObserveOptions<
+    NativeMutationObserverCxxNativeMutationObserverObserveOptions<
         // mutationObserverId
         MutationObserverId,
         // targetShadowNode
@@ -27,15 +27,10 @@ using NativeMutationObserverObserveOptions =
 
 template <>
 struct Bridging<NativeMutationObserverObserveOptions>
-    : NativeMutationObserverCxxBaseNativeMutationObserverObserveOptionsBridging<
-          // mutationObserverId
-          MutationObserverId,
-          // targetShadowNode
-          jsi::Object,
-          // subtree
-          bool> {};
+    : NativeMutationObserverCxxNativeMutationObserverObserveOptionsBridging<
+          NativeMutationObserverObserveOptions> {};
 
-using NativeMutationRecord = NativeMutationObserverCxxBaseNativeMutationRecord<
+using NativeMutationRecord = NativeMutationObserverCxxNativeMutationRecord<
     // mutationObserverId
     MutationObserverId,
     // target
@@ -47,15 +42,8 @@ using NativeMutationRecord = NativeMutationObserverCxxBaseNativeMutationRecord<
 
 template <>
 struct Bridging<NativeMutationRecord>
-    : NativeMutationObserverCxxBaseNativeMutationRecordBridging<
-          // mutationObserverId
-          MutationObserverId,
-          // target
-          jsi::Value,
-          // addedNodes
-          std::vector<jsi::Value>,
-          // removedNodes
-          std::vector<jsi::Value>> {};
+    : NativeMutationObserverCxxNativeMutationRecordBridging<
+          NativeMutationRecord> {};
 
 class NativeMutationObserver
     : public NativeMutationObserverCxxSpec<NativeMutationObserver>,
@@ -64,22 +52,22 @@ class NativeMutationObserver
   NativeMutationObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
   void observe(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       NativeMutationObserverObserveOptions options);
 
   void unobserve(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       MutationObserverId mutationObserverId,
       jsi::Object targetShadowNode);
 
   void connect(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       AsyncCallback<> notifyMutationObservers,
       jsi::Function getPublicInstanceFromInstanceHandle);
 
-  void disconnect(jsi::Runtime &runtime);
+  void disconnect(jsi::Runtime& runtime);
 
-  std::vector<NativeMutationRecord> takeRecords(jsi::Runtime &runtime);
+  std::vector<NativeMutationRecord> takeRecords(jsi::Runtime& runtime);
 
  private:
   MutationObserverManager mutationObserverManager_{};
@@ -89,17 +77,16 @@ class NativeMutationObserver
   // This is passed to `connect` so we can retain references to public instances
   // when mutation occur, before React cleans up unmounted instances.
   jsi::Value getPublicInstanceFromInstanceHandle_ = jsi::Value::undefined();
-  std::function<jsi::Value(ShadowNode const &)>
-      getPublicInstanceFromShadowNode_;
+  std::function<jsi::Value(const ShadowNode&)> getPublicInstanceFromShadowNode_;
 
   bool notifiedMutationObservers_{};
   std::function<void()> notifyMutationObservers_;
 
-  void onMutations(std::vector<const MutationRecord> &records);
+  void onMutations(std::vector<MutationRecord>& records);
   void notifyMutationObserversIfNecessary();
 
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
-      std::vector<ShadowNode::Shared> const &shadowNodes) const;
+      const std::vector<ShadowNode::Shared>& shadowNodes) const;
 };
 
 } // namespace facebook::react

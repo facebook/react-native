@@ -6,11 +6,11 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("com.facebook.react")
-    id("de.undercouch.download")
     id("maven-publish")
-    id("org.jetbrains.kotlin.android")
+    id("com.facebook.react")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.download)
+    alias(libs.plugins.kotlin.android)
 }
 
 import com.facebook.react.tasks.internal.*
@@ -45,7 +45,7 @@ def cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
 ext.cmake_version = cmakeVersion
 
 // You need to have following folders in this directory:
-//   - boost_1_76_0
+//   - boost_1_83_0
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
@@ -60,6 +60,14 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // reduce the size of the React Native published .AAR.
 def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
+
+// Native versions which are defined inside the version catalog (libs.versions.toml)
+def BOOST_VERSION = libs.versions.boost.get()
+def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+def FMT_VERSION = libs.versions.fmt.get()
+def FOLLY_VERSION = libs.versions.folly.get()
+def GLOG_VERSION = libs.versions.glog.get()
+def GTEST_VERSION = libs.versions.gtest.get()
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
     dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
@@ -98,6 +106,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("src/main/jni/react/newarchdefaults", "")
             ),
             new PrefabPreprocessingEntry(
+                "react_cxxreactpackage",
+                new Pair("src/main/jni/react/runtime/cxxreactpackage", "")
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_animations",
                 new Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")
             ),
@@ -109,7 +121,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_graphics",
                 [
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
-                    new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
+                    new Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
@@ -118,7 +130,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
-                new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+                [
+                    new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/"),
+                    new Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "rrc_legacyviewmanagerinterop",
@@ -150,16 +165,18 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "folly_runtime",
                 [
+                    new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
-                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
                 "react_nativemodule_core",
                 [
-                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
@@ -204,8 +221,8 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "hermes_executor",
                 // "hermes_executor" is statically linking against "hermes_executor_common"
-                // and "hermes_inspector". Here we expose only the headers that we know are needed.
-                new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
+                // and "hermes_inspector_modern". Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")
             ),
             new PrefabPreprocessingEntry(
                 "jscexecutor",
@@ -234,7 +251,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "jsinspector",
-                new Pair("../ReactCommon/jsinspector/", "jsinspector/"),
+                new Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
             ),
         ]
     )
@@ -312,22 +329,6 @@ task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     into("$thirdPartyNdkDir/fmt")
 }
 
-task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
-    onlyIfModified(true)
-    overwrite(false)
-    retries(5)
-    dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
-}
-
-
-final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTask) {
-    it.dependsOn(dependenciesPath ? [] : [downloadLibevent])
-    it.libeventPath.setFrom(dependenciesPath ?: tarTree(downloadLibevent.dest))
-    it.libeventVersion.set(LIBEVENT_VERSION)
-    it.outputDir.set(new File(thirdPartyNdkDir, "libevent"))
-}
-
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfModified(true)
@@ -368,16 +369,20 @@ tasks.register('prepareJSC', PrepareJSCTask) {
     it.outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
 }
 
-task downloadNdkBuildDependencies {
-    if (!boostPath) {
-        dependsOn(downloadBoost)
+task prepareKotlinBuildScriptModel {
+    // This task is run when Gradle Sync is running.
+    // We create it here so we can let it depend on preBuild inside the android{}
+}
+
+// As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
+// This is not the case for users of React Native, as we ship a compiled version of the codegen.
+final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
+    it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
+    it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
+    it.onlyIf {
+        // For build from source scenario, we don't need to build the codegen at all.
+        rootProject.name != "react-native-build-from-source"
     }
-    dependsOn(downloadDoubleConversion)
-    dependsOn(downloadFolly)
-    dependsOn(downloadGlog)
-    dependsOn(downloadFmt)
-    dependsOn(downloadLibevent)
-    dependsOn(downloadGtest)
 }
 
 /**
@@ -431,6 +436,11 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def enableWarningsAsErrors() {
+    def value = project.getProperties().get("enableWarningsAsErrors")
+    return value != null ? value : false
+}
+
 task packageReactNdkLibsForBuck(type: Copy) {
     dependsOn("mergeDebugNativeLibs")
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
@@ -453,12 +463,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -467,18 +477,20 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         // Using '-Xjvm-default=all' to generate default java methods for interfaces
         freeCompilerArgs = ['-Xjvm-default=all']
+        // Using -PenableWarningsAsErrors=true prop to enable allWarningsAsErrors
+        kotlinOptions.allWarningsAsErrors = enableWarningsAsErrors()
     }
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode(1)
         versionName("1.0")
 
@@ -500,7 +512,6 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21",
                     // Due to https://github.com/android/ndk/issues/1693 we're losing Android
                     // specific compilation flags. This can be removed once we moved to NDK 25/26
                     "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
@@ -523,6 +534,7 @@ android {
                     "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_cxxreactpackage",
                     "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
@@ -569,14 +581,29 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
-    preBuild.dependsOn("generateCodegenArtifactsFromSchema")
-    preBuild.dependsOn(preparePrefab)
+    preBuild.dependsOn(
+            buildCodegenCLITask,
+            generateCodegenArtifactsFromSchema,
+            prepareBoost,
+            prepareDoubleConversion,
+            prepareFmt,
+            prepareFolly,
+            prepareGlog,
+            prepareGtest,
+            prepareJSC,
+            preparePrefab
+    )
+    generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
+    prepareKotlinBuildScriptModel.dependsOn(
+            preBuild,
+            ":packages:react-native:ReactAndroid:hermes-engine:preBuild",
+    )
 
     sourceSets.main {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
             srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
+            exclude("com/facebook/annotationprocessors")
             exclude("com/facebook/react/processing")
             exclude("com/facebook/react/module/processing")
         }
@@ -627,6 +654,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_cxxreactpackage {
+            headers(new File(prefabHeadersDir, "react_cxxreactpackage").absolutePath)
         }
         react_render_animations {
             headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
@@ -711,44 +741,41 @@ android {
 }
 
 dependencies {
-    api("androidx.appcompat:appcompat-resources:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
-    api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
+    api(libs.androidx.appcompat)
+    api(libs.androidx.appcompat.resources)
+    api(libs.androidx.autofill)
+    api(libs.androidx.swiperefreshlayout)
+    api(libs.androidx.tracing)
 
-    api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
-    api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
-    api("com.facebook.fresco:middleware:${FRESCO_VERSION}")
-    api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
-    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
-    api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
-    api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
-    api("com.facebook.yoga:proguard-annotations:${PROGUARD_ANNOTATIONS_VERSION}")
+    api(libs.fbjni)
+    api(libs.fresco)
+    api(libs.fresco.middleware)
+    api(libs.fresco.imagepipeline.okhttp3)
+    api(libs.fresco.ui.common)
+    api(libs.infer.annotation)
+    api(libs.soloader)
+    api(libs.yoga.proguard.annotations)
 
-    api("com.google.code.findbugs:jsr305:${JSR305_VERSION}")
-    api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:${OKIO_VERSION}")
-    api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
+    api(libs.jsr305)
+    api(libs.okhttp3.urlconnection)
+    api(libs.okhttp3)
+    api(libs.okio)
+    compileOnly(libs.javax.annotation.api)
+    api(libs.javax.inject)
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    testImplementation("junit:junit:${JUNIT_VERSION}")
-    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
-    testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
-    testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
-    testImplementation("com.thoughtworks.xstream:xstream:1.4.20")
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.thoughtworks)
 
-    androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.mockito)
 }
 
 react {
@@ -758,29 +785,20 @@ react {
     jsRootDir = file("../Libraries")
 }
 
-kotlin {
-    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
-    // not running well on JDK 17.
-    jvmToolchain(11)
+// For build from source, we need to override the privateReact extension.
+// This is neeeded as the build-from-source won't have a com.android.application
+// module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
+if (rootProject.name == "react-native-build-from-source") {
+    privateReact {
+        codegenDir = file("$rootDir/../@react-native/codegen")
+        reactNativeDir = file("$rootDir")
+    }
 }
 
-tasks.withType(Test).all {
-    // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-        jvmArgs += [
-            "--illegal-access=permit",
-            "--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",
-            "--add-opens=java.base/java.util=ALL-UNNAMED",
-            "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
-            "--add-opens=java.base/java.net=ALL-UNNAMED",
-            "--add-opens=java.base/java.security=ALL-UNNAMED",
-            "--add-opens=java.base/java.io=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
-            "--add-opens=java.base/jdk.xml.internal=ALL-UNNAMED",
-        ]
-    }
+kotlin {
+    jvmToolchain(17)
+
+    explicitApi()
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

@@ -156,6 +156,12 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
         });
   }
 
+  @DoNotStrip
+  @Override
+  public boolean isIdle() {
+    return mLooper.getQueue().isIdle();
+  }
+
   private static void assignToPerfStats(MessageQueueThreadPerfStats stats, long wall, long cpu) {
     stats.wallTime = wall;
     stats.cpuTime = cpu;
@@ -184,9 +190,8 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   /** @return a MessageQueueThreadImpl corresponding to Android's main UI thread. */
   private static MessageQueueThreadImpl createForMainThread(
       String name, QueueThreadExceptionHandler exceptionHandler) {
-    Looper mainLooper = Looper.getMainLooper();
     final MessageQueueThreadImpl mqt =
-        new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
+        new MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler);
 
     if (UiThreadUtil.isOnUiThread()) {
       Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);

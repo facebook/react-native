@@ -16,6 +16,7 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
 #include <utility>
 
@@ -26,7 +27,7 @@ namespace facebook::react {
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
 void AndroidTextInputShadowNode::setContextContainer(
-    ContextContainer *contextContainer) {
+    ContextContainer* contextContainer) {
   ensureUnsealed();
   contextContainer_ = contextContainer;
 }
@@ -97,7 +98,7 @@ void AndroidTextInputShadowNode::setTextLayoutManager(
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
     const {
-  auto const &state = getStateData();
+  const auto& state = getStateData();
 
   auto reactTreeAttributedString = getAttributedString();
 
@@ -118,7 +119,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto reactTreeAttributedString = getAttributedString();
-  auto const &state = getStateData();
+  const auto& state = getStateData();
 
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
@@ -157,8 +158,8 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
         ->measureCachedSpannableById(
@@ -183,10 +184,13 @@ Size AndroidTextInputShadowNode::measureContent(
     return {0, 0};
   }
 
+  TextLayoutContext textLayoutContext;
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   return textLayoutManager_
       ->measure(
           AttributedStringBox{attributedString},
           getConcreteProps().paragraphAttributes,
+          textLayoutContext,
           layoutConstraints,
           nullptr)
       .size;

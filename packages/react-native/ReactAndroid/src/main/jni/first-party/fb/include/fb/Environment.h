@@ -22,13 +22,13 @@ struct CacheEnvTag {};
 // Keeps a thread-local reference to the current thread's JNIEnv.
 struct Environment {
   // May be null if this thread isn't attached to the JVM
-  FBEXPORT static JNIEnv *current();
-  static void initialize(JavaVM *vm);
+  FBEXPORT static JNIEnv* current();
+  static void initialize(JavaVM* vm);
 
   // There are subtle issues with calling the next functions directly. It is
   // much better to always use a ThreadScope to manage attaching/detaching for
   // you.
-  FBEXPORT static JNIEnv *ensureCurrentThreadIsAttached();
+  FBEXPORT static JNIEnv* ensureCurrentThreadIsAttached();
   FBEXPORT static void detachCurrentThread();
 };
 
@@ -61,10 +61,10 @@ struct Environment {
 class FBEXPORT ThreadScope {
  public:
   ThreadScope();
-  ThreadScope(ThreadScope &) = delete;
-  ThreadScope(ThreadScope &&) = default;
-  ThreadScope &operator=(ThreadScope &) = delete;
-  ThreadScope &operator=(ThreadScope &&) = delete;
+  ThreadScope(ThreadScope&) = delete;
+  ThreadScope(ThreadScope&&) = default;
+  ThreadScope& operator=(ThreadScope&) = delete;
+  ThreadScope& operator=(ThreadScope&&) = delete;
   ~ThreadScope();
 
   /**
@@ -73,20 +73,20 @@ class FBEXPORT ThreadScope {
    * running in the closure will have access to the same classes as in a normal
    * java-create thread.
    */
-  static void WithClassLoader(std::function<void()> &&runnable);
+  static void WithClassLoader(std::function<void()>&& runnable);
 
   static void OnLoad();
 
   // This constructor is only used internally by fbjni.
-  ThreadScope(JNIEnv *, internal::CacheEnvTag);
+  ThreadScope(JNIEnv*, internal::CacheEnvTag);
 
  private:
   friend struct Environment;
-  ThreadScope *previous_;
+  ThreadScope* previous_;
   // If the JNIEnv* is set, it is guaranteed to be valid at least through the
   // lifetime of this ThreadScope. The only case where that guarantee can be
   // made is when there is a java frame in the stack below this.
-  JNIEnv *env_;
+  JNIEnv* env_;
   bool attachedWithThisScope_;
 };
 } // namespace jni

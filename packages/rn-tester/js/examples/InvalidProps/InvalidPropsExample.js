@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 import * as React from 'react';
-
 import {Text, View} from 'react-native';
 
 export const title = 'Invalid Props';

@@ -16,7 +16,6 @@ import com.facebook.react.views.view.ReactViewGroup;
 public class ReactHorizontalScrollContainerView extends ReactViewGroup {
 
   private int mLayoutDirection;
-  private int mCurrentWidth;
 
   public ReactHorizontalScrollContainerView(Context context) {
     super(context);
@@ -24,7 +23,6 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
         I18nUtil.getInstance().isRTL(context)
             ? ViewCompat.LAYOUT_DIRECTION_RTL
             : ViewCompat.LAYOUT_DIRECTION_LTR;
-    mCurrentWidth = 0;
   }
 
   @Override
@@ -50,24 +48,7 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
       int newLeft = 0;
       int width = right - left;
       int newRight = newLeft + width;
-      setLeft(newLeft);
-      setRight(newRight);
-
-      /**
-       * Note: in RTL mode, *when layout width changes*, we adjust the scroll position. Practically,
-       * this means that on the first (meaningful) layout we will go from position 0 to position
-       * (right - screenWidth). In theory this means if the width of the view ever changes during
-       * layout again, scrolling could jump. Which shouldn't happen in theory, but... if you find a
-       * weird product bug that looks related, keep this in mind.
-       */
-      if (mCurrentWidth != getWidth()) {
-        // Call with the present values in order to re-layout if necessary
-        ReactHorizontalScrollView parent = (ReactHorizontalScrollView) getParent();
-        // Fix the ScrollX position when using RTL language
-        int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth - parent.getWidth();
-        parent.scrollTo(offsetX, parent.getScrollY());
-      }
+      setLeftTopRightBottom(newLeft, top, newRight, bottom);
     }
-    mCurrentWidth = getWidth();
   }
 }

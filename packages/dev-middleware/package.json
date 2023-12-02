@@ -1,6 +1,6 @@
 {
   "name": "@react-native/dev-middleware",
-  "version": "0.73.0",
+  "version": "0.74.0",
   "description": "Dev server middleware for React Native",
   "keywords": [
     "react-native",
@@ -14,30 +14,32 @@
     "directory": "packages/dev-middleware"
   },
   "license": "MIT",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "yarn clean && babel src --out-dir dist",
-    "dev": "babel src --out-dir dist --source-maps --watch",
-    "clean": "rimraf dist",
-    "prepare": "yarn build"
-  },
   "dependencies": {
+    "@isaacs/ttlcache": "^1.4.1",
+    "@react-native/debugger-frontend": "^0.74.0",
+    "@rnx-kit/chromium-edge-launcher": "^1.0.0",
     "chrome-launcher": "^0.15.2",
     "connect": "^3.6.5",
+    "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
+    "open": "^7.0.3",
+    "selfsigned": "^2.4.1",
+    "serve-static": "^1.13.1",
     "temp-dir": "^2.0.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.20.0",
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/preset-flow": "^7.20.0",
-    "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "data-uri-to-buffer": "^6.0.1",
+    "undici": "^5.27.2",
+    "wait-for-expect": "^3.0.2"
   }
 }

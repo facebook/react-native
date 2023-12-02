@@ -17,9 +17,9 @@
 namespace facebook::react {
 
 ScrollViewProps::ScrollViewProps(
-    const PropsParserContext &context,
-    ScrollViewProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext& context,
+    const ScrollViewProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       alwaysBounceHorizontal(
           CoreFeatures::enablePropIteratorSetter
@@ -331,10 +331,10 @@ ScrollViewProps::ScrollViewProps(
                     {})) {}
 
 void ScrollViewProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

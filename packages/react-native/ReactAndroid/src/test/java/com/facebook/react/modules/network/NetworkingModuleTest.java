@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +23,6 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,60 +36,39 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.MockedStatic;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 /** Tests for {@link NetworkingModule}. */
-@PrepareForTest({
-  Arguments.class,
-  Call.class,
-  RequestBodyUtil.class,
-  ProgressRequestBody.class,
-  ProgressListener.class,
-  MultipartBody.class,
-  MultipartBody.Builder.class,
-  NetworkingModule.class,
-  OkHttpClient.class,
-  OkHttpClient.Builder.class,
-  OkHttpCallUtil.class
-})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class NetworkingModuleTest {
   private NetworkingModule mNetworkingModule;
   private OkHttpClient mHttpClient;
   private ReactApplicationContext mContext;
 
-  @Rule public PowerMockRule rule = new PowerMockRule();
+  private MockedStatic<Arguments> arguments;
 
   @Before
   public void prepareModules() {
-    mHttpClient = PowerMockito.mock(OkHttpClient.class);
-    PowerMockito.when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    mHttpClient = mock(OkHttpClient.class);
+    when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(mHttpClient.newCall(any(Request.class)))
         .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                Call callMock = mock(Call.class);
-                return callMock;
-              }
+            invocation -> {
+              Call callMock = mock(Call.class);
+              return callMock;
             });
-    OkHttpClient.Builder clientBuilder = PowerMockito.mock(OkHttpClient.Builder.class);
-    PowerMockito.when(clientBuilder.build()).thenReturn(mHttpClient);
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(mHttpClient);
     when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
 
     CatalystInstance reactInstance = mock(CatalystInstance.class);
@@ -98,6 +77,15 @@ public class NetworkingModuleTest {
     when(mContext.getCatalystInstance()).thenReturn(reactInstance);
     when(mContext.hasActiveReactInstance()).thenReturn(true);
     mNetworkingModule = new NetworkingModule(mContext, "", mHttpClient);
+
+    arguments = mockStatic(Arguments.class);
+    arguments.when(Arguments::createArray).thenAnswer(invocation -> new JavaOnlyArray());
+    arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
+  }
+
+  @After
+  public void tearDown() {
+    arguments.close();
   }
 
   @Test
@@ -125,8 +113,6 @@ public class NetworkingModuleTest {
   public void testFailGetWithInvalidHeadersStruct() throws Exception {
     List<JavaOnlyArray> invalidHeaders = Arrays.asList(JavaOnlyArray.of("foo"));
 
-    mockEvents();
-
     mNetworkingModule.sendRequest(
         "GET",
         "http://somedoman/foo",
@@ -146,8 +132,6 @@ public class NetworkingModuleTest {
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
 
-    mockEvents();
-
     mNetworkingModule.sendRequest(
         "POST",
         "http://somedomain/bar",
@@ -164,8 +148,6 @@ public class NetworkingModuleTest {
 
   @Test
   public void testFailInvalidUrl() throws Exception {
-    mockEvents();
-
     mNetworkingModule.sendRequest(
         "GET",
         "aaa",
@@ -189,33 +171,10 @@ public class NetworkingModuleTest {
     assertThat(array.getString(1)).isNotNull();
   }
 
-  private static void mockEvents() {
-    PowerMockito.mockStatic(Arguments.class);
-    Mockito.when(Arguments.createArray())
-        .thenAnswer(
-            new Answer<WritableArray>() {
-              @Override
-              public WritableArray answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyArray();
-              }
-            });
-
-    Mockito.when(Arguments.createMap())
-        .thenAnswer(
-            new Answer<WritableMap>() {
-              @Override
-              public WritableMap answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyMap();
-              }
-            });
-  }
-
   @Test
   public void testSuccessfulPostRequest() throws Exception {
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
-
-    mockEvents();
 
     mNetworkingModule.sendRequest(
         "POST",
@@ -295,8 +254,6 @@ public class NetworkingModuleTest {
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "Friðjónsson");
 
-    mockEvents();
-
     mNetworkingModule.sendRequest(
         "POST",
         "http://somedomain/bar",
@@ -321,8 +278,6 @@ public class NetworkingModuleTest {
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "test");
 
-    mockEvents();
-
     mNetworkingModule.sendRequest(
         "POST",
         "http://somedomain/bar",
@@ -346,12 +301,18 @@ public class NetworkingModuleTest {
 
   @Test
   public void testMultipartPostRequestSimple() throws Exception {
-    PowerMockito.mockStatic(RequestBodyUtil.class);
-    when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
+    MockedStatic<RequestBodyUtil> requestBodyUtil = mockStatic(RequestBodyUtil.class);
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
         .thenReturn(mock(InputStream.class));
-    when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
-    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressListener.class)))
+    requestBodyUtil
+        .when(
+            () ->
+                RequestBodyUtil.createProgressRequest(
+                    any(RequestBody.class), any(ProgressListener.class)))
         .thenCallRealMethod();
 
     JavaOnlyMap body = new JavaOnlyMap();
@@ -386,16 +347,24 @@ public class NetworkingModuleTest {
         .isEqualTo(MultipartBody.FORM.subtype());
     Headers requestHeaders = argumentCaptor.getValue().headers();
     assertThat(requestHeaders.size()).isEqualTo(1);
+
+    requestBodyUtil.close();
   }
 
   @Test
   public void testMultipartPostRequestHeaders() throws Exception {
-    PowerMockito.mockStatic(RequestBodyUtil.class);
-    when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
+    MockedStatic<RequestBodyUtil> requestBodyUtil = mockStatic(RequestBodyUtil.class);
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
         .thenReturn(mock(InputStream.class));
-    when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenReturn(mock(RequestBody.class));
-    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressListener.class)))
+    requestBodyUtil
+        .when(
+            () ->
+                RequestBodyUtil.createProgressRequest(
+                    any(RequestBody.class), any(ProgressListener.class)))
         .thenCallRealMethod();
 
     List<JavaOnlyArray> headers =
@@ -444,18 +413,29 @@ public class NetworkingModuleTest {
   @Test
   public void testMultipartPostRequestBody() throws Exception {
     InputStream inputStream = mock(InputStream.class);
-    PowerMockito.mockStatic(RequestBodyUtil.class);
-    when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
-        .thenReturn(inputStream);
-    when(RequestBodyUtil.create(any(MediaType.class), any(InputStream.class))).thenCallRealMethod();
-    when(RequestBodyUtil.createProgressRequest(any(RequestBody.class), any(ProgressListener.class)))
+
+    MockedStatic<RequestBodyUtil> requestBodyUtil = mockStatic(RequestBodyUtil.class);
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
+        .thenReturn(mock(InputStream.class));
+    requestBodyUtil
+        .when(() -> RequestBodyUtil.create(any(MediaType.class), any(InputStream.class)))
         .thenCallRealMethod();
+    requestBodyUtil
+        .when(
+            () ->
+                RequestBodyUtil.createProgressRequest(
+                    any(RequestBody.class), any(ProgressListener.class)))
+        .thenCallRealMethod();
+
     when(inputStream.available()).thenReturn("imageUri".length());
 
-    final MultipartBody.Builder multipartBuilder = PowerMockito.mock(MultipartBody.Builder.class);
-    PowerMockito.whenNew(MultipartBody.Builder.class)
-        .withNoArguments()
-        .thenReturn(multipartBuilder);
+    final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
+    // TODO This PowerMock statement should be migrated to an equivalent for Mockito
+    //      once this test is unsuppressed.
+    //    whenNew(MultipartBody.Builder.class)
+    //        .withNoArguments()
+    //        .thenReturn(multipartBuilder);
     when(multipartBuilder.setType(any(MediaType.class)))
         .thenAnswer(
             new Answer<Object>() {
@@ -502,7 +482,9 @@ public class NetworkingModuleTest {
         JavaOnlyArray.from(
             Arrays.asList(
                 JavaOnlyArray.of("content-type", "image/jpg"),
-                JavaOnlyArray.of("content-disposition", "filename=photo.jpg"))));
+                JavaOnlyArray.of(
+                    "content-disposition",
+                    "filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg"))));
     formData.pushMap(imageBodyPart);
 
     mNetworkingModule.sendRequest(
@@ -517,9 +499,12 @@ public class NetworkingModuleTest {
         /* withCredentials */ false);
 
     // verify RequestBodyPart for image
-    PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
+
+    // TODO This should be migrated to requestBodyUtil.verify();
+    //  PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
     RequestBodyUtil.getFileInputStream(any(ReactContext.class), eq("imageUri"));
-    PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
+    // TODO This should be migrated to requestBodyUtil.verify();
+    //  PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
     RequestBodyUtil.create(MediaType.parse("image/jpg"), inputStream);
 
     // verify body
@@ -538,14 +523,15 @@ public class NetworkingModuleTest {
     assertThat(bodyHeaders.get(0).get("content-disposition")).isEqualTo("user");
     assertThat(bodyRequestBody.get(0).contentType()).isNull();
     assertThat(bodyRequestBody.get(0).contentLength()).isEqualTo("locale".getBytes().length);
-    assertThat(bodyHeaders.get(1).get("content-disposition")).isEqualTo("filename=photo.jpg");
+    assertThat(bodyHeaders.get(1).get("content-disposition"))
+        .isEqualTo("filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg");
     assertThat(bodyRequestBody.get(1).contentType()).isEqualTo(MediaType.parse("image/jpg"));
     assertThat(bodyRequestBody.get(1).contentLength()).isEqualTo("imageUri".getBytes().length);
   }
 
   @Test
   public void testCancelAllCallsInvalidate() throws Exception {
-    PowerMockito.mockStatic(OkHttpCallUtil.class);
+    MockedStatic<OkHttpCallUtil> okHttpCallUtil = mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
     for (int idx = 0; idx < requests; idx++) {
@@ -578,7 +564,8 @@ public class NetworkingModuleTest {
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
     mNetworkingModule.invalidate();
-    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
+    // TODO This should be migrated to okHttpCallUtil.verify();
+    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
@@ -591,7 +578,7 @@ public class NetworkingModuleTest {
 
   @Test
   public void testCancelSomeCallsInvalidate() throws Exception {
-    PowerMockito.mockStatic(OkHttpCallUtil.class);
+    MockedStatic<OkHttpCallUtil> okHttpCallUtil = mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
     for (int idx = 0; idx < requests; idx++) {
@@ -623,7 +610,8 @@ public class NetworkingModuleTest {
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
     mNetworkingModule.abortRequest(requests);
-    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(1));
+    // TODO This should be migrated to okHttpCallUtil.verify();
+    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(1));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());
@@ -634,7 +622,8 @@ public class NetworkingModuleTest {
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
     mNetworkingModule.invalidate();
-    PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
+    // TODO This should be migrated to okHttpCallUtil.verify();
+    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
     clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     requestIdArguments = ArgumentCaptor.forClass(Integer.class);
     OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture());

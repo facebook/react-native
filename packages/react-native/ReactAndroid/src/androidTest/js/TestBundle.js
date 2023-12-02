@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-disable lint/sort-imports */
+
 const {AppRegistry} = require('react-native');
 const TestApps = require('./TestApps');
 

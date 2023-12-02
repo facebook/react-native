@@ -1,0 +1,19 @@
+name: Check for reproducer
+# This workflow is triggered when issue is created or edited.
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  check-for-reproducer:
+    runs-on: ubuntu-latest
+    if: |
+      github.repository == 'facebook/react-native' && github.event.issue.pull_request == null && github.event.issue.state == 'open' && !contains(github.event.issue.labels.*.name, ':open_umbrella: Umbrella')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const checkForReproducer = require('./.github/workflow-scripts/checkForReproducer.js')
+            await checkForReproducer(github, context)

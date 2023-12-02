@@ -65,11 +65,6 @@
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
-
 - (void)invalidate;
 
 @end

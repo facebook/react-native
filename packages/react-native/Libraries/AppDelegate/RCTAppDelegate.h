@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridge.h>
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@class RCTBridge;
+@protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -50,7 +51,7 @@
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong) UIWindow *window;
@@ -100,8 +101,6 @@
  * By default, it assigns the rootView to the view property of the rootViewController
  * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
  * For example: UISplitViewController requires `setViewController(_:for:)`
- *
- * @return: void
  */
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
@@ -110,7 +109,6 @@
 /// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
 - (BOOL)runtimeSchedulerEnabled;
 
-#if RCT_NEW_ARCH_ENABLED
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
@@ -132,6 +130,12 @@
 /// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
 - (BOOL)fabricEnabled;
 
-#endif
+/// This method controls whether React Native's new initialization layer is enabled.
+///
+/// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
+- (BOOL)bridgelessEnabled;
+
+/// Return the bundle URL for the main bundle.
+- (NSURL *)bundleURL;
 
 @end

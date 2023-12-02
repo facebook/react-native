@@ -10,14 +10,10 @@
 
 'use strict';
 import type {Item} from '../../components/ListExampleShared';
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const {
-  HeaderComponent,
   FooterComponent,
+  HeaderComponent,
   ItemComponent,
   PlainInput,
   SeparatorComponent,
@@ -27,15 +23,18 @@ const {
   renderSmallSwitchOption,
   renderStackedItem,
 } = require('../../components/ListExampleShared');
+const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 const {
   Alert,
   Animated,
   Button,
+  SectionList,
   StyleSheet,
   Text,
   View,
-  SectionList,
 } = require('react-native');
+const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,

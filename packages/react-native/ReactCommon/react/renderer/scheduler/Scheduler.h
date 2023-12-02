@@ -36,9 +36,9 @@ namespace facebook::react {
 class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(
-      SchedulerToolbox const &schedulerToolbox,
-      UIManagerAnimationDelegate *animationDelegate,
-      SchedulerDelegate *delegate);
+      const SchedulerToolbox& schedulerToolbox,
+      UIManagerAnimationDelegate* animationDelegate,
+      SchedulerDelegate* delegate);
   ~Scheduler() override;
 
 #pragma mark - Surface Management
@@ -48,22 +48,18 @@ class Scheduler final : public UIManagerDelegate {
    * All registered `SurfaceHandler` objects must be unregistered
    * (with the same `Scheduler`) before their deallocation.
    */
-  void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
-  void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+  void registerSurface(const SurfaceHandler& surfaceHandler) const noexcept;
+  void unregisterSurface(const SurfaceHandler& surfaceHandler) const noexcept;
 
   InspectorData getInspectorDataForInstance(
-      EventEmitter const &eventEmitter) const noexcept;
-
-  void renderTemplateToSurface(
-      SurfaceId surfaceId,
-      const std::string &uiTemplate);
+      const EventEmitter& eventEmitter) const noexcept;
 
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
    * there is no any guarantees about their lifetime.
    */
-  ComponentDescriptor const *
+  const ComponentDescriptor*
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle handle) const;
 
@@ -74,8 +70,8 @@ class Scheduler final : public UIManagerDelegate {
    * If you requesting a ComponentDescriptor and unsure that it's there, you are
    * doing something wrong.
    */
-  void setDelegate(SchedulerDelegate *delegate);
-  SchedulerDelegate *getDelegate() const;
+  void setDelegate(SchedulerDelegate* delegate);
+  SchedulerDelegate* getDelegate() const;
 
 #pragma mark - UIManagerAnimationDelegate
   // This is not needed on iOS or any platform that has a "pull" instead of
@@ -89,16 +85,16 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared mountingCoordinator,
       bool mountSynchronously) override;
-  void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) override;
+  void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &commandName,
-      folly::dynamic const &args) override;
+      const ShadowNode::Shared& shadowNode,
+      const std::string& commandName,
+      const folly::dynamic& args) override;
   void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared &shadowNode,
-      std::string const &eventType) override;
+      const ShadowNode::Shared& shadowNode,
+      const std::string& eventType) override;
   void uiManagerDidSetIsJSResponder(
-      ShadowNode::Shared const &shadowNode,
+      const ShadowNode::Shared& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
@@ -111,14 +107,14 @@ class Scheduler final : public UIManagerDelegate {
   void reportMount(SurfaceId surfaceId) const;
 
 #pragma mark - Event listeners
-  void addEventListener(const std::shared_ptr<EventListener const> &listener);
+  void addEventListener(const std::shared_ptr<const EventListener>& listener);
   void removeEventListener(
-      const std::shared_ptr<EventListener const> &listener);
+      const std::shared_ptr<const EventListener>& listener);
 
  private:
   friend class SurfaceHandler;
 
-  SchedulerDelegate *delegate_;
+  SchedulerDelegate* delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
@@ -133,7 +129,7 @@ class Scheduler final : public UIManagerDelegate {
    * parts that need to have ownership (and only ownership) of that, and then
    * fill the optional.
    */
-  std::shared_ptr<std::optional<EventDispatcher const>> eventDispatcher_;
+  std::shared_ptr<std::optional<const EventDispatcher>> eventDispatcher_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.

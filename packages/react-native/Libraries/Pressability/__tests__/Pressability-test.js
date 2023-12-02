@@ -9,6 +9,9 @@
  * @oncall react_native
  */
 
+// TODO(legacy-fake-timers): Fix these tests to work with modern timers.
+jest.useFakeTimers({legacyFakeTimers: true});
+
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
 const UIManager = require('../../ReactNative/UIManager');

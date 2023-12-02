@@ -1,0 +1,6 @@
+# Ignore Pods
+**/Pods
+
+# Ignore hermes as it is downloaded from the react_native_pods
+**/sdks/hermes
+**/sdks/downloads

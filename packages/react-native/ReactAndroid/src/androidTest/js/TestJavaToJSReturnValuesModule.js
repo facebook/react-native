@@ -9,10 +9,9 @@
 
 'use strict';
 
+const {assertEquals, assertTrue} = require('./Asserts');
 const {NativeModules} = require('react-native');
 const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
-
-const {assertEquals, assertTrue} = require('./Asserts');
 const {TestModule} = NativeModules;
 
 const TestJavaToJSReturnValuesModule = {

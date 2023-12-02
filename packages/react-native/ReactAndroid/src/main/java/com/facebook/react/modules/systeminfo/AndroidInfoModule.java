@@ -18,8 +18,8 @@ import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +28,7 @@ import java.util.Map;
 @SuppressLint("HardwareIds")
 public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implements TurboModule {
   private static final String IS_TESTING = "IS_TESTING";
+  private static final String IS_DISABLE_ANIMATIONS = "IS_DISABLE_ANIMATIONS";
 
   public AndroidInfoModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -75,6 +76,10 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
     }
     constants.put(
         "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
+    String isDisableAnimations = System.getProperty(IS_DISABLE_ANIMATIONS);
+    if (isDisableAnimations != null) {
+      constants.put("isDisableAnimations", "true".equals(isDisableAnimations));
+    }
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
     return constants;

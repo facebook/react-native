@@ -8,11 +8,12 @@
  * @format
  */
 
-import * as React from 'react';
 import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import {requireNativeComponent, UIManager} from 'react-native';
+
 import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
+import * as React from 'react';
+import {UIManager, requireNativeComponent} from 'react-native';
 
 type ColorChangedEvent = {
   nativeEvent: {

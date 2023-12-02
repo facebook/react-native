@@ -10,11 +10,12 @@
 
 'use strict';
 
-const React = require('react');
-const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
-const TextInlineView = require('../../components/TextInlineView');
+import type {RNTesterModule} from '../../types/RNTesterTypes';
+
 import TextLegend from '../../components/TextLegend';
 
+const TextInlineView = require('../../components/TextInlineView');
+const React = require('react');
 const {
   Button,
   LayoutAnimation,
@@ -23,6 +24,7 @@ const {
   TextInput,
   View,
 } = require('react-native');
+const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
@@ -546,12 +548,7 @@ class TextWithCapBaseBox extends React.Component<
   }
 }
 
-exports.title = 'Text';
-exports.documentationURL = 'https://reactnative.dev/docs/text';
-exports.category = 'Basic';
-exports.description = 'Base component for rendering styled text.';
-exports.displayName = 'TextExample';
-exports.examples = [
+const examples = [
   {
     title: 'Wrap',
     render: function (): React.Node {
@@ -1332,3 +1329,12 @@ exports.examples = [
     },
   },
 ];
+
+module.exports = ({
+  title: 'Text',
+  documentationURL: 'https://reactnative.dev/docs/text',
+  category: 'Basic',
+  description: 'Base component for rendering styled text.',
+  displayName: 'TextExample',
+  examples,
+}: RNTesterModule);

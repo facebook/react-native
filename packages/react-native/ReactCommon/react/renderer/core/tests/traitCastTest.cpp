@@ -52,95 +52,93 @@ TEST(traitCastTest, testOne) {
   std::shared_ptr<ShadowNode> shadowNodeForTextShadowNode{textShadowNode};
 
   // Casting `nullptr` returns `nullptrs`.
-  ShadowNode *nullShadowNode = nullptr;
-  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullShadowNode));
-  EXPECT_FALSE(traitCast<YogaLayoutableShadowNode const *>(nullShadowNode));
-  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullShadowNode));
-  EXPECT_FALSE(traitCast<LayoutableShadowNode *>(nullShadowNode));
+  ShadowNode* nullShadowNode = nullptr;
+  EXPECT_FALSE(traitCast<const LayoutableShadowNode*>(nullShadowNode));
+  EXPECT_FALSE(traitCast<const YogaLayoutableShadowNode*>(nullShadowNode));
+  EXPECT_FALSE(traitCast<const LayoutableShadowNode*>(nullShadowNode));
+  EXPECT_FALSE(traitCast<LayoutableShadowNode*>(nullShadowNode));
   EXPECT_FALSE(traitCast<LayoutableShadowNode>(
       std::shared_ptr<ShadowNode>(nullShadowNode)));
 
   // `ViewShadowNode` is `LayoutableShadowNode` and `YogaLayoutableShadowNode`.
-  EXPECT_TRUE(traitCast<LayoutableShadowNode const *>(viewShadowNode.get()));
-  EXPECT_TRUE(
-      traitCast<YogaLayoutableShadowNode const *>(viewShadowNode.get()));
+  EXPECT_TRUE(traitCast<const LayoutableShadowNode*>(viewShadowNode.get()));
+  EXPECT_TRUE(traitCast<const YogaLayoutableShadowNode*>(viewShadowNode.get()));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<LayoutableShadowNode const &>(*viewShadowNode));
+      traitCast<const LayoutableShadowNode&>(*viewShadowNode));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<YogaLayoutableShadowNode const &>(*viewShadowNode));
+      traitCast<const YogaLayoutableShadowNode&>(*viewShadowNode));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<YogaLayoutableShadowNode &>(*viewShadowNode));
-  EXPECT_TRUE(traitCast<LayoutableShadowNode *>(viewShadowNode.get()));
+      traitCast<YogaLayoutableShadowNode&>(*viewShadowNode));
+  EXPECT_TRUE(traitCast<LayoutableShadowNode*>(viewShadowNode.get()));
   EXPECT_TRUE(traitCast<LayoutableShadowNode>(viewShadowNode));
 
   // `ScrollViewShadowNode` is `LayoutableShadowNode` and
   // `YogaLayoutableShadowNode`.
   EXPECT_TRUE(
-      traitCast<LayoutableShadowNode const *>(scrollViewShadowNode.get()));
+      traitCast<const LayoutableShadowNode*>(scrollViewShadowNode.get()));
   EXPECT_TRUE(
-      traitCast<YogaLayoutableShadowNode const *>(scrollViewShadowNode.get()));
+      traitCast<const YogaLayoutableShadowNode*>(scrollViewShadowNode.get()));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<LayoutableShadowNode const &>(*scrollViewShadowNode));
+      traitCast<const LayoutableShadowNode&>(*scrollViewShadowNode));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<YogaLayoutableShadowNode const &>(*scrollViewShadowNode));
+      traitCast<const YogaLayoutableShadowNode&>(*scrollViewShadowNode));
 
   // `ParagraphShadowNode` is `LayoutableShadowNode` and
   // `YogaLayoutableShadowNode`.
   EXPECT_TRUE(
-      traitCast<LayoutableShadowNode const *>(paragraphShadowNode.get()));
+      traitCast<const LayoutableShadowNode*>(paragraphShadowNode.get()));
   EXPECT_TRUE(
-      traitCast<YogaLayoutableShadowNode const *>(paragraphShadowNode.get()));
+      traitCast<const YogaLayoutableShadowNode*>(paragraphShadowNode.get()));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<LayoutableShadowNode const &>(*paragraphShadowNode));
+      traitCast<const LayoutableShadowNode&>(*paragraphShadowNode));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<YogaLayoutableShadowNode const &>(*paragraphShadowNode));
+      traitCast<const YogaLayoutableShadowNode&>(*paragraphShadowNode));
 
   // `TextShadowNode` is *not* `LayoutableShadowNode` nor
   // `YogaLayoutableShadowNode`.
-  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(textShadowNode.get()));
+  EXPECT_FALSE(traitCast<const LayoutableShadowNode*>(textShadowNode.get()));
   EXPECT_FALSE(
-      traitCast<YogaLayoutableShadowNode const *>(textShadowNode.get()));
+      traitCast<const YogaLayoutableShadowNode*>(textShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<LayoutableShadowNode const &>(*textShadowNode), "");
+      traitCast<const LayoutableShadowNode&>(*textShadowNode), "");
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<YogaLayoutableShadowNode const &>(*textShadowNode), "");
+      traitCast<const YogaLayoutableShadowNode&>(*textShadowNode), "");
 
   // `RawTextShadowNode` is *not* `LayoutableShadowNode` nor
   // `YogaLayoutableShadowNode`.
+  EXPECT_FALSE(traitCast<const LayoutableShadowNode*>(rawTextShadowNode.get()));
   EXPECT_FALSE(
-      traitCast<LayoutableShadowNode const *>(rawTextShadowNode.get()));
-  EXPECT_FALSE(
-      traitCast<YogaLayoutableShadowNode const *>(rawTextShadowNode.get()));
+      traitCast<const YogaLayoutableShadowNode*>(rawTextShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<LayoutableShadowNode const &>(*rawTextShadowNode), "");
+      traitCast<const LayoutableShadowNode&>(*rawTextShadowNode), "");
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<YogaLayoutableShadowNode const &>(*rawTextShadowNode), "");
+      traitCast<const YogaLayoutableShadowNode&>(*rawTextShadowNode), "");
 
   // trait cast to `RawTextShadowNode` works on `RawTextShadowNode`
   // and not on TextShadowNode or ViewShadowNode
-  EXPECT_TRUE(traitCast<RawTextShadowNode const *>(
+  EXPECT_TRUE(traitCast<const RawTextShadowNode*>(
       shadowNodeForRawTextShadowNode.get()));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<RawTextShadowNode const &>(*shadowNodeForRawTextShadowNode));
+      traitCast<const RawTextShadowNode&>(*shadowNodeForRawTextShadowNode));
   EXPECT_FALSE(
-      traitCast<RawTextShadowNode const *>(shadowNodeForTextShadowNode.get()));
+      traitCast<const RawTextShadowNode*>(shadowNodeForTextShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<RawTextShadowNode const &>(*shadowNodeForTextShadowNode), "");
-  EXPECT_FALSE(traitCast<RawTextShadowNode const *>(viewShadowNode.get()));
+      traitCast<const RawTextShadowNode&>(*shadowNodeForTextShadowNode), "");
+  EXPECT_FALSE(traitCast<const RawTextShadowNode*>(viewShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<RawTextShadowNode const &>(*viewShadowNode), "");
+      traitCast<const RawTextShadowNode&>(*viewShadowNode), "");
 
   // trait cast to `TextShadowNode` works on `TextShadowNode`
   // and not on RawTextShadowNode or ViewShadowNode
   EXPECT_TRUE(
-      traitCast<TextShadowNode const *>(shadowNodeForTextShadowNode.get()));
+      traitCast<const TextShadowNode*>(shadowNodeForTextShadowNode.get()));
   EXPECT_NO_FATAL_FAILURE(
-      traitCast<TextShadowNode const &>(*shadowNodeForTextShadowNode));
+      traitCast<const TextShadowNode&>(*shadowNodeForTextShadowNode));
   EXPECT_FALSE(
-      traitCast<TextShadowNode const *>(shadowNodeForRawTextShadowNode.get()));
+      traitCast<const TextShadowNode*>(shadowNodeForRawTextShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<TextShadowNode const &>(*shadowNodeForRawTextShadowNode), "");
-  EXPECT_FALSE(traitCast<TextShadowNode const *>(viewShadowNode.get()));
+      traitCast<const TextShadowNode&>(*shadowNodeForRawTextShadowNode), "");
+  EXPECT_FALSE(traitCast<const TextShadowNode*>(viewShadowNode.get()));
   EXPECT_DEATH_IF_SUPPORTED(
-      traitCast<TextShadowNode const &>(*viewShadowNode), "");
+      traitCast<const TextShadowNode&>(*viewShadowNode), "");
 }

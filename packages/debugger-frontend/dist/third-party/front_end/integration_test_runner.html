@@ -1,0 +1,40 @@
+<!--
+ * Copyright 2017 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- <meta http-equiv="Content-Security-Policy" content="object-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://chrome-devtools-frontend.appspot.com"> -->
+    <script type="importmap">
+      {
+        "imports": {
+          "test_runner": "./legacy_test_runner/test_runner/test_runner.js",
+          "accessibility_test_runner": "./legacy_test_runner/accessibility_test_runner/accessibility_test_runner.js",
+          "application_test_runner": "./legacy_test_runner/application_test_runner/application_test_runner.js",
+          "axe_core_test_runner": "./legacy_test_runner/axe_core_test_runner/axe_core_test_runner.js",
+          "bindings_test_runner": "./legacy_test_runner/bindings_test_runner/bindings_test_runner.js",
+          "console_test_runner": "./legacy_test_runner/console_test_runner/console_test_runner.js",
+          "coverage_test_runner": "./legacy_test_runner/coverage_test_runner/coverage_test_runner.js",
+          "cpu_profiler_test_runner": "./legacy_test_runner/cpu_profiler_test_runner/cpu_profiler_test_runner.js",
+          "data_grid_test_runner": "./legacy_test_runner/data_grid_test_runner/data_grid_test_runner.js",
+          "device_mode_test_runner": "./legacy_test_runner/device_mode_test_runner/device_mode_test_runner.js",
+          "elements_test_runner": "./legacy_test_runner/elements_test_runner/elements_test_runner.js",
+          "extensions_test_runner": "./legacy_test_runner/extensions_test_runner/extensions_test_runner.js",
+          "heap_profiler_test_runner": "./legacy_test_runner/heap_profiler_test_runner/heap_profiler_test_runner.js",
+          "layers_test_runner": "./legacy_test_runner/layers_test_runner/layers_test_runner.js",
+          "network_test_runner": "./legacy_test_runner/network_test_runner/network_test_runner.js",
+          "performance_test_runner": "./legacy_test_runner/performance_test_runner/performance_test_runner.js",
+          "sdk_test_runner": "./legacy_test_runner/sdk_test_runner/sdk_test_runner.js",
+          "security_test_runner": "./legacy_test_runner/security_test_runner/security_test_runner.js",
+          "sources_test_runner": "./legacy_test_runner/sources_test_runner/sources_test_runner.js",
+          "devtools/": "./"
+        }
+      }
+    </script>
+    <script type="module" src="legacy_test_runner/legacy_test_runner.js"></script>
+</head>
+<body id="-blink-dev-tools"></body>
+</html>

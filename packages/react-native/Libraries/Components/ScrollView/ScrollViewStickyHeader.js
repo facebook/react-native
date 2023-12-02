@@ -58,17 +58,16 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     useState<?number>(_nextHeaderLayoutY);
   const [isFabric, setIsFabric] = useState<boolean>(false);
 
-  const callbackRef = (ref: Instance | null): void => {
+  const callbackRef = useCallback((ref: Instance | null): void => {
     if (ref == null) {
       return;
     }
-    ref.setNextHeaderY = value => {
-      setNextHeaderLayoutY(value);
-    };
+    ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
-  };
+  }, []);
   const ref: (React.ElementRef<typeof Animated.View> | null) => void =
     // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
+    // $FlowFixMe[incompatible-call]
     useMergeRefs<Instance | null>(callbackRef, forwardedRef);
 
   const offset = useMemo(
@@ -108,12 +107,12 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     },
   );
 
-  const _haveReceivedInitialZeroTranslateY = useRef<boolean>(true);
-  const _timer = useRef<?TimeoutID>(null);
+  const haveReceivedInitialZeroTranslateY = useRef<boolean>(true);
+  const translateYDebounceTimer = useRef<?TimeoutID>(null);
 
   useEffect(() => {
     if (translateY !== 0 && translateY != null) {
-      _haveReceivedInitialZeroTranslateY.current = false;
+      haveReceivedInitialZeroTranslateY.current = false;
     }
   }, [translateY]);
 
@@ -131,26 +130,22 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
   //    your finger, the hit-detection moves from the Android
   //    platform to JS, so we need the ShadowTree to have knowledge
   //    of the current position.
-  const animatedValueListener = useCallback(
-    ({value}: $FlowFixMe) => {
-      const _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
-      // When the AnimatedInterpolation is recreated, it always initializes
-      // to a value of zero and emits a value change of 0 to its listeners.
-      if (value === 0 && !_haveReceivedInitialZeroTranslateY.current) {
-        _haveReceivedInitialZeroTranslateY.current = true;
-        return;
-      }
-      if (_timer.current != null) {
-        clearTimeout(_timer.current);
-      }
-      _timer.current = setTimeout(() => {
-        if (value !== translateY) {
-          setTranslateY(value);
-        }
-      }, _debounceTimeout);
-    },
-    [translateY],
-  );
+  const animatedValueListener = useCallback(({value}: $FlowFixMe) => {
+    const debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
+    // When the AnimatedInterpolation is recreated, it always initializes
+    // to a value of zero and emits a value change of 0 to its listeners.
+    if (value === 0 && !haveReceivedInitialZeroTranslateY.current) {
+      haveReceivedInitialZeroTranslateY.current = true;
+      return;
+    }
+    if (translateYDebounceTimer.current != null) {
+      clearTimeout(translateYDebounceTimer.current);
+    }
+    translateYDebounceTimer.current = setTimeout(
+      () => setTranslateY(value),
+      debounceTimeout,
+    );
+  }, []);
 
   useEffect(() => {
     const inputRange: Array<number> = [-1, 0];
@@ -242,8 +237,8 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
       if (animatedListenerId) {
         newAnimatedTranslateY.removeListener(animatedListenerId);
       }
-      if (_timer.current != null) {
-        clearTimeout(_timer.current);
+      if (translateYDebounceTimer.current != null) {
+        clearTimeout(translateYDebounceTimer.current);
       }
     };
   }, [

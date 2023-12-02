@@ -242,7 +242,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
             StateWrapper state = castToState(mObjBuffer[j++]);
             String stateString =
                 IS_DEVELOPMENT_ENVIRONMENT
-                    ? (state != null ? state.getStateData().toString() : "<null>")
+                    ? (state != null ? state.toString() : "<null>")
                     : "<hidden>";
             s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {

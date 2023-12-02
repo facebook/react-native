@@ -11,6 +11,8 @@
 #import <React/RCTDefines.h>
 #import <React/RCTJSThread.h>
 
+#import <RCTDeprecation/RCTDeprecation.h>
+
 #import "RCTBundleManager.h"
 
 @class RCTBridge;
@@ -94,19 +96,6 @@ RCT_EXTERN_C_END
     RCTRegisterModule([objc_name class]);                                       \
   }
 
-/**
- * To improve startup performance users may want to generate their module lists
- * at build time and hook the delegate to merge with the runtime list. This
- * macro takes the place of the above for those cases by omitting the +load
- * generation.
- *
- */
-#define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
-  +(NSString *)moduleName                         \
-  {                                               \
-    return @ #js_name;                            \
-  }
-
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
 
@@ -159,7 +148,7 @@ RCT_EXTERN_C_END
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
  * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
-@property (nonatomic, weak, readonly) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge RCT_DEPRECATED;
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this

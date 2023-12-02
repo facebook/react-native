@@ -195,7 +195,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
     mUIImplementation.onCatalystInstanceDestroyed();
@@ -229,7 +229,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private static Map<String, Object> createConstants(
+  public static Map<String, Object> createConstants(
       List<ViewManager> viewManagers,
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
@@ -313,7 +313,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   public <T extends View> int addRootView(final T rootView) {
-    return addRootView(rootView, null, null);
+    return addRootView(rootView, null);
   }
 
   /**
@@ -341,8 +341,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
   @Override
-  public <T extends View> int addRootView(
-      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
+  public <T extends View> int addRootView(final T rootView, WritableMap initialProps) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();

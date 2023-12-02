@@ -18,7 +18,7 @@ namespace facebook::react {
  * `patch`, overriding existing keys.
  */
 folly::dynamic mergeDynamicProps(
-    folly::dynamic const &source,
-    folly::dynamic const &patch);
+    const folly::dynamic& source,
+    const folly::dynamic& patch);
 
 } // namespace facebook::react

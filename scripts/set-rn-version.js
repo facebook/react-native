@@ -9,12 +9,12 @@
 
 'use strict';
 
+const {applyPackageVersions, getNpmInfo} = require('./npm-utils');
+const updateTemplatePackage = require('./update-template-package');
+const {parseVersion, validateBuildType} = require('./version-utils');
 const fs = require('fs');
 const {cat, echo, exit, sed} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion, validateBuildType} = require('./version-utils');
-const updateTemplatePackage = require('./update-template-package');
-const {applyPackageVersions} = require('./npm-utils');
 
 /**
  * This script updates relevant React Native files with supplied version:
@@ -28,7 +28,7 @@ if (require.main === module) {
     .option('v', {
       alias: 'to-version',
       type: 'string',
-      required: true,
+      required: false,
     })
     .option('d', {
       alias: 'dependency-versions',
@@ -46,7 +46,7 @@ if (require.main === module) {
     .option('b', {
       alias: 'build-type',
       type: 'string',
-      choices: ['dry-run', 'nightly', 'release'],
+      choices: ['dry-run', 'nightly', 'release', 'prealpha'],
       required: true,
     }).argv;
 
@@ -145,6 +145,10 @@ function setPackage({version}, dependencyVersions) {
 }
 
 function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
+  if (!argVersion) {
+    const {version} = getNpmInfo(buildType);
+    argVersion = version;
+  }
   validateBuildType(buildType);
 
   const version = parseVersion(argVersion, buildType);

@@ -12,14 +12,14 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
+const {
+  findComponentConfig,
+  getCommandProperties,
+  getOptions,
+} = require('../../parsers-commons');
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
-const {
-  getOptions,
-  findComponentConfig,
-  getCommandProperties,
-} = require('../../parsers-commons');
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;

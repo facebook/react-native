@@ -11,17 +11,17 @@
 'use strict';
 
 import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
+  ExtendsPropsShape,
   NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMemberType,
-  NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
   PropTypeAnnotation,
-  ExtendsPropsShape,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -32,44 +32,37 @@ import type {
 } from '../parser';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from '../utils';
+
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('../errors');
+const {
+  buildModuleSchema,
+  buildPropSchema,
+  buildSchema,
+  handleGenericTypeAnnotation,
+} = require('../parsers-commons');
+const {Visitor} = require('../parsers-primitives');
+const {wrapComponentSchema} = require('../schema.js');
+const {buildComponentSchema} = require('./components');
+const {
+  flattenProperties,
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./components/componentsUtils');
+const {flowTranslateTypeAnnotation} = require('./modules');
+const {parseFlowAndThrowErrors} = require('./parseFlowAndThrowErrors');
+const fs = require('fs');
+const invariant = require('invariant');
 
 type ExtendsForProp = null | {
   type: 'ReactNativeBuiltInType',
   knownTypeName: 'ReactNativeCoreViewProps',
 };
-
-const invariant = require('invariant');
-
-const {
-  getSchemaInfo,
-  getTypeAnnotation,
-  flattenProperties,
-} = require('./components/componentsUtils');
-
-const {flowTranslateTypeAnnotation} = require('./modules');
-
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
-
-const {
-  buildSchema,
-  buildPropSchema,
-  buildModuleSchema,
-  handleGenericTypeAnnotation,
-} = require('../parsers-commons');
-const {Visitor} = require('../parsers-primitives');
-const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('../schema.js');
-
-const fs = require('fs');
-
-const {
-  UnsupportedObjectPropertyTypeAnnotationParserError,
-} = require('../errors');
 
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
@@ -99,7 +92,7 @@ class FlowParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.id?.name;
   }
 
@@ -149,10 +142,8 @@ class FlowParser implements Parser {
     return this.parseString(contents, 'path/NativeSampleTurboModule.js');
   }
 
-  getAst(contents: string): $FlowFixMe {
-    return flowParser.parse(contents, {
-      enums: true,
-    });
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
+    return parseFlowAndThrowErrors(contents, {filename});
   }
 
   getFunctionTypeAnnotationParameters(
@@ -421,7 +412,7 @@ class FlowParser implements Parser {
         break;
       }
 
-      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const typeAnnotationName = this.getTypeAnnotationName(node);
       const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
@@ -542,6 +533,16 @@ class FlowParser implements Parser {
 
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.properties;
+  }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.value;
+  }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].value
+      : null;
   }
 }
 

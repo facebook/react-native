@@ -21,10 +21,10 @@ class SurfaceRegistryBinding final {
    * Thread synchronization must be enforced externally.
    */
   static void startSurface(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &initialProps,
+      const std::string& moduleName,
+      const folly::dynamic& initialProps,
       DisplayMode displayMode);
 
   /*
@@ -33,17 +33,17 @@ class SurfaceRegistryBinding final {
    * Thread synchronization must be enforced externally.
    */
   static void setSurfaceProps(
-      jsi::Runtime &runtime,
+      jsi::Runtime& runtime,
       SurfaceId surfaceId,
-      std::string const &moduleName,
-      folly::dynamic const &initialProps,
+      const std::string& moduleName,
+      const folly::dynamic& initialProps,
       DisplayMode displayMode);
 
   /*
    * Stops React Native Surface with given id.
    * Thread synchronization must be enforced externally.
    */
-  static void stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId);
+  static void stopSurface(jsi::Runtime& runtime, SurfaceId surfaceId);
 };
 
 } // namespace facebook::react

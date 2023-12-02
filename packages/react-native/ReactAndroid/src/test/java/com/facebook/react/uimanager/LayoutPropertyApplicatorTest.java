@@ -12,12 +12,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import android.util.DisplayMetrics;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -29,23 +28,15 @@ import com.facebook.yoga.YogaPositionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-@PrepareForTest({PixelUtil.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T14964130
 public class LayoutPropertyApplicatorTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Before
   public void setup() {
@@ -400,16 +391,15 @@ public class LayoutPropertyApplicatorTest {
 
   @Test
   public void testSettingDefaultStyleValues() {
-    mockStatic(PixelUtil.class);
-    when(PixelUtil.toPixelFromDIP(anyFloat()))
+    MockedStatic<PixelUtil> pixelUtil = mockStatic(PixelUtil.class);
+    pixelUtil
+        .when(() -> PixelUtil.toPixelFromDIP(anyFloat()))
         .thenAnswer(
-            new Answer() {
-              @Override
-              public Float answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Float) args[0];
-              }
-            });
+            (Answer)
+                invocation -> {
+                  Object[] args = invocation.getArguments();
+                  return (Float) args[0];
+                });
 
     LayoutShadowNode[] nodes = new LayoutShadowNode[7];
     for (int idx = 0; idx < nodes.length; idx++) {

@@ -7,9 +7,6 @@
 
 #pragma once
 
-// foo bar 2
-
-// #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/graphics/Color.h>
 
@@ -22,6 +19,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
 #include <cinttypes>
+#include <unordered_map>
 #include <vector>
 
 namespace facebook::react {
@@ -32,10 +30,10 @@ struct AndroidTextInputTextShadowOffsetStruct {
 };
 
 static inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AndroidTextInputTextShadowOffsetStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
+    const PropsParserContext& context,
+    const RawValue& value,
+    AndroidTextInputTextShadowOffsetStruct& result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
 
   auto width = map.find("width");
   if (width != map.end()) {
@@ -48,33 +46,31 @@ static inline void fromRawValue(
 }
 
 static inline std::string toString(
-    const AndroidTextInputTextShadowOffsetStruct &value) {
+    const AndroidTextInputTextShadowOffsetStruct& value) {
   return "[Object AndroidTextInputTextShadowOffsetStruct]";
 }
 
-#ifdef ANDROID
 inline folly::dynamic toDynamic(
-    const AndroidTextInputTextShadowOffsetStruct &value) {
+    const AndroidTextInputTextShadowOffsetStruct& value) {
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["width"] = value.width;
   dynamicValue["height"] = value.height;
   return dynamicValue;
 }
-#endif
 
 class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
  public:
   AndroidTextInputProps() = default;
   AndroidTextInputProps(
-      const PropsParserContext &context,
-      const AndroidTextInputProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const AndroidTextInputProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
   folly::dynamic getDynamic() const;
 
@@ -104,6 +100,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   SharedColor placeholderTextColor{};
   bool secureTextEntry{false};
   SharedColor selectionColor{};
+  SharedColor selectionHandleColor{};
   std::string value{};
   std::string defaultValue{};
   bool selectTextOnFocus{false};

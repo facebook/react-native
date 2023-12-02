@@ -8,14 +8,15 @@
  * @flow strict-local
  */
 
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
-  Int32,
   BubblingEventHandler,
+  Int32,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type OnChangeEvent = $ReadOnly<{|
   location: {

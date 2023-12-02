@@ -32,17 +32,6 @@ int32_t getUniqueId()
   return counter++;
 }
 }
-static BOOL isMainQueueExecutionOfConstantToExportDisabled = NO;
-
-void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val)
-{
-  isMainQueueExecutionOfConstantToExportDisabled = val;
-}
-
-BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
-{
-  return isMainQueueExecutionOfConstantToExportDisabled;
-}
 
 @implementation RCTModuleData {
   NSDictionary<NSString *, id> *_constantsToExport;
@@ -88,20 +77,6 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
         !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
     _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
-    if (_requiresMainQueueSetup) {
-      const char *methodName = "";
-      if (_hasConstantsToExport) {
-        methodName = "constantsToExport";
-      } else if (hasCustomInit) {
-        methodName = "init";
-      }
-      RCTLogWarn(
-          @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-           "`requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules "
-           "on a background thread unless explicitly opted-out of.",
-          _moduleClass,
-          methodName);
-    }
   }
 }
 
@@ -461,7 +436,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
     }
 
-    if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled() && _requiresMainQueueSetup) {
+    if (_requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
       }

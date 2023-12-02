@@ -11,12 +11,12 @@
 
 'use-strict';
 
+import {FlowParser} from '../flow/parser';
+import {TypeScriptParser} from '../typescript/parser';
+
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('../errors');
-
-import {TypeScriptParser} from '../typescript/parser';
-import {FlowParser} from '../flow/parser';
 
 const hasteModuleName = 'moduleName';
 describe('FlowParser', () => {
@@ -122,6 +122,20 @@ describe('FlowParser', () => {
     it('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
+    });
+  });
+
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        id: {
+          name: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toBe(
+        'StringTypeAnnotation',
+      );
     });
   });
 
@@ -430,6 +444,22 @@ describe('FlowParser', () => {
       expect(parser.getObjectProperties(declaration)).toEqual(undefined);
     });
   });
+  describe('getLiteralValue', () => {
+    it('returns value of an union represented, given an option', () => {
+      const option = {
+        value: 'LiteralValue',
+      };
+      const expected = option.value;
+
+      expect(parser.getLiteralValue(option)).toEqual(expected);
+    });
+
+    it('returns undefined if option does not have value', () => {
+      const option = {};
+
+      expect(parser.getLiteralValue(option)).toEqual(undefined);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -532,6 +562,19 @@ describe('TypeScriptParser', () => {
     it('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
+    });
+  });
+
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        type: 'TSTypeReference',
+        typeName: {
+          name: 'Foo',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toEqual('Foo');
     });
   });
 
@@ -819,6 +862,28 @@ describe('TypeScriptParser', () => {
       };
 
       expect(parser.getObjectProperties(declaration)).toEqual(undefined);
+    });
+  });
+
+  describe('getLiteralValue', () => {
+    it('returns literal value of an union represented, given an option', () => {
+      const literal = {
+        value: 'LiteralValue',
+      };
+      const option = {
+        literal,
+      };
+      const expected = literal.value;
+
+      expect(parser.getLiteralValue(option)).toEqual(expected);
+    });
+
+    it('returns undefined if literal does not have value', () => {
+      const option = {
+        literal: {},
+      };
+
+      expect(parser.getLiteralValue(option)).toEqual(undefined);
     });
   });
 });

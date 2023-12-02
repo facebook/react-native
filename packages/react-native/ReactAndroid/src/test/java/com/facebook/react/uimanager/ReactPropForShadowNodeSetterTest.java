@@ -20,11 +20,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 /**
@@ -33,11 +30,8 @@ import org.robolectric.RobolectricTestRunner;
  * of properties to be updated.
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T14964130
 public class ReactPropForShadowNodeSetterTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   public interface ViewManagerUpdatesReceiver {
     void onBooleanSetterCalled(boolean value);
@@ -65,7 +59,7 @@ public class ReactPropForShadowNodeSetterTest {
     void onBoxedIntGroupPropSetterCalled(int index, Integer value);
   }
 
-  public static ReactStylesDiffMap buildStyles(Object... keysAndValues) {
+  private ReactStylesDiffMap buildStyles(Object... keysAndValues) {
     return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 

@@ -48,10 +48,10 @@ const useSingleOpBatching =
 let flushQueueTimeout = null;
 
 const eventListenerGetValueCallbacks: {
-  [$FlowFixMe | number]: ((value: number) => void) | void,
+  [number]: (value: number) => void,
 } = {};
 const eventListenerAnimationFinishedCallbacks: {
-  [$FlowFixMe | number]: EndCallback | void,
+  [number]: EndCallback,
 } = {};
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
@@ -339,7 +339,7 @@ const API = {
 function setupGlobalEventEmitterListeners() {
   globalEventEmitterGetValueListener = RCTDeviceEventEmitter.addListener(
     'onNativeAnimatedModuleGetValue',
-    function (params) {
+    params => {
       const {tag} = params;
       const callback = eventListenerGetValueCallbacks[tag];
       if (!callback) {
@@ -352,14 +352,17 @@ function setupGlobalEventEmitterListeners() {
   globalEventEmitterAnimationFinishedListener =
     RCTDeviceEventEmitter.addListener(
       'onNativeAnimatedModuleAnimationFinished',
-      function (params) {
-        const {animationId} = params;
-        const callback = eventListenerAnimationFinishedCallbacks[animationId];
-        if (!callback) {
-          return;
+      params => {
+        // TODO: remove Array.isArray once native changes have propagated
+        const animations = Array.isArray(params) ? params : [params];
+        for (const animation of animations) {
+          const {animationId} = animation;
+          const callback = eventListenerAnimationFinishedCallbacks[animationId];
+          if (callback) {
+            callback(animation);
+            delete eventListenerAnimationFinishedCallbacks[animationId];
+          }
         }
-        callback(params);
-        delete eventListenerAnimationFinishedCallbacks[animationId];
       },
     );
 }

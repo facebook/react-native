@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-Binding *JFabricUIManager::getBinding() {
+Binding* JFabricUIManager::getBinding() {
   static const auto bindingField =
       javaClassStatic()->getField<Binding::javaobject>("mBinding");
 

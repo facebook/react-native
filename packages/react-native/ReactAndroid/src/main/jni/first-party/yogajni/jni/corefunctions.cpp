@@ -6,8 +6,8 @@
  */
 
 #include "corefunctions.h"
-#include "macros.h"
 #include "YogaJniException.h"
+#include "macros.h"
 
 namespace facebook::yoga::vanillajni {
 
@@ -44,7 +44,7 @@ jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
 // TODO why we need JNIEXPORT for getCurrentEnv ?
 JNIEXPORT JNIEnv* getCurrentEnv() {
   JNIEnv* env;
-  jint ret = globalVm->GetEnv((void**) &env, JNI_VERSION_1_6);
+  jint ret = globalVm->GetEnv((void**)&env, JNI_VERSION_1_6);
   if (ret != JNI_OK) {
     logErrorMessageAndDie(
         "There was an error retrieving the current JNIEnv. Make sure the "
@@ -54,7 +54,7 @@ JNIEXPORT JNIEnv* getCurrentEnv() {
 }
 
 void logErrorMessageAndDie(const char* message) {
-  (void) message;
+  (void)message;
   VANILLAJNI_LOG_ERROR(
       "VanillaJni",
       "Aborting due to error detected in native code: %s",

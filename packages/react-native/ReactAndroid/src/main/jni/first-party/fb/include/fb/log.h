@@ -72,12 +72,12 @@ typedef enum android_LogPriority {
 /*
  * Send a simple string to the log.
  */
-int __android_log_write(int prio, const char *tag, const char *text);
+int __android_log_write(int prio, const char* tag, const char* text);
 
 /*
  * Send a formatted string to the log, used like printf(fmt,...)
  */
-int __android_log_print(int prio, const char *tag, const char *fmt, ...)
+int __android_log_print(int prio, const char* tag, const char* fmt, ...)
 #if defined(__GNUC__)
     __attribute__((format(printf, 3, 4)))
 #endif
@@ -308,7 +308,7 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #define IF_FBLOG(priority, tag) if (fb_testLog(ANDROID_##priority, tag))
 #endif
 
-typedef void (*LogHandler)(int priority, const char *tag, const char *message);
+typedef void (*LogHandler)(int priority, const char* tag, const char* message);
 FBEXPORT void setLogHandler(LogHandler logHandler);
 
 /*
@@ -316,7 +316,7 @@ FBEXPORT void setLogHandler(LogHandler logHandler);
  *
  * The stuff in the rest of this file should not be used directly.
  */
-FBEXPORT int fb_printLog(int prio, const char *tag, const char *fmt, ...)
+FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
 #if defined(__GNUC__)
     __attribute__((format(printf, 3, 4)))
 #endif
@@ -340,9 +340,9 @@ FBEXPORT int fb_printLog(int prio, const char *tag, const char *fmt, ...)
  */
 void logPrintByDelims(
     int priority,
-    const char *tag,
-    const char *delims,
-    const char *msg,
+    const char* tag,
+    const char* delims,
+    const char* msg,
     ...);
 
 #ifdef __cplusplus

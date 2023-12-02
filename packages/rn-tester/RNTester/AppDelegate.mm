@@ -16,15 +16,31 @@
 #import <React/RCTPushNotificationManager.h>
 #endif
 
-#if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
+#endif
+
+// FB-internal imports
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <RCTFBAppInit/RCTFBAppInit.h>
+#endif
+
+#if BUNDLE_PATH
+NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterTestBundle.js";
+#else
+NSString *kBundlePath = @"js/RNTesterApp.ios";
 #endif
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+  // FB-internal app init setup.
+  RCTFBAppInitApplicationDidFinishLaunching(launchOptions);
+#endif
+
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -47,7 +63,7 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -70,22 +86,13 @@
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
-#ifdef RCT_NEW_ARCH_ENABLED
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-#endif
   return nullptr;
 }
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
-
-// Required to register for notifications
-- (void)application:(__unused UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
-}
 
 // Required for the remoteNotificationsRegistered event.
 - (void)application:(__unused UIApplication *)application
@@ -118,11 +125,16 @@
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
-#if RCT_NEW_ARCH_ENABLED
+#ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
   return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
 }
 #endif
+
+- (NSURL *)bundleURL
+{
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
+}
 
 @end

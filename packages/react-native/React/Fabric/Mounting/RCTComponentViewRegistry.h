@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
  * for given `componentHandle` and with given `tag`.
  * #RefuseSingleUse
  */
-- (RCTComponentViewDescriptor const &)dequeueComponentViewWithComponentHandle:
+- (const RCTComponentViewDescriptor &)dequeueComponentViewWithComponentHandle:
                                           (facebook::react::ComponentHandle)componentHandle
                                                                           tag:(facebook::react::Tag)tag;
 
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Returns a component view descriptor by given `tag`.
  */
-- (RCTComponentViewDescriptor const &)componentViewDescriptorWithTag:(facebook::react::Tag)tag;
+- (const RCTComponentViewDescriptor &)componentViewDescriptorWithTag:(facebook::react::Tag)tag;
 
 /**
  * Finds a native component view by given `tag`.

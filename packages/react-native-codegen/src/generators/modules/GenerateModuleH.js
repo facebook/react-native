@@ -9,30 +9,31 @@
  */
 
 'use strict';
-
 import type {
-  Nullable,
-  SchemaType,
-  NativeModuleTypeAnnotation,
-  NativeModuleFunctionTypeAnnotation,
-  NativeModulePropertyShape,
+  NamedShape,
+  NativeModuleBaseTypeAnnotation,
+} from '../../CodegenSchema';
+import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModulePropertyShape,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
 
+const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {getEnumName, toSafeCppString} = require('../Utils');
-
+const {indent} = require('../Utils');
 const {
   createAliasResolver,
-  getModules,
   getAreEnumMembersInteger,
+  getModules,
 } = require('./Utils');
-const {indent} = require('../Utils');
-const {unwrapNullable} = require('../../parsers/parsers-commons');
 
 type FilesOutput = Map<string, string>;
 
@@ -79,7 +80,7 @@ public:
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
-      delegate_(static_cast<T*>(this), jsInvoker) {}
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
 private:
   class Delegate : public ${hasteModuleName}CxxSpecJSI {
@@ -219,39 +220,48 @@ function createStructsString(
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
 ): string {
-  return Object.keys(aliasMap)
-    .map(alias => {
-      const value = aliasMap[alias];
-      if (value.properties.length === 0) {
-        return '';
-      }
-      const structName = `${moduleName}Base${alias}`;
-      const templateParameterWithTypename = value.properties
-        .map((v, i) => 'typename P' + i)
-        .join(', ');
-      const templateParameter = value.properties
-        .map((v, i) => 'P' + i)
-        .join(', ');
-      const paramemterConversion = value.properties
-        .map((v, i) => {
-          const translatedParam = translatePrimitiveJSTypeToCpp(
-            moduleName,
-            v.typeAnnotation,
-            false,
-            typeName =>
-              `Unsupported type for param "${v.name}". Found: ${typeName}`,
-            resolveAlias,
-            enumMap,
-          );
-          return `  static ${translatedParam} ${v.name}ToJs(jsi::Runtime &rt, P${i} value) {
+  const getCppType = (
+    v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
+  ) =>
+    translatePrimitiveJSTypeToCpp(
+      moduleName,
+      v.typeAnnotation,
+      false,
+      typeName => `Unsupported type for param "${v.name}". Found: ${typeName}`,
+      resolveAlias,
+      enumMap,
+    );
+
+  // TODO: T171006733 [Begin] Remove deprecated Cxx TMs structs after a new release.
+  return (
+    Object.keys(aliasMap)
+      .map(alias => {
+        const value = aliasMap[alias];
+        if (value.properties.length === 0) {
+          return '';
+        }
+        const structName = `${moduleName}Base${alias}`;
+        const structNameNew = `${moduleName}${alias}`;
+        const templateParameterWithTypename = value.properties
+          .map((v, i) => `typename P${i}`)
+          .join(', ');
+        const templateParameter = value.properties
+          .map((v, i) => 'P' + i)
+          .join(', ');
+        const debugParameterConversion = value.properties
+          .map(
+            (v, i) => `  static ${getCppType(v)} ${
+              v.name
+            }ToJs(jsi::Runtime &rt, P${i} value) {
     return bridging::toJs(rt, value);
-  }`;
-        })
-        .join('\n');
-      return `#pragma mark - ${structName}
+  }`,
+          )
+          .join('\n\n');
+        return `
+#pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
-struct ${structName} {
+struct [[deprecated("Use ${structNameNew} instead.")]] ${structName} {
 ${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
   bool operator==(const ${structName} &other) const {
     return ${value.properties
@@ -261,7 +271,7 @@ ${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
 };
 
 template <${templateParameterWithTypename}>
-struct ${structName}Bridging {
+struct [[deprecated("Use ${structNameNew}Bridging instead.")]] ${structName}Bridging {
   static ${structName}<${templateParameter}> fromJs(
       jsi::Runtime &rt,
       const jsi::Object &value,
@@ -277,32 +287,111 @@ ${value.properties
   }
 
 #ifdef DEBUG
-${paramemterConversion}
+${debugParameterConversion}
 #endif
 
   static jsi::Object toJs(
-    jsi::Runtime &rt,
-    const ${structName}<${templateParameter}> &value,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
-      auto result = facebook::jsi::Object(rt);
-      ${value.properties
-        .map((v, i) => {
-          if (v.optional) {
-            return `    if (value.${v.name}) {
-            result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
-          }`;
-          } else {
-            return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
-          }
-        })
-        .join('\n')}
-          return result;
-        }
-      };
+      jsi::Runtime &rt,
+      const ${structName}<${templateParameter}> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+${value.properties
+  .map((v, i) => {
+    if (v.optional) {
+      return `    if (value.${v.name}) {
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+    }`;
+    } else {
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+    }
+  })
+  .join('\n')}
+    return result;
+  }
+};
 
 `;
-    })
-    .join('\n');
+      })
+      .join('\n') +
+    // TODO: T171006733 [End] Remove deprecated Cxx TMs structs after a new release.
+    Object.keys(aliasMap)
+      .map(alias => {
+        const value = aliasMap[alias];
+        if (value.properties.length === 0) {
+          return '';
+        }
+        const structName = `${moduleName}${alias}`;
+        const templateParameterWithTypename = value.properties
+          .map((v, i) => `typename P${i}`)
+          .join(', ');
+        const debugParameterConversion = value.properties
+          .map(
+            (v, i) => `  static ${getCppType(v)} ${
+              v.name
+            }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
+    return bridging::toJs(rt, value);
+  }`,
+          )
+          .join('\n\n');
+        return `
+#pragma mark - ${structName}
+
+template <${templateParameterWithTypename}>
+struct ${structName} {
+${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
+  bool operator==(const ${structName} &other) const {
+    return ${value.properties
+      .map(v => `${v.name} == other.${v.name}`)
+      .join(' && ')};
+  }
+};
+
+template <typename T>
+struct ${structName}Bridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+${value.properties
+  .map(
+    (v, i) =>
+      `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
+  )
+  .join(',\n')}};
+    return result;
+  }
+
+#ifdef DEBUG
+${debugParameterConversion}
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+${value.properties
+  .map((v, i) => {
+    if (v.optional) {
+      return `    if (value.${v.name}) {
+      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
+    }`;
+    } else {
+      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
+    }
+  })
+  .join('\n')}
+    return result;
+  }
+};
+
+`;
+      })
+      .join('\n')
+  );
 }
 
 type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';

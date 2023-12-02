@@ -181,10 +181,10 @@ RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag);
 RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     NSObject *obj,
     id expectedClass,
-    NSString const *expectedType,
-    NSString const *componentName,
-    NSString const *commandName,
-    NSString const *argPos);
+    const NSString *expectedType,
+    const NSString *componentName,
+    const NSString *commandName,
+    const NSString *argPos);
 
 RCT_EXTERN BOOL RCTIsAppActive(void);
 

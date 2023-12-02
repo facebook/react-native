@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {NativeColorValue} from './PlatformColorValueTypes';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -21,6 +20,7 @@ import type {
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
@@ -552,7 +552,8 @@ type ____LayoutStyle_Internal = $ReadOnly<{
     | 'center'
     | 'stretch'
     | 'space-between'
-    | 'space-around',
+    | 'space-around'
+    | 'space-evenly',
 
   /** `overflow` controls how children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
@@ -625,7 +626,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   /** `direction` specifies the directional flow of the user interface.
    *  The default is `inherit`, except for root node which will have
    *  value based on the current locale.
-   *  See https://yogalayout.com/docs/layout-direction
+   *  See https://yogalayout.dev/docs/layout-direction
    *  for more details.
    *  @platform ios
    */

@@ -541,6 +541,11 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
           setAlignContent(YogaAlign.SPACE_AROUND);
           return;
         }
+      case "space-evenly":
+        {
+          setAlignContent(YogaAlign.SPACE_EVENLY);
+          return;
+        }
       default:
         {
           FLog.w(ReactConstants.TAG, "invalid value for alignContent: " + alignContent);

@@ -9,7 +9,7 @@
 
 namespace facebook::react {
 
-jsi::Value PointerEvent::asJSIValue(jsi::Runtime &runtime) const {
+jsi::Value PointerEvent::asJSIValue(jsi::Runtime& runtime) const {
   auto object = jsi::Object(runtime);
   object.setProperty(runtime, "pointerId", this->pointerId);
   object.setProperty(runtime, "pressure", this->pressure);
@@ -44,14 +44,18 @@ jsi::Value PointerEvent::asJSIValue(jsi::Runtime &runtime) const {
   return object;
 }
 
+EventPayloadType PointerEvent::getType() const {
+  return EventPayloadType::PointerEvent;
+}
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const & /*pointerEvent*/) {
+std::string getDebugName(const PointerEvent& /*pointerEvent*/) {
   return "PointerEvent";
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    PointerEvent const &pointerEvent,
+    const PointerEvent& pointerEvent,
     DebugStringConvertibleOptions options) {
   return {
       {"pointerId", getDebugDescription(pointerEvent.pointerId, options)},

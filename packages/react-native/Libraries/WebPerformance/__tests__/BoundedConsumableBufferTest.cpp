@@ -163,7 +163,7 @@ TEST(BoundedConsumableBuffer, CanClearByPredicate) {
   buffer.add(0);
   buffer.add(4);
 
-  buffer.clear([](const int &el) { return el == 0; });
+  buffer.clear([](const int& el) { return el == 0; });
 
   ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries());
   auto elems = buffer.consume();
@@ -182,18 +182,18 @@ TEST(BoundedConsumableBuffer, CanGetByPredicate) {
   buffer.consume();
   buffer.add(3);
 
-  ASSERT_EQ(std::vector<int>({1, 2, 3}), buffer.getEntries([](const int &el) {
+  ASSERT_EQ(std::vector<int>({1, 2, 3}), buffer.getEntries([](const int& el) {
     return el != 0;
   }));
 
   buffer.add(0);
   buffer.add(4);
 
-  ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries([](const int &el) {
+  ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries([](const int& el) {
     return el != 0;
   }));
   auto elems = buffer.consume();
-  ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries([](const int &el) {
+  ASSERT_EQ(std::vector<int>({2, 3, 4}), buffer.getEntries([](const int& el) {
     return el != 0;
   }));
 }

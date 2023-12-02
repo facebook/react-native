@@ -16,7 +16,7 @@ namespace facebook::yoga::vanillajni {
  * does not gets cleared before jni call completion
  */
 class YogaJniException : public std::exception {
-public:
+ public:
   YogaJniException();
   ~YogaJniException() override;
 
@@ -28,7 +28,7 @@ public:
 
   ScopedLocalRef<jthrowable> getThrowable() const noexcept;
 
-private:
+ private:
   ScopedGlobalRef<jthrowable> throwable_;
 };
 

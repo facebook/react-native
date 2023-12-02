@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 
 /** Implementation of Dynamic wrapping a ReadableArray. */
-public class DynamicFromArray implements Dynamic {
+class DynamicFromArray implements Dynamic {
   private static final Pools.SimplePool<DynamicFromArray> sPool = new Pools.SimplePool<>(10);
 
   private @Nullable ReadableArray mArray;

@@ -11,23 +11,35 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {ReactNativeStartupTiming as ReactNativeStartupTimingType} from './NativePerformance';
+type ReactNativeStartupTimingLike = {
+  startTime: ?number,
+  endTime: ?number,
+  initializeRuntimeStart: ?number,
+  initializeRuntimeEnd: ?number,
+  executeJavaScriptBundleEntryPointStart: ?number,
+  executeJavaScriptBundleEntryPointEnd: ?number,
+};
 
 // Read-only object with RN startup timing information.
 // This is returned by the performance.reactNativeStartup API.
 export default class ReactNativeStartupTiming {
-  // All time information here are in ms. To match web spec,
-  // the default value for timings are zero if not present.
-  // See https://www.w3.org/TR/performance-timeline/#performancetiming-interface
-  _startTime = 0;
-  _endTime = 0;
-  _executeJavaScriptBundleEntryPointStart = 0;
-  _executeJavaScriptBundleEntryPointEnd = 0;
+  // All time information here are in ms. The values may be null if not provided.
+  // We do NOT match web spect here for two reasons:
+  // 1. The `ReactNativeStartupTiming` is non-standard API
+  // 2. The timing information is relative to the time origin, which means `0` has valid meaning
+  _startTime: ?number;
+  _endTime: ?number;
+  _initializeRuntimeStart: ?number;
+  _initializeRuntimeEnd: ?number;
+  _executeJavaScriptBundleEntryPointStart: ?number;
+  _executeJavaScriptBundleEntryPointEnd: ?number;
 
-  constructor(startUpTiming: ?ReactNativeStartupTimingType) {
+  constructor(startUpTiming: ?ReactNativeStartupTimingLike) {
     if (startUpTiming != null) {
       this._startTime = startUpTiming.startTime;
       this._endTime = startUpTiming.endTime;
+      this._initializeRuntimeStart = startUpTiming.initializeRuntimeStart;
+      this._initializeRuntimeEnd = startUpTiming.initializeRuntimeEnd;
       this._executeJavaScriptBundleEntryPointStart =
         startUpTiming.executeJavaScriptBundleEntryPointStart;
       this._executeJavaScriptBundleEntryPointEnd =
@@ -36,30 +48,44 @@ export default class ReactNativeStartupTiming {
   }
 
   /**
-   *  Start time of the RN app startup process. This is provided by the platform by implementing the `ReactMarker.setAppStartTime` API in the native platform code.
+   * Start time of the RN app startup process. This is provided by the platform by implementing the `ReactMarker.setAppStartTime` API in the native platform code.
    */
-  get startTime(): number {
+  get startTime(): ?number {
     return this._startTime;
   }
 
   /**
    * End time of the RN app startup process. This is equal to `executeJavaScriptBundleEntryPointEnd`.
    */
-  get endTime(): number {
+  get endTime(): ?number {
     return this._endTime;
+  }
+
+  /**
+   * Start time when RN runtime get initialized. This is when RN infra first kicks in app startup process.
+   */
+  get initializeRuntimeStart(): ?number {
+    return this._initializeRuntimeStart;
+  }
+
+  /**
+   * End time when RN runtime get initialized. This is the last marker before ends of the app startup process.
+   */
+  get initializeRuntimeEnd(): ?number {
+    return this._initializeRuntimeEnd;
   }
 
   /**
    * Start time of JS bundle being executed. This indicates the RN JS bundle is loaded and start to be evaluated.
    */
-  get executeJavaScriptBundleEntryPointStart(): number {
+  get executeJavaScriptBundleEntryPointStart(): ?number {
     return this._executeJavaScriptBundleEntryPointStart;
   }
 
   /**
    * End time of JS bundle being executed. This indicates all the synchronous entry point jobs are finished.
    */
-  get executeJavaScriptBundleEntryPointEnd(): number {
+  get executeJavaScriptBundleEntryPointEnd(): ?number {
     return this._executeJavaScriptBundleEntryPointEnd;
   }
 }

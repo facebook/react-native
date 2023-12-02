@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: et_EE -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">React Native’i arendaja menüü (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">Töötab %1$s</string>
 </resources>

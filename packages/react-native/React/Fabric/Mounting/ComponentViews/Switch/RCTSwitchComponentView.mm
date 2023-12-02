@@ -29,8 +29,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const SwitchProps>();
-    _props = defaultProps;
+    _props = SwitchShadowNode::defaultSharedProps();
 
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 
@@ -55,10 +54,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<SwitchComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldSwitchProps = static_cast<SwitchProps const &>(*_props);
-  const auto &newSwitchProps = static_cast<SwitchProps const &>(*props);
+  const auto &oldSwitchProps = static_cast<const SwitchProps &>(*_props);
+  const auto &newSwitchProps = static_cast<const SwitchProps &>(*props);
 
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
@@ -92,7 +91,7 @@ using namespace facebook::react;
 
 - (void)onChange:(UISwitch *)sender
 {
-  const auto &props = static_cast<SwitchProps const &>(*_props);
+  const auto &props = static_cast<const SwitchProps &>(*_props);
   if (props.value == sender.on) {
     return;
   }

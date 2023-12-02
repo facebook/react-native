@@ -28,9 +28,8 @@
  *   - an option to uninstall the apps (RNTester, RNTestProject) from emulators
  */
 
-const {exec, exit} = require('shelljs');
-
 const {isPackagerRunning} = require('./testing-utils');
+const {exec, exit} = require('shelljs');
 
 console.info('\n** Starting the clean up process **\n');
 
@@ -44,6 +43,7 @@ if (isPackagerRunning() === 'running') {
 console.info('\n** Cleaning Gradle build artifacts **\n');
 exec('./gradlew clean');
 exec('rm -rf /tmp/maven-local');
+exec('rm -rf /tmp/react-native-tmp');
 
 // iOS
 console.info('\n** Nuking the derived data folder **\n');
@@ -55,9 +55,6 @@ exec('rm -rf ~/Library/Caches/CocoaPods/Pods/External/hermes-engine');
 // RNTester Pods
 console.info('\n** Removing the RNTester Pods **\n');
 exec('rm -rf packages/rn-tester/Pods');
-
-// I'm not sure we want to also remove the lock file
-// exec('rm -rf packages/rn-tester/Podfile.lock');
 
 // RNTestProject
 console.info('\n** Removing the RNTestProject folder **\n');

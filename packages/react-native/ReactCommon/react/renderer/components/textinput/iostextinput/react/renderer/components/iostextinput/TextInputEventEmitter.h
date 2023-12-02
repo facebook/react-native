@@ -36,27 +36,27 @@ class TextInputEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onFocus(TextInputMetrics const &textInputMetrics) const;
-  void onBlur(TextInputMetrics const &textInputMetrics) const;
-  void onChange(TextInputMetrics const &textInputMetrics) const;
-  void onChangeSync(TextInputMetrics const &textInputMetrics) const;
-  void onContentSizeChange(TextInputMetrics const &textInputMetrics) const;
-  void onSelectionChange(TextInputMetrics const &textInputMetrics) const;
-  void onEndEditing(TextInputMetrics const &textInputMetrics) const;
-  void onSubmitEditing(TextInputMetrics const &textInputMetrics) const;
-  void onKeyPress(KeyPressMetrics const &keyPressMetrics) const;
-  void onKeyPressSync(KeyPressMetrics const &keyPressMetrics) const;
-  void onScroll(TextInputMetrics const &textInputMetrics) const;
+  void onFocus(const TextInputMetrics& textInputMetrics) const;
+  void onBlur(const TextInputMetrics& textInputMetrics) const;
+  void onChange(const TextInputMetrics& textInputMetrics) const;
+  void onChangeSync(const TextInputMetrics& textInputMetrics) const;
+  void onContentSizeChange(const TextInputMetrics& textInputMetrics) const;
+  void onSelectionChange(const TextInputMetrics& textInputMetrics) const;
+  void onEndEditing(const TextInputMetrics& textInputMetrics) const;
+  void onSubmitEditing(const TextInputMetrics& textInputMetrics) const;
+  void onKeyPress(const KeyPressMetrics& keyPressMetrics) const;
+  void onKeyPressSync(const KeyPressMetrics& keyPressMetrics) const;
+  void onScroll(const TextInputMetrics& textInputMetrics) const;
 
  private:
   void dispatchTextInputEvent(
-      std::string const &name,
-      TextInputMetrics const &textInputMetrics,
+      const std::string& name,
+      const TextInputMetrics& textInputMetrics,
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 
   void dispatchTextInputContentSizeChangeEvent(
-      std::string const &name,
-      TextInputMetrics const &textInputMetrics,
+      const std::string& name,
+      const TextInputMetrics& textInputMetrics,
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 

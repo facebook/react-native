@@ -112,7 +112,7 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
  public:
   ModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
-  void invokeAsync(const std::string &methodName, std::function<void()> &&work) override
+  void invokeAsync(const std::string &methodName, std::function<void()> &&work) noexcept override
   {
     if (methodQueue_ == RCTJSThread) {
       work();
@@ -206,6 +206,9 @@ static Class getFallbackClassFromName(const char *name)
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+
+  BOOL _enableSharedModuleQueue;
+  dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -221,6 +224,11 @@ static Class getFallbackClassFromName(const char *name)
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
+    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
+
+    if (_enableSharedModuleQueue) {
+      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    }
 
     if (RCTTurboModuleInteropEnabled()) {
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
@@ -276,20 +284,6 @@ static Class getFallbackClassFromName(const char *name)
         bridgeModuleDecorator:bridgeModuleDecorator
                      delegate:delegate
                     jsInvoker:jsInvoker];
-}
-
-- (void)notifyAboutTurboModuleSetup:(const char *)name
-{
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
-  if (moduleName) {
-    int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
-                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
-                                                      }];
-  }
 }
 
 /**
@@ -389,6 +383,7 @@ static Class getFallbackClassFromName(const char *name)
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
+        .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
     };
 
     auto turboModule = [(id<RCTTurboModule>)module getTurboModule:params];
@@ -451,6 +446,7 @@ static Class getFallbackClassFromName(const char *name)
       .jsInvoker = _jsInvoker,
       .nativeMethodCallInvoker = std::move(nativeMethodCallInvoker),
       .isSyncModule = methodQueue == RCTJSThread,
+      .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
   };
 
   auto turboModule = std::make_shared<ObjCInteropTurboModule>(params);
@@ -572,17 +568,6 @@ static Class getFallbackClassFromName(const char *name)
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
-        /**
-         * When TurboModule eager initialization is enabled, there shouldn't be any TurboModule initializations on the
-         * main queue.
-         * TODO(T69449176) Roll out TurboModule eager initialization, and remove this check.
-         */
-        if (RCTTurboModuleEagerInitEnabled() && !RCTIsMainQueue()) {
-          RCTLogWarn(
-              @"TurboModule \"%@\" requires synchronous dispatch onto the main queue to be initialized. This may lead to deadlock.",
-              moduleClass);
-        }
-
         RCTUnsafeExecuteOnMainQueueSync(work);
       } else {
         work();
@@ -708,8 +693,12 @@ static Class getFallbackClassFromName(const char *name)
    * following if condition's block.
    */
   if (!methodQueue) {
-    NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-    methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    if (_enableSharedModuleQueue) {
+      methodQueue = _sharedModuleQueue;
+    } else {
+      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
+      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    }
 
     if (moduleHasMethodQueueGetter) {
       /**
@@ -800,17 +789,31 @@ static Class getFallbackClassFromName(const char *name)
     return _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
   }
 
-  Class moduleClass;
-  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  } else {
+  Class moduleClass = nil;
+  {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     moduleClass = [_delegate getModuleClassFromName:moduleName];
   }
 
-  if (!moduleClass) {
-    moduleClass = getFallbackClassFromName(moduleName);
+  if (moduleClass != nil) {
+    return moduleClass;
   }
+
+  moduleClass = getFallbackClassFromName(moduleName);
+  if (moduleClass != nil) {
+    return moduleClass;
+  }
+
+  // fallback on modules registered throught RCT_EXPORT_MODULE with custom names
+  NSString *objcModuleName = [NSString stringWithUTF8String:moduleName];
+  NSArray<Class> *modules = RCTGetModuleClasses();
+  for (Class current in modules) {
+    NSString *currentModuleName = [current moduleName];
+    if ([objcModuleName isEqualToString:currentModuleName]) {
+      return current;
+    }
+  }
+
   return moduleClass;
 }
 
@@ -826,12 +829,11 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   id<RCTBridgeModule> module = nil;
-  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
+  {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
   }
+
   if (!module) {
     module = [moduleClass new];
   }
@@ -877,19 +879,7 @@ static Class getFallbackClassFromName(const char *name)
    */
   const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
-  BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
-  if (requiresMainQueueSetup) {
-    RCTLogWarn(
-        @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-         "`requiresMainQueueSetup`. In a future release React Native will default to initializing all NativeModules "
-         "on a background thread unless explicitly opted-out of.",
-        moduleClass,
-        hasConstantsToExport ? "constantsToExport"
-            : hasCustomInit  ? "init"
-                             : "");
-  }
-
-  return requiresMainQueueSetup;
+  return hasConstantsToExport || hasCustomInit;
 }
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime
@@ -919,7 +909,6 @@ static Class getFallbackClassFromName(const char *name)
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-      [self notifyAboutTurboModuleSetup:moduleName];
     }
 
     if (turboModule) {
@@ -935,7 +924,6 @@ static Class getFallbackClassFromName(const char *name)
       auto moduleName = name.c_str();
 
       TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-      auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
 
       /**
        * By default, all TurboModules are long-lived.
@@ -943,10 +931,6 @@ static Class getFallbackClassFromName(const char *name)
        * trigger an assertion failure.
        */
       auto turboModule = [self provideLegacyModule:moduleName];
-
-      if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
-        [self notifyAboutTurboModuleSetup:moduleName];
-      }
 
       if (turboModule) {
         TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
@@ -959,17 +943,6 @@ static Class getFallbackClassFromName(const char *name)
     TurboModuleBinding::install(runtime, std::move(turboModuleProvider), std::move(legacyModuleProvider));
   } else {
     TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-  }
-}
-
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
-{
-  // jsi::Runtime doesn't exist when attached to Chrome debugger.
-  if (runtimeExecutor) {
-    runtimeExecutor([self](facebook::jsi::Runtime &runtime) { [self installJSBindings:runtime]; });
   }
 }
 

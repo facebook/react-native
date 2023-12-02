@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  * @generated
- * See xplat/js/tools/metro/scripts/updateBabelTypesFlowTypes.js.
+ * See <metro>/scripts/updateBabelTypesFlowTypes.js.
  * @flow strict
  */
 
@@ -72,7 +72,7 @@ declare type BabelNodeBinaryExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "BinaryExpression";
-  operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=";
+  operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=" | "|>";
   left: BabelNodeExpression | BabelNodePrivateName;
   right: BabelNodeExpression;
 };
@@ -141,7 +141,7 @@ declare type BabelNodeCallExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "CallExpression";
-  callee: BabelNodeExpression | BabelNodeV8IntrinsicIdentifier;
+  callee: BabelNodeExpression | BabelNodeSuper | BabelNodeV8IntrinsicIdentifier;
   arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>;
   optional?: true | false;
   typeArguments?: BabelNodeTypeParameterInstantiation;
@@ -276,11 +276,12 @@ declare type BabelNodeFunctionDeclaration = {
   loc: ?BabelNodeSourceLocation,
   type: "FunctionDeclaration";
   id?: BabelNodeIdentifier;
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>;
   body: BabelNodeBlockStatement;
   generator?: boolean;
   async?: boolean;
   declare?: boolean;
+  predicate?: BabelNodeDeclaredPredicate | BabelNodeInferredPredicate;
   returnType?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
   typeParameters?: BabelNodeTypeParameterDeclaration | BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
 };
@@ -294,10 +295,11 @@ declare type BabelNodeFunctionExpression = {
   loc: ?BabelNodeSourceLocation,
   type: "FunctionExpression";
   id?: BabelNodeIdentifier;
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>;
   body: BabelNodeBlockStatement;
   generator?: boolean;
   async?: boolean;
+  predicate?: BabelNodeDeclaredPredicate | BabelNodeInferredPredicate;
   returnType?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
   typeParameters?: BabelNodeTypeParameterDeclaration | BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
 };
@@ -417,7 +419,7 @@ declare type BabelNodeMemberExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "MemberExpression";
-  object: BabelNodeExpression;
+  object: BabelNodeExpression | BabelNodeSuper;
   property: BabelNodeExpression | BabelNodeIdentifier | BabelNodePrivateName;
   computed?: boolean;
   optional?: true | false;
@@ -431,7 +433,7 @@ declare type BabelNodeNewExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "NewExpression";
-  callee: BabelNodeExpression | BabelNodeV8IntrinsicIdentifier;
+  callee: BabelNodeExpression | BabelNodeSuper | BabelNodeV8IntrinsicIdentifier;
   arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>;
   optional?: true | false;
   typeArguments?: BabelNodeTypeParameterInstantiation;
@@ -473,8 +475,8 @@ declare type BabelNodeObjectMethod = {
   loc: ?BabelNodeSourceLocation,
   type: "ObjectMethod";
   kind?: "method" | "get" | "set";
-  key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral;
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>;
   body: BabelNodeBlockStatement;
   computed?: boolean;
   generator?: boolean;
@@ -492,7 +494,7 @@ declare type BabelNodeObjectProperty = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "ObjectProperty";
-  key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral;
+  key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeDecimalLiteral | BabelNodePrivateName;
   value: BabelNodeExpression | BabelNodePatternLike;
   computed?: boolean;
   shorthand?: boolean;
@@ -509,6 +511,7 @@ declare type BabelNodeRestElement = {
   type: "RestElement";
   argument: BabelNodeLVal;
   decorators?: Array<BabelNodeDecorator>;
+  optional?: boolean;
   typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
 };
 
@@ -637,7 +640,7 @@ declare type BabelNodeVariableDeclaration = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "VariableDeclaration";
-  kind: "var" | "let" | "const";
+  kind: "var" | "let" | "const" | "using";
   declarations: Array<BabelNodeVariableDeclarator>;
   declare?: boolean;
 };
@@ -687,7 +690,7 @@ declare type BabelNodeAssignmentPattern = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "AssignmentPattern";
-  left: BabelNodeIdentifier | BabelNodeObjectPattern | BabelNodeArrayPattern | BabelNodeMemberExpression;
+  left: BabelNodeIdentifier | BabelNodeObjectPattern | BabelNodeArrayPattern | BabelNodeMemberExpression | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression;
   right: BabelNodeExpression;
   decorators?: Array<BabelNodeDecorator>;
   typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
@@ -701,8 +704,9 @@ declare type BabelNodeArrayPattern = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "ArrayPattern";
-  elements: Array<null | BabelNodePatternLike>;
+  elements: Array<null | BabelNodePatternLike | BabelNodeLVal>;
   decorators?: Array<BabelNodeDecorator>;
+  optional?: boolean;
   typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
 };
 
@@ -714,11 +718,12 @@ declare type BabelNodeArrowFunctionExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "ArrowFunctionExpression";
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>;
   body: BabelNodeBlockStatement | BabelNodeExpression;
   async?: boolean;
   expression: boolean;
   generator?: boolean;
+  predicate?: BabelNodeDeclaredPredicate | BabelNodeInferredPredicate;
   returnType?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
   typeParameters?: BabelNodeTypeParameterDeclaration | BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
 };
@@ -731,7 +736,7 @@ declare type BabelNodeClassBody = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "ClassBody";
-  body: Array<BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeClassProperty | BabelNodeClassPrivateProperty | BabelNodeTSDeclareMethod | BabelNodeTSIndexSignature>;
+  body: Array<BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeClassProperty | BabelNodeClassPrivateProperty | BabelNodeClassAccessorProperty | BabelNodeTSDeclareMethod | BabelNodeTSIndexSignature | BabelNodeStaticBlock>;
 };
 
 declare type BabelNodeClassExpression = {
@@ -793,7 +798,8 @@ declare type BabelNodeExportDefaultDeclaration = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "ExportDefaultDeclaration";
-  declaration: BabelNodeFunctionDeclaration | BabelNodeTSDeclareFunction | BabelNodeClassDeclaration | BabelNodeExpression;
+  declaration: BabelNodeTSDeclareFunction | BabelNodeFunctionDeclaration | BabelNodeClassDeclaration | BabelNodeExpression;
+  exportKind?: "value";
 };
 
 declare type BabelNodeExportNamedDeclaration = {
@@ -821,6 +827,7 @@ declare type BabelNodeExportSpecifier = {
   type: "ExportSpecifier";
   local: BabelNodeIdentifier;
   exported: BabelNodeIdentifier | BabelNodeStringLiteral;
+  exportKind?: "type" | "value";
 };
 
 declare type BabelNodeForOfStatement = {
@@ -849,6 +856,7 @@ declare type BabelNodeImportDeclaration = {
   source: BabelNodeStringLiteral;
   assertions?: Array<BabelNodeImportAttribute>;
   importKind?: "type" | "typeof" | "value";
+  module?: boolean;
 };
 
 declare type BabelNodeImportDefaultSpecifier = {
@@ -883,7 +891,7 @@ declare type BabelNodeImportSpecifier = {
   type: "ImportSpecifier";
   local: BabelNodeIdentifier;
   imported: BabelNodeIdentifier | BabelNodeStringLiteral;
-  importKind?: "type" | "typeof";
+  importKind?: "type" | "typeof" | "value";
 };
 
 declare type BabelNodeMetaProperty = {
@@ -907,7 +915,7 @@ declare type BabelNodeClassMethod = {
   loc: ?BabelNodeSourceLocation,
   type: "ClassMethod";
   kind?: "get" | "set" | "method" | "constructor";
-  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression;
+  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression;
   params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
   body: BabelNodeBlockStatement;
   computed?: boolean;
@@ -979,7 +987,7 @@ declare type BabelNodeTemplateElement = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "TemplateElement";
-  value: { raw: string, cooked?: string };
+  value: any;
   tail?: boolean;
 };
 
@@ -1077,6 +1085,120 @@ declare type BabelNodeOptionalCallExpression = {
   optional: boolean;
   typeArguments?: BabelNodeTypeParameterInstantiation;
   typeParameters?: BabelNodeTSTypeParameterInstantiation;
+};
+
+declare type BabelNodeClassProperty = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "ClassProperty";
+  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression;
+  value?: BabelNodeExpression;
+  typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
+  decorators?: Array<BabelNodeDecorator>;
+  computed?: boolean;
+  static?: boolean;
+  abstract?: boolean;
+  accessibility?: "public" | "private" | "protected";
+  declare?: boolean;
+  definite?: boolean;
+  optional?: boolean;
+  override?: boolean;
+  readonly?: boolean;
+  variance?: BabelNodeVariance;
+};
+
+declare type BabelNodeClassAccessorProperty = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "ClassAccessorProperty";
+  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression | BabelNodePrivateName;
+  value?: BabelNodeExpression;
+  typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
+  decorators?: Array<BabelNodeDecorator>;
+  computed?: boolean;
+  static?: boolean;
+  abstract?: boolean;
+  accessibility?: "public" | "private" | "protected";
+  declare?: boolean;
+  definite?: boolean;
+  optional?: boolean;
+  override?: boolean;
+  readonly?: boolean;
+  variance?: BabelNodeVariance;
+};
+
+declare type BabelNodeClassPrivateProperty = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "ClassPrivateProperty";
+  key: BabelNodePrivateName;
+  value?: BabelNodeExpression;
+  decorators?: Array<BabelNodeDecorator>;
+  static?: boolean;
+  definite?: boolean;
+  readonly?: boolean;
+  typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
+  variance?: BabelNodeVariance;
+};
+
+declare type BabelNodeClassPrivateMethod = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "ClassPrivateMethod";
+  kind?: "get" | "set" | "method";
+  key: BabelNodePrivateName;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  body: BabelNodeBlockStatement;
+  static?: boolean;
+  abstract?: boolean;
+  access?: "public" | "private" | "protected";
+  accessibility?: "public" | "private" | "protected";
+  async?: boolean;
+  computed?: boolean;
+  decorators?: Array<BabelNodeDecorator>;
+  generator?: boolean;
+  optional?: boolean;
+  override?: boolean;
+  returnType?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
+  typeParameters?: BabelNodeTypeParameterDeclaration | BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
+};
+
+declare type BabelNodePrivateName = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "PrivateName";
+  id: BabelNodeIdentifier;
+};
+
+declare type BabelNodeStaticBlock = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "StaticBlock";
+  body: Array<BabelNodeStatement>;
 };
 
 declare type BabelNodeAnyTypeAnnotation = {
@@ -1235,6 +1357,7 @@ declare type BabelNodeDeclareOpaqueType = {
   id: BabelNodeIdentifier;
   typeParameters?: BabelNodeTypeParameterDeclaration;
   supertype?: BabelNodeFlowType;
+  impltype?: BabelNodeFlowType;
 };
 
 declare type BabelNodeDeclareVariable = {
@@ -2091,102 +2214,6 @@ declare type BabelNodeBindExpression = {
   callee: BabelNodeExpression;
 };
 
-declare type BabelNodeClassProperty = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "ClassProperty";
-  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression;
-  value?: BabelNodeExpression;
-  typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
-  decorators?: Array<BabelNodeDecorator>;
-  computed?: boolean;
-  static?: boolean;
-  abstract?: boolean;
-  accessibility?: "public" | "private" | "protected";
-  declare?: boolean;
-  definite?: boolean;
-  optional?: boolean;
-  override?: boolean;
-  readonly?: boolean;
-};
-
-declare type BabelNodePipelineTopicExpression = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "PipelineTopicExpression";
-  expression: BabelNodeExpression;
-};
-
-declare type BabelNodePipelineBareFunction = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "PipelineBareFunction";
-  callee: BabelNodeExpression;
-};
-
-declare type BabelNodePipelinePrimaryTopicReference = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "PipelinePrimaryTopicReference";
-};
-
-declare type BabelNodeClassPrivateProperty = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "ClassPrivateProperty";
-  key: BabelNodePrivateName;
-  value?: BabelNodeExpression;
-  decorators?: Array<BabelNodeDecorator>;
-  static: any;
-  typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
-};
-
-declare type BabelNodeClassPrivateMethod = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "ClassPrivateMethod";
-  kind?: "get" | "set" | "method" | "constructor";
-  key: BabelNodePrivateName;
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
-  body: BabelNodeBlockStatement;
-  static?: boolean;
-  abstract?: boolean;
-  access?: "public" | "private" | "protected";
-  accessibility?: "public" | "private" | "protected";
-  async?: boolean;
-  computed?: boolean;
-  decorators?: Array<BabelNodeDecorator>;
-  generator?: boolean;
-  optional?: boolean;
-  override?: boolean;
-  returnType?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop;
-  typeParameters?: BabelNodeTypeParameterDeclaration | BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
-};
-
 declare type BabelNodeImportAttribute = {
   leadingComments?: Array<BabelNodeComment>;
   innerComments?: Array<BabelNodeComment>;
@@ -2233,17 +2260,6 @@ declare type BabelNodeExportDefaultSpecifier = {
   exported: BabelNodeIdentifier;
 };
 
-declare type BabelNodePrivateName = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "PrivateName";
-  id: BabelNodeIdentifier;
-};
-
 declare type BabelNodeRecordExpression = {
   leadingComments?: Array<BabelNodeComment>;
   innerComments?: Array<BabelNodeComment>;
@@ -2277,17 +2293,6 @@ declare type BabelNodeDecimalLiteral = {
   value: string;
 };
 
-declare type BabelNodeStaticBlock = {
-  leadingComments?: Array<BabelNodeComment>;
-  innerComments?: Array<BabelNodeComment>;
-  trailingComments?: Array<BabelNodeComment>;
-  start: ?number;
-  end: ?number;
-  loc: ?BabelNodeSourceLocation,
-  type: "StaticBlock";
-  body: Array<BabelNodeStatement>;
-};
-
 declare type BabelNodeModuleExpression = {
   leadingComments?: Array<BabelNodeComment>;
   innerComments?: Array<BabelNodeComment>;
@@ -2297,6 +2302,48 @@ declare type BabelNodeModuleExpression = {
   loc: ?BabelNodeSourceLocation,
   type: "ModuleExpression";
   body: BabelNodeProgram;
+};
+
+declare type BabelNodeTopicReference = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "TopicReference";
+};
+
+declare type BabelNodePipelineTopicExpression = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "PipelineTopicExpression";
+  expression: BabelNodeExpression;
+};
+
+declare type BabelNodePipelineBareFunction = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "PipelineBareFunction";
+  callee: BabelNodeExpression;
+};
+
+declare type BabelNodePipelinePrimaryTopicReference = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "PipelinePrimaryTopicReference";
 };
 
 declare type BabelNodeTSParameterProperty = {
@@ -2309,6 +2356,8 @@ declare type BabelNodeTSParameterProperty = {
   type: "TSParameterProperty";
   parameter: BabelNodeIdentifier | BabelNodeAssignmentPattern;
   accessibility?: "public" | "private" | "protected";
+  decorators?: Array<BabelNodeDecorator>;
+  override?: boolean;
   readonly?: boolean;
 };
 
@@ -2322,7 +2371,7 @@ declare type BabelNodeTSDeclareFunction = {
   type: "TSDeclareFunction";
   id?: BabelNodeIdentifier;
   typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
-  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
+  params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>;
   returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop;
   async?: boolean;
   declare?: boolean;
@@ -2338,7 +2387,7 @@ declare type BabelNodeTSDeclareMethod = {
   loc: ?BabelNodeSourceLocation,
   type: "TSDeclareMethod";
   decorators?: Array<BabelNodeDecorator>;
-  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression;
+  key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression;
   typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop;
   params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>;
   returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop;
@@ -2404,6 +2453,7 @@ declare type BabelNodeTSPropertySignature = {
   typeAnnotation?: BabelNodeTSTypeAnnotation;
   initializer?: BabelNodeExpression;
   computed?: boolean;
+  kind: "get" | "set";
   optional?: boolean;
   readonly?: boolean;
 };
@@ -2640,6 +2690,7 @@ declare type BabelNodeTSTypeQuery = {
   loc: ?BabelNodeSourceLocation,
   type: "TSTypeQuery";
   exprName: BabelNodeTSEntityName | BabelNodeTSImportType;
+  typeParameters?: BabelNodeTSTypeParameterInstantiation;
 };
 
 declare type BabelNodeTSTypeLiteral = {
@@ -2803,8 +2854,8 @@ declare type BabelNodeTSMappedType = {
   typeParameter: BabelNodeTSTypeParameter;
   typeAnnotation?: BabelNodeTSType;
   nameType?: BabelNodeTSType;
-  optional?: boolean;
-  readonly?: boolean;
+  optional?: true | false | "+" | "-";
+  readonly?: true | false | "+" | "-";
 };
 
 declare type BabelNodeTSLiteralType = {
@@ -2815,7 +2866,7 @@ declare type BabelNodeTSLiteralType = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "TSLiteralType";
-  literal: BabelNodeNumericLiteral | BabelNodeStringLiteral | BabelNodeBooleanLiteral | BabelNodeBigIntLiteral;
+  literal: BabelNodeNumericLiteral | BabelNodeStringLiteral | BabelNodeBooleanLiteral | BabelNodeBigIntLiteral | BabelNodeTemplateLiteral | BabelNodeUnaryExpression;
 };
 
 declare type BabelNodeTSExpressionWithTypeArguments = {
@@ -2870,6 +2921,18 @@ declare type BabelNodeTSTypeAliasDeclaration = {
   declare?: boolean;
 };
 
+declare type BabelNodeTSInstantiationExpression = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "TSInstantiationExpression";
+  expression: BabelNodeExpression;
+  typeParameters?: BabelNodeTSTypeParameterInstantiation;
+};
+
 declare type BabelNodeTSAsExpression = {
   leadingComments?: Array<BabelNodeComment>;
   innerComments?: Array<BabelNodeComment>;
@@ -2878,6 +2941,18 @@ declare type BabelNodeTSAsExpression = {
   end: ?number;
   loc: ?BabelNodeSourceLocation,
   type: "TSAsExpression";
+  expression: BabelNodeExpression;
+  typeAnnotation: BabelNodeTSType;
+};
+
+declare type BabelNodeTSSatisfiesExpression = {
+  leadingComments?: Array<BabelNodeComment>;
+  innerComments?: Array<BabelNodeComment>;
+  trailingComments?: Array<BabelNodeComment>;
+  start: ?number;
+  end: ?number;
+  loc: ?BabelNodeSourceLocation,
+  type: "TSSatisfiesExpression";
   expression: BabelNodeExpression;
   typeAnnotation: BabelNodeTSType;
 };
@@ -2969,6 +3044,7 @@ declare type BabelNodeTSImportEqualsDeclaration = {
   type: "TSImportEqualsDeclaration";
   id: BabelNodeIdentifier;
   moduleReference: BabelNodeTSEntityName | BabelNodeTSExternalModuleReference;
+  importKind?: "type" | "value";
   isExport: boolean;
 };
 
@@ -3060,10 +3136,13 @@ declare type BabelNodeTSTypeParameter = {
   constraint?: BabelNodeTSType;
   default?: BabelNodeTSType;
   name: string;
+  in?: boolean;
+  out?: boolean;
 };
 
-declare type BabelNode = BabelNodeArrayExpression | BabelNodeAssignmentExpression | BabelNodeBinaryExpression | BabelNodeInterpreterDirective | BabelNodeDirective | BabelNodeDirectiveLiteral | BabelNodeBlockStatement | BabelNodeBreakStatement | BabelNodeCallExpression | BabelNodeCatchClause | BabelNodeConditionalExpression | BabelNodeContinueStatement | BabelNodeDebuggerStatement | BabelNodeDoWhileStatement | BabelNodeEmptyStatement | BabelNodeExpressionStatement | BabelNodeFile | BabelNodeForInStatement | BabelNodeForStatement | BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeIdentifier | BabelNodeIfStatement | BabelNodeLabeledStatement | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeLogicalExpression | BabelNodeMemberExpression | BabelNodeNewExpression | BabelNodeProgram | BabelNodeObjectExpression | BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeRestElement | BabelNodeReturnStatement | BabelNodeSequenceExpression | BabelNodeParenthesizedExpression | BabelNodeSwitchCase | BabelNodeSwitchStatement | BabelNodeThisExpression | BabelNodeThrowStatement | BabelNodeTryStatement | BabelNodeUnaryExpression | BabelNodeUpdateExpression | BabelNodeVariableDeclaration | BabelNodeVariableDeclarator | BabelNodeWhileStatement | BabelNodeWithStatement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeArrowFunctionExpression | BabelNodeClassBody | BabelNodeClassExpression | BabelNodeClassDeclaration | BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration | BabelNodeExportSpecifier | BabelNodeForOfStatement | BabelNodeImportDeclaration | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier | BabelNodeImportSpecifier | BabelNodeMetaProperty | BabelNodeClassMethod | BabelNodeObjectPattern | BabelNodeSpreadElement | BabelNodeSuper | BabelNodeTaggedTemplateExpression | BabelNodeTemplateElement | BabelNodeTemplateLiteral | BabelNodeYieldExpression | BabelNodeAwaitExpression | BabelNodeImport | BabelNodeBigIntLiteral | BabelNodeExportNamespaceSpecifier | BabelNodeOptionalMemberExpression | BabelNodeOptionalCallExpression | BabelNodeAnyTypeAnnotation | BabelNodeArrayTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeBooleanLiteralTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeClassImplements | BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeDeclaredPredicate | BabelNodeExistsTypeAnnotation | BabelNodeFunctionTypeAnnotation | BabelNodeFunctionTypeParam | BabelNodeGenericTypeAnnotation | BabelNodeInferredPredicate | BabelNodeInterfaceExtends | BabelNodeInterfaceDeclaration | BabelNodeInterfaceTypeAnnotation | BabelNodeIntersectionTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNullableTypeAnnotation | BabelNodeNumberLiteralTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeObjectTypeAnnotation | BabelNodeObjectTypeInternalSlot | BabelNodeObjectTypeCallProperty | BabelNodeObjectTypeIndexer | BabelNodeObjectTypeProperty | BabelNodeObjectTypeSpreadProperty | BabelNodeOpaqueType | BabelNodeQualifiedTypeIdentifier | BabelNodeStringLiteralTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeTupleTypeAnnotation | BabelNodeTypeofTypeAnnotation | BabelNodeTypeAlias | BabelNodeTypeAnnotation | BabelNodeTypeCastExpression | BabelNodeTypeParameter | BabelNodeTypeParameterDeclaration | BabelNodeTypeParameterInstantiation | BabelNodeUnionTypeAnnotation | BabelNodeVariance | BabelNodeVoidTypeAnnotation | BabelNodeEnumDeclaration | BabelNodeEnumBooleanBody | BabelNodeEnumNumberBody | BabelNodeEnumStringBody | BabelNodeEnumSymbolBody | BabelNodeEnumBooleanMember | BabelNodeEnumNumberMember | BabelNodeEnumStringMember | BabelNodeEnumDefaultedMember | BabelNodeIndexedAccessType | BabelNodeOptionalIndexedAccessType | BabelNodeJSXAttribute | BabelNodeJSXClosingElement | BabelNodeJSXElement | BabelNodeJSXEmptyExpression | BabelNodeJSXExpressionContainer | BabelNodeJSXSpreadChild | BabelNodeJSXIdentifier | BabelNodeJSXMemberExpression | BabelNodeJSXNamespacedName | BabelNodeJSXOpeningElement | BabelNodeJSXSpreadAttribute | BabelNodeJSXText | BabelNodeJSXFragment | BabelNodeJSXOpeningFragment | BabelNodeJSXClosingFragment | BabelNodeNoop | BabelNodePlaceholder | BabelNodeV8IntrinsicIdentifier | BabelNodeArgumentPlaceholder | BabelNodeBindExpression | BabelNodeClassProperty | BabelNodePipelineTopicExpression | BabelNodePipelineBareFunction | BabelNodePipelinePrimaryTopicReference | BabelNodeClassPrivateProperty | BabelNodeClassPrivateMethod | BabelNodeImportAttribute | BabelNodeDecorator | BabelNodeDoExpression | BabelNodeExportDefaultSpecifier | BabelNodePrivateName | BabelNodeRecordExpression | BabelNodeTupleExpression | BabelNodeDecimalLiteral | BabelNodeStaticBlock | BabelNodeModuleExpression | BabelNodeTSParameterProperty | BabelNodeTSDeclareFunction | BabelNodeTSDeclareMethod | BabelNodeTSQualifiedName | BabelNodeTSCallSignatureDeclaration | BabelNodeTSConstructSignatureDeclaration | BabelNodeTSPropertySignature | BabelNodeTSMethodSignature | BabelNodeTSIndexSignature | BabelNodeTSAnyKeyword | BabelNodeTSBooleanKeyword | BabelNodeTSBigIntKeyword | BabelNodeTSIntrinsicKeyword | BabelNodeTSNeverKeyword | BabelNodeTSNullKeyword | BabelNodeTSNumberKeyword | BabelNodeTSObjectKeyword | BabelNodeTSStringKeyword | BabelNodeTSSymbolKeyword | BabelNodeTSUndefinedKeyword | BabelNodeTSUnknownKeyword | BabelNodeTSVoidKeyword | BabelNodeTSThisType | BabelNodeTSFunctionType | BabelNodeTSConstructorType | BabelNodeTSTypeReference | BabelNodeTSTypePredicate | BabelNodeTSTypeQuery | BabelNodeTSTypeLiteral | BabelNodeTSArrayType | BabelNodeTSTupleType | BabelNodeTSOptionalType | BabelNodeTSRestType | BabelNodeTSNamedTupleMember | BabelNodeTSUnionType | BabelNodeTSIntersectionType | BabelNodeTSConditionalType | BabelNodeTSInferType | BabelNodeTSParenthesizedType | BabelNodeTSTypeOperator | BabelNodeTSIndexedAccessType | BabelNodeTSMappedType | BabelNodeTSLiteralType | BabelNodeTSExpressionWithTypeArguments | BabelNodeTSInterfaceDeclaration | BabelNodeTSInterfaceBody | BabelNodeTSTypeAliasDeclaration | BabelNodeTSAsExpression | BabelNodeTSTypeAssertion | BabelNodeTSEnumDeclaration | BabelNodeTSEnumMember | BabelNodeTSModuleDeclaration | BabelNodeTSModuleBlock | BabelNodeTSImportType | BabelNodeTSImportEqualsDeclaration | BabelNodeTSExternalModuleReference | BabelNodeTSNonNullExpression | BabelNodeTSExportAssignment | BabelNodeTSNamespaceExportDeclaration | BabelNodeTSTypeAnnotation | BabelNodeTSTypeParameterInstantiation | BabelNodeTSTypeParameterDeclaration | BabelNodeTSTypeParameter;
-declare type BabelNodeExpression = BabelNodeArrayExpression | BabelNodeAssignmentExpression | BabelNodeBinaryExpression | BabelNodeCallExpression | BabelNodeConditionalExpression | BabelNodeFunctionExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeLogicalExpression | BabelNodeMemberExpression | BabelNodeNewExpression | BabelNodeObjectExpression | BabelNodeSequenceExpression | BabelNodeParenthesizedExpression | BabelNodeThisExpression | BabelNodeUnaryExpression | BabelNodeUpdateExpression | BabelNodeArrowFunctionExpression | BabelNodeClassExpression | BabelNodeMetaProperty | BabelNodeSuper | BabelNodeTaggedTemplateExpression | BabelNodeTemplateLiteral | BabelNodeYieldExpression | BabelNodeAwaitExpression | BabelNodeImport | BabelNodeBigIntLiteral | BabelNodeOptionalMemberExpression | BabelNodeOptionalCallExpression | BabelNodeTypeCastExpression | BabelNodeJSXElement | BabelNodeJSXFragment | BabelNodeBindExpression | BabelNodePipelinePrimaryTopicReference | BabelNodeDoExpression | BabelNodeRecordExpression | BabelNodeTupleExpression | BabelNodeDecimalLiteral | BabelNodeModuleExpression | BabelNodeTSAsExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression;
+declare type BabelNode = BabelNodeArrayExpression | BabelNodeAssignmentExpression | BabelNodeBinaryExpression | BabelNodeInterpreterDirective | BabelNodeDirective | BabelNodeDirectiveLiteral | BabelNodeBlockStatement | BabelNodeBreakStatement | BabelNodeCallExpression | BabelNodeCatchClause | BabelNodeConditionalExpression | BabelNodeContinueStatement | BabelNodeDebuggerStatement | BabelNodeDoWhileStatement | BabelNodeEmptyStatement | BabelNodeExpressionStatement | BabelNodeFile | BabelNodeForInStatement | BabelNodeForStatement | BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeIdentifier | BabelNodeIfStatement | BabelNodeLabeledStatement | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeLogicalExpression | BabelNodeMemberExpression | BabelNodeNewExpression | BabelNodeProgram | BabelNodeObjectExpression | BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeRestElement | BabelNodeReturnStatement | BabelNodeSequenceExpression | BabelNodeParenthesizedExpression | BabelNodeSwitchCase | BabelNodeSwitchStatement | BabelNodeThisExpression | BabelNodeThrowStatement | BabelNodeTryStatement | BabelNodeUnaryExpression | BabelNodeUpdateExpression | BabelNodeVariableDeclaration | BabelNodeVariableDeclarator | BabelNodeWhileStatement | BabelNodeWithStatement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeArrowFunctionExpression | BabelNodeClassBody | BabelNodeClassExpression | BabelNodeClassDeclaration | BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration | BabelNodeExportSpecifier | BabelNodeForOfStatement | BabelNodeImportDeclaration | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier | BabelNodeImportSpecifier | BabelNodeMetaProperty | BabelNodeClassMethod | BabelNodeObjectPattern | BabelNodeSpreadElement | BabelNodeSuper | BabelNodeTaggedTemplateExpression | BabelNodeTemplateElement | BabelNodeTemplateLiteral | BabelNodeYieldExpression | BabelNodeAwaitExpression | BabelNodeImport | BabelNodeBigIntLiteral | BabelNodeExportNamespaceSpecifier | BabelNodeOptionalMemberExpression | BabelNodeOptionalCallExpression | BabelNodeClassProperty | BabelNodeClassAccessorProperty | BabelNodeClassPrivateProperty | BabelNodeClassPrivateMethod | BabelNodePrivateName | BabelNodeStaticBlock | BabelNodeAnyTypeAnnotation | BabelNodeArrayTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeBooleanLiteralTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeClassImplements | BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeDeclaredPredicate | BabelNodeExistsTypeAnnotation | BabelNodeFunctionTypeAnnotation | BabelNodeFunctionTypeParam | BabelNodeGenericTypeAnnotation | BabelNodeInferredPredicate | BabelNodeInterfaceExtends | BabelNodeInterfaceDeclaration | BabelNodeInterfaceTypeAnnotation | BabelNodeIntersectionTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNullableTypeAnnotation | BabelNodeNumberLiteralTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeObjectTypeAnnotation | BabelNodeObjectTypeInternalSlot | BabelNodeObjectTypeCallProperty | BabelNodeObjectTypeIndexer | BabelNodeObjectTypeProperty | BabelNodeObjectTypeSpreadProperty | BabelNodeOpaqueType | BabelNodeQualifiedTypeIdentifier | BabelNodeStringLiteralTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeTupleTypeAnnotation | BabelNodeTypeofTypeAnnotation | BabelNodeTypeAlias | BabelNodeTypeAnnotation | BabelNodeTypeCastExpression | BabelNodeTypeParameter | BabelNodeTypeParameterDeclaration | BabelNodeTypeParameterInstantiation | BabelNodeUnionTypeAnnotation | BabelNodeVariance | BabelNodeVoidTypeAnnotation | BabelNodeEnumDeclaration | BabelNodeEnumBooleanBody | BabelNodeEnumNumberBody | BabelNodeEnumStringBody | BabelNodeEnumSymbolBody | BabelNodeEnumBooleanMember | BabelNodeEnumNumberMember | BabelNodeEnumStringMember | BabelNodeEnumDefaultedMember | BabelNodeIndexedAccessType | BabelNodeOptionalIndexedAccessType | BabelNodeJSXAttribute | BabelNodeJSXClosingElement | BabelNodeJSXElement | BabelNodeJSXEmptyExpression | BabelNodeJSXExpressionContainer | BabelNodeJSXSpreadChild | BabelNodeJSXIdentifier | BabelNodeJSXMemberExpression | BabelNodeJSXNamespacedName | BabelNodeJSXOpeningElement | BabelNodeJSXSpreadAttribute | BabelNodeJSXText | BabelNodeJSXFragment | BabelNodeJSXOpeningFragment | BabelNodeJSXClosingFragment | BabelNodeNoop | BabelNodePlaceholder | BabelNodeV8IntrinsicIdentifier | BabelNodeArgumentPlaceholder | BabelNodeBindExpression | BabelNodeImportAttribute | BabelNodeDecorator | BabelNodeDoExpression | BabelNodeExportDefaultSpecifier | BabelNodeRecordExpression | BabelNodeTupleExpression | BabelNodeDecimalLiteral | BabelNodeModuleExpression | BabelNodeTopicReference | BabelNodePipelineTopicExpression | BabelNodePipelineBareFunction | BabelNodePipelinePrimaryTopicReference | BabelNodeTSParameterProperty | BabelNodeTSDeclareFunction | BabelNodeTSDeclareMethod | BabelNodeTSQualifiedName | BabelNodeTSCallSignatureDeclaration | BabelNodeTSConstructSignatureDeclaration | BabelNodeTSPropertySignature | BabelNodeTSMethodSignature | BabelNodeTSIndexSignature | BabelNodeTSAnyKeyword | BabelNodeTSBooleanKeyword | BabelNodeTSBigIntKeyword | BabelNodeTSIntrinsicKeyword | BabelNodeTSNeverKeyword | BabelNodeTSNullKeyword | BabelNodeTSNumberKeyword | BabelNodeTSObjectKeyword | BabelNodeTSStringKeyword | BabelNodeTSSymbolKeyword | BabelNodeTSUndefinedKeyword | BabelNodeTSUnknownKeyword | BabelNodeTSVoidKeyword | BabelNodeTSThisType | BabelNodeTSFunctionType | BabelNodeTSConstructorType | BabelNodeTSTypeReference | BabelNodeTSTypePredicate | BabelNodeTSTypeQuery | BabelNodeTSTypeLiteral | BabelNodeTSArrayType | BabelNodeTSTupleType | BabelNodeTSOptionalType | BabelNodeTSRestType | BabelNodeTSNamedTupleMember | BabelNodeTSUnionType | BabelNodeTSIntersectionType | BabelNodeTSConditionalType | BabelNodeTSInferType | BabelNodeTSParenthesizedType | BabelNodeTSTypeOperator | BabelNodeTSIndexedAccessType | BabelNodeTSMappedType | BabelNodeTSLiteralType | BabelNodeTSExpressionWithTypeArguments | BabelNodeTSInterfaceDeclaration | BabelNodeTSInterfaceBody | BabelNodeTSTypeAliasDeclaration | BabelNodeTSInstantiationExpression | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSEnumDeclaration | BabelNodeTSEnumMember | BabelNodeTSModuleDeclaration | BabelNodeTSModuleBlock | BabelNodeTSImportType | BabelNodeTSImportEqualsDeclaration | BabelNodeTSExternalModuleReference | BabelNodeTSNonNullExpression | BabelNodeTSExportAssignment | BabelNodeTSNamespaceExportDeclaration | BabelNodeTSTypeAnnotation | BabelNodeTSTypeParameterInstantiation | BabelNodeTSTypeParameterDeclaration | BabelNodeTSTypeParameter;
+declare type BabelNodeStandardized = BabelNodeArrayExpression | BabelNodeAssignmentExpression | BabelNodeBinaryExpression | BabelNodeInterpreterDirective | BabelNodeDirective | BabelNodeDirectiveLiteral | BabelNodeBlockStatement | BabelNodeBreakStatement | BabelNodeCallExpression | BabelNodeCatchClause | BabelNodeConditionalExpression | BabelNodeContinueStatement | BabelNodeDebuggerStatement | BabelNodeDoWhileStatement | BabelNodeEmptyStatement | BabelNodeExpressionStatement | BabelNodeFile | BabelNodeForInStatement | BabelNodeForStatement | BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeIdentifier | BabelNodeIfStatement | BabelNodeLabeledStatement | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeLogicalExpression | BabelNodeMemberExpression | BabelNodeNewExpression | BabelNodeProgram | BabelNodeObjectExpression | BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeRestElement | BabelNodeReturnStatement | BabelNodeSequenceExpression | BabelNodeParenthesizedExpression | BabelNodeSwitchCase | BabelNodeSwitchStatement | BabelNodeThisExpression | BabelNodeThrowStatement | BabelNodeTryStatement | BabelNodeUnaryExpression | BabelNodeUpdateExpression | BabelNodeVariableDeclaration | BabelNodeVariableDeclarator | BabelNodeWhileStatement | BabelNodeWithStatement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeArrowFunctionExpression | BabelNodeClassBody | BabelNodeClassExpression | BabelNodeClassDeclaration | BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration | BabelNodeExportSpecifier | BabelNodeForOfStatement | BabelNodeImportDeclaration | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier | BabelNodeImportSpecifier | BabelNodeMetaProperty | BabelNodeClassMethod | BabelNodeObjectPattern | BabelNodeSpreadElement | BabelNodeSuper | BabelNodeTaggedTemplateExpression | BabelNodeTemplateElement | BabelNodeTemplateLiteral | BabelNodeYieldExpression | BabelNodeAwaitExpression | BabelNodeImport | BabelNodeBigIntLiteral | BabelNodeExportNamespaceSpecifier | BabelNodeOptionalMemberExpression | BabelNodeOptionalCallExpression | BabelNodeClassProperty | BabelNodeClassAccessorProperty | BabelNodeClassPrivateProperty | BabelNodeClassPrivateMethod | BabelNodePrivateName | BabelNodeStaticBlock;
+declare type BabelNodeExpression = BabelNodeArrayExpression | BabelNodeAssignmentExpression | BabelNodeBinaryExpression | BabelNodeCallExpression | BabelNodeConditionalExpression | BabelNodeFunctionExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeLogicalExpression | BabelNodeMemberExpression | BabelNodeNewExpression | BabelNodeObjectExpression | BabelNodeSequenceExpression | BabelNodeParenthesizedExpression | BabelNodeThisExpression | BabelNodeUnaryExpression | BabelNodeUpdateExpression | BabelNodeArrowFunctionExpression | BabelNodeClassExpression | BabelNodeMetaProperty | BabelNodeSuper | BabelNodeTaggedTemplateExpression | BabelNodeTemplateLiteral | BabelNodeYieldExpression | BabelNodeAwaitExpression | BabelNodeImport | BabelNodeBigIntLiteral | BabelNodeOptionalMemberExpression | BabelNodeOptionalCallExpression | BabelNodeTypeCastExpression | BabelNodeJSXElement | BabelNodeJSXFragment | BabelNodeBindExpression | BabelNodeDoExpression | BabelNodeRecordExpression | BabelNodeTupleExpression | BabelNodeDecimalLiteral | BabelNodeModuleExpression | BabelNodeTopicReference | BabelNodePipelineTopicExpression | BabelNodePipelineBareFunction | BabelNodePipelinePrimaryTopicReference | BabelNodeTSInstantiationExpression | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression;
 declare type BabelNodeBinary = BabelNodeBinaryExpression | BabelNodeLogicalExpression;
 declare type BabelNodeScopable = BabelNodeBlockStatement | BabelNodeCatchClause | BabelNodeDoWhileStatement | BabelNodeForInStatement | BabelNodeForStatement | BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeProgram | BabelNodeObjectMethod | BabelNodeSwitchStatement | BabelNodeWhileStatement | BabelNodeArrowFunctionExpression | BabelNodeClassExpression | BabelNodeClassDeclaration | BabelNodeForOfStatement | BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeStaticBlock | BabelNodeTSModuleBlock;
 declare type BabelNodeBlockParent = BabelNodeBlockStatement | BabelNodeCatchClause | BabelNodeDoWhileStatement | BabelNodeForInStatement | BabelNodeForStatement | BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeProgram | BabelNodeObjectMethod | BabelNodeSwitchStatement | BabelNodeWhileStatement | BabelNodeArrowFunctionExpression | BabelNodeForOfStatement | BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeStaticBlock | BabelNodeTSModuleBlock;
@@ -3078,25 +3157,27 @@ declare type BabelNodeExpressionWrapper = BabelNodeExpressionStatement | BabelNo
 declare type BabelNodeFor = BabelNodeForInStatement | BabelNodeForStatement | BabelNodeForOfStatement;
 declare type BabelNodeForXStatement = BabelNodeForInStatement | BabelNodeForOfStatement;
 declare type BabelNodeFunction = BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeObjectMethod | BabelNodeArrowFunctionExpression | BabelNodeClassMethod | BabelNodeClassPrivateMethod;
-declare type BabelNodeFunctionParent = BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeObjectMethod | BabelNodeArrowFunctionExpression | BabelNodeClassMethod | BabelNodeClassPrivateMethod;
+declare type BabelNodeFunctionParent = BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeObjectMethod | BabelNodeArrowFunctionExpression | BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeStaticBlock | BabelNodeTSModuleBlock;
 declare type BabelNodePureish = BabelNodeFunctionDeclaration | BabelNodeFunctionExpression | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeArrowFunctionExpression | BabelNodeBigIntLiteral | BabelNodeDecimalLiteral;
 declare type BabelNodeDeclaration = BabelNodeFunctionDeclaration | BabelNodeVariableDeclaration | BabelNodeClassDeclaration | BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration | BabelNodeImportDeclaration | BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeInterfaceDeclaration | BabelNodeOpaqueType | BabelNodeTypeAlias | BabelNodeEnumDeclaration | BabelNodeTSDeclareFunction | BabelNodeTSInterfaceDeclaration | BabelNodeTSTypeAliasDeclaration | BabelNodeTSEnumDeclaration | BabelNodeTSModuleDeclaration;
-declare type BabelNodePatternLike = BabelNodeIdentifier | BabelNodeRestElement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeObjectPattern;
-declare type BabelNodeLVal = BabelNodeIdentifier | BabelNodeMemberExpression | BabelNodeRestElement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeObjectPattern | BabelNodeTSParameterProperty;
+declare type BabelNodePatternLike = BabelNodeIdentifier | BabelNodeRestElement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeObjectPattern | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression;
+declare type BabelNodeLVal = BabelNodeIdentifier | BabelNodeMemberExpression | BabelNodeRestElement | BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeObjectPattern | BabelNodeTSParameterProperty | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression;
 declare type BabelNodeTSEntityName = BabelNodeIdentifier | BabelNodeTSQualifiedName;
 declare type BabelNodeLiteral = BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeRegExpLiteral | BabelNodeTemplateLiteral | BabelNodeBigIntLiteral | BabelNodeDecimalLiteral;
 declare type BabelNodeImmutable = BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeNullLiteral | BabelNodeBooleanLiteral | BabelNodeBigIntLiteral | BabelNodeJSXAttribute | BabelNodeJSXClosingElement | BabelNodeJSXElement | BabelNodeJSXExpressionContainer | BabelNodeJSXSpreadChild | BabelNodeJSXOpeningElement | BabelNodeJSXText | BabelNodeJSXFragment | BabelNodeJSXOpeningFragment | BabelNodeJSXClosingFragment | BabelNodeDecimalLiteral;
 declare type BabelNodeUserWhitespacable = BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeObjectTypeInternalSlot | BabelNodeObjectTypeCallProperty | BabelNodeObjectTypeIndexer | BabelNodeObjectTypeProperty | BabelNodeObjectTypeSpreadProperty;
 declare type BabelNodeMethod = BabelNodeObjectMethod | BabelNodeClassMethod | BabelNodeClassPrivateMethod;
 declare type BabelNodeObjectMember = BabelNodeObjectMethod | BabelNodeObjectProperty;
-declare type BabelNodeProperty = BabelNodeObjectProperty | BabelNodeClassProperty | BabelNodeClassPrivateProperty;
+declare type BabelNodeProperty = BabelNodeObjectProperty | BabelNodeClassProperty | BabelNodeClassAccessorProperty | BabelNodeClassPrivateProperty;
 declare type BabelNodeUnaryLike = BabelNodeUnaryExpression | BabelNodeSpreadElement;
 declare type BabelNodePattern = BabelNodeAssignmentPattern | BabelNodeArrayPattern | BabelNodeObjectPattern;
 declare type BabelNodeClass = BabelNodeClassExpression | BabelNodeClassDeclaration;
 declare type BabelNodeModuleDeclaration = BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration | BabelNodeImportDeclaration;
 declare type BabelNodeExportDeclaration = BabelNodeExportAllDeclaration | BabelNodeExportDefaultDeclaration | BabelNodeExportNamedDeclaration;
 declare type BabelNodeModuleSpecifier = BabelNodeExportSpecifier | BabelNodeImportDefaultSpecifier | BabelNodeImportNamespaceSpecifier | BabelNodeImportSpecifier | BabelNodeExportNamespaceSpecifier | BabelNodeExportDefaultSpecifier;
-declare type BabelNodeFlow = BabelNodeAnyTypeAnnotation | BabelNodeArrayTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeBooleanLiteralTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeClassImplements | BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeDeclaredPredicate | BabelNodeExistsTypeAnnotation | BabelNodeFunctionTypeAnnotation | BabelNodeFunctionTypeParam | BabelNodeGenericTypeAnnotation | BabelNodeInferredPredicate | BabelNodeInterfaceExtends | BabelNodeInterfaceDeclaration | BabelNodeInterfaceTypeAnnotation | BabelNodeIntersectionTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNullableTypeAnnotation | BabelNodeNumberLiteralTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeObjectTypeAnnotation | BabelNodeObjectTypeInternalSlot | BabelNodeObjectTypeCallProperty | BabelNodeObjectTypeIndexer | BabelNodeObjectTypeProperty | BabelNodeObjectTypeSpreadProperty | BabelNodeOpaqueType | BabelNodeQualifiedTypeIdentifier | BabelNodeStringLiteralTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeTupleTypeAnnotation | BabelNodeTypeofTypeAnnotation | BabelNodeTypeAlias | BabelNodeTypeAnnotation | BabelNodeTypeCastExpression | BabelNodeTypeParameter | BabelNodeTypeParameterDeclaration | BabelNodeTypeParameterInstantiation | BabelNodeUnionTypeAnnotation | BabelNodeVariance | BabelNodeVoidTypeAnnotation | BabelNodeIndexedAccessType | BabelNodeOptionalIndexedAccessType;
+declare type BabelNodeAccessor = BabelNodeClassAccessorProperty;
+declare type BabelNodePrivate = BabelNodeClassPrivateProperty | BabelNodeClassPrivateMethod | BabelNodePrivateName;
+declare type BabelNodeFlow = BabelNodeAnyTypeAnnotation | BabelNodeArrayTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeBooleanLiteralTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeClassImplements | BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeDeclaredPredicate | BabelNodeExistsTypeAnnotation | BabelNodeFunctionTypeAnnotation | BabelNodeFunctionTypeParam | BabelNodeGenericTypeAnnotation | BabelNodeInferredPredicate | BabelNodeInterfaceExtends | BabelNodeInterfaceDeclaration | BabelNodeInterfaceTypeAnnotation | BabelNodeIntersectionTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNullableTypeAnnotation | BabelNodeNumberLiteralTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeObjectTypeAnnotation | BabelNodeObjectTypeInternalSlot | BabelNodeObjectTypeCallProperty | BabelNodeObjectTypeIndexer | BabelNodeObjectTypeProperty | BabelNodeObjectTypeSpreadProperty | BabelNodeOpaqueType | BabelNodeQualifiedTypeIdentifier | BabelNodeStringLiteralTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeTupleTypeAnnotation | BabelNodeTypeofTypeAnnotation | BabelNodeTypeAlias | BabelNodeTypeAnnotation | BabelNodeTypeCastExpression | BabelNodeTypeParameter | BabelNodeTypeParameterDeclaration | BabelNodeTypeParameterInstantiation | BabelNodeUnionTypeAnnotation | BabelNodeVariance | BabelNodeVoidTypeAnnotation | BabelNodeEnumDeclaration | BabelNodeEnumBooleanBody | BabelNodeEnumNumberBody | BabelNodeEnumStringBody | BabelNodeEnumSymbolBody | BabelNodeEnumBooleanMember | BabelNodeEnumNumberMember | BabelNodeEnumStringMember | BabelNodeEnumDefaultedMember | BabelNodeIndexedAccessType | BabelNodeOptionalIndexedAccessType;
 declare type BabelNodeFlowType = BabelNodeAnyTypeAnnotation | BabelNodeArrayTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeBooleanLiteralTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeExistsTypeAnnotation | BabelNodeFunctionTypeAnnotation | BabelNodeGenericTypeAnnotation | BabelNodeInterfaceTypeAnnotation | BabelNodeIntersectionTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNullableTypeAnnotation | BabelNodeNumberLiteralTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeObjectTypeAnnotation | BabelNodeStringLiteralTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeTupleTypeAnnotation | BabelNodeTypeofTypeAnnotation | BabelNodeUnionTypeAnnotation | BabelNodeVoidTypeAnnotation | BabelNodeIndexedAccessType | BabelNodeOptionalIndexedAccessType;
 declare type BabelNodeFlowBaseAnnotation = BabelNodeAnyTypeAnnotation | BabelNodeBooleanTypeAnnotation | BabelNodeNullLiteralTypeAnnotation | BabelNodeMixedTypeAnnotation | BabelNodeEmptyTypeAnnotation | BabelNodeNumberTypeAnnotation | BabelNodeStringTypeAnnotation | BabelNodeSymbolTypeAnnotation | BabelNodeThisTypeAnnotation | BabelNodeVoidTypeAnnotation;
 declare type BabelNodeFlowDeclaration = BabelNodeDeclareClass | BabelNodeDeclareFunction | BabelNodeDeclareInterface | BabelNodeDeclareModule | BabelNodeDeclareModuleExports | BabelNodeDeclareTypeAlias | BabelNodeDeclareOpaqueType | BabelNodeDeclareVariable | BabelNodeDeclareExportDeclaration | BabelNodeDeclareExportAllDeclaration | BabelNodeInterfaceDeclaration | BabelNodeOpaqueType | BabelNodeTypeAlias;
@@ -3104,7 +3185,8 @@ declare type BabelNodeFlowPredicate = BabelNodeDeclaredPredicate | BabelNodeInfe
 declare type BabelNodeEnumBody = BabelNodeEnumBooleanBody | BabelNodeEnumNumberBody | BabelNodeEnumStringBody | BabelNodeEnumSymbolBody;
 declare type BabelNodeEnumMember = BabelNodeEnumBooleanMember | BabelNodeEnumNumberMember | BabelNodeEnumStringMember | BabelNodeEnumDefaultedMember;
 declare type BabelNodeJSX = BabelNodeJSXAttribute | BabelNodeJSXClosingElement | BabelNodeJSXElement | BabelNodeJSXEmptyExpression | BabelNodeJSXExpressionContainer | BabelNodeJSXSpreadChild | BabelNodeJSXIdentifier | BabelNodeJSXMemberExpression | BabelNodeJSXNamespacedName | BabelNodeJSXOpeningElement | BabelNodeJSXSpreadAttribute | BabelNodeJSXText | BabelNodeJSXFragment | BabelNodeJSXOpeningFragment | BabelNodeJSXClosingFragment;
-declare type BabelNodePrivate = BabelNodeClassPrivateProperty | BabelNodeClassPrivateMethod | BabelNodePrivateName;
+declare type BabelNodeMiscellaneous = BabelNodeNoop | BabelNodePlaceholder | BabelNodeV8IntrinsicIdentifier;
+declare type BabelNodeTypeScript = BabelNodeTSParameterProperty | BabelNodeTSDeclareFunction | BabelNodeTSDeclareMethod | BabelNodeTSQualifiedName | BabelNodeTSCallSignatureDeclaration | BabelNodeTSConstructSignatureDeclaration | BabelNodeTSPropertySignature | BabelNodeTSMethodSignature | BabelNodeTSIndexSignature | BabelNodeTSAnyKeyword | BabelNodeTSBooleanKeyword | BabelNodeTSBigIntKeyword | BabelNodeTSIntrinsicKeyword | BabelNodeTSNeverKeyword | BabelNodeTSNullKeyword | BabelNodeTSNumberKeyword | BabelNodeTSObjectKeyword | BabelNodeTSStringKeyword | BabelNodeTSSymbolKeyword | BabelNodeTSUndefinedKeyword | BabelNodeTSUnknownKeyword | BabelNodeTSVoidKeyword | BabelNodeTSThisType | BabelNodeTSFunctionType | BabelNodeTSConstructorType | BabelNodeTSTypeReference | BabelNodeTSTypePredicate | BabelNodeTSTypeQuery | BabelNodeTSTypeLiteral | BabelNodeTSArrayType | BabelNodeTSTupleType | BabelNodeTSOptionalType | BabelNodeTSRestType | BabelNodeTSNamedTupleMember | BabelNodeTSUnionType | BabelNodeTSIntersectionType | BabelNodeTSConditionalType | BabelNodeTSInferType | BabelNodeTSParenthesizedType | BabelNodeTSTypeOperator | BabelNodeTSIndexedAccessType | BabelNodeTSMappedType | BabelNodeTSLiteralType | BabelNodeTSExpressionWithTypeArguments | BabelNodeTSInterfaceDeclaration | BabelNodeTSInterfaceBody | BabelNodeTSTypeAliasDeclaration | BabelNodeTSInstantiationExpression | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSEnumDeclaration | BabelNodeTSEnumMember | BabelNodeTSModuleDeclaration | BabelNodeTSModuleBlock | BabelNodeTSImportType | BabelNodeTSImportEqualsDeclaration | BabelNodeTSExternalModuleReference | BabelNodeTSNonNullExpression | BabelNodeTSExportAssignment | BabelNodeTSNamespaceExportDeclaration | BabelNodeTSTypeAnnotation | BabelNodeTSTypeParameterInstantiation | BabelNodeTSTypeParameterDeclaration | BabelNodeTSTypeParameter;
 declare type BabelNodeTSTypeElement = BabelNodeTSCallSignatureDeclaration | BabelNodeTSConstructSignatureDeclaration | BabelNodeTSPropertySignature | BabelNodeTSMethodSignature | BabelNodeTSIndexSignature;
 declare type BabelNodeTSType = BabelNodeTSAnyKeyword | BabelNodeTSBooleanKeyword | BabelNodeTSBigIntKeyword | BabelNodeTSIntrinsicKeyword | BabelNodeTSNeverKeyword | BabelNodeTSNullKeyword | BabelNodeTSNumberKeyword | BabelNodeTSObjectKeyword | BabelNodeTSStringKeyword | BabelNodeTSSymbolKeyword | BabelNodeTSUndefinedKeyword | BabelNodeTSUnknownKeyword | BabelNodeTSVoidKeyword | BabelNodeTSThisType | BabelNodeTSFunctionType | BabelNodeTSConstructorType | BabelNodeTSTypeReference | BabelNodeTSTypePredicate | BabelNodeTSTypeQuery | BabelNodeTSTypeLiteral | BabelNodeTSArrayType | BabelNodeTSTupleType | BabelNodeTSOptionalType | BabelNodeTSRestType | BabelNodeTSUnionType | BabelNodeTSIntersectionType | BabelNodeTSConditionalType | BabelNodeTSInferType | BabelNodeTSParenthesizedType | BabelNodeTSTypeOperator | BabelNodeTSIndexedAccessType | BabelNodeTSMappedType | BabelNodeTSLiteralType | BabelNodeTSExpressionWithTypeArguments | BabelNodeTSImportType;
 declare type BabelNodeTSBaseType = BabelNodeTSAnyKeyword | BabelNodeTSBooleanKeyword | BabelNodeTSBigIntKeyword | BabelNodeTSIntrinsicKeyword | BabelNodeTSNeverKeyword | BabelNodeTSNullKeyword | BabelNodeTSNumberKeyword | BabelNodeTSObjectKeyword | BabelNodeTSStringKeyword | BabelNodeTSSymbolKeyword | BabelNodeTSUndefinedKeyword | BabelNodeTSUnknownKeyword | BabelNodeTSVoidKeyword | BabelNodeTSThisType | BabelNodeTSLiteralType;
@@ -3112,13 +3194,13 @@ declare type BabelNodeTSBaseType = BabelNodeTSAnyKeyword | BabelNodeTSBooleanKey
 declare module "@babel/types" {
   declare export function arrayExpression(elements?: Array<null | BabelNodeExpression | BabelNodeSpreadElement>): BabelNodeArrayExpression;
   declare export function assignmentExpression(operator: string, left: BabelNodeLVal, right: BabelNodeExpression): BabelNodeAssignmentExpression;
-  declare export function binaryExpression(operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=", left: BabelNodeExpression | BabelNodePrivateName, right: BabelNodeExpression): BabelNodeBinaryExpression;
+  declare export function binaryExpression(operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=" | "|>", left: BabelNodeExpression | BabelNodePrivateName, right: BabelNodeExpression): BabelNodeBinaryExpression;
   declare export function interpreterDirective(value: string): BabelNodeInterpreterDirective;
   declare export function directive(value: BabelNodeDirectiveLiteral): BabelNodeDirective;
   declare export function directiveLiteral(value: string): BabelNodeDirectiveLiteral;
   declare export function blockStatement(body: Array<BabelNodeStatement>, directives?: Array<BabelNodeDirective>): BabelNodeBlockStatement;
   declare export function breakStatement(label?: BabelNodeIdentifier): BabelNodeBreakStatement;
-  declare export function callExpression(callee: BabelNodeExpression | BabelNodeV8IntrinsicIdentifier, _arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>): BabelNodeCallExpression;
+  declare export function callExpression(callee: BabelNodeExpression | BabelNodeSuper | BabelNodeV8IntrinsicIdentifier, _arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>): BabelNodeCallExpression;
   declare export function catchClause(param?: BabelNodeIdentifier | BabelNodeArrayPattern | BabelNodeObjectPattern, body: BabelNodeBlockStatement): BabelNodeCatchClause;
   declare export function conditionalExpression(test: BabelNodeExpression, consequent: BabelNodeExpression, alternate: BabelNodeExpression): BabelNodeConditionalExpression;
   declare export function continueStatement(label?: BabelNodeIdentifier): BabelNodeContinueStatement;
@@ -3129,8 +3211,8 @@ declare module "@babel/types" {
   declare export function file(program: BabelNodeProgram, comments?: Array<BabelNodeCommentBlock | BabelNodeCommentLine>, tokens?: Array<any>): BabelNodeFile;
   declare export function forInStatement(left: BabelNodeVariableDeclaration | BabelNodeLVal, right: BabelNodeExpression, body: BabelNodeStatement): BabelNodeForInStatement;
   declare export function forStatement(init?: BabelNodeVariableDeclaration | BabelNodeExpression, test?: BabelNodeExpression, update?: BabelNodeExpression, body: BabelNodeStatement): BabelNodeForStatement;
-  declare export function functionDeclaration(id?: BabelNodeIdentifier, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, generator?: boolean, async?: boolean): BabelNodeFunctionDeclaration;
-  declare export function functionExpression(id?: BabelNodeIdentifier, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, generator?: boolean, async?: boolean): BabelNodeFunctionExpression;
+  declare export function functionDeclaration(id?: BabelNodeIdentifier, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>, body: BabelNodeBlockStatement, generator?: boolean, async?: boolean): BabelNodeFunctionDeclaration;
+  declare export function functionExpression(id?: BabelNodeIdentifier, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>, body: BabelNodeBlockStatement, generator?: boolean, async?: boolean): BabelNodeFunctionExpression;
   declare export function identifier(name: string): BabelNodeIdentifier;
   declare export function ifStatement(test: BabelNodeExpression, consequent: BabelNodeStatement, alternate?: BabelNodeStatement): BabelNodeIfStatement;
   declare export function labeledStatement(label: BabelNodeIdentifier, body: BabelNodeStatement): BabelNodeLabeledStatement;
@@ -3140,12 +3222,12 @@ declare module "@babel/types" {
   declare export function booleanLiteral(value: boolean): BabelNodeBooleanLiteral;
   declare export function regExpLiteral(pattern: string, flags?: string): BabelNodeRegExpLiteral;
   declare export function logicalExpression(operator: "||" | "&&" | "??", left: BabelNodeExpression, right: BabelNodeExpression): BabelNodeLogicalExpression;
-  declare export function memberExpression(object: BabelNodeExpression, property: BabelNodeExpression | BabelNodeIdentifier | BabelNodePrivateName, computed?: boolean, optional?: true | false): BabelNodeMemberExpression;
-  declare export function newExpression(callee: BabelNodeExpression | BabelNodeV8IntrinsicIdentifier, _arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>): BabelNodeNewExpression;
+  declare export function memberExpression(object: BabelNodeExpression | BabelNodeSuper, property: BabelNodeExpression | BabelNodeIdentifier | BabelNodePrivateName, computed?: boolean, optional?: true | false): BabelNodeMemberExpression;
+  declare export function newExpression(callee: BabelNodeExpression | BabelNodeSuper | BabelNodeV8IntrinsicIdentifier, _arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>): BabelNodeNewExpression;
   declare export function program(body: Array<BabelNodeStatement>, directives?: Array<BabelNodeDirective>, sourceType?: "script" | "module", interpreter?: BabelNodeInterpreterDirective): BabelNodeProgram;
   declare export function objectExpression(properties: Array<BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeSpreadElement>): BabelNodeObjectExpression;
-  declare export function objectMethod(kind?: "method" | "get" | "set", key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, computed?: boolean, generator?: boolean, async?: boolean): BabelNodeObjectMethod;
-  declare export function objectProperty(key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral, value: BabelNodeExpression | BabelNodePatternLike, computed?: boolean, shorthand?: boolean, decorators?: Array<BabelNodeDecorator>): BabelNodeObjectProperty;
+  declare export function objectMethod(kind?: "method" | "get" | "set", key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>, body: BabelNodeBlockStatement, computed?: boolean, generator?: boolean, async?: boolean): BabelNodeObjectMethod;
+  declare export function objectProperty(key: BabelNodeExpression | BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeDecimalLiteral | BabelNodePrivateName, value: BabelNodeExpression | BabelNodePatternLike, computed?: boolean, shorthand?: boolean, decorators?: Array<BabelNodeDecorator>): BabelNodeObjectProperty;
   declare export function restElement(argument: BabelNodeLVal): BabelNodeRestElement;
   declare export function returnStatement(argument?: BabelNodeExpression): BabelNodeReturnStatement;
   declare export function sequenceExpression(expressions: Array<BabelNodeExpression>): BabelNodeSequenceExpression;
@@ -3157,18 +3239,18 @@ declare module "@babel/types" {
   declare export function tryStatement(block: BabelNodeBlockStatement, handler?: BabelNodeCatchClause, finalizer?: BabelNodeBlockStatement): BabelNodeTryStatement;
   declare export function unaryExpression(operator: "void" | "throw" | "delete" | "!" | "+" | "-" | "~" | "typeof", argument: BabelNodeExpression, prefix?: boolean): BabelNodeUnaryExpression;
   declare export function updateExpression(operator: "++" | "--", argument: BabelNodeExpression, prefix?: boolean): BabelNodeUpdateExpression;
-  declare export function variableDeclaration(kind: "var" | "let" | "const", declarations: Array<BabelNodeVariableDeclarator>): BabelNodeVariableDeclaration;
+  declare export function variableDeclaration(kind: "var" | "let" | "const" | "using", declarations: Array<BabelNodeVariableDeclarator>): BabelNodeVariableDeclaration;
   declare export function variableDeclarator(id: BabelNodeLVal, init?: BabelNodeExpression): BabelNodeVariableDeclarator;
   declare export function whileStatement(test: BabelNodeExpression, body: BabelNodeStatement): BabelNodeWhileStatement;
   declare export function withStatement(object: BabelNodeExpression, body: BabelNodeStatement): BabelNodeWithStatement;
-  declare export function assignmentPattern(left: BabelNodeIdentifier | BabelNodeObjectPattern | BabelNodeArrayPattern | BabelNodeMemberExpression, right: BabelNodeExpression): BabelNodeAssignmentPattern;
-  declare export function arrayPattern(elements: Array<null | BabelNodePatternLike>): BabelNodeArrayPattern;
-  declare export function arrowFunctionExpression(params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement | BabelNodeExpression, async?: boolean): BabelNodeArrowFunctionExpression;
-  declare export function classBody(body: Array<BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeClassProperty | BabelNodeClassPrivateProperty | BabelNodeTSDeclareMethod | BabelNodeTSIndexSignature>): BabelNodeClassBody;
+  declare export function assignmentPattern(left: BabelNodeIdentifier | BabelNodeObjectPattern | BabelNodeArrayPattern | BabelNodeMemberExpression | BabelNodeTSAsExpression | BabelNodeTSSatisfiesExpression | BabelNodeTSTypeAssertion | BabelNodeTSNonNullExpression, right: BabelNodeExpression): BabelNodeAssignmentPattern;
+  declare export function arrayPattern(elements: Array<null | BabelNodePatternLike | BabelNodeLVal>): BabelNodeArrayPattern;
+  declare export function arrowFunctionExpression(params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>, body: BabelNodeBlockStatement | BabelNodeExpression, async?: boolean): BabelNodeArrowFunctionExpression;
+  declare export function classBody(body: Array<BabelNodeClassMethod | BabelNodeClassPrivateMethod | BabelNodeClassProperty | BabelNodeClassPrivateProperty | BabelNodeClassAccessorProperty | BabelNodeTSDeclareMethod | BabelNodeTSIndexSignature | BabelNodeStaticBlock>): BabelNodeClassBody;
   declare export function classExpression(id?: BabelNodeIdentifier, superClass?: BabelNodeExpression, body: BabelNodeClassBody, decorators?: Array<BabelNodeDecorator>): BabelNodeClassExpression;
   declare export function classDeclaration(id: BabelNodeIdentifier, superClass?: BabelNodeExpression, body: BabelNodeClassBody, decorators?: Array<BabelNodeDecorator>): BabelNodeClassDeclaration;
   declare export function exportAllDeclaration(source: BabelNodeStringLiteral): BabelNodeExportAllDeclaration;
-  declare export function exportDefaultDeclaration(declaration: BabelNodeFunctionDeclaration | BabelNodeTSDeclareFunction | BabelNodeClassDeclaration | BabelNodeExpression): BabelNodeExportDefaultDeclaration;
+  declare export function exportDefaultDeclaration(declaration: BabelNodeTSDeclareFunction | BabelNodeFunctionDeclaration | BabelNodeClassDeclaration | BabelNodeExpression): BabelNodeExportDefaultDeclaration;
   declare export function exportNamedDeclaration(declaration?: BabelNodeDeclaration, specifiers?: Array<BabelNodeExportSpecifier | BabelNodeExportDefaultSpecifier | BabelNodeExportNamespaceSpecifier>, source?: BabelNodeStringLiteral): BabelNodeExportNamedDeclaration;
   declare export function exportSpecifier(local: BabelNodeIdentifier, exported: BabelNodeIdentifier | BabelNodeStringLiteral): BabelNodeExportSpecifier;
   declare export function forOfStatement(left: BabelNodeVariableDeclaration | BabelNodeLVal, right: BabelNodeExpression, body: BabelNodeStatement, _await?: boolean): BabelNodeForOfStatement;
@@ -3177,13 +3259,13 @@ declare module "@babel/types" {
   declare export function importNamespaceSpecifier(local: BabelNodeIdentifier): BabelNodeImportNamespaceSpecifier;
   declare export function importSpecifier(local: BabelNodeIdentifier, imported: BabelNodeIdentifier | BabelNodeStringLiteral): BabelNodeImportSpecifier;
   declare export function metaProperty(meta: BabelNodeIdentifier, property: BabelNodeIdentifier): BabelNodeMetaProperty;
-  declare export function classMethod(kind?: "get" | "set" | "method" | "constructor", key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, computed?: boolean, _static?: boolean, generator?: boolean, async?: boolean): BabelNodeClassMethod;
+  declare export function classMethod(kind?: "get" | "set" | "method" | "constructor", key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, computed?: boolean, _static?: boolean, generator?: boolean, async?: boolean): BabelNodeClassMethod;
   declare export function objectPattern(properties: Array<BabelNodeRestElement | BabelNodeObjectProperty>): BabelNodeObjectPattern;
   declare export function spreadElement(argument: BabelNodeExpression): BabelNodeSpreadElement;
   declare var _super: () => BabelNodeSuper;
   declare export { _super as super }
   declare export function taggedTemplateExpression(tag: BabelNodeExpression, quasi: BabelNodeTemplateLiteral): BabelNodeTaggedTemplateExpression;
-  declare export function templateElement(value: { raw: string, cooked?: string }, tail?: boolean): BabelNodeTemplateElement;
+  declare export function templateElement(value: any, tail?: boolean): BabelNodeTemplateElement;
   declare export function templateLiteral(quasis: Array<BabelNodeTemplateElement>, expressions: Array<BabelNodeExpression | BabelNodeTSType>): BabelNodeTemplateLiteral;
   declare export function yieldExpression(argument?: BabelNodeExpression, delegate?: boolean): BabelNodeYieldExpression;
   declare export function awaitExpression(argument: BabelNodeExpression): BabelNodeAwaitExpression;
@@ -3193,6 +3275,12 @@ declare module "@babel/types" {
   declare export function exportNamespaceSpecifier(exported: BabelNodeIdentifier): BabelNodeExportNamespaceSpecifier;
   declare export function optionalMemberExpression(object: BabelNodeExpression, property: BabelNodeExpression | BabelNodeIdentifier, computed?: boolean, optional: boolean): BabelNodeOptionalMemberExpression;
   declare export function optionalCallExpression(callee: BabelNodeExpression, _arguments: Array<BabelNodeExpression | BabelNodeSpreadElement | BabelNodeJSXNamespacedName | BabelNodeArgumentPlaceholder>, optional: boolean): BabelNodeOptionalCallExpression;
+  declare export function classProperty(key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression, value?: BabelNodeExpression, typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop, decorators?: Array<BabelNodeDecorator>, computed?: boolean, _static?: boolean): BabelNodeClassProperty;
+  declare export function classAccessorProperty(key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression | BabelNodePrivateName, value?: BabelNodeExpression, typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop, decorators?: Array<BabelNodeDecorator>, computed?: boolean, _static?: boolean): BabelNodeClassAccessorProperty;
+  declare export function classPrivateProperty(key: BabelNodePrivateName, value?: BabelNodeExpression, decorators?: Array<BabelNodeDecorator>, _static?: boolean): BabelNodeClassPrivateProperty;
+  declare export function classPrivateMethod(kind?: "get" | "set" | "method", key: BabelNodePrivateName, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, _static?: boolean): BabelNodeClassPrivateMethod;
+  declare export function privateName(id: BabelNodeIdentifier): BabelNodePrivateName;
+  declare export function staticBlock(body: Array<BabelNodeStatement>): BabelNodeStaticBlock;
   declare export function anyTypeAnnotation(): BabelNodeAnyTypeAnnotation;
   declare export function arrayTypeAnnotation(elementType: BabelNodeFlowType): BabelNodeArrayTypeAnnotation;
   declare export function booleanTypeAnnotation(): BabelNodeBooleanTypeAnnotation;
@@ -3278,25 +3366,21 @@ declare module "@babel/types" {
   declare export function v8IntrinsicIdentifier(name: string): BabelNodeV8IntrinsicIdentifier;
   declare export function argumentPlaceholder(): BabelNodeArgumentPlaceholder;
   declare export function bindExpression(object: BabelNodeExpression, callee: BabelNodeExpression): BabelNodeBindExpression;
-  declare export function classProperty(key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression, value?: BabelNodeExpression, typeAnnotation?: BabelNodeTypeAnnotation | BabelNodeTSTypeAnnotation | BabelNodeNoop, decorators?: Array<BabelNodeDecorator>, computed?: boolean, _static?: boolean): BabelNodeClassProperty;
-  declare export function pipelineTopicExpression(expression: BabelNodeExpression): BabelNodePipelineTopicExpression;
-  declare export function pipelineBareFunction(callee: BabelNodeExpression): BabelNodePipelineBareFunction;
-  declare export function pipelinePrimaryTopicReference(): BabelNodePipelinePrimaryTopicReference;
-  declare export function classPrivateProperty(key: BabelNodePrivateName, value?: BabelNodeExpression, decorators?: Array<BabelNodeDecorator>, _static: any): BabelNodeClassPrivateProperty;
-  declare export function classPrivateMethod(kind?: "get" | "set" | "method" | "constructor", key: BabelNodePrivateName, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, body: BabelNodeBlockStatement, _static?: boolean): BabelNodeClassPrivateMethod;
   declare export function importAttribute(key: BabelNodeIdentifier | BabelNodeStringLiteral, value: BabelNodeStringLiteral): BabelNodeImportAttribute;
   declare export function decorator(expression: BabelNodeExpression): BabelNodeDecorator;
   declare export function doExpression(body: BabelNodeBlockStatement, async?: boolean): BabelNodeDoExpression;
   declare export function exportDefaultSpecifier(exported: BabelNodeIdentifier): BabelNodeExportDefaultSpecifier;
-  declare export function privateName(id: BabelNodeIdentifier): BabelNodePrivateName;
   declare export function recordExpression(properties: Array<BabelNodeObjectProperty | BabelNodeSpreadElement>): BabelNodeRecordExpression;
   declare export function tupleExpression(elements?: Array<BabelNodeExpression | BabelNodeSpreadElement>): BabelNodeTupleExpression;
   declare export function decimalLiteral(value: string): BabelNodeDecimalLiteral;
-  declare export function staticBlock(body: Array<BabelNodeStatement>): BabelNodeStaticBlock;
   declare export function moduleExpression(body: BabelNodeProgram): BabelNodeModuleExpression;
+  declare export function topicReference(): BabelNodeTopicReference;
+  declare export function pipelineTopicExpression(expression: BabelNodeExpression): BabelNodePipelineTopicExpression;
+  declare export function pipelineBareFunction(callee: BabelNodeExpression): BabelNodePipelineBareFunction;
+  declare export function pipelinePrimaryTopicReference(): BabelNodePipelinePrimaryTopicReference;
   declare export function tsParameterProperty(parameter: BabelNodeIdentifier | BabelNodeAssignmentPattern): BabelNodeTSParameterProperty;
-  declare export function tsDeclareFunction(id?: BabelNodeIdentifier, typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop): BabelNodeTSDeclareFunction;
-  declare export function tsDeclareMethod(decorators?: Array<BabelNodeDecorator>, key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeExpression, typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop): BabelNodeTSDeclareMethod;
+  declare export function tsDeclareFunction(id?: BabelNodeIdentifier, typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement>, returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop): BabelNodeTSDeclareFunction;
+  declare export function tsDeclareMethod(decorators?: Array<BabelNodeDecorator>, key: BabelNodeIdentifier | BabelNodeStringLiteral | BabelNodeNumericLiteral | BabelNodeBigIntLiteral | BabelNodeExpression, typeParameters?: BabelNodeTSTypeParameterDeclaration | BabelNodeNoop, params: Array<BabelNodeIdentifier | BabelNodePattern | BabelNodeRestElement | BabelNodeTSParameterProperty>, returnType?: BabelNodeTSTypeAnnotation | BabelNodeNoop): BabelNodeTSDeclareMethod;
   declare export function tsQualifiedName(left: BabelNodeTSEntityName, right: BabelNodeIdentifier): BabelNodeTSQualifiedName;
   declare export function tsCallSignatureDeclaration(typeParameters?: BabelNodeTSTypeParameterDeclaration, parameters: Array<BabelNodeIdentifier | BabelNodeRestElement>, typeAnnotation?: BabelNodeTSTypeAnnotation): BabelNodeTSCallSignatureDeclaration;
   declare export function tsConstructSignatureDeclaration(typeParameters?: BabelNodeTSTypeParameterDeclaration, parameters: Array<BabelNodeIdentifier | BabelNodeRestElement>, typeAnnotation?: BabelNodeTSTypeAnnotation): BabelNodeTSConstructSignatureDeclaration;
@@ -3321,7 +3405,7 @@ declare module "@babel/types" {
   declare export function tsConstructorType(typeParameters?: BabelNodeTSTypeParameterDeclaration, parameters: Array<BabelNodeIdentifier | BabelNodeRestElement>, typeAnnotation?: BabelNodeTSTypeAnnotation): BabelNodeTSConstructorType;
   declare export function tsTypeReference(typeName: BabelNodeTSEntityName, typeParameters?: BabelNodeTSTypeParameterInstantiation): BabelNodeTSTypeReference;
   declare export function tsTypePredicate(parameterName: BabelNodeIdentifier | BabelNodeTSThisType, typeAnnotation?: BabelNodeTSTypeAnnotation, asserts?: boolean): BabelNodeTSTypePredicate;
-  declare export function tsTypeQuery(exprName: BabelNodeTSEntityName | BabelNodeTSImportType): BabelNodeTSTypeQuery;
+  declare export function tsTypeQuery(exprName: BabelNodeTSEntityName | BabelNodeTSImportType, typeParameters?: BabelNodeTSTypeParameterInstantiation): BabelNodeTSTypeQuery;
   declare export function tsTypeLiteral(members: Array<BabelNodeTSTypeElement>): BabelNodeTSTypeLiteral;
   declare export function tsArrayType(elementType: BabelNodeTSType): BabelNodeTSArrayType;
   declare export function tsTupleType(elementTypes: Array<BabelNodeTSType | BabelNodeTSNamedTupleMember>): BabelNodeTSTupleType;
@@ -3336,12 +3420,14 @@ declare module "@babel/types" {
   declare export function tsTypeOperator(typeAnnotation: BabelNodeTSType): BabelNodeTSTypeOperator;
   declare export function tsIndexedAccessType(objectType: BabelNodeTSType, indexType: BabelNodeTSType): BabelNodeTSIndexedAccessType;
   declare export function tsMappedType(typeParameter: BabelNodeTSTypeParameter, typeAnnotation?: BabelNodeTSType, nameType?: BabelNodeTSType): BabelNodeTSMappedType;
-  declare export function tsLiteralType(literal: BabelNodeNumericLiteral | BabelNodeStringLiteral | BabelNodeBooleanLiteral | BabelNodeBigIntLiteral): BabelNodeTSLiteralType;
+  declare export function tsLiteralType(literal: BabelNodeNumericLiteral | BabelNodeStringLiteral | BabelNodeBooleanLiteral | BabelNodeBigIntLiteral | BabelNodeTemplateLiteral | BabelNodeUnaryExpression): BabelNodeTSLiteralType;
   declare export function tsExpressionWithTypeArguments(expression: BabelNodeTSEntityName, typeParameters?: BabelNodeTSTypeParameterInstantiation): BabelNodeTSExpressionWithTypeArguments;
   declare export function tsInterfaceDeclaration(id: BabelNodeIdentifier, typeParameters?: BabelNodeTSTypeParameterDeclaration, _extends?: Array<BabelNodeTSExpressionWithTypeArguments>, body: BabelNodeTSInterfaceBody): BabelNodeTSInterfaceDeclaration;
   declare export function tsInterfaceBody(body: Array<BabelNodeTSTypeElement>): BabelNodeTSInterfaceBody;
   declare export function tsTypeAliasDeclaration(id: BabelNodeIdentifier, typeParameters?: BabelNodeTSTypeParameterDeclaration, typeAnnotation: BabelNodeTSType): BabelNodeTSTypeAliasDeclaration;
+  declare export function tsInstantiationExpression(expression: BabelNodeExpression, typeParameters?: BabelNodeTSTypeParameterInstantiation): BabelNodeTSInstantiationExpression;
   declare export function tsAsExpression(expression: BabelNodeExpression, typeAnnotation: BabelNodeTSType): BabelNodeTSAsExpression;
+  declare export function tsSatisfiesExpression(expression: BabelNodeExpression, typeAnnotation: BabelNodeTSType): BabelNodeTSSatisfiesExpression;
   declare export function tsTypeAssertion(typeAnnotation: BabelNodeTSType, expression: BabelNodeExpression): BabelNodeTSTypeAssertion;
   declare export function tsEnumDeclaration(id: BabelNodeIdentifier, members: Array<BabelNodeTSEnumMember>): BabelNodeTSEnumDeclaration;
   declare export function tsEnumMember(id: BabelNodeIdentifier | BabelNodeStringLiteral, initializer?: BabelNodeExpression): BabelNodeTSEnumMember;
@@ -3357,300 +3443,308 @@ declare module "@babel/types" {
   declare export function tsTypeParameterInstantiation(params: Array<BabelNodeTSType>): BabelNodeTSTypeParameterInstantiation;
   declare export function tsTypeParameterDeclaration(params: Array<BabelNodeTSTypeParameter>): BabelNodeTSTypeParameterDeclaration;
   declare export function tsTypeParameter(constraint?: BabelNodeTSType, _default?: BabelNodeTSType, name: string): BabelNodeTSTypeParameter;
-  declare export function isArrayExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ArrayExpression');
-  declare export function isAssignmentExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'AssignmentExpression');
-  declare export function isBinaryExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BinaryExpression');
-  declare export function isInterpreterDirective(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'InterpreterDirective');
-  declare export function isDirective(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Directive');
-  declare export function isDirectiveLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DirectiveLiteral');
-  declare export function isBlockStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BlockStatement');
-  declare export function isBreakStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BreakStatement');
-  declare export function isCallExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'CallExpression');
-  declare export function isCatchClause(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'CatchClause');
-  declare export function isConditionalExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ConditionalExpression');
-  declare export function isContinueStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ContinueStatement');
-  declare export function isDebuggerStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DebuggerStatement');
-  declare export function isDoWhileStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DoWhileStatement');
-  declare export function isEmptyStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EmptyStatement');
-  declare export function isExpressionStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExpressionStatement');
-  declare export function isFile(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'File');
-  declare export function isForInStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ForInStatement');
-  declare export function isForStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ForStatement');
-  declare export function isFunctionDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'FunctionDeclaration');
-  declare export function isFunctionExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'FunctionExpression');
-  declare export function isIdentifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Identifier');
-  declare export function isIfStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'IfStatement');
-  declare export function isLabeledStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'LabeledStatement');
-  declare export function isStringLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'StringLiteral');
-  declare export function isNumericLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NumericLiteral');
-  declare export function isNullLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NullLiteral');
-  declare export function isBooleanLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BooleanLiteral');
-  declare export function isRegExpLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'RegExpLiteral');
-  declare export function isLogicalExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'LogicalExpression');
-  declare export function isMemberExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'MemberExpression');
-  declare export function isNewExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NewExpression');
-  declare export function isProgram(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Program');
-  declare export function isObjectExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectExpression');
-  declare export function isObjectMethod(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectMethod');
-  declare export function isObjectProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectProperty');
-  declare export function isRestElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'RestElement');
-  declare export function isReturnStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ReturnStatement');
-  declare export function isSequenceExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SequenceExpression');
-  declare export function isParenthesizedExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ParenthesizedExpression');
-  declare export function isSwitchCase(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SwitchCase');
-  declare export function isSwitchStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SwitchStatement');
-  declare export function isThisExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ThisExpression');
-  declare export function isThrowStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ThrowStatement');
-  declare export function isTryStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TryStatement');
-  declare export function isUnaryExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'UnaryExpression');
-  declare export function isUpdateExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'UpdateExpression');
-  declare export function isVariableDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'VariableDeclaration');
-  declare export function isVariableDeclarator(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'VariableDeclarator');
-  declare export function isWhileStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'WhileStatement');
-  declare export function isWithStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'WithStatement');
-  declare export function isAssignmentPattern(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'AssignmentPattern');
-  declare export function isArrayPattern(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ArrayPattern');
-  declare export function isArrowFunctionExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ArrowFunctionExpression');
-  declare export function isClassBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassBody');
-  declare export function isClassExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassExpression');
-  declare export function isClassDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassDeclaration');
-  declare export function isExportAllDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportAllDeclaration');
-  declare export function isExportDefaultDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportDefaultDeclaration');
-  declare export function isExportNamedDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportNamedDeclaration');
-  declare export function isExportSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportSpecifier');
-  declare export function isForOfStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ForOfStatement');
-  declare export function isImportDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ImportDeclaration');
-  declare export function isImportDefaultSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ImportDefaultSpecifier');
-  declare export function isImportNamespaceSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ImportNamespaceSpecifier');
-  declare export function isImportSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ImportSpecifier');
-  declare export function isMetaProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'MetaProperty');
-  declare export function isClassMethod(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassMethod');
-  declare export function isObjectPattern(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectPattern');
-  declare export function isSpreadElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SpreadElement');
-  declare export function isSuper(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Super');
-  declare export function isTaggedTemplateExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TaggedTemplateExpression');
-  declare export function isTemplateElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TemplateElement');
-  declare export function isTemplateLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TemplateLiteral');
-  declare export function isYieldExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'YieldExpression');
-  declare export function isAwaitExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'AwaitExpression');
-  declare export function isImport(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Import');
-  declare export function isBigIntLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BigIntLiteral');
-  declare export function isExportNamespaceSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportNamespaceSpecifier');
-  declare export function isOptionalMemberExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'OptionalMemberExpression');
-  declare export function isOptionalCallExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'OptionalCallExpression');
-  declare export function isAnyTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'AnyTypeAnnotation');
-  declare export function isArrayTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ArrayTypeAnnotation');
-  declare export function isBooleanTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BooleanTypeAnnotation');
-  declare export function isBooleanLiteralTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BooleanLiteralTypeAnnotation');
-  declare export function isNullLiteralTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NullLiteralTypeAnnotation');
-  declare export function isClassImplements(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassImplements');
-  declare export function isDeclareClass(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareClass');
-  declare export function isDeclareFunction(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareFunction');
-  declare export function isDeclareInterface(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareInterface');
-  declare export function isDeclareModule(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareModule');
-  declare export function isDeclareModuleExports(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareModuleExports');
-  declare export function isDeclareTypeAlias(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareTypeAlias');
-  declare export function isDeclareOpaqueType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareOpaqueType');
-  declare export function isDeclareVariable(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareVariable');
-  declare export function isDeclareExportDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareExportDeclaration');
-  declare export function isDeclareExportAllDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclareExportAllDeclaration');
-  declare export function isDeclaredPredicate(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DeclaredPredicate');
-  declare export function isExistsTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExistsTypeAnnotation');
-  declare export function isFunctionTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'FunctionTypeAnnotation');
-  declare export function isFunctionTypeParam(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'FunctionTypeParam');
-  declare export function isGenericTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'GenericTypeAnnotation');
-  declare export function isInferredPredicate(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'InferredPredicate');
-  declare export function isInterfaceExtends(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'InterfaceExtends');
-  declare export function isInterfaceDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'InterfaceDeclaration');
-  declare export function isInterfaceTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'InterfaceTypeAnnotation');
-  declare export function isIntersectionTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'IntersectionTypeAnnotation');
-  declare export function isMixedTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'MixedTypeAnnotation');
-  declare export function isEmptyTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EmptyTypeAnnotation');
-  declare export function isNullableTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NullableTypeAnnotation');
-  declare export function isNumberLiteralTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NumberLiteralTypeAnnotation');
-  declare export function isNumberTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NumberTypeAnnotation');
-  declare export function isObjectTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeAnnotation');
-  declare export function isObjectTypeInternalSlot(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeInternalSlot');
-  declare export function isObjectTypeCallProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeCallProperty');
-  declare export function isObjectTypeIndexer(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeIndexer');
-  declare export function isObjectTypeProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeProperty');
-  declare export function isObjectTypeSpreadProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ObjectTypeSpreadProperty');
-  declare export function isOpaqueType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'OpaqueType');
-  declare export function isQualifiedTypeIdentifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'QualifiedTypeIdentifier');
-  declare export function isStringLiteralTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'StringLiteralTypeAnnotation');
-  declare export function isStringTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'StringTypeAnnotation');
-  declare export function isSymbolTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SymbolTypeAnnotation');
-  declare export function isThisTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ThisTypeAnnotation');
-  declare export function isTupleTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TupleTypeAnnotation');
-  declare export function isTypeofTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeofTypeAnnotation');
-  declare export function isTypeAlias(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeAlias');
-  declare export function isTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeAnnotation');
-  declare export function isTypeCastExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeCastExpression');
-  declare export function isTypeParameter(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeParameter');
-  declare export function isTypeParameterDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeParameterDeclaration');
-  declare export function isTypeParameterInstantiation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TypeParameterInstantiation');
-  declare export function isUnionTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'UnionTypeAnnotation');
-  declare export function isVariance(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Variance');
-  declare export function isVoidTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'VoidTypeAnnotation');
-  declare export function isEnumDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumDeclaration');
-  declare export function isEnumBooleanBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumBooleanBody');
-  declare export function isEnumNumberBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumNumberBody');
-  declare export function isEnumStringBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumStringBody');
-  declare export function isEnumSymbolBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumSymbolBody');
-  declare export function isEnumBooleanMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumBooleanMember');
-  declare export function isEnumNumberMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumNumberMember');
-  declare export function isEnumStringMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumStringMember');
-  declare export function isEnumDefaultedMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'EnumDefaultedMember');
-  declare export function isIndexedAccessType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'IndexedAccessType');
-  declare export function isOptionalIndexedAccessType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'OptionalIndexedAccessType');
-  declare export function isJSXAttribute(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXAttribute');
-  declare export function isJSXClosingElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXClosingElement');
-  declare export function isJSXElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXElement');
-  declare export function isJSXEmptyExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXEmptyExpression');
-  declare export function isJSXExpressionContainer(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXExpressionContainer');
-  declare export function isJSXSpreadChild(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXSpreadChild');
-  declare export function isJSXIdentifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXIdentifier');
-  declare export function isJSXMemberExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXMemberExpression');
-  declare export function isJSXNamespacedName(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXNamespacedName');
-  declare export function isJSXOpeningElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXOpeningElement');
-  declare export function isJSXSpreadAttribute(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXSpreadAttribute');
-  declare export function isJSXText(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXText');
-  declare export function isJSXFragment(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXFragment');
-  declare export function isJSXOpeningFragment(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXOpeningFragment');
-  declare export function isJSXClosingFragment(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'JSXClosingFragment');
-  declare export function isNoop(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Noop');
-  declare export function isPlaceholder(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Placeholder');
-  declare export function isV8IntrinsicIdentifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'V8IntrinsicIdentifier');
-  declare export function isArgumentPlaceholder(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ArgumentPlaceholder');
-  declare export function isBindExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'BindExpression');
-  declare export function isClassProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassProperty');
-  declare export function isPipelineTopicExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'PipelineTopicExpression');
-  declare export function isPipelineBareFunction(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'PipelineBareFunction');
-  declare export function isPipelinePrimaryTopicReference(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'PipelinePrimaryTopicReference');
-  declare export function isClassPrivateProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassPrivateProperty');
-  declare export function isClassPrivateMethod(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ClassPrivateMethod');
-  declare export function isImportAttribute(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ImportAttribute');
-  declare export function isDecorator(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'Decorator');
-  declare export function isDoExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DoExpression');
-  declare export function isExportDefaultSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ExportDefaultSpecifier');
-  declare export function isPrivateName(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'PrivateName');
-  declare export function isRecordExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'RecordExpression');
-  declare export function isTupleExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TupleExpression');
-  declare export function isDecimalLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'DecimalLiteral');
-  declare export function isStaticBlock(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'StaticBlock');
-  declare export function isModuleExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'ModuleExpression');
-  declare export function isTSParameterProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSParameterProperty');
-  declare export function isTSDeclareFunction(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSDeclareFunction');
-  declare export function isTSDeclareMethod(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSDeclareMethod');
-  declare export function isTSQualifiedName(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSQualifiedName');
-  declare export function isTSCallSignatureDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSCallSignatureDeclaration');
-  declare export function isTSConstructSignatureDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSConstructSignatureDeclaration');
-  declare export function isTSPropertySignature(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSPropertySignature');
-  declare export function isTSMethodSignature(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSMethodSignature');
-  declare export function isTSIndexSignature(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSIndexSignature');
-  declare export function isTSAnyKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSAnyKeyword');
-  declare export function isTSBooleanKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSBooleanKeyword');
-  declare export function isTSBigIntKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSBigIntKeyword');
-  declare export function isTSIntrinsicKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSIntrinsicKeyword');
-  declare export function isTSNeverKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNeverKeyword');
-  declare export function isTSNullKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNullKeyword');
-  declare export function isTSNumberKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNumberKeyword');
-  declare export function isTSObjectKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSObjectKeyword');
-  declare export function isTSStringKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSStringKeyword');
-  declare export function isTSSymbolKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSSymbolKeyword');
-  declare export function isTSUndefinedKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSUndefinedKeyword');
-  declare export function isTSUnknownKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSUnknownKeyword');
-  declare export function isTSVoidKeyword(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSVoidKeyword');
-  declare export function isTSThisType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSThisType');
-  declare export function isTSFunctionType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSFunctionType');
-  declare export function isTSConstructorType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSConstructorType');
-  declare export function isTSTypeReference(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeReference');
-  declare export function isTSTypePredicate(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypePredicate');
-  declare export function isTSTypeQuery(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeQuery');
-  declare export function isTSTypeLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeLiteral');
-  declare export function isTSArrayType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSArrayType');
-  declare export function isTSTupleType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTupleType');
-  declare export function isTSOptionalType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSOptionalType');
-  declare export function isTSRestType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSRestType');
-  declare export function isTSNamedTupleMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNamedTupleMember');
-  declare export function isTSUnionType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSUnionType');
-  declare export function isTSIntersectionType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSIntersectionType');
-  declare export function isTSConditionalType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSConditionalType');
-  declare export function isTSInferType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSInferType');
-  declare export function isTSParenthesizedType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSParenthesizedType');
-  declare export function isTSTypeOperator(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeOperator');
-  declare export function isTSIndexedAccessType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSIndexedAccessType');
-  declare export function isTSMappedType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSMappedType');
-  declare export function isTSLiteralType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSLiteralType');
-  declare export function isTSExpressionWithTypeArguments(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSExpressionWithTypeArguments');
-  declare export function isTSInterfaceDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSInterfaceDeclaration');
-  declare export function isTSInterfaceBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSInterfaceBody');
-  declare export function isTSTypeAliasDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeAliasDeclaration');
-  declare export function isTSAsExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSAsExpression');
-  declare export function isTSTypeAssertion(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeAssertion');
-  declare export function isTSEnumDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSEnumDeclaration');
-  declare export function isTSEnumMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSEnumMember');
-  declare export function isTSModuleDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSModuleDeclaration');
-  declare export function isTSModuleBlock(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSModuleBlock');
-  declare export function isTSImportType(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSImportType');
-  declare export function isTSImportEqualsDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSImportEqualsDeclaration');
-  declare export function isTSExternalModuleReference(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSExternalModuleReference');
-  declare export function isTSNonNullExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNonNullExpression');
-  declare export function isTSExportAssignment(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSExportAssignment');
-  declare export function isTSNamespaceExportDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSNamespaceExportDeclaration');
-  declare export function isTSTypeAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeAnnotation');
-  declare export function isTSTypeParameterInstantiation(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeParameterInstantiation');
-  declare export function isTSTypeParameterDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeParameterDeclaration');
-  declare export function isTSTypeParameter(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'TSTypeParameter');
-  declare export function isExpression(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ArrayExpression' || node.type === 'AssignmentExpression' || node.type === 'BinaryExpression' || node.type === 'CallExpression' || node.type === 'ConditionalExpression' || node.type === 'FunctionExpression' || node.type === 'Identifier' || node.type === 'StringLiteral' || node.type === 'NumericLiteral' || node.type === 'NullLiteral' || node.type === 'BooleanLiteral' || node.type === 'RegExpLiteral' || node.type === 'LogicalExpression' || node.type === 'MemberExpression' || node.type === 'NewExpression' || node.type === 'ObjectExpression' || node.type === 'SequenceExpression' || node.type === 'ParenthesizedExpression' || node.type === 'ThisExpression' || node.type === 'UnaryExpression' || node.type === 'UpdateExpression' || node.type === 'ArrowFunctionExpression' || node.type === 'ClassExpression' || node.type === 'MetaProperty' || node.type === 'Super' || node.type === 'TaggedTemplateExpression' || node.type === 'TemplateLiteral' || node.type === 'YieldExpression' || node.type === 'AwaitExpression' || node.type === 'Import' || node.type === 'BigIntLiteral' || node.type === 'OptionalMemberExpression' || node.type === 'OptionalCallExpression' || node.type === 'TypeCastExpression' || node.type === 'JSXElement' || node.type === 'JSXFragment' || node.type === 'BindExpression' || node.type === 'PipelinePrimaryTopicReference' || node.type === 'DoExpression' || node.type === 'RecordExpression' || node.type === 'TupleExpression' || node.type === 'DecimalLiteral' || node.type === 'ModuleExpression' || node.type === 'TSAsExpression' || node.type === 'TSTypeAssertion' || node.type === 'TSNonNullExpression'));
-  declare export function isBinary(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BinaryExpression' || node.type === 'LogicalExpression'));
-  declare export function isScopable(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BlockStatement' || node.type === 'CatchClause' || node.type === 'DoWhileStatement' || node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'Program' || node.type === 'ObjectMethod' || node.type === 'SwitchStatement' || node.type === 'WhileStatement' || node.type === 'ArrowFunctionExpression' || node.type === 'ClassExpression' || node.type === 'ClassDeclaration' || node.type === 'ForOfStatement' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod' || node.type === 'StaticBlock' || node.type === 'TSModuleBlock'));
-  declare export function isBlockParent(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BlockStatement' || node.type === 'CatchClause' || node.type === 'DoWhileStatement' || node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'Program' || node.type === 'ObjectMethod' || node.type === 'SwitchStatement' || node.type === 'WhileStatement' || node.type === 'ArrowFunctionExpression' || node.type === 'ForOfStatement' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod' || node.type === 'StaticBlock' || node.type === 'TSModuleBlock'));
-  declare export function isBlock(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BlockStatement' || node.type === 'Program' || node.type === 'TSModuleBlock'));
-  declare export function isStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BlockStatement' || node.type === 'BreakStatement' || node.type === 'ContinueStatement' || node.type === 'DebuggerStatement' || node.type === 'DoWhileStatement' || node.type === 'EmptyStatement' || node.type === 'ExpressionStatement' || node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'FunctionDeclaration' || node.type === 'IfStatement' || node.type === 'LabeledStatement' || node.type === 'ReturnStatement' || node.type === 'SwitchStatement' || node.type === 'ThrowStatement' || node.type === 'TryStatement' || node.type === 'VariableDeclaration' || node.type === 'WhileStatement' || node.type === 'WithStatement' || node.type === 'ClassDeclaration' || node.type === 'ExportAllDeclaration' || node.type === 'ExportDefaultDeclaration' || node.type === 'ExportNamedDeclaration' || node.type === 'ForOfStatement' || node.type === 'ImportDeclaration' || node.type === 'DeclareClass' || node.type === 'DeclareFunction' || node.type === 'DeclareInterface' || node.type === 'DeclareModule' || node.type === 'DeclareModuleExports' || node.type === 'DeclareTypeAlias' || node.type === 'DeclareOpaqueType' || node.type === 'DeclareVariable' || node.type === 'DeclareExportDeclaration' || node.type === 'DeclareExportAllDeclaration' || node.type === 'InterfaceDeclaration' || node.type === 'OpaqueType' || node.type === 'TypeAlias' || node.type === 'EnumDeclaration' || node.type === 'TSDeclareFunction' || node.type === 'TSInterfaceDeclaration' || node.type === 'TSTypeAliasDeclaration' || node.type === 'TSEnumDeclaration' || node.type === 'TSModuleDeclaration' || node.type === 'TSImportEqualsDeclaration' || node.type === 'TSExportAssignment' || node.type === 'TSNamespaceExportDeclaration'));
-  declare export function isTerminatorless(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BreakStatement' || node.type === 'ContinueStatement' || node.type === 'ReturnStatement' || node.type === 'ThrowStatement' || node.type === 'YieldExpression' || node.type === 'AwaitExpression'));
-  declare export function isCompletionStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'BreakStatement' || node.type === 'ContinueStatement' || node.type === 'ReturnStatement' || node.type === 'ThrowStatement'));
-  declare export function isConditional(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ConditionalExpression' || node.type === 'IfStatement'));
-  declare export function isLoop(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'DoWhileStatement' || node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'WhileStatement' || node.type === 'ForOfStatement'));
-  declare export function isWhile(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'DoWhileStatement' || node.type === 'WhileStatement'));
-  declare export function isExpressionWrapper(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ExpressionStatement' || node.type === 'ParenthesizedExpression' || node.type === 'TypeCastExpression'));
-  declare export function isFor(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'ForOfStatement'));
-  declare export function isForXStatement(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ForInStatement' || node.type === 'ForOfStatement'));
-  declare export function isFunction(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ObjectMethod' || node.type === 'ArrowFunctionExpression' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod'));
-  declare export function isFunctionParent(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ObjectMethod' || node.type === 'ArrowFunctionExpression' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod'));
-  declare export function isPureish(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'StringLiteral' || node.type === 'NumericLiteral' || node.type === 'NullLiteral' || node.type === 'BooleanLiteral' || node.type === 'RegExpLiteral' || node.type === 'ArrowFunctionExpression' || node.type === 'BigIntLiteral' || node.type === 'DecimalLiteral'));
-  declare export function isDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'FunctionDeclaration' || node.type === 'VariableDeclaration' || node.type === 'ClassDeclaration' || node.type === 'ExportAllDeclaration' || node.type === 'ExportDefaultDeclaration' || node.type === 'ExportNamedDeclaration' || node.type === 'ImportDeclaration' || node.type === 'DeclareClass' || node.type === 'DeclareFunction' || node.type === 'DeclareInterface' || node.type === 'DeclareModule' || node.type === 'DeclareModuleExports' || node.type === 'DeclareTypeAlias' || node.type === 'DeclareOpaqueType' || node.type === 'DeclareVariable' || node.type === 'DeclareExportDeclaration' || node.type === 'DeclareExportAllDeclaration' || node.type === 'InterfaceDeclaration' || node.type === 'OpaqueType' || node.type === 'TypeAlias' || node.type === 'EnumDeclaration' || node.type === 'TSDeclareFunction' || node.type === 'TSInterfaceDeclaration' || node.type === 'TSTypeAliasDeclaration' || node.type === 'TSEnumDeclaration' || node.type === 'TSModuleDeclaration'));
-  declare export function isPatternLike(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'Identifier' || node.type === 'RestElement' || node.type === 'AssignmentPattern' || node.type === 'ArrayPattern' || node.type === 'ObjectPattern'));
-  declare export function isLVal(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'Identifier' || node.type === 'MemberExpression' || node.type === 'RestElement' || node.type === 'AssignmentPattern' || node.type === 'ArrayPattern' || node.type === 'ObjectPattern' || node.type === 'TSParameterProperty'));
-  declare export function isTSEntityName(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'Identifier' || node.type === 'TSQualifiedName'));
-  declare export function isLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'StringLiteral' || node.type === 'NumericLiteral' || node.type === 'NullLiteral' || node.type === 'BooleanLiteral' || node.type === 'RegExpLiteral' || node.type === 'TemplateLiteral' || node.type === 'BigIntLiteral' || node.type === 'DecimalLiteral'));
-  declare export function isImmutable(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'StringLiteral' || node.type === 'NumericLiteral' || node.type === 'NullLiteral' || node.type === 'BooleanLiteral' || node.type === 'BigIntLiteral' || node.type === 'JSXAttribute' || node.type === 'JSXClosingElement' || node.type === 'JSXElement' || node.type === 'JSXExpressionContainer' || node.type === 'JSXSpreadChild' || node.type === 'JSXOpeningElement' || node.type === 'JSXText' || node.type === 'JSXFragment' || node.type === 'JSXOpeningFragment' || node.type === 'JSXClosingFragment' || node.type === 'DecimalLiteral'));
-  declare export function isUserWhitespacable(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ObjectMethod' || node.type === 'ObjectProperty' || node.type === 'ObjectTypeInternalSlot' || node.type === 'ObjectTypeCallProperty' || node.type === 'ObjectTypeIndexer' || node.type === 'ObjectTypeProperty' || node.type === 'ObjectTypeSpreadProperty'));
-  declare export function isMethod(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ObjectMethod' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod'));
-  declare export function isObjectMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ObjectMethod' || node.type === 'ObjectProperty'));
-  declare export function isProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ObjectProperty' || node.type === 'ClassProperty' || node.type === 'ClassPrivateProperty'));
-  declare export function isUnaryLike(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'UnaryExpression' || node.type === 'SpreadElement'));
-  declare export function isPattern(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'AssignmentPattern' || node.type === 'ArrayPattern' || node.type === 'ObjectPattern'));
-  declare export function isClass(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ClassExpression' || node.type === 'ClassDeclaration'));
-  declare export function isModuleDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ExportAllDeclaration' || node.type === 'ExportDefaultDeclaration' || node.type === 'ExportNamedDeclaration' || node.type === 'ImportDeclaration'));
-  declare export function isExportDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ExportAllDeclaration' || node.type === 'ExportDefaultDeclaration' || node.type === 'ExportNamedDeclaration'));
-  declare export function isModuleSpecifier(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ExportSpecifier' || node.type === 'ImportDefaultSpecifier' || node.type === 'ImportNamespaceSpecifier' || node.type === 'ImportSpecifier' || node.type === 'ExportNamespaceSpecifier' || node.type === 'ExportDefaultSpecifier'));
-  declare export function isFlow(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'AnyTypeAnnotation' || node.type === 'ArrayTypeAnnotation' || node.type === 'BooleanTypeAnnotation' || node.type === 'BooleanLiteralTypeAnnotation' || node.type === 'NullLiteralTypeAnnotation' || node.type === 'ClassImplements' || node.type === 'DeclareClass' || node.type === 'DeclareFunction' || node.type === 'DeclareInterface' || node.type === 'DeclareModule' || node.type === 'DeclareModuleExports' || node.type === 'DeclareTypeAlias' || node.type === 'DeclareOpaqueType' || node.type === 'DeclareVariable' || node.type === 'DeclareExportDeclaration' || node.type === 'DeclareExportAllDeclaration' || node.type === 'DeclaredPredicate' || node.type === 'ExistsTypeAnnotation' || node.type === 'FunctionTypeAnnotation' || node.type === 'FunctionTypeParam' || node.type === 'GenericTypeAnnotation' || node.type === 'InferredPredicate' || node.type === 'InterfaceExtends' || node.type === 'InterfaceDeclaration' || node.type === 'InterfaceTypeAnnotation' || node.type === 'IntersectionTypeAnnotation' || node.type === 'MixedTypeAnnotation' || node.type === 'EmptyTypeAnnotation' || node.type === 'NullableTypeAnnotation' || node.type === 'NumberLiteralTypeAnnotation' || node.type === 'NumberTypeAnnotation' || node.type === 'ObjectTypeAnnotation' || node.type === 'ObjectTypeInternalSlot' || node.type === 'ObjectTypeCallProperty' || node.type === 'ObjectTypeIndexer' || node.type === 'ObjectTypeProperty' || node.type === 'ObjectTypeSpreadProperty' || node.type === 'OpaqueType' || node.type === 'QualifiedTypeIdentifier' || node.type === 'StringLiteralTypeAnnotation' || node.type === 'StringTypeAnnotation' || node.type === 'SymbolTypeAnnotation' || node.type === 'ThisTypeAnnotation' || node.type === 'TupleTypeAnnotation' || node.type === 'TypeofTypeAnnotation' || node.type === 'TypeAlias' || node.type === 'TypeAnnotation' || node.type === 'TypeCastExpression' || node.type === 'TypeParameter' || node.type === 'TypeParameterDeclaration' || node.type === 'TypeParameterInstantiation' || node.type === 'UnionTypeAnnotation' || node.type === 'Variance' || node.type === 'VoidTypeAnnotation' || node.type === 'IndexedAccessType' || node.type === 'OptionalIndexedAccessType'));
-  declare export function isFlowType(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'AnyTypeAnnotation' || node.type === 'ArrayTypeAnnotation' || node.type === 'BooleanTypeAnnotation' || node.type === 'BooleanLiteralTypeAnnotation' || node.type === 'NullLiteralTypeAnnotation' || node.type === 'ExistsTypeAnnotation' || node.type === 'FunctionTypeAnnotation' || node.type === 'GenericTypeAnnotation' || node.type === 'InterfaceTypeAnnotation' || node.type === 'IntersectionTypeAnnotation' || node.type === 'MixedTypeAnnotation' || node.type === 'EmptyTypeAnnotation' || node.type === 'NullableTypeAnnotation' || node.type === 'NumberLiteralTypeAnnotation' || node.type === 'NumberTypeAnnotation' || node.type === 'ObjectTypeAnnotation' || node.type === 'StringLiteralTypeAnnotation' || node.type === 'StringTypeAnnotation' || node.type === 'SymbolTypeAnnotation' || node.type === 'ThisTypeAnnotation' || node.type === 'TupleTypeAnnotation' || node.type === 'TypeofTypeAnnotation' || node.type === 'UnionTypeAnnotation' || node.type === 'VoidTypeAnnotation' || node.type === 'IndexedAccessType' || node.type === 'OptionalIndexedAccessType'));
-  declare export function isFlowBaseAnnotation(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'AnyTypeAnnotation' || node.type === 'BooleanTypeAnnotation' || node.type === 'NullLiteralTypeAnnotation' || node.type === 'MixedTypeAnnotation' || node.type === 'EmptyTypeAnnotation' || node.type === 'NumberTypeAnnotation' || node.type === 'StringTypeAnnotation' || node.type === 'SymbolTypeAnnotation' || node.type === 'ThisTypeAnnotation' || node.type === 'VoidTypeAnnotation'));
-  declare export function isFlowDeclaration(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'DeclareClass' || node.type === 'DeclareFunction' || node.type === 'DeclareInterface' || node.type === 'DeclareModule' || node.type === 'DeclareModuleExports' || node.type === 'DeclareTypeAlias' || node.type === 'DeclareOpaqueType' || node.type === 'DeclareVariable' || node.type === 'DeclareExportDeclaration' || node.type === 'DeclareExportAllDeclaration' || node.type === 'InterfaceDeclaration' || node.type === 'OpaqueType' || node.type === 'TypeAlias'));
-  declare export function isFlowPredicate(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'DeclaredPredicate' || node.type === 'InferredPredicate'));
-  declare export function isEnumBody(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'EnumBooleanBody' || node.type === 'EnumNumberBody' || node.type === 'EnumStringBody' || node.type === 'EnumSymbolBody'));
-  declare export function isEnumMember(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'EnumBooleanMember' || node.type === 'EnumNumberMember' || node.type === 'EnumStringMember' || node.type === 'EnumDefaultedMember'));
-  declare export function isJSX(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'JSXAttribute' || node.type === 'JSXClosingElement' || node.type === 'JSXElement' || node.type === 'JSXEmptyExpression' || node.type === 'JSXExpressionContainer' || node.type === 'JSXSpreadChild' || node.type === 'JSXIdentifier' || node.type === 'JSXMemberExpression' || node.type === 'JSXNamespacedName' || node.type === 'JSXOpeningElement' || node.type === 'JSXSpreadAttribute' || node.type === 'JSXText' || node.type === 'JSXFragment' || node.type === 'JSXOpeningFragment' || node.type === 'JSXClosingFragment'));
-  declare export function isPrivate(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'ClassPrivateProperty' || node.type === 'ClassPrivateMethod' || node.type === 'PrivateName'));
-  declare export function isTSTypeElement(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'TSCallSignatureDeclaration' || node.type === 'TSConstructSignatureDeclaration' || node.type === 'TSPropertySignature' || node.type === 'TSMethodSignature' || node.type === 'TSIndexSignature'));
-  declare export function isTSType(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'TSAnyKeyword' || node.type === 'TSBooleanKeyword' || node.type === 'TSBigIntKeyword' || node.type === 'TSIntrinsicKeyword' || node.type === 'TSNeverKeyword' || node.type === 'TSNullKeyword' || node.type === 'TSNumberKeyword' || node.type === 'TSObjectKeyword' || node.type === 'TSStringKeyword' || node.type === 'TSSymbolKeyword' || node.type === 'TSUndefinedKeyword' || node.type === 'TSUnknownKeyword' || node.type === 'TSVoidKeyword' || node.type === 'TSThisType' || node.type === 'TSFunctionType' || node.type === 'TSConstructorType' || node.type === 'TSTypeReference' || node.type === 'TSTypePredicate' || node.type === 'TSTypeQuery' || node.type === 'TSTypeLiteral' || node.type === 'TSArrayType' || node.type === 'TSTupleType' || node.type === 'TSOptionalType' || node.type === 'TSRestType' || node.type === 'TSUnionType' || node.type === 'TSIntersectionType' || node.type === 'TSConditionalType' || node.type === 'TSInferType' || node.type === 'TSParenthesizedType' || node.type === 'TSTypeOperator' || node.type === 'TSIndexedAccessType' || node.type === 'TSMappedType' || node.type === 'TSLiteralType' || node.type === 'TSExpressionWithTypeArguments' || node.type === 'TSImportType'));
-  declare export function isTSBaseType(node: ?Object, opts?: ?Object): boolean %checks (node != null && (node.type === 'TSAnyKeyword' || node.type === 'TSBooleanKeyword' || node.type === 'TSBigIntKeyword' || node.type === 'TSIntrinsicKeyword' || node.type === 'TSNeverKeyword' || node.type === 'TSNullKeyword' || node.type === 'TSNumberKeyword' || node.type === 'TSObjectKeyword' || node.type === 'TSStringKeyword' || node.type === 'TSSymbolKeyword' || node.type === 'TSUndefinedKeyword' || node.type === 'TSUnknownKeyword' || node.type === 'TSVoidKeyword' || node.type === 'TSThisType' || node.type === 'TSLiteralType'));
-  declare export function isNumberLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'NumericLiteral');
-  declare export function isRegexLiteral(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'RegExpLiteral');
-  declare export function isRestProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'RestElement');
-  declare export function isSpreadProperty(node: ?Object, opts?: ?Object): boolean %checks (node != null && node.type === 'SpreadElement');
+  declare export function isArrayExpression(node: ?Object, opts?: ?Object): node is ArrayExpression;
+  declare export function isAssignmentExpression(node: ?Object, opts?: ?Object): node is AssignmentExpression;
+  declare export function isBinaryExpression(node: ?Object, opts?: ?Object): node is BinaryExpression;
+  declare export function isInterpreterDirective(node: ?Object, opts?: ?Object): node is InterpreterDirective;
+  declare export function isDirective(node: ?Object, opts?: ?Object): node is Directive;
+  declare export function isDirectiveLiteral(node: ?Object, opts?: ?Object): node is DirectiveLiteral;
+  declare export function isBlockStatement(node: ?Object, opts?: ?Object): node is BlockStatement;
+  declare export function isBreakStatement(node: ?Object, opts?: ?Object): node is BreakStatement;
+  declare export function isCallExpression(node: ?Object, opts?: ?Object): node is CallExpression;
+  declare export function isCatchClause(node: ?Object, opts?: ?Object): node is CatchClause;
+  declare export function isConditionalExpression(node: ?Object, opts?: ?Object): node is ConditionalExpression;
+  declare export function isContinueStatement(node: ?Object, opts?: ?Object): node is ContinueStatement;
+  declare export function isDebuggerStatement(node: ?Object, opts?: ?Object): node is DebuggerStatement;
+  declare export function isDoWhileStatement(node: ?Object, opts?: ?Object): node is DoWhileStatement;
+  declare export function isEmptyStatement(node: ?Object, opts?: ?Object): node is EmptyStatement;
+  declare export function isExpressionStatement(node: ?Object, opts?: ?Object): node is ExpressionStatement;
+  declare export function isFile(node: ?Object, opts?: ?Object): node is File;
+  declare export function isForInStatement(node: ?Object, opts?: ?Object): node is ForInStatement;
+  declare export function isForStatement(node: ?Object, opts?: ?Object): node is ForStatement;
+  declare export function isFunctionDeclaration(node: ?Object, opts?: ?Object): node is FunctionDeclaration;
+  declare export function isFunctionExpression(node: ?Object, opts?: ?Object): node is FunctionExpression;
+  declare export function isIdentifier(node: ?Object, opts?: ?Object): node is Identifier;
+  declare export function isIfStatement(node: ?Object, opts?: ?Object): node is IfStatement;
+  declare export function isLabeledStatement(node: ?Object, opts?: ?Object): node is LabeledStatement;
+  declare export function isStringLiteral(node: ?Object, opts?: ?Object): node is StringLiteral;
+  declare export function isNumericLiteral(node: ?Object, opts?: ?Object): node is NumericLiteral;
+  declare export function isNullLiteral(node: ?Object, opts?: ?Object): node is NullLiteral;
+  declare export function isBooleanLiteral(node: ?Object, opts?: ?Object): node is BooleanLiteral;
+  declare export function isRegExpLiteral(node: ?Object, opts?: ?Object): node is RegExpLiteral;
+  declare export function isLogicalExpression(node: ?Object, opts?: ?Object): node is LogicalExpression;
+  declare export function isMemberExpression(node: ?Object, opts?: ?Object): node is MemberExpression;
+  declare export function isNewExpression(node: ?Object, opts?: ?Object): node is NewExpression;
+  declare export function isProgram(node: ?Object, opts?: ?Object): node is Program;
+  declare export function isObjectExpression(node: ?Object, opts?: ?Object): node is ObjectExpression;
+  declare export function isObjectMethod(node: ?Object, opts?: ?Object): node is ObjectMethod;
+  declare export function isObjectProperty(node: ?Object, opts?: ?Object): node is ObjectProperty;
+  declare export function isRestElement(node: ?Object, opts?: ?Object): node is RestElement;
+  declare export function isReturnStatement(node: ?Object, opts?: ?Object): node is ReturnStatement;
+  declare export function isSequenceExpression(node: ?Object, opts?: ?Object): node is SequenceExpression;
+  declare export function isParenthesizedExpression(node: ?Object, opts?: ?Object): node is ParenthesizedExpression;
+  declare export function isSwitchCase(node: ?Object, opts?: ?Object): node is SwitchCase;
+  declare export function isSwitchStatement(node: ?Object, opts?: ?Object): node is SwitchStatement;
+  declare export function isThisExpression(node: ?Object, opts?: ?Object): node is ThisExpression;
+  declare export function isThrowStatement(node: ?Object, opts?: ?Object): node is ThrowStatement;
+  declare export function isTryStatement(node: ?Object, opts?: ?Object): node is TryStatement;
+  declare export function isUnaryExpression(node: ?Object, opts?: ?Object): node is UnaryExpression;
+  declare export function isUpdateExpression(node: ?Object, opts?: ?Object): node is UpdateExpression;
+  declare export function isVariableDeclaration(node: ?Object, opts?: ?Object): node is VariableDeclaration;
+  declare export function isVariableDeclarator(node: ?Object, opts?: ?Object): node is VariableDeclarator;
+  declare export function isWhileStatement(node: ?Object, opts?: ?Object): node is WhileStatement;
+  declare export function isWithStatement(node: ?Object, opts?: ?Object): node is WithStatement;
+  declare export function isAssignmentPattern(node: ?Object, opts?: ?Object): node is AssignmentPattern;
+  declare export function isArrayPattern(node: ?Object, opts?: ?Object): node is ArrayPattern;
+  declare export function isArrowFunctionExpression(node: ?Object, opts?: ?Object): node is ArrowFunctionExpression;
+  declare export function isClassBody(node: ?Object, opts?: ?Object): node is ClassBody;
+  declare export function isClassExpression(node: ?Object, opts?: ?Object): node is ClassExpression;
+  declare export function isClassDeclaration(node: ?Object, opts?: ?Object): node is ClassDeclaration;
+  declare export function isExportAllDeclaration(node: ?Object, opts?: ?Object): node is ExportAllDeclaration;
+  declare export function isExportDefaultDeclaration(node: ?Object, opts?: ?Object): node is ExportDefaultDeclaration;
+  declare export function isExportNamedDeclaration(node: ?Object, opts?: ?Object): node is ExportNamedDeclaration;
+  declare export function isExportSpecifier(node: ?Object, opts?: ?Object): node is ExportSpecifier;
+  declare export function isForOfStatement(node: ?Object, opts?: ?Object): node is ForOfStatement;
+  declare export function isImportDeclaration(node: ?Object, opts?: ?Object): node is ImportDeclaration;
+  declare export function isImportDefaultSpecifier(node: ?Object, opts?: ?Object): node is ImportDefaultSpecifier;
+  declare export function isImportNamespaceSpecifier(node: ?Object, opts?: ?Object): node is ImportNamespaceSpecifier;
+  declare export function isImportSpecifier(node: ?Object, opts?: ?Object): node is ImportSpecifier;
+  declare export function isMetaProperty(node: ?Object, opts?: ?Object): node is MetaProperty;
+  declare export function isClassMethod(node: ?Object, opts?: ?Object): node is ClassMethod;
+  declare export function isObjectPattern(node: ?Object, opts?: ?Object): node is ObjectPattern;
+  declare export function isSpreadElement(node: ?Object, opts?: ?Object): node is SpreadElement;
+  declare export function isSuper(node: ?Object, opts?: ?Object): node is Super;
+  declare export function isTaggedTemplateExpression(node: ?Object, opts?: ?Object): node is TaggedTemplateExpression;
+  declare export function isTemplateElement(node: ?Object, opts?: ?Object): node is TemplateElement;
+  declare export function isTemplateLiteral(node: ?Object, opts?: ?Object): node is TemplateLiteral;
+  declare export function isYieldExpression(node: ?Object, opts?: ?Object): node is YieldExpression;
+  declare export function isAwaitExpression(node: ?Object, opts?: ?Object): node is AwaitExpression;
+  declare export function isImport(node: ?Object, opts?: ?Object): node is Import;
+  declare export function isBigIntLiteral(node: ?Object, opts?: ?Object): node is BigIntLiteral;
+  declare export function isExportNamespaceSpecifier(node: ?Object, opts?: ?Object): node is ExportNamespaceSpecifier;
+  declare export function isOptionalMemberExpression(node: ?Object, opts?: ?Object): node is OptionalMemberExpression;
+  declare export function isOptionalCallExpression(node: ?Object, opts?: ?Object): node is OptionalCallExpression;
+  declare export function isClassProperty(node: ?Object, opts?: ?Object): node is ClassProperty;
+  declare export function isClassAccessorProperty(node: ?Object, opts?: ?Object): node is ClassAccessorProperty;
+  declare export function isClassPrivateProperty(node: ?Object, opts?: ?Object): node is ClassPrivateProperty;
+  declare export function isClassPrivateMethod(node: ?Object, opts?: ?Object): node is ClassPrivateMethod;
+  declare export function isPrivateName(node: ?Object, opts?: ?Object): node is PrivateName;
+  declare export function isStaticBlock(node: ?Object, opts?: ?Object): node is StaticBlock;
+  declare export function isAnyTypeAnnotation(node: ?Object, opts?: ?Object): node is AnyTypeAnnotation;
+  declare export function isArrayTypeAnnotation(node: ?Object, opts?: ?Object): node is ArrayTypeAnnotation;
+  declare export function isBooleanTypeAnnotation(node: ?Object, opts?: ?Object): node is BooleanTypeAnnotation;
+  declare export function isBooleanLiteralTypeAnnotation(node: ?Object, opts?: ?Object): node is BooleanLiteralTypeAnnotation;
+  declare export function isNullLiteralTypeAnnotation(node: ?Object, opts?: ?Object): node is NullLiteralTypeAnnotation;
+  declare export function isClassImplements(node: ?Object, opts?: ?Object): node is ClassImplements;
+  declare export function isDeclareClass(node: ?Object, opts?: ?Object): node is DeclareClass;
+  declare export function isDeclareFunction(node: ?Object, opts?: ?Object): node is DeclareFunction;
+  declare export function isDeclareInterface(node: ?Object, opts?: ?Object): node is DeclareInterface;
+  declare export function isDeclareModule(node: ?Object, opts?: ?Object): node is DeclareModule;
+  declare export function isDeclareModuleExports(node: ?Object, opts?: ?Object): node is DeclareModuleExports;
+  declare export function isDeclareTypeAlias(node: ?Object, opts?: ?Object): node is DeclareTypeAlias;
+  declare export function isDeclareOpaqueType(node: ?Object, opts?: ?Object): node is DeclareOpaqueType;
+  declare export function isDeclareVariable(node: ?Object, opts?: ?Object): node is DeclareVariable;
+  declare export function isDeclareExportDeclaration(node: ?Object, opts?: ?Object): node is DeclareExportDeclaration;
+  declare export function isDeclareExportAllDeclaration(node: ?Object, opts?: ?Object): node is DeclareExportAllDeclaration;
+  declare export function isDeclaredPredicate(node: ?Object, opts?: ?Object): node is DeclaredPredicate;
+  declare export function isExistsTypeAnnotation(node: ?Object, opts?: ?Object): node is ExistsTypeAnnotation;
+  declare export function isFunctionTypeAnnotation(node: ?Object, opts?: ?Object): node is FunctionTypeAnnotation;
+  declare export function isFunctionTypeParam(node: ?Object, opts?: ?Object): node is FunctionTypeParam;
+  declare export function isGenericTypeAnnotation(node: ?Object, opts?: ?Object): node is GenericTypeAnnotation;
+  declare export function isInferredPredicate(node: ?Object, opts?: ?Object): node is InferredPredicate;
+  declare export function isInterfaceExtends(node: ?Object, opts?: ?Object): node is InterfaceExtends;
+  declare export function isInterfaceDeclaration(node: ?Object, opts?: ?Object): node is InterfaceDeclaration;
+  declare export function isInterfaceTypeAnnotation(node: ?Object, opts?: ?Object): node is InterfaceTypeAnnotation;
+  declare export function isIntersectionTypeAnnotation(node: ?Object, opts?: ?Object): node is IntersectionTypeAnnotation;
+  declare export function isMixedTypeAnnotation(node: ?Object, opts?: ?Object): node is MixedTypeAnnotation;
+  declare export function isEmptyTypeAnnotation(node: ?Object, opts?: ?Object): node is EmptyTypeAnnotation;
+  declare export function isNullableTypeAnnotation(node: ?Object, opts?: ?Object): node is NullableTypeAnnotation;
+  declare export function isNumberLiteralTypeAnnotation(node: ?Object, opts?: ?Object): node is NumberLiteralTypeAnnotation;
+  declare export function isNumberTypeAnnotation(node: ?Object, opts?: ?Object): node is NumberTypeAnnotation;
+  declare export function isObjectTypeAnnotation(node: ?Object, opts?: ?Object): node is ObjectTypeAnnotation;
+  declare export function isObjectTypeInternalSlot(node: ?Object, opts?: ?Object): node is ObjectTypeInternalSlot;
+  declare export function isObjectTypeCallProperty(node: ?Object, opts?: ?Object): node is ObjectTypeCallProperty;
+  declare export function isObjectTypeIndexer(node: ?Object, opts?: ?Object): node is ObjectTypeIndexer;
+  declare export function isObjectTypeProperty(node: ?Object, opts?: ?Object): node is ObjectTypeProperty;
+  declare export function isObjectTypeSpreadProperty(node: ?Object, opts?: ?Object): node is ObjectTypeSpreadProperty;
+  declare export function isOpaqueType(node: ?Object, opts?: ?Object): node is OpaqueType;
+  declare export function isQualifiedTypeIdentifier(node: ?Object, opts?: ?Object): node is QualifiedTypeIdentifier;
+  declare export function isStringLiteralTypeAnnotation(node: ?Object, opts?: ?Object): node is StringLiteralTypeAnnotation;
+  declare export function isStringTypeAnnotation(node: ?Object, opts?: ?Object): node is StringTypeAnnotation;
+  declare export function isSymbolTypeAnnotation(node: ?Object, opts?: ?Object): node is SymbolTypeAnnotation;
+  declare export function isThisTypeAnnotation(node: ?Object, opts?: ?Object): node is ThisTypeAnnotation;
+  declare export function isTupleTypeAnnotation(node: ?Object, opts?: ?Object): node is TupleTypeAnnotation;
+  declare export function isTypeofTypeAnnotation(node: ?Object, opts?: ?Object): node is TypeofTypeAnnotation;
+  declare export function isTypeAlias(node: ?Object, opts?: ?Object): node is TypeAlias;
+  declare export function isTypeAnnotation(node: ?Object, opts?: ?Object): node is TypeAnnotation;
+  declare export function isTypeCastExpression(node: ?Object, opts?: ?Object): node is TypeCastExpression;
+  declare export function isTypeParameter(node: ?Object, opts?: ?Object): node is TypeParameter;
+  declare export function isTypeParameterDeclaration(node: ?Object, opts?: ?Object): node is TypeParameterDeclaration;
+  declare export function isTypeParameterInstantiation(node: ?Object, opts?: ?Object): node is TypeParameterInstantiation;
+  declare export function isUnionTypeAnnotation(node: ?Object, opts?: ?Object): node is UnionTypeAnnotation;
+  declare export function isVariance(node: ?Object, opts?: ?Object): node is Variance;
+  declare export function isVoidTypeAnnotation(node: ?Object, opts?: ?Object): node is VoidTypeAnnotation;
+  declare export function isEnumDeclaration(node: ?Object, opts?: ?Object): node is EnumDeclaration;
+  declare export function isEnumBooleanBody(node: ?Object, opts?: ?Object): node is EnumBooleanBody;
+  declare export function isEnumNumberBody(node: ?Object, opts?: ?Object): node is EnumNumberBody;
+  declare export function isEnumStringBody(node: ?Object, opts?: ?Object): node is EnumStringBody;
+  declare export function isEnumSymbolBody(node: ?Object, opts?: ?Object): node is EnumSymbolBody;
+  declare export function isEnumBooleanMember(node: ?Object, opts?: ?Object): node is EnumBooleanMember;
+  declare export function isEnumNumberMember(node: ?Object, opts?: ?Object): node is EnumNumberMember;
+  declare export function isEnumStringMember(node: ?Object, opts?: ?Object): node is EnumStringMember;
+  declare export function isEnumDefaultedMember(node: ?Object, opts?: ?Object): node is EnumDefaultedMember;
+  declare export function isIndexedAccessType(node: ?Object, opts?: ?Object): node is IndexedAccessType;
+  declare export function isOptionalIndexedAccessType(node: ?Object, opts?: ?Object): node is OptionalIndexedAccessType;
+  declare export function isJSXAttribute(node: ?Object, opts?: ?Object): node is JSXAttribute;
+  declare export function isJSXClosingElement(node: ?Object, opts?: ?Object): node is JSXClosingElement;
+  declare export function isJSXElement(node: ?Object, opts?: ?Object): node is JSXElement;
+  declare export function isJSXEmptyExpression(node: ?Object, opts?: ?Object): node is JSXEmptyExpression;
+  declare export function isJSXExpressionContainer(node: ?Object, opts?: ?Object): node is JSXExpressionContainer;
+  declare export function isJSXSpreadChild(node: ?Object, opts?: ?Object): node is JSXSpreadChild;
+  declare export function isJSXIdentifier(node: ?Object, opts?: ?Object): node is JSXIdentifier;
+  declare export function isJSXMemberExpression(node: ?Object, opts?: ?Object): node is JSXMemberExpression;
+  declare export function isJSXNamespacedName(node: ?Object, opts?: ?Object): node is JSXNamespacedName;
+  declare export function isJSXOpeningElement(node: ?Object, opts?: ?Object): node is JSXOpeningElement;
+  declare export function isJSXSpreadAttribute(node: ?Object, opts?: ?Object): node is JSXSpreadAttribute;
+  declare export function isJSXText(node: ?Object, opts?: ?Object): node is JSXText;
+  declare export function isJSXFragment(node: ?Object, opts?: ?Object): node is JSXFragment;
+  declare export function isJSXOpeningFragment(node: ?Object, opts?: ?Object): node is JSXOpeningFragment;
+  declare export function isJSXClosingFragment(node: ?Object, opts?: ?Object): node is JSXClosingFragment;
+  declare export function isNoop(node: ?Object, opts?: ?Object): node is Noop;
+  declare export function isPlaceholder(node: ?Object, opts?: ?Object): node is Placeholder;
+  declare export function isV8IntrinsicIdentifier(node: ?Object, opts?: ?Object): node is V8IntrinsicIdentifier;
+  declare export function isArgumentPlaceholder(node: ?Object, opts?: ?Object): node is ArgumentPlaceholder;
+  declare export function isBindExpression(node: ?Object, opts?: ?Object): node is BindExpression;
+  declare export function isImportAttribute(node: ?Object, opts?: ?Object): node is ImportAttribute;
+  declare export function isDecorator(node: ?Object, opts?: ?Object): node is Decorator;
+  declare export function isDoExpression(node: ?Object, opts?: ?Object): node is DoExpression;
+  declare export function isExportDefaultSpecifier(node: ?Object, opts?: ?Object): node is ExportDefaultSpecifier;
+  declare export function isRecordExpression(node: ?Object, opts?: ?Object): node is RecordExpression;
+  declare export function isTupleExpression(node: ?Object, opts?: ?Object): node is TupleExpression;
+  declare export function isDecimalLiteral(node: ?Object, opts?: ?Object): node is DecimalLiteral;
+  declare export function isModuleExpression(node: ?Object, opts?: ?Object): node is ModuleExpression;
+  declare export function isTopicReference(node: ?Object, opts?: ?Object): node is TopicReference;
+  declare export function isPipelineTopicExpression(node: ?Object, opts?: ?Object): node is PipelineTopicExpression;
+  declare export function isPipelineBareFunction(node: ?Object, opts?: ?Object): node is PipelineBareFunction;
+  declare export function isPipelinePrimaryTopicReference(node: ?Object, opts?: ?Object): node is PipelinePrimaryTopicReference;
+  declare export function isTSParameterProperty(node: ?Object, opts?: ?Object): node is TSParameterProperty;
+  declare export function isTSDeclareFunction(node: ?Object, opts?: ?Object): node is TSDeclareFunction;
+  declare export function isTSDeclareMethod(node: ?Object, opts?: ?Object): node is TSDeclareMethod;
+  declare export function isTSQualifiedName(node: ?Object, opts?: ?Object): node is TSQualifiedName;
+  declare export function isTSCallSignatureDeclaration(node: ?Object, opts?: ?Object): node is TSCallSignatureDeclaration;
+  declare export function isTSConstructSignatureDeclaration(node: ?Object, opts?: ?Object): node is TSConstructSignatureDeclaration;
+  declare export function isTSPropertySignature(node: ?Object, opts?: ?Object): node is TSPropertySignature;
+  declare export function isTSMethodSignature(node: ?Object, opts?: ?Object): node is TSMethodSignature;
+  declare export function isTSIndexSignature(node: ?Object, opts?: ?Object): node is TSIndexSignature;
+  declare export function isTSAnyKeyword(node: ?Object, opts?: ?Object): node is TSAnyKeyword;
+  declare export function isTSBooleanKeyword(node: ?Object, opts?: ?Object): node is TSBooleanKeyword;
+  declare export function isTSBigIntKeyword(node: ?Object, opts?: ?Object): node is TSBigIntKeyword;
+  declare export function isTSIntrinsicKeyword(node: ?Object, opts?: ?Object): node is TSIntrinsicKeyword;
+  declare export function isTSNeverKeyword(node: ?Object, opts?: ?Object): node is TSNeverKeyword;
+  declare export function isTSNullKeyword(node: ?Object, opts?: ?Object): node is TSNullKeyword;
+  declare export function isTSNumberKeyword(node: ?Object, opts?: ?Object): node is TSNumberKeyword;
+  declare export function isTSObjectKeyword(node: ?Object, opts?: ?Object): node is TSObjectKeyword;
+  declare export function isTSStringKeyword(node: ?Object, opts?: ?Object): node is TSStringKeyword;
+  declare export function isTSSymbolKeyword(node: ?Object, opts?: ?Object): node is TSSymbolKeyword;
+  declare export function isTSUndefinedKeyword(node: ?Object, opts?: ?Object): node is TSUndefinedKeyword;
+  declare export function isTSUnknownKeyword(node: ?Object, opts?: ?Object): node is TSUnknownKeyword;
+  declare export function isTSVoidKeyword(node: ?Object, opts?: ?Object): node is TSVoidKeyword;
+  declare export function isTSThisType(node: ?Object, opts?: ?Object): node is TSThisType;
+  declare export function isTSFunctionType(node: ?Object, opts?: ?Object): node is TSFunctionType;
+  declare export function isTSConstructorType(node: ?Object, opts?: ?Object): node is TSConstructorType;
+  declare export function isTSTypeReference(node: ?Object, opts?: ?Object): node is TSTypeReference;
+  declare export function isTSTypePredicate(node: ?Object, opts?: ?Object): node is TSTypePredicate;
+  declare export function isTSTypeQuery(node: ?Object, opts?: ?Object): node is TSTypeQuery;
+  declare export function isTSTypeLiteral(node: ?Object, opts?: ?Object): node is TSTypeLiteral;
+  declare export function isTSArrayType(node: ?Object, opts?: ?Object): node is TSArrayType;
+  declare export function isTSTupleType(node: ?Object, opts?: ?Object): node is TSTupleType;
+  declare export function isTSOptionalType(node: ?Object, opts?: ?Object): node is TSOptionalType;
+  declare export function isTSRestType(node: ?Object, opts?: ?Object): node is TSRestType;
+  declare export function isTSNamedTupleMember(node: ?Object, opts?: ?Object): node is TSNamedTupleMember;
+  declare export function isTSUnionType(node: ?Object, opts?: ?Object): node is TSUnionType;
+  declare export function isTSIntersectionType(node: ?Object, opts?: ?Object): node is TSIntersectionType;
+  declare export function isTSConditionalType(node: ?Object, opts?: ?Object): node is TSConditionalType;
+  declare export function isTSInferType(node: ?Object, opts?: ?Object): node is TSInferType;
+  declare export function isTSParenthesizedType(node: ?Object, opts?: ?Object): node is TSParenthesizedType;
+  declare export function isTSTypeOperator(node: ?Object, opts?: ?Object): node is TSTypeOperator;
+  declare export function isTSIndexedAccessType(node: ?Object, opts?: ?Object): node is TSIndexedAccessType;
+  declare export function isTSMappedType(node: ?Object, opts?: ?Object): node is TSMappedType;
+  declare export function isTSLiteralType(node: ?Object, opts?: ?Object): node is TSLiteralType;
+  declare export function isTSExpressionWithTypeArguments(node: ?Object, opts?: ?Object): node is TSExpressionWithTypeArguments;
+  declare export function isTSInterfaceDeclaration(node: ?Object, opts?: ?Object): node is TSInterfaceDeclaration;
+  declare export function isTSInterfaceBody(node: ?Object, opts?: ?Object): node is TSInterfaceBody;
+  declare export function isTSTypeAliasDeclaration(node: ?Object, opts?: ?Object): node is TSTypeAliasDeclaration;
+  declare export function isTSInstantiationExpression(node: ?Object, opts?: ?Object): node is TSInstantiationExpression;
+  declare export function isTSAsExpression(node: ?Object, opts?: ?Object): node is TSAsExpression;
+  declare export function isTSSatisfiesExpression(node: ?Object, opts?: ?Object): node is TSSatisfiesExpression;
+  declare export function isTSTypeAssertion(node: ?Object, opts?: ?Object): node is TSTypeAssertion;
+  declare export function isTSEnumDeclaration(node: ?Object, opts?: ?Object): node is TSEnumDeclaration;
+  declare export function isTSEnumMember(node: ?Object, opts?: ?Object): node is TSEnumMember;
+  declare export function isTSModuleDeclaration(node: ?Object, opts?: ?Object): node is TSModuleDeclaration;
+  declare export function isTSModuleBlock(node: ?Object, opts?: ?Object): node is TSModuleBlock;
+  declare export function isTSImportType(node: ?Object, opts?: ?Object): node is TSImportType;
+  declare export function isTSImportEqualsDeclaration(node: ?Object, opts?: ?Object): node is TSImportEqualsDeclaration;
+  declare export function isTSExternalModuleReference(node: ?Object, opts?: ?Object): node is TSExternalModuleReference;
+  declare export function isTSNonNullExpression(node: ?Object, opts?: ?Object): node is TSNonNullExpression;
+  declare export function isTSExportAssignment(node: ?Object, opts?: ?Object): node is TSExportAssignment;
+  declare export function isTSNamespaceExportDeclaration(node: ?Object, opts?: ?Object): node is TSNamespaceExportDeclaration;
+  declare export function isTSTypeAnnotation(node: ?Object, opts?: ?Object): node is TSTypeAnnotation;
+  declare export function isTSTypeParameterInstantiation(node: ?Object, opts?: ?Object): node is TSTypeParameterInstantiation;
+  declare export function isTSTypeParameterDeclaration(node: ?Object, opts?: ?Object): node is TSTypeParameterDeclaration;
+  declare export function isTSTypeParameter(node: ?Object, opts?: ?Object): node is TSTypeParameter;
+  declare export function isStandardized(node: ?Object, opts?: ?Object): node is (ArrayExpression | AssignmentExpression | BinaryExpression | InterpreterDirective | Directive | DirectiveLiteral | BlockStatement | BreakStatement | CallExpression | CatchClause | ConditionalExpression | ContinueStatement | DebuggerStatement | DoWhileStatement | EmptyStatement | ExpressionStatement | File | ForInStatement | ForStatement | FunctionDeclaration | FunctionExpression | Identifier | IfStatement | LabeledStatement | StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | LogicalExpression | MemberExpression | NewExpression | Program | ObjectExpression | ObjectMethod | ObjectProperty | RestElement | ReturnStatement | SequenceExpression | ParenthesizedExpression | SwitchCase | SwitchStatement | ThisExpression | ThrowStatement | TryStatement | UnaryExpression | UpdateExpression | VariableDeclaration | VariableDeclarator | WhileStatement | WithStatement | AssignmentPattern | ArrayPattern | ArrowFunctionExpression | ClassBody | ClassExpression | ClassDeclaration | ExportAllDeclaration | ExportDefaultDeclaration | ExportNamedDeclaration | ExportSpecifier | ForOfStatement | ImportDeclaration | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier | MetaProperty | ClassMethod | ObjectPattern | SpreadElement | Super | TaggedTemplateExpression | TemplateElement | TemplateLiteral | YieldExpression | AwaitExpression | Import | BigIntLiteral | ExportNamespaceSpecifier | OptionalMemberExpression | OptionalCallExpression | ClassProperty | ClassAccessorProperty | ClassPrivateProperty | ClassPrivateMethod | PrivateName | StaticBlock);
+  declare export function isExpression(node: ?Object, opts?: ?Object): node is (ArrayExpression | AssignmentExpression | BinaryExpression | CallExpression | ConditionalExpression | FunctionExpression | Identifier | StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | LogicalExpression | MemberExpression | NewExpression | ObjectExpression | SequenceExpression | ParenthesizedExpression | ThisExpression | UnaryExpression | UpdateExpression | ArrowFunctionExpression | ClassExpression | MetaProperty | Super | TaggedTemplateExpression | TemplateLiteral | YieldExpression | AwaitExpression | Import | BigIntLiteral | OptionalMemberExpression | OptionalCallExpression | TypeCastExpression | JSXElement | JSXFragment | BindExpression | DoExpression | RecordExpression | TupleExpression | DecimalLiteral | ModuleExpression | TopicReference | PipelineTopicExpression | PipelineBareFunction | PipelinePrimaryTopicReference | TSInstantiationExpression | TSAsExpression | TSSatisfiesExpression | TSTypeAssertion | TSNonNullExpression);
+  declare export function isBinary(node: ?Object, opts?: ?Object): node is (BinaryExpression | LogicalExpression);
+  declare export function isScopable(node: ?Object, opts?: ?Object): node is (BlockStatement | CatchClause | DoWhileStatement | ForInStatement | ForStatement | FunctionDeclaration | FunctionExpression | Program | ObjectMethod | SwitchStatement | WhileStatement | ArrowFunctionExpression | ClassExpression | ClassDeclaration | ForOfStatement | ClassMethod | ClassPrivateMethod | StaticBlock | TSModuleBlock);
+  declare export function isBlockParent(node: ?Object, opts?: ?Object): node is (BlockStatement | CatchClause | DoWhileStatement | ForInStatement | ForStatement | FunctionDeclaration | FunctionExpression | Program | ObjectMethod | SwitchStatement | WhileStatement | ArrowFunctionExpression | ForOfStatement | ClassMethod | ClassPrivateMethod | StaticBlock | TSModuleBlock);
+  declare export function isBlock(node: ?Object, opts?: ?Object): node is (BlockStatement | Program | TSModuleBlock);
+  declare export function isStatement(node: ?Object, opts?: ?Object): node is (BlockStatement | BreakStatement | ContinueStatement | DebuggerStatement | DoWhileStatement | EmptyStatement | ExpressionStatement | ForInStatement | ForStatement | FunctionDeclaration | IfStatement | LabeledStatement | ReturnStatement | SwitchStatement | ThrowStatement | TryStatement | VariableDeclaration | WhileStatement | WithStatement | ClassDeclaration | ExportAllDeclaration | ExportDefaultDeclaration | ExportNamedDeclaration | ForOfStatement | ImportDeclaration | DeclareClass | DeclareFunction | DeclareInterface | DeclareModule | DeclareModuleExports | DeclareTypeAlias | DeclareOpaqueType | DeclareVariable | DeclareExportDeclaration | DeclareExportAllDeclaration | InterfaceDeclaration | OpaqueType | TypeAlias | EnumDeclaration | TSDeclareFunction | TSInterfaceDeclaration | TSTypeAliasDeclaration | TSEnumDeclaration | TSModuleDeclaration | TSImportEqualsDeclaration | TSExportAssignment | TSNamespaceExportDeclaration);
+  declare export function isTerminatorless(node: ?Object, opts?: ?Object): node is (BreakStatement | ContinueStatement | ReturnStatement | ThrowStatement | YieldExpression | AwaitExpression);
+  declare export function isCompletionStatement(node: ?Object, opts?: ?Object): node is (BreakStatement | ContinueStatement | ReturnStatement | ThrowStatement);
+  declare export function isConditional(node: ?Object, opts?: ?Object): node is (ConditionalExpression | IfStatement);
+  declare export function isLoop(node: ?Object, opts?: ?Object): node is (DoWhileStatement | ForInStatement | ForStatement | WhileStatement | ForOfStatement);
+  declare export function isWhile(node: ?Object, opts?: ?Object): node is (DoWhileStatement | WhileStatement);
+  declare export function isExpressionWrapper(node: ?Object, opts?: ?Object): node is (ExpressionStatement | ParenthesizedExpression | TypeCastExpression);
+  declare export function isFor(node: ?Object, opts?: ?Object): node is (ForInStatement | ForStatement | ForOfStatement);
+  declare export function isForXStatement(node: ?Object, opts?: ?Object): node is (ForInStatement | ForOfStatement);
+  declare export function isFunction(node: ?Object, opts?: ?Object): node is (FunctionDeclaration | FunctionExpression | ObjectMethod | ArrowFunctionExpression | ClassMethod | ClassPrivateMethod);
+  declare export function isFunctionParent(node: ?Object, opts?: ?Object): node is (FunctionDeclaration | FunctionExpression | ObjectMethod | ArrowFunctionExpression | ClassMethod | ClassPrivateMethod | StaticBlock | TSModuleBlock);
+  declare export function isPureish(node: ?Object, opts?: ?Object): node is (FunctionDeclaration | FunctionExpression | StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | ArrowFunctionExpression | BigIntLiteral | DecimalLiteral);
+  declare export function isDeclaration(node: ?Object, opts?: ?Object): node is (FunctionDeclaration | VariableDeclaration | ClassDeclaration | ExportAllDeclaration | ExportDefaultDeclaration | ExportNamedDeclaration | ImportDeclaration | DeclareClass | DeclareFunction | DeclareInterface | DeclareModule | DeclareModuleExports | DeclareTypeAlias | DeclareOpaqueType | DeclareVariable | DeclareExportDeclaration | DeclareExportAllDeclaration | InterfaceDeclaration | OpaqueType | TypeAlias | EnumDeclaration | TSDeclareFunction | TSInterfaceDeclaration | TSTypeAliasDeclaration | TSEnumDeclaration | TSModuleDeclaration);
+  declare export function isPatternLike(node: ?Object, opts?: ?Object): node is (Identifier | RestElement | AssignmentPattern | ArrayPattern | ObjectPattern | TSAsExpression | TSSatisfiesExpression | TSTypeAssertion | TSNonNullExpression);
+  declare export function isLVal(node: ?Object, opts?: ?Object): node is (Identifier | MemberExpression | RestElement | AssignmentPattern | ArrayPattern | ObjectPattern | TSParameterProperty | TSAsExpression | TSSatisfiesExpression | TSTypeAssertion | TSNonNullExpression);
+  declare export function isTSEntityName(node: ?Object, opts?: ?Object): node is (Identifier | TSQualifiedName);
+  declare export function isLiteral(node: ?Object, opts?: ?Object): node is (StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | RegExpLiteral | TemplateLiteral | BigIntLiteral | DecimalLiteral);
+  declare export function isImmutable(node: ?Object, opts?: ?Object): node is (StringLiteral | NumericLiteral | NullLiteral | BooleanLiteral | BigIntLiteral | JSXAttribute | JSXClosingElement | JSXElement | JSXExpressionContainer | JSXSpreadChild | JSXOpeningElement | JSXText | JSXFragment | JSXOpeningFragment | JSXClosingFragment | DecimalLiteral);
+  declare export function isUserWhitespacable(node: ?Object, opts?: ?Object): node is (ObjectMethod | ObjectProperty | ObjectTypeInternalSlot | ObjectTypeCallProperty | ObjectTypeIndexer | ObjectTypeProperty | ObjectTypeSpreadProperty);
+  declare export function isMethod(node: ?Object, opts?: ?Object): node is (ObjectMethod | ClassMethod | ClassPrivateMethod);
+  declare export function isObjectMember(node: ?Object, opts?: ?Object): node is (ObjectMethod | ObjectProperty);
+  declare export function isProperty(node: ?Object, opts?: ?Object): node is (ObjectProperty | ClassProperty | ClassAccessorProperty | ClassPrivateProperty);
+  declare export function isUnaryLike(node: ?Object, opts?: ?Object): node is (UnaryExpression | SpreadElement);
+  declare export function isPattern(node: ?Object, opts?: ?Object): node is (AssignmentPattern | ArrayPattern | ObjectPattern);
+  declare export function isClass(node: ?Object, opts?: ?Object): node is (ClassExpression | ClassDeclaration);
+  declare export function isModuleDeclaration(node: ?Object, opts?: ?Object): node is (ExportAllDeclaration | ExportDefaultDeclaration | ExportNamedDeclaration | ImportDeclaration);
+  declare export function isExportDeclaration(node: ?Object, opts?: ?Object): node is (ExportAllDeclaration | ExportDefaultDeclaration | ExportNamedDeclaration);
+  declare export function isModuleSpecifier(node: ?Object, opts?: ?Object): node is (ExportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier | ExportNamespaceSpecifier | ExportDefaultSpecifier);
+  declare export function isAccessor(node: ?Object, opts?: ?Object): node is (ClassAccessorProperty);
+  declare export function isPrivate(node: ?Object, opts?: ?Object): node is (ClassPrivateProperty | ClassPrivateMethod | PrivateName);
+  declare export function isFlow(node: ?Object, opts?: ?Object): node is (AnyTypeAnnotation | ArrayTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullLiteralTypeAnnotation | ClassImplements | DeclareClass | DeclareFunction | DeclareInterface | DeclareModule | DeclareModuleExports | DeclareTypeAlias | DeclareOpaqueType | DeclareVariable | DeclareExportDeclaration | DeclareExportAllDeclaration | DeclaredPredicate | ExistsTypeAnnotation | FunctionTypeAnnotation | FunctionTypeParam | GenericTypeAnnotation | InferredPredicate | InterfaceExtends | InterfaceDeclaration | InterfaceTypeAnnotation | IntersectionTypeAnnotation | MixedTypeAnnotation | EmptyTypeAnnotation | NullableTypeAnnotation | NumberLiteralTypeAnnotation | NumberTypeAnnotation | ObjectTypeAnnotation | ObjectTypeInternalSlot | ObjectTypeCallProperty | ObjectTypeIndexer | ObjectTypeProperty | ObjectTypeSpreadProperty | OpaqueType | QualifiedTypeIdentifier | StringLiteralTypeAnnotation | StringTypeAnnotation | SymbolTypeAnnotation | ThisTypeAnnotation | TupleTypeAnnotation | TypeofTypeAnnotation | TypeAlias | TypeAnnotation | TypeCastExpression | TypeParameter | TypeParameterDeclaration | TypeParameterInstantiation | UnionTypeAnnotation | Variance | VoidTypeAnnotation | EnumDeclaration | EnumBooleanBody | EnumNumberBody | EnumStringBody | EnumSymbolBody | EnumBooleanMember | EnumNumberMember | EnumStringMember | EnumDefaultedMember | IndexedAccessType | OptionalIndexedAccessType);
+  declare export function isFlowType(node: ?Object, opts?: ?Object): node is (AnyTypeAnnotation | ArrayTypeAnnotation | BooleanTypeAnnotation | BooleanLiteralTypeAnnotation | NullLiteralTypeAnnotation | ExistsTypeAnnotation | FunctionTypeAnnotation | GenericTypeAnnotation | InterfaceTypeAnnotation | IntersectionTypeAnnotation | MixedTypeAnnotation | EmptyTypeAnnotation | NullableTypeAnnotation | NumberLiteralTypeAnnotation | NumberTypeAnnotation | ObjectTypeAnnotation | StringLiteralTypeAnnotation | StringTypeAnnotation | SymbolTypeAnnotation | ThisTypeAnnotation | TupleTypeAnnotation | TypeofTypeAnnotation | UnionTypeAnnotation | VoidTypeAnnotation | IndexedAccessType | OptionalIndexedAccessType);
+  declare export function isFlowBaseAnnotation(node: ?Object, opts?: ?Object): node is (AnyTypeAnnotation | BooleanTypeAnnotation | NullLiteralTypeAnnotation | MixedTypeAnnotation | EmptyTypeAnnotation | NumberTypeAnnotation | StringTypeAnnotation | SymbolTypeAnnotation | ThisTypeAnnotation | VoidTypeAnnotation);
+  declare export function isFlowDeclaration(node: ?Object, opts?: ?Object): node is (DeclareClass | DeclareFunction | DeclareInterface | DeclareModule | DeclareModuleExports | DeclareTypeAlias | DeclareOpaqueType | DeclareVariable | DeclareExportDeclaration | DeclareExportAllDeclaration | InterfaceDeclaration | OpaqueType | TypeAlias);
+  declare export function isFlowPredicate(node: ?Object, opts?: ?Object): node is (DeclaredPredicate | InferredPredicate);
+  declare export function isEnumBody(node: ?Object, opts?: ?Object): node is (EnumBooleanBody | EnumNumberBody | EnumStringBody | EnumSymbolBody);
+  declare export function isEnumMember(node: ?Object, opts?: ?Object): node is (EnumBooleanMember | EnumNumberMember | EnumStringMember | EnumDefaultedMember);
+  declare export function isJSX(node: ?Object, opts?: ?Object): node is (JSXAttribute | JSXClosingElement | JSXElement | JSXEmptyExpression | JSXExpressionContainer | JSXSpreadChild | JSXIdentifier | JSXMemberExpression | JSXNamespacedName | JSXOpeningElement | JSXSpreadAttribute | JSXText | JSXFragment | JSXOpeningFragment | JSXClosingFragment);
+  declare export function isMiscellaneous(node: ?Object, opts?: ?Object): node is (Noop | Placeholder | V8IntrinsicIdentifier);
+  declare export function isTypeScript(node: ?Object, opts?: ?Object): node is (TSParameterProperty | TSDeclareFunction | TSDeclareMethod | TSQualifiedName | TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSPropertySignature | TSMethodSignature | TSIndexSignature | TSAnyKeyword | TSBooleanKeyword | TSBigIntKeyword | TSIntrinsicKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSFunctionType | TSConstructorType | TSTypeReference | TSTypePredicate | TSTypeQuery | TSTypeLiteral | TSArrayType | TSTupleType | TSOptionalType | TSRestType | TSNamedTupleMember | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSParenthesizedType | TSTypeOperator | TSIndexedAccessType | TSMappedType | TSLiteralType | TSExpressionWithTypeArguments | TSInterfaceDeclaration | TSInterfaceBody | TSTypeAliasDeclaration | TSInstantiationExpression | TSAsExpression | TSSatisfiesExpression | TSTypeAssertion | TSEnumDeclaration | TSEnumMember | TSModuleDeclaration | TSModuleBlock | TSImportType | TSImportEqualsDeclaration | TSExternalModuleReference | TSNonNullExpression | TSExportAssignment | TSNamespaceExportDeclaration | TSTypeAnnotation | TSTypeParameterInstantiation | TSTypeParameterDeclaration | TSTypeParameter);
+  declare export function isTSTypeElement(node: ?Object, opts?: ?Object): node is (TSCallSignatureDeclaration | TSConstructSignatureDeclaration | TSPropertySignature | TSMethodSignature | TSIndexSignature);
+  declare export function isTSType(node: ?Object, opts?: ?Object): node is (TSAnyKeyword | TSBooleanKeyword | TSBigIntKeyword | TSIntrinsicKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSFunctionType | TSConstructorType | TSTypeReference | TSTypePredicate | TSTypeQuery | TSTypeLiteral | TSArrayType | TSTupleType | TSOptionalType | TSRestType | TSUnionType | TSIntersectionType | TSConditionalType | TSInferType | TSParenthesizedType | TSTypeOperator | TSIndexedAccessType | TSMappedType | TSLiteralType | TSExpressionWithTypeArguments | TSImportType);
+  declare export function isTSBaseType(node: ?Object, opts?: ?Object): node is (TSAnyKeyword | TSBooleanKeyword | TSBigIntKeyword | TSIntrinsicKeyword | TSNeverKeyword | TSNullKeyword | TSNumberKeyword | TSObjectKeyword | TSStringKeyword | TSSymbolKeyword | TSUndefinedKeyword | TSUnknownKeyword | TSVoidKeyword | TSThisType | TSLiteralType);
+  declare export function isNumberLiteral(node: ?Object, opts?: ?Object): node is NumericLiteral;
+  declare export function isRegexLiteral(node: ?Object, opts?: ?Object): node is RegExpLiteral;
+  declare export function isRestProperty(node: ?Object, opts?: ?Object): node is RestElement;
+  declare export function isSpreadProperty(node: ?Object, opts?: ?Object): node is SpreadElement;
   declare export function createTypeAnnotationBasedOnTypeof(type: 'string' | 'number' | 'undefined' | 'boolean' | 'function' | 'object' | 'symbol'): BabelNodeTypeAnnotation
   declare export function createUnionTypeAnnotation(types: Array<BabelNodeFlowType>): BabelNodeUnionTypeAnnotation
   declare export function createFlowUnionType(types: Array<BabelNodeFlowType>): BabelNodeUnionTypeAnnotation
@@ -3702,18 +3796,18 @@ declare module "@babel/types" {
   declare export function is(type: string, n: BabelNode, opts: Object): boolean;
   declare export function isBinding(node: BabelNode, parent: BabelNode, grandparent?: BabelNode): boolean
   declare export function isBlockScoped(node: BabelNode): boolean
-  declare export function isLet(node: BabelNode): boolean %checks (node.type === 'VariableDeclaration')
+  declare export function isLet(node: BabelNode): node is VariableDeclaration
   declare export function isNode(node: ?Object): boolean
   declare export function isNodesEquivalent(a: any, b: any): boolean
   declare export function isPlaceholderType(placeholderType: string, targetType: string): boolean
   declare export function isReferenced(node: BabelNode, parent: BabelNode, grandparent?: BabelNode): boolean
-  declare export function isScope(node: BabelNode, parent: BabelNode): boolean %checks (node.type === 'BlockStatement' ||  node.type === 'CatchClause' || node.type === 'DoWhileStatement' || node.type === 'ForInStatement' || node.type === 'ForStatement' || node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'Program' || node.type === 'ObjectMethod' || node.type === 'SwitchStatement' || node.type === 'WhileStatement' || node.type === 'ArrowFunctionExpression' || node.type === 'ClassExpression' || node.type === 'ClassDeclaration' || node.type === 'ForOfStatement' || node.type === 'ClassMethod' || node.type === 'ClassPrivateMethod' || node.type === 'TSModuleBlock')
+  declare export function isScope(node: BabelNode, parent: BabelNode): node is (BlockStatement | CatchClause | DoWhileStatement | ForInStatement | ForStatement | FunctionDeclaration | FunctionExpression | Program | ObjectMethod | SwitchStatement | WhileStatement | ArrowFunctionExpression | ClassExpression | ClassDeclaration | ForOfStatement | ClassMethod | ClassPrivateMethod | TSModuleBlock)
   declare export function isSpecifierDefault(specifier: BabelNodeModuleSpecifier): boolean
   declare export function isType(nodetype: ?string, targetType: string): boolean
   declare export function isValidES3Identifier(name: string): boolean
   declare export function isValidES3Identifier(name: string): boolean
   declare export function isValidIdentifier(name: string): boolean
-  declare export function isVar(node: BabelNode): boolean %checks (node.type === 'VariableDeclaration')
+  declare export function isVar(node: BabelNode): node is VariableDeclaration
   declare export function matchesPattern(node: ?BabelNode, match: string | Array<string>, allowPartial?: boolean): boolean
   declare export function validate(n: BabelNode, key: string, value: mixed): void;
   declare export type Node = BabelNode;
@@ -3802,6 +3896,12 @@ declare module "@babel/types" {
   declare export type ExportNamespaceSpecifier = BabelNodeExportNamespaceSpecifier;
   declare export type OptionalMemberExpression = BabelNodeOptionalMemberExpression;
   declare export type OptionalCallExpression = BabelNodeOptionalCallExpression;
+  declare export type ClassProperty = BabelNodeClassProperty;
+  declare export type ClassAccessorProperty = BabelNodeClassAccessorProperty;
+  declare export type ClassPrivateProperty = BabelNodeClassPrivateProperty;
+  declare export type ClassPrivateMethod = BabelNodeClassPrivateMethod;
+  declare export type PrivateName = BabelNodePrivateName;
+  declare export type StaticBlock = BabelNodeStaticBlock;
   declare export type AnyTypeAnnotation = BabelNodeAnyTypeAnnotation;
   declare export type ArrayTypeAnnotation = BabelNodeArrayTypeAnnotation;
   declare export type BooleanTypeAnnotation = BabelNodeBooleanTypeAnnotation;
@@ -3887,22 +3987,18 @@ declare module "@babel/types" {
   declare export type V8IntrinsicIdentifier = BabelNodeV8IntrinsicIdentifier;
   declare export type ArgumentPlaceholder = BabelNodeArgumentPlaceholder;
   declare export type BindExpression = BabelNodeBindExpression;
-  declare export type ClassProperty = BabelNodeClassProperty;
-  declare export type PipelineTopicExpression = BabelNodePipelineTopicExpression;
-  declare export type PipelineBareFunction = BabelNodePipelineBareFunction;
-  declare export type PipelinePrimaryTopicReference = BabelNodePipelinePrimaryTopicReference;
-  declare export type ClassPrivateProperty = BabelNodeClassPrivateProperty;
-  declare export type ClassPrivateMethod = BabelNodeClassPrivateMethod;
   declare export type ImportAttribute = BabelNodeImportAttribute;
   declare export type Decorator = BabelNodeDecorator;
   declare export type DoExpression = BabelNodeDoExpression;
   declare export type ExportDefaultSpecifier = BabelNodeExportDefaultSpecifier;
-  declare export type PrivateName = BabelNodePrivateName;
   declare export type RecordExpression = BabelNodeRecordExpression;
   declare export type TupleExpression = BabelNodeTupleExpression;
   declare export type DecimalLiteral = BabelNodeDecimalLiteral;
-  declare export type StaticBlock = BabelNodeStaticBlock;
   declare export type ModuleExpression = BabelNodeModuleExpression;
+  declare export type TopicReference = BabelNodeTopicReference;
+  declare export type PipelineTopicExpression = BabelNodePipelineTopicExpression;
+  declare export type PipelineBareFunction = BabelNodePipelineBareFunction;
+  declare export type PipelinePrimaryTopicReference = BabelNodePipelinePrimaryTopicReference;
   declare export type TSParameterProperty = BabelNodeTSParameterProperty;
   declare export type TSDeclareFunction = BabelNodeTSDeclareFunction;
   declare export type TSDeclareMethod = BabelNodeTSDeclareMethod;
@@ -3950,7 +4046,9 @@ declare module "@babel/types" {
   declare export type TSInterfaceDeclaration = BabelNodeTSInterfaceDeclaration;
   declare export type TSInterfaceBody = BabelNodeTSInterfaceBody;
   declare export type TSTypeAliasDeclaration = BabelNodeTSTypeAliasDeclaration;
+  declare export type TSInstantiationExpression = BabelNodeTSInstantiationExpression;
   declare export type TSAsExpression = BabelNodeTSAsExpression;
+  declare export type TSSatisfiesExpression = BabelNodeTSSatisfiesExpression;
   declare export type TSTypeAssertion = BabelNodeTSTypeAssertion;
   declare export type TSEnumDeclaration = BabelNodeTSEnumDeclaration;
   declare export type TSEnumMember = BabelNodeTSEnumMember;
@@ -3966,6 +4064,7 @@ declare module "@babel/types" {
   declare export type TSTypeParameterInstantiation = BabelNodeTSTypeParameterInstantiation;
   declare export type TSTypeParameterDeclaration = BabelNodeTSTypeParameterDeclaration;
   declare export type TSTypeParameter = BabelNodeTSTypeParameter;
+  declare export type Standardized = BabelNodeStandardized;
   declare export type Expression = BabelNodeExpression;
   declare export type Binary = BabelNodeBinary;
   declare export type Scopable = BabelNodeScopable;
@@ -3999,6 +4098,8 @@ declare module "@babel/types" {
   declare export type ModuleDeclaration = BabelNodeModuleDeclaration;
   declare export type ExportDeclaration = BabelNodeExportDeclaration;
   declare export type ModuleSpecifier = BabelNodeModuleSpecifier;
+  declare export type Accessor = BabelNodeAccessor;
+  declare export type Private = BabelNodePrivate;
   declare export type Flow = BabelNodeFlow;
   declare export type FlowType = BabelNodeFlowType;
   declare export type FlowBaseAnnotation = BabelNodeFlowBaseAnnotation;
@@ -4007,7 +4108,8 @@ declare module "@babel/types" {
   declare export type EnumBody = BabelNodeEnumBody;
   declare export type EnumMember = BabelNodeEnumMember;
   declare export type JSX = BabelNodeJSX;
-  declare export type Private = BabelNodePrivate;
+  declare export type Miscellaneous = BabelNodeMiscellaneous;
+  declare export type TypeScript = BabelNodeTypeScript;
   declare export type TSTypeElement = BabelNodeTSTypeElement;
   declare export type TSType = BabelNodeTSType;
   declare export type TSBaseType = BabelNodeTSBaseType;

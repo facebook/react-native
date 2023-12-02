@@ -36,6 +36,10 @@
 #define RN_DEBUG_STRING_CONVERTIBLE 1
 #endif
 
+#ifndef RN_DEBUG_STRING_CONVERTIBLE
+#define RN_DEBUG_STRING_CONVERTIBLE 0
+#endif
+
 // Enables *very* verbose, noisy logs in the differ. Useful for debugging
 // specifically the differ, but not much else.
 //#define DEBUG_LOGS_DIFFER

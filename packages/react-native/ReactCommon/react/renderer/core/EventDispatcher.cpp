@@ -17,10 +17,10 @@
 namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
-    EventQueueProcessor const &eventProcessor,
-    EventBeat::Factory const &synchonousEventBeatFactory,
-    EventBeat::Factory const &asynchronousEventBeatFactory,
-    EventBeat::SharedOwnerBox const &ownerBox)
+    const EventQueueProcessor& eventProcessor,
+    const EventBeat::Factory& synchonousEventBeatFactory,
+    const EventBeat::Factory& asynchronousEventBeatFactory,
+    const EventBeat::SharedOwnerBox& ownerBox)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
@@ -34,7 +34,7 @@ EventDispatcher::EventDispatcher(
           eventProcessor,
           asynchronousEventBeatFactory(ownerBox))) {}
 
-void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
+void EventDispatcher::dispatchEvent(RawEvent&& rawEvent, EventPriority priority)
     const {
   // Allows the event listener to interrupt default event dispatch
   if (eventListeners_.willDispatchEvent(rawEvent)) {
@@ -43,18 +43,18 @@ void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
 
   auto eventLogger = getEventLogger();
   if (eventLogger != nullptr) {
-    rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type.c_str());
+    rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
   }
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }
 
 void EventDispatcher::dispatchStateUpdate(
-    StateUpdate &&stateUpdate,
+    StateUpdate&& stateUpdate,
     EventPriority priority) const {
   getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
 }
 
-void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
+void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
@@ -62,7 +62,7 @@ void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
   asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
 }
 
-const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
+const EventQueue& EventDispatcher::getEventQueue(EventPriority priority) const {
   switch (priority) {
     case EventPriority::SynchronousUnbatched:
       return *synchronousUnbatchedQueue_;
@@ -76,7 +76,7 @@ const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
 }
 
 void EventDispatcher::addListener(
-    const std::shared_ptr<EventListener const> &listener) const {
+    const std::shared_ptr<const EventListener>& listener) const {
   eventListeners_.addListener(listener);
 }
 
@@ -84,7 +84,7 @@ void EventDispatcher::addListener(
  * Removes provided event listener to the event dispatcher.
  */
 void EventDispatcher::removeListener(
-    const std::shared_ptr<EventListener const> &listener) const {
+    const std::shared_ptr<const EventListener>& listener) const {
   eventListeners_.removeListener(listener);
 }
 

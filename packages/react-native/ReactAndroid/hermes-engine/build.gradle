@@ -9,9 +9,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id("de.undercouch.download")
-    id("com.android.library")
     id("maven-publish")
     id("signing")
+    alias(libs.plugins.android.library)
 }
 
 group = "com.facebook.react"
@@ -23,7 +23,7 @@ def cmakeVersion = parent.cmake_version
  * users to install CMake externally.
  */
 def findCmakePath(cmakeVersion) {
-    def cmakeRelativePath = "/cmake/${cmakeVersion}/bin/cmake"
+    def cmakeRelativePath = "cmake/${cmakeVersion}/bin/cmake"
     if (System.getenv("ANDROID_SDK_ROOT") && new File("${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}").exists()) {
         return "${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}"
     }
@@ -42,6 +42,18 @@ def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(re
 def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
 def hermesBuildDir = new File("$buildDir/hermes")
+def hermesCOutputBinary = new File("$buildDir/hermes/bin/hermesc")
+
+// This filetree represents the file of the Hermes build that we want as input/output
+// of the buildHermesC task. Gradle will compute the hash of files in the file tree
+// and won't rebuilt hermesc unless those files are changing.
+def hermesBuildOutputFileTree = fileTree(hermesBuildDir.toString())
+                    .include('**/*.make')
+                    .include('**/*.cmake')
+                    .include('**/*.marks')
+                    .include('**/compiler_depends.ts')
+                    .include('**/Makefile')
+                    .include('**/link.txt')
 
 def hermesVersion = "main"
 def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
@@ -86,12 +98,36 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "", "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    inputs.dir(hermesDir)
+    outputs.files(hermesBuildOutputFileTree)
+    commandLine(
+        windowsAwareCommandLine(
+            findCmakePath(cmakeVersion),
+            Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "",
+            "-S",
+            ".",
+            "-B",
+            hermesBuildDir.toString(),
+            "-DJSI_DIR=" + jsiDir.absolutePath
+        )
+    )
 }
 
-task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
+task buildHermesC(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
+    inputs.files(hermesBuildOutputFileTree)
+    outputs.file(hermesCOutputBinary)
+    commandLine(
+        windowsAwareCommandLine(
+            findCmakePath(cmakeVersion),
+            "--build",
+            hermesBuildDir.toString(),
+            "--target",
+            "hermesc",
+            "-j",
+            ndkBuildJobs,
+        )
+    )
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -125,12 +161,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion = "33.0.0"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -139,7 +175,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.minSdk.get().toInteger()
 
         externalNativeBuild {
             cmake {
@@ -198,17 +234,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlin {
-        // We intentionally don't build on JDK 17 to keep this version aligned with
-        // the JVM toolchain of :ReactAndroid
-        jvmToolchain(11)
-    }
-
     sourceSets {
         main {
             manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
@@ -224,10 +249,10 @@ android {
     }
 
     dependencies {
-        implementation("com.facebook.fbjni:fbjni:0.4.0")
-        implementation("com.facebook.soloader:soloader:0.10.5")
-        implementation("com.facebook.yoga:proguard-annotations:1.19.0")
-        implementation("androidx.annotation:annotation:1.3.0")
+        implementation(libs.fbjni)
+        implementation(libs.soloader)
+        implementation(libs.yoga.proguard.annotations)
+        implementation(libs.androidx.annotation)
     }
 
     packagingOptions {
@@ -258,9 +283,9 @@ afterEvaluate {
         configureBuildForHermes.dependsOn(unzipHermes)
         prepareHeadersForPrefab.dependsOn(unzipHermes)
     }
-    preBuild.dependsOn(buildHermes)
+    preBuild.dependsOn(buildHermesC)
     preBuild.dependsOn(prepareHeadersForPrefab)
-    prepareHeadersForPrefab.dependsOn(buildHermes)
+    prepareHeadersForPrefab.dependsOn(buildHermesC)
 }
 
 /* Publishing Configuration */

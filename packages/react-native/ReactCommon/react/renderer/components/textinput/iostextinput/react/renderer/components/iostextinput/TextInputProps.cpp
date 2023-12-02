@@ -15,9 +15,9 @@
 namespace facebook::react {
 
 TextInputProps::TextInputProps(
-    const PropsParserContext &context,
-    TextInputProps const &sourceProps,
-    RawProps const &rawProps)
+    const PropsParserContext& context,
+    const TextInputProps& sourceProps,
+    const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       traits(convertRawProp(context, rawProps, sourceProps.traits, {})),
@@ -61,6 +61,12 @@ TextInputProps::TextInputProps(
           rawProps,
           "selectionColor",
           sourceProps.selectionColor,
+          {})),
+      selectionHandleColor(convertRawProp(
+          context,
+          rawProps,
+          "selectionHandleColor",
+          sourceProps.selectionHandleColor,
           {})),
       underlineColorAndroid(convertRawProp(
           context,
@@ -107,10 +113,10 @@ TextInputProps::TextInputProps(
           {})){};
 
 void TextInputProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 }

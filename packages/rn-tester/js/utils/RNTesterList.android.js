@@ -130,6 +130,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
+  {
+    key: 'PerformanceComparisonExample',
+    category: 'Basic',
+    module: require('../examples/Performance/PerformanceComparisonExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -306,6 +311,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'TurboModuleExample',
     category: 'Basic',
     module: require('../examples/TurboModule/TurboModuleExample'),
+  },
+  {
+    key: 'LegacyModuleExample',
+    module: require('../examples/TurboModule/LegacyModuleExample'),
   },
   {
     key: 'TurboCxxModuleExample',

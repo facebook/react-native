@@ -22,7 +22,7 @@
 RCT_MOCK_DEF(RCTView, RCTContentInsets);
 #define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
 
-UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+const UIAccessibilityTraits SwitchAccessibilityTrait = 0x20000000000001;
 
 @implementation UIView (RCTViewUnmounting)
 
@@ -883,7 +883,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
       RCTLogAdvice(
           @"View #%@ of type %@ has a shadow set but cannot calculate "
-           "shadow efficiently. Consider setting a background color to "
+           "shadow efficiently. Consider setting a solid background color to "
            "fix this, or apply the shadow to a more specific component.",
           view.reactTag,
           [view class]);

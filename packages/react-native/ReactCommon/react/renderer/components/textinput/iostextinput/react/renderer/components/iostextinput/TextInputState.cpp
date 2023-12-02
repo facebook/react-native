@@ -7,26 +7,4 @@
 
 #include "TextInputState.h"
 
-namespace facebook::react {
-
-#ifdef ANDROID
-TextInputState::TextInputState(
-    TextInputState const & /*previousState*/,
-    folly::dynamic const & /*data*/){};
-
-/*
- * Empty implementation for Android because it doesn't use this class.
- */
-folly::dynamic TextInputState::getDynamic() const {
-  return {};
-};
-
-/*
- * Empty implementation for Android because it doesn't use this class.
- */
-MapBuffer TextInputState::getMapBuffer() const {
-  return MapBufferBuilder::EMPTY();
-};
-#endif
-
-} // namespace facebook::react
+namespace facebook::react {} // namespace facebook::react

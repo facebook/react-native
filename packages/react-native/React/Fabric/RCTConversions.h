@@ -19,7 +19,7 @@ inline NSString *RCTNSStringFromString(
     const std::string &string,
     const NSStringEncoding &encoding = NSUTF8StringEncoding)
 {
-  return [NSString stringWithCString:string.c_str() encoding:encoding];
+  return [NSString stringWithCString:string.c_str() encoding:encoding] ?: @"";
 }
 
 inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
@@ -34,7 +34,7 @@ inline std::string RCTStringFromNSString(NSString *string)
   return std::string{string.UTF8String ?: ""};
 }
 
-inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor)
+inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
   if (!sharedColor) {
     return nil;
@@ -56,8 +56,8 @@ inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor
   return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 
-inline CF_RETURNS_RETAINED CGColorRef
-RCTCreateCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline CF_RETURNS_RETAINED CGColorRef _Nullable RCTCreateCGColorRefFromSharedColor(
+    const facebook::react::SharedColor &sharedColor)
 {
   return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
 }
@@ -82,7 +82,7 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
-UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
+const UIAccessibilityTraits AccessibilityTraitSwitch = 0x20000000000001;
 
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
     facebook::react::AccessibilityTraits accessibilityTraits)

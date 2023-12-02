@@ -71,11 +71,11 @@ class JavaNativeModule : public NativeModule {
   std::string getSyncMethodName(unsigned int reactMethodId) override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId)
       override;
   MethodCallResult callSerializableNativeHook(
       unsigned int reactMethodId,
-      folly::dynamic &&params) override;
+      folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;

@@ -36,8 +36,7 @@ using namespace facebook::react;
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
 
-    static auto const defaultProps = std::make_shared<PullToRefreshViewProps const>();
-    _props = defaultProps;
+    _props = PullToRefreshViewShadowNode::defaultSharedProps();
 
     _refreshControl = [UIRefreshControl new];
     [_refreshControl addTarget:self
@@ -55,10 +54,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<PullToRefreshViewComponentDescriptor>();
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldConcreteProps = static_cast<PullToRefreshViewProps const &>(*_props);
-  const auto &newConcreteProps = static_cast<PullToRefreshViewProps const &>(*props);
+  const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+  const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
@@ -89,12 +88,12 @@ using namespace facebook::react;
 
 - (void)handleUIControlEventValueChanged
 {
-  static_cast<PullToRefreshViewEventEmitter const &>(*_eventEmitter).onRefresh({});
+  static_cast<const PullToRefreshViewEventEmitter &>(*_eventEmitter).onRefresh({});
 }
 
 - (void)_updateTitle
 {
-  const auto &concreteProps = static_cast<PullToRefreshViewProps const &>(*_props);
+  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
 
   if (concreteProps.title.empty()) {
     _refreshControl.attributedTitle = nil;

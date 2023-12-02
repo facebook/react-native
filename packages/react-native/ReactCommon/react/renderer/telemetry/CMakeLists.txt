@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fexceptions
         -frtti
-        -std=c++17
+        -std=c++20
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
@@ -21,7 +21,6 @@ add_library(react_render_telemetry SHARED ${react_render_telemetry_SRC})
 target_include_directories(react_render_telemetry PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_render_telemetry
-        butter
         folly_runtime
         glog
         glog_init

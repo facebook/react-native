@@ -24,7 +24,7 @@ module.exports = {
     // overriding the JS config from @react-native/eslint-config to ensure
     // that we use hermes-eslint for all js files
     {
-      files: ['*.js'],
+      files: ['*.js', '*.js.flow'],
       parser: 'hermes-eslint',
       rules: {
         // These rules are not required with hermes-eslint
@@ -32,6 +32,23 @@ module.exports = {
         'ft-flow/use-flow-type': 0,
         // flow handles this check for us, so it's not required
         'no-undef': 0,
+      },
+    },
+    {
+      files: ['*.js', '*.js.flow'],
+      excludedFiles: ['packages/react-native/template/**/*'],
+      rules: {
+        'lint/sort-imports': 1,
+      },
+    },
+    {
+      files: ['package.json'],
+      parser: 'jsonc-eslint-parser',
+    },
+    {
+      files: ['package.json'],
+      rules: {
+        'lint/react-native-manifest': 2,
       },
     },
     {
@@ -50,7 +67,6 @@ module.exports = {
         'lint/no-haste-imports': 2,
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
-        'lint/sort-imports': 1,
       },
     },
     {

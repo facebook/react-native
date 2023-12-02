@@ -17,8 +17,8 @@ namespace facebook::react {
  * Sorting comparator for `reorderInPlaceIfNeeded`.
  */
 static bool shouldFirstPairComesBeforeSecondOne(
-    ShadowViewNodePair const &lhs,
-    ShadowViewNodePair const &rhs) noexcept {
+    const ShadowViewNodePair& lhs,
+    const ShadowViewNodePair& rhs) noexcept {
   return lhs.shadowNode->getOrderIndex() < rhs.shadowNode->getOrderIndex();
 }
 
@@ -26,7 +26,7 @@ static bool shouldFirstPairComesBeforeSecondOne(
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
 static void reorderInPlaceIfNeeded(
-    ShadowViewNodePair::OwningList &pairs) noexcept {
+    ShadowViewNodePair::OwningList& pairs) noexcept {
   // This is a simplified version of the function intentionally copied from
   // `Differentiator.cpp`.
   std::stable_sort(
@@ -40,14 +40,14 @@ static void reorderInPlaceIfNeeded(
  * an empty tree with some other one.
  */
 static void calculateShadowViewMutationsForNewTree(
-    ShadowViewMutation::List &mutations,
-    ShadowView const &parentShadowView,
+    ShadowViewMutation::List& mutations,
+    const ShadowView& parentShadowView,
     ShadowViewNodePair::OwningList newChildPairs) {
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
   for (size_t index = 0; index < newChildPairs.size(); index++) {
-    auto const &newChildPair = newChildPairs[index];
+    const auto& newChildPair = newChildPairs[index];
 
     mutations.push_back(
         ShadowViewMutation::CreateMutation(newChildPair.shadowView));
@@ -63,7 +63,7 @@ static void calculateShadowViewMutationsForNewTree(
 }
 
 StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
-    ShadowNode const &rootShadowNode) {
+    const ShadowNode& rootShadowNode) {
   auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);
 
@@ -82,7 +82,7 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
 }
 
 StubViewTree buildStubViewTreeUsingDifferentiator(
-    ShadowNode const &rootShadowNode) {
+    const ShadowNode& rootShadowNode) {
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
       ShadowNodeFragment::propsPlaceholder(),
       ShadowNode::emptySharedShadowNodeSharedList()});

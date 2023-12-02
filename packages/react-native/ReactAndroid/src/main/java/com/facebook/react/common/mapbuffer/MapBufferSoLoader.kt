@@ -9,9 +9,11 @@ package com.facebook.react.common.mapbuffer
 
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
+@StableReactNativeAPI
 object MapBufferSoLoader {
   @Volatile private var didInit = false
 

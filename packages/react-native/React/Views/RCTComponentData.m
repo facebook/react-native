@@ -15,6 +15,7 @@
 #import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcherProtocol.h"
+#import "RCTModuleMethod.h"
 #import "RCTParserUtils.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
@@ -70,7 +71,7 @@ static SEL selectorForType(NSString *type)
                                                         object:nil
                                                       userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager ?: _bridgelessViewManager;
+  return _manager ? _manager : _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
@@ -385,6 +386,42 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   }];
 }
 
++ (NSDictionary<NSString *, NSNumber *> *)commandsForViewMangerClass:(Class)managerClass
+                                                             methods:(Method *)methods
+                                                         methodCount:(unsigned int)methodCount
+{
+  NSMutableDictionary<NSString *, NSNumber *> *commands = [NSMutableDictionary new];
+  static const char *prefix = "__rct_export__";
+  const unsigned int prefixLength = strlen(prefix);
+  int commandCount = 0;
+  for (int i = 0; i < methodCount; i++) {
+    SEL selector = method_getName(methods[i]);
+    const char *selectorName = sel_getName(selector);
+    if (strncmp(selectorName, prefix, prefixLength) != 0) {
+      continue;
+    }
+    RCTMethodInfo *methodInfo = ((RCTMethodInfo * (*)(id, SEL)) objc_msgSend)(managerClass, selector);
+    RCTModuleMethod *moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo
+                                                                        moduleClass:managerClass];
+    NSString *methodName = @(moduleMethod.JSMethodName);
+    commands[methodName] = @(commandCount);
+    commandCount += 1;
+  }
+  // View manager do not export getConstants with RCT_EXPORT_METHOD, so we inject it into "Commands" manually.
+  if (commandCount > 0) {
+    commands[@"getConstants"] = @(commandCount);
+  }
+  return commands;
+}
+
++ (NSDictionary<NSString *, id> *)constantsForViewMangerClass:(Class)managerClass
+{
+  if ([managerClass instancesRespondToSelector:@selector(constantsToExport)]) {
+    return [[managerClass new] constantsToExport];
+  }
+  return @{};
+}
+
 + (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
@@ -442,7 +479,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
       propTypes[name] = type;
     }
   }
-  free(methods);
 
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
@@ -458,13 +494,22 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
   Class superClass = [managerClass superclass];
 
-  return @{
+  NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
     @"capturingEvents" : capturingEvents,
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
-  };
+  }];
+
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    result[@"Commands"] = [self commandsForViewMangerClass:managerClass methods:methods methodCount:count];
+    result[@"Constants"] = [self constantsForViewMangerClass:managerClass];
+  }
+
+  free(methods);
+
+  return result;
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig

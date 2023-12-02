@@ -7,15 +7,12 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
-#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
-
-#ifdef ANDROID
-#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook::react {
 
@@ -74,8 +71,8 @@ class AndroidTextInputState final {
 
   AndroidTextInputState() = default;
   AndroidTextInputState(
-      AndroidTextInputState const &previousState,
-      folly::dynamic const &data);
+      const AndroidTextInputState& previousState,
+      const folly::dynamic& data);
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
 };

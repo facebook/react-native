@@ -20,11 +20,11 @@ namespace facebook::react {
  */
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public JavaTurboModule {
  public:
-  NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
+  NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams& params);
 };
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
-    const std::string &moduleName,
-    const JavaTurboModule::InitParams &params);
+    const std::string& moduleName,
+    const JavaTurboModule::InitParams& params);
 
 } // namespace facebook::react

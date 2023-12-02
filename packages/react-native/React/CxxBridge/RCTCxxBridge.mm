@@ -41,15 +41,7 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
-#ifndef RCT_USE_HERMES
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-#define RCT_USE_HERMES 1
-#else
-#define RCT_USE_HERMES 0
-#endif
-#endif
-
-#if RCT_USE_HERMES
+#if USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
@@ -114,26 +106,24 @@ class GetDescAdapter : public JSExecutorFactory {
 
 }
 
-static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag)
-{
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
-  if (moduleName) {
-    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
-                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
-                                                      }];
-  }
-}
-
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
     RCTPerformanceLogger *performanceLogger,
     const char *tag)
 {
   switch (markerId) {
+    case ReactMarker::APP_STARTUP_START:
+      [performanceLogger markStartForTag:RCTPLAppStartup];
+      break;
+    case ReactMarker::APP_STARTUP_STOP:
+      [performanceLogger markStopForTag:RCTPLAppStartup];
+      break;
+    case ReactMarker::INIT_REACT_RUNTIME_START:
+      [performanceLogger markStartForTag:RCTPLInitReactRuntime];
+      break;
+    case ReactMarker::INIT_REACT_RUNTIME_STOP:
+      [performanceLogger markStopForTag:RCTPLInitReactRuntime];
+      break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       [performanceLogger markStartForTag:RCTPLScriptExecution];
       break;
@@ -152,7 +142,6 @@ static void mapReactMarkerToPerformanceLogger(
       break;
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       [performanceLogger markStopForTag:RCTPLNativeModuleSetup];
-      notifyAboutModuleSetup(performanceLogger, tag);
       break;
       // Not needed in bridge mode.
     case ReactMarker::REACT_INSTANCE_INIT_START:
@@ -426,7 +415,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     if (!executorFactory) {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
-#if RCT_USE_HERMES
+#if USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
 #else
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
@@ -439,27 +428,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         [weakSelf handleError:error];
       }
     }));
-  }
-
-  /**
-   * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleRegistry> object to
-   * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
-   */
-  if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
-    for (NSString *moduleName in [_parentBridge eagerInitModuleNames_DO_NOT_USE]) {
-      [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
-    }
-
-    for (NSString *moduleName in [_parentBridge eagerInitMainQueueModuleNames_DO_NOT_USE]) {
-      if (RCTIsMainQueue()) {
-        [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
-      } else {
-        id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
-        dispatch_group_async(prepareBridge, dispatch_get_main_queue(), ^{
-          [turboModuleRegistry moduleForName:[moduleName UTF8String]];
-        });
-      }
-    }
   }
 
   // Dispatch the instance initialization as soon as the initial module metadata has
@@ -1024,9 +992,7 @@ struct RCTInstanceCallback : public InstanceCallback {
         if (self.valid && ![moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
           [self->_performanceLogger appendStartForTag:RCTPLNativeModuleMainThread];
           (void)[moduleData instance];
-          if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled()) {
-            [moduleData gatherConstants];
-          }
+          [moduleData gatherConstants];
           [self->_performanceLogger appendStopForTag:RCTPLNativeModuleMainThread];
         }
       };

@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) NSString *moduleName;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
-@property (nonatomic, readonly) BOOL hasBridge;
-@property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
-@property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
@@ -42,21 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 @property (nonatomic, assign) CGSize minimumSize;
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions;
-
-/**
- * Bridgeless mode initializer
- */
-- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
-                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
-                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface NS_DESIGNATED_INITIALIZER;
 
 - (void)cancelTouches;
 

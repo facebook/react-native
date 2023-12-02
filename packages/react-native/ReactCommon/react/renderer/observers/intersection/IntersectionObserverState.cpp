@@ -41,7 +41,7 @@ bool IntersectionObserverState::isIntersecting() const {
 }
 
 bool IntersectionObserverState::operator==(
-    const IntersectionObserverState &other) const {
+    const IntersectionObserverState& other) const {
   if (state_ != other.state_) {
     return false;
   }
@@ -54,7 +54,7 @@ bool IntersectionObserverState::operator==(
 }
 
 bool IntersectionObserverState::operator!=(
-    const IntersectionObserverState &other) const {
+    const IntersectionObserverState& other) const {
   return !(*this == other);
 }
 } // namespace facebook::react

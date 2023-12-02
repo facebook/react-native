@@ -7,8 +7,9 @@
 
 package com.facebook.react.devsupport;
 
-import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -30,21 +31,21 @@ import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.util.RNLog;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Okio;
 import okio.Sink;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
@@ -240,38 +241,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void openUrl(final ReactContext context, final String url, final String errorMessage) {
-    new AsyncTask<Void, String, Boolean>() {
-      @Override
-      protected Boolean doInBackground(Void... ignore) {
-        return doSync();
-      }
-
-      public boolean doSync() {
-        try {
-          String openUrlEndpoint = getOpenUrlEndpoint(context);
-          String jsonString = new JSONObject().put("url", url).toString();
-          RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonString);
-
-          Request request = new Request.Builder().url(openUrlEndpoint).post(body).build();
-          OkHttpClient client = new OkHttpClient();
-          client.newCall(request).execute();
-          return true;
-        } catch (JSONException | IOException e) {
-          FLog.e(ReactConstants.TAG, "Failed to open URL" + url, e);
-          return false;
-        }
-      }
-
-      @Override
-      protected void onPostExecute(Boolean result) {
-        if (!result) {
-          RNLog.w(context, errorMessage);
-        }
-      }
-    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
-
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
@@ -279,13 +248,73 @@ public class DevServerHelper {
         mPackagerConnectionSettings.getDebugServerHost());
   }
 
+  private static String getSHA256(String string) {
+    MessageDigest digest = null;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new AssertionError("Could not get standard SHA-256 algorithm", e);
+    }
+    digest.reset();
+    byte[] result;
+    try {
+      result = digest.digest(string.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      throw new AssertionError("This environment doesn't support UTF-8 encoding", e);
+    }
+    return String.format(
+        "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+        result[0],
+        result[1],
+        result[2],
+        result[3],
+        result[4],
+        result[5],
+        result[6],
+        result[7],
+        result[8],
+        result[9],
+        result[10],
+        result[11],
+        result[12],
+        result[13],
+        result[14],
+        result[15],
+        result[16],
+        result[17],
+        result[18],
+        result[19]);
+  }
+
+  // Returns an opaque ID which is stable for the current combination of device and app, stable
+  // across installs, and unique across devices.
+  private String getInspectorDeviceId() {
+    // Every Android app has a unique application ID that looks like a Java or Kotlin package name,
+    // such as com.example.myapp. This ID uniquely identifies your app on the device and in the
+    // Google Play Store.
+    // [Source: Android docs]
+    String packageName = mPackageName;
+
+    // A 64-bit number expressed as a hexadecimal string, which is either:
+    // * unique to each combination of app-signing key, user, and device (API level >= 26), or
+    // * randomly generated when the user first sets up the device and should remain constant for
+    // the lifetime of the user's device (API level < 26).
+    // [Source: Android docs]
+    String androidId = Settings.Secure.ANDROID_ID;
+
+    String rawDeviceId = String.format(Locale.US, "android-%s-%s", packageName, androidId);
+
+    return getSHA256(rawDeviceId);
+  }
+
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        "http://%s/inspector/device?name=%s&app=%s",
+        "http://%s/inspector/device?name=%s&app=%s&device=%s",
         mPackagerConnectionSettings.getInspectorServerHost(),
-        AndroidInfoHelpers.getFriendlyDeviceName(),
-        mPackageName);
+        Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
+        Uri.encode(mPackageName),
+        Uri.encode(getInspectorDeviceId()));
   }
 
   public void downloadBundleFromURL(
@@ -294,11 +323,6 @@ public class DevServerHelper {
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
-  }
-
-  private String getOpenUrlEndpoint(Context context) {
-    return String.format(
-        Locale.US, "http://%s/open-url", AndroidInfoHelpers.getServerHost(context));
   }
 
   public void downloadBundleFromURL(
@@ -457,5 +481,32 @@ public class DevServerHelper {
           ex);
       return null;
     }
+  }
+
+  /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
+  public void openDebugger(final ReactContext context, final String errorMessage) {
+    // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
+    String requestUrl =
+        String.format(
+            Locale.US,
+            "http://%s/open-debugger?appId=%s&device=%s",
+            mPackagerConnectionSettings.getInspectorServerHost(),
+            Uri.encode(mPackageName),
+            Uri.encode(getInspectorDeviceId()));
+    Request request =
+        new Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build();
+
+    mClient
+        .newCall(request)
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(@NonNull Call _call, @NonNull IOException _e) {
+                RNLog.w(context, errorMessage);
+              }
+
+              @Override
+              public void onResponse(@NonNull Call _call, @NonNull Response _response) {}
+            });
   }
 }

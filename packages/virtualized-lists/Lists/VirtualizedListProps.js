@@ -8,19 +8,19 @@
  * @format
  */
 
-import {typeof ScrollView} from 'react-native';
-import type {
-  FocusEvent,
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  FocusEvent,
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
+import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 
@@ -329,13 +329,6 @@ export function onEndReachedThresholdOrDefault(
   onEndReachedThreshold: ?number,
 ): number {
   return onEndReachedThreshold ?? 2;
-}
-
-// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
-export function scrollEventThrottleOrDefault(
-  scrollEventThrottle: ?number,
-): number {
-  return scrollEventThrottle ?? 50;
 }
 
 // windowSizeOrDefault(this.props.windowSize)

@@ -9,14 +9,13 @@
 #include <sys/mman.h>
 
 #include <cxxreact/JSBigString.h>
-#include <folly/File.h>
 #include <gtest/gtest.h>
 
 using namespace facebook::react;
 
 namespace {
 int tempFileFromString(std::string contents) {
-  const char *tmpDir = getenv("TMPDIR");
+  const char* tmpDir = getenv("TMPDIR");
   if (tmpDir == nullptr)
     tmpDir = "/tmp";
   std::string tmp{tmpDir};

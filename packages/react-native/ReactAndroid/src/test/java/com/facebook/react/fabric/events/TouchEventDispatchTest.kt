@@ -14,33 +14,31 @@ import android.view.MotionEvent.PointerProperties
 import com.facebook.react.bridge.*
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
+import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
+import com.facebook.testutils.shadows.ShadowSoLoader
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
-@PrepareForTest(Arguments::class, FabricUIManager::class)
-@SuppressStaticInitializationFor("com.facebook.react.fabric.FabricUIManager")
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
+@Config(shadows = [ShadowSoLoader::class])
 class TouchEventDispatchTest {
-  @get:Rule var rule = PowerMockRule()
   private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
   /** Events (1 pointer): START -> MOVE -> MOVE -> UP */
@@ -453,23 +451,36 @@ class TouchEventDispatchTest {
                   listOf(
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))))
-  private var dispatchedEvents: List<ReadableMap> = emptyList()
+
   private lateinit var eventEmitter: FabricEventEmitter
   private lateinit var uiManager: FabricUIManager
+  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
-    mockStatic(Arguments::class.java)
-    mockStatic(FabricUIManager::class.java)
-    whenever(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
-    whenever(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
+    arguments = mockStatic(Arguments::class.java)
+    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
+    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
     val metrics = DisplayMetrics()
     metrics.xdpi = 1f
     metrics.ydpi = 1f
     metrics.density = 1f
     DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
-    uiManager = mock(FabricUIManager::class.java)
+
+    // We use a real FabricUIManager here as it's harder to mock with both static and non-static
+    // methods.
+    val reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    val viewManagerRegistry = ViewManagerRegistry(emptyList())
+    val batchEventDispatchedListener = FakeBatchEventDispatchedListener()
+    uiManager =
+        spy(FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener))
+
     eventEmitter = FabricEventEmitter(uiManager)
+  }
+
+  @After
+  fun tearDown() {
+    arguments.close()
   }
 
   @Test
@@ -479,8 +490,7 @@ class TouchEventDispatchTest {
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(4))
-        .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
     Assert.assertEquals(startMoveEndExpectedSequence, argument.allValues)
   }
 
@@ -491,8 +501,7 @@ class TouchEventDispatchTest {
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
-        .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
     Assert.assertEquals(startMoveCancelExpectedSequence, argument.allValues)
   }
 
@@ -503,8 +512,7 @@ class TouchEventDispatchTest {
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
-        .receiveEvent(
-            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
+        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
     Assert.assertEquals(startPointerMoveUpExpectedSequence, argument.allValues)
   }
 

@@ -16,31 +16,33 @@ TODO:
 - ViewConfigs should spread in View's valid attributes
 */
 
-const fs = require('fs');
+import type {SchemaType} from '../CodegenSchema';
+
+const schemaValidator = require('../SchemaValidator.js');
 const generateComponentDescriptorH = require('./components/GenerateComponentDescriptorH.js');
 const generateComponentHObjCpp = require('./components/GenerateComponentHObjCpp.js');
 const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js');
 const generateEventEmitterH = require('./components/GenerateEventEmitterH.js');
 const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
+const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
+const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
+const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
+const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
 const generateStateCpp = require('./components/GenerateStateCpp.js');
 const generateStateH = require('./components/GenerateStateH.js');
-const generateModuleH = require('./modules/GenerateModuleH.js');
+const generateTests = require('./components/GenerateTests.js');
+const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
+const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
+const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
-const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
+const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
 const generateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
 const generateModuleJniH = require('./modules/GenerateModuleJniH.js');
-const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
-const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
-const generateTests = require('./components/GenerateTests.js');
-const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
-const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
-const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
-const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
-const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
+const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
+const fs = require('fs');
 const path = require('path');
-const schemaValidator = require('../SchemaValidator.js');
 
 const ALL_GENERATORS = {
   generateComponentDescriptorH: generateComponentDescriptorH.generate,
@@ -68,8 +70,6 @@ const ALL_GENERATORS = {
     generateThirdPartyFabricComponentsProviderH.generate,
   generateViewConfigJs: generateViewConfigJs.generate,
 };
-
-import type {SchemaType} from '../CodegenSchema';
 
 type LibraryOptions = $ReadOnly<{
   libraryName: string,

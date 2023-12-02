@@ -15,7 +15,6 @@ SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
 SKIPPED_TESTS=()
-SKIPPED_TESTS+=("-skip-testing:RNTesterIntegrationTests/RNTesterSnapshotTests")
 # TODO: T60408036 This test crashes iOS 13 for bad access, please investigate
 # and re-enable. See https://gist.github.com/0xced/56035d2f57254cf518b5.
 SKIPPED_TESTS+=("-skip-testing:RNTesterUnitTests/RCTJSONTests/testNotUTF8Convertible")
@@ -108,7 +107,6 @@ xcbeautifyFormat() {
 preloadBundlesRNIntegrationTests() {
   # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
 preloadBundlesRNTester() {

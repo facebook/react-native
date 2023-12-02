@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -45,7 +45,7 @@ import * as React from 'react';
  * ```
  */
 class ImageBackground extends React.Component<ImageBackgroundProps> {
-  setNativeProps(props: Object) {
+  setNativeProps(props: {...}) {
     // Work-around flow
     const viewRef = this._viewRef;
     if (viewRef) {
@@ -98,7 +98,9 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
               // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
               // This workaround should be removed after implementing proper support of
               // intrinsic content size of the <Image>.
+              // $FlowFixMe[prop-missing]
               width: flattenedStyle?.width,
+              // $FlowFixMe[prop-missing]
               height: flattenedStyle?.height,
             },
             imageStyle,

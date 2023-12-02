@@ -10,17 +10,16 @@
 
 'use strict';
 import type {EventTypeShape} from '../../CodegenSchema';
-
-const {generateEventStructName} = require('./CppHelpers');
-const {indent} = require('../Utils');
-
 import type {
   ComponentShape,
-  NamedShape,
   EventTypeAnnotation,
-  SchemaType,
+  NamedShape,
   ObjectTypeAnnotation,
+  SchemaType,
 } from '../../CodegenSchema';
+
+const {indent} = require('../Utils');
+const {generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;

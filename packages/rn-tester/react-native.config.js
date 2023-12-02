@@ -26,6 +26,10 @@ module.exports = {
     },
     android: {
       sourceDir: '../../',
+      // To remove once the CLI fix for manifestPath search path is landed.
+      manifestPath:
+        'packages/rn-tester/android/app/src/main/AndroidManifest.xml',
+      packageName: 'com.facebook.react.uiapp',
     },
   },
 };

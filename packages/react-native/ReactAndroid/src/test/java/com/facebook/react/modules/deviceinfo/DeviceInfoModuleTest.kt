@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.deviceinfo
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
@@ -18,35 +17,34 @@ import junit.framework.TestCase
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import org.mockito.MockedStatic
 import org.mockito.Mockito.*
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-@PrepareForTest(Arguments::class, DisplayMetricsHolder::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class DeviceInfoModuleTest : TestCase() {
-  @get:Rule var rule = PowerMockRule()
 
   private lateinit var deviceInfoModule: DeviceInfoModule
   private lateinit var fakePortraitDisplayMetrics: WritableMap
   private lateinit var fakeLandscapeDisplayMetrics: WritableMap
   private lateinit var reactContext: ReactApplicationContext
+  private lateinit var displayMetricsHolder: MockedStatic<DisplayMetricsHolder>
 
   @Before
   public override fun setUp() {
-    initTestData()
-    PowerMockito.mockStatic(DisplayMetricsHolder::class.java)
+    fakePortraitDisplayMetrics = JavaOnlyMap()
+    fakePortraitDisplayMetrics.putInt("width", 100)
+    fakePortraitDisplayMetrics.putInt("height", 200)
+    fakeLandscapeDisplayMetrics = JavaOnlyMap()
+    fakeLandscapeDisplayMetrics.putInt("width", 200)
+    fakeLandscapeDisplayMetrics.putInt("height", 100)
+
+    displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
     reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
     val catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
     reactContext.initializeWithInstance(catalystInstanceMock)
@@ -55,8 +53,7 @@ class DeviceInfoModuleTest : TestCase() {
 
   @After
   fun teardown() {
-    DisplayMetricsHolder.setWindowDisplayMetrics(null)
-    DisplayMetricsHolder.setScreenDisplayMetrics(null)
+    displayMetricsHolder.close()
   }
 
   @Test
@@ -105,24 +102,13 @@ class DeviceInfoModuleTest : TestCase() {
         fakeLandscapeDisplayMetrics)
   }
 
-  private fun initTestData() {
-    PowerMockito.mockStatic(Arguments::class.java)
-    whenever(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
-    fakePortraitDisplayMetrics = Arguments.createMap()
-    fakePortraitDisplayMetrics.putInt("width", 100)
-    fakePortraitDisplayMetrics.putInt("height", 200)
-    fakeLandscapeDisplayMetrics = Arguments.createMap()
-    fakeLandscapeDisplayMetrics.putInt("width", 200)
-    fakeLandscapeDisplayMetrics.putInt("height", 100)
+  private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
+    displayMetricsHolder
+        .`when`<WritableMap> { DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0) }
+        .thenAnswer { fakeDisplayMetrics }
   }
 
   companion object {
-    private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
-      whenever(DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0)).thenAnswer {
-        fakeDisplayMetrics
-      }
-    }
-
     private fun verifyUpdateDimensionsEventsEmitted(
         context: ReactContext?,
         vararg expectedEvents: WritableMap

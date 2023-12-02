@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.assets.ReactFontManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ReactTypefaceUtils {
           return 900;
       }
     }
-    return ReactBaseTextShadowNode.UNSET;
+    return ReactFontManager.TypefaceStyle.UNSET;
   }
 
   public static int parseFontStyle(@Nullable String fontStyleString) {
@@ -56,7 +57,7 @@ public class ReactTypefaceUtils {
         return Typeface.NORMAL;
       }
     }
-    return ReactBaseTextShadowNode.UNSET;
+    return ReactFontManager.TypefaceStyle.UNSET;
   }
 
   public static @Nullable String parseFontVariant(@Nullable ReadableArray fontVariantArray) {
@@ -184,7 +185,8 @@ public class ReactTypefaceUtils {
       int weight,
       @Nullable String fontFamilyName,
       AssetManager assetManager) {
-    TypefaceStyle typefaceStyle = new TypefaceStyle(style, weight);
+    ReactFontManager.TypefaceStyle typefaceStyle =
+        new ReactFontManager.TypefaceStyle(style, weight);
     if (fontFamilyName == null) {
       return typefaceStyle.apply(typeface == null ? Typeface.DEFAULT : typeface);
     } else {

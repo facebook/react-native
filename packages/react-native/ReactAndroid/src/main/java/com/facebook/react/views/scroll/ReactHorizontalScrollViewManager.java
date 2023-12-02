@@ -69,7 +69,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @Override
   public Object updateState(
       ReactHorizontalScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
+    view.setStateWrapper(stateWrapper);
     return null;
   }
 
@@ -199,6 +199,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @Override
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
@@ -219,6 +220,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
           "scrollToEnd called on HorizontalScrollView without child");
     }
     int right = child.getWidth() + scrollView.getPaddingRight();
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {

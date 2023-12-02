@@ -13,8 +13,8 @@
 namespace facebook::react {
 
 static jsi::Value getModule(
-    jsi::Runtime &runtime,
-    std::string const &moduleName) {
+    jsi::Runtime& runtime,
+    const std::string& moduleName) {
   auto batchedBridge =
       runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
   auto getCallableModule =
@@ -30,7 +30,7 @@ static jsi::Value getModule(
   return moduleAsValue;
 }
 
-static bool checkBatchedBridgeIsActive(jsi::Runtime &runtime) {
+static bool checkBatchedBridgeIsActive(jsi::Runtime& runtime) {
   if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge")) {
     LOG(ERROR)
         << "getPropertyAsObject: property '__fbBatchedBridge' is undefined, expected an Object";
@@ -39,7 +39,7 @@ static bool checkBatchedBridgeIsActive(jsi::Runtime &runtime) {
   return true;
 }
 
-static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
+static bool checkGetCallableModuleIsActive(jsi::Runtime& runtime) {
   if (!checkBatchedBridgeIsActive(runtime)) {
     return false;
   }
@@ -54,9 +54,9 @@ static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
 }
 
 jsi::Value callMethodOfModule(
-    jsi::Runtime &runtime,
-    std::string const &moduleName,
-    std::string const &methodName,
+    jsi::Runtime& runtime,
+    const std::string& moduleName,
+    const std::string& methodName,
     std::initializer_list<jsi::Value> args) {
   if (checkGetCallableModuleIsActive(runtime)) {
     auto module = getModule(runtime, moduleName);

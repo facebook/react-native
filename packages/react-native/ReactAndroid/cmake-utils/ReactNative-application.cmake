@@ -54,10 +54,10 @@ target_compile_options(${CMAKE_PROJECT_NAME}
                 # due to use migrating away from
                 # #include <react/renderer/graphics/conversions.h>
                 # This can be removed for React Native 0.73
-                -Wno-error=cpp 
+                -Wno-error=cpp
                 -fexceptions
                 -frtti
-                -std=c++17
+                -std=c++20
                 -DWITH_INSPECTOR=1
                 -DLOG_TAG=\"ReactNative\")
 
@@ -71,6 +71,7 @@ add_library(react_debug ALIAS ReactAndroid::react_debug)
 add_library(react_utils ALIAS ReactAndroid::react_utils)
 add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
+add_library(react_cxxreactpackage ALIAS ReactAndroid::react_cxxreactpackage)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
@@ -99,6 +100,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_utils                         # prefab ready
         react_nativemodule_core             # prefab ready
         react_newarchdefaults               # prefab ready
+        react_cxxreactpackage               # prefab ready
         react_render_componentregistry      # prefab ready
         react_render_core                   # prefab ready
         react_render_debug                  # prefab ready

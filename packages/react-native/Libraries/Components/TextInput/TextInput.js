@@ -137,6 +137,9 @@ type DataDetectorTypesType =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -200,6 +203,15 @@ export type TextContentType =
   | 'addressState'
   | 'countryName'
   | 'creditCardNumber'
+  | 'creditCardExpiration'
+  | 'creditCardExpirationMonth'
+  | 'creditCardExpirationYear'
+  | 'creditCardSecurityCode'
+  | 'creditCardType'
+  | 'creditCardName'
+  | 'creditCardGivenName'
+  | 'creditCardMiddleName'
+  | 'creditCardFamilyName'
   | 'emailAddress'
   | 'familyName'
   | 'fullStreetAddress'
@@ -220,7 +232,11 @@ export type TextContentType =
   | 'username'
   | 'password'
   | 'newPassword'
-  | 'oneTimeCode';
+  | 'oneTimeCode'
+  | 'birthdate'
+  | 'birthdateDay'
+  | 'birthdateMonth'
+  | 'birthdateYear';
 
 export type enterKeyHintType =
   // Cross Platform
@@ -462,7 +478,16 @@ export type Props = $ReadOnly<{|
    * - `additional-name`
    * - `address-line1`
    * - `address-line2`
+   * - `birthdate-day` (iOS 17+)
+   * - `birthdate-full` (iOS 17+)
+   * - `birthdate-month` (iOS 17+)
+   * - `birthdate-year` (iOS 17+)
    * - `cc-number`
+   * - `cc-csc` (iOS 17+)
+   * - `cc-exp` (iOS 17+)
+   * - `cc-exp-day` (iOS 17+)
+   * - `cc-exp-month` (iOS 17+)
+   * - `cc-exp-year` (iOS 17+)
    * - `country`
    * - `current-password`
    * - `email`
@@ -481,6 +506,11 @@ export type Props = $ReadOnly<{|
    *
    * The following values work on iOS only:
    *
+   * - `cc-name` (iOS 17+)
+   * - `cc-given-name` (iOS 17+)
+   * - `cc-middle-name` (iOS 17+)
+   * - `cc-family-name` (iOS 17+)
+   * - `cc-type` (iOS 17+)
    * - `nickname`
    * - `organization`
    * - `organization-title`
@@ -488,15 +518,6 @@ export type Props = $ReadOnly<{|
    *
    * The following values work on Android only:
    *
-   * - `birthdate-day`
-   * - `birthdate-full`
-   * - `birthdate-month`
-   * - `birthdate-year`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-day`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
    * - `gender`
    * - `name-family`
    * - `name-given`
@@ -532,6 +553,11 @@ export type Props = $ReadOnly<{|
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-middle-name'
+    | 'cc-family-name'
+    | 'cc-type'
     | 'country'
     | 'current-password'
     | 'email'
@@ -786,6 +812,11 @@ export type Props = $ReadOnly<{|
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
+
+  /**
    * Called when a touch is engaged.
    */
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -885,6 +916,12 @@ export type Props = $ReadOnly<{|
    * The highlight and cursor color of the text input.
    */
   selectionColor?: ?ColorValue,
+
+  /**
+   * The text selection handle color.
+   * @platform android
+   */
+  selectionHandleColor?: ?ColorValue,
 
   /**
    * If `true`, all text will automatically be selected on focus.
@@ -1012,8 +1049,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *     return (
  *       <TextInput
  *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
- *         editable = {true}
- *         maxLength = {40}
+ *         editable={true}
+ *         maxLength={40}
  *       />
  *     );
  *   }
@@ -1037,8 +1074,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *        borderBottomWidth: 1 }}
  *      >
  *        <UselessTextInput
- *          multiline = {true}
- *          numberOfLines = {4}
+ *          multiline={true}
+ *          numberOfLines={4}
  *          onChangeText={(text) => this.setState({text})}
  *          value={this.state.text}
  *        />
@@ -1080,6 +1117,9 @@ function InternalTextInput(props: Props): React.Node {
     id,
     tabIndex,
     selection: propsSelection,
+    selectionColor,
+    selectionHandleColor,
+    cursorColor,
     ...otherProps
   } = props;
 
@@ -1355,25 +1395,37 @@ function InternalTextInput(props: Props): React.Node {
   const accessible = props.accessible !== false;
   const focusable = props.focusable !== false;
 
+  const {
+    editable,
+    hitSlop,
+    onPress,
+    onPressIn,
+    onPressOut,
+    rejectResponderTermination,
+  } = props;
+
   const config = React.useMemo(
     () => ({
+      hitSlop,
       onPress: (event: PressEvent) => {
-        if (props.editable !== false) {
+        onPress?.(event);
+        if (editable !== false) {
           if (inputRef.current != null) {
             inputRef.current.focus();
           }
         }
       },
-      onPressIn: props.onPressIn,
-      onPressOut: props.onPressOut,
-      cancelable:
-        Platform.OS === 'ios' ? !props.rejectResponderTermination : null,
+      onPressIn: onPressIn,
+      onPressOut: onPressOut,
+      cancelable: Platform.OS === 'ios' ? !rejectResponderTermination : null,
     }),
     [
-      props.editable,
-      props.onPressIn,
-      props.onPressOut,
-      props.rejectResponderTermination,
+      editable,
+      hitSlop,
+      onPress,
+      onPressIn,
+      onPressOut,
+      rejectResponderTermination,
     ],
   );
 
@@ -1463,7 +1515,15 @@ function InternalTextInput(props: Props): React.Node {
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
-
+    // For consistency with iOS set cursor/selectionHandle color as selectionColor
+    const colorProps = {
+      selectionColor,
+      selectionHandleColor:
+        selectionHandleColor === undefined
+          ? selectionColor
+          : selectionHandleColor,
+      cursorColor: cursorColor === undefined ? selectionColor : cursorColor,
+    };
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
        * exactly with the props for TextInput. This will need to get fixed */
@@ -1477,6 +1537,7 @@ function InternalTextInput(props: Props): React.Node {
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
         ref={ref}
         {...otherProps}
+        {...colorProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
@@ -1572,7 +1633,20 @@ const autoCompleteWebToAutoCompleteAndroidMap = {
 const autoCompleteWebToTextContentTypeMap = {
   'address-line1': 'streetAddressLine1',
   'address-line2': 'streetAddressLine2',
+  bday: 'birthdate',
+  'bday-day': 'birthdateDay',
+  'bday-month': 'birthdateMonth',
+  'bday-year': 'birthdateYear',
+  'cc-csc': 'creditCardSecurityCode',
+  'cc-exp-month': 'creditCardExpirationMonth',
+  'cc-exp-year': 'creditCardExpirationYear',
+  'cc-exp': 'creditCardExpiration',
+  'cc-given-name': 'creditCardGivenName',
+  'cc-additional-name': 'creditCardMiddleName',
+  'cc-family-name': 'creditCardFamilyName',
+  'cc-name': 'creditCardName',
   'cc-number': 'creditCardNumber',
+  'cc-type': 'creditCardType',
   'current-password': 'password',
   country: 'countryName',
   email: 'emailAddress',
@@ -1598,6 +1672,7 @@ const autoCompleteWebToTextContentTypeMap = {
 const ExportedForwardRef: React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   TextInputInstance,
+  // $FlowFixMe[incompatible-call]
 > = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
@@ -1620,8 +1695,13 @@ const ExportedForwardRef: React.AbstractComponent<
   let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     style.textAlignVertical =
+      // $FlowFixMe[invalid-computed-prop]
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     delete style.verticalAlign;
   }
 

@@ -22,26 +22,26 @@ class IntersectionObserverManager final : public UIManagerMountHook {
 
   void observe(
       IntersectionObserverObserverId intersectionObserverId,
-      const ShadowNode::Shared &shadowNode,
+      const ShadowNode::Shared& shadowNode,
       std::vector<Float> thresholds,
-      UIManager const &uiManager);
+      const UIManager& uiManager);
 
   void unobserve(
       IntersectionObserverObserverId intersectionObserverId,
-      ShadowNode const &shadowNode);
+      const ShadowNode& shadowNode);
 
   void connect(
-      UIManager &uiManager,
+      UIManager& uiManager,
       std::function<void()> notifyIntersectionObserversCallback);
 
-  void disconnect(UIManager &uiManager);
+  void disconnect(UIManager& uiManager);
 
   std::vector<IntersectionObserverEntry> takeRecords();
 
 #pragma mark - UIManagerMountHook
 
   void shadowTreeDidMount(
-      RootShadowNode::Shared const &rootShadowNode,
+      const RootShadowNode::Shared& rootShadowNode,
       double mountTime) noexcept override;
 
  private:
@@ -63,10 +63,10 @@ class IntersectionObserverManager final : public UIManagerMountHook {
   // Equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   void updateIntersectionObservations(
-      RootShadowNode const &rootShadowNode,
+      const RootShadowNode& rootShadowNode,
       double mountTime);
 
-  IntersectionObserver const &getRegisteredIntersectionObserver(
+  const IntersectionObserver& getRegisteredIntersectionObserver(
       SurfaceId surfaceId,
       IntersectionObserverObserverId observerId) const;
 };

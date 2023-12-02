@@ -71,7 +71,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable JSExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
 
-  private @Nullable InteropModuleRegistry mInteropModuleRegistry;
+  protected @Nullable InteropModuleRegistry mInteropModuleRegistry;
   private boolean mIsInitialized = false;
 
   public ReactContext(Context base) {
@@ -439,6 +439,18 @@ public class ReactContext extends ContextWrapper {
 
   public boolean runOnJSQueueThread(Runnable runnable) {
     return Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  }
+
+  public @Nullable MessageQueueThread getJSMessageQueueThread() {
+    return mJSMessageQueueThread;
+  }
+
+  public @Nullable MessageQueueThread getNativeModulesMessageQueueThread() {
+    return mNativeModulesMessageQueueThread;
+  }
+
+  public @Nullable MessageQueueThread getUiMessageQueueThread() {
+    return mUiMessageQueueThread;
   }
 
   /**

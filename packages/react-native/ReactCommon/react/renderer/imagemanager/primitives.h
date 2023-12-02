@@ -25,11 +25,11 @@ class ImageSource {
   Float scale{3};
   Size size{0};
 
-  bool operator==(const ImageSource &rhs) const {
+  bool operator==(const ImageSource& rhs) const {
     return std::tie(this->type, this->uri) == std::tie(rhs.type, rhs.uri);
   }
 
-  bool operator!=(const ImageSource &rhs) const {
+  bool operator!=(const ImageSource& rhs) const {
     return !(*this == rhs);
   }
 };

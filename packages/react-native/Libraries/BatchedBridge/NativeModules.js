@@ -177,7 +177,7 @@ function updateErrorWithErrorData(
 let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
-} else if (!global.nativeExtensions) {
+} else {
   const bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(
     bridgeConfig,

@@ -11,8 +11,8 @@
 
 'use strict';
 
-const {FlowParser} = require('../../../src/parsers/flow/parser');
 const generator = require('../../../src/generators/components/GeneratePropsH');
+const {FlowParser} = require('../../../src/parsers/flow/parser');
 const fs = require('fs');
 
 const FIXTURE_DIR = `${__dirname}/../../__test_fixtures__/components`;

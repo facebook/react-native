@@ -27,6 +27,8 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const PixelRatio = require('../Utilities/PixelRatio').default;
 const flatten = require('./flattenStyle');
 
+export type {NativeColorValue} from './StyleSheetTypes';
+
 /**
  * This type should be used as the type for anything that is a color. It is
  * most useful when using DynamicColorIOS which can be a string or a dynamic
@@ -210,16 +212,12 @@ if (__DEV__) {
  * Code quality:
  *
  *  - By moving styles away from the render function, you're making the code
- *  easier to understand.
+ *    easier to understand.
  *  - Naming the styles is a good way to add meaning to the low level components
- *  in the render function.
+ *  in the render function, and encourage reuse.
+ *  - In most IDEs, using `StyleSheet.create()` will offer static type checking
+ *  and suggestions to help you write valid styles.
  *
- * Performance:
- *
- *  - Making a stylesheet from a style object makes it possible to refer to it
- * by ID instead of creating a new style object every time.
- *  - It also allows to send the style only once through the bridge. All
- * subsequent uses are going to refer an id (not implemented yet).
  */
 module.exports = {
   /**
@@ -283,14 +281,6 @@ module.exports = {
 
   /**
    * Flattens an array of style objects, into one aggregated style object.
-   * Alternatively, this method can be used to lookup IDs, returned by
-   * StyleSheet.register.
-   *
-   * > **NOTE**: Exercise caution as abusing this can tax you in terms of
-   * > optimizations.
-   * >
-   * > IDs enable optimizations through the bridge and memory in general. Referring
-   * > to style objects directly will deprive you of these optimizations.
    *
    * Example:
    * ```
@@ -308,17 +298,6 @@ module.exports = {
    * StyleSheet.flatten([styles.listItem, styles.selectedListItem])
    * // returns { flex: 1, fontSize: 16, color: 'green' }
    * ```
-   * Alternative use:
-   * ```
-   * StyleSheet.flatten(styles.listItem);
-   * // return { flex: 1, fontSize: 16, color: 'white' }
-   * // Simply styles.listItem would return its ID (number)
-   * ```
-   * This method internally uses `StyleSheetRegistry.getStyleByID(style)`
-   * to resolve style objects represented by IDs. Thus, an array of style
-   * objects (instances of StyleSheet.create), are individually resolved to,
-   * their respective objects, merged as one and then returned. This also explains
-   * the alternative use.
    */
   flatten,
 
@@ -359,8 +338,9 @@ module.exports = {
   },
 
   /**
-   * Creates a StyleSheet style reference from the given object.
+   * An identity function for creating style sheets.
    */
+  // $FlowFixMe[unsupported-variance-annotation]
   create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this

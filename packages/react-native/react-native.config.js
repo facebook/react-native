@@ -9,11 +9,22 @@
 
 'use strict';
 
-const ios = require('@react-native-community/cli-platform-ios');
 const android = require('@react-native-community/cli-platform-android');
+const ios = require('@react-native-community/cli-platform-ios');
+const {
+  bundleCommand,
+  ramBundleCommand,
+  startCommand,
+} = require('@react-native/community-cli-plugin');
 
 module.exports = {
-  commands: [...ios.commands, ...android.commands],
+  commands: [
+    ...ios.commands,
+    ...android.commands,
+    bundleCommand,
+    ramBundleCommand,
+    startCommand,
+  ],
   platforms: {
     ios: {
       projectConfig: ios.projectConfig,

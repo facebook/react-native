@@ -73,7 +73,7 @@ function getDefaultConfig(
         'metro-runtime/src/modules/asyncRequire',
       ),
       babelTransformerPath: require.resolve(
-        'metro-react-native-babel-transformer',
+        '@react-native/metro-babel-transformer',
       ),
       getTransformOptions: async () => ({
         transform: {

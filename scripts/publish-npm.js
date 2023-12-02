@@ -9,22 +9,16 @@
 
 'use strict';
 
-const {echo, exit} = require('shelljs');
-const {parseVersion} = require('./version-utils');
-const {getPackageVersionStrByTag, publishPackage} = require('./npm-utils');
-const {
-  exitIfNotOnGit,
-  getCurrentCommit,
-  isTaggedLatest,
-} = require('./scm-utils');
-const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
-const setReactNativeVersion = require('./set-rn-version');
+const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
+const {getNpmInfo, publishPackage} = require('./npm-utils');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
-const fs = require('fs');
+const removeNewArchFlags = require('./releases/remove-new-arch-flags');
+const setReactNativeVersion = require('./set-rn-version');
 const path = require('path');
+const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
 
 /**
@@ -51,101 +45,37 @@ const yargs = require('yargs');
 
 if (require.main === module) {
   const argv = yargs
-    .option('n', {
-      alias: 'nightly',
-      type: 'boolean',
-      default: false,
-    })
-    .option('d', {
-      alias: 'dry-run',
-      type: 'boolean',
-      default: false,
-    })
-    .option('r', {
-      alias: 'release',
-      type: 'boolean',
-      default: false,
+    .option('t', {
+      alias: 'builtType',
+      describe: 'The type of build you want to perform.',
+      choices: ['dry-run', 'nightly', 'release', 'prealpha'],
+      default: 'dry-run',
     })
     .strict().argv;
 
-  const buildType = argv.release
-    ? 'release'
-    : argv.nightly
-    ? 'nightly'
-    : 'dry-run';
+  const buildType = argv.builtType;
 
   publishNpm(buildType);
-}
-
-// Get `next` version from npm and +1 on the minor for `main` version
-function getMainVersion() {
-  const versionStr = getPackageVersionStrByTag('react-native', 'next');
-  const {major, minor} = parseVersion(versionStr, 'release');
-  return `${major}.${parseInt(minor, 10) + 1}.0`;
-}
-
-function getNpmInfo(buildType) {
-  const currentCommit = getCurrentCommit();
-  const shortCommit = currentCommit.slice(0, 9);
-
-  if (buildType === 'dry-run') {
-    return {
-      version: `1000.0.0-${shortCommit}`,
-      tag: null, // We never end up publishing this
-    };
-  }
-
-  if (buildType === 'nightly') {
-    const mainVersion = getMainVersion();
-    const dateIdentifier = new Date()
-      .toISOString()
-      .slice(0, -14)
-      .replace(/[-]/g, '');
-    return {
-      version: `${mainVersion}-nightly-${dateIdentifier}-${shortCommit}`,
-      tag: 'nightly',
-    };
-  }
-
-  const {version, major, minor, prerelease} = parseVersion(
-    process.env.CIRCLE_TAG,
-    buildType,
-  );
-
-  // See if releaser indicated that this version should be tagged "latest"
-  // Set in `bump-oss-version`
-  const isLatest = exitIfNotOnGit(
-    () => isTaggedLatest(currentCommit),
-    'Not in git. We do not want to publish anything',
-  );
-
-  const releaseBranchTag = `${major}.${minor}-stable`;
-
-  // npm will automatically tag the version as `latest` if no tag is set when we publish
-  // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
-  const tag =
-    prerelease != null ? 'next' : isLatest ? 'latest' : releaseBranchTag;
-
-  return {
-    version,
-    tag,
-  };
 }
 
 function publishNpm(buildType) {
   const {version, tag} = getNpmInfo(buildType);
 
+  if (buildType === 'prealpha') {
+    removeNewArchFlags();
+  }
+
   // Here we update the react-native package and template package with the right versions
   // For releases, CircleCI job `prepare_package_for_release` handles this
-  if (buildType === 'nightly' || buildType === 'dry-run') {
-    // Publish monorepo nightlies if there are updates, returns nightly versions for each
-    const monorepoNightlyVersions =
-      buildType === 'nightly' ? getAndUpdateNightlies(version) : null;
+  if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
+    // Publish monorepo nightlies and prealphas if there are updates, returns the new version for each package
+    const monorepoVersions =
+      buildType === 'dry-run' ? null : getAndUpdatePackages(version, buildType);
 
     try {
       // Update the react-native and template packages with the react-native version
       // and nightly versions of monorepo deps
-      setReactNativeVersion(version, monorepoNightlyVersions, buildType);
+      setReactNativeVersion(version, monorepoVersions, buildType);
     } catch (e) {
       console.error(`Failed to set version number to ${version}`);
       console.error(e);
@@ -155,10 +85,6 @@ function publishNpm(buildType) {
 
   generateAndroidArtifacts(version);
 
-  // Write version number to the build folder
-  const versionFile = path.join('build', '.version');
-  fs.writeFileSync(versionFile, version);
-
   if (buildType === 'dry-run') {
     echo('Skipping `npm publish` because --dry-run is set.');
     return exit(0);
@@ -166,7 +92,7 @@ function publishNpm(buildType) {
 
   // We first publish on Maven Central all the necessary artifacts.
   // NPM publishing is done just after.
-  publishAndroidArtifactsToMaven(version, buildType === 'nightly');
+  publishAndroidArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
   const result = publishPackage(packagePath, {

@@ -101,8 +101,11 @@ RCT_EXPORT_MODULE()
 
   RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
+    NSMutableDictionary<NSNumber *, id<RCTComponent>> *viewRegistry =
+        (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry;
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-      UIView *rootView = self->_viewRegistry[rootViewTag];
+      id<RCTComponent> rootView = viewRegistry[rootViewTag];
+      [self _purgeChildren:[rootView reactSubviews] fromRegistry:viewRegistry];
       if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)rootView invalidate];
       }
@@ -178,7 +181,10 @@ RCT_EXPORT_MODULE()
   }
 
   // This dispatch_async avoids a deadlock while configuring native modules
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_queue_t accessibilityManagerInitQueue = RCTUIManagerDispatchAccessibilityManagerInitOntoMain()
+      ? dispatch_get_main_queue()
+      : dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+  dispatch_async(accessibilityManagerInitQueue, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
@@ -534,7 +540,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertUIManagerQueue();
 
-  NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+  NSPointerArray *affectedShadowViews = [NSPointerArray weakObjectsPointerArray];
   [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
   if (!affectedShadowViews.count) {
@@ -1485,7 +1491,14 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
   moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
   moduleConstants[@"directEventTypes"] = directEventTypes;
-
+  // In the Old Architecture the "Commands" and "Constants" properties of view manager config are populated by
+  // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
+  // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
+  // native.
+  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    moduleConstants[@"Commands"] = viewConfig[@"Commands"];
+    moduleConstants[@"Constants"] = viewConfig[@"Constants"];
+  }
   // Add direct events
   for (NSString *eventName in viewConfig[@"directEvents"]) {
     if (!directEvents[eventName]) {

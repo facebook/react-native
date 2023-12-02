@@ -49,7 +49,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -169,14 +168,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
-  private static final String[] DRAWABLE_FIELDS = {
-    "mCursorDrawable", "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
+  private static final String[] DRAWABLE_HANDLE_RESOURCES = {
+    "mTextSelectHandleLeftRes", "mTextSelectHandleRightRes", "mTextSelectHandleRes"
   };
-  private static final String[] DRAWABLE_RESOURCES = {
-    "mCursorDrawableRes",
-    "mTextSelectHandleLeftRes",
-    "mTextSelectHandleRightRes",
-    "mTextSelectHandleRes"
+  private static final String[] DRAWABLE_HANDLE_FIELDS = {
+    "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
   };
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
@@ -525,20 +521,78 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       view.setHighlightColor(color);
     }
+  }
 
-    setCursorColor(view, color);
+  @ReactProp(name = "selectionHandleColor", customType = "Color")
+  public void setSelectionHandleColor(ReactEditText view, @Nullable Integer color) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Drawable drawableCenter = view.getTextSelectHandle().mutate();
+      Drawable drawableLeft = view.getTextSelectHandleLeft().mutate();
+      Drawable drawableRight = view.getTextSelectHandleRight().mutate();
+      if (color != null) {
+        BlendModeColorFilter filter = new BlendModeColorFilter(color, BlendMode.SRC_IN);
+        drawableCenter.setColorFilter(filter);
+        drawableLeft.setColorFilter(filter);
+        drawableRight.setColorFilter(filter);
+      } else {
+        drawableCenter.clearColorFilter();
+        drawableLeft.clearColorFilter();
+        drawableRight.clearColorFilter();
+      }
+      view.setTextSelectHandle(drawableCenter);
+      view.setTextSelectHandleLeft(drawableLeft);
+      view.setTextSelectHandleRight(drawableRight);
+      return;
+    }
+
+    // Based on https://github.com/facebook/react-native/pull/31007
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+      return;
+    }
+
+    // The following code uses reflection to change handles color on Android 8.1 and below.
+    for (int i = 0; i < DRAWABLE_HANDLE_RESOURCES.length; i++) {
+      try {
+        Field drawableResourceField =
+            view.getClass().getDeclaredField(DRAWABLE_HANDLE_RESOURCES[i]);
+        drawableResourceField.setAccessible(true);
+        int resourceId = drawableResourceField.getInt(view);
+
+        // The view has no handle drawable.
+        if (resourceId == 0) {
+          return;
+        }
+
+        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
+        if (color != null) {
+          drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        } else {
+          drawable.clearColorFilter();
+        }
+
+        Field editorField = TextView.class.getDeclaredField("mEditor");
+        editorField.setAccessible(true);
+        Object editor = editorField.get(view);
+
+        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_HANDLE_FIELDS[i]);
+        cursorDrawableField.setAccessible(true);
+        cursorDrawableField.set(editor, drawable);
+      } catch (NoSuchFieldException ex) {
+      } catch (IllegalAccessException ex) {
+      }
+    }
   }
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      return;
-    }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
       if (cursorDrawable != null) {
-        cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        if (color != null) {
+          cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+          cursorDrawable.clearColorFilter();
+        }
         view.setTextCursorDrawable(cursorDrawable);
       }
       return;
@@ -553,39 +607,35 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     // The evil code that follows uses reflection to achieve this on Android 8.1 and below.
     // Based on https://tinyurl.com/3vff8lyu https://tinyurl.com/vehggzs9
-    for (int i = 0; i < DRAWABLE_RESOURCES.length; i++) {
-      try {
-        Field drawableResourceField = TextView.class.getDeclaredField(DRAWABLE_RESOURCES[i]);
-        drawableResourceField.setAccessible(true);
-        int resourceId = drawableResourceField.getInt(view);
+    try {
+      Field drawableCursorField = view.getClass().getDeclaredField("mCursorDrawableRes");
+      drawableCursorField.setAccessible(true);
+      int resourceId = drawableCursorField.getInt(view);
 
-        // The view has no cursor drawable.
-        if (resourceId == 0) {
-          return;
-        }
-
-        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId);
-
-        Drawable drawableCopy = drawable.mutate();
-        drawableCopy.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-
-        Field editorField = TextView.class.getDeclaredField("mEditor");
-        editorField.setAccessible(true);
-        Object editor = editorField.get(view);
-
-        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_FIELDS[i]);
-        cursorDrawableField.setAccessible(true);
-        if (DRAWABLE_RESOURCES[i] == "mCursorDrawableRes") {
-          Drawable[] drawables = {drawableCopy, drawableCopy};
-          cursorDrawableField.set(editor, drawables);
-        } else {
-          cursorDrawableField.set(editor, drawableCopy);
-        }
-      } catch (NoSuchFieldException ex) {
-        // Ignore errors to avoid crashing if these private fields don't exist on modified
-        // or future android versions.
-      } catch (IllegalAccessException ex) {
+      // The view has no cursor drawable.
+      if (resourceId == 0) {
+        return;
       }
+
+      Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
+      if (color != null) {
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      } else {
+        drawable.clearColorFilter();
+      }
+
+      Field editorField = TextView.class.getDeclaredField("mEditor");
+      editorField.setAccessible(true);
+      Object editor = editorField.get(view);
+
+      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
+      cursorDrawableField.setAccessible(true);
+      Drawable[] drawables = {drawable, drawable};
+      cursorDrawableField.set(editor, drawables);
+    } catch (NoSuchFieldException ex) {
+      // Ignore errors to avoid crashing if these private fields don't exist on modified
+      // or future android versions.
+    } catch (IllegalAccessException ex) {
     }
   }
 
@@ -1053,23 +1103,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
-      if (stateManager.hasStateWrapper()) {
-        // Fabric: communicate to C++ layer that text has changed
-        // We need to call `incrementAndGetEventCounter` here explicitly because this
-        // update may race with other updates.
-        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
-        // on the native side, triggering a measure.
-        stateManager.setState(
-            new FabricViewStateManager.StateUpdateCallback() {
-              @Override
-              public WritableMap getStateUpdate() {
-                WritableMap map = new WritableNativeMap();
-                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                map.putInt("opaqueCacheId", mEditText.getId());
-                return map;
-              }
-            });
+      StateWrapper stateWrapper = mEditText.getStateWrapper();
+
+      if (stateWrapper != null) {
+        WritableMap newStateData = new WritableNativeMap();
+        newStateData.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+        newStateData.putInt("opaqueCacheId", mEditText.getId());
+        stateWrapper.updateState(newStateData);
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1317,8 +1357,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    FabricViewStateManager stateManager = view.getFabricViewStateManager();
-    if (!stateManager.hasStateWrapper()) {
+    StateWrapper stateManager = view.getStateWrapper();
+    if (stateManager == null) {
       // HACK: In Fabric, we assume all components start off with zero padding, which is
       // not true for TextInput components. We expose the theme's default padding via
       // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
@@ -1326,7 +1366,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setPadding(0, 0, 0, 0);
     }
 
-    stateManager.setStateWrapper(stateWrapper);
+    view.setStateWrapper(stateWrapper);
 
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {

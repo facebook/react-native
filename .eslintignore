@@ -6,5 +6,6 @@ packages/react-native/Libraries/Renderer/*
 packages/react-native/Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
+packages/debugger-frontend/dist/**/*
 packages/react-native-codegen/lib
 tools/eslint/rules/sort-imports.js

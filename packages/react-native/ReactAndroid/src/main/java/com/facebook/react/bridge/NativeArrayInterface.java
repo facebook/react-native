@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge;
 
-public interface NativeArrayInterface {
+interface NativeArrayInterface {
   @Override
   String toString();
 }

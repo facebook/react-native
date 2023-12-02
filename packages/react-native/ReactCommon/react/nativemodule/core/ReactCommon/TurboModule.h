@@ -44,8 +44,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   // Note: keep this method declared inline to avoid conflicts
   // between RTTI and non-RTTI compilation units
   facebook::jsi::Value get(
-      facebook::jsi::Runtime &runtime,
-      const facebook::jsi::PropNameID &propName) override {
+      facebook::jsi::Runtime& runtime,
+      const facebook::jsi::PropNameID& propName) override {
     {
       auto prop = create(runtime, propName);
       // If we have a JS wrapper, cache the result of this lookup
@@ -60,7 +60,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   }
 
   virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(
-      facebook::jsi::Runtime &runtime) override {
+      facebook::jsi::Runtime& runtime) override {
     std::vector<jsi::PropNameID> result;
     result.reserve(methodMap_.size());
     for (auto it = methodMap_.cbegin(); it != methodMap_.cend(); ++it) {
@@ -76,15 +76,15 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   struct MethodMetadata {
     size_t argCount;
     facebook::jsi::Value (*invoker)(
-        facebook::jsi::Runtime &rt,
-        TurboModule &turboModule,
-        const facebook::jsi::Value *args,
+        facebook::jsi::Runtime& rt,
+        TurboModule& turboModule,
+        const facebook::jsi::Value* args,
         size_t count);
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
 
   using ArgFactory =
-      std::function<void(jsi::Runtime &runtime, std::vector<jsi::Value> &args)>;
+      std::function<void(jsi::Runtime& runtime, std::vector<jsi::Value>& args)>;
 
   /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and
@@ -99,28 +99,28 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
    *  });
    */
   void emitDeviceEvent(
-      jsi::Runtime &runtime,
-      const std::string &eventName,
+      jsi::Runtime& runtime,
+      const std::string& eventName,
       ArgFactory argFactory = nullptr);
 
   virtual jsi::Value create(
-      jsi::Runtime &runtime,
-      const jsi::PropNameID &propName) {
+      jsi::Runtime& runtime,
+      const jsi::PropNameID& propName) {
     std::string propNameUtf8 = propName.utf8(runtime);
     auto p = methodMap_.find(propNameUtf8);
     if (p == methodMap_.end()) {
       // Method was not found, let JS decide what to do.
       return facebook::jsi::Value::undefined();
     } else {
-      const MethodMetadata &meta = p->second;
+      const MethodMetadata& meta = p->second;
       return jsi::Function::createFromHostFunction(
           runtime,
           propName,
           static_cast<unsigned int>(meta.argCount),
           [this, meta](
-              jsi::Runtime &rt,
-              [[maybe_unused]] const jsi::Value &thisVal,
-              const jsi::Value *args,
+              jsi::Runtime& rt,
+              [[maybe_unused]] const jsi::Value& thisVal,
+              const jsi::Value* args,
               size_t count) { return meta.invoker(rt, *this, args, count); });
     }
   }
@@ -136,6 +136,6 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  * given a name.
  */
 using TurboModuleProviderFunctionType =
-    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
+    std::function<std::shared_ptr<TurboModule>(const std::string& name)>;
 
 } // namespace facebook::react

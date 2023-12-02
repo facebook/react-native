@@ -7,7 +7,7 @@
 # It sets up the Fabric dependencies.
 #
 # @parameter react_native_path: relative path to react-native
-def setup_fabric!(react_native_path: "../node_modules/react-native", new_arch_enabled: false)
+def setup_fabric!(react_native_path: "../node_modules/react-native")
     pod 'React-Fabric', :path => "#{react_native_path}/ReactCommon"
     pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
     pod 'React-RCTFabric', :path => "#{react_native_path}/React", :modular_headers => true

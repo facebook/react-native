@@ -5,11 +5,35 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import groovy.json.JsonSlurper
+
 plugins {
-    id("com.android.application")
     id("com.facebook.react")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
+def reactNativeVersionRequireNewArchEnabled(reactNativeDirPath) {
+    def reactNativePackageJson = "$reactNativeDirPath/package.json"
+    def slurper = new JsonSlurper()
+    def jsonData = slurper.parse(new File(reactNativePackageJson))
+    def rnVersion = jsonData.version
+    def regexPattern = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
+
+
+    if (rnVersion =~ regexPattern) {
+        def result = (rnVersion =~ regexPattern).findAll().first()
+
+        def major = result[1].toInteger()
+        if (major > 0 && major < 1000) {
+            return true
+        }
+    }
+    return false
+}
+
+def reactNativeDirPath = "$rootDir/packages/react-native"
+def isNewArchEnabled = project.property("newArchEnabled") == "true" || reactNativeVersionRequireNewArchEnabled(reactNativeDirPath)
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -19,11 +43,11 @@ react {
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
     root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = file("$rootDir/packages/react-native")
+    reactNativeDir = file(reactNativeDirPath)
     //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
     codegenDir = file("$rootDir/node_modules/@react-native/codegen")
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    cliFile = file("$rootDir/packages/react-native/cli.js")
+    cliFile = file("$reactNativeDirPath/cli.js")
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -53,7 +77,7 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    hermesCommand = "$rootDir/packages/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 }
 
@@ -89,12 +113,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -116,12 +140,14 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
+        buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
     }
     externalNativeBuild {
         cmake {
@@ -147,7 +173,7 @@ android {
         java {
             // SampleTurboModule.
             srcDirs += [
-                "$rootDir/packages/react-native/ReactCommon/react/nativemodule/samples/platform/android",
+                "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
     }
@@ -156,14 +182,13 @@ android {
 dependencies {
     // Build React Native from source
     implementation project(':packages:react-native:ReactAndroid')
-    implementation project(':packages:react-native:ReactAndroid:flipper-integration')
 
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
     jscImplementation jscFlavor
 
-    androidTestImplementation 'junit:junit:4.12'
+    testImplementation(libs.junit)
 }
 
 android {
@@ -171,7 +196,7 @@ android {
         cmake {
             // RN Tester is doing custom linking of C++ libraries therefore needs
             // a dedicated CMakeLists.txt file.
-            if (project.property("newArchEnabled") == "true") {
+            if (isNewArchEnabled) {
                 path("src/main/jni/CMakeLists.txt")
             }
         }
@@ -179,17 +204,23 @@ android {
 }
 
 afterEvaluate {
-    // As we're consuming Hermes from source, we want to make sure
-    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermes")
+    if (project.findProperty("react.internal.useHermesNightly") == null || project.findProperty("react.internal.useHermesNightly").toString() == "false") {
+        // As we're consuming Hermes from source, we want to make sure
+        // `hermesc` is built before we actually invoke the `emit*HermesResource` task
+        createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+    }
 
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.
     // We fixing this by instructing Gradle to always mergeLibs after they've been built.
-    if (project.property("newArchEnabled") == "true") {
+    if (isNewArchEnabled) {
         mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
         mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
         mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
         mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
     }
+
+    // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
+    // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
+    generateCodegenSchemaFromJavaScript.dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

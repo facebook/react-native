@@ -10,7 +10,6 @@
 #include <react/bridging/Convert.h>
 
 #include <ReactCommon/CallInvoker.h>
-#include <butter/function.h>
 #include <jsi/jsi.h>
 
 #include <cstdint>
@@ -25,7 +24,7 @@ struct Bridging;
 template <>
 struct Bridging<void> {
   // Highly generic code may result in "casting" to void.
-  static void fromJs(jsi::Runtime &, const jsi::Value &) {}
+  static void fromJs(jsi::Runtime&, const jsi::Value&) {}
 };
 
 namespace bridging {
@@ -36,12 +35,12 @@ struct function_wrapper;
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...)> {
-  using type = butter::function<R(Args...)>;
+  using type = std::function<R(Args...)>;
 };
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...) const> {
-  using type = butter::function<R(Args...)>;
+  using type = std::function<R(Args...)>;
 };
 
 template <typename T, typename = void>
@@ -63,13 +62,13 @@ template <typename T>
 using bridging_t = typename detail::bridging_wrapper<T>::type;
 
 template <typename R, typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
-auto fromJs(jsi::Runtime &rt, T &&value, const std::shared_ptr<CallInvoker> &)
+auto fromJs(jsi::Runtime& rt, T&& value, const std::shared_ptr<CallInvoker>&)
     -> decltype(static_cast<R>(convert(rt, std::forward<T>(value)))) {
   return convert(rt, std::forward<T>(value));
 }
 
 template <typename R, typename T>
-auto fromJs(jsi::Runtime &rt, T &&value, const std::shared_ptr<CallInvoker> &)
+auto fromJs(jsi::Runtime& rt, T&& value, const std::shared_ptr<CallInvoker>&)
     -> decltype(Bridging<remove_cvref_t<R>>::fromJs(
         rt,
         convert(rt, std::forward<T>(value)))) {
@@ -79,9 +78,9 @@ auto fromJs(jsi::Runtime &rt, T &&value, const std::shared_ptr<CallInvoker> &)
 
 template <typename R, typename T>
 auto fromJs(
-    jsi::Runtime &rt,
-    T &&value,
-    const std::shared_ptr<CallInvoker> &jsInvoker)
+    jsi::Runtime& rt,
+    T&& value,
+    const std::shared_ptr<CallInvoker>& jsInvoker)
     -> decltype(Bridging<remove_cvref_t<R>>::fromJs(
         rt,
         convert(rt, std::forward<T>(value)),
@@ -92,26 +91,26 @@ auto fromJs(
 
 template <typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
 auto toJs(
-    jsi::Runtime &rt,
-    T &&value,
-    const std::shared_ptr<CallInvoker> & = nullptr) -> remove_cvref_t<T> {
+    jsi::Runtime& rt,
+    T&& value,
+    const std::shared_ptr<CallInvoker>& = nullptr) -> remove_cvref_t<T> {
   return convert(rt, std::forward<T>(value));
 }
 
 template <typename T>
 auto toJs(
-    jsi::Runtime &rt,
-    T &&value,
-    const std::shared_ptr<CallInvoker> & = nullptr)
+    jsi::Runtime& rt,
+    T&& value,
+    const std::shared_ptr<CallInvoker>& = nullptr)
     -> decltype(Bridging<bridging_t<T>>::toJs(rt, std::forward<T>(value))) {
   return Bridging<bridging_t<T>>::toJs(rt, std::forward<T>(value));
 }
 
 template <typename T>
 auto toJs(
-    jsi::Runtime &rt,
-    T &&value,
-    const std::shared_ptr<CallInvoker> &jsInvoker)
+    jsi::Runtime& rt,
+    T&& value,
+    const std::shared_ptr<CallInvoker>& jsInvoker)
     -> decltype(Bridging<bridging_t<T>>::toJs(
         rt,
         std::forward<T>(value),
@@ -127,7 +126,7 @@ inline constexpr bool supportsFromJs<
     T,
     Arg,
     std::void_t<decltype(fromJs<T>(
-        std::declval<jsi::Runtime &>(),
+        std::declval<jsi::Runtime&>(),
         std::declval<Arg>(),
         nullptr))>> = true;
 
@@ -139,12 +138,12 @@ inline constexpr bool supportsToJs<
     T,
     Ret,
     std::void_t<decltype(toJs(
-        std::declval<jsi::Runtime &>(),
+        std::declval<jsi::Runtime&>(),
         std::declval<T>(),
         nullptr))>> =
     std::is_convertible_v<
         decltype(toJs(
-            std::declval<jsi::Runtime &>(),
+            std::declval<jsi::Runtime&>(),
             std::declval<T>(),
             nullptr)),
         Ret>;

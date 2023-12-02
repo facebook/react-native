@@ -11,9 +11,9 @@
 #import <React/RCTConversions.h>
 #import <React/RCTLog.h>
 
-#import <butter/map.h>
-#import <butter/set.h>
 #import <shared_mutex>
+#import <unordered_map>
+#import <unordered_set>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -46,7 +46,7 @@ using namespace facebook::react;
 // Allow JS runtime to register native components as needed. For static view configs.
 void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime)
 {
-  auto hasComponentProvider = [](std::string const &name) -> bool {
+  auto hasComponentProvider = [](const std::string &name) -> bool {
     return [[RCTComponentViewFactory currentComponentViewFactory]
         registerComponentIfPossible:componentNameByReactViewName(name)];
   };
@@ -59,8 +59,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 }
 
 @implementation RCTComponentViewFactory {
-  butter::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
-  butter::set<std::string> _registeredComponentsNames;
+  std::unordered_map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
+  std::unordered_set<std::string> _registeredComponentsNames;
   ComponentDescriptorProviderRegistry _providerRegistry;
   std::shared_mutex _mutex;
 }
@@ -99,7 +99,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 #pragma clang diagnostic pop
 }
 
-- (BOOL)registerComponentIfPossible:(std::string const &)name
+- (BOOL)registerComponentIfPossible:(const std::string &)name
 {
   if (_registeredComponentsNames.find(name) != _registeredComponentsNames.end()) {
     // Component has already been registered.
@@ -186,7 +186,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 }
 
-- (void)_addDescriptorToProviderRegistry:(ComponentDescriptorProvider const &)provider
+- (void)_addDescriptorToProviderRegistry:(const ComponentDescriptorProvider &)provider
 {
   _registeredComponentsNames.insert(provider.name);
   _providerRegistry.add(provider);

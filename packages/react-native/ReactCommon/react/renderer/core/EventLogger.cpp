@@ -9,13 +9,13 @@
 
 namespace facebook::react {
 
-EventLogger *eventLogger;
+EventLogger* eventLogger;
 
-void setEventLogger(EventLogger *logger) {
+void setEventLogger(EventLogger* logger) {
   eventLogger = logger;
 }
 
-EventLogger *getEventLogger() {
+EventLogger* getEventLogger() {
   return eventLogger;
 }
 

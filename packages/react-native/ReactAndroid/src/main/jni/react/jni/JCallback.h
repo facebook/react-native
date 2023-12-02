@@ -47,7 +47,7 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
   using Callback = std::function<void(folly::dynamic)>;
   JCxxCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
 
-  void invoke(NativeArray *arguments) {
+  void invoke(NativeArray* arguments) {
     callback_(arguments->consume());
   }
 

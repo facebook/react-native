@@ -11,12 +11,6 @@
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
-
 namespace facebook::react {
 
 /*
@@ -51,19 +45,9 @@ class TextInputState final {
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  std::shared_ptr<TextLayoutManager const> layoutManager;
+  std::shared_ptr<const TextLayoutManager> layoutManager;
 
   size_t mostRecentEventCount{0};
-
-#ifdef ANDROID
-  TextInputState(
-      TextInputState const &previousState,
-      folly::dynamic const &data);
-
-  folly::dynamic getDynamic() const;
-
-  MapBuffer getMapBuffer() const;
-#endif
 };
 
 } // namespace facebook::react

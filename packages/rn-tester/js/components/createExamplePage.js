@@ -10,10 +10,11 @@
 
 'use strict';
 
-const React = require('react');
+import type {RNTesterModule} from '../types/RNTesterTypes';
 
 import RNTesterModuleContainer from './RNTesterModuleContainer';
-import type {RNTesterModule} from '../types/RNTesterTypes';
+
+const React = require('react');
 
 const createExamplePage = function (
   title: ?string,

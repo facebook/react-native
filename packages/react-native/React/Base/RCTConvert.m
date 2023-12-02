@@ -84,7 +84,6 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 
   @try { // NSURL has a history of crashing with bad input, so let's be safe
-
     NSURL *URL = [NSURL URLWithString:path];
     if (URL.scheme) { // Was a well-formed absolute URL
       return URL;
@@ -451,26 +450,13 @@ RCT_MULTI_ENUM_CONVERTER(
       @"link" : @(UIDataDetectorTypeLink),
       @"address" : @(UIDataDetectorTypeAddress),
       @"calendarEvent" : @(UIDataDetectorTypeCalendarEvent),
+      @"trackingNumber" : @(UIDataDetectorTypeShipmentTrackingNumber),
+      @"flightNumber" : @(UIDataDetectorTypeFlightNumber),
+      @"lookupSuggestion" : @(UIDataDetectorTypeLookupSuggestion),
       @"none" : @(UIDataDetectorTypeNone),
       @"all" : @(UIDataDetectorTypeAll),
     }),
     UIDataDetectorTypePhoneNumber,
-    unsignedLongLongValue)
-
-RCT_MULTI_ENUM_CONVERTER(
-    WKDataDetectorTypes,
-    (@{
-      @"phoneNumber" : @(WKDataDetectorTypePhoneNumber),
-      @"link" : @(WKDataDetectorTypeLink),
-      @"address" : @(WKDataDetectorTypeAddress),
-      @"calendarEvent" : @(WKDataDetectorTypeCalendarEvent),
-      @"trackingNumber" : @(WKDataDetectorTypeTrackingNumber),
-      @"flightNumber" : @(WKDataDetectorTypeFlightNumber),
-      @"lookupSuggestion" : @(WKDataDetectorTypeLookupSuggestion),
-      @"none" : @(WKDataDetectorTypeNone),
-      @"all" : @(WKDataDetectorTypeAll),
-    }),
-    WKDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
 
 RCT_ENUM_CONVERTER(
@@ -1186,7 +1172,8 @@ RCT_ENUM_CONVERTER(
       @"stretch" : @(YGAlignStretch),
       @"baseline" : @(YGAlignBaseline),
       @"space-between" : @(YGAlignSpaceBetween),
-      @"space-around" : @(YGAlignSpaceAround)
+      @"space-around" : @(YGAlignSpaceAround),
+      @"space-evenly" : @(YGAlignSpaceEvenly)
     }),
     YGAlignFlexStart,
     intValue)
