@@ -1190,12 +1190,14 @@ function InternalTextInput(props: Props): React.Node {
     const nativeUpdate: {text?: string, selection?: Selection} = {};
 
     if (
-      lastNativeText !== props.value && typeof props.value === 'string'
+      lastNativeText !== props.value &&
+      typeof props.value === 'string'
     ) {
       nativeUpdate.text = props.value;
       setLastNativeText(props.value);
     } else if (
-      lastNativeText !== childrenValue && typeof childrenValue === 'string'
+      lastNativeText !== childrenValue &&
+      typeof childrenValue === 'string'
     ) {
       nativeUpdate.text = childrenValue;
       setLastNativeText(childrenValue);
