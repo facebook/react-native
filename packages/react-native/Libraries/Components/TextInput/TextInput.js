@@ -1158,11 +1158,11 @@ function InternalTextInput(props: Props): React.Node {
   if (Object.prototype.toString.call(childrenProp) === '[object Array]') {
     childrenProp = <Text>{childrenProp}</Text>;
   }
-  
+
   const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
       const string = React.Children.map(child.props.children, innerChild => {
-        return innerChild.props?.children
+        return innerChild?.props?.children;
       })?.join('');
       return string;
     } else {
@@ -1189,7 +1189,9 @@ function InternalTextInput(props: Props): React.Node {
       typeof props.value === 'string') {
         nativeUpdate.text = props.value;
         setLastNativeText(props.value);
-    } else if (lastNativeText !== childrenValue && 
+    }
+    
+    if (lastNativeText !== childrenValue && 
       typeof childrenValue === 'string') {
         nativeUpdate.text = childrenValue;
         setLastNativeText(childrenValue);
