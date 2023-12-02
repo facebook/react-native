@@ -1162,11 +1162,7 @@ function InternalTextInput(props: Props): React.Node {
   const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
       const string = React.Children.map(child.props.children, innerChild => {
-        if (React.isValidElement(innerChild)) {
-          return innerChild.props.children;
-        } else {
-          return innerChild;
-        }
+        return innerChild?.props !== undefined ? innerChild.props?.children : innerChild;
       })?.join('');
       return string;
     } else {
@@ -1189,14 +1185,10 @@ function InternalTextInput(props: Props): React.Node {
   useLayoutEffect(() => {
     const nativeUpdate: {text?: string, selection?: Selection} = {};
 
-    if (lastNativeText !== props.value && 
-      typeof props.value === 'string'
-    ) {
+    if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
       setLastNativeText(props.value);
-    } else if (lastNativeText !== childrenValue && 
-      typeof childrenValue === 'string'
-    ) {
+    } else if (lastNativeText !== childrenValue && typeof childrenValue === 'string') {
       nativeUpdate.text = childrenValue;
       setLastNativeText(childrenValue);
     }
