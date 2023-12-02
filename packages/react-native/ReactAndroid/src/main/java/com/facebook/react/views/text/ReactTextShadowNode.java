@@ -219,12 +219,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         break;
     }
 
-    boolean avoidCalculatingTextBreakSingleLine = false;
-    if (boring != null) {
-      avoidCalculatingTextBreakSingleLine =
-          mNumberOfLines == 1 && mAdjustsFontSizeToFit != true && boring.width > width;
-    }
-
     if (boring == null
         && (unconstrainedWidth
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -280,8 +274,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
       }
-
-      builder.setEllipsizedWidth(180);
       layout = builder.build();
     }
     return layout;
