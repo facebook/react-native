@@ -132,17 +132,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           if (widthMode == YogaMeasureMode.EXACTLY) {
             layoutWidth = width;
           } else {
-            if (mNumberOfLines == 1) { // add other conditions (to skip with adjustFontSizeToFit)
-              layoutWidth = layout.getWidth();
-            } else {
-              for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-                boolean endsWithNewLine =
-                    text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-                float lineWidth =
-                    endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-                if (lineWidth > layoutWidth) {
-                  layoutWidth = lineWidth;
-                }
+            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+              boolean endsWithNewLine =
+                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+              float lineWidth =
+                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+              if (lineWidth > layoutWidth) {
+                layoutWidth = lineWidth;
               }
             }
             if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
@@ -219,6 +215,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         break;
     }
 
+    boolean overrideTextBreakStrategySingleLine = false;
+    if (boring != null) {
+      overrideTextBreakStrategySingleLine =
+          mNumberOfLines == 1 && mAdjustsFontSizeToFit != true && boring.width > width;
+    }
+
     if (boring == null
         && (unconstrainedWidth
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -241,7 +243,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       }
       layout = builder.build();
 
-    } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+    } else if (boring != null
+        && (unconstrainedWidth || boring.width <= width || overrideTextBreakStrategySingleLine)) {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
