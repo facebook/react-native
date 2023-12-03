@@ -1153,12 +1153,12 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputNativeCommands
         : RCTSinglelineTextInputNativeCommands;
   }
-  
-  const extractTextFromComponent = (component) => {
+
+  const extractTextFromComponent = component => {
     return component.defaultProps?.text || '';
   };
 
-  const extractTextFromElement = (element) => {
+  const extractTextFromElement = element => {
     if (typeof element.type === 'string') {
       return element.props.children?.toString() || '';
     } else if (typeof element.type === 'function') {
@@ -1181,10 +1181,7 @@ function InternalTextInput(props: Props): React.Node {
   const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
       return extractTextFromElement(child);
-    } else if (
-      typeof child === 'string' ||
-      typeof child === 'number'
-    ) {
+    } else if (typeof child === 'string' || typeof child === 'number') {
       return child.toString();
     } else {
       return '';
