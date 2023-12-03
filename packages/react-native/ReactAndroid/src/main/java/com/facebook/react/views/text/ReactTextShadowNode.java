@@ -197,7 +197,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     textPaint.setTextSize(mTextAttributes.getEffectiveFontSize());
     Layout layout;
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+    float desiredWidth = Float.NaN;
+    boolean overrideTextBreakStrategySingleLine = false;
+    if (boring == null) {
+      desiredWidth = Layout.getDesiredWidth(text, textPaint);
+    } else {
+      overrideTextBreakStrategySingleLine =
+          mNumberOfLines == 1 && !mAdjustsFontSizeToFit && boring.width > width;
+    }
 
     // technically, width should never be negative, but there is currently a bug in
     boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
@@ -213,12 +220,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       case Gravity.CENTER_HORIZONTAL:
         alignment = Layout.Alignment.ALIGN_CENTER;
         break;
-    }
-
-    boolean overrideTextBreakStrategySingleLine = false;
-    if (boring != null) {
-      overrideTextBreakStrategySingleLine =
-          mNumberOfLines == 1 && !mAdjustsFontSizeToFit && boring.width > width;
     }
 
     if (boring == null
