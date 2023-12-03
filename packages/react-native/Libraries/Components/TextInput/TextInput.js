@@ -1159,12 +1159,12 @@ function InternalTextInput(props: Props): React.Node {
     React.isValidElement(childrenProp) &&
     Object.prototype.toString.call(childrenProp) !== '[object Array]'
   ) {
-    childrenProp = React.Children.toArray(childrenProp?.props?.children);
+    childrenProp = React.Children.toArray(childrenProp.props.children);
   }
 
   const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
-      return React.Children.toArray(child?.props?.children)?.join('');
+      return child.props.children;
     } else {
       return child;
     }
