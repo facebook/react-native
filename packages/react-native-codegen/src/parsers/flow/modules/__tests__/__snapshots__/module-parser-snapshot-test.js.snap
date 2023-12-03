@@ -51,7 +51,59 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
   'modules': {
     'NativeSampleTurboModule': {
       'type': 'NativeModule',
-      'aliasMap': {},
+      'aliasMap': {
+        'BinaryTreeNode': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'left',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'BinaryTreeNode'
+              }
+            },
+            {
+              'name': 'value',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'right',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'BinaryTreeNode'
+              }
+            }
+          ]
+        },
+        'GraphNode': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'label',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'neighbors',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'GraphNode'
+                }
+              }
+            }
+          ]
+        }
+      },
       'enumMap': {
         'Quality': {
           'name': 'Quality',
@@ -197,6 +249,48 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                     'name': 'StringOptions',
                     'type': 'EnumDeclaration',
                     'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getBinaryTreeNode',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'BinaryTreeNode'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'BinaryTreeNode'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getGraphNode',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'GraphNode'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'GraphNode'
                   }
                 }
               ]

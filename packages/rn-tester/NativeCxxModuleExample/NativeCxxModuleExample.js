@@ -56,6 +56,12 @@ export type ValueStruct = {|
 
 export type CustomHostObject = {};
 
+export type BinaryTreeNode = {
+  left?: BinaryTreeNode,
+  value: number,
+  right?: BinaryTreeNode,
+};
+
 export type GraphNode = {
   label: string,
   neighbors?: Array<GraphNode>,
@@ -68,6 +74,7 @@ export interface Spec extends TurboModule {
   +getCustomEnum: (arg: EnumInt) => EnumInt;
   +getCustomHostObject: () => CustomHostObject;
   +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
+  +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   +getGraphNode: (arg: GraphNode) => GraphNode;
   +getNumEnum: (arg: EnumInt) => EnumFloat;
   +getStrEnum: (arg: EnumNone) => EnumStr;

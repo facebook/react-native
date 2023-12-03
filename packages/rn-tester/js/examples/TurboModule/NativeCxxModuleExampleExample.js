@@ -43,6 +43,7 @@ type Examples =
   | 'getConstants'
   | 'getCustomEnum'
   | 'getCustomHostObject'
+  | 'getBinaryTreeNode'
   | 'getGraphNode'
   | 'getNumEnum'
   | 'getStrEnum'
@@ -104,6 +105,12 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.consumeCustomHostObject(
         NativeCxxModuleExample?.getCustomHostObject(),
       ),
+    getBinaryTreeNode: () =>
+      NativeCxxModuleExample?.getBinaryTreeNode({
+        left: {value: 1},
+        value: 0,
+        right: {value: 2},
+      }),
     getGraphNode: () =>
       NativeCxxModuleExample?.getGraphNode({
         label: 'root',
