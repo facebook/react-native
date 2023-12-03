@@ -1153,6 +1153,22 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputNativeCommands
         : RCTSinglelineTextInputNativeCommands;
   }
+  
+  const extractTextFromComponent = (component) => {
+    return component.defaultProps?.text || '';
+  };
+
+  const extractTextFromElement = (element) => {
+    if (typeof element.type === 'string') {
+      return element.props.children?.toString() || '';
+    } else if (typeof element.type === 'function') {
+      return extractTextFromComponent(element.type);
+    } else if (Object.prototype.toString.call(element) === '[object Object]') {
+      return element?.props?.children;
+    } else {
+      return '';
+    }
+  };
 
   let childrenProp = props.children;
   if (
@@ -1163,13 +1179,15 @@ function InternalTextInput(props: Props): React.Node {
   }
 
   const childrenValue = React.Children.map(childrenProp, child => {
-    if (
-      React.isValidElement(child) &&
-      Object.prototype.toString.call(child) === '[object Object]'
+    if (React.isValidElement(child)) {
+      return extractTextFromElement(child);
+    } else if (
+      typeof child === 'string' ||
+      typeof child === 'number'
     ) {
-      return child.props.children;
+      return child.toString();
     } else {
-      return child;
+      return '';
     }
   })?.join('');
 
