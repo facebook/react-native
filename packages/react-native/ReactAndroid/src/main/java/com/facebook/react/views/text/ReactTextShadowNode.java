@@ -218,7 +218,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     boolean overrideTextBreakStrategySingleLine = false;
     if (boring != null) {
       overrideTextBreakStrategySingleLine =
-          mNumberOfLines == 1 && mAdjustsFontSizeToFit != true && boring.width > width;
+          mNumberOfLines == 1 && !mAdjustsFontSizeToFit && boring.width > width;
     }
 
     if (boring == null
