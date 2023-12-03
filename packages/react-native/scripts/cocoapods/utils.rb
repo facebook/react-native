@@ -613,4 +613,46 @@ class ReactNativePodsUtils
         }
         return result
     end
+
+    def self.add_ndebug_flag_to_pods_in_release(installer)
+        ndebug_flag = " -DNDEBUG"
+
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CFLAGS', ndebug_flag);
+
+                xcconfig_path = aggregate_target.xcconfig_path(config_name)
+                config_file.save_as(xcconfig_path)
+            end
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CFLAGS', ndebug_flag);
+            end
+        end
+    end
+
+    def self.add_flag_to_map_with_inheritance(map, field, flag)
+        if map[field] == nil
+            map[field] = "$(inherited)" + flag
+        else
+            unless map[field].include?(flag)
+                map[field] = map[field] + flag
+            end
+            unless map[field].include?("$(inherited)")
+                map[field] = "$(inherited) " + map[field]
+            end
+        end
+    end
 end

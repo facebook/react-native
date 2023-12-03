@@ -11,7 +11,6 @@ import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -374,30 +373,24 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       mTurboModuleRegistry.invalidate();
                     }
 
-                    getReactQueueConfiguration()
-                        .getUIQueueThread()
-                        .runOnQueue(
+                    // Kill non-UI threads from neutral third party
+                    // potentially expensive, so don't run on UI thread
+                    new Thread(
                             () -> {
-                              // AsyncTask.execute must be executed from the UI Thread
-                              AsyncTask.execute(
-                                  () -> {
-                                    // Kill non-UI threads from neutral third party
-                                    // potentially expensive, so don't run on UI thread
+                              // contextHolder is used as a lock to guard against
+                              // other users of the JS VM having the VM destroyed
+                              // underneath them, so notify them before we reset
+                              // Native
+                              mJavaScriptContextHolder.clear();
 
-                                    // contextHolder is used as a lock to guard against
-                                    // other users of the JS VM having the VM destroyed
-                                    // underneath them, so notify them before we reset
-                                    // Native
-                                    mJavaScriptContextHolder.clear();
-
-                                    mHybridData.resetNative();
-                                    getReactQueueConfiguration().destroy();
-                                    FLog.d(
-                                        ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
-                                    ReactMarker.logMarker(
-                                        ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
-                                  });
-                            });
+                              mHybridData.resetNative();
+                              getReactQueueConfiguration().destroy();
+                              FLog.w(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+                              ReactMarker.logMarker(
+                                  ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
+                            },
+                            "destroy_react_context")
+                        .start();
                   });
         });
 

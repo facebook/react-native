@@ -97,7 +97,7 @@ Pod::Spec.new do |s|
     if ENV['USE_FRAMEWORKS']
       header_search_path = header_search_path + [
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
-        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
       ]
     end
@@ -198,8 +198,7 @@ Pod::Spec.new do |s|
     ss.subspec "textinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/iostextinput/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/textinput/iostextinput/tests"
+      sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
 
     end
