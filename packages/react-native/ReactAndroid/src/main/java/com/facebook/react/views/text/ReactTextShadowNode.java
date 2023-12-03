@@ -202,6 +202,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     if (boring == null) {
       desiredWidth = Layout.getDesiredWidth(text, textPaint);
     } else {
+      // StaticLayout#getLineWidth does not work with single-line text.
       overrideTextBreakStrategySingleLine =
           mNumberOfLines == 1 && !mAdjustsFontSizeToFit && boring.width > width;
     }
@@ -246,8 +247,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
     } else if (boring != null
         && (unconstrainedWidth || boring.width <= width || overrideTextBreakStrategySingleLine)) {
-      // Is used for single-line, boring text when the width is either unknown or bigger
-      // than the width of the text.
+      // Is used for single-line, boring text when adjustsFontSizeToFit is disabled.
       layout =
           BoringLayout.make(
               text,
