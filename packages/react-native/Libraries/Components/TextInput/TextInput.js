@@ -1165,10 +1165,10 @@ function InternalTextInput(props: Props): React.Node {
   const childrenValue = React.Children.map(childrenProp, child => {
     if (React.isValidElement(child)) {
       const elementType = child.type;
-      if (typeof elementType === 'string') {
-        return child;
-      } else {
+      if (elementType?.$$typeof !== undefined) {
         return child.props.children;
+      } else {
+        return child;
       }
     } else {
       return child;
