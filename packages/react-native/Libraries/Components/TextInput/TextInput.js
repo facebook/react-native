@@ -1464,7 +1464,13 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    style = props.multiline === true ? [styles.multilineInput, style] : style;
+    const hasPaddingTopStyle =
+      props.style?.padding != null ||
+      props.style?.paddingVertical != null ||
+      props.style?.paddingTop != null;
+    if (props.multiline === true && !hasPaddingTopStyle) {
+      style = [styles.multilineInput, style];
+    }
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
