@@ -65,6 +65,16 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
   return value->a_ + std::to_string(value->b_);
 }
 
+GraphNode NativeCxxModuleExample::getGraphNode(
+    jsi::Runtime& rt,
+    GraphNode arg) {
+  if (arg.neighbors) {
+    arg.neighbors->emplace_back(GraphNode{.label = "top"});
+    arg.neighbors->emplace_back(GraphNode{.label = "down"});
+  }
+  return arg;
+}
+
 NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
     NativeCxxModuleExampleCxxEnumInt arg) {
