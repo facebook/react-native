@@ -1469,7 +1469,7 @@ function InternalTextInput(props: Props): React.Node {
       props.style?.paddingVertical != null ||
       props.style?.paddingTop != null;
     if (props.multiline === true && !hasPaddingTopStyle) {
-      style = [styles.multilineInput, style];
+      style = [styles.multilineDefault, style];
     }
 
     const useOnChangeSync =
@@ -1777,7 +1777,7 @@ export type TextInputComponentStatics = $ReadOnly<{|
 |}>;
 
 const styles = StyleSheet.create({
-  multilineInput: {
+  multilineDefault: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
     // to single-line RCTSinglelineTextInputView defaults, using the system defaults
     // of font size 17 and a height of 31 points.
