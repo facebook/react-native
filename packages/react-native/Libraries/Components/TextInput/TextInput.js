@@ -1180,9 +1180,7 @@ function InternalTextInput(props: Props): React.Node {
         return React.Children.toArray(child);
       } else if (typeof child.type === 'function') {
         return React.Children.toArray(child);
-      } else if (
-        Object.prototype.toString.call(child) === '[object Object]'
-      ) {
+      } else if (Object.prototype.toString.call(child) === '[object Object]') {
         return React.Children.toArray(child?.props?.children);
       } else {
         return child;
@@ -1190,8 +1188,7 @@ function InternalTextInput(props: Props): React.Node {
     } else {
       return child;
     }
-  }
-  
+  };
 
   const childrenValue = React.Children.map(childrenProp(), child => {
     if (React.isValidElement(child)) {
