@@ -11,12 +11,38 @@ plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.binary.compatibility.validator) apply true
 }
 
 val reactAndroidProperties = java.util.Properties()
 
 File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStream().use {
   reactAndroidProperties.load(it)
+}
+
+apiValidation {
+  ignoredPackages.addAll(
+      listOf(
+          "com.facebook.fbreact",
+          "com.facebook.react.flipper",
+          "com.facebook.debug",
+          "com.facebook.hermes",
+          "com.facebook.perftest",
+          "com.facebook.proguard",
+          "com.facebook.react.module.processing",
+          "com.facebook.systrace",
+          "com.facebook.yoga",
+          "com.facebook.react.internal",
+          "com.facebook.react.bridgeless.internal"))
+
+  ignoredClasses.addAll(listOf("com.facebook.react.BuildConfig"))
+
+  nonPublicMarkers.addAll(
+      listOf(
+          "com.facebook.react.common.annotations.UnstableReactNativeAPI",
+          "com.facebook.react.common.annotations.VisibleForTesting"))
+
+  validationDisabled = true
 }
 
 version =
