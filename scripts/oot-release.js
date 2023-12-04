@@ -9,10 +9,13 @@
 const forEachPackage = require('./monorepo/for-each-package');
 const {applyPackageVersions, publishPackage} = require('./npm-utils');
 const updateTemplatePackage = require('./update-template-package');
+const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const {cat, echo, exit} = require('shelljs');
 const yargs = require('yargs');
+
+const REPO_ROOT = path.resolve(__dirname, '../');
 
 /**
  * This script updates core packages to the version of React Native that we are basing on,
@@ -115,6 +118,12 @@ function releaseOOT(
     ...visionOSPackages.reduce((acc, pkg) => ({...acc, [pkg]: newVersion}), {}),
   });
   echo(`Updating template and it's dependencies to ${reactNativeVersion}`);
+
+  echo('Building packages...\n');
+  execSync('node ./scripts/build/build.js', {
+    cwd: REPO_ROOT,
+    stdio: [process.stdin, process.stdout, process.stderr],
+  });
 
   // Release visionOS packages only if OTP is passed
   if (!oneTimePassword) {

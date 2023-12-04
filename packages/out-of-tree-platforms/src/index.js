@@ -18,7 +18,7 @@ type ResolverConfig = {
  * Creates a custom Metro resolver that maps platform extensions to package names.
  * To be used in app's `metro.config.js` as `resolver.resolveRequest`.
  */
-const getPlatformResolver = (config: ResolverConfig): CustomResolver => {
+export const getPlatformResolver = (config: ResolverConfig): CustomResolver => {
   return (context, moduleName, platform) => {
     // `customResolverOptions` is populated through `?resolver.platformExtension` query params
     // in the jsBundleURLForBundleRoot method of the react-native/React/Base/RCTBundleURLProvider.mm
@@ -42,5 +42,3 @@ const getPlatformResolver = (config: ResolverConfig): CustomResolver => {
     return context.resolveRequest(context, modifiedModuleName, platform);
   };
 };
-
-module.exports = {getPlatformResolver};

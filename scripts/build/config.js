@@ -45,6 +45,10 @@ const buildConfig /*: BuildConfig */ = {
     'community-cli-plugin': {
       target: 'node',
     },
+    'out-of-tree-platforms': {
+      target: 'node',
+      emitTypeScriptDefs: true,
+    },
     'dev-middleware': {
       target: 'node',
       emitTypeScriptDefs: true,
