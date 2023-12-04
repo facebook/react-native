@@ -36,23 +36,23 @@ export type UnionFloat = 1.44 | 2.88 | 5.76;
 export type UnionString = 'One' | 'Two' | 'Three';
 export type UnionObject = {value: number} | {low: string};
 
-export type ConstantsStruct = {|
+export type ConstantsStruct = {
   const1: boolean,
   const2: number,
   const3: string,
-|};
+};
 
-export type ObjectStruct = {|
+export type ObjectStruct = {
   a: number,
   b: string,
   c?: ?string,
-|};
+};
 
-export type ValueStruct = {|
+export type ValueStruct = {
   x: number,
   y: string,
   z: ObjectStruct,
-|};
+};
 
 export type CustomHostObject = {};
 
