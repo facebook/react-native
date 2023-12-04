@@ -352,25 +352,30 @@ static void positionAbsoluteChild(
       : ((resolveChildAlignment(parent, child) == Align::FlexEnd) ^
          (parent->getStyle().flexWrap() == Wrap::WrapReverse));
 
-  if (child->isFlexEndPositionDefined(axis) &&
-      !child->isFlexStartPositionDefined(axis)) {
+  if (child->isFlexEndPositionDefined(axis, direction) &&
+      !child->isFlexStartPositionDefined(axis, direction)) {
     child->setLayoutPosition(
         containingNode->getLayout().measuredDimension(dimension(axis)) -
             child->getLayout().measuredDimension(dimension(axis)) -
             containingNode->getFlexEndBorder(axis, direction) -
             child->getFlexEndMargin(
                 axis,
+                direction,
                 isAxisRow ? containingBlockWidth : containingBlockHeight) -
             child->getFlexEndPosition(
-                axis, isAxisRow ? containingBlockWidth : containingBlockHeight),
+                axis,
+                direction,
+                isAxisRow ? containingBlockWidth : containingBlockHeight),
         flexStartEdge(axis));
-  } else if (!child->isFlexStartPositionDefined(axis) && shouldCenter) {
+  } else if (
+      !child->isFlexStartPositionDefined(axis, direction) && shouldCenter) {
     child->setLayoutPosition(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))) /
             2.0f,
         flexStartEdge(axis));
-  } else if (!child->isFlexStartPositionDefined(axis) && shouldFlexEnd) {
+  } else if (
+      !child->isFlexStartPositionDefined(axis, direction) && shouldFlexEnd) {
     child->setLayoutPosition(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))),
@@ -378,14 +383,17 @@ static void positionAbsoluteChild(
   } else if (
       parent->getConfig()->isExperimentalFeatureEnabled(
           ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(axis)) {
+      child->isFlexStartPositionDefined(axis, direction)) {
     child->setLayoutPosition(
         child->getFlexStartPosition(
             axis,
+            direction,
             containingNode->getLayout().measuredDimension(dimension(axis))) +
             containingNode->getFlexStartBorder(axis, direction) +
             child->getFlexStartMargin(
-                axis, isAxisRow ? containingBlockWidth : containingBlockHeight),
+                axis,
+                direction,
+                isAxisRow ? containingBlockWidth : containingBlockHeight),
         flexStartEdge(axis));
   }
 }
@@ -425,15 +433,16 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified width, compute the width based on
     // the left/right offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Row) &&
-        child->isFlexEndPositionDefined(FlexDirection::Row)) {
+    if (child->isFlexStartPositionDefined(FlexDirection::Row, direction) &&
+        child->isFlexEndPositionDefined(FlexDirection::Row, direction)) {
       childWidth =
           containingNode->getLayout().measuredDimension(Dimension::Width) -
           (containingNode->getFlexStartBorder(FlexDirection::Row, direction) +
            containingNode->getFlexEndBorder(FlexDirection::Row, direction)) -
           (child->getFlexStartPosition(
-               FlexDirection::Row, containingBlockWidth) +
-           child->getFlexEndPosition(FlexDirection::Row, containingBlockWidth));
+               FlexDirection::Row, direction, containingBlockWidth) +
+           child->getFlexEndPosition(
+               FlexDirection::Row, direction, containingBlockWidth));
       childWidth = boundAxis(
           child,
           FlexDirection::Row,
@@ -453,17 +462,17 @@ static void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified height, compute the height based on
     // the top/bottom offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Column) &&
-        child->isFlexEndPositionDefined(FlexDirection::Column)) {
+    if (child->isFlexStartPositionDefined(FlexDirection::Column, direction) &&
+        child->isFlexEndPositionDefined(FlexDirection::Column, direction)) {
       childHeight =
           containingNode->getLayout().measuredDimension(Dimension::Height) -
           (containingNode->getFlexStartBorder(
                FlexDirection::Column, direction) +
            containingNode->getFlexEndBorder(FlexDirection::Column, direction)) -
           (child->getFlexStartPosition(
-               FlexDirection::Column, containingBlockHeight) +
+               FlexDirection::Column, direction, containingBlockHeight) +
            child->getFlexEndPosition(
-               FlexDirection::Column, containingBlockHeight));
+               FlexDirection::Column, direction, containingBlockHeight));
       childHeight = boundAxis(
           child,
           FlexDirection::Column,
