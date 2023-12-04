@@ -318,6 +318,78 @@ static void computeFlexBasisForChild(
   child->setLayoutComputedFlexBasisGeneration(generationCount);
 }
 
+/*
+ * Absolutely positioned nodes do not participate in flex layout and thus their
+ * positions can be determined independently from the rest of their siblings.
+ * For each axis there are essentially two cases:
+ *
+ * 1) The node has insets defined. In this case we can just use these to
+ *    determine the position of the node.
+ * 2) The node does not have insets defined. In this case we look at the style
+ *    of the parent to position the node. Things like justify content and
+ *    align content will move absolute children around. If none of these
+ *    special properties are defined, the child is positioned at the start
+ *    (defined by flex direction) of the leading flex line.
+ *
+ * This function does that positioning for the given axis. The spec has more
+ * information on this topic: https://www.w3.org/TR/css-flexbox-1/#abspos-items
+ */
+static void positionAbsoluteChild(
+    const yoga::Node* const containingNode,
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const bool isMainAxis,
+    const float containingBlockWidth,
+    const float containingBlockHeight) {
+  const bool isAxisRow = isRow(axis);
+  const bool shouldCenter = isMainAxis
+      ? parent->getStyle().justifyContent() == Justify::Center
+      : resolveChildAlignment(parent, child) == Align::Center;
+  const bool shouldFlexEnd = isMainAxis
+      ? parent->getStyle().justifyContent() == Justify::FlexEnd
+      : ((resolveChildAlignment(parent, child) == Align::FlexEnd) ^
+         (parent->getStyle().flexWrap() == Wrap::WrapReverse));
+
+  if (child->isFlexEndPositionDefined(axis) &&
+      !child->isFlexStartPositionDefined(axis)) {
+    child->setLayoutPosition(
+        containingNode->getLayout().measuredDimension(dimension(axis)) -
+            child->getLayout().measuredDimension(dimension(axis)) -
+            containingNode->getFlexEndBorder(axis, direction) -
+            child->getFlexEndMargin(
+                axis,
+                isAxisRow ? containingBlockWidth : containingBlockHeight) -
+            child->getFlexEndPosition(
+                axis, isAxisRow ? containingBlockWidth : containingBlockHeight),
+        flexStartEdge(axis));
+  } else if (!child->isFlexStartPositionDefined(axis) && shouldCenter) {
+    child->setLayoutPosition(
+        (parent->getLayout().measuredDimension(dimension(axis)) -
+         child->getLayout().measuredDimension(dimension(axis))) /
+            2.0f,
+        flexStartEdge(axis));
+  } else if (!child->isFlexStartPositionDefined(axis) && shouldFlexEnd) {
+    child->setLayoutPosition(
+        (parent->getLayout().measuredDimension(dimension(axis)) -
+         child->getLayout().measuredDimension(dimension(axis))),
+        flexStartEdge(axis));
+  } else if (
+      parent->getConfig()->isExperimentalFeatureEnabled(
+          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
+      child->isFlexStartPositionDefined(axis)) {
+    child->setLayoutPosition(
+        child->getFlexStartPosition(
+            axis,
+            containingNode->getLayout().measuredDimension(dimension(axis))) +
+            containingNode->getFlexStartBorder(axis, direction) +
+            child->getFlexStartMargin(
+                axis, isAxisRow ? containingBlockWidth : containingBlockHeight),
+        flexStartEdge(axis));
+  }
+}
+
 static void layoutAbsoluteChild(
     const yoga::Node* const containingNode,
     const yoga::Node* const node,
@@ -472,94 +544,24 @@ static void layoutAbsoluteChild(
       depth,
       generationCount);
 
-  if (child->isFlexEndPositionDefined(mainAxis) &&
-      !child->isFlexStartPositionDefined(mainAxis)) {
-    child->setLayoutPosition(
-        containingNode->getLayout().measuredDimension(dimension(mainAxis)) -
-            child->getLayout().measuredDimension(dimension(mainAxis)) -
-            containingNode->getFlexEndBorder(mainAxis, direction) -
-            child->getFlexEndMargin(
-                mainAxis,
-                isMainAxisRow ? containingBlockWidth : containingBlockHeight) -
-            child->getFlexEndPosition(
-                mainAxis,
-                isMainAxisRow ? containingBlockWidth : containingBlockHeight),
-        flexStartEdge(mainAxis));
-  } else if (
-      !child->isFlexStartPositionDefined(mainAxis) &&
-      node->getStyle().justifyContent() == Justify::Center) {
-    child->setLayoutPosition(
-        (node->getLayout().measuredDimension(dimension(mainAxis)) -
-         child->getLayout().measuredDimension(dimension(mainAxis))) /
-            2.0f,
-        flexStartEdge(mainAxis));
-  } else if (
-      !child->isFlexStartPositionDefined(mainAxis) &&
-      node->getStyle().justifyContent() == Justify::FlexEnd) {
-    child->setLayoutPosition(
-        (node->getLayout().measuredDimension(dimension(mainAxis)) -
-         child->getLayout().measuredDimension(dimension(mainAxis))),
-        flexStartEdge(mainAxis));
-  } else if (
-      node->getConfig()->isExperimentalFeatureEnabled(
-          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(mainAxis)) {
-    child->setLayoutPosition(
-        child->getFlexStartPosition(
-            mainAxis,
-            containingNode->getLayout().measuredDimension(
-                dimension(mainAxis))) +
-            containingNode->getFlexStartBorder(mainAxis, direction) +
-            child->getFlexStartMargin(
-                mainAxis,
-                isMainAxisRow ? containingBlockWidth : containingBlockHeight),
-        flexStartEdge(mainAxis));
-  }
-
-  if (child->isFlexEndPositionDefined(crossAxis) &&
-      !child->isFlexStartPositionDefined(crossAxis)) {
-    child->setLayoutPosition(
-        containingNode->getLayout().measuredDimension(dimension(crossAxis)) -
-            child->getLayout().measuredDimension(dimension(crossAxis)) -
-            containingNode->getFlexEndBorder(crossAxis, direction) -
-            child->getFlexEndMargin(
-                crossAxis,
-                isMainAxisRow ? containingBlockHeight : containingBlockWidth) -
-            child->getFlexEndPosition(
-                crossAxis,
-                isMainAxisRow ? containingBlockHeight : containingBlockWidth),
-        flexStartEdge(crossAxis));
-  } else if (
-      !child->isFlexStartPositionDefined(crossAxis) &&
-      resolveChildAlignment(node, child) == Align::Center) {
-    child->setLayoutPosition(
-        (node->getLayout().measuredDimension(dimension(crossAxis)) -
-         child->getLayout().measuredDimension(dimension(crossAxis))) /
-            2.0f,
-        flexStartEdge(crossAxis));
-  } else if (
-      !child->isFlexStartPositionDefined(crossAxis) &&
-      ((resolveChildAlignment(node, child) == Align::FlexEnd) ^
-       (node->getStyle().flexWrap() == Wrap::WrapReverse))) {
-    child->setLayoutPosition(
-        (node->getLayout().measuredDimension(dimension(crossAxis)) -
-         child->getLayout().measuredDimension(dimension(crossAxis))),
-        flexStartEdge(crossAxis));
-  } else if (
-      containingNode->getConfig()->isExperimentalFeatureEnabled(
-          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(crossAxis)) {
-    child->setLayoutPosition(
-        child->getFlexStartPosition(
-            crossAxis,
-            containingNode->getLayout().measuredDimension(
-                dimension(crossAxis))) +
-            containingNode->getFlexStartBorder(crossAxis, direction) +
-            child->getFlexStartMargin(
-                crossAxis,
-                isMainAxisRow ? containingBlockHeight : containingBlockWidth),
-        flexStartEdge(crossAxis));
-  }
+  positionAbsoluteChild(
+      containingNode,
+      node,
+      child,
+      direction,
+      mainAxis,
+      true /*isMainAxis*/,
+      containingBlockWidth,
+      containingBlockHeight);
+  positionAbsoluteChild(
+      containingNode,
+      node,
+      child,
+      direction,
+      crossAxis,
+      false /*isMainAxis*/,
+      containingBlockWidth,
+      containingBlockHeight);
 }
 
 static void layoutAbsoluteDescendants(
