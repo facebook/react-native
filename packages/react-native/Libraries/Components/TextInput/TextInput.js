@@ -1154,37 +1154,10 @@ function InternalTextInput(props: Props): React.Node {
         : RCTSinglelineTextInputNativeCommands;
   }
 
-  const extractTextFromComponent = component => {
-    return component.defaultProps?.text || '';
-  };
-
-  const extractTextFromElement = element => {
-    if (typeof element.type === 'string') {
-      return element.props.children?.toString() || '';
-    } else if (typeof element.type === 'function') {
-      return extractTextFromComponent(element.type);
-    } else if (Object.prototype.toString.call(element) === '[object Object]') {
-      return element?.props?.children;
-    } else {
-      return '';
-    }
-  };
-
   const childrenProp = () => {
     const child = props.children;
-    if (
-      React.isValidElement(child) &&
-      Object.prototype.toString.call(child) !== '[object Array]'
-    ) {
-      if (typeof child.type === 'string') {
-        return React.Children.toArray(child);
-      } else if (typeof child.type === 'function') {
-        return React.Children.toArray(child);
-      } else if (Object.prototype.toString.call(child) === '[object Object]') {
-        return React.Children.toArray(child?.props?.children);
-      } else {
-        return child;
-      }
+    if (React.isValidElement(child)) {
+      return React.Children.toArray(child?.props?.children);
     } else {
       return child;
     }
@@ -1192,9 +1165,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const childrenValue = React.Children.map(childrenProp(), child => {
     if (React.isValidElement(child)) {
-      return extractTextFromElement(child);
-    } else if (typeof child === 'string' || typeof child === 'number') {
-      return child.toString();
+      return child?.props?.children;
     } else {
       return '';
     }
