@@ -488,11 +488,16 @@ void Node::setLayoutDimension(float LengthValue, Dimension dimension) {
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or
-// -right depending on which is defined.
+// -right depending on which is defined. Ignore statically positioned nodes as
+// insets do not apply to them.
 float Node::relativePosition(
     FlexDirection axis,
     Direction direction,
     float axisSize) const {
+  if (style_.positionType() == PositionType::Static &&
+      !hasErrata(Errata::PositionStaticBehavesLikeRelative)) {
+    return 0;
+  }
   if (isInlineStartPositionDefined(axis, direction)) {
     return getInlineStartPosition(axis, direction, axisSize);
   }
@@ -514,8 +519,7 @@ void Node::setPosition(
   const FlexDirection crossAxis =
       yoga::resolveCrossDirection(mainAxis, directionRespectingRoot);
 
-  // Here we should check for `PositionType::Static` and in this case zero inset
-  // properties (left, right, top, bottom, begin, end).
+  // In the case of position static these are just 0. See:
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
   const float relativePositionMain =
       relativePosition(mainAxis, directionRespectingRoot, mainSize);
