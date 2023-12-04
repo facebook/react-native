@@ -23,6 +23,12 @@ export type Experiments = $ReadOnly<{
    * interface.
    */
   enableOpenDebuggerRedirect: boolean,
+
+  /**
+   * Enables the new JS debugger network panel and network CDP events.
+   * When disabled, all CDP events and the network panel are disabled.
+   */
+  enableNetworkInspector: Boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;

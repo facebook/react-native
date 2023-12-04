@@ -64,6 +64,7 @@ export default function openDebuggerMiddleware({
         app =>
           app.title === 'React Native Experimental (Improved Chrome Reloads)',
       );
+
       let target;
 
       const launchType: 'launch' | 'redirect' =
@@ -117,6 +118,7 @@ export default function openDebuggerMiddleware({
               frontendInstanceId,
               await browserLauncher.launchDebuggerAppWindow(
                 getDevToolsFrontendUrl(
+                  experiments,
                   target.webSocketDebuggerUrl,
                   serverBaseUrl,
                 ),
@@ -127,6 +129,7 @@ export default function openDebuggerMiddleware({
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
+                experiments,
                 target.webSocketDebuggerUrl,
                 // Use a relative URL.
                 '',
