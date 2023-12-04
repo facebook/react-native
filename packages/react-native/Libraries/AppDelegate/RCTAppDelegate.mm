@@ -156,9 +156,13 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   BOOL enableFabric = self.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 
-  rootView.backgroundColor = [UIColor systemBackgroundColor];
+  rootView.backgroundColor = self.backgroundColor;
 
   return rootView;
+}
+
+- (UIColor *)backgroundColor {
+  return [UIColor systemBackgroundColor];
 }
 
 - (UIViewController *)createRootViewController
