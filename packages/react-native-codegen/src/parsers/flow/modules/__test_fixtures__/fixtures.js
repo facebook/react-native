@@ -731,10 +731,23 @@ export enum StringOptions {
   Three = 'three',
 }
 
+export type BinaryTreeNode = {
+  left?: BinaryTreeNode,
+  value: number,
+  right?: BinaryTreeNode,
+};
+
+export type GraphNode = {
+  label: string,
+  neighbors?: Array<GraphNode>,
+};
+
 export interface Spec extends TurboModule {
   +getCallback: () => () => void;
   +getMixed: (arg: mixed) => mixed;
   +getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
+  +getGraphNode: (arg: GraphNode) => GraphNode;
   +getMap: (arg: {[a: string]: ?number}) => {[b: string]: ?number};
   +getAnotherMap: (arg: {[string]: string}) => {[string]: string};
   +getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;

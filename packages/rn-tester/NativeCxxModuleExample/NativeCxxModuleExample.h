@@ -91,6 +91,50 @@ struct CustomHostObjectRef {
 using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
 
 #pragma mark - recursive objects
+struct BinaryTreeNode {
+  std::unique_ptr<BinaryTreeNode> left;
+  int32_t value;
+  std::unique_ptr<BinaryTreeNode> right;
+};
+
+template <>
+struct Bridging<BinaryTreeNode> {
+  static BinaryTreeNode fromJs(
+      jsi::Runtime& rt,
+      const jsi::Object& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    BinaryTreeNode result{
+        value.hasProperty(rt, "left")
+            ? std::make_unique<BinaryTreeNode>(bridging::fromJs<BinaryTreeNode>(
+                  rt, value.getProperty(rt, "left"), jsInvoker))
+            : nullptr,
+        bridging::fromJs<int32_t>(
+            rt, value.getProperty(rt, "value"), jsInvoker),
+        value.hasProperty(rt, "right")
+            ? std::make_unique<BinaryTreeNode>(bridging::fromJs<BinaryTreeNode>(
+                  rt, value.getProperty(rt, "right"), jsInvoker))
+            : nullptr};
+    return result;
+  }
+
+  static jsi::Object toJs(
+      jsi::Runtime& rt,
+      const BinaryTreeNode& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    if (value.left) {
+      result.setProperty(
+          rt, "left", bridging::toJs(rt, *value.left, jsInvoker));
+    }
+    result.setProperty(rt, "value", bridging::toJs(rt, value.value, jsInvoker));
+    if (value.right) {
+      result.setProperty(
+          rt, "right", bridging::toJs(rt, *value.right, jsInvoker));
+    }
+    return result;
+  }
+};
+
 struct GraphNode {
   std::string label;
   std::optional<std::vector<GraphNode>> neighbors;
@@ -155,6 +199,8 @@ class NativeCxxModuleExample
   std::string consumeCustomHostObject(
       jsi::Runtime& rt,
       std::shared_ptr<CustomHostObject> arg);
+
+  BinaryTreeNode getBinaryTreeNode(jsi::Runtime& rt, BinaryTreeNode arg);
 
   GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 

@@ -65,6 +65,12 @@ std::string NativeCxxModuleExample::consumeCustomHostObject(
   return value->a_ + std::to_string(value->b_);
 }
 
+BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
+    jsi::Runtime& rt,
+    BinaryTreeNode arg) {
+  return arg;
+}
+
 GraphNode NativeCxxModuleExample::getGraphNode(
     jsi::Runtime& rt,
     GraphNode arg) {
