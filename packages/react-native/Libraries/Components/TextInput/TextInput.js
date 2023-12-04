@@ -1155,9 +1155,10 @@ function InternalTextInput(props: Props): React.Node {
   }
 
   const childrenProp = () => {
-    const child = props.children;
+    let child = props.children;
     if (React.isValidElement(child)) {
-      return React.Children.toArray(child?.props?.children);
+      child = React.Children.only(child);
+      return React.Children.toArray(child.props.children);
     } else {
       return child;
     }
@@ -1165,7 +1166,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const childrenValue = React.Children.map(childrenProp(), child => {
     if (React.isValidElement(child)) {
-      return child?.props?.children;
+      return child.props.children;
     } else {
       return '';
     }
