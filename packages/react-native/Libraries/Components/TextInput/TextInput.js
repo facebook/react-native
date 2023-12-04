@@ -1175,7 +1175,11 @@ function InternalTextInput(props: Props): React.Node {
     React.isValidElement(childrenProp) &&
     Object.prototype.toString.call(childrenProp) !== '[object Array]'
   ) {
-    if (Object.prototype.toString.call(childrenProp) === '[object Object]') {
+    if (typeof childrenProp.type === 'string') {
+      childrenProp = React.Children.toArray(childrenProp);
+    } else if (typeof childrenProp.type === 'function') {
+      childrenProp = React.Children.toArray(childrenProp);
+    } else if (Object.prototype.toString.call(childrenProp) === '[object Object]') {
       childrenProp = React.Children.toArray(childrenProp?.props?.children);
     } else {
       childrenProp = React.Children.toArray(childrenProp);
