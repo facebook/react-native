@@ -524,7 +524,6 @@ class NetworkingModuleTest {
   @Test
   @Ignore("TODO: Fix me")
   fun testCancelAllCallsInvalidate() {
-    val okHttpCallUtil = mock(OkHttpCallUtil::class.java)
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)
     for (idx in 0 until requests) {
@@ -570,7 +569,6 @@ class NetworkingModuleTest {
   @Test
   @Ignore("TODO: Fix me")
   fun testCancelSomeCallsInvalidate() {
-    val okHttpCallUtil = mockStatic(OkHttpCallUtil::class.java)
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)
     for (idx in 0 until requests) {
