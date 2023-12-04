@@ -404,6 +404,33 @@ float Node::baseline(float width, float height) const {
   return baselineFunc_(this, width, height);
 }
 
+float Node::dimensionWithMargin(
+    const FlexDirection axis,
+    const float widthSize) {
+  return getLayout().measuredDimension(dimension(axis)) +
+      getMarginForAxis(axis, widthSize);
+}
+
+bool Node::isLayoutDimensionDefined(const FlexDirection axis) {
+  const float value = getLayout().measuredDimension(dimension(axis));
+  return yoga::isDefined(value) && value >= 0.0f;
+}
+
+bool Node::styleDefinesDimension(
+    const FlexDirection axis,
+    const float ownerSize) {
+  bool isDefined = yoga::isDefined(getResolvedDimension(dimension(axis)).value);
+
+  auto resolvedDimension = getResolvedDimension(dimension(axis));
+  return !(
+      resolvedDimension.unit == YGUnitAuto ||
+      resolvedDimension.unit == YGUnitUndefined ||
+      (resolvedDimension.unit == YGUnitPoint && isDefined &&
+       resolvedDimension.value < 0.0f) ||
+      (resolvedDimension.unit == YGUnitPercent && isDefined &&
+       (resolvedDimension.value < 0.0f || yoga::isUndefined(ownerSize))));
+}
+
 // Setters
 
 void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
