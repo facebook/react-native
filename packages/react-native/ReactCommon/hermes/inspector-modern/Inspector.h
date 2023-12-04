@@ -372,10 +372,6 @@ std::optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
     cb(std::forward<A>(arg)...);
   } catch (const std::exception &e) {
     return UserCallbackException(e);
-  } catch (const std::runtime_error &e) {
-    // NOTE(kudo): Adding this to catch Hermes inspector exceptions after SDK 49.
-    // I still not figure out why the std::runtime_error is not catched by the std::exception above.
-    return UserCallbackException(e);
   }
 
   return {};
