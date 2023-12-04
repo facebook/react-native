@@ -90,6 +90,42 @@ struct CustomHostObjectRef {
 
 using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
 
+#pragma mark - recursive objects
+struct GraphNode {
+  std::string label;
+  std::optional<std::vector<GraphNode>> neighbors;
+};
+
+template <>
+struct Bridging<GraphNode> {
+  static GraphNode fromJs(
+      jsi::Runtime& rt,
+      const jsi::Object& value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    GraphNode result{
+        bridging::fromJs<std::string>(
+            rt, value.getProperty(rt, "label"), jsInvoker),
+        bridging::fromJs<std::optional<std::vector<GraphNode>>>(
+            rt, value.getProperty(rt, "neighbors"), jsInvoker)};
+    return result;
+  }
+
+  static jsi::Object toJs(
+      jsi::Runtime& rt,
+      const GraphNode value,
+      const std::shared_ptr<CallInvoker>& jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, "label", bridging::toJs(rt, value.label, jsInvoker));
+    if (value.neighbors) {
+      result.setProperty(
+          rt,
+          "neighbors",
+          bridging::toJs(rt, value.neighbors.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -119,6 +155,8 @@ class NativeCxxModuleExample
   std::string consumeCustomHostObject(
       jsi::Runtime& rt,
       std::shared_ptr<CustomHostObject> arg);
+
+  GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
   NativeCxxModuleExampleCxxEnumFloat getNumEnum(
       jsi::Runtime& rt,

@@ -56,6 +56,11 @@ export type ValueStruct = {|
 
 export type CustomHostObject = {};
 
+export type GraphNode = {
+  label: string,
+  neighbors?: Array<GraphNode>,
+};
+
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
@@ -63,6 +68,7 @@ export interface Spec extends TurboModule {
   +getCustomEnum: (arg: EnumInt) => EnumInt;
   +getCustomHostObject: () => CustomHostObject;
   +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
+  +getGraphNode: (arg: GraphNode) => GraphNode;
   +getNumEnum: (arg: EnumInt) => EnumFloat;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};

@@ -42,6 +42,8 @@ type Examples =
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
+  | 'getCustomHostObject'
+  | 'getGraphNode'
   | 'getNumEnum'
   | 'getStrEnum'
   | 'getMap'
@@ -102,6 +104,11 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.consumeCustomHostObject(
         NativeCxxModuleExample?.getCustomHostObject(),
       ),
+    getGraphNode: () =>
+      NativeCxxModuleExample?.getGraphNode({
+        label: 'root',
+        neighbors: [{label: 'left'}, {label: 'right'}],
+      }),
     getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
     getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
