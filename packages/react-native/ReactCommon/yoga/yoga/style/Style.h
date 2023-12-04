@@ -231,6 +231,22 @@ class YG_EXPORT Style {
     }
   }
 
+  bool horizontalInsetsDefined() const {
+    return position_[YGEdge::YGEdgeLeft].isDefined() ||
+        position_[YGEdge::YGEdgeRight].isDefined() ||
+        position_[YGEdge::YGEdgeAll].isDefined() ||
+        position_[YGEdge::YGEdgeHorizontal].isDefined() ||
+        position_[YGEdge::YGEdgeStart].isDefined() ||
+        position_[YGEdge::YGEdgeEnd].isDefined();
+  }
+
+  bool verticalInsetsDefined() const {
+    return position_[YGEdge::YGEdgeTop].isDefined() ||
+        position_[YGEdge::YGEdgeBottom].isDefined() ||
+        position_[YGEdge::YGEdgeAll].isDefined() ||
+        position_[YGEdge::YGEdgeVertical].isDefined();
+  }
+
   bool operator==(const Style& other) const {
     return direction_ == other.direction_ &&
         flexDirection_ == other.flexDirection_ &&
