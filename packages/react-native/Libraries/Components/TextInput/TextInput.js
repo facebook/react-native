@@ -1170,23 +1170,30 @@ function InternalTextInput(props: Props): React.Node {
     }
   };
 
-  let childrenProp = props.children;
-  if (
-    React.isValidElement(childrenProp) &&
-    Object.prototype.toString.call(childrenProp) !== '[object Array]'
-  ) {
-    if (typeof childrenProp.type === 'string') {
-      childrenProp = React.Children.toArray(childrenProp);
-    } else if (typeof childrenProp.type === 'function') {
-      childrenProp = React.Children.toArray(childrenProp);
-    } else if (Object.prototype.toString.call(childrenProp) === '[object Object]') {
-      childrenProp = React.Children.toArray(childrenProp?.props?.children);
+  const childrenProp = () => {
+    const child = props.children;
+    if (
+      React.isValidElement(child) &&
+      Object.prototype.toString.call(child) !== '[object Array]'
+    ) {
+      if (typeof child.type === 'string') {
+        return React.Children.toArray(child);
+      } else if (typeof child.type === 'function') {
+        return React.Children.toArray(child);
+      } else if (
+        Object.prototype.toString.call(child) === '[object Object]'
+      ) {
+        return React.Children.toArray(child?.props?.children);
+      } else {
+        return child;
+      }
     } else {
-      childrenProp = React.Children.toArray(childrenProp);
+      return child;
     }
   }
+  
 
-  const childrenValue = React.Children.map(childrenProp, child => {
+  const childrenValue = React.Children.map(childrenProp(), child => {
     if (React.isValidElement(child)) {
       return extractTextFromElement(child);
     } else if (typeof child === 'string' || typeof child === 'number') {
