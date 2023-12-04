@@ -59,6 +59,12 @@ class YG_EXPORT Node : public ::YGNode {
   Edge getInlineEndEdgeUsingErrata(
       FlexDirection flexDirection,
       Direction direction) const;
+  Edge getFlexStartRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getFlexEndRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
@@ -196,28 +202,41 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   // Methods related to positions, margin, padding and border
-  bool isFlexStartPositionDefined(FlexDirection axis) const;
+  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
+      const;
   bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const;
-  bool isFlexEndPositionDefined(FlexDirection axis) const;
+  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const;
   bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       const;
-  float getFlexStartPosition(FlexDirection axis, float axisSize) const;
+  float getFlexStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
   float getInlineStartPosition(
       FlexDirection axis,
       Direction direction,
       float axisSize) const;
-  float getFlexEndPosition(FlexDirection axis, float axisSize) const;
+  float getFlexEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
   float getInlineEndPosition(
       FlexDirection axis,
       Direction direction,
       float axisSize) const;
-  float getFlexStartMargin(FlexDirection axis, float widthSize) const;
+  float getFlexStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
   float getInlineStartMargin(
       FlexDirection axis,
       Direction direction,
       float widthSize) const;
-  float getFlexEndMargin(FlexDirection axis, float widthSize) const;
+  float getFlexEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
   float getInlineEndMargin(
       FlexDirection axis,
       Direction direction,
