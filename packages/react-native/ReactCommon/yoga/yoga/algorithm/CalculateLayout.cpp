@@ -531,6 +531,45 @@ static void layoutAbsoluteChild(
   }
 }
 
+static void layoutAbsoluteDescendants(
+    yoga::Node* currentNode,
+    SizingMode widthSizingMode,
+    Direction currentNodeDirection,
+    LayoutData& layoutMarkerData,
+    uint32_t currentDepth,
+    uint32_t generationCount,
+    float containingBlockWidth,
+    float containingBlockHeight) {
+  for (auto child : currentNode->getChildren()) {
+    if (child->getStyle().display() == Display::None) {
+      continue;
+    } else if (child->getStyle().positionType() == PositionType::Absolute) {
+      layoutAbsoluteChild(
+          currentNode,
+          child,
+          containingBlockWidth,
+          widthSizingMode,
+          containingBlockHeight,
+          currentNodeDirection,
+          layoutMarkerData,
+          currentDepth,
+          generationCount);
+    } else if (child->getStyle().positionType() == PositionType::Static) {
+      const Direction childDirection =
+          child->resolveDirection(currentNodeDirection);
+      layoutAbsoluteDescendants(
+          child,
+          widthSizingMode,
+          childDirection,
+          layoutMarkerData,
+          currentDepth + 1,
+          generationCount,
+          containingBlockWidth,
+          containingBlockHeight);
+    }
+  }
+}
+
 static void measureNodeWithMeasureFunc(
     yoga::Node* const node,
     float availableWidth,
@@ -2304,29 +2343,46 @@ static void calculateLayoutImpl(
 
   if (performLayout) {
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-    for (auto child : node->getChildren()) {
-      if (child->getStyle().display() == Display::None ||
-          child->getStyle().positionType() != PositionType::Absolute) {
-        continue;
+    if (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative)) {
+      // Let the containing block layout its absolute descendants. By definition
+      // the containing block will not be static unless we are at the root.
+      if (node->getStyle().positionType() != PositionType::Static ||
+          depth == 1) {
+        layoutAbsoluteDescendants(
+            node,
+            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+            direction,
+            layoutMarkerData,
+            depth,
+            generationCount,
+            node->getLayout().measuredDimension(Dimension::Width),
+            node->getLayout().measuredDimension(Dimension::Height));
       }
-      const bool absolutePercentageAgainstPaddingEdge =
-          node->getConfig()->isExperimentalFeatureEnabled(
-              ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge);
+    } else {
+      for (auto child : node->getChildren()) {
+        if (child->getStyle().display() == Display::None ||
+            child->getStyle().positionType() != PositionType::Absolute) {
+          continue;
+        }
+        const bool absolutePercentageAgainstPaddingEdge =
+            node->getConfig()->isExperimentalFeatureEnabled(
+                ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge);
 
-      layoutAbsoluteChild(
-          node,
-          child,
-          absolutePercentageAgainstPaddingEdge
-              ? node->getLayout().measuredDimension(Dimension::Width)
-              : availableInnerWidth,
-          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-          absolutePercentageAgainstPaddingEdge
-              ? node->getLayout().measuredDimension(Dimension::Height)
-              : availableInnerHeight,
-          direction,
-          layoutMarkerData,
-          depth,
-          generationCount);
+        layoutAbsoluteChild(
+            node,
+            child,
+            absolutePercentageAgainstPaddingEdge
+                ? node->getLayout().measuredDimension(Dimension::Width)
+                : availableInnerWidth,
+            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+            absolutePercentageAgainstPaddingEdge
+                ? node->getLayout().measuredDimension(Dimension::Height)
+                : availableInnerHeight,
+            direction,
+            layoutMarkerData,
+            depth,
+            generationCount);
+      }
     }
 
     // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
