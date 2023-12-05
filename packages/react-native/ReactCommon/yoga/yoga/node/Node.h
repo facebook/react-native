@@ -126,6 +126,12 @@ class YG_EXPORT Node : public ::YGNode {
 
   float baseline(float width, float height) const;
 
+  float dimensionWithMargin(const FlexDirection axis, const float widthSize);
+
+  bool isLayoutDimensionDefined(const FlexDirection axis);
+
+  bool styleDefinesDimension(const FlexDirection axis, const float ownerSize);
+
   bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
   }
