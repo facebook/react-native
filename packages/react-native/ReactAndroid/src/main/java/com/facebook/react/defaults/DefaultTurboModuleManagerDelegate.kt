@@ -48,6 +48,9 @@ private constructor(
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var eagerInitModuleNames: List<String> = emptyList()
     private var cxxReactPackages: MutableList<CxxReactPackage> = mutableListOf()
+    private var cxxReactPackageProviders:
+        MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
+        mutableListOf()
 
     fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
       this.eagerInitModuleNames = eagerInitModuleNames
@@ -59,8 +62,39 @@ private constructor(
       return this
     }
 
-    override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
-        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackages)
+    /**
+     * TODO(T171430145): This API was introduced because some CxxReactPackages need to use the
+     *   ReactApplicationContext.
+     *
+     * We should consider consolidating this with addCxxReactPackage above.
+     *
+     * Why don't we just use this provider method for all CxxReactPackage registration?
+     * 1. Not all CxxReactPackages need access to the ReactContext.
+     * 2. We are not sure if this is the right way to give the ReactContext to CxxReactPackage.
+     * 3. We are not even sure if CxxReactPackage is going to be long-lived.
+     *
+     * So, let's solve this problem later.
+     */
+    fun unstable_addCxxReactPackageProvider(
+        provider: (context: ReactApplicationContext) -> CxxReactPackage
+    ): Builder {
+      this.cxxReactPackageProviders.add(provider)
+      return this
+    }
+
+    override fun build(
+        context: ReactApplicationContext,
+        packages: List<ReactPackage>
+    ): DefaultTurboModuleManagerDelegate {
+      val actualCxxReactPackages = mutableListOf<CxxReactPackage>()
+      actualCxxReactPackages.addAll(cxxReactPackages)
+      for (cxxReactPackageProvider in cxxReactPackageProviders) {
+        actualCxxReactPackages.add(cxxReactPackageProvider(context))
+      }
+
+      return DefaultTurboModuleManagerDelegate(
+          context, packages, eagerInitModuleNames, actualCxxReactPackages)
+    }
   }
 
   companion object {
