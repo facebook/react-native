@@ -15,8 +15,7 @@ exports[`GenerateModuleH can generate a header file NativeModule specs 1`] = `
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
   class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
@@ -2345,8 +2344,7 @@ private:
   Delegate delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;
 
@@ -2365,8 +2363,7 @@ exports[`GenerateModuleH can generate a header file NativeModule specs with assu
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
   class JSI_EXPORT NativeArrayTurboModuleCxxSpecJSI : public TurboModule {
@@ -4695,7 +4692,6 @@ private:
   Delegate delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;

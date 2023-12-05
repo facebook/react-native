@@ -119,13 +119,11 @@ const FileTemplate = ({
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules.join('\n\n')}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 

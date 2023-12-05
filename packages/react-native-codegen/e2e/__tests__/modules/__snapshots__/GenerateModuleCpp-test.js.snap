@@ -12,8 +12,7 @@ exports[`GenerateModuleCpp can generate a header file NativeModule specs with as
 
 #include \\"RNCodegenModuleFixturesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeArrayTurboModuleCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeArrayTurboModuleCxxSpecJSI *>(&turboModule)->getArray(
@@ -818,8 +817,7 @@ NativeStringTurboModuleCxxSpecJSI::NativeStringTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;
 
@@ -835,8 +833,7 @@ exports[`GenerateModuleCpp can generate an implementation file NativeModule spec
 
 #include \\"RNCodegenModuleFixturesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeArrayTurboModuleCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeArrayTurboModuleCxxSpecJSI *>(&turboModule)->getArray(
@@ -1641,7 +1638,6 @@ NativeStringTurboModuleCxxSpecJSI::NativeStringTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 "
 `;
