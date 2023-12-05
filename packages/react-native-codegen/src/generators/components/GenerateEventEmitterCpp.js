@@ -50,11 +50,9 @@ const FileTemplate = ({
 #include <react/renderer/components/${libraryName}/EventEmitters.h>
 ${[...extraIncludes].join('\n')}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 ${events}
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({
