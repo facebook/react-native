@@ -1456,7 +1456,7 @@ function InternalTextInput(props: Props): React.Node {
   }
 
   // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(props.style);
+  const style = flattenStyle(props.style);
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
@@ -1468,9 +1468,8 @@ function InternalTextInput(props: Props): React.Node {
       style?.padding != null ||
       style?.paddingVertical != null ||
       style?.paddingTop != null;
-    if (props.multiline === true && !hasPaddingTopStyle) {
-      style = [styles.multilineDefault, style];
-    }
+    const useMultilineDefaultStyle =
+      props.multiline === true && !hasPaddingTopStyle;
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1500,7 +1499,11 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
-        style={style}
+        style={
+          useMultilineDefaultStyle === true
+            ? [styles.multilineDefault, style]
+            : style
+        }
         text={text}
       />
     );
