@@ -14,8 +14,7 @@ Map {
 
 #include \\"SampleWithUppercaseName.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -31,8 +30,7 @@ std::shared_ptr<TurboModule> SampleWithUppercaseName_ModuleProvider(const std::s
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -51,8 +49,7 @@ Map {
 
 #include \\"complex_objects.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_difficult(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
@@ -107,8 +104,7 @@ std::shared_ptr<TurboModule> complex_objects_ModuleProvider(const std::string &m
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -127,8 +123,7 @@ Map {
 
 #include \\"cxx_only_native_modules.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -137,8 +132,7 @@ std::shared_ptr<TurboModule> cxx_only_native_modules_ModuleProvider(const std::s
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -157,8 +151,7 @@ Map {
 
 #include \\"empty_native_modules.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -174,8 +167,7 @@ std::shared_ptr<TurboModule> empty_native_modules_ModuleProvider(const std::stri
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -194,8 +186,7 @@ Map {
 
 #include \\"native_modules_with_type_aliases.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -216,8 +207,7 @@ std::shared_ptr<TurboModule> native_modules_with_type_aliases_ModuleProvider(con
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -236,8 +226,7 @@ Map {
 
 #include \\"real_module_example.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -306,8 +295,7 @@ std::shared_ptr<TurboModule> real_module_example_ModuleProvider(const std::strin
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -326,8 +314,7 @@ Map {
 
 #include \\"simple_native_modules.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
@@ -424,8 +411,7 @@ std::shared_ptr<TurboModule> simple_native_modules_ModuleProvider(const std::str
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -444,8 +430,7 @@ Map {
 
 #include \\"two_modules_different_files.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
@@ -478,8 +463,7 @@ std::shared_ptr<TurboModule> two_modules_different_files_ModuleProvider(const st
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

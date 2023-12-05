@@ -13,8 +13,7 @@ Map {
 
 #include \\"SampleWithUppercaseNameJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -24,8 +23,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -43,8 +41,7 @@ Map {
 
 #include \\"complex_objectsJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(
@@ -106,8 +103,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -125,8 +121,7 @@ Map {
 
 #include \\"cxx_only_native_modulesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArray(
@@ -321,8 +316,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -340,8 +334,7 @@ Map {
 
 #include \\"empty_native_modulesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
@@ -351,8 +344,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -370,8 +362,7 @@ Map {
 
 #include \\"native_modules_with_type_aliasesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_AliasTurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<AliasTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(
@@ -393,8 +384,7 @@ AliasTurboModuleCxxSpecJSI::AliasTurboModuleCxxSpecJSI(std::shared_ptr<CallInvok
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -412,8 +402,7 @@ Map {
 
 #include \\"real_module_exampleJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeCameraRollManagerCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->getConstants(
@@ -498,8 +487,7 @@ NativeExceptionsManagerCxxSpecJSI::NativeExceptionsManagerCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -517,8 +505,7 @@ Map {
 
 #include \\"simple_native_modulesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(
@@ -627,8 +614,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -646,8 +632,7 @@ Map {
 
 #include \\"two_modules_different_filesJSI.h\\"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(
@@ -679,8 +664,7 @@ NativeSampleTurboModule2CxxSpecJSI::NativeSampleTurboModule2CxxSpecJSI(std::shar
 }
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
