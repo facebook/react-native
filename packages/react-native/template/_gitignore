@@ -57,6 +57,7 @@ yarn-error.log
 
 # Ruby / CocoaPods
 /ios/Pods/
+/visionos/Pods/ 
 /vendor/bundle/
 
 # Temporary files created by Metro to check the health of the file watcher

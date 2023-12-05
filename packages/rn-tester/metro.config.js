@@ -38,7 +38,7 @@ const config = {
       'react-native': path.resolve(__dirname, '../react-native'),
     },
     resolveRequest: getPlatformResolver({
-      platformNameMap: [{visionos: '@callstack/react-native-visionos'}],
+      platformNameMap: {visionos: '@callstack/react-native-visionos'},
     }),
   },
 };

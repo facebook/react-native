@@ -42,7 +42,7 @@ const Header = (): Node => {
         ]}>
         Welcome to
         {'\n'}
-        React Native
+        React Native visionOS
       </Text>
     </ImageBackground>
   );
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     opacity: 0.2,
-    overflow: 'visible',
+    overflow: 'hidden',
     resizeMode: 'cover',
     /*
      * These negative margins allow the image to be offset similarly across screen sizes and component sizes.
@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
      * source image's size.
      */
     marginLeft: -128,
-    marginBottom: -192,
   },
   text: {
     fontSize: 40,

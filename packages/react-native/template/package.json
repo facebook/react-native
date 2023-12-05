@@ -22,6 +22,7 @@
     "@react-native/eslint-config": "0.74.0",
     "@react-native/metro-config": "0.74.0",
     "@react-native/typescript-config": "0.74.0",
+    "@callstack/out-of-tree-platforms": "0.74.0",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
