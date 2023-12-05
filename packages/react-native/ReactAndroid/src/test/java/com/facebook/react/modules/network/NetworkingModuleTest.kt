@@ -21,7 +21,9 @@ import java.nio.charset.StandardCharsets
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.MultipartBody.Companion.FORM
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -69,7 +71,7 @@ class NetworkingModuleTest {
   @Before
   fun prepareModules() {
     httpClient = mock(OkHttpClient::class.java)
-    whenever(httpClient.cookieJar()).thenReturn(mock(CookieJarContainer::class.java))
+    whenever(httpClient.cookieJar).thenReturn(mock(CookieJarContainer::class.java))
     whenever(httpClient.newCall(anyOrNull(Request::class.java))).thenAnswer {
       val callMock = mock(Call::class.java)
       callMock
@@ -97,13 +99,11 @@ class NetworkingModuleTest {
           RequestBodyUtil.getFileInputStream(any(ReactContext::class.java), any(String::class.java))
         }
         .thenReturn(mock(InputStream::class.java))
-
     requestBodyUtil
         .`when`<RequestBody> {
           RequestBodyUtil.create(any(MediaType::class.java), any(InputStream::class.java))
         }
         .thenReturn(mock(RequestBody::class.java))
-
     requestBodyUtil
         .`when`<ProgressRequestBody> {
           RequestBodyUtil.createProgressRequest(
@@ -134,10 +134,10 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url().toString()).isEqualTo("http://somedomain/foo")
+    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://somedomain/foo")
     // We set the User-Agent header by default
-    assertThat(requestArgumentCaptor.value.headers().size()).isEqualTo(1)
-    assertThat(requestArgumentCaptor.value.method()).isEqualTo("GET")
+    assertThat(requestArgumentCaptor.value.headers.size).isEqualTo(1)
+    assertThat(requestArgumentCaptor.value.method).isEqualTo("GET")
   }
 
   @Test
@@ -219,13 +219,13 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url().toString()).isEqualTo("http://somedomain/bar")
-    assertThat(requestArgumentCaptor.value.headers().size()).isEqualTo(2)
-    assertThat(requestArgumentCaptor.value.method()).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.type()).isEqualTo("text")
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.subtype()).isEqualTo("plain")
+    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://somedomain/bar")
+    assertThat(requestArgumentCaptor.value.headers.size).isEqualTo(2)
+    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo("text")
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo("plain")
     val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body()!!.writeTo(contentBuffer)
+    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
     assertThat(contentBuffer.readUtf8()).isEqualTo("This is request body")
   }
 
@@ -248,8 +248,8 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     verify(httpClient).newCall(capture(requestArgumentCaptor))
-    val requestHeaders = requestArgumentCaptor.value.headers()
-    assertThat(requestHeaders.size()).isEqualTo(2)
+    val requestHeaders = requestArgumentCaptor.value.headers
+    assertThat(requestHeaders.size).isEqualTo(2)
     assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
     assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
   }
@@ -273,7 +273,7 @@ class NetworkingModuleTest {
     verify(httpClient).newCall(capture(requestArgumentCaptor))
 
     // Verify okhttp does not append "charset=utf-8"
-    assertThat(requestArgumentCaptor.value.body()!!.contentType().toString())
+    assertThat(requestArgumentCaptor.value.body!!.contentType().toString())
         .isEqualTo("application/json")
   }
 
@@ -298,7 +298,7 @@ class NetworkingModuleTest {
     verify(httpClient).newCall(capture(requestArgumentCaptor))
 
     val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body()!!.writeTo(contentBuffer)
+    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
     assertThat(contentBuffer.readString(StandardCharsets.UTF_16)).isEqualTo(testString)
   }
 
@@ -321,7 +321,7 @@ class NetworkingModuleTest {
     verify(httpClient).newCall(capture(requestArgumentCaptor))
 
     val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body()!!.writeTo(contentBuffer)
+    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
 
     assertThat(contentBuffer.readString(StandardCharsets.UTF_8)).isEqualTo("test")
     assertThat(requestArgumentCaptor.value.header("Content-Type")).isEqualTo("invalid")
@@ -335,7 +335,6 @@ class NetworkingModuleTest {
     bodyPart.putString("string", "value")
     bodyPart.putArray(
         "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))))
-
     formData.pushMap(bodyPart)
     body.putArray("formData", formData)
 
@@ -352,15 +351,12 @@ class NetworkingModuleTest {
 
     // verify url, method, headers
     verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url().toString()).isEqualTo("http://someurl/uploadFoo")
-    assertThat(requestArgumentCaptor.value.method()).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.type())
-        .isEqualTo(MultipartBody.FORM.type())
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.subtype())
-        .isEqualTo(MultipartBody.FORM.subtype())
-
-    val requestHeaders = requestArgumentCaptor.value.headers()
-    assertThat(requestHeaders.size()).isEqualTo(1)
+    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://someurl/uploadFoo")
+    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo(FORM.type)
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo(FORM.subtype)
+    val requestHeaders = requestArgumentCaptor.value.headers
+    assertThat(requestHeaders.size).isEqualTo(1)
   }
 
   @Test
@@ -377,7 +373,6 @@ class NetworkingModuleTest {
     bodyPart.putString("string", "value")
     bodyPart.putArray(
         "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "name"))))
-
     formData.pushMap(bodyPart)
     body.putArray("formData", formData)
 
@@ -394,15 +389,12 @@ class NetworkingModuleTest {
 
     // verify url, method, headers
     verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url().toString()).isEqualTo("http://someurl/uploadFoo")
-    assertThat(requestArgumentCaptor.value.method()).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.type())
-        .isEqualTo(MultipartBody.FORM.type())
-    assertThat(requestArgumentCaptor.value.body()!!.contentType()!!.subtype())
-        .isEqualTo(MultipartBody.FORM.subtype())
-
-    val requestHeaders = requestArgumentCaptor.value.headers()
-    assertThat(requestHeaders.size()).isEqualTo(3)
+    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://someurl/uploadFoo")
+    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo(FORM.type)
+    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo(FORM.subtype)
+    val requestHeaders = requestArgumentCaptor.value.headers
+    assertThat(requestHeaders.size).isEqualTo(3)
     assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
     assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
     assertThat(requestHeaders["content-type"]).isEqualTo("multipart/form-data")
@@ -425,7 +417,6 @@ class NetworkingModuleTest {
     }
     whenever(multipartBuilder.addPart(any(Headers::class.java), anyOrNull(RequestBody::class.java)))
         .thenAnswer { multipartBuilder }
-
     whenever(multipartBuilder.build()).thenAnswer { mock(MultipartBody::class.java) }
 
     val headers = listOf(JavaOnlyArray.of("content-type", "multipart/form-data"))
@@ -438,7 +429,6 @@ class NetworkingModuleTest {
     bodyPart.putString("string", "locale")
     bodyPart.putArray(
         "headers", JavaOnlyArray.from(listOf(JavaOnlyArray.of("content-disposition", "user"))))
-
     formData.pushMap(bodyPart)
 
     val imageBodyPart = JavaOnlyMap()
@@ -472,12 +462,12 @@ class NetworkingModuleTest {
     RequestBodyUtil.getFileInputStream(any(ReactContext::class.java), eq("imageUri"))
     // TODO This should be migrated to requestBodyUtil.verify();
     //  PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
-    RequestBodyUtil.create(MediaType.parse("image/jpg"), inputStream)
+    RequestBodyUtil.create("image/jpg".toMediaTypeOrNull(), inputStream)
 
     // verify body
     // TODO fix it (now mock is not called)
     verify(multipartBuilder).build()
-    verify(multipartBuilder).setType(MultipartBody.FORM)
+    verify(multipartBuilder).setType(FORM)
     // TODO fix it (Captors are nulls)
     val headersArgumentCaptor = ArgumentCaptor.forClass(Headers::class.java)
     val bodyArgumentCaptor = ArgumentCaptor.forClass(RequestBody::class.java)
@@ -492,11 +482,10 @@ class NetworkingModuleTest {
     assertThat(bodyHeaders[0]["content-disposition"]).isEqualTo("user")
     assertThat(bodyRequestBody[0].contentType()).isNull()
     assertThat(bodyRequestBody[0].contentLength()).isEqualTo("locale".toByteArray().size.toLong())
-
     assertThat(bodyHeaders[1]["content-disposition"])
         .isEqualTo("filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg")
-
-    assertThat<MediaType?>(bodyRequestBody[1].contentType()).isEqualTo(MediaType.parse("image/jpg"))
+    assertThat<MediaType?>(bodyRequestBody[1].contentType())
+        .isEqualTo("image/jpg".toMediaTypeOrNull())
     assertThat(bodyRequestBody[1].contentLength()).isEqualTo("imageUri".toByteArray().size.toLong())
   }
 
