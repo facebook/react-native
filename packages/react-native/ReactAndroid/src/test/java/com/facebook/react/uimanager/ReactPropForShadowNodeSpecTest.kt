@@ -10,17 +10,22 @@ package com.facebook.react.uimanager
 import android.view.View
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
-import org.junit.Ignore
+import com.facebook.testutils.shadows.ShadowSoLoader
+import com.facebook.testutils.shadows.ShadowYogaConfigProvider
+import com.facebook.testutils.shadows.ShadowYogaNodeFactory
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * Test that verifies that spec of methods annotated with @ReactProp in {@link ReactShadowNode} is
  * correct
  */
 @RunWith(RobolectricTestRunner::class)
-@Ignore
+@Config(
+    shadows =
+        [ShadowYogaConfigProvider::class, ShadowSoLoader::class, ShadowYogaNodeFactory::class])
 class ReactPropForShadowNodeSpecTest {
   @Test(expected = RuntimeException::class)
   fun testMethodWithWrongNumberOfParams() {
