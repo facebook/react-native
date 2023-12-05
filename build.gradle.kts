@@ -20,29 +20,19 @@ File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStrea
   reactAndroidProperties.load(it)
 }
 
+fun getListReactAndroidProperty(name: String) = reactAndroidProperties.getProperty(name).split(",")
+
 apiValidation {
   ignoredPackages.addAll(
-      listOf(
-          "com.facebook.fbreact",
-          "com.facebook.react.flipper",
-          "com.facebook.debug",
-          "com.facebook.hermes",
-          "com.facebook.perftest",
-          "com.facebook.proguard",
-          "com.facebook.react.module.processing",
-          "com.facebook.systrace",
-          "com.facebook.yoga",
-          "com.facebook.react.internal",
-          "com.facebook.react.bridgeless.internal"))
-
-  ignoredClasses.addAll(listOf("com.facebook.react.BuildConfig"))
-
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredPackages"))
+  ignoredClasses.addAll(
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredClasses"))
   nonPublicMarkers.addAll(
-      listOf(
-          "com.facebook.react.common.annotations.UnstableReactNativeAPI",
-          "com.facebook.react.common.annotations.VisibleForTesting"))
-
-  validationDisabled = true
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.nonPublicMarkers"))
+  validationDisabled =
+      reactAndroidProperties
+          .getProperty("react.internal.binaryCompatibilityValidator.validationDisabled")
+          ?.toBoolean() == true
 }
 
 version =
