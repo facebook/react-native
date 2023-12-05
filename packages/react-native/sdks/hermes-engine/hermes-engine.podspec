@@ -112,7 +112,6 @@ Pod::Spec.new do |spec|
     # This podspec is also run in CI to build Hermes without using Pod install
     # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
     if defined?(Pod::Executable.to_s)
-      puts "Const Defined!"
       CMAKE_BINARY = Pod::Executable::which!('cmake')
       # NOTE: Script phases are sorted alphabetically inside Xcode project
       spec.script_phases = [
