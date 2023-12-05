@@ -1455,8 +1455,7 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  const style = flattenStyle(props.style);
+  const style = flattenStyle<TextStyleProp>(props.style);
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
