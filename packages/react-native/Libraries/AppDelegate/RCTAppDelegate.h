@@ -58,7 +58,6 @@
 @property (nonatomic, strong) RCTBridge *bridge;
 @property (nonatomic, strong) NSString *moduleName;
 @property (nonatomic, strong) NSDictionary *initialProps;
-@property (nonatomic, copy, readonly) UIColor *backgroundColor;
 
 /**
  * It creates a `RCTBridge` using a delegate and some launch options.
@@ -138,5 +137,8 @@
 
 /// Return the bundle URL for the main bundle.
 - (NSURL *)bundleURL;
+
+/// This method returns React Native root view background color for both `RCTRootView` and `RCTFabricSurface`.
+- (UIColor* )backgroundColor;
 
 @end
