@@ -91,7 +91,7 @@ RCT_EXTERN_C_END
   {                                                                             \
     return @ #js_name;                                                          \
   }                                                                             \
-  __attribute__((constructor)) static void RCT_CONCAT(initialize_, objc_name)() \
+  __attribute__((constructor)) static void RCT_CONCAT(initialize_, objc_name)(void) \
   {                                                                             \
     RCTRegisterModule([objc_name class]);                                       \
   }
