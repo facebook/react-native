@@ -40,13 +40,11 @@ ${imports}#include <react/renderer/components/${libraryName}/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({

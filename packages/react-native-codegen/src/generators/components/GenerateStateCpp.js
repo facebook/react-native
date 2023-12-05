@@ -32,13 +32,11 @@ const FileTemplate = ({
  */
 #include <react/renderer/components/${libraryName}/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${stateClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const StateTemplate = ({stateName}: {stateName: string}) => '';

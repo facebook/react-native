@@ -52,13 +52,11 @@ const FileTemplate = ({
 
 ${imports}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ClassTemplate = ({
