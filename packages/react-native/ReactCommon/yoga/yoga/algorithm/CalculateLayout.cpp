@@ -93,6 +93,11 @@ static void setChildTrailingPosition(
       flexEndEdge(axis));
 }
 
+static bool needsTrailingPosition(const FlexDirection axis) {
+  return axis == FlexDirection::RowReverse ||
+      axis == FlexDirection::ColumnReverse;
+}
+
 static void constrainMaxSizeForMode(
     const yoga::Node* const node,
     const enum FlexDirection axis,
@@ -554,6 +559,17 @@ static void layoutAbsoluteDescendants(
           layoutMarkerData,
           currentDepth,
           generationCount);
+
+      const FlexDirection mainAxis = resolveDirection(
+          currentNode->getStyle().flexDirection(), currentNodeDirection);
+      const FlexDirection crossAxis =
+          resolveCrossDirection(mainAxis, currentNodeDirection);
+      if (needsTrailingPosition(mainAxis)) {
+        setChildTrailingPosition(currentNode, child, mainAxis);
+      }
+      if (needsTrailingPosition(crossAxis)) {
+        setChildTrailingPosition(currentNode, child, crossAxis);
+      }
     } else if (child->getStyle().positionType() == PositionType::Static) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
@@ -2386,16 +2402,18 @@ static void calculateLayoutImpl(
     }
 
     // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
-    const bool needsMainTrailingPos = mainAxis == FlexDirection::RowReverse ||
-        mainAxis == FlexDirection::ColumnReverse;
-    const bool needsCrossTrailingPos = crossAxis == FlexDirection::RowReverse ||
-        crossAxis == FlexDirection::ColumnReverse;
+    const bool needsMainTrailingPos = needsTrailingPosition(mainAxis);
+    const bool needsCrossTrailingPos = needsTrailingPosition(crossAxis);
 
-    // Set trailing position if necessary.
     if (needsMainTrailingPos || needsCrossTrailingPos) {
       for (size_t i = 0; i < childCount; i++) {
         const auto child = node->getChild(i);
-        if (child->getStyle().display() == Display::None) {
+        // Absolute children will be handled by their containing block since we
+        // cannot guarantee that their positions are set when their parents are
+        // done with layout.
+        if (child->getStyle().display() == Display::None ||
+            (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative) &&
+             child->getStyle().positionType() == PositionType::Absolute)) {
           continue;
         }
         if (needsMainTrailingPos) {
