@@ -28,11 +28,12 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const findXcodeProject = require('./findXcodeProject');
-const {
-  logger,
-  CLIError,
-  getDefaultUserTerminal,
-} = require('@react-native-community/cli-tools');
+const {logger, CLIError, getDefaultUserTerminal} = (() => {
+  const cli = require.resolve('@react-native-community/cli/package.json');
+  const options = {paths: [path.dirname(cli)]};
+  const tools = require.resolve('@react-native-community/cli-tools', options);
+  return require(tools);
+})();
 
 /**
  * @param {string[]} _
