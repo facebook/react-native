@@ -19,7 +19,7 @@ import Platform from '../Utilities/Platform';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';
-import EventTarget from 'event-target-shim';
+import {defineCustomEventTarget} from 'event-target-shim';
 import invariant from 'invariant';
 
 type ArrayBufferView =
@@ -68,7 +68,7 @@ type WebSocketEventDefinitions = {
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
+class WebSocket extends (defineCustomEventTarget(...WEBSOCKET_EVENTS): any) {
   static CONNECTING: number = CONNECTING;
   static OPEN: number = OPEN;
   static CLOSING: number = CLOSING;

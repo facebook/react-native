@@ -12,7 +12,7 @@ import type Blob from './Blob';
 
 import NativeFileReaderModule from './NativeFileReaderModule';
 import {toByteArray} from 'base64-js';
-import EventTarget from 'event-target-shim';
+import {defineCustomEventTarget} from 'event-target-shim';
 
 type ReadyState =
   | 0 // EMPTY
@@ -34,7 +34,7 @@ const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends (EventTarget(...READER_EVENTS): any) {
+class FileReader extends (defineCustomEventTarget(...READER_EVENTS): any) {
   static EMPTY: number = EMPTY;
   static LOADING: number = LOADING;
   static DONE: number = DONE;
