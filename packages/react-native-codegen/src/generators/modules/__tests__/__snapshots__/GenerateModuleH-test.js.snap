@@ -582,6 +582,70 @@ struct [[deprecated(\\"Use SampleTurboModuleCxxValueStructBridging instead.\\")]
 };
 
 
+
+#pragma mark - SampleTurboModuleCxxBaseMenuItem
+
+template <typename P0, typename P1, typename P2, typename P3>
+struct [[deprecated(\\"Use SampleTurboModuleCxxMenuItem instead.\\")]] SampleTurboModuleCxxBaseMenuItem {
+  P0 label;
+  P1 onPress;
+  P2 shortcut;
+  P3 items;
+  bool operator==(const SampleTurboModuleCxxBaseMenuItem &other) const {
+    return label == other.label && onPress == other.onPress && shortcut == other.shortcut && items == other.items;
+  }
+};
+
+template <typename P0, typename P1, typename P2, typename P3>
+struct [[deprecated(\\"Use SampleTurboModuleCxxMenuItemBridging instead.\\")]] SampleTurboModuleCxxBaseMenuItemBridging {
+  static SampleTurboModuleCxxBaseMenuItem<P0, P1, P2, P3> fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    SampleTurboModuleCxxBaseMenuItem<P0, P1, P2, P3> result{
+      bridging::fromJs<P0>(rt, value.getProperty(rt, \\"label\\"), jsInvoker),
+      bridging::fromJs<P1>(rt, value.getProperty(rt, \\"onPress\\"), jsInvoker),
+      bridging::fromJs<P2>(rt, value.getProperty(rt, \\"shortcut\\"), jsInvoker),
+      bridging::fromJs<P3>(rt, value.getProperty(rt, \\"items\\"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String labelToJs(jsi::Runtime &rt, P0 value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Function onPressToJs(jsi::Runtime &rt, P1 value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static std::optional<jsi::String> shortcutToJs(jsi::Runtime &rt, P2 value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array itemsToJs(jsi::Runtime &rt, P3 value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const SampleTurboModuleCxxBaseMenuItem<P0, P1, P2, P3> &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"label\\", bridging::toJs(rt, value.label, jsInvoker));
+    result.setProperty(rt, \\"onPress\\", bridging::toJs(rt, value.onPress, jsInvoker));
+    if (value.shortcut) {
+      result.setProperty(rt, \\"shortcut\\", bridging::toJs(rt, value.shortcut.value(), jsInvoker));
+    }
+    if (value.items) {
+      result.setProperty(rt, \\"items\\", bridging::toJs(rt, value.items.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
+
 #pragma mark - SampleTurboModuleCxxConstantsStruct
 
 template <typename P0, typename P1, typename P2>
@@ -857,6 +921,72 @@ struct SampleTurboModuleCxxValueStructBridging {
   }
 };
 
+
+
+#pragma mark - SampleTurboModuleCxxMenuItem
+
+template <typename P0, typename P1, typename P2>
+struct SampleTurboModuleCxxMenuItem {
+  P0 label;
+  P1 onPress;
+  P2 shortcut;
+  std::optional<std::vector<SampleTurboModuleCxxMenuItem<P0, P1, P2>>> items;
+  bool operator==(const SampleTurboModuleCxxMenuItem &other) const {
+    return label == other.label && onPress == other.onPress && shortcut == other.shortcut && items == other.items;
+  }
+};
+
+template <typename T>
+struct SampleTurboModuleCxxMenuItemBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.label)>(rt, value.getProperty(rt, \\"label\\"), jsInvoker),
+      bridging::fromJs<decltype(types.onPress)>(rt, value.getProperty(rt, \\"onPress\\"), jsInvoker),
+      bridging::fromJs<decltype(types.shortcut)>(rt, value.getProperty(rt, \\"shortcut\\"), jsInvoker),
+      bridging::fromJs<decltype(types.items)>(rt, value.getProperty(rt, \\"items\\"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static jsi::String labelToJs(jsi::Runtime &rt, decltype(types.label) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Function onPressToJs(jsi::Runtime &rt, decltype(types.onPress) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static std::optional<jsi::String> shortcutToJs(jsi::Runtime &rt, decltype(types.shortcut) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::Array itemsToJs(jsi::Runtime &rt, decltype(types.items) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"label\\", bridging::toJs(rt, value.label, jsInvoker));
+    result.setProperty(rt, \\"onPress\\", bridging::toJs(rt, value.onPress, jsInvoker));
+    if (value.shortcut) {
+      result.setProperty(rt, \\"shortcut\\", bridging::toJs(rt, value.shortcut.value(), jsInvoker));
+    }
+    if (value.items) {
+      result.setProperty(rt, \\"items\\", bridging::toJs(rt, value.items.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
 class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
 protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
@@ -883,6 +1013,7 @@ public:
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
   virtual std::optional<bool> getWithWithOptionalArgs(jsi::Runtime &rt, std::optional<bool> optionalArg) = 0;
   virtual void voidFunc(jsi::Runtime &rt) = 0;
+  virtual void setMenu(jsi::Runtime &rt, jsi::Object menuItem) = 0;
   virtual void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName) = 0;
   virtual void voidFuncThrows(jsi::Runtime &rt) = 0;
   virtual jsi::Object getObjectThrows(jsi::Runtime &rt, jsi::Object arg) = 0;
@@ -1078,6 +1209,14 @@ private:
 
       return bridging::callFromJs<void>(
           rt, &T::voidFunc, jsInvoker_, instance_);
+    }
+    void setMenu(jsi::Runtime &rt, jsi::Object menuItem) override {
+      static_assert(
+          bridging::getParameterCount(&T::setMenu) == 2,
+          \\"Expected setMenu(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::setMenu, jsInvoker_, instance_, std::move(menuItem));
     }
     void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName) override {
       static_assert(

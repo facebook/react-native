@@ -1706,6 +1706,65 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
             },
           ],
         },
+        MenuItem: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              name: 'label',
+              optional: false,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              name: 'onPress',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
+                params: [
+                  {
+                    name: 'value',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'flag',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'shortcut',
+              optional: true,
+              typeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'StringTypeAnnotation',
+                },
+              },
+            },
+            {
+              name: 'items',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'TypeAliasTypeAnnotation',
+                  name: 'MenuItem',
+                },
+              },
+            },
+          ],
+        },
       },
       enumMap: {
         EnumInt: {
@@ -2234,6 +2293,26 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                 type: 'VoidTypeAnnotation',
               },
               params: [],
+            },
+          },
+          {
+            name: 'setMenu',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'menuItem',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'TypeAliasTypeAnnotation',
+                    name: 'MenuItem',
+                  },
+                },
+              ],
             },
           },
           {
