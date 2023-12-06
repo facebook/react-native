@@ -253,6 +253,13 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi:
   );
   return jsi::Value::undefined();
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_setMenu(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->setMenu(
+    rt,
+    args[0].asObject(rt)
+  );
+  return jsi::Value::undefined();
+}
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_emitCustomDeviceEvent(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->emitCustomDeviceEvent(
     rt,
@@ -308,6 +315,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
   methodMap_[\\"getWithWithOptionalArgs\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getWithWithOptionalArgs};
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
+  methodMap_[\\"setMenu\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_setMenu};
   methodMap_[\\"emitCustomDeviceEvent\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_emitCustomDeviceEvent};
   methodMap_[\\"voidFuncThrows\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFuncThrows};
   methodMap_[\\"getObjectThrows\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObjectThrows};

@@ -57,6 +57,7 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
+  | 'setMenuItem'
   | 'optionalArgs'
   | 'emitDeviceEvent';
 
@@ -135,6 +136,28 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    setMenuItem: () => {
+      let curValue = '';
+      NativeCxxModuleExample?.setMenu({
+        label: 'File',
+        onPress: (value: string, flag: boolean) => {
+          curValue = `${value}: ${flag.toString()}`;
+          this._setResult('setMenuItem', curValue);
+        },
+        items: [
+          {
+            label: 'Open',
+            onPress: (value: string, flag: boolean) => {
+              this._setResult(
+                'setMenuItem',
+                `${curValue} - ${value}: ${flag.toString()}`,
+              );
+            },
+          },
+        ],
+        shortcut: 'ctrl+shift+f',
+      });
+    },
     optionalArgs: () => NativeCxxModuleExample?.getWithWithOptionalArgs(),
     emitDeviceEvent: () => {
       const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';

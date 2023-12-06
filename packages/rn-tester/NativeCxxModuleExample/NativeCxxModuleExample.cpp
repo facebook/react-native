@@ -169,6 +169,15 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   // Nothing to do
 }
 
+void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+  menuItem.onPress("value", true);
+  if (menuItem.items) {
+    for (auto subMenuItem : *menuItem.items) {
+      subMenuItem.onPress("another value", false);
+    }
+  }
+}
+
 void NativeCxxModuleExample::emitCustomDeviceEvent(
     jsi::Runtime& rt,
     jsi::String eventName) {

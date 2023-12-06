@@ -67,6 +67,13 @@ export type GraphNode = {
   neighbors?: Array<GraphNode>,
 };
 
+export type MenuItem = {
+  label: string,
+  onPress: (value: string, flag: boolean) => void,
+  shortcut?: ?string,
+  items?: Array<MenuItem>,
+};
+
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
@@ -92,6 +99,7 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
+  +setMenu: (menuItem: MenuItem) => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
   +voidFuncThrows: () => void;
   +getObjectThrows: (arg: ObjectStruct) => ObjectStruct;

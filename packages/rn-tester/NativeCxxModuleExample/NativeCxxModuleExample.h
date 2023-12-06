@@ -104,6 +104,17 @@ template <>
 struct Bridging<GraphNode>
     : NativeCxxModuleExampleCxxGraphNodeBridging<GraphNode> {};
 
+#pragma mark - functional object properties
+
+using MenuItem = NativeCxxModuleExampleCxxMenuItem<
+    std::string,
+    AsyncCallback<std::string, bool>,
+    std::optional<std::string>>;
+
+template <>
+struct Bridging<MenuItem>
+    : NativeCxxModuleExampleCxxMenuItemBridging<MenuItem> {};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -170,6 +181,8 @@ class NativeCxxModuleExample
       std::optional<bool> optionalArg);
 
   void voidFunc(jsi::Runtime& rt);
+
+  void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
   void emitCustomDeviceEvent(jsi::Runtime& rt, jsi::String eventName);
 
