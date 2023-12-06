@@ -87,7 +87,6 @@
     return;
   }
 
-  // Fix issue https://github.com/facebook/react-native/issues/35234#issuecomment-1831141903
   CGSize maximumSize = self.layoutMetrics.contentFrame.size;
 
   if (_maximumNumberOfLines == 1) {
