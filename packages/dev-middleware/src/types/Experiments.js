@@ -25,8 +25,7 @@ export type Experiments = $ReadOnly<{
   enableOpenDebuggerRedirect: boolean,
 
   /**
-   * Enables the new JS debugger network panel and network CDP events.
-   * When disabled, all CDP events and the network panel are disabled.
+   * Enables the Network panel when launching the custom debugger frontend.
    */
   enableNetworkInspector: boolean,
 }>;
