@@ -377,6 +377,11 @@ float Node::getFlexEndPaddingAndBorder(
       getFlexEndBorder(axis, direction);
 }
 
+float Node::getBorderForAxis(FlexDirection axis) const {
+  return getInlineStartBorder(axis, Direction::LTR) +
+      getInlineEndBorder(axis, Direction::LTR);
+}
+
 float Node::getMarginForAxis(FlexDirection axis, float widthSize) const {
   // The total margin for a given axis does not depend on the direction
   // so hardcoding LTR here to avoid piping direction to this function
