@@ -66,11 +66,10 @@ class CodegenUtils
     #
     # Parameters
     # - package_json_file: the path to the `package.json`, required to extract the proper React Native version
-    # - fabric_enabled: whether fabric is enabled or not.
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
@@ -136,18 +135,14 @@ class CodegenUtils
             "React-NativeModulesApple": [],
             "glog": [],
             "DoubleConversion": [],
-          }
-        }
-
-        if fabric_enabled
-          spec[:'dependencies'].merge!({
             'React-graphics': [],
             'React-rendererdebug': [],
             'React-Fabric': [],
+            'React-FabricImage': [],
             'React-debug': [],
             'React-utils': [],
-          });
-        end
+          }
+        }
 
         if hermes_enabled
           spec[:'dependencies'].merge!({
@@ -157,13 +152,6 @@ class CodegenUtils
           spec[:'dependencies'].merge!({
             'React-jsc': [],
           });
-        end
-
-        if new_arch_disabled
-          spec[:dependencies].merge!({
-            'React-rncore': [],
-            'FBReactNativeSpec': [],
-          })
         end
 
         if script_phases
@@ -320,7 +308,6 @@ class CodegenUtils
       react_codegen_spec = codegen_utils.get_react_codegen_spec(
         file_manager.join(relative_installation_root, react_native_path, "package.json"),
         :folly_version => folly_version,
-        :fabric_enabled => fabric_enabled,
         :hermes_enabled => hermes_enabled,
         :script_phases => script_phases
       )
@@ -332,7 +319,6 @@ class CodegenUtils
           "#{relative_installation_root}/#{react_native_path}/scripts/generate-codegen-artifacts.js",
           "-p", "#{app_path}",
           "-o", Pod::Config.instance.installation_root,
-          "-e", "#{fabric_enabled}",
           "-c", "#{config_file_dir}",
         ])
       Pod::UI.puts out;

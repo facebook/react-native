@@ -12,7 +12,7 @@ class NewArchitectureHelper
 
     @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
 
-    @@new_arch_cpp_flags = "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
+    @@new_arch_cpp_flags = " -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
 
     @@cplusplus_version = "c++20"
 
@@ -49,17 +49,10 @@ class NewArchitectureHelper
         unless is_new_arch_enabled
             return
         end
-        ndebug_flag = " -DNDEBUG"
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-
-                if config_name == "Release"
-                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + ndebug_flag
-                    other_cflags = config_file.attributes['OTHER_CFLAGS'] != nil ? config_file.attributes['OTHER_CFLAGS'] : "$(inherited)"
-                    config_file.attributes['OTHER_CFLAGS'] = other_cflags + ndebug_flag
-                end
+                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
@@ -71,27 +64,7 @@ class NewArchitectureHelper
             # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
             if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
-                end
-            end
-
-            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
-            # This helps with backward compatibility.
-            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
-                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
-                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
-                target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
-                end
-            end
-
-            target_installation_result.native_target.build_configurations.each do |config|
-                if config.name == "Release"
-                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
-                    current_cflags = config.build_settings['OTHER_CFLAGS'] != nil ? config.build_settings['OTHER_CFLAGS'] : "$(inherited)"
-                    config.build_settings['OTHER_CFLAGS'] = current_cflags + ndebug_flag
+                    ReactNativePodsUtils.add_flag_to_map_with_inheritance(config.build_settings, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
                 end
             end
         end
@@ -137,28 +110,29 @@ class NewArchitectureHelper
         spec.dependency "glog"
 
         if new_arch_enabled
-            current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
-            spec.dependency "React-RCTFabric" # This is for Fabric Component
-            spec.dependency "React-Codegen"
+            ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
+        end
 
-            spec.dependency "RCTRequired"
-            spec.dependency "RCTTypeSafety"
-            spec.dependency "ReactCommon/turbomodule/bridging"
-            spec.dependency "ReactCommon/turbomodule/core"
-            spec.dependency "React-NativeModulesApple"
-            spec.dependency "Yoga"
-            spec.dependency "React-Fabric"
-            spec.dependency "React-graphics"
-            spec.dependency "React-utils"
-            spec.dependency "React-debug"
-            spec.dependency "React-ImageManager"
-            spec.dependency "React-rendererdebug"
+        spec.dependency "React-RCTFabric" # This is for Fabric Component
+        spec.dependency "React-Codegen"
 
-            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-                spec.dependency "hermes-engine"
-            else
-                spec.dependency "React-jsi"
-            end
+        spec.dependency "RCTRequired"
+        spec.dependency "RCTTypeSafety"
+        spec.dependency "ReactCommon/turbomodule/bridging"
+        spec.dependency "ReactCommon/turbomodule/core"
+        spec.dependency "React-NativeModulesApple"
+        spec.dependency "Yoga"
+        spec.dependency "React-Fabric"
+        spec.dependency "React-graphics"
+        spec.dependency "React-utils"
+        spec.dependency "React-debug"
+        spec.dependency "React-ImageManager"
+        spec.dependency "React-rendererdebug"
+
+        if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+            spec.dependency "hermes-engine"
+        else
+            spec.dependency "React-jsi"
         end
 
         spec.pod_target_xcconfig = current_config

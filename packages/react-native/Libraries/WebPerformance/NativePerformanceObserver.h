@@ -20,7 +20,7 @@ class PerformanceEntryReporter;
 
 using RawPerformanceEntryType = int32_t;
 
-using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
+using RawPerformanceEntry = NativePerformanceObserverCxxRawPerformanceEntry<
     std::string,
     RawPerformanceEntryType,
     double,
@@ -32,25 +32,18 @@ using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
 
 template <>
 struct Bridging<RawPerformanceEntry>
-    : NativePerformanceObserverCxxBaseRawPerformanceEntryBridging<
-          std::string,
-          RawPerformanceEntryType,
-          double,
-          double,
-          std::optional<double>,
-          std::optional<double>,
-          std::optional<uint32_t>> {};
+    : NativePerformanceObserverCxxRawPerformanceEntryBridging<
+          RawPerformanceEntry> {};
 
 using GetPendingEntriesResult =
-    NativePerformanceObserverCxxBaseGetPendingEntriesResult<
+    NativePerformanceObserverCxxGetPendingEntriesResult<
         std::vector<RawPerformanceEntry>,
         uint32_t>;
 
 template <>
 struct Bridging<GetPendingEntriesResult>
-    : NativePerformanceObserverCxxBaseGetPendingEntriesResultBridging<
-          std::vector<RawPerformanceEntry>,
-          uint32_t> {};
+    : NativePerformanceObserverCxxGetPendingEntriesResultBridging<
+          GetPendingEntriesResult> {};
 
 #pragma mark - implementation
 

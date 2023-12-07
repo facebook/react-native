@@ -118,8 +118,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ScrollViewProps>();
-    _props = defaultProps;
+    _props = ScrollViewShadowNode::defaultSharedProps();
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -134,11 +133,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     [self.scrollViewDelegateSplitter addDelegate:self];
 
-    if (CoreFeatures::disableScrollEventThrottleRequirement) {
-      _scrollEventThrottle = 0;
-    } else {
-      _scrollEventThrottle = INFINITY;
-    }
+    _scrollEventThrottle = 0;
   }
 
   return self;

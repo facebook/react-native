@@ -1520,6 +1520,25 @@ TEST_P(JSITest, NativeStateSymbolOverrides) {
       42);
 }
 
+TEST_P(JSITest, UTF8ExceptionTest) {
+  // Test that a native exception containing UTF-8 characters is correctly
+  // passed through.
+  Function throwUtf8 = Function::createFromHostFunction(
+      rt,
+      PropNameID::forAscii(rt, "throwUtf8"),
+      1,
+      [](Runtime& rt, const Value&, const Value* args, size_t) -> Value {
+        throw JSINativeException(args[0].asString(rt).utf8(rt));
+      });
+  std::string utf8 = "👍";
+  try {
+    throwUtf8.call(rt, utf8);
+    FAIL();
+  } catch (const JSError& e) {
+    EXPECT_NE(e.getMessage().find(utf8), std::string::npos);
+  }
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

@@ -14,7 +14,7 @@ import type {
   InstanceFromReactDevTools,
   ReactDevToolsAgent,
 } from '../Types/ReactDevToolsTypes';
-import type {HostRef} from './getInspectorDataForViewAtPoint';
+import type {InspectedElement} from './Inspector';
 
 import View from '../Components/View/View';
 import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
@@ -29,17 +29,15 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const {useEffect, useState, useCallback} = React;
 
 type Props = {
-  inspectedView: ?HostRef,
+  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
   reactDevToolsAgent: ReactDevToolsAgent,
 };
 
 export default function ReactDevToolsOverlay({
-  inspectedView,
+  inspectedViewRef,
   reactDevToolsAgent,
 }: Props): React.Node {
-  const [inspected, setInspected] = useState<null | {
-    frame: {+height: any, +left: any, +top: any, +width: any},
-  }>(null);
+  const [inspected, setInspected] = useState<?InspectedElement>(null);
   const [isInspecting, setIsInspecting] = useState(false);
 
   useEffect(() => {
@@ -126,24 +124,29 @@ export default function ReactDevToolsOverlay({
 
   const findViewForLocation = useCallback(
     (x: number, y: number) => {
-      getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
-        const {touchedViewTag, closestInstance, frame} = viewData;
-        if (closestInstance != null || touchedViewTag != null) {
-          // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
-          // this makes sure it works for both architectures.
-          reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
-          if (closestInstance != null) {
-            reactDevToolsAgent.selectNode(closestInstance);
+      getInspectorDataForViewAtPoint(
+        inspectedViewRef.current,
+        x,
+        y,
+        viewData => {
+          const {touchedViewTag, closestInstance, frame} = viewData;
+          if (closestInstance != null || touchedViewTag != null) {
+            // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
+            // this makes sure it works for both architectures.
+            reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
+            if (closestInstance != null) {
+              reactDevToolsAgent.selectNode(closestInstance);
+            }
+            setInspected({
+              frame,
+            });
+            return true;
           }
-          setInspected({
-            frame,
-          });
-          return true;
-        }
-        return false;
-      });
+          return false;
+        },
+      );
     },
-    [inspectedView, reactDevToolsAgent],
+    [inspectedViewRef, reactDevToolsAgent],
   );
 
   const stopInspecting = useCallback(() => {

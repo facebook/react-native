@@ -48,6 +48,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsitracing"
   s.dependency "React-utils"
   s.dependency "React-jsi"
+  s.dependency "React-RuntimeCore"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

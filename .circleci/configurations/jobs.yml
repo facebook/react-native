@@ -1231,7 +1231,6 @@ jobs:
             or:
               - equal: [ "release", << parameters.release_type >> ]
               - equal: [ "nightly", << parameters.release_type >> ]
-              - equal: [ "prealpha", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
       # END: Stables, prealpha and nightlies

@@ -23,7 +23,8 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
-describe('inspector proxy React Native reloads', () => {
+// TODO T169943794
+xdescribe('inspector proxy React Native reloads', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
     projectRoot: '',

@@ -23,7 +23,7 @@ def cmakeVersion = parent.cmake_version
  * users to install CMake externally.
  */
 def findCmakePath(cmakeVersion) {
-    def cmakeRelativePath = "/cmake/${cmakeVersion}/bin/cmake"
+    def cmakeRelativePath = "cmake/${cmakeVersion}/bin/cmake"
     if (System.getenv("ANDROID_SDK_ROOT") && new File("${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}").exists()) {
         return "${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}"
     }

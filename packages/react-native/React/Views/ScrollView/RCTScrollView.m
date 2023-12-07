@@ -674,8 +674,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
    * inadvertently filter out any scroll events.
    */
-  if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
+  if (_allowNextScrollNoMatterWhat || (_scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
     RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;

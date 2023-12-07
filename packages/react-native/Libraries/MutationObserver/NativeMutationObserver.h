@@ -17,7 +17,7 @@
 namespace facebook::react {
 
 using NativeMutationObserverObserveOptions =
-    NativeMutationObserverCxxBaseNativeMutationObserverObserveOptions<
+    NativeMutationObserverCxxNativeMutationObserverObserveOptions<
         // mutationObserverId
         MutationObserverId,
         // targetShadowNode
@@ -27,15 +27,10 @@ using NativeMutationObserverObserveOptions =
 
 template <>
 struct Bridging<NativeMutationObserverObserveOptions>
-    : NativeMutationObserverCxxBaseNativeMutationObserverObserveOptionsBridging<
-          // mutationObserverId
-          MutationObserverId,
-          // targetShadowNode
-          jsi::Object,
-          // subtree
-          bool> {};
+    : NativeMutationObserverCxxNativeMutationObserverObserveOptionsBridging<
+          NativeMutationObserverObserveOptions> {};
 
-using NativeMutationRecord = NativeMutationObserverCxxBaseNativeMutationRecord<
+using NativeMutationRecord = NativeMutationObserverCxxNativeMutationRecord<
     // mutationObserverId
     MutationObserverId,
     // target
@@ -47,15 +42,8 @@ using NativeMutationRecord = NativeMutationObserverCxxBaseNativeMutationRecord<
 
 template <>
 struct Bridging<NativeMutationRecord>
-    : NativeMutationObserverCxxBaseNativeMutationRecordBridging<
-          // mutationObserverId
-          MutationObserverId,
-          // target
-          jsi::Value,
-          // addedNodes
-          std::vector<jsi::Value>,
-          // removedNodes
-          std::vector<jsi::Value>> {};
+    : NativeMutationObserverCxxNativeMutationRecordBridging<
+          NativeMutationRecord> {};
 
 class NativeMutationObserver
     : public NativeMutationObserverCxxSpec<NativeMutationObserver>,

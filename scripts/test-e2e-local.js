@@ -37,8 +37,9 @@ const argv = yargs
   })
   .option('p', {
     alias: 'platform',
-    default: 'iOS',
-    choices: ['iOS', 'Android'],
+    default: 'ios',
+    coerce: platform => platform.toLowerCase(),
+    choices: ['ios', 'android'],
   })
   .option('h', {
     alias: 'hermes',
@@ -167,7 +168,7 @@ async function testRNTester(circleCIArtifacts, onReleaseBranch) {
   // see also https://github.com/shelljs/shelljs/issues/86
   pushd('packages/rn-tester');
 
-  if (argv.platform === 'iOS') {
+  if (argv.platform === 'ios') {
     await testRNTesterIOS(circleCIArtifacts, onReleaseBranch);
   } else {
     await testRNTesterAndroid(circleCIArtifacts);
@@ -248,7 +249,7 @@ async function testRNTestProject(circleCIArtifacts) {
     );
   }
 
-  if (argv.platform === 'iOS') {
+  if (argv.platform === 'ios') {
     // doing the pod install here so that it's easier to play around RNTestProject
     cd('ios');
     exec('bundle install');

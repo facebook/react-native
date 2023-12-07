@@ -147,15 +147,6 @@ class ReactNativePodsUtils
 
     end
 
-    def self.apply_flags_for_fabric(installer, fabric_enabled: false)
-        fabric_flag = "-DRN_FABRIC_ENABLED"
-        if fabric_enabled
-            self.add_compiler_flag_to_project(installer, fabric_flag)
-        else
-            self.remove_compiler_flag_from_project(installer, fabric_flag)
-        end
-    end
-
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
@@ -316,6 +307,22 @@ class ReactNativePodsUtils
                     config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = [Helpers::Constants.min_ios_version_supported.to_f, old_iphone_deploy_target.to_f].max.to_s
                 end
             end
+    end
+
+    def self.set_dynamic_frameworks_flags(installer)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+
+            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
+            # This helps with backward compatibility.
+            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
+                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
+                target_installation_result.native_target.build_configurations.each do |config|
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
+                end
+            end
+        end
     end
 
     # ========= #
@@ -592,7 +599,6 @@ class ReactNativePodsUtils
             "fmt",
             "glog",
             "hermes-engine",
-            "libevent",
             "React-hermes",
         ]
     end
@@ -606,5 +612,47 @@ class ReactNativePodsUtils
             result << File.join(base_path, extra_path)
         }
         return result
+    end
+
+    def self.add_ndebug_flag_to_pods_in_release(installer)
+        ndebug_flag = " -DNDEBUG"
+
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CFLAGS', ndebug_flag);
+
+                xcconfig_path = aggregate_target.xcconfig_path(config_name)
+                config_file.save_as(xcconfig_path)
+            end
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CFLAGS', ndebug_flag);
+            end
+        end
+    end
+
+    def self.add_flag_to_map_with_inheritance(map, field, flag)
+        if map[field] == nil
+            map[field] = "$(inherited)" + flag
+        else
+            unless map[field].include?(flag)
+                map[field] = map[field] + flag
+            end
+            unless map[field].include?("$(inherited)")
+                map[field] = "$(inherited) " + map[field]
+            end
+        end
     end
 end

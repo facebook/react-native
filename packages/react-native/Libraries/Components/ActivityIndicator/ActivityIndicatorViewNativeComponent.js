@@ -21,16 +21,16 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the indicator should hide when not animating (true by default).
    *
-   * See https://reactnative.dev/docs/activityindicator#hideswhenstopped
+   * See https://reactnative.dev/docs/activityindicator#hideswhenstopped-ios
    */
-  hidesWhenStopped?: WithDefault<boolean, false>,
+  hidesWhenStopped?: WithDefault<boolean, true>,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
    *
    * See https://reactnative.dev/docs/activityindicator#animating
    */
-  animating?: WithDefault<boolean, false>,
+  animating?: WithDefault<boolean, true>,
 
   /**
    * The foreground color of the spinner (default is gray).

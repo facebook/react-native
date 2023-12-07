@@ -14,15 +14,20 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.testutils.shadows.ShadowSoLoader;
+import com.facebook.testutils.shadows.ShadowYogaConfigProvider;
+import com.facebook.testutils.shadows.ShadowYogaNodeFactory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 /**
  * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprehensive test of this
@@ -30,9 +35,9 @@ import org.robolectric.RobolectricTestRunner;
  * of properties to be updated.
  */
 @RunWith(RobolectricTestRunner.class)
-@Ignore // TODO T14964130
+@Config(
+    shadows = {ShadowYogaConfigProvider.class, ShadowSoLoader.class, ShadowYogaNodeFactory.class})
 public class ReactPropForShadowNodeSetterTest {
-
   public interface ViewManagerUpdatesReceiver {
     void onBooleanSetterCalled(boolean value);
 
@@ -69,6 +74,10 @@ public class ReactPropForShadowNodeSetterTest {
 
     private ShadowViewUnderTest(ViewManagerUpdatesReceiver viewManagerUpdatesReceiver) {
       mViewManagerUpdatesReceiver = viewManagerUpdatesReceiver;
+      setViewClassName("ShadowViewUnderTest");
+      ReactApplicationContext context =
+          new ReactApplicationContext(RuntimeEnvironment.getApplication());
+      setThemedContext(new ThemedReactContext(context, context, null, -1));
     }
 
     @ReactProp(name = "boolProp")

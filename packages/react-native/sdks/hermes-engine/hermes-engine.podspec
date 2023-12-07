@@ -41,7 +41,7 @@ Pod::Spec.new do |spec|
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
-      ss.source_files = "destroot/include/**/*.h"
+      ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
@@ -112,7 +112,6 @@ Pod::Spec.new do |spec|
     # This podspec is also run in CI to build Hermes without using Pod install
     # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
     if defined?(Pod::Executable.to_s)
-      puts "Const Defined!"
       CMAKE_BINARY = Pod::Executable::which!('cmake')
       # NOTE: Script phases are sorted alphabetically inside Xcode project
       spec.script_phases = [

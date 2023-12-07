@@ -10,7 +10,7 @@
 #import <cxxreact/MessageQueueThread.h>
 #import <hermes/Public/CrashManager.h>
 #import <jsi/jsi.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/hermes/HermesInstance.h>
 
 namespace facebook {
@@ -19,14 +19,14 @@ using CrashManagerProvider =
     std::function<std::shared_ptr<::hermes::vm::CrashManager>()>;
 
 // ObjC++ wrapper for HermesInstance.cpp
-class RCTHermesInstance : public JSEngineInstance {
+class RCTHermesInstance : public JSRuntimeFactory {
  public:
   RCTHermesInstance();
   RCTHermesInstance(
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       CrashManagerProvider crashManagerProvider);
 
-  std::unique_ptr<jsi::Runtime> createJSRuntime(
+  std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
   ~RCTHermesInstance(){};

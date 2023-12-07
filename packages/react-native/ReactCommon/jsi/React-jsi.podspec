@@ -46,9 +46,15 @@ Pod::Spec.new do |s|
   s.dependency "glog"
 
   s.source_files  = "**/*.{cpp,h}"
-  s.exclude_files = [
+  files_to_exclude = [
                       "jsi/jsilib-posix.cpp",
                       "jsi/jsilib-windows.cpp",
                       "**/test/*"
-                    ]
+                     ]
+  if js_engine == :hermes
+    # JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rulle.
+    files_to_exclude += [ "jsi/jsi.cpp" ]
+    s.dependency "hermes-engine"
+  end
+  s.exclude_files = files_to_exclude
 end

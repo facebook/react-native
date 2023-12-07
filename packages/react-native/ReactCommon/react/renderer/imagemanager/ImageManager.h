@@ -21,15 +21,17 @@ class ImageManager;
 using SharedImageManager = std::shared_ptr<ImageManager>;
 
 /*
- * Cross platform facade for iOS-specific RCTImageManager.
+ * Cross platform facade for image management (e.g. iOS-specific
+ * RCTImageManager)
  */
 class ImageManager {
  public:
   ImageManager(const ContextContainer::Shared& contextContainer);
-  ~ImageManager();
+  virtual ~ImageManager();
 
-  ImageRequest requestImage(const ImageSource& imageSource, SurfaceId surfaceId)
-      const;
+  virtual ImageRequest requestImage(
+      const ImageSource& imageSource,
+      SurfaceId surfaceId) const;
 
  private:
   void* self_{};

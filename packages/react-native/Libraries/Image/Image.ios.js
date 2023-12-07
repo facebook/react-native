@@ -16,7 +16,10 @@ import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import {unstable_getImageComponentDecorator} from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -158,6 +161,8 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
@@ -167,7 +172,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
-            ref={forwardedRef}
+            ref={actualRef}
             style={style}
             resizeMode={resizeMode}
             tintColor={tintColor}

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/renderer/core/EventDispatcher.h>
-#include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -106,7 +105,7 @@ class ComponentDescriptor {
   virtual Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
-      const RawProps& rawProps) const = 0;
+      RawProps rawProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial
@@ -129,12 +128,6 @@ class ComponentDescriptor {
    */
   virtual ShadowNodeFamily::Shared createFamily(
       const ShadowNodeFamilyFragment& fragment) const = 0;
-
-  /*
-   * Creates an event emitter for particular node.
-   */
-  virtual SharedEventEmitter createEventEmitter(
-      const InstanceHandle::Shared& instanceHandle) const = 0;
 
  protected:
   friend ShadowNode;

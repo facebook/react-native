@@ -57,7 +57,7 @@ float calculateBaseline(const yoga::Node* node) {
   }
 
   const float baseline = calculateBaseline(baselineChild);
-  return baseline + baselineChild->getLayout().position[YGEdgeTop];
+  return baseline + baselineChild->getLayout().position(Edge::Top);
 }
 
 bool isBaselineLayout(const yoga::Node* node) {

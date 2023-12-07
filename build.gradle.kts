@@ -11,12 +11,28 @@ plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.binary.compatibility.validator) apply true
 }
 
 val reactAndroidProperties = java.util.Properties()
 
 File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStream().use {
   reactAndroidProperties.load(it)
+}
+
+fun getListReactAndroidProperty(name: String) = reactAndroidProperties.getProperty(name).split(",")
+
+apiValidation {
+  ignoredPackages.addAll(
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredPackages"))
+  ignoredClasses.addAll(
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredClasses"))
+  nonPublicMarkers.addAll(
+      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.nonPublicMarkers"))
+  validationDisabled =
+      reactAndroidProperties
+          .getProperty("react.internal.binaryCompatibilityValidator.validationDisabled")
+          ?.toBoolean() == true
 }
 
 version =

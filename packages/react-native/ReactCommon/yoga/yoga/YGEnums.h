@@ -12,7 +12,7 @@
 
 YG_EXTERN_C_BEGIN
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGAlign,
     YGAlignAuto,
     YGAlignFlexStart,
@@ -24,23 +24,23 @@ YG_ENUM_SEQ_DECL(
     YGAlignSpaceAround,
     YGAlignSpaceEvenly)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGDimension,
     YGDimensionWidth,
     YGDimensionHeight)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGDirection,
     YGDirectionInherit,
     YGDirectionLTR,
     YGDirectionRTL)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGDisplay,
     YGDisplayFlex,
     YGDisplayNone)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGEdge,
     YGEdgeLeft,
     YGEdgeTop,
@@ -62,25 +62,25 @@ YG_ENUM_DECL(
     YGErrataClassic = 2147483646)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGExperimentalFeature,
     YGExperimentalFeatureWebFlexBasis,
     YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGFlexDirection,
     YGFlexDirectionColumn,
     YGFlexDirectionColumnReverse,
     YGFlexDirectionRow,
     YGFlexDirectionRowReverse)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGGutter,
     YGGutterColumn,
     YGGutterRow,
     YGGutterAll)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGJustify,
     YGJustifyFlexStart,
     YGJustifyCenter,
@@ -89,7 +89,7 @@ YG_ENUM_SEQ_DECL(
     YGJustifySpaceAround,
     YGJustifySpaceEvenly)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGLogLevel,
     YGLogLevelError,
     YGLogLevelWarn,
@@ -98,24 +98,24 @@ YG_ENUM_SEQ_DECL(
     YGLogLevelVerbose,
     YGLogLevelFatal)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGMeasureMode,
     YGMeasureModeUndefined,
     YGMeasureModeExactly,
     YGMeasureModeAtMost)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGNodeType,
     YGNodeTypeDefault,
     YGNodeTypeText)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGOverflow,
     YGOverflowVisible,
     YGOverflowHidden,
     YGOverflowScroll)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGPositionType,
     YGPositionTypeStatic,
     YGPositionTypeRelative,
@@ -128,14 +128,14 @@ YG_ENUM_DECL(
     YGPrintOptionsChildren = 4)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGPrintOptions)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGUnit,
     YGUnitUndefined,
     YGUnitPoint,
     YGUnitPercent,
     YGUnitAuto)
 
-YG_ENUM_SEQ_DECL(
+YG_ENUM_DECL(
     YGWrap,
     YGWrapNoWrap,
     YGWrapWrap,

@@ -233,6 +233,7 @@ class JSCRuntime : public jsi::Runtime {
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  void setExternalMemoryPressure(const jsi::Object&, size_t) override;
 
  private:
   // Basically convenience casts
@@ -240,10 +241,7 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-
-#ifdef RN_FABRIC_ENABLED
   static JSObjectRef objectRef(const jsi::WeakObject& obj);
-#endif
 
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
@@ -1065,23 +1063,15 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
 }
 
 jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return make<jsi::WeakObject>(makeObjectValue(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
-#ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return jsi::Value(createObject(objRef));
-#else
-  throw std::logic_error("Not implemented");
-#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1403,6 +1393,8 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
   return res;
 }
 
+void JSCRuntime::setExternalMemoryPressure(const jsi::Object&, size_t) {}
+
 jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
     JSValueRef symbolRef) const {
 #ifndef NDEBUG
@@ -1527,12 +1519,10 @@ JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
-#ifdef RN_FABRIC_ENABLED
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-#endif
 
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {

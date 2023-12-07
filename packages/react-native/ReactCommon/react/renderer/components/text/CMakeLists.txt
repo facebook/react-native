@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_text_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_text SHARED ${rrc_text_SRC})
+add_library(rrc_text STATIC ${rrc_text_SRC})
 
 target_include_directories(rrc_text PUBLIC ${REACT_COMMON_DIR})
 

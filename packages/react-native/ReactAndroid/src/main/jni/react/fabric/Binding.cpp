@@ -424,6 +424,8 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =
       getFeatureFlagValue("excludeYogaFromRawProps");
+  CoreFeatures::positionRelativeDefault =
+      getFeatureFlagValue("positionRelativeDefault");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =

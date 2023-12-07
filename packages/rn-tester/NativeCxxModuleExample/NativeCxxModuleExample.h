@@ -24,35 +24,27 @@ namespace facebook::react {
 
 #pragma mark - Structs
 using ConstantsStruct =
-    NativeCxxModuleExampleCxxBaseConstantsStruct<bool, int32_t, std::string>;
+    NativeCxxModuleExampleCxxConstantsStruct<bool, int32_t, std::string>;
 
 template <>
 struct Bridging<ConstantsStruct>
-    : NativeCxxModuleExampleCxxBaseConstantsStructBridging<
-          bool,
-          int32_t,
-          std::string> {};
+    : NativeCxxModuleExampleCxxConstantsStructBridging<ConstantsStruct> {};
 
-using ObjectStruct = NativeCxxModuleExampleCxxBaseObjectStruct<
+using ObjectStruct = NativeCxxModuleExampleCxxObjectStruct<
     int32_t,
     std::string,
     std::optional<std::string>>;
 
 template <>
 struct Bridging<ObjectStruct>
-    : NativeCxxModuleExampleCxxBaseObjectStructBridging<
-          int32_t,
-          std::string,
-          std::optional<std::string>> {};
+    : NativeCxxModuleExampleCxxObjectStructBridging<ObjectStruct> {};
 
 using ValueStruct =
-    NativeCxxModuleExampleCxxBaseValueStruct<double, std::string, ObjectStruct>;
+    NativeCxxModuleExampleCxxValueStruct<double, std::string, ObjectStruct>;
 
 template <>
-struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
-                                   double,
-                                   std::string,
-                                   ObjectStruct> {};
+struct Bridging<ValueStruct>
+    : NativeCxxModuleExampleCxxValueStructBridging<ValueStruct> {};
 
 #pragma mark - enums
 enum CustomEnumInt { A = 23, B = 42 };
@@ -98,6 +90,31 @@ struct CustomHostObjectRef {
 
 using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
 
+#pragma mark - recursive objects
+
+using BinaryTreeNode = NativeCxxModuleExampleCxxBinaryTreeNode<int32_t>;
+
+template <>
+struct Bridging<BinaryTreeNode>
+    : NativeCxxModuleExampleCxxBinaryTreeNodeBridging<BinaryTreeNode> {};
+
+using GraphNode = NativeCxxModuleExampleCxxGraphNode<std::string>;
+
+template <>
+struct Bridging<GraphNode>
+    : NativeCxxModuleExampleCxxGraphNodeBridging<GraphNode> {};
+
+#pragma mark - functional object properties
+
+using MenuItem = NativeCxxModuleExampleCxxMenuItem<
+    std::string,
+    AsyncCallback<std::string, bool>,
+    std::optional<std::string>>;
+
+template <>
+struct Bridging<MenuItem>
+    : NativeCxxModuleExampleCxxMenuItemBridging<MenuItem> {};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -127,6 +144,10 @@ class NativeCxxModuleExample
   std::string consumeCustomHostObject(
       jsi::Runtime& rt,
       std::shared_ptr<CustomHostObject> arg);
+
+  BinaryTreeNode getBinaryTreeNode(jsi::Runtime& rt, BinaryTreeNode arg);
+
+  GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
   NativeCxxModuleExampleCxxEnumFloat getNumEnum(
       jsi::Runtime& rt,
@@ -160,6 +181,8 @@ class NativeCxxModuleExample
       std::optional<bool> optionalArg);
 
   void voidFunc(jsi::Runtime& rt);
+
+  void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
   void emitCustomDeviceEvent(jsi::Runtime& rt, jsi::String eventName);
 

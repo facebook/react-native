@@ -90,7 +90,7 @@ export default class ReactNativeElement
           offsetParentInstanceHandle,
         );
         // $FlowExpectedError[incompatible-type] The value returned by `getOffset` is always an instance handle for `ReadOnlyElement`.
-        const offsetParentElement: ReadOnlyElement = offsetParent;
+        const offsetParentElement: ReadOnlyElement | null = offsetParent;
         return offsetParentElement;
       }
     }

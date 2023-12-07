@@ -38,13 +38,11 @@ const FileTemplate = ({
 #include <react/renderer/components/${libraryName}/Props.h>
 ${imports}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({

@@ -28,7 +28,6 @@ const int RECONNECT_DELAY_MS = 2000;
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
   SRWebSocket *_webSocket;
-  dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
   RCTBundleStatusProvider _bundleStatusProvider;
@@ -57,7 +56,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   if (self = [super init]) {
     _url = url;
     _inspectorConnections = [NSMutableDictionary new];
-    _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -247,7 +245,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // timeouts, but our previous class, RCTSRWebSocket didn't have the same
   // implemented options. Might be worth reinvestigating for SRWebSocket?
   _webSocket = [[SRWebSocket alloc] initWithURL:_url];
-  [_webSocket setDelegateDispatchQueue:_jsQueue];
   _webSocket.delegate = self;
   [_webSocket open];
 }
@@ -282,7 +279,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)sendToPackager:(NSDictionary *)messageObject
 {
   __weak RCTInspectorPackagerConnection *weakSelf = self;
-  dispatch_async(_jsQueue, ^{
+  dispatch_async(dispatch_get_main_queue(), ^{
     RCTInspectorPackagerConnection *strongSelf = weakSelf;
     if (strongSelf && !strongSelf->_closed) {
       NSError *error;

@@ -28,7 +28,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ImageProps>();
+    const auto &defaultProps = ImageShadowNode::defaultSharedProps();
     _props = defaultProps;
 
     _imageView = [RCTUIImageViewAnimated new];

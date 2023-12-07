@@ -35,7 +35,7 @@ if ENV['USE_FRAMEWORKS']
   header_search_path = header_search_path + [
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
-    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
     # "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
   ]
 end

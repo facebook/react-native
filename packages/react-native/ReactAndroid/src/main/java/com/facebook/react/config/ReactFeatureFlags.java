@@ -72,7 +72,7 @@ public class ReactFeatureFlags {
   public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
 
   /** Does the bridgeless architecture use the new create/reload/destroy routines */
-  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = false;
+  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
 
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
@@ -182,4 +182,7 @@ public class ReactFeatureFlags {
    *  when there is work to do.
    */
   public static boolean enableOnDemandReactChoreographer = false;
+
+  /** When enabled, the default value of the position style property is relative. */
+  public static boolean positionRelativeDefault = false;
 }

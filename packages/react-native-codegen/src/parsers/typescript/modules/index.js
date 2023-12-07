@@ -50,6 +50,7 @@ function translateObjectTypeAnnotation(
   /**
    * TODO(T108222691): Use flow-types for @babel/parser
    */
+  typeScriptTypeAnnotation: $FlowFixMe,
   nullable: boolean,
   objectMembers: $ReadOnlyArray<$FlowFixMe>,
   typeResolutionStatus: TypeResolutionStatus,
@@ -66,6 +67,7 @@ function translateObjectTypeAnnotation(
     .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
       return tryParse(() => {
         return parseObjectProperty(
+          typeScriptTypeAnnotation,
           property,
           hasteModuleName,
           types,
@@ -266,6 +268,7 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
@@ -281,6 +284,7 @@ function translateTypeAnnotation(
     case 'TSIntersectionType': {
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
@@ -324,6 +328,7 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         typeAnnotation.members,
         typeResolutionStatus,

@@ -31,8 +31,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
-    _props = defaultProps;
+    _props = LegacyViewManagerInteropShadowNode::defaultSharedProps();
     _viewsToBeMounted = [NSMutableArray new];
     _viewsToBeUnmounted = [NSMutableArray new];
     _hasInvokedForwardingWarning = NO;

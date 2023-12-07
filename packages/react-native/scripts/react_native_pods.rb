@@ -93,9 +93,10 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
-
+  ENV['USE_NEW_ARCH'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
+
+  ENV['RCT_NEW_ARCH_ENABLED'] = "1"
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
@@ -103,9 +104,10 @@ def use_react_native! (
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
+  build_codegen!(prefix, relative_path_from_current)
+
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec" if !NewArchitectureHelper.new_arch_enabled
   pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
@@ -128,7 +130,8 @@ def use_react_native! (
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
-  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
+  pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
+  pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
@@ -174,16 +177,7 @@ def use_react_native! (
   # If the New Arch is turned off, we will use the Old Renderer, though.
   # RNTester always installed Fabric, this change is required to make the template work.
   setup_fabric!(:react_native_path => prefix)
-  checkAndGenerateEmptyThirdPartyProvider!(prefix, NewArchitectureHelper.new_arch_enabled)
-
-  if !fabric_enabled
-    relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-    build_codegen!(prefix, relative_installation_root)
-  end
-
-  if NewArchitectureHelper.new_arch_enabled
-    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
-  end
+  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
@@ -282,115 +276,15 @@ def react_native_post_install(
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
-  ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
+  ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
+  ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
 
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
-end
-
-# === LEGACY METHOD ===
-# We need to keep this while we continue to support the old architecture.
-# =====================
-def use_react_native_codegen!(spec, options={})
-  return if NewArchitectureHelper.new_arch_enabled
-  # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
-
-  # The prefix to react-native
-  react_native_path = options[:react_native_path] ||= ".."
-
-  # Library name (e.g. FBReactNativeSpec)
-  library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
-  Pod::UI.puts "[Codegen] Found #{library_name}"
-
-  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-  output_dir = options[:output_dir] ||= $CODEGEN_OUTPUT_DIR
-  output_dir_module = "#{output_dir}/#{$CODEGEN_MODULE_DIR}"
-  output_dir_component = "#{output_dir}/#{$CODEGEN_COMPONENT_DIR}"
-
-  codegen_config = {
-    "modules" => {
-      :js_srcs_pattern => "Native*.js",
-      :generated_dir => "#{relative_installation_root}/#{output_dir_module}/#{library_name}",
-      :generated_files => [
-        "#{library_name}.h",
-        "#{library_name}-generated.mm"
-      ]
-    },
-    "components" => {
-      :js_srcs_pattern => "*NativeComponent.js",
-      :generated_dir => "#{relative_installation_root}/#{output_dir_component}/#{library_name}",
-      :generated_files => [
-        "ComponentDescriptors.h",
-        "EventEmitters.cpp",
-        "EventEmitters.h",
-        "Props.cpp",
-        "Props.h",
-        "States.cpp",
-        "States.h",
-        "RCTComponentViewHelpers.h",
-        "ShadowNodes.cpp",
-        "ShadowNodes.h"
-      ]
-    }
-  }
-
-  # The path to JavaScript files
-  js_srcs_dir = options[:js_srcs_dir] ||= "./"
-  library_type = options[:library_type]
-
-  if library_type
-    if !codegen_config[library_type]
-      raise "[Codegen] invalid library_type: #{library_type}. Check your podspec to make sure it's set to 'modules' or 'components'. Removing the option will generate files for both"
-    end
-    js_srcs_pattern = codegen_config[library_type][:js_srcs_pattern]
-  end
-
-  if library_type
-    generated_dirs = [ codegen_config[library_type][:generated_dir] ]
-    generated_files = codegen_config[library_type][:generated_files].map { |filename| "#{codegen_config[library_type][:generated_dir]}/#{filename}" }
-  else
-    generated_dirs = [ codegen_config["modules"][:generated_dir], codegen_config["components"][:generated_dir] ]
-    generated_files = codegen_config["modules"][:generated_files].map { |filename| "#{codegen_config["modules"][:generated_dir]}/#{filename}" }
-    generated_files = generated_files.concat(codegen_config["components"][:generated_files].map { |filename| "#{codegen_config["components"][:generated_dir]}/#{filename}" })
-  end
-
-  if js_srcs_pattern
-    file_list = `find #{js_srcs_dir} -type f -name #{js_srcs_pattern}`.split("\n").sort
-    input_files = file_list.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}" }
-  else
-    input_files = [ js_srcs_dir ]
-  end
-
-  # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
-  prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
-  system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios. Replace with pre_integrate_hook after updating to CocoaPods 1.11
-  spec.prepare_command = prepare_command
-
-  env_files = ["$PODS_ROOT/../.xcode.env.local", "$PODS_ROOT/../.xcode.env"]
-
-  spec.script_phase = {
-    :name => 'Generate Specs',
-    :input_files => input_files + env_files, # This also needs to be relative to Xcode
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
-    # The final generated files will be created when this script is invoked at Xcode build time.
-    :script => get_script_phases_no_codegen_discovery(
-      react_native_path: react_native_path,
-      codegen_output_dir: output_dir,
-      codegen_module_dir: output_dir_module,
-      codegen_component_dir: output_dir_component,
-      library_name: library_name,
-      library_type: library_type,
-      js_srcs_pattern: js_srcs_pattern,
-      js_srcs_dir: js_srcs_dir,
-      file_list: file_list
-    ),
-    :execution_position => :before_compile,
-    :show_env_vars_in_log => true
-  }
 end

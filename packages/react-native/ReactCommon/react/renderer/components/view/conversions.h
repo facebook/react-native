@@ -395,9 +395,9 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    yoga::Style::ValueRepr& result) {
+    yoga::Style::Length& result) {
   if (value.hasType<Float>()) {
-    result = yoga::CompactValue::ofMaybe<YGUnitPoint>((float)value);
+    result = yoga::value::points((float)value);
     return;
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
@@ -409,13 +409,13 @@ inline void fromRawValue(
         auto tryValue = folly::tryTo<float>(
             std::string_view(stringValue).substr(0, stringValue.length() - 1));
         if (tryValue.hasValue()) {
-          result = YGValue{tryValue.value(), YGUnitPercent};
+          result = yoga::value::percent(tryValue.value());
           return;
         }
       } else {
         auto tryValue = folly::tryTo<float>(stringValue);
         if (tryValue.hasValue()) {
-          result = YGValue{tryValue.value(), YGUnitPoint};
+          result = yoga::value::points(tryValue.value());
           return;
         }
       }
@@ -428,7 +428,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     YGValue& result) {
-  yoga::Style::ValueRepr ygValue{};
+  yoga::Style::Length ygValue{};
   fromRawValue(context, value, ygValue);
   result = ygValue;
 }
@@ -776,40 +776,6 @@ inline std::string toString(const yoga::FloatOptional& value) {
   }
 
   return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
-}
-
-inline std::string toString(const yoga::Style::Dimensions& value) {
-  return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
-}
-
-inline std::string toString(const yoga::Style::Edges& value) {
-  static std::array<std::string, 9> names = {
-      {"left",
-       "top",
-       "right",
-       "bottom",
-       "start",
-       "end",
-       "horizontal",
-       "vertical",
-       "all"}};
-
-  auto result = std::string{};
-  auto separator = std::string{", "};
-
-  for (size_t i = 0; i < names.size(); i++) {
-    YGValue v = value[i];
-    if (v.unit == YGUnitUndefined) {
-      continue;
-    }
-    result += names[i] + ": " + toString(v) + separator;
-  }
-
-  if (!result.empty()) {
-    result.erase(result.length() - separator.length());
-  }
-
-  return "{" + result + "}";
 }
 
 inline std::string toString(const LayoutConformance& value) {

@@ -17,14 +17,12 @@ import java.util.Map;
 public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final ReactInstanceManager mReactInstanceManager;
 
   private final Map<String, ModuleHolder> mModules = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
       ReactApplicationContext reactApplicationContext, ReactInstanceManager reactInstanceManager) {
     mReactApplicationContext = reactApplicationContext;
-    mReactInstanceManager = reactInstanceManager;
   }
 
   public void processPackage(ReactPackage reactPackage) {
