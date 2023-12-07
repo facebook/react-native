@@ -28,7 +28,7 @@ export type Experiments = $ReadOnly<{
    * Enables the new JS debugger network panel and network CDP events.
    * When disabled, all CDP events and the network panel are disabled.
    */
-  enableNetworkInspector: Boolean,
+  enableNetworkInspector: boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;
