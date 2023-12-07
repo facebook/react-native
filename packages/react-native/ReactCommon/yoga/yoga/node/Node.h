@@ -287,6 +287,7 @@ class YG_EXPORT Node : public ::YGNode {
       FlexDirection axis,
       Direction direction,
       float widthSize) const;
+  float getBorderForAxis(FlexDirection axis) const;
   float getMarginForAxis(FlexDirection axis, float widthSize) const;
   float getGapForAxis(FlexDirection axis) const;
   // Setters
