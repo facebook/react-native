@@ -94,7 +94,9 @@ RCT_EXPORT_MODULE()
 
 - (void)stopObserving
 {
+#if !TARGET_OS_VISION
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif
 }
 
 - (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
