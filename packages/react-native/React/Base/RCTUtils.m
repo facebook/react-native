@@ -315,23 +315,17 @@ static CGFloat screenScale;
 
 void RCTComputeScreenScale(void)
 {
-#if !TARGET_OS_VISION
   dispatch_once(&onceTokenScreenScale, ^{
     screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
-#endif
 }
 
 CGFloat RCTScreenScale(void)
 {
-#if !TARGET_OS_VISION
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
     screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
   return screenScale;
-#endif
-
-  return 2;
 }
 
 CGFloat RCTFontSizeMultiplier(void)

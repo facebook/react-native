@@ -42,6 +42,7 @@
   [_touchHandler attachToView:self.view];
 }
 
+#if !TARGET_OS_VISION
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return [RCTUIStatusBarManager() statusBarStyle];
@@ -53,6 +54,7 @@
   _lastViewBounds = CGRectZero;
 }
 
+#if !TARGET_OS_VISION
 - (BOOL)prefersStatusBarHidden
 {
   return [RCTUIStatusBarManager() isStatusBarHidden];

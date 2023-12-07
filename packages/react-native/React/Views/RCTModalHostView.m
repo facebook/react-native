@@ -78,7 +78,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 #if !TARGET_OS_VISION
   UIInterfaceOrientation currentOrientation = [RCTSharedApplication() statusBarOrientation];
 #else
-    UIInterfaceOrientation currentOrientation = UIDeviceOrientationUnknown;
+    UIInterfaceOrientation currentOrientation = UIInterfaceOrientationUnknown;
 #endif
   if (currentOrientation == _lastKnownOrientation) {
     return;
