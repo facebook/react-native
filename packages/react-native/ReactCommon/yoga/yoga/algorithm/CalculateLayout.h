@@ -35,14 +35,25 @@ bool calculateLayoutInternal(
     const uint32_t depth,
     const uint32_t generationCount);
 
+// Given an offset to an edge, returns the offset to the opposite edge on the
+// same axis. This assumes that the width/height of both nodes is determined at
+// this point.
+inline float getPositionOfOppositeEdge(
+    float position,
+    FlexDirection axis,
+    const yoga::Node* const containingNode,
+    const yoga::Node* const node) {
+  return containingNode->getLayout().measuredDimension(dimension(axis)) -
+      node->getLayout().measuredDimension(dimension(axis)) - position;
+}
+
 inline void setChildTrailingPosition(
     const yoga::Node* const node,
     yoga::Node* const child,
     const FlexDirection axis) {
-  const float size = child->getLayout().measuredDimension(dimension(axis));
   child->setLayoutPosition(
-      node->getLayout().measuredDimension(dimension(axis)) - size -
-          child->getLayout().position(flexStartEdge(axis)),
+      getPositionOfOppositeEdge(
+          child->getLayout().position(flexStartEdge(axis)), axis, node, child),
       flexEndEdge(axis));
 }
 
