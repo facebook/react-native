@@ -72,7 +72,8 @@ static void alignAbsoluteChild(
     case Align::Stretch:
     case Align::SpaceEvenly:
       child->setLayoutPosition(
-          parent->getFlexStartBorder(crossAxis, direction) +
+          parent->getLayout().border(flexStartEdge(crossAxis)) +
+              parent->getLayout().padding(flexStartEdge(crossAxis)) +
               child->getFlexStartMargin(
                   crossAxis, direction, containingBlockWidth),
           flexStartEdge(crossAxis));
