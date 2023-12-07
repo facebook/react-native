@@ -17,6 +17,9 @@
 ; Checked-in build output
 <PROJECT_ROOT>/packages/debugger-frontend/dist/
 
+; Generated build output
+<PROJECT_ROOT>/packages/.*/dist
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
