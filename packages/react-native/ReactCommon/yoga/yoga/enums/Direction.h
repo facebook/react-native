@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<Direction>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Direction>() {
-  return 2;
-} 
-
 constexpr inline Direction scopedEnum(YGDirection unscoped) {
   return static_cast<Direction>(unscoped);
 }

@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<PositionType>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<PositionType>() {
-  return 2;
-} 
-
 constexpr inline PositionType scopedEnum(YGPositionType unscoped) {
   return static_cast<PositionType>(unscoped);
 }

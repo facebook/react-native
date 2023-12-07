@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<Overflow>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Overflow>() {
-  return 2;
-} 
-
 constexpr inline Overflow scopedEnum(YGOverflow unscoped) {
   return static_cast<Overflow>(unscoped);
 }

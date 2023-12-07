@@ -32,11 +32,6 @@ constexpr inline int32_t ordinalCount<Align>() {
   return 9;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Align>() {
-  return 4;
-} 
-
 constexpr inline Align scopedEnum(YGAlign unscoped) {
   return static_cast<Align>(unscoped);
 }

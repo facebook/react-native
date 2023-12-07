@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<MeasureMode>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<MeasureMode>() {
-  return 2;
-} 
-
 constexpr inline MeasureMode scopedEnum(YGMeasureMode unscoped) {
   return static_cast<MeasureMode>(unscoped);
 }

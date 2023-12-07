@@ -29,11 +29,6 @@ constexpr inline int32_t ordinalCount<Justify>() {
   return 6;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Justify>() {
-  return 3;
-} 
-
 constexpr inline Justify scopedEnum(YGJustify unscoped) {
   return static_cast<Justify>(unscoped);
 }

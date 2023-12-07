@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<Wrap>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Wrap>() {
-  return 2;
-} 
-
 constexpr inline Wrap scopedEnum(YGWrap unscoped) {
   return static_cast<Wrap>(unscoped);
 }

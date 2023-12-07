@@ -26,11 +26,6 @@ constexpr inline int32_t ordinalCount<Gutter>() {
   return 3;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Gutter>() {
-  return 2;
-} 
-
 constexpr inline Gutter scopedEnum(YGGutter unscoped) {
   return static_cast<Gutter>(unscoped);
 }

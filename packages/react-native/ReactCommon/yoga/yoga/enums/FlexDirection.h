@@ -27,11 +27,6 @@ constexpr inline int32_t ordinalCount<FlexDirection>() {
   return 4;
 } 
 
-template <>
-constexpr inline int32_t bitCount<FlexDirection>() {
-  return 2;
-} 
-
 constexpr inline FlexDirection scopedEnum(YGFlexDirection unscoped) {
   return static_cast<FlexDirection>(unscoped);
 }

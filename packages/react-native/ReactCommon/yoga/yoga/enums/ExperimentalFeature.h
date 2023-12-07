@@ -25,11 +25,6 @@ constexpr inline int32_t ordinalCount<ExperimentalFeature>() {
   return 2;
 } 
 
-template <>
-constexpr inline int32_t bitCount<ExperimentalFeature>() {
-  return 1;
-} 
-
 constexpr inline ExperimentalFeature scopedEnum(YGExperimentalFeature unscoped) {
   return static_cast<ExperimentalFeature>(unscoped);
 }

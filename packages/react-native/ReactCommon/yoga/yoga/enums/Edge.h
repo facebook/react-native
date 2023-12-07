@@ -32,11 +32,6 @@ constexpr inline int32_t ordinalCount<Edge>() {
   return 9;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Edge>() {
-  return 4;
-} 
-
 constexpr inline Edge scopedEnum(YGEdge unscoped) {
   return static_cast<Edge>(unscoped);
 }

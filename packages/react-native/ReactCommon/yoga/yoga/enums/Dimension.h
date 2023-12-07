@@ -25,11 +25,6 @@ constexpr inline int32_t ordinalCount<Dimension>() {
   return 2;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Dimension>() {
-  return 1;
-} 
-
 constexpr inline Dimension scopedEnum(YGDimension unscoped) {
   return static_cast<Dimension>(unscoped);
 }

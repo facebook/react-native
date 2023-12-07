@@ -25,11 +25,6 @@ constexpr inline int32_t ordinalCount<NodeType>() {
   return 2;
 } 
 
-template <>
-constexpr inline int32_t bitCount<NodeType>() {
-  return 1;
-} 
-
 constexpr inline NodeType scopedEnum(YGNodeType unscoped) {
   return static_cast<NodeType>(unscoped);
 }

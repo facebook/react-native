@@ -27,11 +27,6 @@ constexpr inline int32_t ordinalCount<Unit>() {
   return 4;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Unit>() {
-  return 2;
-} 
-
 constexpr inline Unit scopedEnum(YGUnit unscoped) {
   return static_cast<Unit>(unscoped);
 }

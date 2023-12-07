@@ -29,11 +29,6 @@ constexpr inline int32_t ordinalCount<LogLevel>() {
   return 6;
 } 
 
-template <>
-constexpr inline int32_t bitCount<LogLevel>() {
-  return 3;
-} 
-
 constexpr inline LogLevel scopedEnum(YGLogLevel unscoped) {
   return static_cast<LogLevel>(unscoped);
 }

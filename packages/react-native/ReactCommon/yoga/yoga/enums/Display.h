@@ -25,11 +25,6 @@ constexpr inline int32_t ordinalCount<Display>() {
   return 2;
 } 
 
-template <>
-constexpr inline int32_t bitCount<Display>() {
-  return 1;
-} 
-
 constexpr inline Display scopedEnum(YGDisplay unscoped) {
   return static_cast<Display>(unscoped);
 }
