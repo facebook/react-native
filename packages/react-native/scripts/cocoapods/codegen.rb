@@ -11,23 +11,12 @@
 # - dir_manager: a class that implements the `Dir` interface. Defaults to `Dir`, the Dependency can be injected for testing purposes.
 # @throws an error if it could not find the codegen folder.
 def build_codegen!(react_native_path, relative_installation_root, dir_manager: Dir)
-    codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
-    codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../@react-native/codegen";
-    codegen_cli_path = ""
+  codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
+  return unless dir_manager.exist?(codegen_repo_path) && !dir_manager.exist?("#{codegen_repo_path}/lib")
 
-    if dir_manager.exist?(codegen_repo_path)
-      codegen_cli_path = codegen_repo_path
-    elsif dir_manager.exist?(codegen_npm_path)
-      codegen_cli_path = codegen_npm_path
-    else
-      raise "[codegen] Could not find react-native-codegen."
-    end
-
-    if !dir_manager.exist?("#{codegen_cli_path}/lib")
-      Pod::UI.puts "[Codegen] building #{codegen_cli_path}."
-      system("#{codegen_cli_path}/scripts/oss/build.sh")
-    end
-  end
+  Pod::UI.puts "[Codegen] building #{codegen_repo_path}"
+  system("#{codegen_repo_path}/scripts/oss/build.sh")
+end
 
 # It generates an empty `ThirdPartyProvider`, required by Fabric to load the components
 #

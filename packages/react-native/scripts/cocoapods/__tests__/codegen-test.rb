@@ -68,7 +68,7 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(Pod::Executable.executed_commands.length, 0)
     end
 
-    def testCheckAndGenerateEmptyThirdPartyProvider_whenHeaderMissingAndCodegenMissing_raiseError()
+    def testCheckAndGenerateEmptyThirdPartyProvider_whenHeaderMissingAndCodegenMissing_dontBuildCodegen()
 
         # Arrange
         FileMock.mocked_existing_files([
@@ -76,7 +76,7 @@ class CodegenTests < Test::Unit::TestCase
         ])
 
         # Act
-        assert_raise {
+        assert_nothing_raised {
             checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
         }
 
@@ -84,16 +84,16 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
-            @prefix + "/React/Fabric/" + @third_party_provider_header
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/tmpSchemaList.txt",
         ])
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/"+ @prefix + "/../react-native-codegen",
-            @base_path + "/"+ @prefix + "/../@react-native/codegen",
         ])
-        assert_equal(Pod::UI.collected_messages, [])
+        assert_equal(Pod::UI.collected_messages, ["[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"])
         assert_equal($collected_commands, [])
-        assert_equal(FileMock.open_files.length, 0)
-        assert_equal(Pod::Executable.executed_commands.length, 0)
+        assert_equal(FileMock.open_files.length, 1)
+        assert_equal(Pod::Executable.executed_commands.length, 1)
     end
 
     def testCheckAndGenerateEmptyThirdPartyProvider_whenImplementationMissingAndCodegenrepoExists_dontBuildCodegen()
@@ -145,7 +145,7 @@ class CodegenTests < Test::Unit::TestCase
 
     def testCheckAndGenerateEmptyThirdPartyProvider_whenBothMissing_buildCodegen()
         # Arrange
-        codegen_cli_path = @base_path + "/" + @prefix + "/../@react-native/codegen"
+        codegen_cli_path = @base_path + "/" + @prefix + "/../react-native-codegen"
         DirMock.mocked_existing_dirs([
             codegen_cli_path,
         ])
@@ -160,15 +160,14 @@ class CodegenTests < Test::Unit::TestCase
             @prefix + "/React/Fabric/" + @tmp_schema_list_file
         ])
         assert_equal(DirMock.exist_invocation_params, [
-            @base_path + "/" + @prefix + "/../react-native-codegen",
             codegen_cli_path,
             codegen_cli_path + "/lib",
         ])
         assert_equal(Pod::UI.collected_messages, [
-            "[Codegen] building #{codegen_cli_path}.",
+            "[Codegen] building #{codegen_cli_path}",
             "[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"
         ])
-        assert_equal($collected_commands, ["~/app/ios/../../../@react-native/codegen/scripts/oss/build.sh"])
+        assert_equal($collected_commands, ["~/app/ios/../../../react-native-codegen/scripts/oss/build.sh"])
         assert_equal(FileMock.open_files[0].collected_write, ["[]"])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands[0], {
