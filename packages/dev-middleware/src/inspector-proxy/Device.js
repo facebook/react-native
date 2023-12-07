@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type {EventReporter} from '../types/EventReporter';
 import type {
   DebuggerRequest,
   ErrorResponse,
@@ -22,10 +23,9 @@ import type {
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
-import * as path from 'path';
 import fetch from 'node-fetch';
+import * as path from 'path';
 import WS from 'ws';
-import type {EventReporter} from '../types/EventReporter';
 
 const debug = require('debug')('Metro:InspectorProxy');
 

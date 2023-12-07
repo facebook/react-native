@@ -16,18 +16,17 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, pushd, popd, pwd, cd, sed} = require('shelljs');
-const updateTemplatePackage = require('./update-template-package');
-const yargs = require('yargs');
-const path = require('path');
-
 const {
   checkPackagerRunning,
-  maybeLaunchAndroidEmulator,
   launchPackagerInSeparateWindow,
-  setupCircleCIArtifacts,
+  maybeLaunchAndroidEmulator,
   prepareArtifacts,
+  setupCircleCIArtifacts,
 } = require('./testing-utils');
+const updateTemplatePackage = require('./update-template-package');
+const path = require('path');
+const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
+const yargs = require('yargs');
 
 const argv = yargs
   .option('t', {
