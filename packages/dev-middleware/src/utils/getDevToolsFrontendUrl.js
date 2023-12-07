@@ -9,10 +9,13 @@
  * @oncall react_native
  */
 
+import type {Experiments} from '../types/Experiments';
+
 /**
  * Get the DevTools frontend URL to debug a given React Native CDP target.
  */
 export default function getDevToolsFrontendUrl(
+  experiments: Experiments,
   webSocketDebuggerUrl: string,
   devServerUrl: string,
 ): string {
@@ -22,5 +25,9 @@ export default function getDevToolsFrontendUrl(
     webSocketDebuggerUrl.replace(/^wss?:\/\//, ''),
   );
 
-  return `${appUrl}?${scheme}=${webSocketUrlWithoutProtocol}&sources.hide_add_folder=true`;
+  const devToolsUrl = `${appUrl}?${scheme}=${webSocketUrlWithoutProtocol}&sources.hide_add_folder=true`;
+
+  return experiments.enableNetworkInspector
+    ? `${devToolsUrl}&unstable_enableNetworkPanel=true`
+    : devToolsUrl;
 }
