@@ -13,23 +13,88 @@
 
 namespace facebook::yoga {
 
-/*
- * Absolutely positioned nodes do not participate in flex layout and thus their
- * positions can be determined independently from the rest of their siblings.
- * For each axis there are essentially two cases:
- *
- * 1) The node has insets defined. In this case we can just use these to
- *    determine the position of the node.
- * 2) The node does not have insets defined. In this case we look at the style
- *    of the parent to position the node. Things like justify content and
- *    align content will move absolute children around. If none of these
- *    special properties are defined, the child is positioned at the start
- *    (defined by flex direction) of the leading flex line.
- *
- * This function does that positioning for the given axis. The spec has more
- * information on this topic: https://www.w3.org/TR/css-flexbox-1/#abspos-items
- */
-static void positionAbsoluteChild(
+static void justifyAbsoluteChild(
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection mainAxis,
+    const float containingBlockWidth) {
+  const Justify parentJustifyContent = parent->getStyle().justifyContent();
+  switch (parentJustifyContent) {
+    case Justify::FlexStart:
+    case Justify::SpaceBetween:
+      child->setLayoutPosition(
+          child->getFlexStartMargin(mainAxis, direction, containingBlockWidth) +
+              parent->getFlexStartBorder(mainAxis, direction),
+          flexStartEdge(mainAxis));
+      break;
+    case Justify::FlexEnd:
+      child->setLayoutPosition(
+          (parent->getLayout().measuredDimension(dimension(mainAxis)) -
+           child->getLayout().measuredDimension(dimension(mainAxis))),
+          flexStartEdge(mainAxis));
+      break;
+    case Justify::Center:
+    case Justify::SpaceAround:
+    case Justify::SpaceEvenly:
+      child->setLayoutPosition(
+          (parent->getLayout().measuredDimension(dimension(mainAxis)) -
+           child->getLayout().measuredDimension(dimension(mainAxis))) /
+              2.0f,
+          flexStartEdge(mainAxis));
+      break;
+  }
+}
+
+static void alignAbsoluteChild(
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection crossAxis,
+    const float containingBlockWidth) {
+  Align itemAlign = resolveChildAlignment(parent, child);
+  const Wrap parentWrap = parent->getStyle().flexWrap();
+  if (parentWrap == Wrap::WrapReverse) {
+    if (itemAlign == Align::FlexEnd) {
+      itemAlign = Align::FlexStart;
+    } else if (itemAlign != Align::Center) {
+      itemAlign = Align::FlexEnd;
+    }
+  }
+
+  switch (itemAlign) {
+    case Align::Auto:
+    case Align::FlexStart:
+    case Align::Baseline:
+    case Align::SpaceAround:
+    case Align::SpaceBetween:
+    case Align::Stretch:
+    case Align::SpaceEvenly:
+      child->setLayoutPosition(
+          parent->getFlexStartBorder(crossAxis, direction) +
+              child->getFlexStartMargin(
+                  crossAxis, direction, containingBlockWidth),
+          flexStartEdge(crossAxis));
+      break;
+    case Align::FlexEnd:
+      child->setLayoutPosition(
+          (parent->getLayout().measuredDimension(dimension(crossAxis)) -
+           child->getLayout().measuredDimension(dimension(crossAxis))),
+          flexStartEdge(crossAxis));
+      break;
+    case Align::Center:
+      child->setLayoutPosition(
+          (parent->getLayout().measuredDimension(dimension(crossAxis)) -
+           child->getLayout().measuredDimension(dimension(crossAxis))) /
+              2.0f,
+          flexStartEdge(crossAxis));
+      break;
+  }
+}
+
+// To ensure no breaking changes, we preserve the legacy way of positioning
+// absolute children and determine if we should use it using an errata.
+static void positionAbsoluteChildLegacy(
     const yoga::Node* const containingNode,
     const yoga::Node* const parent,
     yoga::Node* child,
@@ -91,6 +156,109 @@ static void positionAbsoluteChild(
                 isAxisRow ? containingBlockWidth : containingBlockHeight),
         flexStartEdge(axis));
   }
+}
+
+/*
+ * Absolutely positioned nodes do not participate in flex layout and thus their
+ * positions can be determined independently from the rest of their siblings.
+ * For each axis there are essentially two cases:
+ *
+ * 1) The node has insets defined. In this case we can just use these to
+ *    determine the position of the node.
+ * 2) The node does not have insets defined. In this case we look at the style
+ *    of the parent to position the node. Things like justify content and
+ *    align content will move absolute children around. If none of these
+ *    special properties are defined, the child is positioned at the start
+ *    (defined by flex direction) of the leading flex line.
+ *
+ * This function does that positioning for the given axis. The spec has more
+ * information on this topic: https://www.w3.org/TR/css-flexbox-1/#abspos-items
+ */
+static void positionAbsoluteChildImpl(
+    const yoga::Node* const containingNode,
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const bool isMainAxis,
+    const float containingBlockWidth,
+    const float containingBlockHeight) {
+  const bool isAxisRow = isRow(axis);
+  const float containingBlockSize =
+      isAxisRow ? containingBlockWidth : containingBlockHeight;
+
+  // The inline-start position takes priority over the end position in the case
+  // that they are both set and the node has a fixed width. Thus we only have 2
+  // cases here: if inline-start is defined and if inline-end is defined.
+  //
+  // Despite checking inline-start to honor prioritization of insets, we write
+  // to the flex-start edge because this algorithm works by positioning on the
+  // flex-start edge and then filling in the flex-end direction at the end if
+  // necessary.
+  if (child->isInlineStartPositionDefined(axis, direction)) {
+    const float positionRelativeToInlineStart =
+        child->getInlineStartPosition(
+            axis,
+            direction,
+            containingNode->getLayout().measuredDimension(dimension(axis))) +
+        containingNode->getInlineStartBorder(axis, direction) +
+        child->getInlineStartMargin(axis, direction, containingBlockSize);
+    const float positionRelativeToFlexStart =
+        inlineStartEdge(axis, direction) != flexStartEdge(axis)
+        ? getPositionOfOppositeEdge(
+              positionRelativeToInlineStart, axis, containingNode, child)
+        : positionRelativeToInlineStart;
+
+    child->setLayoutPosition(positionRelativeToFlexStart, flexStartEdge(axis));
+  } else if (child->isInlineEndPositionDefined(axis, direction)) {
+    const float positionRelativeToInlineStart =
+        containingNode->getLayout().measuredDimension(dimension(axis)) -
+        child->getLayout().measuredDimension(dimension(axis)) -
+        containingNode->getInlineEndBorder(axis, direction) -
+        child->getInlineEndMargin(axis, direction, containingBlockSize) -
+        child->getInlineEndPosition(axis, direction, containingBlockSize);
+    const float positionRelativeToFlexStart =
+        inlineStartEdge(axis, direction) != flexStartEdge(axis)
+        ? getPositionOfOppositeEdge(
+              positionRelativeToInlineStart, axis, containingNode, child)
+        : positionRelativeToInlineStart;
+
+    child->setLayoutPosition(positionRelativeToFlexStart, flexStartEdge(axis));
+  } else {
+    isMainAxis ? justifyAbsoluteChild(
+                     parent, child, direction, axis, containingBlockWidth)
+               : alignAbsoluteChild(
+                     parent, child, direction, axis, containingBlockWidth);
+  }
+}
+
+static void positionAbsoluteChild(
+    const yoga::Node* const containingNode,
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const bool isMainAxis,
+    const float containingBlockWidth,
+    const float containingBlockHeight) {
+  child->hasErrata(Errata::AbsolutePositioning) ? positionAbsoluteChildLegacy(
+                                                      containingNode,
+                                                      parent,
+                                                      child,
+                                                      direction,
+                                                      axis,
+                                                      isMainAxis,
+                                                      containingBlockWidth,
+                                                      containingBlockHeight)
+                                                : positionAbsoluteChildImpl(
+                                                      containingNode,
+                                                      parent,
+                                                      child,
+                                                      direction,
+                                                      axis,
+                                                      isMainAxis,
+                                                      containingBlockWidth,
+                                                      containingBlockHeight);
 }
 
 void layoutAbsoluteChild(
@@ -155,8 +323,8 @@ void layoutAbsoluteChild(
                       .unwrap() +
         marginColumn;
   } else {
-    // If the child doesn't have a specified height, compute the height based on
-    // the top/bottom offsets if they're defined.
+    // If the child doesn't have a specified height, compute the height based
+    // on the top/bottom offsets if they're defined.
     if (child->isFlexStartPositionDefined(FlexDirection::Column, direction) &&
         child->isFlexEndPositionDefined(FlexDirection::Column, direction)) {
       childHeight =
@@ -203,9 +371,9 @@ void layoutAbsoluteChild(
         : SizingMode::StretchFit;
 
     // If the size of the owner is defined then try to constrain the absolute
-    // child to that size as well. This allows text within the absolute child to
-    // wrap to the size of its owner. This is the same behavior as many browsers
-    // implement.
+    // child to that size as well. This allows text within the absolute child
+    // to wrap to the size of its owner. This is the same behavior as many
+    // browsers implement.
     if (!isMainAxisRow && yoga::isUndefined(childWidth) &&
         widthMode != SizingMode::MaxContent &&
         yoga::isDefined(containingBlockWidth) && containingBlockWidth > 0) {
