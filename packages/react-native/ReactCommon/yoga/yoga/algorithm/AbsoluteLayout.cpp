@@ -25,7 +25,8 @@ static void justifyAbsoluteChild(
     case Justify::SpaceBetween:
       child->setLayoutPosition(
           child->getFlexStartMargin(mainAxis, direction, containingBlockWidth) +
-              parent->getFlexStartBorder(mainAxis, direction),
+              parent->getLayout().border(flexStartEdge(mainAxis)) +
+              parent->getLayout().padding(flexStartEdge(mainAxis)),
           flexStartEdge(mainAxis));
       break;
     case Justify::FlexEnd:
@@ -458,8 +459,10 @@ void layoutAbsoluteDescendants(
           containingNode,
           currentNode,
           child,
-          containingNode->getLayout().measuredDimension(Dimension::Width),
-          containingNode->getLayout().measuredDimension(Dimension::Height),
+          containingNode->getLayout().measuredDimension(Dimension::Width) -
+              containingNode->getBorderForAxis(FlexDirection::Row),
+          containingNode->getLayout().measuredDimension(Dimension::Height) -
+              containingNode->getBorderForAxis(FlexDirection::Column),
           widthSizingMode,
           currentNodeDirection,
           layoutMarkerData,
