@@ -9,7 +9,7 @@
 # and relies on environment variables (including PWD) set by Xcode
 
 # Print commands before executing them (useful for troubleshooting)
-set -x -e
+set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
@@ -26,6 +26,9 @@ if [[ ! "$SKIP_BUNDLING_METRO_IP" && "$CONFIGURATION" = *Debug* && ! "$PLATFORM_
 
   echo "$IP" > "$DEST/ip.txt"
 fi
+
+# Fail Xcode build if Build JS Bundle script phase fails
+set -e
 
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping."
