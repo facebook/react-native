@@ -38,10 +38,21 @@ static void justifyAbsoluteChild(
     case Justify::Center:
     case Justify::SpaceAround:
     case Justify::SpaceEvenly:
+      const float parentContentBoxSize =
+          parent->getLayout().measuredDimension(dimension(mainAxis)) -
+          parent->getLayout().border(flexStartEdge(mainAxis)) -
+          parent->getLayout().border(flexEndEdge(mainAxis)) -
+          parent->getLayout().padding(flexStartEdge(mainAxis)) -
+          parent->getLayout().padding(flexEndEdge(mainAxis));
+      const float childOuterSize =
+          child->getLayout().measuredDimension(dimension(mainAxis)) +
+          child->getMarginForAxis(mainAxis, containingBlockWidth);
       child->setLayoutPosition(
-          (parent->getLayout().measuredDimension(dimension(mainAxis)) -
-           child->getLayout().measuredDimension(dimension(mainAxis))) /
-              2.0f,
+          (parentContentBoxSize - childOuterSize) / 2.0f +
+              parent->getLayout().border(flexStartEdge(mainAxis)) +
+              parent->getLayout().padding(flexStartEdge(mainAxis)) +
+              child->getFlexStartMargin(
+                  mainAxis, direction, containingBlockWidth),
           flexStartEdge(mainAxis));
       break;
   }
