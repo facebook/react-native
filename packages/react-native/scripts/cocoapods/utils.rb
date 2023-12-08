@@ -519,11 +519,11 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
-    def self.get_plist_paths_from(user_project)
+    def self.get_plist_paths_from(user_project, file_manager)
         info_plists = user_project
           .files
           .select { |p|
-            p.name&.end_with?('Info.plist')
+            file_manager.exist?(p.real_path) && p.name&.end_with?('Info.plist')
           }
         return info_plists
       end
@@ -547,11 +547,11 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.apply_ats_config(installer)
+    def self.apply_ats_config(installer, file_manager: File)
         user_project = installer.aggregate_targets
                     .map{ |t| t.user_project }
                     .first
-        plistPaths = self.get_plist_paths_from(user_project)
+        plistPaths = self.get_plist_paths_from(user_project, file_manager)
         self.update_ats_in_plist(plistPaths, user_project.path.parent)
     end
 

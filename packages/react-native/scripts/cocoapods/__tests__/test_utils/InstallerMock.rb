@@ -139,6 +139,10 @@ class PBXFileRefMock
         @name = name
         @path = name
     end
+
+    def real_path
+        @path
+    end
 end
 
 class XCConfigMock

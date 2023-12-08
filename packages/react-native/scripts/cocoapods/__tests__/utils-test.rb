@@ -797,6 +797,8 @@ class UtilsTests < Test::Unit::TestCase
 
     def test_applyATSConfig_plistNil
         # Arrange
+        FileMock.mocked_existing_files("Info.plist")
+        FileMock.mocked_existing_files("Extension-Info.plist")
         user_project_mock = prepare_user_project_mock_with_plists()
         pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
         installer = InstallerMock.new(pods_projects_mock, [
@@ -804,7 +806,7 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
+        ReactNativePodsUtils.apply_ats_config(installer, file_manager: FileMock)
 
         # # Assert
         assert_equal(user_project_mock.files.length, 2)
@@ -820,6 +822,8 @@ class UtilsTests < Test::Unit::TestCase
 
     def test_applyATSConfig_plistNonNil
         # Arrange
+        FileMock.mocked_existing_files("Info.plist")
+        FileMock.mocked_existing_files("Extension-Info.plist")
         user_project_mock = prepare_user_project_mock_with_plists()
         pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
         installer = InstallerMock.new(pods_projects_mock, [
@@ -829,7 +833,7 @@ class UtilsTests < Test::Unit::TestCase
         Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
 
         # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
+        ReactNativePodsUtils.apply_ats_config(installer, file_manager: FileMock)
 
         # # Assert
         assert_equal(user_project_mock.files.length, 2)
