@@ -171,7 +171,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       if (_completionBlock) {
         RCTURLRequestCompletionBlock completionBlock = _completionBlock;
         [self dispatchCallback:^{
-          completionBlock(self->_response, nil, RCTErrorWithMessage(@"Request's received data too long."));
+          completionBlock(
+              self->_response, nil, RCTErrorWithMessage(exception.reason ?: @"Request's received data too long."));
         }];
       }
       [self invalidate];
