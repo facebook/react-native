@@ -20,6 +20,7 @@ enum class Errata : uint32_t {
   StretchFlexBasis = YGErrataStretchFlexBasis,
   StartingEndingEdgeFromFlexDirection = YGErrataStartingEndingEdgeFromFlexDirection,
   PositionStaticBehavesLikeRelative = YGErrataPositionStaticBehavesLikeRelative,
+  AbsolutePositioning = YGErrataAbsolutePositioning,
   All = YGErrataAll,
   Classic = YGErrataClassic,
 };
