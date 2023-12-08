@@ -13,6 +13,59 @@
 
 namespace facebook::yoga {
 
+static inline void setFlexStartLayoutPosition(
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const float containingBlockWidth) {
+  child->setLayoutPosition(
+      child->getFlexStartMargin(axis, direction, containingBlockWidth) +
+          parent->getLayout().border(flexStartEdge(axis)) +
+          parent->getLayout().padding(flexStartEdge(axis)),
+      flexStartEdge(axis));
+}
+
+static inline void setFlexEndLayoutPosition(
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const float containingBlockWidth) {
+  child->setLayoutPosition(
+      getPositionOfOppositeEdge(
+          parent->getLayout().border(flexEndEdge(axis)) +
+              parent->getLayout().padding(flexEndEdge(axis)) +
+              child->getFlexEndMargin(axis, direction, containingBlockWidth),
+          axis,
+          parent,
+          child),
+      flexStartEdge(axis));
+}
+
+static inline void setCenterLayoutPosition(
+    const yoga::Node* const parent,
+    yoga::Node* child,
+    const Direction direction,
+    const FlexDirection axis,
+    const float containingBlockWidth) {
+  const float parentContentBoxSize =
+      parent->getLayout().measuredDimension(dimension(axis)) -
+      parent->getLayout().border(flexStartEdge(axis)) -
+      parent->getLayout().border(flexEndEdge(axis)) -
+      parent->getLayout().padding(flexStartEdge(axis)) -
+      parent->getLayout().padding(flexEndEdge(axis));
+  const float childOuterSize =
+      child->getLayout().measuredDimension(dimension(axis)) +
+      child->getMarginForAxis(axis, containingBlockWidth);
+  child->setLayoutPosition(
+      (parentContentBoxSize - childOuterSize) / 2.0f +
+          parent->getLayout().border(flexStartEdge(axis)) +
+          parent->getLayout().padding(flexStartEdge(axis)) +
+          child->getFlexStartMargin(axis, direction, containingBlockWidth),
+      flexStartEdge(axis));
+}
+
 static void justifyAbsoluteChild(
     const yoga::Node* const parent,
     yoga::Node* child,
@@ -23,43 +76,18 @@ static void justifyAbsoluteChild(
   switch (parentJustifyContent) {
     case Justify::FlexStart:
     case Justify::SpaceBetween:
-      child->setLayoutPosition(
-          child->getFlexStartMargin(mainAxis, direction, containingBlockWidth) +
-              parent->getLayout().border(flexStartEdge(mainAxis)) +
-              parent->getLayout().padding(flexStartEdge(mainAxis)),
-          flexStartEdge(mainAxis));
+      setFlexStartLayoutPosition(
+          parent, child, direction, mainAxis, containingBlockWidth);
       break;
     case Justify::FlexEnd:
-      child->setLayoutPosition(
-          getPositionOfOppositeEdge(
-              parent->getLayout().border(flexEndEdge(mainAxis)) +
-                  parent->getLayout().padding(flexEndEdge(mainAxis)) +
-                  child->getFlexEndMargin(
-                      mainAxis, direction, containingBlockWidth),
-              mainAxis,
-              parent,
-              child),
-          flexStartEdge(mainAxis));
+      setFlexEndLayoutPosition(
+          parent, child, direction, mainAxis, containingBlockWidth);
       break;
     case Justify::Center:
     case Justify::SpaceAround:
     case Justify::SpaceEvenly:
-      const float parentContentBoxSize =
-          parent->getLayout().measuredDimension(dimension(mainAxis)) -
-          parent->getLayout().border(flexStartEdge(mainAxis)) -
-          parent->getLayout().border(flexEndEdge(mainAxis)) -
-          parent->getLayout().padding(flexStartEdge(mainAxis)) -
-          parent->getLayout().padding(flexEndEdge(mainAxis));
-      const float childOuterSize =
-          child->getLayout().measuredDimension(dimension(mainAxis)) +
-          child->getMarginForAxis(mainAxis, containingBlockWidth);
-      child->setLayoutPosition(
-          (parentContentBoxSize - childOuterSize) / 2.0f +
-              parent->getLayout().border(flexStartEdge(mainAxis)) +
-              parent->getLayout().padding(flexStartEdge(mainAxis)) +
-              child->getFlexStartMargin(
-                  mainAxis, direction, containingBlockWidth),
-          flexStartEdge(mainAxis));
+      setCenterLayoutPosition(
+          parent, child, direction, mainAxis, containingBlockWidth);
       break;
   }
 }
@@ -88,25 +116,16 @@ static void alignAbsoluteChild(
     case Align::SpaceBetween:
     case Align::Stretch:
     case Align::SpaceEvenly:
-      child->setLayoutPosition(
-          parent->getLayout().border(flexStartEdge(crossAxis)) +
-              parent->getLayout().padding(flexStartEdge(crossAxis)) +
-              child->getFlexStartMargin(
-                  crossAxis, direction, containingBlockWidth),
-          flexStartEdge(crossAxis));
+      setFlexStartLayoutPosition(
+          parent, child, direction, crossAxis, containingBlockWidth);
       break;
     case Align::FlexEnd:
-      child->setLayoutPosition(
-          (parent->getLayout().measuredDimension(dimension(crossAxis)) -
-           child->getLayout().measuredDimension(dimension(crossAxis))),
-          flexStartEdge(crossAxis));
+      setFlexEndLayoutPosition(
+          parent, child, direction, crossAxis, containingBlockWidth);
       break;
     case Align::Center:
-      child->setLayoutPosition(
-          (parent->getLayout().measuredDimension(dimension(crossAxis)) -
-           child->getLayout().measuredDimension(dimension(crossAxis))) /
-              2.0f,
-          flexStartEdge(crossAxis));
+      setCenterLayoutPosition(
+          parent, child, direction, crossAxis, containingBlockWidth);
       break;
   }
 }
