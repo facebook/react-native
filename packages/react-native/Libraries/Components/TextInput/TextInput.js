@@ -1498,11 +1498,10 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
-        style={
-          useMultilineDefaultStyle === true
-            ? [styles.multilineDefault, style]
-            : style
-        }
+        style={StyleSheet.compose(
+          useMultilineDefaultStyle ? styles.multilineDefault : null,
+          style,
+        )}
         text={text}
       />
     );
