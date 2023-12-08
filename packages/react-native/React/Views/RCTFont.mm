@@ -47,7 +47,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
       @(UIFontWeightHeavy),
       @(UIFontWeightHeavy),
       @(UIFontWeightBold),
-      @(UIFontWeightHeavy),
+      @(UIFontWeightBlack),
       @(UIFontWeightBlack)
     ];
   });
