@@ -199,10 +199,7 @@ static void positionAbsoluteChildImpl(
   // necessary.
   if (child->isInlineStartPositionDefined(axis, direction)) {
     const float positionRelativeToInlineStart =
-        child->getInlineStartPosition(
-            axis,
-            direction,
-            containingNode->getLayout().measuredDimension(dimension(axis))) +
+        child->getInlineStartPosition(axis, direction, containingBlockSize) +
         containingNode->getInlineStartBorder(axis, direction) +
         child->getInlineStartMargin(axis, direction, containingBlockSize);
     const float positionRelativeToFlexStart =
