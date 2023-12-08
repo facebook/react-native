@@ -31,8 +31,14 @@ static void justifyAbsoluteChild(
       break;
     case Justify::FlexEnd:
       child->setLayoutPosition(
-          (parent->getLayout().measuredDimension(dimension(mainAxis)) -
-           child->getLayout().measuredDimension(dimension(mainAxis))),
+          getPositionOfOppositeEdge(
+              parent->getLayout().border(flexEndEdge(mainAxis)) +
+                  parent->getLayout().padding(flexEndEdge(mainAxis)) +
+                  child->getFlexEndMargin(
+                      mainAxis, direction, containingBlockWidth),
+              mainAxis,
+              parent,
+              child),
           flexStartEdge(mainAxis));
       break;
     case Justify::Center:
