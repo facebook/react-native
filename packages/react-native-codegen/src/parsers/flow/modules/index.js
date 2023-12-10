@@ -176,6 +176,7 @@ function translateTypeAnnotation(
             property => {
               return tryParse(() => {
                 return parseObjectProperty(
+                  flowTypeAnnotation,
                   property,
                   hasteModuleName,
                   types,

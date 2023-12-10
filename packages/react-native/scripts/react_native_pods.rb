@@ -93,9 +93,10 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
-
+  ENV['USE_NEW_ARCH'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
+
+  ENV['RCT_NEW_ARCH_ENABLED'] = "1"
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
@@ -279,6 +280,7 @@ def react_native_post_install(
   ReactNativePodsUtils.apply_ats_config(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
+  ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)

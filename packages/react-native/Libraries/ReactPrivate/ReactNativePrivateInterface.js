@@ -19,6 +19,7 @@ import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
   createPublicTextInstance,
+  getInternalInstanceHandleFromPublicInstance,
   getNativeTagFromPublicInstance,
   getNodeFromPublicInstance,
 } from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
@@ -107,5 +108,9 @@ module.exports = {
   get getNodeFromPublicInstance(): getNodeFromPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getNodeFromPublicInstance;
+  },
+  get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .getInternalInstanceHandleFromPublicInstance;
   },
 };

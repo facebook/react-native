@@ -81,7 +81,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   BOOL enableTM = self.turboModuleEnabled;
-  ;
   BOOL enableBridgeless = self.bridgelessEnabled;
   BOOL fabricEnabled = self.fabricEnabled;
 
@@ -112,14 +111,14 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     if (!self.bridge) {
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
     }
-#if RCT_NEW_ARCH_ENABLED
-    self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                                 contextContainer:_contextContainer];
-    self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
+    if ([self newArchEnabled]) {
+      self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                                   contextContainer:_contextContainer];
+      self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-    [self unstable_registerLegacyComponents];
-    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-#endif
+      [self unstable_registerLegacyComponents];
+      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+    }
 
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
@@ -190,38 +189,39 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
-#if RCT_NEW_ARCH_ENABLED
-  std::shared_ptr<facebook::react::CallInvoker> callInvoker =
-      std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                                   delegate:self
-                                                                                  jsInvoker:callInvoker];
-  _contextContainer->erase("RuntimeScheduler");
-  _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
-#else
-  return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
-#endif
+  if ([self newArchEnabled]) {
+    std::shared_ptr<facebook::react::CallInvoker> callInvoker =
+        std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
+    RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                     delegate:self
+                                                                                    jsInvoker:callInvoker];
+    _contextContainer->erase("RuntimeScheduler");
+    _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
+    return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
+  } else {
+    return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
+  }
 }
 
 #pragma mark - New Arch Enabled settings
 
-- (BOOL)turboModuleEnabled
+- (BOOL)newArchEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
+#if USE_NEW_ARCH
   return YES;
 #else
   return NO;
 #endif
 }
 
+- (BOOL)turboModuleEnabled
+{
+  return [self newArchEnabled];
+}
+
 - (BOOL)fabricEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return [self newArchEnabled];
 }
 
 - (BOOL)bridgelessEnabled

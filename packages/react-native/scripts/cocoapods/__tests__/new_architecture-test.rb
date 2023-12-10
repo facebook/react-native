@@ -120,12 +120,12 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
         assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DNDEBUG")
-        assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
+        assert_nil(react_core_release_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(yoga_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_nil(yoga_release_config.build_settings["OTHER_CFLAGS"])
     end
 
     # =================================== #

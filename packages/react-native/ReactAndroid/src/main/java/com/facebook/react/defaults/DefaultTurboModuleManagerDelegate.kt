@@ -47,20 +47,39 @@ private constructor(
 
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var eagerInitModuleNames: List<String> = emptyList()
-    private var cxxReactPackages: MutableList<CxxReactPackage> = mutableListOf()
+    private var cxxReactPackageProviders:
+        MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
+        mutableListOf()
 
     fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
       this.eagerInitModuleNames = eagerInitModuleNames
       return this
     }
 
-    fun addCxxReactPackage(cxxReactPackage: CxxReactPackage): Builder {
-      this.cxxReactPackages.add(cxxReactPackage)
+    fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
+      this.cxxReactPackageProviders.add({ _ -> provider() })
       return this
     }
 
-    override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
-        DefaultTurboModuleManagerDelegate(context, packages, eagerInitModuleNames, cxxReactPackages)
+    fun addCxxReactPackage(
+        provider: (context: ReactApplicationContext) -> CxxReactPackage
+    ): Builder {
+      this.cxxReactPackageProviders.add(provider)
+      return this
+    }
+
+    override fun build(
+        context: ReactApplicationContext,
+        packages: List<ReactPackage>
+    ): DefaultTurboModuleManagerDelegate {
+      val cxxReactPackages = mutableListOf<CxxReactPackage>()
+      for (cxxReactPackageProvider in cxxReactPackageProviders) {
+        cxxReactPackages.add(cxxReactPackageProvider(context))
+      }
+
+      return DefaultTurboModuleManagerDelegate(
+          context, packages, eagerInitModuleNames, cxxReactPackages)
+    }
   }
 
   companion object {

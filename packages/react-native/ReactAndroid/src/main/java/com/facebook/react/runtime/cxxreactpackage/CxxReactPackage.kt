@@ -17,12 +17,10 @@ import com.facebook.soloader.SoLoader
 @UnstableReactNativeAPI()
 abstract class CxxReactPackage {
 
-  @DoNotStrip @Suppress("NoHungarianNotation") private var mHybridData: HybridData? = initHybrid()
+  @DoNotStrip @Suppress("NoHungarianNotation") private var mHybridData: HybridData?
 
-  protected abstract fun initHybrid(): HybridData
-
-  protected constructor() {
-    mHybridData = initHybrid()
+  protected constructor(hybridData: HybridData?) {
+    mHybridData = hybridData
   }
 
   companion object {

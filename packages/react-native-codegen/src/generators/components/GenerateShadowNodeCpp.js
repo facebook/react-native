@@ -33,13 +33,11 @@ const FileTemplate = ({
 
 #include <react/renderer/components/${libraryName}/ShadowNodes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${componentNames}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({className}: {className: string}) =>

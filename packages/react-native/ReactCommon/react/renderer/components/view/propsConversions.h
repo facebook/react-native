@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -22,7 +23,7 @@ static inline yoga::Style convertRawProp(
     const PropsParserContext& context,
     const RawProps& rawProps,
     const yoga::Style& sourceValue) {
-  yoga::Style yogaStyle{};
+  auto yogaStyle = YogaStylableProps::defaultStyle();
 
   yogaStyle.setDirection(convertRawProp(
       context,

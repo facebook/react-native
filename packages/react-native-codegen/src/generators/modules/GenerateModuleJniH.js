@@ -49,16 +49,14 @@ const HeaderFileTemplate = ({
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
 JSI_EXPORT
 std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 

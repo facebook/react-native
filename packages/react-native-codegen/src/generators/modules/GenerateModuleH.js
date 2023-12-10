@@ -33,6 +33,8 @@ const {
   createAliasResolver,
   getAreEnumMembersInteger,
   getModules,
+  isArrayRecursiveMember,
+  isDirectRecursiveMember,
 } = require('./Utils');
 
 type FilesOutput = Map<string, string>;
@@ -117,18 +119,17 @@ const FileTemplate = ({
 #include <ReactCommon/TurboModule.h>
 #include <react/bridging/Bridging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules.join('\n\n')}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 
 function translatePrimitiveJSTypeToCpp(
   moduleName: string,
+  parentObjectAliasName: ?string,
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
   optional: boolean,
   createErrorMessage: (typeName: string) => string,
@@ -139,6 +140,10 @@ function translatePrimitiveJSTypeToCpp(
     nullableTypeAnnotation,
   );
   const isRequired = !optional && !nullable;
+  const isRecursiveType = isDirectRecursiveMember(
+    parentObjectAliasName,
+    nullableTypeAnnotation,
+  );
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -146,7 +151,7 @@ function translatePrimitiveJSTypeToCpp(
   }
 
   function wrap(type: string) {
-    return isRequired ? type : `std::optional<${type}>`;
+    return isRequired || isRecursiveType ? type : `std::optional<${type}>`;
   }
 
   switch (realTypeAnnotation.type) {
@@ -221,10 +226,12 @@ function createStructsString(
   enumMap: NativeModuleEnumMap,
 ): string {
   const getCppType = (
+    parentObjectAlias: string,
     v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
   ) =>
     translatePrimitiveJSTypeToCpp(
       moduleName,
+      parentObjectAlias,
       v.typeAnnotation,
       false,
       typeName => `Unsupported type for param "${v.name}". Found: ${typeName}`,
@@ -250,7 +257,7 @@ function createStructsString(
           .join(', ');
         const debugParameterConversion = value.properties
           .map(
-            (v, i) => `  static ${getCppType(v)} ${
+            (v, i) => `  static ${getCppType(alias, v)} ${
               v.name
             }ToJs(jsi::Runtime &rt, P${i} value) {
     return bridging::toJs(rt, value);
@@ -321,12 +328,39 @@ ${value.properties
           return '';
         }
         const structName = `${moduleName}${alias}`;
-        const templateParameterWithTypename = value.properties
+        const templateParameter = value.properties.filter(
+          v =>
+            !isDirectRecursiveMember(alias, v.typeAnnotation) &&
+            !isArrayRecursiveMember(alias, v.typeAnnotation),
+        );
+        const templateParameterWithTypename = templateParameter
           .map((v, i) => `typename P${i}`)
           .join(', ');
+        const templateParameterWithoutTypename = templateParameter
+          .map((v, i) => `P${i}`)
+          .join(', ');
+        let i = -1;
+        const templateMemberTypes = value.properties.map(v => {
+          if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
+            return `std::unique_ptr<${structName}<${templateParameterWithoutTypename}>> ${v.name}`;
+          } else if (isArrayRecursiveMember(alias, v.typeAnnotation)) {
+            const [nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
+              v.typeAnnotation,
+            );
+            return (
+              (nullable
+                ? `std::optional<std::vector<${structName}<${templateParameterWithoutTypename}>>>`
+                : `std::vector<${structName}<${templateParameterWithoutTypename}>>`) +
+              ` ${v.name}`
+            );
+          } else {
+            i++;
+            return `P${i} ${v.name}`;
+          }
+        });
         const debugParameterConversion = value.properties
           .map(
-            (v, i) => `  static ${getCppType(v)} ${
+            v => `  static ${getCppType(alias, v)} ${
               v.name
             }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
     return bridging::toJs(rt, value);
@@ -338,7 +372,7 @@ ${value.properties
 
 template <${templateParameterWithTypename}>
 struct ${structName} {
-${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
+${templateMemberTypes.map(v => '  ' + v).join(';\n')};
   bool operator==(const ${structName} &other) const {
     return ${value.properties
       .map(v => `${v.name} == other.${v.name}`)
@@ -356,10 +390,13 @@ struct ${structName}Bridging {
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     T result{
 ${value.properties
-  .map(
-    (v, i) =>
-      `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
-  )
+  .map(v => {
+    if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
+      return `      value.hasProperty(rt, "${v.name}") ? std::make_unique<T>(bridging::fromJs<T>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)) : nullptr`;
+    } else {
+      return `      bridging::fromJs<decltype(types.${v.name})>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`;
+    }
+  })
   .join(',\n')}};
     return result;
   }
@@ -374,8 +411,12 @@ ${debugParameterConversion}
       const std::shared_ptr<CallInvoker> &jsInvoker) {
     auto result = facebook::jsi::Object(rt);
 ${value.properties
-  .map((v, i) => {
-    if (v.optional) {
+  .map(v => {
+    if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
+      return `    if (value.${v.name}) {
+        result.setProperty(rt, "${v.name}", bridging::toJs(rt, *value.${v.name}, jsInvoker));
+      }`;
+    } else if (v.optional) {
       return `    if (value.${v.name}) {
       result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
     }`;
@@ -528,6 +569,7 @@ function translatePropertyToCpp(
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
       moduleName,
+      null,
       param.typeAnnotation,
       param.optional,
       typeName =>
@@ -540,6 +582,7 @@ function translatePropertyToCpp(
 
   const returnType = translatePrimitiveJSTypeToCpp(
     moduleName,
+    null,
     propTypeAnnotation.returnTypeAnnotation,
     false,
     typeName => `Unsupported return type for ${prop.name}. Found: ${typeName}`,

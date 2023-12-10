@@ -175,10 +175,10 @@ public class TransformHelper {
       Matrix matrix = new Matrix();
       float[] offsets = getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
       float originX = viewWidth / 2, originY = viewHeight / 2;
-      if (offsets != null) {
-        originX += offsets[0];
-        originY += offsets[1];
+      if (offsets == null) {
+        offsets = new float[]{0,0};
       }
+      matrix.postTranslate(offsets[0], offsets[1]);
       for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
         ReadableMap transform = transforms.getMap(transformIdx);
         String transformType = transform.keySetIterator().nextKey();
@@ -214,6 +214,7 @@ public class TransformHelper {
           matrix.postSkew(0, (float) convertToRadians(transform, transformType), originX, originY);
         }
       }
+      matrix.postTranslate(-offsets[0], -offsets[1]);
       return matrix;
     }
   }

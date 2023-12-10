@@ -35,17 +35,15 @@ Map {
 
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 ",
 }
@@ -197,17 +195,15 @@ namespace JS {
 - (NSArray<id<NSObject>> * _Nullable)getNullableArray;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 inline bool JS::NativeSampleTurboModule::SpecDifficultAE::D() const
 {
   id const p = _v[@\\"D\\"];
@@ -382,17 +378,15 @@ Map {
 
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 ",
 }
@@ -499,17 +493,15 @@ namespace JS {
 - (void)cropImage:(JS::AliasTurboModule::Options &)cropData;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'AliasTurboModule'
-     */
-    class JSI_EXPORT AliasTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'AliasTurboModule'
+   */
+  class JSI_EXPORT AliasTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 inline double JS::AliasTurboModule::OptionsOffset::x() const
 {
   id const p = _v[@\\"x\\"];
@@ -633,17 +625,15 @@ namespace JS {
               reject:(RCTPromiseRejectBlock)reject;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeCameraRollManager'
-     */
-    class JSI_EXPORT NativeCameraRollManagerSpecJSI : public ObjCTurboModule {
-    public:
-      NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeCameraRollManager'
+   */
+  class JSI_EXPORT NativeCameraRollManagerSpecJSI : public ObjCTurboModule {
+  public:
+    NativeCameraRollManagerSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 namespace JS {
   namespace NativeExceptionsManager {
     struct StackFrame {
@@ -700,17 +690,15 @@ namespace JS {
 - (void)dismissRedbox;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeExceptionsManager'
-     */
-    class JSI_EXPORT NativeExceptionsManagerSpecJSI : public ObjCTurboModule {
-    public:
-      NativeExceptionsManagerSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeExceptionsManager'
+   */
+  class JSI_EXPORT NativeExceptionsManagerSpecJSI : public ObjCTurboModule {
+  public:
+    NativeExceptionsManagerSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 inline double JS::NativeCameraRollManager::GetPhotosParams::first() const
 {
   id const p = _v[@\\"first\\"];
@@ -900,17 +888,15 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 inline JS::NativeSampleTurboModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1.get();
@@ -963,34 +949,30 @@ Map {
 - (void)voidFunc;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule'
+   */
+  class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 @protocol NativeSampleTurboModule2Spec <RCTBridgeModule, RCTTurboModule>
 
 - (void)voidFunc;
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'NativeSampleTurboModule2'
-     */
-    class JSI_EXPORT NativeSampleTurboModule2SpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeSampleTurboModule2'
+   */
+  class JSI_EXPORT NativeSampleTurboModule2SpecJSI : public ObjCTurboModule {
+  public:
+    NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
 
 
 ",
