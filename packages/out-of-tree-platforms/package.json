@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "exports": { 
-    ".": "./dist/index.js",
+    ".": "./src/index.js",
     "./package.json": "./package.json" 
   },
   "files": [
