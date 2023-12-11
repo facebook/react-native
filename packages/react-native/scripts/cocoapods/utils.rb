@@ -560,7 +560,8 @@ class ReactNativePodsUtils
                     "NSAppTransportSecurity" => ats_configs
                 }
             else
-                plist["NSAppTransportSecurity"] = ats_configs
+                plist["NSAppTransportSecurity"] ||= {}
+                plist["NSAppTransportSecurity"] = plist["NSAppTransportSecurity"].merge(ats_configs)
             end
             Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
         end
