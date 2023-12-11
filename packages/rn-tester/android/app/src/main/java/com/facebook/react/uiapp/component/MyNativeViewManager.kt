@@ -45,6 +45,14 @@ internal class MyNativeViewManager :
     view.setBackgroundColor(Color.parseColor(color))
   }
 
+  override fun callNativeMethodToAddOverlays(view: MyNativeView, overlayColors: ReadableArray) {
+    view.addOverlays(overlayColors)
+  }
+
+  override fun callNativeMethodToRemoveOverlays(view: MyNativeView) {
+    view.removeOverlays()
+  }
+
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {
     super.setOpacity(view, opacity)

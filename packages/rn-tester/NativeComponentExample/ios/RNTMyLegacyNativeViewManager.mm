@@ -9,6 +9,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
 #import "RNTLegacyView.h"
+#import "RNTMyNativeViewCommon.h"
 #import "RNTMyNativeViewComponentView.h"
 
 @interface RNTMyLegacyNativeViewManager : RCTViewManager
@@ -46,18 +47,33 @@ RCT_EXPORT_METHOD(changeBackgroundColor : (nonnull NSNumber *)reactTag color : (
       return;
     }
 
-    unsigned rgbValue = 0;
-    NSString *colorString = [NSString stringWithCString:std::string([color UTF8String]).c_str()
-                                               encoding:[NSString defaultCStringEncoding]];
-    NSScanner *scanner = [NSScanner scannerWithString:colorString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
+    [RNTMyNativeViewCommon setBackgroundColor:view colorString:color];
+  }];
+}
 
-    UIColor *newColor = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                                        green:((rgbValue & 0xFF00) >> 8) / 255.0
-                                         blue:(rgbValue & 0xFF) / 255.0
-                                        alpha:1.0];
-    view.backgroundColor = newColor;
+RCT_EXPORT_METHOD(addOverlays : (nonnull NSNumber *)reactTag overlayColors : (NSArray *)overlayColors)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
+      RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
+      return;
+    }
+
+    [RNTMyNativeViewCommon addOverlays:view overlayColors:overlayColors];
+  }];
+}
+
+RCT_EXPORT_METHOD(removeOverlays : (nonnull NSNumber *)reactTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
+      RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
+      return;
+    }
+
+    [RNTMyNativeViewCommon removeOverlays:view];
   }];
 }
 
