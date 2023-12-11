@@ -199,7 +199,7 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV_MENU
     devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
-          [self.bridge.devMenu show];
+          [[self.moduleRegistry moduleForName:"DevMenu"] show];
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"devMenu"];
