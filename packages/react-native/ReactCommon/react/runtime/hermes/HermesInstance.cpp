@@ -8,6 +8,7 @@
 #include "HermesInstance.h"
 
 #include <jsi/jsilib.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
@@ -141,10 +142,13 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
 
 #ifdef HERMES_ENABLE_DEBUGGER
-  std::unique_ptr<DecoratedRuntime> decoratedRuntime =
-      std::make_unique<DecoratedRuntime>(
-          std::move(hermesRuntime), msgQueueThread);
-  return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    std::unique_ptr<DecoratedRuntime> decoratedRuntime =
+        std::make_unique<DecoratedRuntime>(
+            std::move(hermesRuntime), msgQueueThread);
+    return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
+  }
 #endif
 
   return std::make_unique<JSIRuntimeHolder>(std::move(hermesRuntime));

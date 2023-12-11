@@ -13,6 +13,7 @@
 #include <cxxreact/SystraceSection.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
@@ -200,11 +201,14 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   }
 
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  bool enableDebugger =
+      !inspectorFlags.getEnableModernCDPRegistry() && enableDebugger_;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,
       jsQueue,
-      enableDebugger_,
+      enableDebugger,
       debuggerName_);
 
   // So what do we have now?
