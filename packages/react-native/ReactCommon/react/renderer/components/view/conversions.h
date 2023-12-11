@@ -98,6 +98,18 @@ inline std::optional<Float> optionalFloatFromYogaValue(
   }
 }
 
+static inline PositionType positionTypeFromYogaPositionType(
+    yoga::PositionType positionType) {
+  switch (positionType) {
+    case yoga::PositionType::Static:
+      return PositionType::Static;
+    case yoga::PositionType::Relative:
+      return PositionType::Relative;
+    case yoga::PositionType::Absolute:
+      return PositionType::Absolute;
+  }
+}
+
 inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
@@ -128,6 +140,9 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   layoutMetrics.displayType =
       yogaNode.getStyle().display() == yoga::Display::None ? DisplayType::None
                                                            : DisplayType::Flex;
+
+  layoutMetrics.positionType =
+      positionTypeFromYogaPositionType(yogaNode.getStyle().positionType());
 
   layoutMetrics.layoutDirection =
       YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL
