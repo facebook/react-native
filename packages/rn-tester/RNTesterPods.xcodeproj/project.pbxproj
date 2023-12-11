@@ -85,7 +85,6 @@
 
 /* Begin PBXFileReference section */
 		0B25775FD7ADF02B1346CE9B /* Pods-RNTester-visionOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-visionOS.debug.xcconfig"; path = "Target Support Files/Pods-RNTester-visionOS/Pods-RNTester-visionOS.debug.xcconfig"; sourceTree = "<group>"; };
-		0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNTester.entitlements; path = RNTester/RNTester.entitlements; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
