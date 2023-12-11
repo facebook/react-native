@@ -171,6 +171,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       return 'int';
     case 'StringTypeAnnotation':
       return 'String';
+    case 'ArrayTypeAnnotation':
+      return 'ReadableArray';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');
