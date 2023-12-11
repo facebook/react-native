@@ -96,7 +96,7 @@ public class ReactHostImpl implements ReactHost {
 
   private final Context mContext;
   private final ReactHostDelegate mReactHostDelegate;
-  private final ComponentFactory mComponentFactory;
+  @Nullable private final ComponentFactory mComponentFactory;
   private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
@@ -137,7 +137,7 @@ public class ReactHostImpl implements ReactHost {
   public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
-      ComponentFactory componentFactory,
+      @Nullable ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
       ReactJsExceptionHandler reactJsExceptionHandler,
       boolean useDevSupport) {
@@ -155,7 +155,7 @@ public class ReactHostImpl implements ReactHost {
   public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
-      ComponentFactory componentFactory,
+      @Nullable ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
       ReactJsExceptionHandler reactJsExceptionHandler,
