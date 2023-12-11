@@ -1406,14 +1406,14 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      if (mUIManagerProvider != null) {
-        UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
-        uiManager.initialize();
-        catalystInstance.setFabricUIManager(uiManager);
-      } else {
-        catalystInstance.getJSIModule(JSIModuleType.UIManager);
-      }
+    // The setFabricUIManager API is valid even if enableFabricRenderer is false because
+    // apps that override getUIManagerProvider() are indicating they want to use Fabric.
+    if (mUIManagerProvider != null) {
+      UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+      uiManager.initialize();
+      catalystInstance.setFabricUIManager(uiManager);
+    } else if (ReactFeatureFlags.enableFabricRenderer) {
+      catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
