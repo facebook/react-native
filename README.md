@@ -19,12 +19,13 @@ React Native Vision OS allows you to write visionOS with full support for platfo
 1. Make sure you have a [proper development environment setup](https://reactnative.dev/docs/environment-setup)
 2. Download the latest Xcode beta [here](https://developer.apple.com/xcode/).
 3. Install visionOS Simulator runtime.
-4. Initialize the project using this command:
+4. Install the latest version of CMake (at least v3.28.0) 
+5. Initialize the project using this command:
 
 ```
 npx @callstack/react-native-visionos@latest init YourApp
 ```
-5. Next, go to `YourApp/visionos` folder and run following commands to install Pods:
+6. Next, go to `YourApp/visionos` folder and run following commands to install Pods:
 
 ```
 cd visionos
@@ -32,16 +33,8 @@ bundle install
 bundle exec pod install
 ```
 
-6. If you want to use Hermes, you need to install CMake from source (v3.28.0)
-
-```sh
-brew install cmake --HEAD
-```
-
-If not, remember to disable it in `Podfile`.
-
-8. Open `YourApp/visionos/YourApp.xcworkspace` using Xcode 15 Beta.
-9. Build the app by clicking the "Run" button in Xcode.
+7. Open `YourApp/visionos/YourApp.xcworkspace` using Xcode 15 Beta.
+8. Build the app by clicking the "Run" button in Xcode.
 
 ## Platform guidelines
 
