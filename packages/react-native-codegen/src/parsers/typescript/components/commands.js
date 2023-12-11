@@ -86,6 +86,30 @@ function buildCommandSchemaInternal(
           type: 'StringTypeAnnotation',
         };
         break;
+      case 'Array':
+      case 'ReadOnlyArray':
+        if (!paramValue.type === 'TSTypeReference') {
+          throw new Error(
+            'Array and ReadOnlyArray are TSTypeReference for array',
+          );
+        }
+        returnType = {
+          type: 'ArrayTypeAnnotation',
+          elementType: {
+            // TODO: T172453752 support complex type annotation for array element
+            type: paramValue.typeParameters.params[0].type,
+          },
+        };
+        break;
+      case 'TSArrayType':
+        returnType = {
+          type: 'ArrayTypeAnnotation',
+          elementType: {
+            // TODO: T172453752 support complex type annotation for array element
+            type: paramValue.elementType.type,
+          },
+        };
+        break;
       default:
         (type: empty);
         throw new Error(

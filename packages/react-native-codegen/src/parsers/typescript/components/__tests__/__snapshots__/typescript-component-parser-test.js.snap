@@ -5253,6 +5253,48 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                   'type': 'VoidTypeAnnotation'
                 }
               }
+            },
+            {
+              'name': 'addOverlays',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'overlayColorsReadOnly',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'TSStringKeyword'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'overlayColorsArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'TSStringKeyword'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'overlayColorsArrayAnnotation',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'TSStringKeyword'
+                      }
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
             }
           ]
         }
