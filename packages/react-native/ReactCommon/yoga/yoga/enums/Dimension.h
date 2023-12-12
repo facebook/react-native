@@ -21,20 +21,15 @@ enum class Dimension : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Dimension>() {
+constexpr int32_t ordinalCount<Dimension>() {
   return 2;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Dimension>() {
-  return 1;
-} 
-
-constexpr inline Dimension scopedEnum(YGDimension unscoped) {
+constexpr Dimension scopedEnum(YGDimension unscoped) {
   return static_cast<Dimension>(unscoped);
 }
 
-constexpr inline YGDimension unscopedEnum(Dimension scoped) {
+constexpr YGDimension unscopedEnum(Dimension scoped) {
   return static_cast<YGDimension>(scoped);
 }
 

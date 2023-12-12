@@ -49,21 +49,21 @@
 #ifdef __cplusplus
 #define YG_DEFINE_ENUM_FLAG_OPERATORS(name)                       \
   extern "C++" {                                                  \
-  constexpr inline name operator~(name a) {                       \
+  constexpr name operator~(name a) {                              \
     return static_cast<name>(                                     \
         ~static_cast<std::underlying_type<name>::type>(a));       \
   }                                                               \
-  constexpr inline name operator|(name a, name b) {               \
+  constexpr name operator|(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) |        \
         static_cast<std::underlying_type<name>::type>(b));        \
   }                                                               \
-  constexpr inline name operator&(name a, name b) {               \
+  constexpr name operator&(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) &        \
         static_cast<std::underlying_type<name>::type>(b));        \
   }                                                               \
-  constexpr inline name operator^(name a, name b) {               \
+  constexpr name operator^(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) ^        \
         static_cast<std::underlying_type<name>::type>(b));        \

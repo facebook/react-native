@@ -7,25 +7,44 @@
 
 #pragma once
 
+#include <bit>
 #include <iterator>
 #include <type_traits>
 
 namespace facebook::yoga {
 
+/**
+ * Concept for any enum/enum class
+ */
 template <typename EnumT>
-constexpr inline int32_t ordinalCount();
+concept Enumeration = std::is_enum_v<EnumT>;
+
+/**
+ * Count of ordinals in a Yoga enum which is sequential
+ */
+template <Enumeration EnumT>
+constexpr int32_t ordinalCount();
+
+/**
+ * Concept for a yoga enum which is sequential
+ */
+template <typename EnumT>
+concept HasOrdinality = (ordinalCount<EnumT>() > 0);
 
 /**
  * Count of bits needed to represent every ordinal
  */
-template <typename EnumT>
-constexpr inline int32_t bitCount();
+template <HasOrdinality EnumT>
+constexpr int32_t bitCount() {
+  return std::bit_width(
+      static_cast<std::underlying_type_t<EnumT>>(ordinalCount<EnumT>() - 1));
+}
 
 /**
  * Polyfill of C++ 23 to_underlying()
  * https://en.cppreference.com/w/cpp/utility/to_underlying
  */
-constexpr auto to_underlying(auto e) noexcept {
+constexpr auto to_underlying(Enumeration auto e) noexcept {
   return static_cast<std::underlying_type_t<decltype(e)>>(e);
 }
 
@@ -33,7 +52,7 @@ constexpr auto to_underlying(auto e) noexcept {
  * Convenience function to iterate through every value in a Yoga enum as part of
  * a range-based for loop.
  */
-template <typename EnumT>
+template <HasOrdinality EnumT>
 auto ordinals() {
   struct Iterator {
     EnumT e{};

@@ -22,20 +22,15 @@ enum class MeasureMode : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<MeasureMode>() {
+constexpr int32_t ordinalCount<MeasureMode>() {
   return 3;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<MeasureMode>() {
-  return 2;
-} 
-
-constexpr inline MeasureMode scopedEnum(YGMeasureMode unscoped) {
+constexpr MeasureMode scopedEnum(YGMeasureMode unscoped) {
   return static_cast<MeasureMode>(unscoped);
 }
 
-constexpr inline YGMeasureMode unscopedEnum(MeasureMode scoped) {
+constexpr YGMeasureMode unscopedEnum(MeasureMode scoped) {
   return static_cast<YGMeasureMode>(scoped);
 }
 

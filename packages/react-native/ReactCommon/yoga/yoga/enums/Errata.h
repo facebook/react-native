@@ -27,11 +27,11 @@ enum class Errata : uint32_t {
 
 YG_DEFINE_ENUM_FLAG_OPERATORS(Errata)
 
-constexpr inline Errata scopedEnum(YGErrata unscoped) {
+constexpr Errata scopedEnum(YGErrata unscoped) {
   return static_cast<Errata>(unscoped);
 }
 
-constexpr inline YGErrata unscopedEnum(Errata scoped) {
+constexpr YGErrata unscopedEnum(Errata scoped) {
   return static_cast<YGErrata>(scoped);
 }
 
