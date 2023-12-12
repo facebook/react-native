@@ -91,19 +91,6 @@ type State = {
   pendingScrollUpdateCount: number,
 };
 
-function findLastWhere<T>(
-  arr: $ReadOnlyArray<T>,
-  predicate: (element: T) => boolean,
-): T | null {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) {
-      return arr[i];
-    }
-  }
-
-  return null;
-}
-
 function getScrollingThreshold(threshold: number, visibleLength: number) {
   return (threshold * visibleLength) / 2;
 }
@@ -986,7 +973,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const spacerKey = this._getSpacerKey(!horizontal);
 
       const renderRegions = this.state.renderMask.enumerateRegions();
-      const lastSpacer = findLastWhere(renderRegions, r => r.isSpacer);
+      const lastRegion = renderRegions[renderRegions.length - 1];
+      const lastSpacer = lastRegion?.isSpacer ? lastRegion : null;
 
       for (const section of renderRegions) {
         if (section.isSpacer) {
