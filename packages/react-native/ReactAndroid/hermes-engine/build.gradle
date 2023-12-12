@@ -75,10 +75,6 @@ task downloadHermes(type: Download) {
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 
-task installArchives {
-    dependsOn("publishAllPublicationsToNpmRepository")
-}
-
 task unzipHermes(dependsOn: downloadHermes, type: Copy) {
     from(tarTree(downloadHermes.dest)) {
         eachFile { file ->

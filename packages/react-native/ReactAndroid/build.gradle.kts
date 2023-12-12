@@ -454,8 +454,6 @@ val packageReactNdkLibsForBuck by
       into("src/main/jni/prebuilt/lib")
     }
 
-val installArchives by tasks.registering { dependsOn("publishAllPublicationsToNpmRepository") }
-
 repositories {
   // Normally RNGP will set repositories for all modules,
   // but when consumed from source, we need to re-declare
