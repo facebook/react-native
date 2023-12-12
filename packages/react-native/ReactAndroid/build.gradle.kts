@@ -60,9 +60,6 @@ val dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // and the build will use that.
 val boostPathOverride = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 
-// By setting REACT_NATIVE_SKIP_PREFAB we can skip prefab publishing, to
-// reduce the size of the React Native published .AAR.
-val skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 val prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
 // Native versions which are defined inside the version catalog (libs.versions.toml)
@@ -635,7 +632,7 @@ android {
 
   buildFeatures {
     prefab = true
-    prefabPublishing = !skipPrefabPublishing
+    prefabPublishing = true
     buildConfig = true
   }
 
