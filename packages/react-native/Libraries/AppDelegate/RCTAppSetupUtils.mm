@@ -61,11 +61,11 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   } else if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
-            [RCTHTTPRequestHandler new],
-            [RCTDataRequestHandler new],
-            [RCTFileRequestHandler new],
-          ];
+          return [NSArray arrayWithObjects:[RCTHTTPRequestHandler new],
+                                           [RCTDataRequestHandler new],
+                                           [RCTFileRequestHandler new],
+                                           [moduleRegistry moduleForName:"BlobModule"],
+                                           nil];
         }];
   }
   // No custom initializer here.
