@@ -90,15 +90,6 @@ tasks.register("build") {
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
 }
 
-tasks.register("publishAllInsideNpmPackage") {
-  description =
-      "Publish all the artifacts to be available inside the NPM package in the `android` folder."
-  // Due to size constraints of NPM, we publish only react-native and hermes-engine inside
-  // the NPM package.
-  dependsOn(":packages:react-native:ReactAndroid:installArchives")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:installArchives")
-}
-
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
