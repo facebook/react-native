@@ -63,10 +63,6 @@ if (hermesVersionFile.exists()) {
 def ndkBuildJobs = Runtime.runtime.availableProcessors().toString()
 def prefabHeadersDir = new File("$buildDir/prefab-headers")
 
-// By setting REACT_NATIVE_HERMES_SKIP_PREFAB you can skip prefab publishing, to
-// reduce the size of the Hermes published .AAR.
-def skipPrefabPublishing = System.getenv("REACT_NATIVE_HERMES_SKIP_PREFAB") != null
-
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
@@ -245,7 +241,7 @@ android {
 
     buildFeatures {
         prefab true
-        prefabPublishing !skipPrefabPublishing
+        prefabPublishing true
     }
 
     dependencies {
