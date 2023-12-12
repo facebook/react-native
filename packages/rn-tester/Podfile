@@ -74,8 +74,7 @@ end
 target 'RNTesterUnitTests' do
   pods('RNTesterUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
-  # TODO: Uncomment this once OCMock is released https://cocoapods.org/pods/OCMock
-  # pod 'OCMock', '~> 3.9.2'
+  pod 'OCMock', :git => 'https://github.com/erikdoe/ocmock.git', :tag => 'v3.9.2'
 end
 
 target 'RNTesterIntegrationTests' do
