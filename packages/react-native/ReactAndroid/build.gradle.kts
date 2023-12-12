@@ -27,7 +27,7 @@ group = "com.facebook.react"
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
-
+val buildDir = project.layout.buildDirectory.get().asFile
 val downloadsDir =
     if (System.getenv("REACT_NATIVE_DOWNLOADS_DIR") != null) {
       File(System.getenv("REACT_NATIVE_DOWNLOADS_DIR"))
@@ -400,13 +400,13 @@ val buildCodegenCLI by
  * algorithm, which searches "node_modules" directories up to the file system root. This handles
  * various cases, including:
  * - Working in the open-source RN repo: Gradle: /path/to/react-native/ReactAndroid Node module:
- *   /path/to/react-native/node_modules/[package]
+ *   /path/to/react-native/node_modules/<package>
  * - Installing RN as a dependency of an app and searching for hoisted dependencies: Gradle:
  *   /path/to/app/node_modules/react-native/ReactAndroid Node module:
- *   /path/to/app/node_modules/[package]
+ *   /path/to/app/node_modules/<package>
  * - Working in a larger repo (e.g., Facebook) that contains RN: Gradle:
  *   /path/to/repo/path/to/react-native/ReactAndroid Node module:
- *   /path/to/repo/node_modules/[package]
+ *   /path/to/repo/node_modules/<package>
  *
  * The search begins at the given base directory (a File object). The returned path is a string.
  */
@@ -491,7 +491,6 @@ android {
 
   defaultConfig {
     minSdk = libs.versions.minSdk.get().toInt()
-    targetSdk = libs.versions.targetSdk.get().toInt()
 
     consumerProguardFiles("proguard-rules.pro")
 
@@ -615,17 +614,20 @@ android {
     java.exclude("com/facebook/react/module/processing")
   }
 
-  lintOptions { isAbortOnError = false }
+  lint {
+    abortOnError = false
+    targetSdk = libs.versions.targetSdk.get().toInt()
+  }
 
-  packagingOptions {
-    exclude("META-INF/NOTICE")
-    exclude("META-INF/LICENSE")
+  packaging {
+    resources.excludes.add("META-INF/NOTICE")
+    resources.excludes.add("META-INF/LICENSE")
     // We intentionally don't want to bundle any JS Runtime inside the Android AAR
     // we produce. The reason behind this is that we want to allow users to pick the
     // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
     // that will include the necessary .so files to load.
-    exclude("**/libhermes.so")
-    exclude("**/libjsc.so")
+    jniLibs.excludes.add("**/libhermes.so")
+    jniLibs.excludes.add("**/libjsc.so")
   }
 
   buildFeatures {
@@ -707,7 +709,10 @@ android {
     }
   }
 
-  testOptions { unitTests { isIncludeAndroidResources = true } }
+  testOptions {
+    unitTests { isIncludeAndroidResources = true }
+    targetSdk = libs.versions.targetSdk.get().toInt()
+  }
 }
 
 dependencies {

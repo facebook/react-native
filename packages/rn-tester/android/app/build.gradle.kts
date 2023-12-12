@@ -99,7 +99,7 @@ android {
     ndkVersion = rootProject.properties["ndkVersion"].toString()
   }
 
-  flavorDimensions("vm")
+  flavorDimensions.add("vm")
   productFlavors {
     create("hermes") {
       dimension = "vm"
