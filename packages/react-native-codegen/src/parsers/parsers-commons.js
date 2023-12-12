@@ -61,6 +61,7 @@ const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
 } = require('./errors');
 const {
   createParserErrorCapturer,
@@ -208,6 +209,13 @@ function parseObjectProperty(
         : parentObject.id &&
           parentObject.id.name === languageTypeAnnotation.id?.name)
     ) {
+      if (!optional) {
+        throw new UnsupportedObjectDirectRecursivePropertyParserError(
+          name,
+          languageTypeAnnotation,
+          hasteModuleName,
+        );
+      }
       return {
         name,
         optional,
