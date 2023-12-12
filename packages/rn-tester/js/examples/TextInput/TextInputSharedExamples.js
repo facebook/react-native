@@ -589,14 +589,18 @@ class SelectionExample extends React.Component<
 
 function UncontrolledExample() {
   const [isFocused, setIsFocused] = React.useState(false);
-
+  const [text1, setText] = React.useState('');
+  console.log('UncontrolledExample', text1);
   return (
     <TextInput
-      defaultValue="Hello World!"
+      defaultValue=""
       testID="uncontrolled-textinput"
-      style={isFocused ? styles.focusedUncontrolled : styles.default}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
+      // value={text1}
+      // onChange={({nativeEvent: {eventCount, target, text}}) => setText(text)}
+      // onChangeText={setText}
+      // style={isFocused ? styles.focusedUncontrolled : styles.default}
+      // onFocus={() => setIsFocused(true)}
+      // onBlur={() => setIsFocused(false)}
     />
   );
 }
@@ -835,285 +839,285 @@ function MultilineStyledTextInput({
 }
 
 module.exports = ([
-  {
-    title: 'Auto-focus',
-    render: function (): React.Node {
-      return (
-        <TextInput
-          autoFocus={true}
-          style={styles.default}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
-    },
-  },
-  {
-    name: 'maxLength',
-    title: "Live Re-Write (<sp>  ->  '_') + maxLength",
-    render: function (): React.Node {
-      return <RewriteExample />;
-    },
-  },
-  {
-    title: 'Live Re-Write (no spaces allowed)',
-    render: function (): React.Node {
-      return <RewriteExampleInvalidCharacters />;
-    },
-  },
-  {
-    name: 'clearButton',
-    title: 'Live Re-Write (no spaces allowed) and clear',
-    render: function (): React.Node {
-      return <RewriteInvalidCharactersAndClearExample />;
-    },
-  },
-  {
-    title: 'Auto-capitalize',
-    name: 'autoCapitalize',
-    render: function (): React.Node {
-      return (
-        <View>
-          <WithLabel label="none">
-            <TextInput
-              testID="capitalize-none"
-              autoCapitalize="none"
-              style={styles.default}
-            />
-          </WithLabel>
-          <WithLabel label="sentences">
-            <TextInput
-              testID="capitalize-sentences"
-              autoCapitalize="sentences"
-              style={styles.default}
-            />
-          </WithLabel>
-          <WithLabel label="words">
-            <TextInput
-              testID="capitalize-words"
-              autoCapitalize="words"
-              style={styles.default}
-            />
-          </WithLabel>
-          <WithLabel label="characters">
-            <TextInput
-              testID="capitalize-characters"
-              autoCapitalize="characters"
-              style={styles.default}
-            />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Auto-correct',
-    render: function (): React.Node {
-      return (
-        <View>
-          <WithLabel label="true">
-            <TextInput autoCorrect={true} style={styles.default} />
-          </WithLabel>
-          <WithLabel label="false">
-            <TextInput autoCorrect={false} style={styles.default} />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Keyboard types',
-    name: 'keyboardTypes',
-    render: function (): React.Node {
-      const keyboardTypes = [
-        'default',
-        'ascii-capable',
-        'numbers-and-punctuation',
-        'url',
-        'number-pad',
-        'phone-pad',
-        'name-phone-pad',
-        'email-address',
-        'decimal-pad',
-        'twitter',
-        'web-search',
-        'ascii-capable-number-pad',
-        'numeric',
-      ];
-      const examples = keyboardTypes.map(type => {
-        return (
-          <WithLabel key={type} label={type}>
-            <TextInput keyboardType={type} style={styles.default} />
-          </WithLabel>
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Input modes',
-    name: 'inputModes',
-    render: function (): React.Node {
-      const inputMode = [
-        'none',
-        'text',
-        'decimal',
-        'numeric',
-        'tel',
-        'search',
-        'email',
-        'url',
-      ];
-      const examples = inputMode.map(mode => {
-        return (
-          <WithLabel key={mode} label={mode}>
-            <TextInput inputMode={mode} style={styles.default} />
-          </WithLabel>
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Blur on submit',
-    render: function (): React.Element<any> {
-      return <BlurOnSubmitExample />;
-    },
-  },
-  {
-    title: 'enterKeyHint modes',
-    name: 'enterKeyHintTypes',
-    render: function (): React.Node {
-      const enterKeyHintTypesHints = [
-        'enter',
-        'done',
-        'go',
-        'next',
-        'previous',
-        'search',
-        'send',
-      ];
-      const examples = enterKeyHintTypesHints.map(hint => {
-        return (
-          <WithLabel key={hint} label={hint}>
-            <TextInput enterKeyHint={hint} style={styles.default} />
-          </WithLabel>
-        );
-      });
-      return <View>{examples}</View>;
-    },
-  },
-  {
-    title: 'Submit behavior',
-    render: function (): React.Element<any> {
-      return <SubmitBehaviorExample />;
-    },
-  },
-  {
-    title: 'Event handling',
-    render: function (): React.Element<any> {
-      return <TextEventsExample />;
-    },
-  },
-  {
-    title: 'fontFamily, fontWeight and fontStyle',
-    render: function (): React.Node {
-      const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
-      const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
+  // {
+  //   title: 'Auto-focus',
+  //   render: function (): React.Node {
+  //     return (
+  //       <TextInput
+  //         autoFocus={true}
+  //         style={styles.default}
+  //         accessibilityLabel="I am the accessibility label for text input"
+  //       />
+  //     );
+  //   },
+  // },
+  // {
+  //   name: 'maxLength',
+  //   title: "Live Re-Write (<sp>  ->  '_') + maxLength",
+  //   render: function (): React.Node {
+  //     return <RewriteExample />;
+  //   },
+  // },
+  // {
+  //   title: 'Live Re-Write (no spaces allowed)',
+  //   render: function (): React.Node {
+  //     return <RewriteExampleInvalidCharacters />;
+  //   },
+  // },
+  // {
+  //   name: 'clearButton',
+  //   title: 'Live Re-Write (no spaces allowed) and clear',
+  //   render: function (): React.Node {
+  //     return <RewriteInvalidCharactersAndClearExample />;
+  //   },
+  // },
+  // {
+  //   title: 'Auto-capitalize',
+  //   name: 'autoCapitalize',
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <WithLabel label="none">
+  //           <TextInput
+  //             testID="capitalize-none"
+  //             autoCapitalize="none"
+  //             style={styles.default}
+  //           />
+  //         </WithLabel>
+  //         <WithLabel label="sentences">
+  //           <TextInput
+  //             testID="capitalize-sentences"
+  //             autoCapitalize="sentences"
+  //             style={styles.default}
+  //           />
+  //         </WithLabel>
+  //         <WithLabel label="words">
+  //           <TextInput
+  //             testID="capitalize-words"
+  //             autoCapitalize="words"
+  //             style={styles.default}
+  //           />
+  //         </WithLabel>
+  //         <WithLabel label="characters">
+  //           <TextInput
+  //             testID="capitalize-characters"
+  //             autoCapitalize="characters"
+  //             style={styles.default}
+  //           />
+  //         </WithLabel>
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: 'Auto-correct',
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <WithLabel label="true">
+  //           <TextInput autoCorrect={true} style={styles.default} />
+  //         </WithLabel>
+  //         <WithLabel label="false">
+  //           <TextInput autoCorrect={false} style={styles.default} />
+  //         </WithLabel>
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: 'Keyboard types',
+  //   name: 'keyboardTypes',
+  //   render: function (): React.Node {
+  //     const keyboardTypes = [
+  //       'default',
+  //       'ascii-capable',
+  //       'numbers-and-punctuation',
+  //       'url',
+  //       'number-pad',
+  //       'phone-pad',
+  //       'name-phone-pad',
+  //       'email-address',
+  //       'decimal-pad',
+  //       'twitter',
+  //       'web-search',
+  //       'ascii-capable-number-pad',
+  //       'numeric',
+  //     ];
+  //     const examples = keyboardTypes.map(type => {
+  //       return (
+  //         <WithLabel key={type} label={type}>
+  //           <TextInput keyboardType={type} style={styles.default} />
+  //         </WithLabel>
+  //       );
+  //     });
+  //     return <View>{examples}</View>;
+  //   },
+  // },
+  // {
+  //   title: 'Input modes',
+  //   name: 'inputModes',
+  //   render: function (): React.Node {
+  //     const inputMode = [
+  //       'none',
+  //       'text',
+  //       'decimal',
+  //       'numeric',
+  //       'tel',
+  //       'search',
+  //       'email',
+  //       'url',
+  //     ];
+  //     const examples = inputMode.map(mode => {
+  //       return (
+  //         <WithLabel key={mode} label={mode}>
+  //           <TextInput inputMode={mode} style={styles.default} />
+  //         </WithLabel>
+  //       );
+  //     });
+  //     return <View>{examples}</View>;
+  //   },
+  // },
+  // {
+  //   title: 'Blur on submit',
+  //   render: function (): React.Element<any> {
+  //     return <BlurOnSubmitExample />;
+  //   },
+  // },
+  // {
+  //   title: 'enterKeyHint modes',
+  //   name: 'enterKeyHintTypes',
+  //   render: function (): React.Node {
+  //     const enterKeyHintTypesHints = [
+  //       'enter',
+  //       'done',
+  //       'go',
+  //       'next',
+  //       'previous',
+  //       'search',
+  //       'send',
+  //     ];
+  //     const examples = enterKeyHintTypesHints.map(hint => {
+  //       return (
+  //         <WithLabel key={hint} label={hint}>
+  //           <TextInput enterKeyHint={hint} style={styles.default} />
+  //         </WithLabel>
+  //       );
+  //     });
+  //     return <View>{examples}</View>;
+  //   },
+  // },
+  // {
+  //   title: 'Submit behavior',
+  //   render: function (): React.Element<any> {
+  //     return <SubmitBehaviorExample />;
+  //   },
+  // },
+  // {
+  //   title: 'Event handling',
+  //   render: function (): React.Element<any> {
+  //     return <TextEventsExample />;
+  //   },
+  // },
+  // {
+  //   title: 'fontFamily, fontWeight and fontStyle',
+  //   render: function (): React.Node {
+  //     const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
+  //     const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
 
-      return (
-        <View>
-          <TextInput
-            style={[styles.singleLine, {fontFamily: fontFamilyA}]}
-            placeholder={`Custom fonts like ${fontFamilyA} are supported`}
-          />
-          <TextInput
-            style={[
-              styles.singleLine,
-              {fontFamily: fontFamilyA, fontWeight: 'bold'},
-            ]}
-            placeholder={`${fontFamilyA} bold`}
-          />
-          <TextInput
-            style={[
-              styles.singleLine,
-              {fontFamily: fontFamilyA, fontWeight: '500'},
-            ]}
-            placeholder={`${fontFamilyA} 500`}
-          />
-          <TextInput
-            style={[
-              styles.singleLine,
-              {fontFamily: fontFamilyA, fontStyle: 'italic'},
-            ]}
-            placeholder={`${fontFamilyA} italic`}
-          />
-          <TextInput
-            style={[styles.singleLine, {fontFamily: fontFamilyB}]}
-            placeholder={fontFamilyB}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Attributed text',
-    name: 'attributedText',
-    render: function (): React.Node {
-      return <TokenizedTextExample />;
-    },
-  },
-  {
-    title: 'Text selection & cursor placement',
-    name: 'cursorPlacement',
-    render: function (): React.Node {
-      return (
-        <View>
-          <SelectionExample
-            testID="singleline"
-            style={styles.default}
-            value="text selection can be changed"
-          />
-          <SelectionExample
-            testID="multiline"
-            multiline
-            style={styles.multiline}
-            value={'multiline text selection\ncan also be changed'}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Text selection & cursor placement (imperative)',
-    name: 'cursorPlacementImperative',
-    render: function (): React.Node {
-      return (
-        <View>
-          <SelectionExample
-            testID="singlelineImperative"
-            style={styles.default}
-            value="text selection can be changed imperatively"
-            imperative={true}
-          />
-          <SelectionExample
-            testID="multilineImperative"
-            multiline
-            style={styles.multiline}
-            value={'multiline text selection\ncan also be changed imperatively'}
-            imperative={true}
-          />
-        </View>
-      );
-    },
-  },
+  //     return (
+  //       <View>
+  //         <TextInput
+  //           style={[styles.singleLine, {fontFamily: fontFamilyA}]}
+  //           placeholder={`Custom fonts like ${fontFamilyA} are supported`}
+  //         />
+  //         <TextInput
+  //           style={[
+  //             styles.singleLine,
+  //             {fontFamily: fontFamilyA, fontWeight: 'bold'},
+  //           ]}
+  //           placeholder={`${fontFamilyA} bold`}
+  //         />
+  //         <TextInput
+  //           style={[
+  //             styles.singleLine,
+  //             {fontFamily: fontFamilyA, fontWeight: '500'},
+  //           ]}
+  //           placeholder={`${fontFamilyA} 500`}
+  //         />
+  //         <TextInput
+  //           style={[
+  //             styles.singleLine,
+  //             {fontFamily: fontFamilyA, fontStyle: 'italic'},
+  //           ]}
+  //           placeholder={`${fontFamilyA} italic`}
+  //         />
+  //         <TextInput
+  //           style={[styles.singleLine, {fontFamily: fontFamilyB}]}
+  //           placeholder={fontFamilyB}
+  //         />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: 'Attributed text',
+  //   name: 'attributedText',
+  //   render: function (): React.Node {
+  //     return <TokenizedTextExample />;
+  //   },
+  // },
+  // {
+  //   title: 'Text selection & cursor placement',
+  //   name: 'cursorPlacement',
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <SelectionExample
+  //           testID="singleline"
+  //           style={styles.default}
+  //           value="text selection can be changed"
+  //         />
+  //         <SelectionExample
+  //           testID="multiline"
+  //           multiline
+  //           style={styles.multiline}
+  //           value={'multiline text selection\ncan also be changed'}
+  //         />
+  //       </View>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: 'Text selection & cursor placement (imperative)',
+  //   name: 'cursorPlacementImperative',
+  //   render: function (): React.Node {
+  //     return (
+  //       <View>
+  //         <SelectionExample
+  //           testID="singlelineImperative"
+  //           style={styles.default}
+  //           value="text selection can be changed imperatively"
+  //           imperative={true}
+  //         />
+  //         <SelectionExample
+  //           testID="multilineImperative"
+  //           multiline
+  //           style={styles.multiline}
+  //           value={'multiline text selection\ncan also be changed imperatively'}
+  //           imperative={true}
+  //         />
+  //       </View>
+  //     );
+  //   },
+  // },
   {
     title: 'Uncontrolled component with layout changes',
     name: 'uncontrolledComponent',
     render: () => <UncontrolledExample />,
   },
-  {
-    title: 'Text styles',
-    name: 'textStyles',
-    render: () => <TextStylesExample />,
-  },
+  // {
+  //   title: 'Text styles',
+  //   name: 'textStyles',
+  //   render: () => <TextStylesExample />,
+  // },
 ]: Array<RNTesterModuleExample>);
