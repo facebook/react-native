@@ -14,3 +14,7 @@ file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(jsinspector STATIC ${jsinspector_SRC})
 
 target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
+
+target_link_libraries(jsinspector
+        glog
+)
