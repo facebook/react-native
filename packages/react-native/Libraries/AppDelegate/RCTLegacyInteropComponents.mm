@@ -11,7 +11,10 @@
 
 + (NSArray<NSString *> *)legacyInteropComponents
 {
-  return @[ @"RNTMyLegacyNativeView", @"RNTMyNativeView" ];
+  return @[
+			@"RNTMyLegacyNativeView",
+			@"RNTMyNativeView"
+  ];
 }
 
 @end
