@@ -16,11 +16,11 @@ import fs from 'fs';
 import path from 'path';
 
 export function cleanAssetCatalog(catalogDir: string): void {
-  const imageSets = fs
+  const files = fs
     .readdirSync(catalogDir)
-    .filter(imageSet => imageSet.endsWith('.imageset'));
-  for (const imageSet of imageSets) {
-    fs.rmSync(path.join(catalogDir, imageSet), {recursive: true, force: true});
+    .filter(file => file.endsWith('.imageset'));
+  for (const file of files) {
+    fs.rmSync(path.join(catalogDir, file), {recursive: true, force: true});
   }
 }
 
