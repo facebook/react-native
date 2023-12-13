@@ -58,7 +58,6 @@ target_compile_options(${CMAKE_PROJECT_NAME}
                 -fexceptions
                 -frtti
                 -std=c++20
-                -DWITH_INSPECTOR=1
                 -DLOG_TAG=\"ReactNative\")
 
 # Prefab packages from React Native
