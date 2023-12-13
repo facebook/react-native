@@ -85,15 +85,15 @@ RCT_EXTERN_C_END
  * registration. Useful for registering swift classes that forbids use of load
  * Used in RCT_EXTERN_REMAP_MODULE
  */
-#define RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)                           \
-  RCT_EXTERN void RCTRegisterModule(Class);                                     \
-  +(NSString *)moduleName                                                       \
-  {                                                                             \
-    return @ #js_name;                                                          \
-  }                                                                             \
-  __attribute__((constructor)) static void RCT_CONCAT(initialize_, objc_name)() \
-  {                                                                             \
-    RCTRegisterModule([objc_name class]);                                       \
+#define RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)                               \
+  RCT_EXTERN void RCTRegisterModule(Class);                                         \
+  +(NSString *)moduleName                                                           \
+  {                                                                                 \
+    return @ #js_name;                                                              \
+  }                                                                                 \
+  __attribute__((constructor)) static void RCT_CONCAT(initialize_, objc_name)(void) \
+  {                                                                                 \
+    RCTRegisterModule([objc_name class]);                                           \
   }
 
 // Implemented by RCT_EXPORT_MODULE
