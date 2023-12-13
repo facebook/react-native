@@ -70,6 +70,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
     adopt(*shadowNode);
+    // adopt(const ShadowNode::Unshared&) is deprecated
+    // but we need to keep calling it for now until all callsites have been
+    // migrated to use adopt(ShadowNode&)
+    adopt(shadowNode);
 
     return shadowNode;
   }
@@ -80,6 +84,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
     adopt(*shadowNode);
+    // adopt(const ShadowNode::Unshared&) is deprecated
+    // but we need to keep calling it for now until all callsites have been
+    // migrated to use adopt(ShadowNode&)
+    adopt(shadowNode);
+
     return shadowNode;
   }
 
@@ -170,10 +179,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
-  virtual void adopt(ShadowNode& shadowNode) const override {
+  void adopt(ShadowNode& shadowNode) const override {
     // Default implementation does nothing.
     react_native_assert(
         shadowNode.getComponentHandle() == getComponentHandle());
+  }
+
+  [[deprecated(
+      "Use overload `adopt` passing in a reference to ShadowNode, do not implement both versions of adopt")]] void
+  adopt(const ShadowNode::Unshared& shadowNode) const override {
+    // Default implementation does nothing.
+    react_native_assert(
+        shadowNode->getComponentHandle() == getComponentHandle());
   }
 };
 
