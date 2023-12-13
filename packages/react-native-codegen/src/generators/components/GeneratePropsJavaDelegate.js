@@ -202,6 +202,8 @@ function getCommandArgJavaType(
       return `args.getInt(${index})`;
     case 'StringTypeAnnotation':
       return `args.getString(${index})`;
+    case 'ArrayTypeAnnotation':
+      return `args.getArray(${index})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(`Receieved invalid type: ${typeAnnotation.type}`);

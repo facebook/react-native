@@ -222,6 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTCommandNativeComponentViewProtocol <NSObject>
 - (void)handleRootTag:(double)rootTag;
 - (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
+- (void)addItems:(const NSArray *)items;
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
@@ -274,6 +275,26 @@ NSObject *arg1 = args[1];
   NSInteger y = [(NSNumber *)arg1 intValue];
 
   [componentView hotspotUpdate:x y:y];
+  return;
+}
+
+if ([commandName isEqualToString:@\\"addItems\\"]) {
+#if RCT_DEBUG
+  if ([args count] != 1) {
+    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 1);
+    return;
+  }
+#endif
+
+  NSObject *arg0 = args[0];
+#if RCT_DEBUG
+  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSArray class], @\\"array\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
+    return;
+  }
+#endif
+  const NSArray * items = (NSArray *)arg0;
+
+  [componentView addItems:items];
   return;
 }
 
