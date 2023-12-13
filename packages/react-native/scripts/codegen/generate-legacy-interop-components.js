@@ -18,6 +18,7 @@ const PROJECT_FIELD = 'project';
 const IOS_FIELD = 'ios';
 const LEGACY_COMPONENTS_FIELD = 'unstable_reactLegacyComponentNames';
 const OUTPUT_FILE_NAME = 'RCTLegacyInteropComponents.mm';
+const MAX_CHARS_IN_ONE_LINE = 80;
 
 const argv = yargs
   .option('p', {
@@ -34,7 +35,14 @@ const argv = yargs
 const appRoot = argv.path;
 const outputPath = argv.outputPath;
 
-function fileBody(components) {
+function fileBody(components, isOneLine) {
+  // Generate components array string with proper formatting
+  const componentsString = components.join(isOneLine ? '' : '\n');
+  const componentsArray = isOneLine
+    ? `@[${componentsString} ];`
+    : `@[
+${componentsString}
+  ];`;
   // eslint-disable duplicate-license-header
   return `/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -49,9 +57,7 @@ function fileBody(components) {
 
 + (NSArray<NSString *> *)legacyInteropComponents
 {
-  return @[
-${components}
-  ];
+  return ${componentsArray}
 }
 
 @end
@@ -112,7 +118,10 @@ function generateRCTLegacyInteropComponents() {
     return;
   }
   console.log(`Components found: ${componentNames}`);
-  let componentsArray = componentNames.map(name => `\t\t\t@"${name}",`);
+  const isOneLine = componentNames.join().length < MAX_CHARS_IN_ONE_LINE;
+  let componentsArray = componentNames.map(
+    (name, index) => `${isOneLine ? ' ' : '\t\t\t'}@"${name}",`,
+  );
   // Remove the last comma
   if (componentsArray.length > 0) {
     componentsArray[componentsArray.length - 1] = componentsArray[
@@ -121,7 +130,7 @@ function generateRCTLegacyInteropComponents() {
   }
 
   const filePath = `${outputPath}/${OUTPUT_FILE_NAME}`;
-  fs.writeFileSync(filePath, fileBody(componentsArray.join('\n')));
+  fs.writeFileSync(filePath, fileBody(componentsArray, isOneLine));
   console.log(`${filePath} updated!`);
 }
 
