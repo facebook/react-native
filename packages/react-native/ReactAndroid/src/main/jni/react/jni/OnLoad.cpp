@@ -24,6 +24,7 @@
 
 #ifdef WITH_INSPECTOR
 #include "JInspector.h"
+#include "JInspectorFlags.h"
 #endif
 
 #ifndef WITH_GLOGINIT
@@ -89,6 +90,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
 #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
+    JInspectorFlags::registerNatives();
 #endif
   });
 }
