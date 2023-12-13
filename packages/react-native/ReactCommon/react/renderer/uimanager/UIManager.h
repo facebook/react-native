@@ -96,6 +96,9 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared getNewestParentOfShadowNode(
       const ShadowNode& shadowNode) const;
 
+  ShadowNode::Shared getNewestPositionedAncestorOfShadowNode(
+      const ShadowNode& shadowNode) const;
+
   std::string getTextContentInNewestCloneOfShadowNode(
       const ShadowNode& shadowNode) const;
 

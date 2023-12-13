@@ -296,6 +296,48 @@ ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
       parentOfParentPair.second);
 }
 
+ShadowNode::Shared UIManager::getNewestPositionedAncestorOfShadowNode(
+    const ShadowNode& shadowNode) const {
+  auto rootShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
+        rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+
+  if (!rootShadowNode) {
+    return nullptr;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*rootShadowNode);
+
+  if (ancestors.empty()) {
+    return nullptr;
+  }
+
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    const auto layoutableAncestorShadowNode =
+        traitCast<const LayoutableShadowNode*>(&(it->first.get()));
+    if (layoutableAncestorShadowNode == nullptr) {
+      return nullptr;
+    }
+    if (layoutableAncestorShadowNode->getLayoutMetrics().positionType !=
+        PositionType::Static) {
+      // We have found our nearest positioned ancestor, now to get a shared
+      // pointer of it
+      it++;
+      if (it != ancestors.rend()) {
+        return it->first.get().getChildren().at(it->second);
+      }
+      // else the positioned ancestor is the root which we return outside of the
+      // loop
+    }
+  }
+
+  // If there is no positioned ancestor then we just consider the root
+  // to be one
+  return rootShadowNode;
+}
+
 std::string UIManager::getTextContentInNewestCloneOfShadowNode(
     const ShadowNode& shadowNode) const {
   auto newestCloneOfShadowNode = getNewestCloneOfShadowNode(shadowNode);
