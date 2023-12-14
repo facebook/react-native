@@ -65,18 +65,21 @@ export type MessageToDevice =
   | DisconnectRequest;
 
 // Page description object that is sent in response to /json HTTP request from debugger.
-export type PageDescription = {
-  description: string,
-  deviceName: string,
-  devtoolsFrontendUrl: string,
-  faviconUrl: string,
+export type PageDescription = $ReadOnly<{
   id: string,
+  description: string,
   title: string,
+  faviconUrl: string,
+  devtoolsFrontendUrl: string,
   type: string,
-  vm: string,
   webSocketDebuggerUrl: string,
-  ...
-};
+  deviceName: string,
+  vm: string,
+  // Metadata specific to React Native
+  reactNative: $ReadOnly<{
+    logicalDeviceId: string,
+  }>,
+}>;
 
 export type JsonPagesListResponse = $ReadOnlyArray<PageDescription>;
 
