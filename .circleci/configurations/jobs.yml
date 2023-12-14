@@ -591,6 +591,74 @@ jobs:
                           - run_ios_tests
 
   # -------------------------
+  #    JOBS: Test visionOS RNTester
+  # -------------------------
+  test_visionos_rntester:
+
+    parameters:
+      jsengine:
+        default: "JSC"
+        description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+        type: enum
+        enum: ["Hermes", "JSC"]
+      architecture:
+        default: "OldArch"
+        description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
+        type: enum
+        enum: ["NewArch", "OldArch"]
+      use_frameworks:
+        default: "StaticLibraries"
+        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+        type: enum
+        enum: ["StaticLibraries", "DynamicFrameworks"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
+      run_unit_tests:
+        description: whether unit tests should run or not.
+        default: false
+        type: boolean
+      executor:
+        description: The executor to use
+        default: reactnative-visionos
+        type: string
+    executor: << parameters.executor >>
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
+      - with_xcodebuild_cache:
+          steps:
+            - run:
+                name: "Install pods"
+                command: |
+                  if [[ << parameters.architecture >> == "NewArch" ]]; then
+                    export RCT_NEW_ARCH_ENABLED=1
+                  fi
+
+                  if [[ << parameters.jsengine >> == "JSC" ]]; then
+                    export USE_HERMES=0
+                  fi
+
+                  if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+                    export USE_FRAMEWORKS=dynamic
+                  fi
+
+                  cd packages/rn-tester
+
+                  bundle install
+                  bundle exec pod install
+            - run: 
+                name: "Build rn-tester"
+                command: |
+                  xcodebuild build \
+                    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                    -scheme RNTester-visionOS \
+                    -sdk xrsimulator
+
+  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:

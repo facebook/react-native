@@ -1,0 +1,6 @@
+  test_visionos:
+    jobs:
+      - test_visionos_rntester:
+          matrix:
+            parameters:
+              architecture: ["OldArch", "NewArch"]

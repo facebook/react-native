@@ -160,6 +160,7 @@ function _computeAndSavePipelineParameters(
     const params = {
       run_all: false,
       run_ios: false,
+      run_visionos: true,
       run_android: false,
       run_js: true,
       run_e2e: false,
@@ -211,6 +212,7 @@ function createConfigs(inputPath, outputPath, configFile) {
   const baseFolder = 'test_workflows';
   const testConfigs = {
     run_ios: ['testIOS.yml'],
+    run_visionos: ['testVisionOS.yml'],
     run_android: ['testAndroid.yml'],
     run_e2e: ['testE2E.yml'],
     run_all: ['testJS.yml', 'testAll.yml'],

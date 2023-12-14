@@ -43,3 +43,10 @@ executors:
     resource_class: macos.x86.medium.gen2
     environment:
       - BUILD_FROM_SOURCE: true
+  reactnative-visionos:
+    <<: *defaults
+    resource_class: macos.m1.medium.gen1
+    macos:
+      xcode: '15.2'
+    environment:
+      - BUILD_FROM_SOURCE: true
