@@ -151,27 +151,17 @@ RCT_EXTERN_C_END
 @property (nonatomic, weak, readonly) RCTBridge *bridge RCT_DEPRECATED;
 
 /**
- * The queue that will be used to call all exported methods. If omitted, this
- * will call on a default background queue, which is avoids blocking the main
- * thread.
+ * This property is deprecated. This selector used to support two functionalities.
  *
- * If the methods in your module need to interact with UIKit methods, they will
- * probably need to call those on the main thread, as most of UIKit is main-
- * thread-only. You can tell React Native to call your module methods on the
- * main thread by returning a reference to the main queue, like this:
+ * 1) Providing a queue to do additional async work.
+ * Instead of synthesizing this selector, retrieve a queue from GCD to do any asynchronous work.
+ * Example: _myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
  *
- * - (dispatch_queue_t)methodQueue
- * {
- *   return dispatch_get_main_queue();
- * }
- *
- * If you don't want to specify the queue yourself, but you need to use it
- * inside your class (e.g. if you have internal methods that need to dispatch
- * onto that queue), you can just add `@synthesize methodQueue = _methodQueue;`
- * and the bridge will populate the methodQueue property for you automatically
- * when it initializes the module.
+ * 2) Overriding this in order to run all the module's methods on a specific queue, usually main.
+ * Instead of overriding this, directly dispatch the code onto main queue when necessary.
+ * Example: dispatch_async(dispatch_get_main_queue, ^{ ... });
  */
-@property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
+@property (nonatomic, strong, readonly) dispatch_queue_t methodQueue RCT_DEPRECATED;
 
 /**
  * Wrap the parameter line of your method implementation with this macro to
