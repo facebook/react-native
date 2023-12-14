@@ -94,9 +94,28 @@ export default function openDebuggerMiddleware({
       if (!target) {
         res.writeHead(404);
         res.end('Unable to find Chrome DevTools inspector target');
-        logger?.warn(
-          'No compatible apps connected. JavaScript debugging can only be used with the Hermes engine.',
-        );
+        if (targets.length === 0) {
+          logger?.warn(
+            'You have no apps connected to the dev server. If your app is running, reload it to reconnect to the dev server.',
+          );
+        } else {
+          const plural = targets.length > 1 ? 'apps' : 'app';
+          const maxSimulatorIdentifier: number = targets.reduce(
+            (max, t) => Math.max(max, t.deviceName.length),
+            0,
+          );
+          const apps = [...targets.entries()]
+            .map(
+              ([i, t]) =>
+                `${i}. [${t.deviceName.padEnd(maxSimulatorIdentifier)}]: ${
+                  t.description
+                } (vm: ${t.vm})`,
+            )
+            .join('\n ');
+          logger?.warn(
+            `JavaScript debugging can only be used with the Hermes engine. Found ${targets.length} connected ${plural}:\n ${apps}`,
+          );
+        }
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
           launchType,
