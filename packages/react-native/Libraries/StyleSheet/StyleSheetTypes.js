@@ -912,6 +912,7 @@ export type ____Styles_Internal = {
   ...
 };
 
+// $FlowFixMe[deprecated-type]
 export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<
   <T>(GenericStyleProp<T>) => T,
   TStyleProp,
