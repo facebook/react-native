@@ -1,6 +1,6 @@
 {
   "name": "@react-native/dev-middleware",
-  "version": "0.73.5",
+  "version": "0.73.6",
   "description": "Dev server middleware for React Native",
   "keywords": [
     "react-native",
@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
-    "@react-native/debugger-frontend": "^0.73.2",
+    "@react-native/debugger-frontend": "^0.73.3",
     "chrome-launcher": "^0.15.2",
     "chromium-edge-launcher": "^1.0.0",
     "connect": "^3.6.5",
