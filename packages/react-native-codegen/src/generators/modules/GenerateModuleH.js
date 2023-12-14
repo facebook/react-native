@@ -180,11 +180,7 @@ function translatePrimitiveJSTypeToCpp(
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return getAreEnumMembersInteger(
-            enumMap[realTypeAnnotation.name].members,
-          )
-            ? wrap('int')
-            : wrap('double');
+          return wrap('jsi::Value');
         case 'StringTypeAnnotation':
           return wrap('jsi::String');
         default:
@@ -466,7 +462,7 @@ const EnumTemplate = ({
   return `
 #pragma mark - ${enumName}
 
-enum ${enumName} { ${values} };
+enum class ${enumName} { ${values} };
 
 template <>
 struct Bridging<${enumName}> {
