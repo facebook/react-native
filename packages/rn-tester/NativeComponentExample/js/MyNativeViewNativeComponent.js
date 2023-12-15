@@ -48,10 +48,23 @@ interface NativeCommands {
     viewRef: React.ElementRef<MyNativeViewType>,
     color: string,
   ) => void;
+
+  +callNativeMethodToAddOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+    overlayColors: $ReadOnlyArray<string>,
+  ) => void;
+
+  +callNativeMethodToRemoveOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+  ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['callNativeMethodToChangeBackgroundColor'],
+  supportedCommands: [
+    'callNativeMethodToChangeBackgroundColor',
+    'callNativeMethodToAddOverlays',
+    'callNativeMethodToRemoveOverlays',
+  ],
 });
 
 export default (codegenNativeComponent<NativeProps>(

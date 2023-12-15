@@ -12,7 +12,11 @@ import type {MyLegacyViewType} from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
 
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
-import {callNativeMethodToChangeBackgroundColor} from './MyLegacyViewNativeComponent';
+import {
+  callNativeMethodToAddOverlays,
+  callNativeMethodToChangeBackgroundColor,
+  callNativeMethodToRemoveOverlays,
+} from './MyLegacyViewNativeComponent';
 import RNTMyNativeView, {
   Commands as RNTMyNativeViewCommands,
 } from './MyNativeViewNativeComponent';
@@ -150,6 +154,32 @@ export default function MyNativeView(props: {}): React.Node {
           );
 
           callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
+        }}
+      />
+      <Button
+        title="Add Overlays"
+        onPress={() => {
+          let randomColorId = Math.floor(Math.random() * 5);
+          let overlayColors = [
+            colors[randomColorId],
+            colors[(randomColorId + 1) % 5],
+          ];
+          RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+            overlayColors,
+          );
+          callNativeMethodToAddOverlays(legacyRef.current, overlayColors);
+        }}
+      />
+      <Button
+        title="Remove Overlays"
+        onPress={() => {
+          RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
+          callNativeMethodToRemoveOverlays(legacyRef.current);
         }}
       />
       <Button

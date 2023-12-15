@@ -6,14 +6,17 @@
  */
 
 #import <React/RCTComponent.h>
-#import <React/RCTViewComponentView.h>
 #import <UIKit/UIKit.h>
+#import <string>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RNTMyNativeViewComponentView : RCTViewComponentView
+@interface UIView (ColorOverlays)
 
-@property (nonatomic, copy) RCTBubblingEventBlock onIntArrayChanged;
+- (void)setBackgroundColorWithColorString:(NSString *)colorString;
+- (void)addColorOverlays:(const NSArray *)overlayColors;
+- (void)removeOverlays;
++ (UIColor *)UIColorFromHexString:(const std::string)hexString;
 
 @end
 
