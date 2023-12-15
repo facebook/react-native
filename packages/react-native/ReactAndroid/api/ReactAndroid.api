@@ -521,7 +521,6 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	protected final fun getReactApplicationContextIfActiveOrWarn ()Lcom/facebook/react/bridge/ReactApplicationContext;
 	public fun initialize ()V
 	public fun invalidate ()V
-	public fun onCatalystInstanceDestroy ()V
 }
 
 public abstract interface class com/facebook/react/bridge/Callback {
@@ -643,7 +642,6 @@ public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react
 	public fun getName ()Ljava/lang/String;
 	public fun initialize ()V
 	public fun invalidate ()V
-	public fun onCatalystInstanceDestroy ()V
 	protected fun resetModule (Lcom/facebook/jni/HybridData;)V
 }
 
@@ -732,6 +730,10 @@ public class com/facebook/react/bridge/Inspector$Page {
 public abstract interface class com/facebook/react/bridge/Inspector$RemoteConnection {
 	public abstract fun onDisconnect ()V
 	public abstract fun onMessage (Ljava/lang/String;)V
+}
+
+public class com/facebook/react/bridge/InspectorFlags {
+	public static fun getEnableModernCDPRegistry ()Z
 }
 
 public class com/facebook/react/bridge/InvalidIteratorException : java/lang/RuntimeException {
