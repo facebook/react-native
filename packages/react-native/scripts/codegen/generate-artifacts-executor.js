@@ -150,6 +150,17 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
     '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
   );
 
+  if (pkgJson.codegenConfig == null) {
+    console.log(
+      '[Codegen] The "codegenConfig" field is not defined in package.json. Assuming there is nothing to generate at the app level.',
+    );
+    return [];
+  }
+
+  if (typeof pkgJson.codegenConfig !== 'object') {
+    throw '[Codegen] "codegenConfig" field must be an Object.';
+  }
+
   return extractLibrariesFromJSON(pkgJson, projectRoot);
 }
 
@@ -175,11 +186,16 @@ function buildCodegenIfNeeded() {
   });
 }
 
-function computeIOSOutputDir(outputPath, projectRoot) {
-  return path.join(
-    outputPath ? outputPath : projectRoot,
-    'build/generated/ios',
-  );
+function computeOutputPath(projectRoot, baseOutputPath, pkgJson) {
+  if (baseOutputPath == null) {
+    const baseOutputPathOverride = pkgJson.codegenConfig.outputDir;
+    if (baseOutputPathOverride && typeof baseOutputPathOverride === 'string') {
+      baseOutputPath = baseOutputPathOverride;
+    } else {
+      baseOutputPath = projectRoot;
+    }
+  }
+  return path.join(baseOutputPath, 'build', 'generated', 'ios');
 }
 
 function generateSchemaInfo(library) {
@@ -264,8 +280,7 @@ function createComponentProvider(schemas) {
   console.log(`Generated provider in: ${outputDir}`);
 }
 
-function findCodegenEnabledLibraries(projectRoot) {
-  const pkgJson = readPkgJsonInDirectory(projectRoot);
+function findCodegenEnabledLibraries(pkgJson, projectRoot) {
   return [
     ...findExternalLibraries(pkgJson),
     ...findProjectRootLibraries(pkgJson, projectRoot),
@@ -315,32 +330,38 @@ function cleanupEmptyFilesAndFolders(filepath) {
  * - generate the code
  *
  * @parameter projectRoot: the directory with the app source code, where the package.json lives.
- * @parameter outputPath: the base output path for the CodeGen.
+ * @parameter baseOutputPath: the base output path for the CodeGen.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, outputPath) {
-  buildCodegenIfNeeded();
-
+function execute(projectRoot, baseOutputPath) {
   try {
-    const libraries = findCodegenEnabledLibraries(projectRoot);
+    console.log(
+      `[Codegen] Analyzing ${path.join(projectRoot, 'package.json')}`,
+    );
+
+    const pkgJson = readPkgJsonInDirectory(projectRoot);
+
+    buildCodegenIfNeeded();
+
+    const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
 
     if (libraries.length === 0) {
       console.log('[Codegen] No codegen-enabled libraries found.');
       return;
     }
 
-    const iosOutputDir = computeIOSOutputDir(outputPath, projectRoot);
+    const outputPath = computeOutputPath(projectRoot, baseOutputPath, pkgJson);
 
     const schemaInfos = generateSchemaInfos(libraries);
-    generateNativeCode(iosOutputDir, schemaInfos);
+    generateNativeCode(outputPath, schemaInfos);
 
     const schemas = schemaInfos
       .filter(needsThirdPartyComponentProvider)
       .map(schemaInfo => schemaInfo.schema);
     createComponentProvider(schemas);
-    cleanupEmptyFilesAndFolders(iosOutputDir);
+    cleanupEmptyFilesAndFolders(outputPath);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
