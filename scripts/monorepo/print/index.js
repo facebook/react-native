@@ -30,12 +30,12 @@ const main = () => {
       const packageName = packageManifest.name;
       const isPublic = !packageManifest.private;
       if ((public && isPublic) || (private && !isPublic)) {
-        echo(`${packageName}, ${packageManifest.version}`);
+        echo(`${packageName} ${packageManifest.version}`);
       } else if (!private && !public) {
         echo(
-          `${isPublic ? '\u{1F4E6}' : '\u{1F512}'} ${
+          `${isPublic ? '\u{1F4E6}' : '\u{1F512}'} ${packageName} ${
             packageManifest.version
-          } ${packageName}`,
+          }`,
         );
       }
     },
