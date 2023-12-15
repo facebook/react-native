@@ -278,12 +278,10 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
                 }
                 return;
               }
-
-              NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsError](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(rt, convertObjCObjectToJSIValue(rt, jsError));
+              reject->call([message](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(
+                    rt, createJSRuntimeError(rt, [message ?: @"Unknown error from a native module" UTF8String]));
               });
-
               resolveWasCalled = NO;
               resolve = std::nullopt;
               reject = std::nullopt;
