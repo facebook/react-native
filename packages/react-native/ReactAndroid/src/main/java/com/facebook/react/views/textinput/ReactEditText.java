@@ -90,8 +90,8 @@ public class ReactEditText extends AppCompatEditText {
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
   protected boolean mIsSettingTextFromJS;
-  private int mDefaultGravityHorizontal;
-  private int mDefaultGravityVertical;
+  private final int mDefaultGravityHorizontal;
+  private final int mDefaultGravityVertical;
 
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
@@ -120,7 +120,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mDidAttachToWindow = false;
   private @Nullable String mPlaceholder = null;
 
-  private ReactViewBackgroundManager mReactBackgroundManager;
+  private final ReactViewBackgroundManager mReactBackgroundManager;
 
   private StateWrapper mStateWrapper = null;
   protected boolean mDisableTextDiffing = false;
@@ -358,11 +358,11 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  public void setContentSizeWatcher(ContentSizeWatcher contentSizeWatcher) {
+  public void setContentSizeWatcher(@Nullable ContentSizeWatcher contentSizeWatcher) {
     mContentSizeWatcher = contentSizeWatcher;
   }
 
-  public void setScrollWatcher(ScrollWatcher scrollWatcher) {
+  public void setScrollWatcher(@Nullable ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
   }
 
@@ -422,7 +422,7 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
+  public void setSelectionWatcher(@Nullable SelectionWatcher selectionWatcher) {
     mSelectionWatcher = selectionWatcher;
   }
 
@@ -470,7 +470,7 @@ public class ReactEditText extends AppCompatEditText {
     return mSubmitBehavior;
   }
 
-  public void setSubmitBehavior(String submitBehavior) {
+  public void setSubmitBehavior(@Nullable String submitBehavior) {
     mSubmitBehavior = submitBehavior;
   }
 

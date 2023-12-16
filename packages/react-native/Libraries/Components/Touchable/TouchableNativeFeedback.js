@@ -146,6 +146,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     );
     return {
       type: 'RippleAndroid',
+      // $FlowFixMe[incompatible-type]
       color: processedColor,
       borderless,
       rippleRadius,

@@ -11,7 +11,6 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
-#if RCT_NEW_ARCH_ENABLED
 // Turbo Module
 #import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
@@ -24,13 +23,10 @@
 // Fabric
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
-#endif
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-#if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(turboModuleEnabled);
-#endif
 
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
@@ -42,18 +38,15 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-#if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
     id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
                                                                    moduleName:moduleName
                                                             initialProperties:initialProperties];
     return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
-#endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-#if RCT_NEW_ARCH_ENABLED
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.
@@ -68,11 +61,11 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   } else if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
-            [RCTHTTPRequestHandler new],
-            [RCTDataRequestHandler new],
-            [RCTFileRequestHandler new],
-          ];
+          return [NSArray arrayWithObjects:[RCTHTTPRequestHandler new],
+                                           [RCTDataRequestHandler new],
+                                           [RCTFileRequestHandler new],
+                                           [moduleRegistry moduleForName:"BlobModule"],
+                                           nil];
         }];
   }
   // No custom initializer here.
@@ -114,8 +107,6 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
           }));
 }
 
-#else // else !RCT_NEW_ARCH_ENABLED
-
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
@@ -134,4 +125,3 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
         }
       }));
 }
-#endif // end RCT_NEW_ARCH_ENABLED

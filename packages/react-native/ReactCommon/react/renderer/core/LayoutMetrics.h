@@ -29,6 +29,8 @@ struct LayoutMetrics {
   EdgeInsets borderWidth{0};
   // See `DisplayType` for all possible options.
   DisplayType displayType{DisplayType::Flex};
+  // See `PositionType` for all possible options.
+  PositionType positionType{PositionType::Static};
   // See `LayoutDirection` for all possible options.
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
   // Whether React Native treated cardinal directions as flow-relative

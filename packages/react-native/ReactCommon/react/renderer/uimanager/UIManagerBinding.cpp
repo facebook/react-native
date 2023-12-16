@@ -97,7 +97,8 @@ void UIManagerBinding::dispatchEvent(
     const EventPayload& eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
-  if (eventPayload.getType() == EventPayloadType::PointerEvent) {
+  if (eventTarget != nullptr &&
+      eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
     auto dispatchCallback = [this](
                                 jsi::Runtime& runtime,
@@ -105,8 +106,10 @@ void UIManagerBinding::dispatchEvent(
                                 const std::string& type,
                                 ReactEventPriority priority,
                                 const EventPayload& eventPayload) {
+      eventTarget->retain(runtime);
       this->dispatchEventToJS(
           runtime, eventTarget, type, priority, eventPayload);
+      eventTarget->release(runtime);
     };
     pointerEventsProcessor_.interceptPointerEvent(
         runtime,
@@ -230,23 +233,27 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
             size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
+          try {
+            validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto instanceHandle =
-              instanceHandleFromValue(runtime, arguments[4], arguments[0]);
-          if (!instanceHandle) {
-            react_native_assert(false);
-            return jsi::Value::undefined();
+            auto instanceHandle =
+                instanceHandleFromValue(runtime, arguments[4], arguments[0]);
+            if (!instanceHandle) {
+              react_native_assert(false);
+              return jsi::Value::undefined();
+            }
+
+            return valueFromShadowNode(
+                runtime,
+                uiManager->createNode(
+                    tagFromValue(arguments[0]),
+                    stringFromValue(runtime, arguments[1]),
+                    surfaceIdFromValue(runtime, arguments[2]),
+                    RawProps(runtime, arguments[3]),
+                    std::move(instanceHandle)));
+          } catch (const std::logic_error& ex) {
+            LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->createNode(
-                  tagFromValue(arguments[0]),
-                  stringFromValue(runtime, arguments[1]),
-                  surfaceIdFromValue(runtime, arguments[2]),
-                  RawProps(runtime, arguments[3]),
-                  instanceHandle));
         });
   }
 
@@ -267,7 +274,9 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0])));
+                  *shadowNodeFromValue(runtime, arguments[0]),
+                  nullptr,
+                  RawProps()));
         });
   }
 
@@ -347,7 +356,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
-                            : ShadowNode::emptySharedShadowNodeSharedList()));
+                            : ShadowNode::emptySharedShadowNodeSharedList(),
+                  RawProps()));
         });
   }
 
@@ -365,13 +375,12 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          RawProps rawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  &rawProps));
+                  RawProps(runtime, arguments[1])));
         });
   }
 
@@ -392,7 +401,6 @@ jsi::Value UIManagerBinding::get(
           // validateArgumentCount(runtime, methodName, paramCount, count);
 
           bool hasChildrenArg = count == 3;
-          RawProps rawProps(runtime, arguments[hasChildrenArg ? 2 : 1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -400,7 +408,7 @@ jsi::Value UIManagerBinding::get(
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  &rawProps));
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
         });
   }
 
@@ -1102,52 +1110,52 @@ jsi::Value UIManagerBinding::get(
 
           auto newestCloneOfShadowNode =
               uiManager->getNewestCloneOfShadowNode(*shadowNode);
-          auto newestParentOfShadowNode =
-              uiManager->getNewestParentOfShadowNode(*shadowNode);
+          auto newestPositionedAncestorOfShadowNode =
+              uiManager->getNewestPositionedAncestorOfShadowNode(*shadowNode);
           // The node is no longer part of an active shadow tree, or it is the
           // root node
           if (newestCloneOfShadowNode == nullptr ||
-              newestParentOfShadowNode == nullptr) {
+              newestPositionedAncestorOfShadowNode == nullptr) {
             return jsi::Value::undefined();
           }
 
           // If the node is not displayed (itself or any of its ancestors has
           // "display: none"), this returns an empty layout metrics object.
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ false});
-
-          if (layoutMetrics == EmptyLayoutMetrics) {
+          auto shadowNodeLayoutMetricsRelativeToRoot =
+              uiManager->getRelativeLayoutMetrics(
+                  *shadowNode, nullptr, {/* .includeTransform = */ false});
+          if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
-              newestCloneOfShadowNode.get());
-          // This should never happen
-          if (layoutableShadowNode == nullptr) {
+          auto positionedAncestorLayoutMetricsRelativeToRoot =
+              uiManager->getRelativeLayoutMetrics(
+                  *newestPositionedAncestorOfShadowNode,
+                  nullptr,
+                  {/* .includeTransform = */ false});
+          if (positionedAncestorLayoutMetricsRelativeToRoot ==
+              EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
 
-          auto layoutableParentShadowNode =
-              traitCast<LayoutableShadowNode const*>(
-                  newestParentOfShadowNode.get());
-          // This should never happen
-          if (layoutableParentShadowNode == nullptr) {
-            return jsi::Value::undefined();
-          }
-
-          auto originRelativeToParentOuterBorder =
-              layoutableShadowNode->getLayoutMetrics().frame.origin;
+          auto shadowNodeOriginRelativeToRoot =
+              shadowNodeLayoutMetricsRelativeToRoot.frame.origin;
+          auto positionedAncestorOriginRelativeToRoot =
+              positionedAncestorLayoutMetricsRelativeToRoot.frame.origin;
 
           // On the Web, offsets are computed from the inner border of the
           // parent.
-          auto offsetTop = originRelativeToParentOuterBorder.y -
-              layoutableParentShadowNode->getLayoutMetrics().borderWidth.top;
-          auto offsetLeft = originRelativeToParentOuterBorder.x -
-              layoutableParentShadowNode->getLayoutMetrics().borderWidth.left;
+          auto offsetTop = shadowNodeOriginRelativeToRoot.y -
+              positionedAncestorOriginRelativeToRoot.y -
+              positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.top;
+          auto offsetLeft = shadowNodeOriginRelativeToRoot.x -
+              positionedAncestorOriginRelativeToRoot.x -
+              positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.left;
 
           return jsi::Array::createWithElements(
               runtime,
-              (*newestParentOfShadowNode).getInstanceHandle(runtime),
+              (*newestPositionedAncestorOfShadowNode)
+                  .getInstanceHandle(runtime),
               jsi::Value{runtime, (double)offsetTop},
               jsi::Value{runtime, (double)offsetLeft});
         });

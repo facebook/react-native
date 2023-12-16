@@ -108,8 +108,7 @@ const FileTemplate = ({
 
 #include ${include}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
@@ -118,8 +117,7 @@ ${moduleLookups.map(ModuleLookupTemplate).join('\n')}
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 

@@ -132,3 +132,11 @@ export type ErrorResponse = $ReadOnly<{
 export type DebuggerRequest =
   | SetBreakpointByUrlRequest
   | GetScriptSourceRequest;
+
+export type JSONSerializable =
+  | boolean
+  | number
+  | string
+  | null
+  | $ReadOnlyArray<JSONSerializable>
+  | {+[string]: JSONSerializable};

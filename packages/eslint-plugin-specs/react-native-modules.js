@@ -154,7 +154,7 @@ function rule(context) {
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();
-      const ast = parser.getAst(sourceCode);
+      const ast = parser.getAst(sourceCode, filename);
 
       tryParse(() => {
         buildModuleSchema(

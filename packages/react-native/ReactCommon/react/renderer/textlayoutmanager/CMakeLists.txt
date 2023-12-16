@@ -20,7 +20,7 @@ file(GLOB react_render_textlayourmanager_SRC CONFIGURE_DEPENDS
         platform/android/react/renderer/textlayoutmanager/*.cpp)
 
 add_library(react_render_textlayoutmanager
-        SHARED
+        STATIC
         ${react_render_textlayourmanager_SRC})
 
 target_include_directories(react_render_textlayoutmanager

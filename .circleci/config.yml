@@ -24,10 +24,6 @@ parameters:
     default: false
     type: boolean
 
-  run_prealpha_workflow:
-    default: false
-    type: boolean
-
 jobs:
   choose_ci_jobs:
     docker:
@@ -64,7 +60,7 @@ jobs:
                   value: << pipeline.git.branch >>
           steps:
             - run:
-                name: "[Main or Stable] Create input fo config to test everything"
+                name: "[Main or Stable] Create input for config to test everything"
                 command: |
                   mkdir -p /tmp/circleci/
                   echo '{ "run_all": true }' > /tmp/circleci/pipeline_config.json

@@ -84,7 +84,7 @@ describe('Flow Module Parser', () => {
           import type {TurboModule} from 'RCTExport';
           import * as TurboModuleRegistry from 'TurboModuleRegistry';
           export interface Spec extends TurboModule {
-            +useArg(arg: any): void;
+            useArg(arg: any): void;
           }
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
@@ -98,7 +98,7 @@ describe('Flow Module Parser', () => {
           import type {TurboModule} from 'RCTExport';
           import * as TurboModuleRegistry from 'TurboModuleRegistry';
           export interface Spec extends TurboModule {
-            +useArg(boolean): void;
+            useArg(boolean): void;
           }
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
@@ -145,7 +145,7 @@ describe('Flow Module Parser', () => {
           ${TYPE_ALIAS_DECLARATIONS}
 
           export interface Spec extends TurboModule {
-            +useArg(${annotateArg(paramName, paramType)}): void;
+            useArg(${annotateArg(paramName, paramType)}): void;
           }
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
@@ -356,7 +356,7 @@ describe('Flow Module Parser', () => {
               type AnimalPointer = Animal;
 
               export interface Spec extends TurboModule {
-                +useArg(${annotateArg('arg', 'AnimalPointer')}): void;
+                useArg(${annotateArg('arg', 'AnimalPointer')}): void;
               }
               export default TurboModuleRegistry.get<Spec>('Foo');
             `);
@@ -693,7 +693,7 @@ describe('Flow Module Parser', () => {
         import type {TurboModule} from 'RCTExport';
         import * as TurboModuleRegistry from 'TurboModuleRegistry';
         export interface Spec extends TurboModule {
-          +useArg(): void;
+          useArg(): void;
         }
         export default TurboModuleRegistry.get<Spec>('Foo');
       `);
@@ -727,7 +727,7 @@ describe('Flow Module Parser', () => {
           ${TYPE_ALIAS_DECLARATIONS}
 
           export interface Spec extends TurboModule {
-            +useArg(): ${annotateRet(flowType)};
+            useArg(): ${annotateRet(flowType)};
           }
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);

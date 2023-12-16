@@ -34,12 +34,13 @@ public class ReactActivityDelegate {
   private ReactDelegate mReactDelegate;
 
   @Deprecated
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@Nullable Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
 
-  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(
+      @Nullable ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }

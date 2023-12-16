@@ -17,11 +17,12 @@ bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
 bool CoreFeatures::enableMountHooks = false;
 bool CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR = false;
 bool CoreFeatures::enableCleanParagraphYogaNode = false;
-bool CoreFeatures::disableScrollEventThrottleRequirement = false;
 bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
 bool CoreFeatures::enableDefaultAsyncBatchedPriority = false;
 bool CoreFeatures::enableClonelessStateProgression = false;
 bool CoreFeatures::excludeYogaFromRawProps = false;
 bool CoreFeatures::enableMicrotasks = false;
+bool CoreFeatures::enableReportEventPaintTime = false;
+bool CoreFeatures::positionRelativeDefault = false;
 
 } // namespace facebook::react

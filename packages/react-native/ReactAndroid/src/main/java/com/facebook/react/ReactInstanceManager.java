@@ -71,6 +71,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
@@ -98,9 +99,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -186,6 +187,7 @@ public class ReactInstanceManager {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
@@ -234,6 +236,7 @@ public class ReactInstanceManager {
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
       @Nullable JSIModulePackage jsiModulePackage,
+      @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
@@ -294,6 +297,7 @@ public class ReactInstanceManager {
       mPackages.addAll(packages);
     }
     mJSIModulePackage = jsiModulePackage;
+    mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize(
@@ -383,7 +387,7 @@ public class ReactInstanceManager {
     mDevSupportManager.handleException(e);
   }
 
-  public void registerCxxErrorHandlerFunc() {
+  private void registerCxxErrorHandlerFunc() {
     Class[] parameterTypes = new Class[1];
     parameterTypes[0] = Exception.class;
     Method handleCxxErrorFunc = null;
@@ -393,6 +397,10 @@ public class ReactInstanceManager {
       FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
     }
     ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
+  }
+
+  private void unregisterCxxErrorHandlerFunc() {
+    ReactCxxErrorHandler.setHandleErrorFunc(null, null);
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
@@ -743,23 +751,22 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeCreateLifecycleState();
-
-    if (mCreateReactContextThread != null) {
-      mCreateReactContextThread = null;
-    }
-
     mMemoryPressureRouter.destroy(mApplicationContext);
+    unregisterCxxErrorHandlerFunc();
 
+    mCreateReactContextThread = null;
     synchronized (mReactContextLock) {
       if (mCurrentReactContext != null) {
         mCurrentReactContext.destroy();
         mCurrentReactContext = null;
       }
     }
+
     mHasStartedCreatingInitialContext = false;
     mCurrentActivity = null;
 
     ResourceDrawableIdHelper.getInstance().clear();
+
     mHasStartedDestroying = false;
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
@@ -1292,14 +1299,12 @@ public class ReactInstanceManager {
           uiManager.stopSurface(surfaceId);
         } else {
           FLog.w(ReactConstants.TAG, "Failed to stop surface, UIManager has already gone away");
-          reactRoot.getRootViewGroup().removeAllViews();
         }
       } else {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new RuntimeException(
                 "detachRootViewFromInstance called with ReactRootView with invalid id"));
-        reactRoot.getRootViewGroup().removeAllViews();
       }
     } else {
       reactContext
@@ -1308,8 +1313,7 @@ public class ReactInstanceManager {
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
 
-    // The view is no longer attached, so mark it as such by resetting its ID.
-    reactRoot.getRootViewGroup().setId(View.NO_ID);
+    clearReactRoot(reactRoot);
   }
 
   @ThreadConfined(UI)
@@ -1389,7 +1393,7 @@ public class ReactInstanceManager {
               catalystInstance.getJSCallInvokerHolder(),
               catalystInstance.getNativeMethodCallInvokerHolder());
 
-      catalystInstance.setTurboModuleManager(turboModuleManager);
+      catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
       // Eagerly initialize TurboModules
       for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
@@ -1403,7 +1407,13 @@ public class ReactInstanceManager {
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
     if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
+      if (mUIManagerProvider != null) {
+        UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+        uiManager.initialize();
+        catalystInstance.setFabricUIManager(uiManager);
+      } else {
+        catalystInstance.getJSIModule(JSIModuleType.UIManager);
+      }
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

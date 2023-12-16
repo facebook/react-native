@@ -14,6 +14,7 @@ import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
@@ -85,6 +86,7 @@ public abstract class ReactNativeHost {
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setJSIModulesPackage(getJSIModulePackage())
+            .setUIManagerProvider(getUIManagerProvider())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
@@ -126,6 +128,10 @@ public abstract class ReactNativeHost {
   }
 
   protected @Nullable JSIModulePackage getJSIModulePackage() {
+    return null;
+  }
+
+  protected @Nullable UIManagerProvider getUIManagerProvider() {
     return null;
   }
 

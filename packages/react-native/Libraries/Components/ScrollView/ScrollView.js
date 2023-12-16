@@ -1148,21 +1148,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   _handleScroll = (e: ScrollEvent) => {
-    if (__DEV__) {
-      if (
-        this.props.onScroll &&
-        this.props.scrollEventThrottle == null &&
-        Platform.OS === 'ios'
-      ) {
-        console.log(
-          'You specified `onScroll` on a <ScrollView> but not ' +
-            '`scrollEventThrottle`. You will only receive one event. ' +
-            'Using `16` you get all the events but be aware that it may ' +
-            "cause frame drops, use a bigger number if you don't need as " +
-            'much precision.',
-        );
-      }
-    }
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   };

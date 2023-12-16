@@ -42,10 +42,9 @@ import invariant from 'invariant';
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
+const {parseFlowAndThrowErrors} = require('./flow/parseFlowAndThrowErrors');
 const {buildPropSchema} = require('./parsers-commons');
 const {flattenProperties} = require('./typescript/components/componentsUtils');
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
 
 type ExtendsForProp = null | {
   type: 'ReactNativeBuiltInType',
@@ -122,10 +121,8 @@ export class MockedParser implements Parser {
     return schemaMock;
   }
 
-  getAst(contents: string): $FlowFixMe {
-    return flowParser.parse(contents, {
-      enums: true,
-    });
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
+    return parseFlowAndThrowErrors(contents, {filename});
   }
 
   getFunctionTypeAnnotationParameters(

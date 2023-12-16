@@ -8,6 +8,7 @@
 #include "HermesInstance.h"
 
 #include <jsi/jsilib.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
@@ -89,7 +90,7 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
-std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
+std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> cm,
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
@@ -141,13 +142,16 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
 
 #ifdef HERMES_ENABLE_DEBUGGER
-  std::unique_ptr<DecoratedRuntime> decoratedRuntime =
-      std::make_unique<DecoratedRuntime>(
-          std::move(hermesRuntime), msgQueueThread);
-  return decoratedRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    std::unique_ptr<DecoratedRuntime> decoratedRuntime =
+        std::make_unique<DecoratedRuntime>(
+            std::move(hermesRuntime), msgQueueThread);
+    return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
+  }
 #endif
 
-  return hermesRuntime;
+  return std::make_unique<JSIRuntimeHolder>(std::move(hermesRuntime));
 }
 
 } // namespace facebook::react

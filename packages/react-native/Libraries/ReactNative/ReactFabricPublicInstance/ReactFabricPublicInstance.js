@@ -8,6 +8,11 @@
  * @flow strict-local
  */
 
+/**
+ * This module is meant to be used by the React renderers to create public
+ * instances and get some data from them (like their instance handle / fiber).
+ */
+
 import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
 import type ReadOnlyText from '../../DOM/Nodes/ReadOnlyText';
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
@@ -78,4 +83,10 @@ export function getNodeFromPublicInstance(
   return ReactFabric.getNodeFromInternalInstanceHandle(
     publicInstance.__internalInstanceHandle,
   );
+}
+
+export function getInternalInstanceHandleFromPublicInstance(
+  publicInstance: ReactFabricHostComponent | ReactNativeElement,
+): InternalInstanceHandle {
+  return publicInstance.__internalInstanceHandle;
 }

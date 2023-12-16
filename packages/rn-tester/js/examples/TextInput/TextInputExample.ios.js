@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const examples: Array<RNTesterModuleExample> = [
+const textInputExamples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
@@ -944,5 +944,5 @@ module.exports = ({
   documentationURL: 'https://reactnative.dev/docs/textinput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
-  examples,
+  examples: textInputExamples,
 }: RNTesterModule);

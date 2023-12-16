@@ -27,5 +27,5 @@ public abstract class YogaConfig {
 
   public abstract YogaLogger getLogger();
 
-  abstract long getNativePointer();
+  protected abstract long getNativePointer();
 }

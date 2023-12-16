@@ -42,6 +42,9 @@ type Examples =
   | 'getBool'
   | 'getConstants'
   | 'getCustomEnum'
+  | 'getCustomHostObject'
+  | 'getBinaryTreeNode'
+  | 'getGraphNode'
   | 'getNumEnum'
   | 'getStrEnum'
   | 'getMap'
@@ -54,8 +57,11 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
+  | 'setMenuItem'
   | 'optionalArgs'
-  | 'emitDeviceEvent'
+  | 'emitDeviceEvent';
+
+type ErrorExamples =
   | 'voidFuncThrows'
   | 'getObjectThrows'
   | 'promiseThrows'
@@ -77,6 +83,16 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.getValueWithCallback(callbackValue =>
         this._setResult('callback', callbackValue),
       ),
+    callbackWithSubscription: () => {
+      const subscription =
+        NativeCxxModuleExample?.setValueCallbackWithSubscription(
+          callbackValue =>
+            this._setResult('callbackWithSubscription', callbackValue),
+        );
+      if (subscription) {
+        subscription();
+      }
+    },
     getArray: () =>
       NativeCxxModuleExample?.getArray([
         {a: 1, b: 'foo'},
@@ -90,6 +106,17 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       NativeCxxModuleExample?.consumeCustomHostObject(
         NativeCxxModuleExample?.getCustomHostObject(),
       ),
+    getBinaryTreeNode: () =>
+      NativeCxxModuleExample?.getBinaryTreeNode({
+        left: {value: 1},
+        value: 0,
+        right: {value: 2},
+      }),
+    getGraphNode: () =>
+      NativeCxxModuleExample?.getGraphNode({
+        label: 'root',
+        neighbors: [{label: 'left'}, {label: 'right'}],
+      }),
     getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
     getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
@@ -109,6 +136,28 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    setMenuItem: () => {
+      let curValue = '';
+      NativeCxxModuleExample?.setMenu({
+        label: 'File',
+        onPress: (value: string, flag: boolean) => {
+          curValue = `${value}: ${flag.toString()}`;
+          this._setResult('setMenuItem', curValue);
+        },
+        items: [
+          {
+            label: 'Open',
+            onPress: (value: string, flag: boolean) => {
+              this._setResult(
+                'setMenuItem',
+                `${curValue} - ${value}: ${flag.toString()}`,
+              );
+            },
+          },
+        ],
+        shortcut: 'ctrl+shift+f',
+      });
+    },
     optionalArgs: () => NativeCxxModuleExample?.getWithWithOptionalArgs(),
     emitDeviceEvent: () => {
       const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
@@ -121,6 +170,10 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
     },
+  };
+
+  // $FlowFixMe[missing-local-annot]
+  _errorTests = {
     voidFuncThrows: () => {
       try {
         NativeCxxModuleExample?.voidFuncThrows();
@@ -192,7 +245,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     }));
   }
 
-  _renderResult(name: Examples): React.Node {
+  _renderResult(name: Examples | ErrorExamples): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
@@ -221,7 +274,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
                 this._setResult(item, this._tests[item]()),
               )
             }>
-            <Text style={styles.buttonTextLarge}>Run all tests</Text>
+            <Text style={styles.buttonTextLarge}>Run function call tests</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.setState({testResults: {}})}
@@ -238,6 +291,24 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
+                <Text style={styles.buttonText}>{item}</Text>
+              </TouchableOpacity>
+              <View style={[styles.column]}>{this._renderResult(item)}</View>
+            </View>
+          )}
+        />
+        <View style={styles.item}>
+          <Text style={styles.buttonTextLarge}>Report errors tests</Text>
+        </View>
+        <FlatList
+          // $FlowFixMe[incompatible-type-arg]
+          data={Object.keys(this._errorTests)}
+          keyExtractor={item => item}
+          renderItem={({item}: {item: ErrorExamples, ...}) => (
+            <View style={styles.item}>
+              <TouchableOpacity
+                style={[styles.column, styles.button]}
+                onPress={e => this._setResult(item, this._errorTests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>

@@ -11,12 +11,13 @@
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/config/ReactNativeConfig.h>
+#include <react/runtime/JSRuntimeFactory.h>
 
 namespace facebook::react {
 
 class HermesInstance {
  public:
-  static std::unique_ptr<jsi::Runtime> createJSRuntime(
+  static std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       std::shared_ptr<::hermes::vm::CrashManager> cm,
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;

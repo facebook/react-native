@@ -80,17 +80,12 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  @Override
-  public void onCatalystInstanceDestroy() {}
-
   /**
    * The CatalystInstance is going away with Venice. Therefore, the TurboModule infra introduces the
    * invalidate() method to allow NativeModules to clean up after themselves.
    */
   @Override
-  public void invalidate() {
-    onCatalystInstanceDestroy();
-  }
+  public void invalidate() {}
 
   /**
    * Subclasses can use this method to access {@link ReactApplicationContext} passed as a

@@ -25,10 +25,6 @@ header_search_paths = [
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
 ]
 
-if ENV["USE_FRAMEWORKS"]
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
-end
-
 Pod::Spec.new do |s|
   s.name                   = "React-utils"
   s.version                = version
@@ -52,6 +48,7 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-debug"
   s.dependency "glog"
+
+  add_dependency(s, "React-debug")
 end

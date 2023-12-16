@@ -688,8 +688,8 @@ export default ({
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <View
                 style={{
-                  height: 200,
-                  width: 200,
+                  height: 150,
+                  width: 150,
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: 'blue',
@@ -699,8 +699,8 @@ export default ({
               </View>
               <View
                 style={{
-                  height: 200,
-                  width: 200,
+                  height: 150,
+                  width: 150,
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: 'red',
@@ -718,8 +718,8 @@ export default ({
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <View
                 style={{
-                  height: 200,
-                  width: 200,
+                  height: 150,
+                  width: 150,
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: 'blue',
@@ -729,8 +729,8 @@ export default ({
               </View>
               <View
                 style={{
-                  height: 200,
-                  width: 200,
+                  height: 150,
+                  width: 150,
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: 'red',

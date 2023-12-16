@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_unimplementedview_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_unimplementedview SHARED ${rrc_unimplementedview_SRC})
+add_library(rrc_unimplementedview STATIC ${rrc_unimplementedview_SRC})
 
 target_include_directories(rrc_unimplementedview PUBLIC ${REACT_COMMON_DIR})
 

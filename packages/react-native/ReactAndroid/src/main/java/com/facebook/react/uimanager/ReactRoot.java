@@ -39,7 +39,7 @@ public interface ReactRoot {
   void runApplication();
 
   /** Handler for stages {@link com.facebook.react.surface.ReactStage} */
-  void onStage(int stage);
+  void onStage(@ReactStage int stage);
 
   /** Return native view for root */
   ViewGroup getRootViewGroup();

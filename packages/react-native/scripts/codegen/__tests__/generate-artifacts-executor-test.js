@@ -12,115 +12,16 @@
 
 const fixtures = require('../__test_fixtures__/fixtures');
 const underTest = require('../generate-artifacts-executor');
-const child_process = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
-const codegenConfigKey = 'codegenConfig';
-const reactNativeDependencyName = 'react-native';
 const rootPath = path.join(__dirname, '../../..');
 
-describe('generateCode', () => {
-  afterEach(() => {
-    jest.resetModules();
-    jest.resetAllMocks();
-  });
-
-  beforeEach(() => {
-    // Silence logs from printDeprecationWarningIfNeeded. Ideally, we should have test assertions on these warnings.
-    jest.spyOn(console, 'log').mockImplementation();
-    jest.spyOn(console, 'debug').mockImplementation();
-  });
-
-  it('executeNodes with the right arguments', () => {
-    // Define variables and expected values
-    const iosOutputDir = 'app/ios/build/generated/ios';
-    const library = {config: {name: 'library', type: 'all'}};
-    const tmpDir = 'tmp';
-    const node = 'usr/bin/node';
-    const pathToSchema = 'app/build/schema.json';
-    const rnRoot = path.join(__dirname, '../..');
-    const libraryTypeArg = 'all';
-
-    const tmpOutputDir = path.join(tmpDir, 'out');
-
-    // mock used functions
-    jest.spyOn(fs, 'mkdirSync').mockImplementation();
-    jest.spyOn(child_process, 'execSync').mockImplementation();
-    jest.spyOn(child_process, 'execFileSync').mockImplementation();
-
-    underTest._generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
-
-    expect(child_process.execFileSync).toHaveBeenCalledTimes(1);
-    expect(child_process.execFileSync).toHaveBeenNthCalledWith(1, node, [
-      `${path.join(rnRoot, 'generate-specs-cli.js')}`,
-      '--platform',
-      'ios',
-      '--schemaPath',
-      pathToSchema,
-      '--outputDir',
-      tmpOutputDir,
-      '--libraryName',
-      library.config.name,
-      '--libraryType',
-      libraryTypeArg,
-    ]);
-    expect(child_process.execSync).toHaveBeenCalledTimes(1);
-    expect(child_process.execSync).toHaveBeenNthCalledWith(
-      1,
-      `cp -R ${tmpOutputDir}/* "${iosOutputDir}"`,
-    );
-
-    expect(fs.mkdirSync).toHaveBeenCalledTimes(2);
-    expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, tmpOutputDir, {
-      recursive: true,
-    });
-    expect(fs.mkdirSync).toHaveBeenNthCalledWith(2, iosOutputDir, {
-      recursive: true,
-    });
-  });
-});
-
 describe('extractLibrariesFromJSON', () => {
-  it('throws if in react-native and no dependencies found', () => {
-    let libraries = [];
-    let configFile = {};
-    expect(() => {
-      underTest._extractLibrariesFromJSON(
-        configFile,
-        libraries,
-        codegenConfigKey,
-      );
-    }).toThrow();
-  });
-
-  it('it skips if not into react-native and no dependencies found', () => {
-    let libraries = [];
-    let configFile = {};
-
-    underTest._extractLibrariesFromJSON(
-      configFile,
-      libraries,
-      codegenConfigKey,
-      'some-node-module',
-      'node_modules/some',
-    );
-    expect(libraries.length).toBe(0);
-  });
-
   it('extracts a single dependency when config has no libraries', () => {
-    let libraries = [];
     let configFile = fixtures.noLibrariesConfigFile;
-    underTest._extractLibrariesFromJSON(
-      configFile,
-      libraries,
-      codegenConfigKey,
-      'my-app',
-      '.',
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, '.');
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
-      library: 'my-app',
       config: {
         name: 'AppModules',
         type: 'all',
@@ -130,32 +31,17 @@ describe('extractLibrariesFromJSON', () => {
     });
   });
 
-  it("extract codegenConfig when it's empty", () => {
+  it("doesn't extract libraries when they are present but empty", () => {
     const configFile = {codegenConfig: {libraries: []}};
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
-      configFile,
-      codegenConfigKey,
-      libraries,
-      reactNativeDependencyName,
-      rootPath,
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(0);
   });
 
-  it('extract codegenConfig when dependency is one', () => {
+  it('extracts libraries when they are present and not empty', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
-      configFile,
-      libraries,
-      codegenConfigKey,
-      reactNativeDependencyName,
-      rootPath,
-    );
+    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
-      library: reactNativeDependencyName,
       config: {
         name: 'react-native',
         type: 'all',
@@ -169,17 +55,12 @@ describe('extractLibrariesFromJSON', () => {
     const configFile = fixtures.multipleLibrariesCodegenConfig;
     const myDependency = 'my-dependency';
     const myDependencyPath = path.join(__dirname, myDependency);
-    let libraries = [];
-    underTest._extractLibrariesFromJSON(
+    let libraries = underTest._extractLibrariesFromJSON(
       configFile,
-      libraries,
-      codegenConfigKey,
-      myDependency,
       myDependencyPath,
     );
     expect(libraries.length).toBe(3);
     expect(libraries[0]).toEqual({
-      library: myDependency,
       config: {
         name: 'react-native',
         type: 'all',
@@ -188,7 +69,6 @@ describe('extractLibrariesFromJSON', () => {
       libraryPath: myDependencyPath,
     });
     expect(libraries[1]).toEqual({
-      library: myDependency,
       config: {
         name: 'my-component',
         type: 'components',
@@ -197,7 +77,6 @@ describe('extractLibrariesFromJSON', () => {
       libraryPath: myDependencyPath,
     });
     expect(libraries[2]).toEqual({
-      library: myDependency,
       config: {
         name: 'my-module',
         type: 'module',
@@ -205,83 +84,6 @@ describe('extractLibrariesFromJSON', () => {
       },
       libraryPath: myDependencyPath,
     });
-  });
-});
-
-describe('findCodegenEnabledLibraries', () => {
-  const mock = require('mock-fs');
-  const {
-    _findCodegenEnabledLibraries: findCodegenEnabledLibraries,
-  } = require('../generate-artifacts-executor');
-
-  afterEach(() => {
-    mock.restore();
-  });
-
-  it('returns libraries defined in react-native.config.js', () => {
-    const projectDir = path.join(__dirname, '../../../../test-project');
-    const baseCodegenConfigFileDir = path.join(__dirname, '../../..');
-    const baseCodegenConfigFilePath = path.join(
-      baseCodegenConfigFileDir,
-      'package.json',
-    );
-
-    mock({
-      [baseCodegenConfigFilePath]: `
-      {
-        "codegenConfig": {}
-      }
-      `,
-      [projectDir]: {
-        app: {
-          'package.json': `{
-            "name": "my-app"
-          }`,
-          'react-native.config.js': '',
-        },
-        'library-foo': {
-          'package.json': `{
-            "name": "react-native-foo",
-            "codegenConfig": {
-              "name": "RNFooSpec",
-              "type": "modules",
-              "jsSrcsDir": "src"
-            }
-          }`,
-        },
-      },
-    });
-
-    jest.mock(path.join(projectDir, 'app', 'react-native.config.js'), () => ({
-      dependencies: {
-        'react-native-foo': {
-          root: path.join(projectDir, 'library-foo'),
-        },
-        'react-native-bar': {
-          root: path.join(projectDir, 'library-bar'),
-        },
-      },
-    }));
-
-    const libraries = findCodegenEnabledLibraries(
-      `${projectDir}/app`,
-      baseCodegenConfigFileDir,
-      `package.json`,
-      'codegenConfig',
-    );
-
-    expect(libraries).toEqual([
-      {
-        library: 'react-native',
-        config: {},
-        libraryPath: baseCodegenConfigFileDir,
-      },
-      {
-        library: 'react-native-foo',
-        config: {name: 'RNFooSpec', type: 'modules', jsSrcsDir: 'src'},
-        libraryPath: path.join(projectDir, 'library-foo'),
-      },
-    ]);
   });
 });
 

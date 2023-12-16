@@ -101,14 +101,12 @@ const FileTemplate = ({
 
 #include "${libraryName}JSI.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 

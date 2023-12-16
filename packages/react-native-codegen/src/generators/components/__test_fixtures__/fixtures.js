@@ -1726,6 +1726,28 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'addItems',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'items',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  },
+                ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
+              },
+            },
           ],
         },
       },

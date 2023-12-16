@@ -109,7 +109,6 @@
 /// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
 - (BOOL)runtimeSchedulerEnabled;
 
-#if RCT_NEW_ARCH_ENABLED
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
@@ -138,7 +137,5 @@
 
 /// Return the bundle URL for the main bundle.
 - (NSURL *)bundleURL;
-
-#endif
 
 @end

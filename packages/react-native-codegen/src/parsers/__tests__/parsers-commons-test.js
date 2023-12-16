@@ -322,6 +322,7 @@ describe('parseObjectProperty', () => {
       );
       expect(() =>
         parseObjectProperty(
+          null, // parentObject
           property,
           moduleName,
           types,
@@ -356,6 +357,7 @@ describe('parseObjectProperty', () => {
       );
       expect(() =>
         parseObjectProperty(
+          null, // parentObject
           property,
           moduleName,
           types,
@@ -714,7 +716,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
@@ -770,7 +772,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
@@ -824,7 +826,7 @@ describe('buildSchema', () => {
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
       expect(getConfigTypeSpy).toHaveBeenCalledWith(
-        parser.getAst(contents),
+        parser.getAst(contents, 'fileName'),
         Visitor,
       );
       expect(schema).toEqual({
@@ -1139,7 +1141,7 @@ describe('buildModuleSchema', () => {
       const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
         import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-    
+
         export interface Spec extends TurboModule {
           +getBool: (arg: boolean) => boolean;      }
         export interface SpecOther extends TurboModule {
@@ -1189,11 +1191,11 @@ describe('buildModuleSchema', () => {
       const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
         import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-  
+
         export interface MisnamedSpec extends TurboModule {
           +getArray: (a: Array<any>) => Array<string>;
         }
-  
+
         export default (TurboModuleRegistry.getEnforcing<Spec>(
           'SampleTurboModule',
         ): Spec);

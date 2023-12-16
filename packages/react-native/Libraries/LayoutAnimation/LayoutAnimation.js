@@ -10,7 +10,6 @@
 
 'use strict';
 
-import type {Spec as FabricUIManagerSpec} from '../ReactNative/FabricUIManager';
 import type {
   LayoutAnimationConfig as LayoutAnimationConfig_,
   LayoutAnimationProperty,

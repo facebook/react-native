@@ -87,7 +87,7 @@
     return;
   }
 
-  CGSize maximumSize = self.layoutMetrics.frame.size;
+  CGSize maximumSize = self.layoutMetrics.contentFrame.size;
 
   if (_maximumNumberOfLines == 1) {
     maximumSize.width = CGFLOAT_MAX;

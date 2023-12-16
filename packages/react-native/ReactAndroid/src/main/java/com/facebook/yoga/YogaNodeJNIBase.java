@@ -231,10 +231,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeMarkDirtyJNI(mNativePointer);
   }
 
-  public void dirtyAllDescendants() {
-    YogaNative.jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(mNativePointer);
-  }
-
   public boolean isDirty() {
     return YogaNative.jni_YGNodeIsDirtyJNI(mNativePointer);
   }
