@@ -57,7 +57,11 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
-            gem install bundler
+            if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
+              gem install bundler -v 2.4.22
+            else
+              gem install bundler
+            fi
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: *rbenv_cache_key
