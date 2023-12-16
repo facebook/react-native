@@ -1569,15 +1569,20 @@ static void calculateLayoutImpl(
       flexLine.layout.crossDim = availableInnerCrossDim;
     }
 
-    // Clamp to the min/max size specified on the container.
-    flexLine.layout.crossDim =
-        boundAxis(
-            node,
-            crossAxis,
-            flexLine.layout.crossDim + paddingAndBorderAxisCross,
-            crossAxisownerSize,
-            ownerWidth) -
-        paddingAndBorderAxisCross;
+    // As-per https://www.w3.org/TR/css-flexbox-1/#cross-sizing, the
+    // cross-size of the line within a single-line container should be bound to
+    // min/max constraints before alignment within the line. In a multi-line
+    // container, affecting alignment between the lines.
+    if (!isNodeFlexWrap) {
+      flexLine.layout.crossDim =
+          boundAxis(
+              node,
+              crossAxis,
+              flexLine.layout.crossDim + paddingAndBorderAxisCross,
+              crossAxisownerSize,
+              ownerWidth) -
+          paddingAndBorderAxisCross;
+    }
 
     // STEP 7: CROSS-AXIS ALIGNMENT
     // We can skip child alignment if we're just measuring the container.
@@ -1735,59 +1740,65 @@ static void calculateLayoutImpl(
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
   // currentLead stores the size of the cross dim
   if (performLayout && (isNodeFlexWrap || isBaselineLayout(node))) {
-    float crossDimLead = 0;
+    float leadPerLine = 0;
     float currentLead = leadingPaddingAndBorderCross;
-    if (yoga::isDefined(availableInnerCrossDim)) {
-      const float remainingAlignContentDim =
-          availableInnerCrossDim - totalLineCrossDim;
-      switch (node->getStyle().alignContent()) {
-        case Align::FlexEnd:
-          currentLead += remainingAlignContentDim;
-          break;
-        case Align::Center:
+
+    const float unclampedCrossDim =
+        node->styleDefinesDimension(crossAxis, crossAxisownerSize)
+        ? yoga::resolveValue(
+              node->getResolvedDimension(dimension(crossAxis)),
+              crossAxisownerSize)
+              .unwrap()
+        : totalLineCrossDim + paddingAndBorderAxisCross;
+
+    const float innerCrossDim =
+        boundAxis(node, crossAxis, unclampedCrossDim, ownerHeight, ownerWidth) -
+        paddingAndBorderAxisCross;
+
+    const float remainingAlignContentDim = innerCrossDim - totalLineCrossDim;
+    switch (node->getStyle().alignContent()) {
+      case Align::FlexEnd:
+        currentLead += remainingAlignContentDim;
+        break;
+      case Align::Center:
+        currentLead += remainingAlignContentDim / 2;
+        break;
+      case Align::Stretch:
+        if (innerCrossDim > totalLineCrossDim) {
+          leadPerLine =
+              remainingAlignContentDim / static_cast<float>(lineCount);
+        }
+        break;
+      case Align::SpaceAround:
+        if (innerCrossDim > totalLineCrossDim) {
+          currentLead +=
+              remainingAlignContentDim / (2 * static_cast<float>(lineCount));
+          leadPerLine =
+              remainingAlignContentDim / static_cast<float>(lineCount);
+        } else {
           currentLead += remainingAlignContentDim / 2;
-          break;
-        case Align::Stretch:
-          if (availableInnerCrossDim > totalLineCrossDim) {
-            crossDimLead =
-                remainingAlignContentDim / static_cast<float>(lineCount);
-          }
-          break;
-        case Align::SpaceAround:
-          if (availableInnerCrossDim > totalLineCrossDim) {
-            currentLead +=
-                remainingAlignContentDim / (2 * static_cast<float>(lineCount));
-            if (lineCount > 1) {
-              crossDimLead =
-                  remainingAlignContentDim / static_cast<float>(lineCount);
-            }
-          } else {
-            currentLead += remainingAlignContentDim / 2;
-          }
-          break;
-        case Align::SpaceEvenly:
-          if (availableInnerCrossDim > totalLineCrossDim) {
-            currentLead +=
-                remainingAlignContentDim / static_cast<float>(lineCount + 1);
-            if (lineCount > 1) {
-              crossDimLead =
-                  remainingAlignContentDim / static_cast<float>(lineCount + 1);
-            }
-          } else {
-            currentLead += remainingAlignContentDim / 2;
-          }
-          break;
-        case Align::SpaceBetween:
-          if (availableInnerCrossDim > totalLineCrossDim && lineCount > 1) {
-            crossDimLead =
-                remainingAlignContentDim / static_cast<float>(lineCount - 1);
-          }
-          break;
-        case Align::Auto:
-        case Align::FlexStart:
-        case Align::Baseline:
-          break;
-      }
+        }
+        break;
+      case Align::SpaceEvenly:
+        if (innerCrossDim > totalLineCrossDim) {
+          currentLead +=
+              remainingAlignContentDim / static_cast<float>(lineCount + 1);
+          leadPerLine =
+              remainingAlignContentDim / static_cast<float>(lineCount + 1);
+        } else {
+          currentLead += remainingAlignContentDim / 2;
+        }
+        break;
+      case Align::SpaceBetween:
+        if (innerCrossDim > totalLineCrossDim && lineCount > 1) {
+          leadPerLine =
+              remainingAlignContentDim / static_cast<float>(lineCount - 1);
+        }
+        break;
+      case Align::Auto:
+      case Align::FlexStart:
+      case Align::Baseline:
+        break;
     }
     size_t endIndex = 0;
     for (size_t i = 0; i < lineCount; i++) {
@@ -1832,7 +1843,6 @@ static void calculateLayoutImpl(
         }
       }
       endIndex = ii;
-      lineHeight += crossDimLead;
       currentLead += i != 0 ? crossAxisGap : 0;
 
       if (performLayout) {
@@ -1885,14 +1895,14 @@ static void calculateLayoutImpl(
                       ? (child->getLayout().measuredDimension(
                              Dimension::Width) +
                          child->getMarginForAxis(mainAxis, availableInnerWidth))
-                      : lineHeight;
+                      : leadPerLine + lineHeight;
 
                   const float childHeight = !isMainAxisRow
                       ? (child->getLayout().measuredDimension(
                              Dimension::Height) +
                          child->getMarginForAxis(
                              crossAxis, availableInnerWidth))
-                      : lineHeight;
+                      : leadPerLine + lineHeight;
 
                   if (!(yoga::inexactEquals(
                             childWidth,
@@ -1941,7 +1951,7 @@ static void calculateLayoutImpl(
           }
         }
       }
-      currentLead += lineHeight;
+      currentLead = currentLead + leadPerLine + lineHeight;
     }
   }
 
