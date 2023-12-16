@@ -185,4 +185,7 @@ public class ReactFeatureFlags {
 
   /** When enabled, the default value of the position style property is relative. */
   public static boolean positionRelativeDefault = false;
+
+  /** Enables the new unified {@link android.text.Spannable} building logic. */
+  public static boolean enableSpannableBuildingUnification = false;
 }

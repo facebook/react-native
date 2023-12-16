@@ -11,6 +11,7 @@ import static com.facebook.react.config.ReactFeatureFlags.enableTextSpannableCac
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -21,6 +22,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
 import android.util.LruCache;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -30,7 +32,10 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.text.fragments.MapBufferTextFragmentList;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
@@ -120,8 +125,111 @@ public class TextLayoutManagerMapBuffer {
         == LayoutDirection.RTL;
   }
 
-  private static void buildSpannableFromFragments(Context context, MapBuffer fragments, SpannableStringBuilder sb,
-                                                  List<SetSpanOperation> ops) {
+  private static void buildSpannableFromFragments(
+       Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+    } else {
+      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+    }
+  }
+
+  private static void buildSpannableFromFragmentsDuplicated(
+      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+
+    for (int i = 0, length = fragments.getCount(); i < length; i++) {
+      MapBuffer fragment = fragments.getMapBuffer(i);
+      int start = sb.length();
+
+      TextAttributeProps textAttributes =
+          TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES));
+
+      sb.append(
+          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform));
+
+      int end = sb.length();
+      int reactTag =
+          fragment.contains(FR_KEY_REACT_TAG) ? fragment.getInt(FR_KEY_REACT_TAG) : View.NO_ID;
+      if (fragment.contains(FR_KEY_IS_ATTACHMENT) && fragment.getBoolean(FR_KEY_IS_ATTACHMENT)) {
+        float width = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_WIDTH));
+        float height = PixelUtil.toPixelFromSP(fragment.getDouble(FR_KEY_HEIGHT));
+        ops.add(
+            new SetSpanOperation(
+                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
+                sb.length(),
+                new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
+      } else if (end >= start) {
+        boolean roleIsLink =
+            textAttributes.mRole != null
+                ? textAttributes.mRole == Role.LINK
+                : textAttributes.mAccessibilityRole == AccessibilityRole.LINK;
+        if (roleIsLink) {
+          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+        }
+        if (textAttributes.mIsColorSet) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
+        }
+        if (textAttributes.mIsBackgroundColorSet) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
+        }
+        if (!Float.isNaN(textAttributes.getLetterSpacing())) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
+        }
+        ops.add(
+            new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
+        if (textAttributes.mFontStyle != UNSET
+            || textAttributes.mFontWeight != UNSET
+            || textAttributes.mFontFamily != null) {
+          ops.add(
+              new SetSpanOperation(
+                  start,
+                  end,
+                  new CustomStyleSpan(
+                      textAttributes.mFontStyle,
+                      textAttributes.mFontWeight,
+                      textAttributes.mFontFeatureSettings,
+                      textAttributes.mFontFamily,
+                      context.getAssets())));
+        }
+        if (textAttributes.mIsUnderlineTextDecorationSet) {
+          ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
+        }
+        if (textAttributes.mIsLineThroughTextDecorationSet) {
+          ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
+        }
+        if ((textAttributes.mTextShadowOffsetDx != 0
+                || textAttributes.mTextShadowOffsetDy != 0
+                || textAttributes.mTextShadowRadius != 0)
+            && Color.alpha(textAttributes.mTextShadowColor) != 0) {
+          ops.add(
+              new SetSpanOperation(
+                  start,
+                  end,
+                  new ShadowStyleSpan(
+                      textAttributes.mTextShadowOffsetDx,
+                      textAttributes.mTextShadowOffsetDy,
+                      textAttributes.mTextShadowRadius,
+                      textAttributes.mTextShadowColor)));
+        }
+        if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
+        }
+
+        ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
+      }
+    }
+  }
+
+  private static void buildSpannableFromFragmentsUnified(
+      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
 
     final var textFragmentList = new MapBufferTextFragmentList(fragments);
 

@@ -380,8 +380,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     return mTextTransform;
   }
 
-  @Override
-  public float getEffectiveLetterSpacing() {
+  public float getLetterSpacing() {
     float letterSpacingPixels =
         mAllowFontScaling
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
@@ -394,6 +393,11 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
     // `letterSpacingPixels` and `mFontSize` are both in pixels,
     // yielding an accurate em value.
     return letterSpacingPixels / mFontSize;
+  }
+
+  @Override
+  public float getEffectiveLetterSpacing() {
+    return getLetterSpacing();
   }
 
   @Override
