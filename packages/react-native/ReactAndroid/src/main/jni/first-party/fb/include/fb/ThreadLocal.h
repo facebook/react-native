@@ -45,7 +45,7 @@ class ThreadLocal {
   /**
    * As above but with a custom cleanup function
    */
-  typedef void (*CleanupFunction)(void *obj);
+  typedef void (*CleanupFunction)(void* obj);
   explicit ThreadLocal(CleanupFunction cleanup) : m_key(0), m_cleanup(cleanup) {
     FBASSERT(cleanup);
     initialize();
@@ -54,26 +54,26 @@ class ThreadLocal {
   /**
    * Access object's member or method through this operator overload.
    */
-  T *operator->() const {
+  T* operator->() const {
     return get();
   }
 
-  T &operator*() const {
+  T& operator*() const {
     return *get();
   }
 
-  T *get() const {
-    return (T *)pthread_getspecific(m_key);
+  T* get() const {
+    return (T*)pthread_getspecific(m_key);
   }
 
-  T *release() {
-    T *obj = get();
+  T* release() {
+    T* obj = get();
     pthread_setspecific(m_key, NULL);
     return obj;
   }
 
-  void reset(T *other = NULL) {
-    T *old = (T *)pthread_getspecific(m_key);
+  void reset(T* other = NULL) {
+    T* old = (T*)pthread_getspecific(m_key);
     if (old != other) {
       FBASSERT(m_cleanup);
       m_cleanup(old);
@@ -85,7 +85,7 @@ class ThreadLocal {
   void initialize() {
     int ret = pthread_key_create(&m_key, m_cleanup);
     if (ret != 0) {
-      const char *msg = "(unknown error)";
+      const char* msg = "(unknown error)";
       switch (ret) {
         case EAGAIN:
           msg = "PTHREAD_KEYS_MAX (1024) is exceeded";
@@ -99,9 +99,9 @@ class ThreadLocal {
     }
   }
 
-  static void OnThreadExit(void *obj) {
+  static void OnThreadExit(void* obj) {
     if (NULL != obj) {
-      delete (T *)obj;
+      delete (T*)obj;
     }
   }
 

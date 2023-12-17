@@ -24,19 +24,19 @@ EventQueueProcessor::EventQueueProcessor(
       statePipe_(std::move(statePipe)) {}
 
 void EventQueueProcessor::flushEvents(
-    jsi::Runtime &runtime,
-    std::vector<RawEvent> &&events) const {
+    jsi::Runtime& runtime,
+    std::vector<RawEvent>&& events) const {
   {
     std::scoped_lock lock(EventEmitter::DispatchMutex());
 
-    for (const auto &event : events) {
+    for (const auto& event : events) {
       if (event.eventTarget) {
         event.eventTarget->retain(runtime);
       }
     }
   }
 
-  for (auto const &event : events) {
+  for (const auto& event : events) {
     if (event.category == RawEvent::Category::ContinuousEnd) {
       hasContinuousEventStarted_ = false;
     }
@@ -55,7 +55,7 @@ void EventQueueProcessor::flushEvents(
 
     auto eventLogger = getEventLogger();
     if (eventLogger != nullptr) {
-      eventLogger->onEventDispatch(event.loggingTag);
+      eventLogger->onEventProcessingStart(event.loggingTag);
     }
 
     if (event.eventPayload == nullptr) {
@@ -77,7 +77,7 @@ void EventQueueProcessor::flushEvents(
     }
 
     if (eventLogger != nullptr) {
-      eventLogger->onEventEnd(event.loggingTag);
+      eventLogger->onEventProcessingEnd(event.loggingTag);
     }
 
     if (event.category == RawEvent::Category::ContinuousStart) {
@@ -93,7 +93,7 @@ void EventQueueProcessor::flushEvents(
   // The mutex protects from a situation when the `instanceHandle` can be
   // deallocated during accessing, but that's impossible at this point because
   // we have a strong pointer to it.
-  for (const auto &event : events) {
+  for (const auto& event : events) {
     if (event.eventTarget) {
       event.eventTarget->release(runtime);
     }
@@ -101,8 +101,8 @@ void EventQueueProcessor::flushEvents(
 }
 
 void EventQueueProcessor::flushStateUpdates(
-    std::vector<StateUpdate> &&states) const {
-  for (const auto &stateUpdate : states) {
+    std::vector<StateUpdate>&& states) const {
+  for (const auto& stateUpdate : states) {
     statePipe_(stateUpdate);
   }
 }

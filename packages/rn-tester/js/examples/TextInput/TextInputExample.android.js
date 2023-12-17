@@ -5,21 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
-
-const React = require('react');
-
-const {Text, TextInput, View, StyleSheet, Switch} = require('react-native');
-
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
 import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
+
+const TextInputSharedExamples = require('./TextInputSharedExamples.js');
+const React = require('react');
+const {StyleSheet, Switch, Text, TextInput, View} = require('react-native');
 
 class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
@@ -198,8 +196,18 @@ const examples: Array<RNTesterModuleExample> = [
             </Text>
           </TextInput>
           <TextInput
-            defaultValue="Highlight Color is red"
+            defaultValue="Selection Color is red"
             selectionColor={'red'}
+            style={styles.singleLine}
+          />
+          <TextInput
+            defaultValue="Selection handles are red"
+            selectionHandleColor={'red'}
+            style={styles.singleLine}
+          />
+          <TextInput
+            defaultValue="Cursor Color is red"
+            cursorColor={'red'}
             style={styles.singleLine}
           />
         </View>
@@ -472,7 +480,7 @@ const examples: Array<RNTesterModuleExample> = [
         'next',
       ];
       const returnKeyLabels = ['Compile', 'React Native'];
-      const examples = returnKeyTypes.map(type => {
+      const returnKeyExamples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -494,7 +502,7 @@ const examples: Array<RNTesterModuleExample> = [
       });
       return (
         <View>
-          {examples}
+          {returnKeyExamples}
           {types}
         </View>
       );

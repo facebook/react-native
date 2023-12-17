@@ -24,18 +24,17 @@ class HostPlatformViewProps : public BaseViewProps {
  public:
   HostPlatformViewProps() = default;
   HostPlatformViewProps(
-      const PropsParserContext &context,
-      HostPlatformViewProps const &sourceProps,
-      RawProps const &rawProps,
-      bool shouldSetRawProps = true);
+      const PropsParserContext& context,
+      const HostPlatformViewProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
-  void propsDiffMapBuffer(Props const *oldProps, MapBufferBuilder &builder)
+  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
       const override;
 
 #pragma mark - Props

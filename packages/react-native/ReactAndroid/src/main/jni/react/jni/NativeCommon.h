@@ -25,10 +25,10 @@ struct ReadableType : public jni::JavaClass<ReadableType> {
 
 namespace exceptions {
 
-extern const char *gUnexpectedNativeTypeExceptionClass;
+extern const char* gUnexpectedNativeTypeExceptionClass;
 
 template <typename T>
-void throwIfObjectAlreadyConsumed(const T &t, const char *msg) {
+void throwIfObjectAlreadyConsumed(const T& t, const char* msg) {
   if (t->isConsumed) {
     jni::throwNewJavaException(
         "com/facebook/react/bridge/ObjectAlreadyConsumedException", msg);

@@ -10,17 +10,16 @@
 
 'use strict';
 import type {EventTypeShape} from '../../CodegenSchema';
-
-const {generateEventStructName} = require('./CppHelpers');
-const {indent} = require('../Utils');
-
 import type {
   ComponentShape,
-  NamedShape,
   EventTypeAnnotation,
-  SchemaType,
+  NamedShape,
   ObjectTypeAnnotation,
+  SchemaType,
 } from '../../CodegenSchema';
+
+const {indent} = require('../Utils');
+const {generateEventStructName} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -51,11 +50,9 @@ const FileTemplate = ({
 #include <react/renderer/components/${libraryName}/EventEmitters.h>
 ${[...extraIncludes].join('\n')}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 ${events}
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 
 const ComponentTemplate = ({

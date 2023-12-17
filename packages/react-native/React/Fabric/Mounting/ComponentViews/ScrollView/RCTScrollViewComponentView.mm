@@ -26,9 +26,9 @@
 
 using namespace facebook::react;
 
-static CGFloat const kClippingLeeway = 44.0;
+static const CGFloat kClippingLeeway = 44.0;
 
-static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollViewProps const &props)
+static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(const ScrollViewProps &props)
 {
   switch (props.keyboardDismissMode) {
     case ScrollViewKeyboardDismissMode::None:
@@ -40,7 +40,7 @@ static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollV
   }
 }
 
-static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(ScrollViewProps const &props)
+static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const ScrollViewProps &props)
 {
   switch (props.indicatorStyle) {
     case ScrollViewIndicatorStyle::Default:
@@ -118,8 +118,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ScrollViewProps>();
-    _props = defaultProps;
+    _props = ScrollViewShadowNode::defaultSharedProps();
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -134,7 +133,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
     [self.scrollViewDelegateSplitter addDelegate:self];
 
-    _scrollEventThrottle = INFINITY;
+    _scrollEventThrottle = 0;
   }
 
   return self;
@@ -160,8 +159,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   [self _prepareForMaintainVisibleScrollPosition];
 }
 
-- (void)mountingTransactionDidMount:(MountingTransaction const &)transaction
-               withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
+- (void)mountingTransactionDidMount:(const MountingTransaction &)transaction
+               withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
 {
   [self _remountChildren];
   [self _adjustForMaintainVisibleContentPosition];
@@ -188,10 +187,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldScrollViewProps = static_cast<ScrollViewProps const &>(*_props);
-  const auto &newScrollViewProps = static_cast<ScrollViewProps const &>(*props);
+  const auto &oldScrollViewProps = static_cast<const ScrollViewProps &>(*_props);
+  const auto &newScrollViewProps = static_cast<const ScrollViewProps &>(*props);
 
 #define REMAP_PROP(reactName, localName, target)                      \
   if (oldScrollViewProps.reactName != newScrollViewProps.reactName) { \
@@ -266,7 +265,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   if (oldScrollViewProps.snapToOffsets != newScrollViewProps.snapToOffsets) {
     NSMutableArray<NSNumber *> *snapToOffsets = [NSMutableArray array];
-    for (auto const &snapToOffset : newScrollViewProps.snapToOffsets) {
+    for (const auto &snapToOffset : newScrollViewProps.snapToOffsets) {
       [snapToOffsets addObject:[NSNumber numberWithFloat:snapToOffset]];
     }
     scrollView.snapToOffsets = snapToOffsets;
@@ -279,13 +278,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   if ((oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) ||
       _shouldUpdateContentInsetAdjustmentBehavior) {
-    auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
+    const auto contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
     if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
-      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentScrollableAxes;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
@@ -302,7 +301,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
   _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
@@ -390,6 +389,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
   metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
   metrics.zoomScale = _scrollView.zoomScale;
+
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
+  }
+
   return metrics;
 }
 
@@ -399,7 +403,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+  _state->updateState([contentOffset](const ScrollViewShadowNode::ConcreteState::Data &data) {
     auto newData = data;
     newData.contentOffset = contentOffset;
     return std::make_shared<ScrollViewShadowNode::ConcreteState::Data const>(newData);
@@ -408,7 +412,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)prepareForRecycle
 {
-  const auto &props = static_cast<ScrollViewProps const &>(*_props);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   // We set the default behavior to "never" so that iOS
   // doesn't do weird things to UIScrollView insets automatically
@@ -442,11 +446,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   NSTimeInterval now = CACurrentMediaTime();
-  if (CoreFeatures::disableScrollEventThrottleRequirement || (_lastScrollEventDispatchTime == 0) ||
-      (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
-      static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);
+      static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);
     }
 
     RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
@@ -480,7 +483,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScrollBeginDrag([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollBeginDrag([self _scrollViewMetrics]);
   _isUserTriggeredScrolling = YES;
 }
 
@@ -492,7 +495,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
 
   [self _updateStateWithContentOffset];
 
@@ -511,7 +514,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onMomentumScrollBegin([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
@@ -522,7 +525,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
   _isUserTriggeredScrolling = NO;
 }
@@ -541,7 +544,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
@@ -553,7 +556,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScrollBeginDrag([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
@@ -564,7 +567,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     return;
   }
 
-  static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
@@ -607,7 +610,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
               fmax(_scrollView.contentInset.top, 0),
           0.01)); // Make width and height greater than 0
 
-  const auto &props = static_cast<ScrollViewProps const &>(*_props);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
     CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
     localX = fmin(localX, CGRectGetMaxX(maxRect));
@@ -714,7 +717,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)_prepareForMaintainVisibleScrollPosition
 {
-  const auto &props = static_cast<ScrollViewProps const &>(*_props);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (!props.maintainVisibleContentPosition) {
     return;
   }
@@ -740,7 +743,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)_adjustForMaintainVisibleContentPosition
 {
-  const auto &props = static_cast<ScrollViewProps const &>(*_props);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (!props.maintainVisibleContentPosition) {
     return;
   }

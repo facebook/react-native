@@ -45,6 +45,14 @@ internal class MyNativeViewManager :
     view.setBackgroundColor(Color.parseColor(color))
   }
 
+  override fun callNativeMethodToAddOverlays(view: MyNativeView, overlayColors: ReadableArray) {
+    view.addOverlays(overlayColors)
+  }
+
+  override fun callNativeMethodToRemoveOverlays(view: MyNativeView) {
+    view.removeOverlays()
+  }
+
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {
     super.setOpacity(view, opacity)
@@ -53,14 +61,14 @@ internal class MyNativeViewManager :
   @ReactProp(name = "values")
   override fun setValues(view: MyNativeView, value: ReadableArray?) {
     val values = mutableListOf<Int>()
-    value?.toArrayList()?.forEach { values.add(it as Int) }
+    value?.toArrayList()?.forEach { values.add((it as Double).toInt()) }
     view.emitOnArrayChangedEvent(values)
   }
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> =
       MapBuilder.builder<String, Any>()
           .put(
-              "onIntArrayChanged",
+              "topIntArrayChanged",
               MapBuilder.of<String, Any>(
                   "phasedRegistrationNames",
                   MapBuilder.of(

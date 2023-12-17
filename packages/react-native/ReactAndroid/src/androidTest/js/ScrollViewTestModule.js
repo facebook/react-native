@@ -15,9 +15,7 @@ import type {
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 const React = require('react');
-
 const {
   NativeModules,
   ScrollView,
@@ -26,6 +24,7 @@ const {
   TouchableWithoutFeedback,
   View,
 } = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 
 const {ScrollListener} = NativeModules;
 

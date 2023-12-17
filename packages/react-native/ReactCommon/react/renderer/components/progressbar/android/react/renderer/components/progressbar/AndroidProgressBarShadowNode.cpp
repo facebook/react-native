@@ -15,8 +15,8 @@ namespace facebook::react {
 extern const char AndroidProgressBarComponentName[] = "AndroidProgressBar";
 
 void AndroidProgressBarShadowNode::setAndroidProgressBarMeasurementsManager(
-    const std::shared_ptr<AndroidProgressBarMeasurementsManager>
-        &measurementsManager) {
+    const std::shared_ptr<AndroidProgressBarMeasurementsManager>&
+        measurementsManager) {
   ensureUnsealed();
   measurementsManager_ = measurementsManager;
 }
@@ -24,8 +24,8 @@ void AndroidProgressBarShadowNode::setAndroidProgressBarMeasurementsManager(
 #pragma mark - LayoutableShadowNode
 
 Size AndroidProgressBarShadowNode::measureContent(
-    LayoutContext const & /*layoutContext*/,
-    LayoutConstraints const &layoutConstraints) const {
+    const LayoutContext& /*layoutContext*/,
+    const LayoutConstraints& layoutConstraints) const {
   return measurementsManager_->measure(
       getSurfaceId(), getConcreteProps(), layoutConstraints);
 }

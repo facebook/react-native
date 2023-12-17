@@ -23,9 +23,9 @@ class RawTextProps : public Props {
  public:
   RawTextProps() = default;
   RawTextProps(
-      const PropsParserContext &context,
-      const RawTextProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const RawTextProps& sourceProps,
+      const RawProps& rawProps);
 
 #pragma mark - Props
 

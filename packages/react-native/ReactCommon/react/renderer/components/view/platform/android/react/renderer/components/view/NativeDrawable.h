@@ -10,6 +10,7 @@
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Float.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -24,7 +25,7 @@ struct NativeDrawable {
     std::optional<Float> rippleRadius{};
     bool borderless{false};
 
-    bool operator==(const Ripple &rhs) const {
+    bool operator==(const Ripple& rhs) const {
       return std::tie(this->color, this->borderless, this->rippleRadius) ==
           std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
     }
@@ -34,7 +35,7 @@ struct NativeDrawable {
   Ripple ripple;
   Kind kind;
 
-  bool operator==(const NativeDrawable &rhs) const {
+  bool operator==(const NativeDrawable& rhs) const {
     if (this->kind != rhs.kind) {
       return false;
     }
@@ -47,7 +48,7 @@ struct NativeDrawable {
     }
   }
 
-  bool operator!=(const NativeDrawable &rhs) const {
+  bool operator!=(const NativeDrawable& rhs) const {
     return !(*this == rhs);
   }
 
@@ -55,10 +56,10 @@ struct NativeDrawable {
 };
 
 static inline void fromRawValue(
-    const PropsParserContext & /*context*/,
-    RawValue const &rawValue,
-    NativeDrawable &result) {
-  auto map = (butter::map<std::string, RawValue>)rawValue;
+    const PropsParserContext& /*context*/,
+    const RawValue& rawValue,
+    NativeDrawable& result) {
+  auto map = (std::unordered_map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");
   react_native_expect(

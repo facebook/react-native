@@ -11,7 +11,7 @@
 
 'use-strict';
 
-const {parseArgs, filterJSFile} = require('../combine-utils.js');
+const {filterJSFile, parseArgs} = require('../combine-utils.js');
 
 describe('parseArgs', () => {
   const nodeBin = 'node';
@@ -103,9 +103,19 @@ describe('filterJSFile', () => {
   });
 
   describe('When the file is NativeSampleTurboModule', () => {
-    it('returns false', () => {
+    it('returns true', () => {
       const file = 'NativeSampleTurboModule.js';
       const result = filterJSFile(file);
+      expect(result).toBeTruthy();
+    });
+
+    it('returns false, when excluded', () => {
+      const file = 'NativeSampleTurboModule.js';
+      const result = filterJSFile(
+        file,
+        null,
+        new RegExp('NativeSampleTurboModule'),
+      );
       expect(result).toBeFalsy();
     });
   });

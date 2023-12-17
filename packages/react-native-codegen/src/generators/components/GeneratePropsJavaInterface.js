@@ -10,18 +10,18 @@
 
 'use strict';
 import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  NamedShape,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
 const {
   getImports,
-  toSafeJavaString,
   getInterfaceJavaClassName,
+  toSafeJavaString,
 } = require('./JavaHelpers');
 
 // File path -> contents
@@ -171,6 +171,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       return 'int';
     case 'StringTypeAnnotation':
       return 'String';
+    case 'ArrayTypeAnnotation':
+      return 'ReadableArray';
     default:
       (typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');

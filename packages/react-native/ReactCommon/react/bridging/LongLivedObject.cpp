@@ -10,7 +10,7 @@
 namespace facebook::react {
 
 // LongLivedObjectCollection
-LongLivedObjectCollection &LongLivedObjectCollection::get() {
+LongLivedObjectCollection& LongLivedObjectCollection::get() {
   static LongLivedObjectCollection instance;
   return instance;
 }
@@ -20,7 +20,7 @@ void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) {
   collection_.insert(std::move(so));
 }
 
-void LongLivedObjectCollection::remove(const LongLivedObject *o) {
+void LongLivedObjectCollection::remove(const LongLivedObject* o) {
   std::scoped_lock lock(collectionMutex_);
   for (auto p = collection_.begin(); p != collection_.end(); p++) {
     if (p->get() == o) {

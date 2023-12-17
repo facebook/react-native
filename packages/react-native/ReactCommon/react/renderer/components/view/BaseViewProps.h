@@ -24,16 +24,15 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   BaseViewProps() = default;
   BaseViewProps(
-      const PropsParserContext &context,
-      BaseViewProps const &sourceProps,
-      RawProps const &rawProps,
-      bool shouldSetRawProps = true);
+      const PropsParserContext& context,
+      const BaseViewProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 
@@ -55,6 +54,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Transform
   Transform transform{};
+  TransformOrigin transformOrigin{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};
@@ -74,10 +74,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
 #pragma mark - Convenience Methods
 
-  BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
+  BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
+  Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;
-
-#pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;

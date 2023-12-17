@@ -14,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ViewHierarchyDumper {
+class ViewHierarchyDumper {
 
   public static JSONObject toJSON(View view) throws JSONException {
     UiThreadUtil.assertOnUiThread();

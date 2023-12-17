@@ -394,15 +394,15 @@ public class ReactScrollViewHelper {
   }
 
   public static <T extends ViewGroup & HasStateWrapper & HasScrollState & HasFlingAnimator>
-      boolean updateFabricScrollState(final T scrollView) {
-    return updateFabricScrollState(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
+      void updateFabricScrollState(final T scrollView) {
+    updateFabricScrollState(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
   }
 
   /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   public static <T extends ViewGroup & HasStateWrapper & HasScrollState & HasFlingAnimator>
-      boolean updateFabricScrollState(final T scrollView, final int scrollX, final int scrollY) {
+      void updateFabricScrollState(final T scrollView, final int scrollX, final int scrollY) {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
@@ -413,18 +413,18 @@ public class ReactScrollViewHelper {
     }
 
     if (ViewUtil.getUIManagerType(scrollView.getId()) == UIManagerType.DEFAULT) {
-      return false;
+      return;
     }
 
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
     // Dedupe events to reduce JNI traffic
     if (scrollState.getLastStateUpdateScroll().equals(scrollX, scrollY)) {
-      return false;
+      return;
     }
 
     scrollState.setLastStateUpdateScroll(scrollX, scrollY);
     forceUpdateState(scrollView);
-    return true;
+    return;
   }
 
   public static <T extends ViewGroup & HasScrollState & HasStateWrapper & HasFlingAnimator>

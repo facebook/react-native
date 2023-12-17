@@ -7,12 +7,12 @@
 
 package com.facebook.react.fabric;
 
+import android.view.Choreographer;
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.ChoreographerCompat;
 
-public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCallback {
+public abstract class GuardedFrameCallback implements Choreographer.FrameCallback {
 
   @NonNull private final JSExceptionHandler mExceptionHandler;
 

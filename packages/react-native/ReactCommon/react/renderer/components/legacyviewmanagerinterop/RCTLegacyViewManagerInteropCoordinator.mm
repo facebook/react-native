@@ -8,6 +8,7 @@
 #include "RCTLegacyViewManagerInteropCoordinator.h"
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridgeMethod.h>
+#include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcherProtocol.h>
 #include <React/RCTFollyConvert.h>
@@ -16,6 +17,7 @@
 #include <React/RCTUIManager.h>
 #include <React/RCTUIManagerUtils.h>
 #include <React/RCTUtils.h>
+#include <React/RCTViewManager.h>
 #include <folly/json.h>
 #include <objc/runtime.h>
 
@@ -25,6 +27,8 @@ using namespace facebook::react;
   RCTComponentData *_componentData;
   __weak RCTBridge *_bridge;
   __weak RCTBridgeModuleDecorator *_bridgelessInteropData;
+  __weak RCTBridgeProxy *_bridgeProxy;
+
   /*
    Each instance of `RCTLegacyViewManagerInteropComponentView` registers a block to which events are dispatched.
    This is the container that maps unretained UIView pointer to a block to which the event is dispatched.
@@ -37,16 +41,21 @@ using namespace facebook::react;
    */
   NSMutableArray<id<RCTBridgeMethod>> *_moduleMethods;
   NSMutableDictionary<NSString *, id<RCTBridgeMethod>> *_moduleMethodsByName;
+
+  NSDictionary<NSString *, id> *_oldProps;
 }
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
-                               bridge:(RCTBridge *)bridge
+                               bridge:(nullable RCTBridge *)bridge
+                          bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
                 bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
 {
   if (self = [super init]) {
     _componentData = componentData;
     _bridge = bridge;
     _bridgelessInteropData = bridgelessInteropData;
+    _bridgeProxy = bridgeProxy;
+
     if (bridgelessInteropData) {
       //  During bridge mode, RCTBridgeModules will be decorated with these APIs by the bridge.
       RCTAssert(
@@ -62,7 +71,9 @@ using namespace facebook::react;
       if (strongSelf) {
         InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
         if (block) {
-          block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event ?: @{}));
+          block(
+              std::string([RCTNormalizeInputEventName(eventName) UTF8String]),
+              convertIdToFollyDynamic(event ? event : @{}));
         }
       }
     };
@@ -87,11 +98,17 @@ using namespace facebook::react;
   return view;
 }
 
-- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view
+- (void)setProps:(const folly::dynamic &)props forView:(UIView *)view
 {
   if (props.isObject()) {
     NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
-    [_componentData setProps:convertedProps forView:view];
+    NSDictionary<NSString *, id> *diffedProps = [self _diffProps:convertedProps];
+    [_componentData setProps:diffedProps forView:view];
+
+    if ([view respondsToSelector:@selector(didSetProps:)]) {
+      [view performSelector:@selector(didSetProps:) withObject:[diffedProps allKeys]];
+    }
+    _oldProps = convertedProps;
   }
 }
 
@@ -131,15 +148,9 @@ using namespace facebook::react;
   NSArray *newArgs = [@[ [NSNumber numberWithInteger:tag] ] arrayByAddingObjectsFromArray:args];
 
   if (_bridge) {
-    [_bridge.batchedBridge
-        dispatchBlock:^{
-          [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
-          [self->_bridge.uiManager setNeedsLayout];
-        }
-                queue:RCTGetUIManagerQueue()];
+    [self _handleCommandsOnBridge:method withArgs:newArgs];
   } else {
-    // TODO T86826778 - Figure out which queue this should be dispatched to.
-    [method invokeWithBridge:nil module:self->_componentData.manager arguments:newArgs];
+    [self _handleCommandsOnBridgeless:method withArgs:newArgs];
   }
 }
 
@@ -169,8 +180,37 @@ using namespace facebook::react;
 }
 
 #pragma mark - Private
+- (void)_handleCommandsOnBridge:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
+{
+  [_bridge.batchedBridge
+      dispatchBlock:^{
+        [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
+        [self->_bridge.uiManager setNeedsLayout];
+      }
+              queue:RCTGetUIManagerQueue()];
+}
+
+- (void)_handleCommandsOnBridgeless:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
+{
+  RCTViewManager *componentViewManager = self->_componentData.manager;
+  [componentViewManager setValue:_bridgeProxy forKey:@"bridge"];
+
+  [self->_bridgeProxy.uiManager
+      addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        [method invokeWithBridge:nil module:componentViewManager arguments:newArgs];
+      }];
+}
 
 - (void)_addUIBlock:(RCTViewManagerUIBlock)block
+{
+  if (_bridge) {
+    [self _addUIBlockOnBridge:block];
+  } else {
+    [self->_bridgeProxy.uiManager addUIBlock:block];
+  }
+}
+
+- (void)_addUIBlockOnBridge:(RCTViewManagerUIBlock)block
 {
   __weak __typeof__(self) weakSelf = self;
   [_bridge.batchedBridge
@@ -210,6 +250,87 @@ using namespace facebook::react;
       cls = class_getSuperclass(cls);
     }
   }
+}
+
+- (NSDictionary<NSString *, id> *)_diffProps:(NSDictionary<NSString *, id> *)newProps
+{
+  NSMutableDictionary<NSString *, id> *diffedProps = [NSMutableDictionary new];
+
+  [newProps enumerateKeysAndObjectsUsingBlock:^(NSString *key, id newProp, __unused BOOL *stop) {
+    id oldProp = _oldProps[key];
+    if ([self _prop:newProp isDifferentFrom:oldProp]) {
+      diffedProps[key] = newProp;
+    }
+  }];
+
+  return diffedProps;
+}
+
+- (BOOL)_prop:(id)oldProp isDifferentFrom:(id)newProp
+{
+  // Check for JSON types.
+  // JSON types can be of:
+  // * number
+  // * bool
+  // * String
+  // * Array
+  // * Objects => Dictionaries in ObjectiveC
+  // * Null
+
+  // Check for NULL
+  BOOL bothNil = !oldProp && !newProp;
+  if (bothNil) {
+    return NO;
+  }
+
+  BOOL onlyOneNil = (oldProp && !newProp) || (!oldProp && newProp);
+  if (onlyOneNil) {
+    return YES;
+  }
+
+  if ([self _propIsSameNumber:oldProp second:newProp]) {
+    // Boolean should be captured by NSNumber
+    return NO;
+  }
+
+  if ([self _propIsSameString:oldProp second:newProp]) {
+    return NO;
+  }
+
+  if ([self _propIsSameArray:oldProp second:newProp]) {
+    return NO;
+  }
+
+  if ([self _propIsSameObject:oldProp second:newProp]) {
+    return NO;
+  }
+
+  // Previous behavior, fallback to YES
+  return YES;
+}
+
+- (BOOL)_propIsSameNumber:(id)first second:(id)second
+{
+  return [first isKindOfClass:[NSNumber class]] && [second isKindOfClass:[NSNumber class]] &&
+      [(NSNumber *)first isEqualToNumber:(NSNumber *)second];
+}
+
+- (BOOL)_propIsSameString:(id)first second:(id)second
+{
+  return [first isKindOfClass:[NSString class]] && [second isKindOfClass:[NSString class]] &&
+      [(NSString *)first isEqualToString:(NSString *)second];
+}
+
+- (BOOL)_propIsSameArray:(id)first second:(id)second
+{
+  return [first isKindOfClass:[NSArray class]] && [second isKindOfClass:[NSArray class]] &&
+      [(NSArray *)first isEqualToArray:(NSArray *)second];
+}
+
+- (BOOL)_propIsSameObject:(id)first second:(id)second
+{
+  return [first isKindOfClass:[NSDictionary class]] && [second isKindOfClass:[NSDictionary class]] &&
+      [(NSDictionary *)first isEqualToDictionary:(NSDictionary *)second];
 }
 
 @end

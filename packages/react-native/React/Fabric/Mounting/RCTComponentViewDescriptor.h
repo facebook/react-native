@@ -31,19 +31,19 @@ class RCTComponentViewDescriptor final {
   bool observesMountingTransactionDidMount{false};
 };
 
-inline bool operator==(RCTComponentViewDescriptor const &lhs, RCTComponentViewDescriptor const &rhs)
+inline bool operator==(const RCTComponentViewDescriptor &lhs, const RCTComponentViewDescriptor &rhs)
 {
   return lhs.view == rhs.view;
 }
 
-inline bool operator!=(RCTComponentViewDescriptor const &lhs, RCTComponentViewDescriptor const &rhs)
+inline bool operator!=(const RCTComponentViewDescriptor &lhs, const RCTComponentViewDescriptor &rhs)
 {
   return lhs.view != rhs.view;
 }
 
 template <>
 struct std::hash<RCTComponentViewDescriptor> {
-  size_t operator()(RCTComponentViewDescriptor const &componentViewDescriptor) const
+  size_t operator()(const RCTComponentViewDescriptor &componentViewDescriptor) const
   {
     return std::hash<void *>()((__bridge void *)componentViewDescriptor.view);
   }

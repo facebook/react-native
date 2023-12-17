@@ -108,8 +108,7 @@ describe('MessageQueue', function () {
     const unknownModule = 'UnknownModule',
       unknownMethod = 'UnknownMethod';
     expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
-      `Failed to call into JavaScript module method ${unknownModule}.${unknownMethod}(). Module has not been registered as callable. Bridgeless Mode: false. Registered callable JavaScript modules (n = 1): MessageQueueTestModule.
-        A frequent cause of the error is that the application entry file path is incorrect. This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
+      `Failed to call into JavaScript module method ${unknownModule}.${unknownMethod}()`,
     );
   });
 

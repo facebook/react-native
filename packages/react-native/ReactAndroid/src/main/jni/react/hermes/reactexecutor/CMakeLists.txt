@@ -16,7 +16,7 @@ target_compile_options(
         hermes_executor
         PRIVATE
         $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -std=c++17
+        -std=c++20
         -fexceptions
 )
 target_include_directories(hermes_executor PRIVATE .)

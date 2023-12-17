@@ -27,7 +27,7 @@ void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
 
-void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarker(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerImpl(markerId, tag);
 }
 
@@ -35,7 +35,7 @@ void logMarkerBridgeless(const ReactMarkerId markerId) {
   logTaggedMarkerBridgeless(markerId, nullptr);
 }
 
-void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
+void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char* tag) {
   logTaggedMarkerBridgelessImpl(markerId, tag);
 }
 
@@ -43,7 +43,7 @@ void logMarkerDone(const ReactMarkerId markerId, double markerTime) {
   StartupLogger::getInstance().logStartupEvent(markerId, markerTime);
 }
 
-StartupLogger &StartupLogger::getInstance() {
+StartupLogger& StartupLogger::getInstance() {
   static StartupLogger instance;
   return instance;
 }
@@ -53,9 +53,13 @@ void StartupLogger::logStartupEvent(
     double markerTime) {
   switch (markerId) {
     case ReactMarkerId::APP_STARTUP_START:
-      if (std::isnan(appStartupStartTime)) {
-        appStartupStartTime = markerTime;
+      if (!std::isnan(appStartupStartTime)) {
+        // We had a startup start time, which indicates a warm start (user
+        // closed the app and start again). In this case we need to invalidate
+        // all other startup timings.
+        reset();
       }
+      appStartupStartTime = markerTime;
       return;
 
     case ReactMarkerId::APP_STARTUP_STOP:
@@ -91,6 +95,15 @@ void StartupLogger::logStartupEvent(
     default:
       return;
   }
+}
+
+void StartupLogger::reset() {
+  appStartupStartTime = std::nan("");
+  appStartupEndTime = std::nan("");
+  initReactRuntimeStartTime = std::nan("");
+  initReactRuntimeEndTime = std::nan("");
+  runJSBundleStartTime = std::nan("");
+  runJSBundleEndTime = std::nan("");
 }
 
 double StartupLogger::getAppStartupStartTime() {

@@ -5303,6 +5303,48 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_WITH_EXTERNA
                   'type': 'VoidTypeAnnotation'
                 }
               }
+            },
+            {
+              'name': 'addOverlays',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'overlayColorsReadOnly',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'overlayColorsArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'overlayColorsArrayAnnotation',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
             }
           ]
         }

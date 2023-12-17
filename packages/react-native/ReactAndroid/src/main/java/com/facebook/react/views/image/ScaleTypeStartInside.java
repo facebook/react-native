@@ -11,7 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import com.facebook.drawee.drawable.ScalingUtils;
 
-public class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
+class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
   public static final ScalingUtils.ScaleType INSTANCE = new ScaleTypeStartInside();
 
   @Override

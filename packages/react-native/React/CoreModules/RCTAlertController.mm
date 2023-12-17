@@ -43,9 +43,13 @@
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
-  UIUserInterfaceStyle style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-      ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
-      : UIUserInterfaceStyleUnspecified;
+  UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
+  if (style == UIUserInterfaceStyleUnspecified) {
+    style = RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
+        ? RCTSharedApplication().delegate.window.overrideUserInterfaceStyle
+        : UIUserInterfaceStyleUnspecified;
+  }
+
   self.overrideUserInterfaceStyle = style;
 
   [self.alertWindow makeKeyAndVisible];

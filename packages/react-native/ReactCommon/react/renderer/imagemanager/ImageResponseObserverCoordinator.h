@@ -10,7 +10,6 @@
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#include <butter/small_vector.h>
 #include <mutex>
 #include <vector>
 
@@ -29,12 +28,12 @@ class ImageResponseObserverCoordinator {
    * If the current image request status is not equal to `Loading`, the observer
    * will be called immediately.
    */
-  void addObserver(ImageResponseObserver const &observer) const;
+  void addObserver(const ImageResponseObserver& observer) const;
 
   /*
    * Interested parties may stop observing the image response.
    */
-  void removeObserver(ImageResponseObserver const &observer) const;
+  void removeObserver(const ImageResponseObserver& observer) const;
 
   /*
    * Platform-specific image loader will call this method with progress updates.
@@ -45,7 +44,7 @@ class ImageResponseObserverCoordinator {
    * Platform-specific image loader will call this method with a completed image
    * response.
    */
-  void nativeImageResponseComplete(ImageResponse const &imageResponse) const;
+  void nativeImageResponseComplete(const ImageResponse& imageResponse) const;
 
   /*
    * Platform-specific image loader will call this method in case of any
@@ -58,7 +57,7 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable butter::small_vector<ImageResponseObserver const *, 1> observers_;
+  mutable std::vector<const ImageResponseObserver*> observers_;
 
   /*
    * Current status of image loading.

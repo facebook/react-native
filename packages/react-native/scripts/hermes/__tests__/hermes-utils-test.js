@@ -9,8 +9,6 @@
 
 import * as path from 'path';
 
-const os = require('os');
-
 const {
   configureMakeForPrebuiltHermesC,
   copyBuildScripts,
@@ -19,24 +17,23 @@ const {
   createTarballFromDirectory,
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
-  getHermesTarballDownloadPath,
   getHermesPrebuiltArtifactsTarballName,
   getHermesTagSHA,
+  getHermesTarballDownloadPath,
   readHermesTag,
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
+const MemoryFs = require('metro-memory-fs');
+const os = require('os');
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
 const tarballContents = 'dummy string';
 const hermescContents = 'dummy string';
 const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
-
 const ROOT_DIR = path.normalize(path.join(__dirname, '../../..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
-
-const MemoryFs = require('metro-memory-fs');
 
 let execCalls, spawnCalls;
 let fs;
@@ -162,6 +159,10 @@ describe('hermes-utils', () => {
 
     execCalls = Object.create(null);
     spawnCalls = Object.create(null);
+
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'info').mockImplementation(() => {});
   });
 
   describe('Versioning Hermes', () => {

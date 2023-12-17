@@ -23,6 +23,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   val targetName = variant.name.capitalizeCompat()
   val targetPath = variant.name
 
+  val buildDir = this.layout.buildDirectory.get().asFile
   // Resources: generated/assets/react/<variant>/index.android.bundle
   val resourcesDir = File(buildDir, "generated/res/react/$targetPath")
   // Bundle: generated/assets/react/<variant>/index.android.bundle
@@ -48,7 +49,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   val isDebuggableVariant =
       config.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
 
-  configureNewArchPackagingOptions(project, variant)
+  configureNewArchPackagingOptions(project, config, variant)
   configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant)
 
   if (!isDebuggableVariant) {

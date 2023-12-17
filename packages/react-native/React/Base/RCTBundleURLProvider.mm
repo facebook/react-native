@@ -7,6 +7,7 @@
 
 #import "RCTBundleURLProvider.h"
 
+#import "RCTConstants.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -22,7 +23,6 @@ void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
   kRCTAllowPackagerAccess = allowed;
 }
 #endif
-static NSString *const kRCTPlatformName = @"ios";
 static NSString *const kRCTPackagerSchemeKey = @"RCT_packager_scheme";
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
@@ -107,13 +107,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
   NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-  // TODO(huntie): Temporary string match in JSON response. We will revert this
-  // endpoint back to "packager-status:running" in the next CLI alpha.
-  if ([status containsString:@"\"status\":\"running\""]) {
-    return true;
-  }
-
   return [status isEqualToString:@"packager-status:running"];
 }
 
@@ -314,7 +307,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   BOOL lazy = enableDev;
   NSArray<NSURLQueryItem *> *queryItems = @[
-    [[NSURLQueryItem alloc] initWithName:@"platform" value:kRCTPlatformName],
+    [[NSURLQueryItem alloc] initWithName:@"platform" value:RCTPlatformName],
     [[NSURLQueryItem alloc] initWithName:@"dev" value:enableDev ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"lazy" value:lazy ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"minify" value:enableMinification ? @"true" : @"false"],

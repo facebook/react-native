@@ -5,32 +5,31 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import {Button, StyleSheet, ScrollView, View, Text} from 'react-native';
-import * as React from 'react';
-
-import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
-import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
 import CompatibilityNativeGestureHandling from './Compatibility/CompatibilityNativeGestureHandling';
-import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
+import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
+import PointerEventAccessibility from './W3CPointerEventPlatformTests/PointerEventAccessibility';
+import PointerEventAttributesHoverablePointers from './W3CPointerEventPlatformTests/PointerEventAttributesHoverablePointers';
 import PointerEventAttributesNoHoverPointers from './W3CPointerEventPlatformTests/PointerEventAttributesNoHoverPointers';
-import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
-import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
-import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
-import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
-import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
-import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
-import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
+import PointerEventCaptureMouse from './W3CPointerEventPlatformTests/PointerEventCaptureMouse';
 import PointerEventClickTouch from './W3CPointerEventPlatformTests/PointerEventClickTouch';
 import PointerEventClickTouchHierarchy from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchy';
-import PointerEventCaptureMouse from './W3CPointerEventPlatformTests/PointerEventCaptureMouse';
-import EventfulView from './W3CPointerEventsEventfulView';
-import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 import PointerEventClickTouchHierarchyPointerEvents from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchyPointerEvents';
-import PointerEventAccessibility from './W3CPointerEventPlatformTests/PointerEventAccessibility';
+import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
+import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
+import PointerEventPointerMove from './W3CPointerEventPlatformTests/PointerEventPointerMove';
+import PointerEventPointerMoveAcross from './W3CPointerEventPlatformTests/PointerEventPointerMoveAcross';
+import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
+import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/PointerEventPointerMoveEventOrder';
+import PointerEventPointerMoveOnChordedMouseButton from './W3CPointerEventPlatformTests/PointerEventPointerMoveOnChordedMouseButton';
+import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
+import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
+import EventfulView from './W3CPointerEventsEventfulView';
+import * as React from 'react';
+import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
   return (

@@ -14,14 +14,14 @@ using Number = MountingTransaction::Number;
 MountingTransaction::MountingTransaction(
     SurfaceId surfaceId,
     Number number,
-    ShadowViewMutationList &&mutations,
+    ShadowViewMutationList&& mutations,
     TransactionTelemetry telemetry)
     : surfaceId_(surfaceId),
       number_(number),
       mutations_(std::move(mutations)),
       telemetry_(std::move(telemetry)) {}
 
-ShadowViewMutationList const &MountingTransaction::getMutations() const & {
+const ShadowViewMutationList& MountingTransaction::getMutations() const& {
   return mutations_;
 }
 
@@ -29,7 +29,7 @@ ShadowViewMutationList MountingTransaction::getMutations() && {
   return std::move(mutations_);
 }
 
-TransactionTelemetry &MountingTransaction::getTelemetry() const {
+TransactionTelemetry& MountingTransaction::getTelemetry() const {
   return telemetry_;
 }
 

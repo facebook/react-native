@@ -12,13 +12,13 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-const {getCommands} = require('./commands');
-const {getEvents} = require('./events');
 const {
-  getOptions,
   findComponentConfig,
   getCommandProperties,
+  getOptions,
 } = require('../../parsers-commons');
+const {getCommands} = require('./commands');
+const {getEvents} = require('./events');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function buildComponentSchema(

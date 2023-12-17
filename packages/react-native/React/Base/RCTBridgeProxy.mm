@@ -173,7 +173,7 @@ using namespace facebook;
 
 - (NSDictionary *)launchOptions
 {
-  [self logError:@"Bridgeless mode doesn't support launchOptions. Returning nil." cmd:_cmd];
+  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
   return nil;
 }
 
@@ -191,7 +191,7 @@ using namespace facebook;
 
 - (RCTPerformanceLogger *)performanceLogger
 {
-  [self logWarning:@"Bridgeless mode does not support RCTPerformanceLogger. Returning nil." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning nil." cmd:_cmd];
   return nil;
 }
 
@@ -217,7 +217,7 @@ using namespace facebook;
 
 - (BOOL)isBatchActive
 {
-  [self logWarning:@"Bridgeless mode does not support batching. Returning NO." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning NO." cmd:_cmd];
   return NO;
 }
 
@@ -227,29 +227,29 @@ using namespace facebook;
 
 - (NSString *)bridgeDescription
 {
-  [self logWarning:@"Bridgeless mode does not support bridgeDescription. Returning \"BridgeProxy\"." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning \"BridgeProxy\"." cmd:_cmd];
   return @"BridgeProxy";
 }
 
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
-  [self logError:@"Bridgeless mode does not queuing callbacks by ids. No-oping." cmd:_cmd];
+  [self logError:@"This method is not supported. No-oping." cmd:_cmd];
 }
 
 - (RCTBridge *)batchedBridge
 {
-  [self logWarning:@"Bridgeless mode does not support batchedBridge. Returning bridge proxy." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning bridge proxy." cmd:_cmd];
   return (RCTBridge *)self;
 }
 
 - (void)setBatchedBridge
 {
-  [self logError:@"Bridgeless mode does not support setBatchedBridge. No-oping." cmd:_cmd];
+  [self logError:@"This method is not supported. No-oping." cmd:_cmd];
 }
 
 - (RCTBridgeModuleListProvider)moduleProvider
 {
-  [self logWarning:@"Bridgeless mode does not support RCTBridgeModuleListProvider. Returning empty block" cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning empty block" cmd:_cmd];
   return ^{
     return @[];
   };
@@ -266,13 +266,13 @@ using namespace facebook;
 
 - (RCTBridge *)parentBridge
 {
-  [self logWarning:@"Bridgeless mode does not support parentBridge. Returning bridge proxy." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning bridge proxy." cmd:_cmd];
   return (RCTBridge *)self;
 }
 
 - (BOOL)moduleSetupComplete
 {
-  [self logWarning:@"Bridgeless mode does not implement moduleSetupComplete. Returning YES." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning YES." cmd:_cmd];
   return YES;
 }
 
@@ -286,13 +286,12 @@ using namespace facebook;
 
 - (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData
 {
-  [self logError:@"Bridgeless mode does not allow custom modules to register themselves for frame updates. Nooping"
-             cmd:_cmd];
+  [self logError:@"This method is not supported. Nooping" cmd:_cmd];
 }
 
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName
 {
-  [self logError:@"Bridgeless mode does not use RCTModuleData. Returning nil." cmd:_cmd];
+  [self logError:@"This method is not supported. Returning nil." cmd:_cmd];
   return nil;
 }
 
@@ -306,33 +305,33 @@ using namespace facebook;
 
 - (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
-  [self logError:@"Bridgeless mode does not support module replacement. Nooping." cmd:_cmd];
+  [self logError:@"This method is not supported. Nooping." cmd:_cmd];
 }
 
 - (void)startProfiling
 {
-  [self logWarning:@"Bridgeless mode does not support this method. Nooping." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
 }
 
 - (void)stopProfiling:(void (^)(NSData *))callback
 {
-  [self logWarning:@"Bridgeless mode does not support this method. Nooping." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
 }
 
 - (id)callNativeModule:(NSUInteger)moduleID method:(NSUInteger)methodID params:(NSArray *)params
 {
-  [self logError:@"Bridgeless mode does not support this method. Nooping and returning nil." cmd:_cmd];
+  [self logError:@"This method is not supported. Nooping and returning nil." cmd:_cmd];
   return nil;
 }
 
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
-  [self logWarning:@"Bridgeless mode does not support this method. Nooping." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
 }
 
 - (void)_immediatelyCallTimer:(NSNumber *)timer
 {
-  [self logWarning:@"Bridgeless mode does not support this method. Nooping." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Nooping." cmd:_cmd];
 }
 
 /**
@@ -340,7 +339,7 @@ using namespace facebook;
  */
 - (BOOL)inspectable
 {
-  [self logWarning:@"Bridgeless mode does not support this method. Returning NO." cmd:_cmd];
+  [self logWarning:@"This method is not supported. Returning NO." cmd:_cmd];
   return NO;
 }
 
@@ -350,6 +349,11 @@ using namespace facebook;
 - (RCTUIManager *)uiManager
 {
   return (RCTUIManager *)_uiManagerProxy;
+}
+
+- (RCTBridgeProxy *)object
+{
+  return self;
 }
 
 /**
@@ -388,12 +392,14 @@ using namespace facebook;
 
 @implementation RCTUIManagerProxy {
   RCTViewRegistry *_viewRegistry;
+  NSMutableDictionary<NSNumber *, UIView *> *_legacyViewRegistry;
 }
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
 {
   self = [super self];
   if (self) {
     _viewRegistry = viewRegistry;
+    _legacyViewRegistry = [NSMutableDictionary new];
   }
   return self;
 }
@@ -405,20 +411,21 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
                cmd:_cmd];
-  return [_viewRegistry viewForReactTag:reactTag];
+  return [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
+                                                  : [_legacyViewRegistry objectForKey:reactTag];
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
   [self
       logWarning:
-          @"This method isn't implemented faithfully: the viewRegistry passed to RCTViewManagerUIBlock is nil. Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
+          @"This method isn't implemented faithfully. Please migrate to RCTViewRegistry if possible: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
              cmd:_cmd];
   __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      block((RCTUIManager *)strongSelf, nil);
+      block((RCTUIManager *)strongSelf, strongSelf->_legacyViewRegistry);
     }
   });
 }

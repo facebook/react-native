@@ -7,9 +7,9 @@
 
 #import "RCTTextLayoutManager.h"
 
-#import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/NSTextStorage+FontScaling.h>
 #import <React/RCTUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>

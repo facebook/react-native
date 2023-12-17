@@ -18,10 +18,10 @@ EventQueue::EventQueue(
     : eventProcessor_(std::move(eventProcessor)),
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
-      [this](jsi::Runtime &runtime) { onBeat(runtime); });
+      [this](jsi::Runtime& runtime) { onBeat(runtime); });
 }
 
-void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
+void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
   {
     std::scoped_lock lock(queueMutex_);
     eventQueue_.push_back(std::move(rawEvent));
@@ -30,7 +30,7 @@ void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
   onEnqueue();
 }
 
-void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
+void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
   {
     std::scoped_lock lock(queueMutex_);
 
@@ -60,11 +60,11 @@ void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
   onEnqueue();
 }
 
-void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
+void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
   {
     std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
-      auto const position = stateUpdateQueue_.back();
+      const auto position = stateUpdateQueue_.back();
       if (stateUpdate.family == position.family) {
         stateUpdateQueue_.pop_back();
       }
@@ -75,12 +75,12 @@ void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
   onEnqueue();
 }
 
-void EventQueue::onBeat(jsi::Runtime &runtime) const {
+void EventQueue::onBeat(jsi::Runtime& runtime) const {
   flushStateUpdates();
   flushEvents(runtime);
 }
 
-void EventQueue::flushEvents(jsi::Runtime &runtime) const {
+void EventQueue::flushEvents(jsi::Runtime& runtime) const {
   std::vector<RawEvent> queue;
 
   {

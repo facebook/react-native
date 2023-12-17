@@ -26,7 +26,7 @@ namespace facebook::react {
 class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleManager;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleManager;";
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject> jThis,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
@@ -56,7 +56,9 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<ModuleCache> turboModuleCache_;
   std::shared_ptr<ModuleCache> legacyModuleCache_;
 
-  void installJSIBindings(bool shouldCreateLegacyModules);
+  void installJSIBindings(
+      bool shouldCreateLegacyModules,
+      bool enableSyncVoidMethods);
   explicit TurboModuleManager(
       jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
@@ -64,7 +66,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  TurboModuleProviderFunctionType createTurboModuleProvider();
+  TurboModuleProviderFunctionType createTurboModuleProvider(
+      bool enableSyncVoidMethods);
   TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 

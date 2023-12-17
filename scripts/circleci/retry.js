@@ -20,7 +20,7 @@ async function retry(command, options, maxRetries, delay, args) {
       return true;
     }
 
-    console.log(`Command failed on attempt ${i}`);
+    console.warn(`Command failed on attempt ${i}`);
 
     if (i >= maxRetries) {
       console.log('Maximum retries reached. Exiting.');
@@ -32,7 +32,7 @@ async function retry(command, options, maxRetries, delay, args) {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    console.log('Retrying...');
+    console.log('Retrying...\n\n');
   }
 }
 

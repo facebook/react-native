@@ -9,9 +9,9 @@
 
 #include <tuple>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Rect.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -26,12 +26,12 @@ struct RectangleEdges {
   T right{};
   T bottom{};
 
-  bool operator==(RectangleEdges<T> const &rhs) const noexcept {
+  bool operator==(const RectangleEdges<T>& rhs) const noexcept {
     return std::tie(this->left, this->top, this->right, this->bottom) ==
         std::tie(rhs.left, rhs.top, rhs.right, rhs.bottom);
   }
 
-  bool operator!=(RectangleEdges<T> const &rhs) const noexcept {
+  bool operator!=(const RectangleEdges<T>& rhs) const noexcept {
     return !(*this == rhs);
   }
 
@@ -39,16 +39,16 @@ struct RectangleEdges {
     return left == top && left == right && left == bottom;
   }
 
-  static RectangleEdges<T> const ZERO;
+  static const RectangleEdges<T> ZERO;
 };
 
 template <typename T>
-RectangleEdges<T> const RectangleEdges<T>::ZERO = {};
+const RectangleEdges<T> RectangleEdges<T>::ZERO = {};
 
 template <typename T>
 RectangleEdges<T> operator+(
-    RectangleEdges<T> const &lhs,
-    RectangleEdges<T> const &rhs) noexcept {
+    const RectangleEdges<T>& lhs,
+    const RectangleEdges<T>& rhs) noexcept {
   return RectangleEdges<T>{
       lhs.left + rhs.left,
       lhs.top + rhs.top,
@@ -58,8 +58,8 @@ RectangleEdges<T> operator+(
 
 template <typename T>
 RectangleEdges<T> operator-(
-    RectangleEdges<T> const &lhs,
-    RectangleEdges<T> const &rhs) noexcept {
+    const RectangleEdges<T>& lhs,
+    const RectangleEdges<T>& rhs) noexcept {
   return RectangleEdges<T>{
       lhs.left - rhs.left,
       lhs.top - rhs.top,
@@ -75,7 +75,7 @@ using EdgeInsets = RectangleEdges<Float>;
 /*
  * Adjusts a rectangle by the given edge insets.
  */
-inline Rect insetBy(Rect const &rect, EdgeInsets const &insets) noexcept {
+inline Rect insetBy(const Rect& rect, const EdgeInsets& insets) noexcept {
   return Rect{
       {rect.origin.x + insets.left, rect.origin.y + insets.top},
       {rect.size.width - insets.left - insets.right,
@@ -85,7 +85,7 @@ inline Rect insetBy(Rect const &rect, EdgeInsets const &insets) noexcept {
 /*
  * Adjusts a rectangle by the given edge outsets.
  */
-inline Rect outsetBy(Rect const &rect, EdgeInsets const &outsets) noexcept {
+inline Rect outsetBy(const Rect& rect, const EdgeInsets& outsets) noexcept {
   return Rect{
       {rect.origin.x - outsets.left, rect.origin.y - outsets.top},
       {rect.size.width + outsets.left + outsets.right,
@@ -99,9 +99,9 @@ namespace std {
 template <typename T>
 struct hash<facebook::react::RectangleEdges<T>> {
   size_t operator()(
-      facebook::react::RectangleEdges<T> const &edges) const noexcept {
-    return folly::hash::hash_combine(
-        0, edges.left, edges.right, edges.top, edges.bottom);
+      const facebook::react::RectangleEdges<T>& edges) const noexcept {
+    return facebook::react::hash_combine(
+        edges.left, edges.right, edges.top, edges.bottom);
   }
 };
 

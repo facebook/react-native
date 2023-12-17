@@ -18,7 +18,7 @@ import java.util.Set;
 /** Translates and routes memory pressure events to the current catalyst instance. */
 public class MemoryPressureRouter implements ComponentCallbacks2 {
   private final Set<MemoryPressureListener> mListeners =
-      Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
+      Collections.synchronizedSet(new LinkedHashSet<>());
 
   public MemoryPressureRouter(Context context) {
     context.getApplicationContext().registerComponentCallbacks(this);

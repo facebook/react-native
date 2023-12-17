@@ -59,7 +59,7 @@ std::string JavaNativeModule::getSyncMethodName(unsigned int reactMethodId) {
         "]"));
   }
 
-  auto &methodInvoker = syncMethods_[reactMethodId];
+  auto& methodInvoker = syncMethods_[reactMethodId];
 
   if (!methodInvoker.has_value()) {
     throw std::invalid_argument(folly::to<std::string>(
@@ -73,7 +73,7 @@ std::vector<MethodDescriptor> JavaNativeModule::getMethods() {
   std::vector<MethodDescriptor> ret;
   syncMethods_.clear();
   auto descs = wrapper_->getMethodDescriptors();
-  for (const auto &desc : *descs) {
+  for (const auto& desc : *descs) {
     auto methodName = desc->getName();
     auto methodType = desc->getType();
 
@@ -112,7 +112,7 @@ folly::dynamic JavaNativeModule::getConstants() {
 
 void JavaNativeModule::invoke(
     unsigned int reactMethodId,
-    folly::dynamic &&params,
+    folly::dynamic&& params,
     int callId) {
   messageQueueThread_->runOnQueue(
       [this, reactMethodId, params = std::move(params), callId] {
@@ -134,7 +134,7 @@ void JavaNativeModule::invoke(
 
 MethodCallResult JavaNativeModule::callSerializableNativeHook(
     unsigned int reactMethodId,
-    folly::dynamic &&params) {
+    folly::dynamic&& params) {
   // TODO: evaluate whether calling through invoke is potentially faster
   if (reactMethodId >= syncMethods_.size()) {
     throw std::invalid_argument(folly::to<std::string>(
@@ -145,7 +145,7 @@ MethodCallResult JavaNativeModule::callSerializableNativeHook(
         "]"));
   }
 
-  auto &method = syncMethods_[reactMethodId];
+  auto& method = syncMethods_[reactMethodId];
   CHECK(method.has_value() && method->isSyncHook())
       << "Trying to invoke a asynchronous method as synchronous hook";
   return method->invoke(instance_, wrapper_->getModule(), params);

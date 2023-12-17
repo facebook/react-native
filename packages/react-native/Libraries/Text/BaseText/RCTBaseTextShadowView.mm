@@ -15,7 +15,7 @@
 NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName =
     @"RCTBaseTextShadowViewEmbeddedShadowViewAttributeName";
 
-static void RCTInlineViewYogaNodeDirtied(YGNodeRef node)
+static void RCTInlineViewYogaNodeDirtied(YGNodeConstRef node)
 {
   // An inline view (a view nested inside of a text node) does not have a parent
   // in the Yoga tree. Consequently, we have to manually propagate the inline

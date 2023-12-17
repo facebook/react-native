@@ -8,19 +8,19 @@
  * @flow strict-local
  */
 
-import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
-import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import {
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  RootTagContext,
-} from 'react-native';
 
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
+import {
+  FlatList,
+  RootTagContext,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
 type State = {|
   testResults: {
@@ -54,7 +54,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     rejectPromise: () =>
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
-        .catch(e => this._setResult('rejectPromise', e.message)),
+        .catch(e => {
+          console.error(e);
+          this._setResult('rejectPromise', e.message);
+        }),
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
@@ -81,6 +84,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.voidFuncThrows?.();
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
@@ -88,21 +92,23 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectThrows?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
     promiseThrows: () => {
-      try {
-        // $FlowFixMe[unused-promise]
-        NativeSampleTurboModule.promiseThrows?.();
-      } catch (e) {
-        return e.message;
-      }
+      NativeSampleTurboModule.promiseThrows?.()
+        .then(() => {})
+        .catch(e => {
+          console.error(e);
+          this._setResult('promiseThrows', e.message);
+        });
     },
     voidFuncAssert: () => {
       try {
         NativeSampleTurboModule.voidFuncAssert?.();
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
@@ -110,16 +116,17 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       try {
         NativeSampleTurboModule.getObjectAssert?.({a: 1, b: 'foo', c: null});
       } catch (e) {
+        console.error(e);
         return e.message;
       }
     },
     promiseAssert: () => {
-      try {
-        // $FlowFixMe[unused-promise]
-        NativeSampleTurboModule.promiseAssert?.();
-      } catch (e) {
-        return e.message;
-      }
+      NativeSampleTurboModule.promiseAssert?.()
+        .then(() => {})
+        .catch(e => {
+          console.error(e);
+          this._setResult('promiseAssert', e.message);
+        });
     },
   };
 

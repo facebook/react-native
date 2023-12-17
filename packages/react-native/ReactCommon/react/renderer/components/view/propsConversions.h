@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -17,322 +18,531 @@ namespace facebook::react {
 
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
-static inline YGStyle::Dimensions convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *widthName,
-    char const *heightName,
-    YGStyle::Dimensions const &sourceValue,
-    YGStyle::Dimensions const &defaultValue) {
-  auto dimensions = defaultValue;
-  dimensions[YGDimensionWidth] = convertRawProp(
-      context,
-      rawProps,
-      widthName,
-      sourceValue[YGDimensionWidth],
-      defaultValue[YGDimensionWidth]);
-  dimensions[YGDimensionHeight] = convertRawProp(
-      context,
-      rawProps,
-      heightName,
-      sourceValue[YGDimensionHeight],
-      defaultValue[YGDimensionHeight]);
-  return dimensions;
-}
 
-static inline YGStyle::Edges convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    YGStyle::Edges const &sourceValue,
-    YGStyle::Edges const &defaultValue) {
-  auto result = defaultValue;
-  result[YGEdgeLeft] = convertRawProp(
-      context,
-      rawProps,
-      "Left",
-      sourceValue[YGEdgeLeft],
-      defaultValue[YGEdgeLeft],
-      prefix,
-      suffix);
-  result[YGEdgeTop] = convertRawProp(
-      context,
-      rawProps,
-      "Top",
-      sourceValue[YGEdgeTop],
-      defaultValue[YGEdgeTop],
-      prefix,
-      suffix);
-  result[YGEdgeRight] = convertRawProp(
-      context,
-      rawProps,
-      "Right",
-      sourceValue[YGEdgeRight],
-      defaultValue[YGEdgeRight],
-      prefix,
-      suffix);
-  result[YGEdgeBottom] = convertRawProp(
-      context,
-      rawProps,
-      "Bottom",
-      sourceValue[YGEdgeBottom],
-      defaultValue[YGEdgeBottom],
-      prefix,
-      suffix);
-  result[YGEdgeStart] = convertRawProp(
-      context,
-      rawProps,
-      "Start",
-      sourceValue[YGEdgeStart],
-      defaultValue[YGEdgeStart],
-      prefix,
-      suffix);
-  result[YGEdgeEnd] = convertRawProp(
-      context,
-      rawProps,
-      "End",
-      sourceValue[YGEdgeEnd],
-      defaultValue[YGEdgeEnd],
-      prefix,
-      suffix);
-  result[YGEdgeHorizontal] = convertRawProp(
-      context,
-      rawProps,
-      "Horizontal",
-      sourceValue[YGEdgeHorizontal],
-      defaultValue[YGEdgeHorizontal],
-      prefix,
-      suffix);
-  result[YGEdgeVertical] = convertRawProp(
-      context,
-      rawProps,
-      "Vertical",
-      sourceValue[YGEdgeVertical],
-      defaultValue[YGEdgeVertical],
-      prefix,
-      suffix);
-  result[YGEdgeAll] = convertRawProp(
-      context,
-      rawProps,
-      "",
-      sourceValue[YGEdgeAll],
-      defaultValue[YGEdgeAll],
-      prefix,
-      suffix);
-  return result;
-}
+static inline yoga::Style convertRawProp(
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style& sourceValue) {
+  auto yogaStyle = YogaStylableProps::defaultStyle();
 
-static inline YGStyle::Edges convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    YGStyle::Edges const &sourceValue,
-    YGStyle::Edges const &defaultValue) {
-  auto result = defaultValue;
-  result[YGEdgeLeft] = convertRawProp(
-      context,
-      rawProps,
-      "left",
-      sourceValue[YGEdgeLeft],
-      defaultValue[YGEdgeLeft]);
-  result[YGEdgeTop] = convertRawProp(
-      context,
-      rawProps,
-      "top",
-      sourceValue[YGEdgeTop],
-      defaultValue[YGEdgeTop]);
-  result[YGEdgeRight] = convertRawProp(
-      context,
-      rawProps,
-      "right",
-      sourceValue[YGEdgeRight],
-      defaultValue[YGEdgeRight]);
-  result[YGEdgeBottom] = convertRawProp(
-      context,
-      rawProps,
-      "bottom",
-      sourceValue[YGEdgeBottom],
-      defaultValue[YGEdgeBottom]);
-  result[YGEdgeStart] = convertRawProp(
-      context,
-      rawProps,
-      "start",
-      sourceValue[YGEdgeStart],
-      defaultValue[YGEdgeStart]);
-  result[YGEdgeEnd] = convertRawProp(
-      context,
-      rawProps,
-      "end",
-      sourceValue[YGEdgeEnd],
-      defaultValue[YGEdgeEnd]);
-  return result;
-}
-
-static inline YGStyle convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    YGStyle const &sourceValue) {
-  auto yogaStyle = YGStyle{};
-  yogaStyle.direction() = convertRawProp(
+  yogaStyle.setDirection(convertRawProp(
       context,
       rawProps,
       "direction",
       sourceValue.direction(),
-      yogaStyle.direction());
-  yogaStyle.flexDirection() = convertRawProp(
+      yogaStyle.direction()));
+
+  yogaStyle.setFlexDirection(convertRawProp(
       context,
       rawProps,
       "flexDirection",
       sourceValue.flexDirection(),
-      yogaStyle.flexDirection());
-  yogaStyle.justifyContent() = convertRawProp(
+      yogaStyle.flexDirection()));
+
+  yogaStyle.setJustifyContent(convertRawProp(
       context,
       rawProps,
       "justifyContent",
       sourceValue.justifyContent(),
-      yogaStyle.justifyContent());
-  yogaStyle.alignContent() = convertRawProp(
+      yogaStyle.justifyContent()));
+
+  yogaStyle.setAlignContent(convertRawProp(
       context,
       rawProps,
       "alignContent",
       sourceValue.alignContent(),
-      yogaStyle.alignContent());
-  yogaStyle.alignItems() = convertRawProp(
+      yogaStyle.alignContent()));
+
+  yogaStyle.setAlignItems(convertRawProp(
       context,
       rawProps,
       "alignItems",
       sourceValue.alignItems(),
-      yogaStyle.alignItems());
-  yogaStyle.alignSelf() = convertRawProp(
+      yogaStyle.alignItems()));
+
+  yogaStyle.setAlignSelf(convertRawProp(
       context,
       rawProps,
       "alignSelf",
       sourceValue.alignSelf(),
-      yogaStyle.alignSelf());
-  yogaStyle.positionType() = convertRawProp(
+      yogaStyle.alignSelf()));
+
+  yogaStyle.setPositionType(convertRawProp(
       context,
       rawProps,
       "position",
       sourceValue.positionType(),
-      yogaStyle.positionType());
-  yogaStyle.flexWrap() = convertRawProp(
+      yogaStyle.positionType()));
+
+  yogaStyle.setFlexWrap(convertRawProp(
       context,
       rawProps,
       "flexWrap",
       sourceValue.flexWrap(),
-      yogaStyle.flexWrap());
-  yogaStyle.overflow() = convertRawProp(
+      yogaStyle.flexWrap()));
+
+  yogaStyle.setOverflow(convertRawProp(
       context,
       rawProps,
       "overflow",
       sourceValue.overflow(),
-      yogaStyle.overflow());
-  yogaStyle.display() = convertRawProp(
-      context, rawProps, "display", sourceValue.display(), yogaStyle.display());
-  yogaStyle.flex() = convertRawProp(
-      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
-  yogaStyle.flexGrow() = convertRawProp(
+      yogaStyle.overflow()));
+
+  yogaStyle.setDisplay(convertRawProp(
+      context,
+      rawProps,
+      "display",
+      sourceValue.display(),
+      yogaStyle.display()));
+
+  yogaStyle.setFlex(convertRawProp(
+      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex()));
+
+  yogaStyle.setFlexGrow(convertRawProp(
       context,
       rawProps,
       "flexGrow",
       sourceValue.flexGrow(),
-      yogaStyle.flexGrow());
-  yogaStyle.flexShrink() = convertRawProp(
+      yogaStyle.flexGrow()));
+
+  yogaStyle.setFlexShrink(convertRawProp(
       context,
       rawProps,
       "flexShrink",
       sourceValue.flexShrink(),
-      yogaStyle.flexShrink());
-  yogaStyle.flexBasis() = convertRawProp(
+      yogaStyle.flexShrink()));
+
+  yogaStyle.setFlexBasis(convertRawProp(
       context,
       rawProps,
       "flexBasis",
       sourceValue.flexBasis(),
-      yogaStyle.flexBasis());
-  yogaStyle.margin() = convertRawProp(
-      context,
-      rawProps,
-      "margin",
-      "",
-      sourceValue.margin(),
-      yogaStyle.margin());
-  yogaStyle.position() = convertRawProp(
-      context, rawProps, sourceValue.position(), yogaStyle.position());
-  yogaStyle.padding() = convertRawProp(
-      context,
-      rawProps,
-      "padding",
-      "",
-      sourceValue.padding(),
-      yogaStyle.padding());
+      yogaStyle.flexBasis()));
 
-  yogaStyle.gap()[YGGutterRow] = convertRawProp(
-      context,
-      rawProps,
-      "rowGap",
-      sourceValue.gap()[YGGutterRow],
-      yogaStyle.gap()[YGGutterRow]);
+  yogaStyle.setMargin(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginLeft",
+          sourceValue.margin(yoga::Edge::Left),
+          yogaStyle.margin(yoga::Edge::Left)));
 
-  yogaStyle.gap()[YGGutterColumn] = convertRawProp(
-      context,
-      rawProps,
-      "columnGap",
-      sourceValue.gap()[YGGutterColumn],
-      yogaStyle.gap()[YGGutterColumn]);
+  yogaStyle.setMargin(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginTop",
+          sourceValue.margin(yoga::Edge::Top),
+          yogaStyle.margin(yoga::Edge::Top)));
 
-  yogaStyle.gap()[YGGutterAll] = convertRawProp(
-      context,
-      rawProps,
-      "gap",
-      sourceValue.gap()[YGGutterAll],
-      yogaStyle.gap()[YGGutterAll]);
+  yogaStyle.setMargin(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginRight",
+          sourceValue.margin(yoga::Edge::Right),
+          yogaStyle.margin(yoga::Edge::Right)));
 
-  yogaStyle.border() = convertRawProp(
-      context,
-      rawProps,
-      "border",
-      "Width",
-      sourceValue.border(),
-      yogaStyle.border());
-  yogaStyle.dimensions() = convertRawProp(
-      context,
-      rawProps,
-      "width",
-      "height",
-      sourceValue.dimensions(),
-      yogaStyle.dimensions());
-  yogaStyle.minDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "minWidth",
-      "minHeight",
-      sourceValue.minDimensions(),
-      yogaStyle.minDimensions());
-  yogaStyle.maxDimensions() = convertRawProp(
-      context,
-      rawProps,
-      "maxWidth",
-      "maxHeight",
-      sourceValue.maxDimensions(),
-      yogaStyle.maxDimensions());
-  yogaStyle.aspectRatio() = convertRawProp(
+  yogaStyle.setMargin(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginBottom",
+          sourceValue.margin(yoga::Edge::Bottom),
+          yogaStyle.margin(yoga::Edge::Bottom)));
+
+  yogaStyle.setMargin(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginStart",
+          sourceValue.margin(yoga::Edge::Start),
+          yogaStyle.margin(yoga::Edge::Start)));
+
+  yogaStyle.setMargin(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginEnd",
+          sourceValue.margin(yoga::Edge::End),
+          yogaStyle.margin(yoga::Edge::End)));
+
+  yogaStyle.setMargin(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginHorizontal",
+          sourceValue.margin(yoga::Edge::Horizontal),
+          yogaStyle.margin(yoga::Edge::Horizontal)));
+
+  yogaStyle.setMargin(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginVertical",
+          sourceValue.margin(yoga::Edge::Vertical),
+          yogaStyle.margin(yoga::Edge::Vertical)));
+
+  yogaStyle.setMargin(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "margin",
+          sourceValue.margin(yoga::Edge::All),
+          yogaStyle.margin(yoga::Edge::All)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "left",
+          sourceValue.position(yoga::Edge::Left),
+          yogaStyle.position(yoga::Edge::Left)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "top",
+          sourceValue.position(yoga::Edge::Top),
+          yogaStyle.position(yoga::Edge::Top)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "right",
+          sourceValue.position(yoga::Edge::Right),
+          yogaStyle.position(yoga::Edge::Right)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "bottom",
+          sourceValue.position(yoga::Edge::Bottom),
+          yogaStyle.position(yoga::Edge::Bottom)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "start",
+          sourceValue.position(yoga::Edge::Start),
+          yogaStyle.position(yoga::Edge::Start)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "end",
+          sourceValue.position(yoga::Edge::End),
+          yogaStyle.position(yoga::Edge::End)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "insetInline",
+          sourceValue.position(yoga::Edge::Horizontal),
+          yogaStyle.position(yoga::Edge::Horizontal)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "insetBlock",
+          sourceValue.position(yoga::Edge::Vertical),
+          yogaStyle.position(yoga::Edge::Vertical)));
+
+  yogaStyle.setPosition(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "inset",
+          sourceValue.position(yoga::Edge::All),
+          yogaStyle.position(yoga::Edge::All)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingLeft",
+          sourceValue.padding(yoga::Edge::Left),
+          yogaStyle.padding(yoga::Edge::Left)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingTop",
+          sourceValue.padding(yoga::Edge::Top),
+          yogaStyle.padding(yoga::Edge::Top)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingRight",
+          sourceValue.padding(yoga::Edge::Right),
+          yogaStyle.padding(yoga::Edge::Right)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingBottom",
+          sourceValue.padding(yoga::Edge::Bottom),
+          yogaStyle.padding(yoga::Edge::Bottom)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingStart",
+          sourceValue.padding(yoga::Edge::Start),
+          yogaStyle.padding(yoga::Edge::Start)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingEnd",
+          sourceValue.padding(yoga::Edge::End),
+          yogaStyle.padding(yoga::Edge::End)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingHorizontal",
+          sourceValue.padding(yoga::Edge::Horizontal),
+          yogaStyle.padding(yoga::Edge::Horizontal)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingVertical",
+          sourceValue.padding(yoga::Edge::Vertical),
+          yogaStyle.padding(yoga::Edge::Vertical)));
+
+  yogaStyle.setPadding(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "padding",
+          sourceValue.padding(yoga::Edge::All),
+          yogaStyle.padding(yoga::Edge::All)));
+
+  yogaStyle.setGap(
+      yoga::Gutter::Row,
+      convertRawProp(
+          context,
+          rawProps,
+          "rowGap",
+          sourceValue.gap(yoga::Gutter::Row),
+          yogaStyle.gap(yoga::Gutter::Row)));
+
+  yogaStyle.setGap(
+      yoga::Gutter::Column,
+      convertRawProp(
+          context,
+          rawProps,
+          "columnGap",
+          sourceValue.gap(yoga::Gutter::Column),
+          yogaStyle.gap(yoga::Gutter::Column)));
+
+  yogaStyle.setGap(
+      yoga::Gutter::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "gap",
+          sourceValue.gap(yoga::Gutter::All),
+          yogaStyle.gap(yoga::Gutter::All)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderLeftWidth",
+          sourceValue.border(yoga::Edge::Left),
+          yogaStyle.border(yoga::Edge::Left)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderTopWidth",
+          sourceValue.border(yoga::Edge::Top),
+          yogaStyle.border(yoga::Edge::Top)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderRightWidth",
+          sourceValue.border(yoga::Edge::Right),
+          yogaStyle.border(yoga::Edge::Right)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderBottomWidth",
+          sourceValue.border(yoga::Edge::Bottom),
+          yogaStyle.border(yoga::Edge::Bottom)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderStartWidth",
+          sourceValue.border(yoga::Edge::Start),
+          yogaStyle.border(yoga::Edge::Start)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderEndWidth",
+          sourceValue.border(yoga::Edge::End),
+          yogaStyle.border(yoga::Edge::End)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderHorizontalWidth",
+          sourceValue.border(yoga::Edge::Horizontal),
+          yogaStyle.border(yoga::Edge::Horizontal)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderVerticalWidth",
+          sourceValue.border(yoga::Edge::Vertical),
+          yogaStyle.border(yoga::Edge::Vertical)));
+
+  yogaStyle.setBorder(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderWidth",
+          sourceValue.border(yoga::Edge::All),
+          yogaStyle.border(yoga::Edge::All)));
+
+  yogaStyle.setDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "width",
+          sourceValue.dimension(yoga::Dimension::Width),
+          {}));
+
+  yogaStyle.setDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "height",
+          sourceValue.dimension(yoga::Dimension::Height),
+          {}));
+
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "minWidth",
+          sourceValue.minDimension(yoga::Dimension::Width),
+          {}));
+
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "minHeight",
+          sourceValue.minDimension(yoga::Dimension::Height),
+          {}));
+
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxWidth",
+          sourceValue.maxDimension(yoga::Dimension::Width),
+          {}));
+
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxHeight",
+          sourceValue.maxDimension(yoga::Dimension::Height),
+          {}));
+
+  yogaStyle.setAspectRatio(convertRawProp(
       context,
       rawProps,
       "aspectRatio",
       sourceValue.aspectRatio(),
-      yogaStyle.aspectRatio());
+      yogaStyle.aspectRatio()));
+
   return yogaStyle;
 }
 
 // This can be deleted when non-iterator ViewProp parsing is deleted
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleCorners<T> const &sourceValue,
-    CascadedRectangleCorners<T> const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleCorners<T>& sourceValue,
+    const CascadedRectangleCorners<T>& defaultValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
@@ -441,12 +651,12 @@ static inline CascadedRectangleCorners<T> convertRawProp(
 
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    char const *prefix,
-    char const *suffix,
-    CascadedRectangleEdges<T> const &sourceValue,
-    CascadedRectangleEdges<T> const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const char* prefix,
+    const char* suffix,
+    const CascadedRectangleEdges<T>& sourceValue,
+    const CascadedRectangleEdges<T>& defaultValue) {
   CascadedRectangleEdges<T> result;
 
   result.left = convertRawProp(
@@ -547,10 +757,10 @@ static inline CascadedRectangleEdges<T> convertRawProp(
 
 // This can be deleted when non-iterator ViewProp parsing is deleted
 static inline ViewEvents convertRawProp(
-    const PropsParserContext &context,
-    RawProps const &rawProps,
-    ViewEvents const &sourceValue,
-    ViewEvents const &defaultValue) {
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const ViewEvents& sourceValue,
+    const ViewEvents& defaultValue) {
   ViewEvents result{};
   using Offset = ViewEvents::Offset;
 
@@ -616,18 +826,31 @@ static inline ViewEvents convertRawProp(
       "onClickCapture",
       sourceValue[Offset::ClickCapture],
       defaultValue[Offset::ClickCapture]);
-  result[Offset::GotPointerCapture] = convertRawProp(
+  result[Offset::PointerDown] = convertRawProp(
       context,
       rawProps,
-      "onGotPointerCapture",
-      sourceValue[Offset::GotPointerCapture],
-      defaultValue[Offset::GotPointerCapture]);
-  result[Offset::LostPointerCapture] = convertRawProp(
+      "onPointerDown",
+      sourceValue[Offset::PointerDown],
+      defaultValue[Offset::PointerDown]);
+  result[Offset::PointerDownCapture] = convertRawProp(
       context,
       rawProps,
-      "onLostPointerCapture",
-      sourceValue[Offset::LostPointerCapture],
-      defaultValue[Offset::LostPointerCapture]);
+      "onPointerDownCapture",
+      sourceValue[Offset::PointerDownCapture],
+      defaultValue[Offset::PointerDownCapture]);
+  result[Offset::PointerUp] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUp",
+      sourceValue[Offset::PointerUp],
+      defaultValue[Offset::PointerUp]);
+  result[Offset::PointerUpCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUpCapture",
+      sourceValue[Offset::PointerUpCapture],
+      defaultValue[Offset::PointerUpCapture]);
+  // TODO: gotPointerCapture & lostPointerCapture
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(

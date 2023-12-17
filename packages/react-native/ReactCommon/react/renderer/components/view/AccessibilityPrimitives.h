@@ -54,14 +54,14 @@ struct AccessibilityAction {
 };
 
 inline static bool operator==(
-    AccessibilityAction const &lhs,
-    AccessibilityAction const &rhs) {
+    const AccessibilityAction& lhs,
+    const AccessibilityAction& rhs) {
   return lhs.name == rhs.name && lhs.label == rhs.label;
 }
 
 inline static bool operator!=(
-    AccessibilityAction const &lhs,
-    AccessibilityAction const &rhs) {
+    const AccessibilityAction& lhs,
+    const AccessibilityAction& rhs) {
   return !(rhs == lhs);
 }
 
@@ -69,21 +69,21 @@ struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
   bool busy{false};
-  bool expanded{false};
+  std::optional<bool> expanded{std::nullopt};
   enum { Unchecked, Checked, Mixed, None } checked{None};
 };
 
 constexpr bool operator==(
-    AccessibilityState const &lhs,
-    AccessibilityState const &rhs) {
+    const AccessibilityState& lhs,
+    const AccessibilityState& rhs) {
   return lhs.disabled == rhs.disabled && lhs.selected == rhs.selected &&
       lhs.checked == rhs.checked && lhs.busy == rhs.busy &&
       lhs.expanded == rhs.expanded;
 }
 
 constexpr bool operator!=(
-    AccessibilityState const &lhs,
-    AccessibilityState const &rhs) {
+    const AccessibilityState& lhs,
+    const AccessibilityState& rhs) {
   return !(rhs == lhs);
 }
 
@@ -92,14 +92,14 @@ struct AccessibilityLabelledBy {
 };
 
 inline static bool operator==(
-    AccessibilityLabelledBy const &lhs,
-    AccessibilityLabelledBy const &rhs) {
+    const AccessibilityLabelledBy& lhs,
+    const AccessibilityLabelledBy& rhs) {
   return lhs.value == rhs.value;
 }
 
 inline static bool operator!=(
-    AccessibilityLabelledBy const &lhs,
-    AccessibilityLabelledBy const &rhs) {
+    const AccessibilityLabelledBy& lhs,
+    const AccessibilityLabelledBy& rhs) {
   return !(lhs == rhs);
 }
 
@@ -111,15 +111,15 @@ struct AccessibilityValue {
 };
 
 constexpr bool operator==(
-    AccessibilityValue const &lhs,
-    AccessibilityValue const &rhs) {
+    const AccessibilityValue& lhs,
+    const AccessibilityValue& rhs) {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.now == rhs.now &&
       lhs.text == rhs.text;
 }
 
 constexpr bool operator!=(
-    AccessibilityValue const &lhs,
-    AccessibilityValue const &rhs) {
+    const AccessibilityValue& lhs,
+    const AccessibilityValue& rhs) {
   return !(rhs == lhs);
 }
 
@@ -252,14 +252,14 @@ enum class Role {
 namespace std {
 template <>
 struct hash<facebook::react::AccessibilityRole> {
-  size_t operator()(const facebook::react::AccessibilityRole &v) const {
+  size_t operator()(const facebook::react::AccessibilityRole& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };
 
 template <>
 struct hash<facebook::react::Role> {
-  size_t operator()(const facebook::react::Role &v) const {
+  size_t operator()(const facebook::react::Role& v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

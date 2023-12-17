@@ -546,8 +546,6 @@ export type Props = $ReadOnly<{|
    * When true, the scroll view stops on multiples of the scroll view's size
    * when scrolling. This can be used for horizontal pagination. The default
    * value is false.
-   *
-   * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
   /**
@@ -1150,21 +1148,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   _handleScroll = (e: ScrollEvent) => {
-    if (__DEV__) {
-      if (
-        this.props.onScroll &&
-        this.props.scrollEventThrottle == null &&
-        Platform.OS === 'ios'
-      ) {
-        console.log(
-          'You specified `onScroll` on a <ScrollView> but not ' +
-            '`scrollEventThrottle`. You will only receive one event. ' +
-            'Using `16` you get all the events but be aware that it may ' +
-            "cause frame drops, use a bigger number if you don't need as " +
-            'much precision.',
-        );
-      }
-    }
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   };
@@ -1665,6 +1648,7 @@ class ScrollView extends React.Component<Props, State> {
       // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
+        // $FlowFixMe[incompatible-use]
         prop => style && style[prop] !== undefined,
       );
       invariant(
@@ -1700,7 +1684,6 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              nativeID={'StickyHeader-' + key} /* TODO: T68258846. */
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
@@ -1837,6 +1820,7 @@ class ScrollView extends React.Component<Props, State> {
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
         // $FlowFixMe[underconstrained-implicit-instantiation]
+        // $FlowFixMe[incompatible-call]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,
@@ -1924,6 +1908,7 @@ function Wrapper(props, ref: (mixed => mixed) | {current: mixed, ...}) {
   return <ScrollView {...props} scrollViewRef={ref} />;
 }
 Wrapper.displayName = 'ScrollView';
+// $FlowFixMe[incompatible-call]
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
 // $FlowFixMe[prop-missing] Add static context to ForwardedScrollView

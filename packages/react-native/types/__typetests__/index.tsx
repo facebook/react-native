@@ -1068,7 +1068,6 @@ const sub2 = androidEventEmitter.addListener(
 androidEventEmitter.listenerCount('event'); // $ExpectType number
 sub2.remove();
 androidEventEmitter.removeAllListeners('event');
-androidEventEmitter.removeSubscription(sub1);
 
 // NativeEventEmitter - IOS
 const nativeModule: NativeModule = {
@@ -1081,7 +1080,6 @@ const sub4 = iosEventEmitter.addListener('event', (event: object) => event, {});
 iosEventEmitter.listenerCount('event');
 sub4.remove();
 iosEventEmitter.removeAllListeners('event');
-iosEventEmitter.removeSubscription(sub3);
 
 class CustomEventEmitter extends NativeEventEmitter {}
 
@@ -2117,4 +2115,7 @@ const ActionSheetIOSTest = () => {
     },
     () => undefined,
   );
+
+  // test dismissActionSheet method
+  ActionSheetIOS.dismissActionSheet();
 };

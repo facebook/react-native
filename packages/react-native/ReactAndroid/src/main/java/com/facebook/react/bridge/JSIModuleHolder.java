@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge;
 
-public class JSIModuleHolder {
+class JSIModuleHolder {
 
   private JSIModule mModule;
   private final JSIModuleSpec mSpec;
@@ -31,7 +31,7 @@ public class JSIModuleHolder {
 
   public void notifyJSInstanceDestroy() {
     if (mModule != null) {
-      mModule.onCatalystInstanceDestroy();
+      mModule.invalidate();
     }
   }
 }

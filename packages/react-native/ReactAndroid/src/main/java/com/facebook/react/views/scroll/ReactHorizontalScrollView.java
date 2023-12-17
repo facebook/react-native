@@ -231,6 +231,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  public void abortAnimation() {
+    if (mScroller != null && !mScroller.isFinished()) {
+      mScroller.abortAnimation();
+    }
+  }
+
   public void setSnapInterval(int snapInterval) {
     mSnapInterval = snapInterval;
   }
@@ -471,9 +477,62 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
   }
 
+  @Nullable
+  private static HorizontalScrollView findDeepestScrollViewForMotionEvent(
+      View view, MotionEvent ev) {
+    return findDeepestScrollViewForMotionEvent(view, ev, true);
+  }
+
+  @Nullable
+  private static HorizontalScrollView findDeepestScrollViewForMotionEvent(
+      View view, MotionEvent ev, boolean skipInitialView) {
+    if (view == null) {
+      return null;
+    }
+
+    Rect rectOnScreen = new Rect();
+    view.getGlobalVisibleRect(rectOnScreen);
+    if (!rectOnScreen.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+      return null;
+    }
+
+    // Only consider the current view if it's not the initial view. We check the
+    // current view first to bail out of recursion. Essentially if there's any
+    // nested horizontal scrollview with nested scrolling enabled, the parent
+    // scroll view shouldn't pick up the down event.
+    if (!skipInitialView
+        && view instanceof HorizontalScrollView
+        && ViewCompat.isNestedScrollingEnabled(view)
+        && (view instanceof ReactHorizontalScrollView
+            && ((ReactHorizontalScrollView) view).mScrollEnabled)) {
+      return (HorizontalScrollView) view;
+    }
+
+    // First, check child views recursively before considering this view.
+    if (view instanceof ViewGroup) {
+      for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+        HorizontalScrollView foundScrollView =
+            findDeepestScrollViewForMotionEvent(((ViewGroup) view).getChildAt(i), ev, false);
+
+        if (foundScrollView != null) {
+          // If a deeper HorizontalScrollView is found in child views, return it.
+          return foundScrollView;
+        }
+      }
+    }
+
+    // Return null if no matching view is found.
+    return null;
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
+      return false;
+    }
+
+    if ((ev.getAction() == MotionEvent.ACTION_DOWN)
+        && findDeepestScrollViewForMotionEvent(this, ev) != null) {
       return false;
     }
 

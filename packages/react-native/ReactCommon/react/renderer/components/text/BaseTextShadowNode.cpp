@@ -16,7 +16,7 @@
 
 namespace facebook::react {
 
-inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
+inline ShadowView shadowViewFromShadowNode(const ShadowNode& shadowNode) {
   auto shadowView = ShadowView{shadowNode};
   // Clearing `props` and `state` (which we don't use) allows avoiding retain
   // cycles.
@@ -26,14 +26,14 @@ inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
 }
 
 void BaseTextShadowNode::buildAttributedString(
-    TextAttributes const &baseTextAttributes,
-    ShadowNode const &parentNode,
-    AttributedString &outAttributedString,
-    Attachments &outAttachments) {
-  for (auto const &childNode : parentNode.getChildren()) {
+    const TextAttributes& baseTextAttributes,
+    const ShadowNode& parentNode,
+    AttributedString& outAttributedString,
+    Attachments& outAttachments) {
+  for (const auto& childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
-        traitCast<RawTextShadowNode const *>(childNode.get());
+        traitCast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -49,7 +49,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
+    auto textShadowNode = traitCast<const TextShadowNode*>(childNode.get());
     if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(

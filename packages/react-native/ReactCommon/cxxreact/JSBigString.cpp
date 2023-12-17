@@ -24,7 +24,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
   m_fd = dup(fd);
 
   if (m_fd == -1) {
-    const char *message =
+    const char* message =
         "JSBigFileString::JSBigFileString - Could not duplicate file descriptor";
     LOG(ERROR) << message;
     throw std::runtime_error(message);
@@ -50,18 +50,18 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
 
 JSBigFileString::~JSBigFileString() {
   if (m_data) {
-    munmap((void *)m_data, m_size);
+    munmap((void*)m_data, m_size);
   }
   close(m_fd);
 }
 
-const char *JSBigFileString::c_str() const {
+const char* JSBigFileString::c_str() const {
   if (m_size == 0) {
     return "";
   }
   if (!m_data) {
     m_data =
-        (const char *)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
+        (const char*)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
     CHECK(m_data != MAP_FAILED)
         << " fd: " << m_fd << " size: " << m_size << " offset: " << m_mapOff
         << " error: " << std::strerror(errno);
@@ -69,7 +69,7 @@ const char *JSBigFileString::c_str() const {
   static const size_t kMinPageSize = 4096;
   CHECK(!(reinterpret_cast<uintptr_t>(m_data) & (kMinPageSize - 1)))
       << "mmap address misaligned, likely corrupted"
-      << " m_data: " << (const void *)m_data;
+      << " m_data: " << (const void*)m_data;
   CHECK(m_pageOff <= m_size)
       << "offset impossibly large, likely corrupted"
       << " m_pageOff: " << m_pageOff << " m_size: " << m_size;
@@ -87,7 +87,7 @@ int JSBigFileString::fd() const {
 }
 
 std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
-    const std::string &sourceURL) {
+    const std::string& sourceURL) {
   int fd = ::open(sourceURL.c_str(), O_RDONLY);
 
   if (fd == -1) {

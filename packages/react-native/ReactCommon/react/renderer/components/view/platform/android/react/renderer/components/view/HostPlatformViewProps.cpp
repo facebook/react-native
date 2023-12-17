@@ -18,11 +18,10 @@
 namespace facebook::react {
 
 HostPlatformViewProps::HostPlatformViewProps(
-    const PropsParserContext &context,
-    HostPlatformViewProps const &sourceProps,
-    RawProps const &rawProps,
-    bool shouldSetRawProps)
-    : BaseViewProps(context, sourceProps, rawProps, shouldSetRawProps),
+    const PropsParserContext& context,
+    const HostPlatformViewProps& sourceProps,
+    const RawProps& rawProps)
+    : BaseViewProps(context, sourceProps, rawProps),
       elevation(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
                                                  : convertRawProp(
@@ -98,10 +97,10 @@ HostPlatformViewProps::HostPlatformViewProps(
   }
 
 void HostPlatformViewProps::setProp(
-    const PropsParserContext &context,
+    const PropsParserContext& context,
     RawPropsPropNameHash hash,
-    const char *propName,
-    RawValue const &value) {
+    const char* propName,
+    const RawValue& value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
@@ -122,7 +121,7 @@ void HostPlatformViewProps::setProp(
 
 bool HostPlatformViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED()
     const {
-  return yogaStyle.flexDirection() == YGFlexDirectionRow;
+  return yogaStyle.flexDirection() == yoga::FlexDirection::Row;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

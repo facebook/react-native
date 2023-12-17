@@ -52,6 +52,15 @@ public class ReactMarker {
   public interface FabricMarkerListener {
     void logFabricMarker(
         ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp);
+
+    default void logFabricMarker(
+        ReactMarkerConstants name,
+        @Nullable String tag,
+        int instanceKey,
+        long timestamp,
+        int counter) {
+      logFabricMarker(name, tag, instanceKey, timestamp);
+    }
   };
 
   // Use a list instead of a set here because we expect the number of listeners
@@ -105,9 +114,21 @@ public class ReactMarker {
   // Specific to Fabric marker listeners
   @DoNotStrip
   public static void logFabricMarker(
+      ReactMarkerConstants name,
+      @Nullable String tag,
+      int instanceKey,
+      long timestamp,
+      int counter) {
+    for (FabricMarkerListener listener : sFabricMarkerListeners) {
+      listener.logFabricMarker(name, tag, instanceKey, timestamp, counter);
+    }
+  }
+
+  @DoNotStrip
+  public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp) {
     for (FabricMarkerListener listener : sFabricMarkerListeners) {
-      listener.logFabricMarker(name, tag, instanceKey, timestamp);
+      listener.logFabricMarker(name, tag, instanceKey, timestamp, 0);
     }
   }
 
@@ -115,7 +136,7 @@ public class ReactMarker {
   @DoNotStrip
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
-    logFabricMarker(name, tag, instanceKey, SystemClock.uptimeMillis());
+    logFabricMarker(name, tag, instanceKey, SystemClock.uptimeMillis(), 0);
   }
 
   @DoNotStrip

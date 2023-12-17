@@ -20,7 +20,7 @@ internal object NdkConfiguratorUtils {
   fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     project.pluginManager.withPlugin("com.android.application") {
       project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-        if (!project.isNewArchEnabled) {
+        if (!project.isNewArchEnabled(extension)) {
           // For Old Arch, we don't need to setup the NDK
           return@finalizeDsl
         }
@@ -74,9 +74,10 @@ internal object NdkConfiguratorUtils {
    */
   fun configureNewArchPackagingOptions(
       project: Project,
-      variant: Variant,
+      extension: ReactExtension,
+      variant: Variant
   ) {
-    if (!project.isNewArchEnabled) {
+    if (!project.isNewArchEnabled(extension)) {
       // For Old Arch, we set a pickFirst only on libraries that we know are
       // clashing with our direct dependencies (mainly FBJNI and Hermes).
       variant.packaging.jniLibs.pickFirsts.addAll(
@@ -101,6 +102,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_debug.so",
               "**/libreact_nativemodule_core.so",
               "**/libreact_newarchdefaults.so",
+              "**/libreact_cxxreactpackage.so",
               "**/libreact_render_componentregistry.so",
               "**/libreact_render_core.so",
               "**/libreact_render_debug.so",

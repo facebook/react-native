@@ -436,7 +436,16 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
          * see the error delete this comment and run Flow. */
         viewabilityConfig: this.props.viewabilityConfig,
         onViewableItemsChanged: this._createOnViewableItemsChanged(
-          this.props.onViewableItemsChanged,
+          // NOTE: we use a wrapper function to allow the actual callback to change
+          // while still keeping the function provided to native to be stable
+          (...args) => {
+            invariant(
+              this.props.onViewableItemsChanged,
+              'Changing the nullability of onViewableItemsChanged is not supported. ' +
+                'Once a function or null is supplied that cannot be changed.',
+            );
+            return this.props.onViewableItemsChanged(...args);
+          },
         ),
       });
     }
@@ -450,8 +459,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         'changing the number of columns to force a fresh render of the component.',
     );
     invariant(
-      prevProps.onViewableItemsChanged === this.props.onViewableItemsChanged,
-      'Changing onViewableItemsChanged on the fly is not supported',
+      (prevProps.onViewableItemsChanged == null) ===
+        (this.props.onViewableItemsChanged == null),
+      'Changing onViewableItemsChanged nullability on the fly is not supported',
     );
     invariant(
       !deepDiffer(prevProps.viewabilityConfig, this.props.viewabilityConfig),

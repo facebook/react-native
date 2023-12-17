@@ -19,20 +19,10 @@ class CoreFeatures {
   // Specifies whether the iterator-style prop parsing is enabled.
   static bool enablePropIteratorSetter;
 
-  // This is used as a feature flag for *all* PropsX structs.
-  // For MapBuffer to be used for a particular component instance,
-  // its ShadowNode traits must set the MapBuffer trait; and this
-  // must be set to "true" globally.
-  static bool enableMapBuffer;
-
   // When enabled, Fabric will block paint to allow for state updates in
   // useLayoutEffect hooks to be processed. This changes affects scheduling of
   // when a transaction is mounted.
   static bool blockPaintForUseLayoutEffect;
-
-  // Whether to use Hermes' NativeState instead of HostObject
-  // in simple data passing scenarios with JS
-  static bool useNativeState;
 
   // Yoga might measure multiple times the same Text with the same constraints
   // This flag enables a caching mechanism to avoid subsequents measurements
@@ -57,16 +47,29 @@ class CoreFeatures {
   // Clean yoga node when <Text /> does not change.
   static bool enableCleanParagraphYogaNode;
 
-  // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
-  // props, and provide continuous `onScroll` upates like other platforms.
-  static bool disableScrollEventThrottleRequirement;
-
   // When enabled, the renderer would only fail commits when they propagate
   // state and the last commit that updated state changed before committing.
   static bool enableGranularShadowTreeStateReconciliation;
 
   // Default state updates and events to async batched priority.
   static bool enableDefaultAsyncBatchedPriority;
+
+  // When enabled, Fabric will avoid cloning notes to perform state progression.
+  static bool enableClonelessStateProgression;
+
+  // When enabled, rawProps in Props will not include Yoga specific props.
+  static bool excludeYogaFromRawProps;
+
+  // Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler
+  // (execution).
+  static bool enableMicrotasks;
+
+  // Report paint time inside the Event Timing API implementation
+  // (PerformanceObserver).
+  static bool enableReportEventPaintTime;
+
+  // Sets the default position of nodes to be relative instead of static
+  static bool positionRelativeDefault;
 };
 
 } // namespace facebook::react

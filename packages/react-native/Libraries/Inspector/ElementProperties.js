@@ -10,7 +10,9 @@
 
 'use strict';
 
+import type {InspectorData} from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {InspectedElementSource} from './Inspector';
 
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
@@ -25,13 +27,9 @@ const StyleInspector = require('./StyleInspector');
 const React = require('react');
 
 type Props = $ReadOnly<{|
-  hierarchy: Array<{|name: string|}>,
+  hierarchy: ?InspectorData['hierarchy'],
   style?: ?ViewStyleProp,
-  source?: ?{
-    fileName?: string,
-    lineNumber?: number,
-    ...
-  },
+  source?: ?InspectedElementSource,
   frame?: ?Object,
   selection?: ?number,
   setSelection?: number => mixed,
@@ -63,23 +61,29 @@ class ElementProperties extends React.Component<Props> {
       <TouchableWithoutFeedback>
         <View style={styles.info}>
           <View style={styles.breadcrumb}>
-            {mapWithSeparator(
-              this.props.hierarchy,
-              (hierarchyItem, i): React.MixedElement => (
-                <TouchableHighlight
-                  key={'item-' + i}
-                  style={[styles.breadItem, i === selection && styles.selected]}
-                  // $FlowFixMe[not-a-function] found when converting React.createClass to ES6
-                  onPress={() => this.props.setSelection(i)}>
-                  <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
-                </TouchableHighlight>
-              ),
-              (i): React.MixedElement => (
-                <Text key={'sep-' + i} style={styles.breadSep}>
-                  &#9656;
-                </Text>
-              ),
-            )}
+            {this.props.hierarchy != null &&
+              mapWithSeparator(
+                this.props.hierarchy,
+                (hierarchyItem, i): React.MixedElement => (
+                  <TouchableHighlight
+                    key={'item-' + i}
+                    style={[
+                      styles.breadItem,
+                      i === selection && styles.selected,
+                    ]}
+                    // $FlowFixMe[not-a-function] found when converting React.createClass to ES6
+                    onPress={() => this.props.setSelection(i)}>
+                    <Text style={styles.breadItemText}>
+                      {hierarchyItem.name}
+                    </Text>
+                  </TouchableHighlight>
+                ),
+                (i): React.MixedElement => (
+                  <Text key={'sep-' + i} style={styles.breadSep}>
+                    &#9656;
+                  </Text>
+                ),
+              )}
           </View>
           <View style={styles.row}>
             <View style={styles.col}>

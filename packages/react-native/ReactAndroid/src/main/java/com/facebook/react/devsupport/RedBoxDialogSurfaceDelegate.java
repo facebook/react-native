@@ -23,7 +23,7 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler;
  * The implementation of SurfaceDelegate with {@link Activity}. This is the default SurfaceDelegate
  * for Mobile.
  */
-public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
+class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
 
   private final DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private final DevSupportManager mDevSupportManager;

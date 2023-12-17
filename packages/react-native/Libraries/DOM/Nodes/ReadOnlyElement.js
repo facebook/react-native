@@ -33,19 +33,55 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientHeight(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get clientLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[3];
+      }
+    }
+
+    return 0;
   }
 
   get clientTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const borderSize = nullthrows(getFabricUIManager()).getBorderSize(node);
+      if (borderSize != null) {
+        return borderSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get clientWidth(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const innerSize = nullthrows(getFabricUIManager()).getInnerSize(node);
+      if (innerSize != null) {
+        return innerSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get firstElementChild(): ReadOnlyElement | null {
@@ -99,7 +135,16 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollHeight(): number {
-    throw new Error('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollLeft(): number {
@@ -133,11 +178,26 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollWidth(): number {
-    throw new Error('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollSize = nullthrows(getFabricUIManager()).getScrollSize(node);
+      if (scrollSize != null) {
+        return scrollSize[0];
+      }
+    }
+
+    return 0;
   }
 
   get tagName(): string {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).getTagName(node);
+    }
+
+    return '';
   }
 
   get textContent(): string | null {
@@ -151,24 +211,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   getBoundingClientRect(): DOMRect {
-    const shadowNode = getShadowNode(this);
-
-    if (shadowNode != null) {
-      const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
-        shadowNode,
-      );
-
-      if (rect) {
-        return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
-      }
-    }
-
-    // Empty rect if any of the above failed
-    return new DOMRect(0, 0, 0, 0);
-  }
-
-  getClientRects(): DOMRectList {
-    throw new TypeError('Unimplemented');
+    return getBoundingClientRect(this, {includeTransform: true});
   }
 
   /**
@@ -205,4 +248,30 @@ function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
   return getChildNodes(node).filter(
     childNode => childNode instanceof ReadOnlyElement,
   );
+}
+
+/**
+ * The public API for `getBoundingClientRect` always includes transform,
+ * so we use this internal version to get the data without transform to
+ * implement methods like `offsetWidth` and `offsetHeight`.
+ */
+export function getBoundingClientRect(
+  node: ReadOnlyElement,
+  {includeTransform}: {includeTransform: boolean},
+): DOMRect {
+  const shadowNode = getShadowNode(node);
+
+  if (shadowNode != null) {
+    const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
+      shadowNode,
+      includeTransform,
+    );
+
+    if (rect) {
+      return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
+    }
+  }
+
+  // Empty rect if any of the above failed
+  return new DOMRect(0, 0, 0, 0);
 }

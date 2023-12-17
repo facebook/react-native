@@ -14,8 +14,8 @@
 namespace facebook::react {
 
 inline SharedColor parsePlatformColor(
-    const PropsParserContext &context,
-    const RawValue &value) {
+    const PropsParserContext& context,
+    const RawValue& value) {
   float alpha = 0;
   float red = 0;
   float green = 0;

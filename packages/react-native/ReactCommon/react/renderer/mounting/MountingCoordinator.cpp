@@ -20,7 +20,7 @@
 
 namespace facebook::react {
 
-MountingCoordinator::MountingCoordinator(const ShadowTreeRevision &baseRevision)
+MountingCoordinator::MountingCoordinator(const ShadowTreeRevision& baseRevision)
     : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
       telemetryController_(*this) {
@@ -67,7 +67,7 @@ bool MountingCoordinator::waitForTransaction(
 }
 
 void MountingCoordinator::updateBaseRevision(
-    ShadowTreeRevision const &baseRevision) const {
+    const ShadowTreeRevision& baseRevision) const {
   baseRevision_ = baseRevision;
 }
 
@@ -182,16 +182,16 @@ bool MountingCoordinator::hasPendingTransactions() const {
   return lastRevision_.has_value();
 }
 
-TelemetryController const &MountingCoordinator::getTelemetryController() const {
+const TelemetryController& MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
-ShadowTreeRevision const &MountingCoordinator::getBaseRevision() const {
+const ShadowTreeRevision& MountingCoordinator::getBaseRevision() const {
   return baseRevision_;
 }
 
 void MountingCoordinator::setMountingOverrideDelegate(
-    std::weak_ptr<MountingOverrideDelegate const> delegate) const {
+    std::weak_ptr<const MountingOverrideDelegate> delegate) const {
   std::scoped_lock lock(mutex_);
   mountingOverrideDelegate_ = std::move(delegate);
 }

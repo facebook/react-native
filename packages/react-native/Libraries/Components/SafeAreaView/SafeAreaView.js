@@ -14,8 +14,6 @@ import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import * as React from 'react';
 
-let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
-
 /**
  * Renders nested content and automatically applies paddings reflect the portion
  * of the view that is not covered by navigation bars, tab bars, toolbars, and
@@ -25,7 +23,10 @@ let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
  */
-exported = Platform.select({
+const exported: React.AbstractComponent<
+  ViewProps,
+  React.ElementRef<typeof View>,
+> = Platform.select({
   ios: require('./RCTSafeAreaViewNativeComponent').default,
   default: View,
 });

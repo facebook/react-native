@@ -7,6 +7,8 @@
 
 package com.facebook.react.common.mapbuffer
 
+import com.facebook.react.common.annotations.StableReactNativeAPI
+
 /**
  * MapBuffer is an optimized sparse array format for transferring props-like data between C++ and
  * JNI. It is designed to:
@@ -23,6 +25,7 @@ package com.facebook.react.common.mapbuffer
  * - O(log(N)) random key access for native buffers due to selected structure. Faster access can be
  *   achieved by retrieving [MapBuffer.Entry] with [entryAt] on known offsets.
  */
+@StableReactNativeAPI
 interface MapBuffer : Iterable<MapBuffer.Entry> {
   companion object {
     /**

@@ -12,6 +12,8 @@
 
 'use strict';
 
+/* eslint-disable lint/sort-imports */
+
 const metroBabelRegister = require('metro-babel-register');
 const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
@@ -32,6 +34,8 @@ const nodeFiles = /[\\/]metro(?:-[^/]*)[\\/]/;
 // hook. This is used below to configure babelTransformSync under Jest.
 const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 
+// Register Babel to allow the transformer itself to be loaded from source.
+require('../scripts/build/babel-register').registerForMonorepo();
 const transformer = require('@react-native/metro-babel-transformer');
 
 module.exports = {

@@ -10,14 +10,13 @@
 
 'use strict';
 
-const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
-const {capitalize} = require('../../../Utils');
-
 import type {Nullable} from '../../../../CodegenSchema';
-import type {StructTypeAnnotation, RegularStruct} from '../StructCollector';
+import type {RegularStruct, StructTypeAnnotation} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
 const {unwrapNullable} = require('../../../../parsers/parsers-commons');
+const {capitalize} = require('../../../Utils');
+const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
 const StructTemplate = ({
   hasteModuleName,

@@ -16,8 +16,8 @@ namespace facebook::react {
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void ViewProps::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
-    MapBufferBuilder &builder) const {
+    const Props* oldPropsPtr,
+    MapBufferBuilder& builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
     ViewProps defaultProps{};
@@ -29,8 +29,8 @@ void ViewProps::propsDiffMapBuffer(
   YogaStylableProps::propsDiffMapBuffer(oldPropsPtr, builder);
   AccessibilityProps::propsDiffMapBuffer(oldPropsPtr, builder);
 
-  ViewProps const &oldProps = *(static_cast<const ViewProps *>(oldPropsPtr));
-  ViewProps const &newProps = *this;
+  const ViewProps& oldProps = *(static_cast<const ViewProps*>(oldPropsPtr));
+  const ViewProps& newProps = *this;
 
   if (oldProps.backfaceVisibility != newProps.backfaceVisibility) {
     int value;

@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Build;
 import android.util.TypedValue;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -76,9 +75,7 @@ public class ReactDrawableHelper {
   }
 
   private static Drawable setRadius(ReadableMap drawableDescriptionDict, Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        && drawableDescriptionDict.hasKey("rippleRadius")
-        && drawable instanceof RippleDrawable) {
+    if (drawableDescriptionDict.hasKey("rippleRadius") && drawable instanceof RippleDrawable) {
       RippleDrawable rippleDrawable = (RippleDrawable) drawable;
       double rippleRadius = drawableDescriptionDict.getDouble("rippleRadius");
       rippleDrawable.setRadius((int) PixelUtil.toPixelFromDIP(rippleRadius));

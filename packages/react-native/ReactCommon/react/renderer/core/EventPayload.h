@@ -20,12 +20,12 @@ struct EventPayload {
   virtual ~EventPayload() = default;
 
   EventPayload() = default;
-  EventPayload(const EventPayload &) = default;
-  EventPayload &operator=(const EventPayload &) = default;
-  EventPayload(EventPayload &&) = default;
-  EventPayload &operator=(EventPayload &&) = default;
+  EventPayload(const EventPayload&) = default;
+  EventPayload& operator=(const EventPayload&) = default;
+  EventPayload(EventPayload&&) = default;
+  EventPayload& operator=(EventPayload&&) = default;
 
-  virtual jsi::Value asJSIValue(jsi::Runtime &runtime) const = 0;
+  virtual jsi::Value asJSIValue(jsi::Runtime& runtime) const = 0;
 
   /**
    * Reports the type of the event payload for efficient downcasting.

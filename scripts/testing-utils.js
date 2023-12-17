@@ -9,23 +9,20 @@
 
 'use strict';
 
-const {exec, cp} = require('shelljs');
-const fs = require('fs');
-const os = require('os');
-const {spawn} = require('node:child_process');
-const path = require('path');
-
-const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
-
-const {
-  generateAndroidArtifacts,
-  generateiOSArtifacts,
-} = require('./release-utils');
-
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
 } = require('../packages/react-native/scripts/hermes/hermes-utils.js');
+const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
+const {
+  generateAndroidArtifacts,
+  generateiOSArtifacts,
+} = require('./release-utils');
+const fs = require('fs');
+const {spawn} = require('node:child_process');
+const os = require('os');
+const path = require('path');
+const {cp, exec} = require('shelljs');
 
 /*
  * Android related utils - leverages android tooling
@@ -117,12 +114,6 @@ function isPackagerRunning(
       silent: true,
     }).stdout;
 
-    // TODO(huntie): Temporary string match in JSON response. We will revert
-    // this endpoint back to "packager-status:running" in the next CLI alpha.
-    if (status.includes('"status":"running"')) {
-      return 'running';
-    }
-
     return status === 'packager-status:running' ? 'running' : 'unrecognized';
   } catch (_error) {
     return 'not_running';
@@ -176,16 +167,21 @@ async function downloadArtifactsFromCircleCI(
 ) {
   const mavenLocalURL = await circleCIArtifacts.artifactURLForMavenLocal();
   const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
+  const reactNativeURL = await circleCIArtifacts.artifactURLForReactNative();
 
   const hermesPath = path.join(
     circleCIArtifacts.baseTmpPath(),
     'hermes-ios-debug.tar.gz',
   );
 
-  console.info('[Download] Maven Local Artifacts');
-  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalPath);
+  console.info(`[Download] Maven Local Artifacts from ${mavenLocalURL}`);
+  const mavenLocalZipPath = `${mavenLocalPath}.zip`;
+  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalZipPath);
+  exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
   console.info('[Download] Hermes');
   circleCIArtifacts.downloadArtifact(hermesURL, hermesPath);
+  console.info(`[Download] React Native from  ${reactNativeURL}`);
+  circleCIArtifacts.downloadArtifact(reactNativeURL, localNodeTGZPath);
 
   return hermesPath;
 }
@@ -222,6 +218,14 @@ function buildArtifactsLocally(
 
   // need to move the scripts inside the local hermes cloned folder
   // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
+  cp(
+    `${reactNativePackagePath}/sdks/hermes-engine/hermes-engine.podspec`,
+    `${reactNativePackagePath}/sdks/hermes/hermes-engine.podspec`,
+  );
+  cp(
+    `${reactNativePackagePath}/sdks/hermes-engine/hermes-utils.rb`,
+    `${reactNativePackagePath}/sdks/hermes/hermes-utils.rb`,
+  );
   cp(
     `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
     `${reactNativePackagePath}/sdks/hermes/utils/.`,

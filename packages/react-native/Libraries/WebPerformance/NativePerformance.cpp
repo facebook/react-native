@@ -26,14 +26,14 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 void NativePerformance::mark(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     std::string name,
     double startTime) {
   PerformanceEntryReporter::getInstance().mark(name, startTime);
 }
 
 void NativePerformance::measure(
-    jsi::Runtime &rt,
+    jsi::Runtime& rt,
     std::string name,
     double startTime,
     double endTime,
@@ -45,20 +45,20 @@ void NativePerformance::measure(
 }
 
 std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
-    jsi::Runtime &rt) {
+    jsi::Runtime& rt) {
   auto heapInfo = rt.instrumentation().getHeapInfo(false);
   std::unordered_map<std::string, double> heapInfoToJs;
-  for (auto &entry : heapInfo) {
+  for (auto& entry : heapInfo) {
     heapInfoToJs[entry.first] = static_cast<double>(entry.second);
   }
   return heapInfoToJs;
 }
 
 std::unordered_map<std::string, double>
-NativePerformance::getReactNativeStartupTiming(jsi::Runtime &rt) {
+NativePerformance::getReactNativeStartupTiming(jsi::Runtime& rt) {
   std::unordered_map<std::string, double> result;
 
-  ReactMarker::StartupLogger &startupLogger =
+  ReactMarker::StartupLogger& startupLogger =
       ReactMarker::StartupLogger::getInstance();
   if (!std::isnan(startupLogger.getAppStartupStartTime())) {
     result["startTime"] = startupLogger.getAppStartupStartTime();

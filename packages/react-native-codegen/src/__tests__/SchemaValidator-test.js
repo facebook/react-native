@@ -11,10 +11,10 @@
 
 'use strict';
 
+import type {SchemaType} from '../CodegenSchema.js';
+
 const fixtures = require('../generators/components/__test_fixtures__/fixtures.js');
 const schemaValidator = require('../SchemaValidator.js');
-
-import type {SchemaType} from '../CodegenSchema.js';
 
 const simpleProp = {
   name: 'disabled',

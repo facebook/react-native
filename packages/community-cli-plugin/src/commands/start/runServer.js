@@ -13,32 +13,27 @@ import type {Config} from '@react-native-community/cli-types';
 import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
-import type Server from 'metro/src/Server';
-import type {Middleware} from 'metro-config';
 
-import chalk from 'chalk';
-import Metro from 'metro';
-import {Terminal} from 'metro-core';
-import path from 'path';
+import isDevServerRunning from '../../utils/isDevServerRunning';
+import loadMetroConfig from '../../utils/loadMetroConfig';
+import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
-import {
-  isPackagerRunning,
-  logger,
-  version,
-  logAlreadyRunningBundler,
-  handlePortUnavailable,
-} from '@react-native-community/cli-tools';
+import {logger, version} from '@react-native-community/cli-tools';
+import {createDevMiddleware} from '@react-native/dev-middleware';
+import chalk from 'chalk';
+import Metro from 'metro';
+import {Terminal} from 'metro-core';
+import path from 'path';
+import url from 'url';
 
-import loadMetroConfig from '../../utils/loadMetroConfig';
-import attachKeyHandlers from './attachKeyHandlers';
-
-export type Args = {
+export type StartCommandArgs = {
   assetPlugins?: string[],
   cert?: string,
   customLogReporterPath?: string,
+  experimentalDebugger: boolean,
   host?: string,
   https?: boolean,
   maxWorkers?: number,
@@ -54,42 +49,47 @@ export type Args = {
   interactive: boolean,
 };
 
-async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
-  let port = args.port ?? 8081;
-  let packager = true;
-  const packagerStatus = await isPackagerRunning(port);
-
-  if (
-    typeof packagerStatus === 'object' &&
-    packagerStatus.status === 'running'
-  ) {
-    if (packagerStatus.root === ctx.root) {
-      packager = false;
-      logAlreadyRunningBundler(port);
-    } else {
-      const result = await handlePortUnavailable(port, ctx.root, packager);
-      [port, packager] = [result.port, result.packager];
-    }
-  } else if (packagerStatus === 'unrecognized') {
-    const result = await handlePortUnavailable(port, ctx.root, packager);
-    [port, packager] = [result.port, result.packager];
-  }
-
-  if (packager === false) {
-    process.exit();
-  }
-
-  logger.info(`Starting dev server on port ${chalk.bold(String(port))}`);
-
+async function runServer(
+  _argv: Array<string>,
+  ctx: Config,
+  args: StartCommandArgs,
+) {
   const metroConfig = await loadMetroConfig(ctx, {
     config: args.config,
     maxWorkers: args.maxWorkers,
-    port: port,
+    port: args.port ?? 8081,
     resetCache: args.resetCache,
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
+  const hostname = args.host?.length ? args.host : 'localhost';
+  const {
+    projectRoot,
+    server: {port},
+    watchFolders,
+  } = metroConfig;
+  const protocol = args.https === true ? 'https' : 'http';
+  const devServerUrl = url.format({protocol, hostname, port});
+
+  logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
+
+  const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
+
+  if (serverStatus === 'matched_server_running') {
+    logger.info(
+      `A dev server is already running for this project on port ${port}. Exiting.`,
+    );
+    return;
+  } else if (serverStatus === 'port_taken') {
+    logger.error(
+      `Another process is running on port ${port}. Please terminate this ` +
+        'process and try again, or use another port with "--port".',
+    );
+    return;
+  }
+
+  logger.info(`Starting dev server on port ${chalk.bold(String(port))}...`);
 
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
@@ -99,28 +99,24 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
   }
 
   const {
-    middleware,
-    websocketEndpoints,
+    middleware: communityMiddleware,
+    websocketEndpoints: communityWebsocketEndpoints,
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host: args.host,
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
+    host: hostname,
+    port,
+    watchFolders,
   });
-  middleware.use(indexPageMiddleware);
-
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // $FlowIgnore[cannot-write] Assigning to readonly property
-  metroConfig.server.enhanceMiddleware = (
-    metroMiddleware: Middleware,
-    server: Server,
-  ) => {
-    if (customEnhanceMiddleware) {
-      return middleware.use(customEnhanceMiddleware(metroMiddleware, server));
-    }
-    return middleware.use(metroMiddleware);
-  };
+  const {middleware, websocketEndpoints} = createDevMiddleware({
+    projectRoot,
+    serverBaseUrl: devServerUrl,
+    logger,
+    unstable_experiments: {
+      // NOTE: Only affects the /open-debugger endpoint
+      enableNewDebugger: args.experimentalDebugger,
+    },
+  });
 
   let reportEvent: (event: TerminalReportableEvent) => void;
   const terminal = new Terminal(process.stdout);
@@ -132,8 +128,14 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
       if (reportEvent) {
         reportEvent(event);
       }
-      if (args.interactive && event.type === 'dep_graph_loaded') {
-        attachKeyHandlers(ctx, messageSocketEndpoint);
+      if (args.interactive && event.type === 'initialize_done') {
+        logger.info('Dev server ready');
+        attachKeyHandlers({
+          cliConfig: ctx,
+          devServerUrl,
+          messageSocket: messageSocketEndpoint,
+          experimentalDebuggerFrontend: args.experimentalDebugger,
+        });
       }
     },
   };
@@ -145,8 +147,15 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,
-    // $FlowFixMe[incompatible-call] Incompatibly defined WebSocketServer type
-    websocketEndpoints,
+    unstable_extraMiddleware: [
+      communityMiddleware,
+      indexPageMiddleware,
+      middleware,
+    ],
+    websocketEndpoints: {
+      ...communityWebsocketEndpoints,
+      ...websocketEndpoints,
+    },
   });
 
   reportEvent = eventsSocketEndpoint.reportEvent;

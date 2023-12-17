@@ -15,11 +15,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -39,11 +37,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -63,11 +59,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -87,11 +81,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -111,11 +103,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -135,11 +125,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -159,8 +147,7 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -180,8 +167,7 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange $e
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -201,8 +187,7 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void EventPropsNativeComponentViewEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -260,8 +245,7 @@ void EventPropsNativeComponentViewEventEmitter::onEventBubblingWithPaperName(OnE
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -281,11 +265,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -305,11 +287,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -329,11 +309,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -353,8 +331,7 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void InterfaceOnlyNativeComponentViewEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -364,8 +341,7 @@ void InterfaceOnlyNativeComponentViewEventEmitter::onChange(OnChange $event) con
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -385,11 +361,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -409,11 +383,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -433,11 +405,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -457,11 +427,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -481,11 +449,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -505,11 +471,9 @@ Object {
 #include <react/renderer/components/RNCodegenModuleFixtures/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

@@ -29,7 +29,9 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -665,7 +667,20 @@ public class UIImplementation {
               .arg("rootTag", cssRoot.getReactTag())
               .flush();
           try {
-            applyUpdatesRecursive(cssRoot, 0f, 0f);
+            List<ReactShadowNode> onLayoutNodes = new ArrayList<>();
+            applyUpdatesRecursive(cssRoot, 0f, 0f, onLayoutNodes);
+
+            for (ReactShadowNode node : onLayoutNodes) {
+              mEventDispatcher.dispatchEvent(
+                  OnLayoutEvent.obtain(
+                      -1, /* surfaceId not used in classic renderer */
+                      node.getReactTag(),
+                      node.getScreenX(),
+                      node.getScreenY(),
+                      node.getScreenWidth(),
+                      node.getScreenHeight()));
+            }
+
           } finally {
             Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
           }
@@ -951,39 +966,34 @@ public class UIImplementation {
     }
   }
 
-  protected void applyUpdatesRecursive(ReactShadowNode cssNode, float absoluteX, float absoluteY) {
+  protected void applyUpdatesRecursive(
+      ReactShadowNode cssNode,
+      float absoluteX,
+      float absoluteY,
+      List<ReactShadowNode> onLayoutNodes) {
     if (!cssNode.hasUpdates()) {
       return;
+    }
+
+    if (cssNode.dispatchUpdatesWillChangeLayout(absoluteX, absoluteY)
+        && cssNode.shouldNotifyOnLayout()
+        && !mShadowNodeRegistry.isRootNode(cssNode.getReactTag())) {
+      onLayoutNodes.add(cssNode);
     }
 
     Iterable<? extends ReactShadowNode> cssChildren = cssNode.calculateLayoutOnChildren();
     if (cssChildren != null) {
       for (ReactShadowNode cssChild : cssChildren) {
         applyUpdatesRecursive(
-            cssChild, absoluteX + cssNode.getLayoutX(), absoluteY + cssNode.getLayoutY());
+            cssChild,
+            absoluteX + cssNode.getLayoutX(),
+            absoluteY + cssNode.getLayoutY(),
+            onLayoutNodes);
       }
     }
 
-    int tag = cssNode.getReactTag();
-    if (!mShadowNodeRegistry.isRootNode(tag)) {
-      boolean frameDidChange =
-          cssNode.dispatchUpdates(
-              absoluteX, absoluteY, mOperationsQueue, mNativeViewHierarchyOptimizer);
+    cssNode.dispatchUpdates(absoluteX, absoluteY, mOperationsQueue, mNativeViewHierarchyOptimizer);
 
-      // Notify JS about layout event if requested
-      // and if the position or dimensions actually changed
-      // (consistent with iOS).
-      if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
-        mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
-                -1, /* surfaceId not used in classic renderer */
-                tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
-      }
-    }
     cssNode.markUpdateSeen();
     mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }

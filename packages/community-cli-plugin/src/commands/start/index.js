@@ -9,10 +9,14 @@
  * @oncall react_native
  */
 
-import path from 'path';
-import runServer from './runServer';
+import type {Command} from '@react-native-community/cli-types';
 
-export default {
+import runServer from './runServer';
+import path from 'path';
+
+export type {StartCommandArgs} from './runServer';
+
+const startCommand: Command = {
   name: 'start',
   func: runServer,
   description: 'Start the React Native development server.',
@@ -91,5 +95,14 @@ export default {
       name: '--no-interactive',
       description: 'Disables interactive mode',
     },
+    {
+      name: '--experimental-debugger',
+      description:
+        "[Experimental] Enable the new debugger experience and 'j' to " +
+        'debug. This enables the new frontend experience only: connection ' +
+        'reliability and some basic features are unstable in this release.',
+    },
   ],
 };
+
+export default startCommand;

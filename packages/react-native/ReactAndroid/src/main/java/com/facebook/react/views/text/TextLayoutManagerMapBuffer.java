@@ -299,26 +299,14 @@ public class TextLayoutManagerMapBuffer {
       // unicode characters.
 
       int hintWidth = (int) Math.ceil(desiredWidth);
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(
-                text,
-                sTextPaintInstance,
-                hintWidth,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                includeFontPadding);
-      } else {
-        layout =
-            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(includeFontPadding)
-                .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency)
-                .build();
-      }
+      layout =
+          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
+              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency)
+              .build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
@@ -341,32 +329,19 @@ public class TextLayoutManagerMapBuffer {
               includeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
+      StaticLayout.Builder builder =
+          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
+              .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+              .setLineSpacing(0.f, 1.f)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency);
 
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        layout =
-            new StaticLayout(
-                text,
-                sTextPaintInstance,
-                (int) width,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                includeFontPadding);
-      } else {
-        StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setLineSpacing(0.f, 1.f)
-                .setIncludePad(includeFontPadding)
-                .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          builder.setUseLineSpacingFromFallbacks(true);
-        }
-
-        layout = builder.build();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
       }
+
+      layout = builder.build();
     }
     return layout;
   }
@@ -445,7 +420,7 @@ public class TextLayoutManagerMapBuffer {
     // Android 11+ introduces changes in text width calculation which leads to cases
     // where the container is measured smaller than text. Math.ceil prevents it
     // See T136756103 for investigation
-    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+    if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
       calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
 

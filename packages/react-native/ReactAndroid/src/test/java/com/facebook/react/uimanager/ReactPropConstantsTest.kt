@@ -30,13 +30,11 @@ class ReactPropConstantsTest {
     }
 
     override fun createShadowNodeInstance(): ReactShadowNode<*>? {
-      Assertions.fail<Any>("This method should not be executed as a part of this test")
-      return null
+      error("This method should not be executed as a part of this test")
     }
 
     override fun createViewInstance(reactContext: ThemedReactContext): View {
-      Assertions.fail<Any>("This method should not be executed as a part of this test")
-      return View(reactContext)
+      error("This method should not be executed as a part of this test")
     }
 
     override fun getShadowNodeClass(): Class<out ReactShadowNode<*>> {
@@ -44,7 +42,7 @@ class ReactPropConstantsTest {
     }
 
     override fun updateExtraData(root: View, extraData: Any) {
-      Assertions.fail<Any>("This method should not be executed as a part of this test")
+      error("This method should not be executed as a part of this test")
     }
 
     @ReactProp(name = "boolProp") fun setBoolProp(v: View?, value: Boolean) {}

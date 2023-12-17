@@ -9,6 +9,7 @@ package com.facebook.react.common.mapbuffer
 
 import android.util.SparseArray
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
 import com.facebook.react.common.mapbuffer.MapBuffer.DataType
 import javax.annotation.concurrent.NotThreadSafe
@@ -19,6 +20,7 @@ import javax.annotation.concurrent.NotThreadSafe
  *
  * See [MapBuffer] for more details
  */
+@StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
 class WritableMapBuffer : MapBuffer {

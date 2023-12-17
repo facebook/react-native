@@ -62,28 +62,28 @@ struct BaseTouch {
    * collections. Because of that they are expressed as separate classes.
    */
   struct Hasher {
-    size_t operator()(BaseTouch const &touch) const {
+    size_t operator()(const BaseTouch& touch) const {
       return std::hash<decltype(touch.identifier)>()(touch.identifier);
     }
   };
 
   struct Comparator {
-    bool operator()(BaseTouch const &lhs, BaseTouch const &rhs) const {
+    bool operator()(const BaseTouch& lhs, const BaseTouch& rhs) const {
       return lhs.identifier == rhs.identifier;
     }
   };
 };
 
 void setTouchPayloadOnObject(
-    jsi::Object &object,
-    jsi::Runtime &runtime,
-    BaseTouch const &touch);
+    jsi::Object& object,
+    jsi::Runtime& runtime,
+    const BaseTouch& touch);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(BaseTouch const &touch);
+std::string getDebugName(const BaseTouch& touch);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    BaseTouch const &touch,
+    const BaseTouch& touch,
     DebugStringConvertibleOptions options);
 
 #endif

@@ -413,7 +413,7 @@ object ReactMapBufferPropSetter {
             PixelUtil.toPixelFromDIP(value.getDouble(EDGE_RIGHT)).toInt(),
             PixelUtil.toPixelFromDIP(value.getDouble(EDGE_BOTTOM)).toInt(),
         )
-    hitSlopRect = rect
+    setHitSlopRect(rect)
   }
 
   private fun ReactViewGroup.importantForAccessibility(value: Int) {

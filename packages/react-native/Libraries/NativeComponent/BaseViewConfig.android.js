@@ -165,6 +165,7 @@ const validAttributesForNonEventProps = {
   // @ReactProps from BaseViewManager
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
+  transformOrigin: true,
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
@@ -303,6 +304,7 @@ const validAttributesForEventProps = {
   onTouchCancel: true,
 
   // Pointer events
+  onClick: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

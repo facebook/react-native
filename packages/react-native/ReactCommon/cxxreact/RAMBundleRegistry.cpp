@@ -72,7 +72,7 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(
   };
 }
 
-JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
+JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
   return m_bundles.at(bundleId).get();
 }
 

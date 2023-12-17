@@ -17,7 +17,8 @@ public enum YogaAlign {
   STRETCH(4),
   BASELINE(5),
   SPACE_BETWEEN(6),
-  SPACE_AROUND(7);
+  SPACE_AROUND(7),
+  SPACE_EVENLY(8);
 
   private final int mIntValue;
 
@@ -39,6 +40,7 @@ public enum YogaAlign {
       case 5: return BASELINE;
       case 6: return SPACE_BETWEEN;
       case 7: return SPACE_AROUND;
+      case 8: return SPACE_EVENLY;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

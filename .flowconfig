@@ -1,7 +1,4 @@
 [ignore]
-; Ignore other platform suffixes
-.*\.android\.js$
-
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
 
@@ -11,10 +8,17 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; Flow doesn't support platforms
-.*/packages/react-native/Libraries/Utilities/LoadingView.js
+; Ignore other platform suffixes
+.*\.macos\.js$
+.*\.windows\.js$
 
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
+
+; Checked-in build output
+<PROJECT_ROOT>/packages/debugger-frontend/dist/
+
+; Generated build output
+<PROJECT_ROOT>/packages/.*/dist
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -32,6 +36,7 @@ packages/react-native/flow/
 [options]
 experimental.global_find_ref=true
 enums=true
+casting_syntax=both
 
 emoji=true
 
@@ -41,12 +46,16 @@ format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
-module.file_ext=.ios.js
+
+experimental.multi_platform=true
+experimental.multi_platform.extensions=.ios
+experimental.multi_platform.extensions=.android
 
 munge_underscores=true
 
 module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/packages/react-native/index.js'
-module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native\1'
+module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native/\1'
+module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
 suppress_type=$FlowIssue
@@ -76,4 +85,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.214.0
+^0.224.0

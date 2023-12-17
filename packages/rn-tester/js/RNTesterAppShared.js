@@ -8,7 +8,8 @@
  * @flow
  */
 
-import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
+import type {RNTesterModuleInfo} from './types/RNTesterTypes';
+
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -21,24 +22,28 @@ import {
 } from './utils/RNTesterNavigationReducer';
 import {
   Screens,
-  getExamplesListWithBookmarksAndRecentlyUsed,
+  getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
+import {
+  BackHandler,
+  Linking,
+  StyleSheet,
+  View,
+  useColorScheme,
+} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
-if (global.RN$Bridgeless) {
-  require('react-native/Libraries/NativeComponent/NativeComponentRegistry').setRuntimeConfigProvider(
-    name => {
-      // In bridgeless mode, never load native ViewConfig.
-      return {native: false, strict: false, verify: false};
-    },
-  );
-}
-
-const RNTesterApp = (): React.Node => {
+const RNTesterApp = ({
+  testList,
+}: {
+  testList?: {
+    components?: Array<RNTesterModuleInfo>,
+    apis?: Array<RNTesterModuleInfo>,
+  },
+}): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
@@ -50,14 +55,12 @@ const RNTesterApp = (): React.Node => {
     activeModuleTitle,
     activeModuleExampleKey,
     screen,
-    bookmarks,
     recentlyUsed,
   } = state;
 
   const examplesList = React.useMemo(
-    () =>
-      getExamplesListWithBookmarksAndRecentlyUsed({bookmarks, recentlyUsed}),
-    [bookmarks, recentlyUsed],
+    () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
+    [recentlyUsed, testList],
   );
 
   const handleBackPress = React.useCallback(() => {
@@ -106,16 +109,6 @@ const RNTesterApp = (): React.Node => {
     [dispatch],
   );
 
-  const toggleBookmark = React.useCallback(
-    ({exampleType, key}: any) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.BOOKMARK_PRESS,
-        data: {exampleType, key},
-      });
-    },
-    [dispatch],
-  );
-
   const handleNavBarPress = React.useCallback(
     (args: {screen: string}) => {
       dispatch({
@@ -125,6 +118,45 @@ const RNTesterApp = (): React.Node => {
     },
     [dispatch],
   );
+
+  // Setup Linking event subscription
+  const handleOpenUrlRequest = React.useCallback(
+    ({url}: {url: string, ...}) => {
+      // Supported URL pattern(s):
+      // *  rntester://example/<key>
+      const match = /^rntester:\/\/example\/(.+)$/.exec(url);
+      if (!match) {
+        console.warn(
+          `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
+        );
+        return;
+      }
+
+      const key = match[1];
+      const exampleModule = RNTesterList.Modules[key];
+      if (exampleModule == null) {
+        console.warn(
+          `handleOpenUrlRequest: Unable to find requested module with key: '${key}'`,
+        );
+        return;
+      }
+
+      console.log(`handleOpenUrlRequest: Opening example '${key}'`);
+
+      dispatch({
+        type: RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST,
+        data: {
+          key,
+          title: exampleModule.title || key,
+        },
+      });
+    },
+    [dispatch],
+  );
+  React.useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
+    return () => subscription.remove();
+  }, [handleOpenUrlRequest]);
 
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
 
@@ -143,16 +175,10 @@ const RNTesterApp = (): React.Node => {
       ? activeModuleTitle
       : screen === Screens.COMPONENTS
       ? 'Components'
-      : screen === Screens.APIS
-      ? 'APIs'
-      : 'Bookmarks';
+      : 'APIs';
 
   const activeExampleList =
-    screen === Screens.COMPONENTS
-      ? examplesList.components
-      : screen === Screens.APIS
-      ? examplesList.apis
-      : examplesList.bookmarks;
+    screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
@@ -172,13 +198,9 @@ const RNTesterApp = (): React.Node => {
             example={activeModuleExample}
             onExampleCardPress={handleModuleExampleCardPress}
           />
-        ) : screen === Screens.BOOKMARKS &&
-          examplesList.bookmarks.length === 0 ? (
-          <RNTesterEmptyBookmarksState />
         ) : (
           <RNTesterModuleList
             sections={activeExampleList}
-            toggleBookmark={toggleBookmark}
             handleModuleCardPress={handleModuleCardPress}
           />
         )}

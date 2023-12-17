@@ -25,7 +25,7 @@ Size AndroidSwitchMeasurementsManager::measure(
     }
   }
 
-  const jni::global_ref<jobject> &fabricUIManager =
+  const jni::global_ref<jobject>& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =

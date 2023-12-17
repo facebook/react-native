@@ -22,15 +22,15 @@ class BaseTextProps {
  public:
   BaseTextProps() = default;
   BaseTextProps(
-      const PropsParserContext &context,
-      const BaseTextProps &sourceProps,
-      const RawProps &rawProps);
+      const PropsParserContext& context,
+      const BaseTextProps& sourceProps,
+      const RawProps& rawProps);
 
   void setProp(
-      const PropsParserContext &context,
+      const PropsParserContext& context,
       RawPropsPropNameHash hash,
-      const char *propName,
-      RawValue const &value);
+      const char* propName,
+      const RawValue& value);
 
 #pragma mark - Props
 

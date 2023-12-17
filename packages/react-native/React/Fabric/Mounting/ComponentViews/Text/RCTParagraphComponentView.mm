@@ -24,6 +24,12 @@
 
 using namespace facebook::react;
 
+@interface RCTParagraphComponentView () <UIEditMenuInteractionDelegate>
+
+@property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+
+@end
+
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
@@ -34,8 +40,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ParagraphProps>();
-    _props = defaultProps;
+    _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
@@ -79,10 +84,10 @@ using namespace facebook::react;
       concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  const auto &oldParagraphProps = static_cast<ParagraphProps const &>(*_props);
-  const auto &newParagraphProps = static_cast<ParagraphProps const &>(*props);
+  const auto &oldParagraphProps = static_cast<const ParagraphProps &>(*_props);
+  const auto &newParagraphProps = static_cast<const ParagraphProps &>(*props);
 
   _paragraphAttributes = newParagraphProps.paragraphAttributes;
 
@@ -97,7 +102,7 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   [self setNeedsDisplay];
@@ -147,7 +152,7 @@ using namespace facebook::react;
 
 - (NSArray *)accessibilityElements
 {
-  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
 
   // If the component is not `accessible`, we return an empty array.
   // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
@@ -211,19 +216,36 @@ using namespace facebook::react;
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(handleLongPress:)];
+
+  if (@available(iOS 16.0, *)) {
+    _editMenuInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_editMenuInteraction];
+  }
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
 - (void)disableContextMenu
 {
   [self removeGestureRecognizer:_longPressGestureRecognizer];
+  if (@available(iOS 16.0, *)) {
+    [self removeInteraction:_editMenuInteraction];
+    _editMenuInteraction = nil;
+  }
   _longPressGestureRecognizer = nil;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
 #if !TARGET_OS_UIKITFORMAC
+  if (@available(iOS 16.0, *)) {
+    CGPoint location = [gesture locationInView:self];
+    UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
+    if (_editMenuInteraction) {
+      [_editMenuInteraction presentEditMenuWithConfiguration:config];
+    }
+    return;
+  }
+  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {
@@ -241,13 +263,13 @@ using namespace facebook::react;
 
 - (BOOL)canBecomeFirstResponder
 {
-  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
   return paragraphProps.isSelectable;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
+  const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
 
   if (paragraphProps.isSelectable && action == @selector(copy:)) {
     return YES;

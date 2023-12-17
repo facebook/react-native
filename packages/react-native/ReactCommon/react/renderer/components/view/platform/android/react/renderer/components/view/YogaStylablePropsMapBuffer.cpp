@@ -13,29 +13,43 @@
 
 namespace facebook::react {
 
-MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
+MapBuffer convertBorderWidths(const yoga::Style& style) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
-      builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));
+      builder,
+      EDGE_TOP,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::Top)));
   putOptionalFloat(
-      builder, EDGE_RIGHT, optionalFloatFromYogaValue(border[YGEdgeRight]));
+      builder,
+      EDGE_RIGHT,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::Right)));
   putOptionalFloat(
-      builder, EDGE_BOTTOM, optionalFloatFromYogaValue(border[YGEdgeBottom]));
+      builder,
+      EDGE_BOTTOM,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::Bottom)));
   putOptionalFloat(
-      builder, EDGE_LEFT, optionalFloatFromYogaValue(border[YGEdgeLeft]));
+      builder,
+      EDGE_LEFT,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::Left)));
   putOptionalFloat(
-      builder, EDGE_START, optionalFloatFromYogaValue(border[YGEdgeStart]));
+      builder,
+      EDGE_START,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::Start)));
   putOptionalFloat(
-      builder, EDGE_END, optionalFloatFromYogaValue(border[YGEdgeEnd]));
+      builder,
+      EDGE_END,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::End)));
   putOptionalFloat(
-      builder, EDGE_ALL, optionalFloatFromYogaValue(border[YGEdgeAll]));
+      builder,
+      EDGE_ALL,
+      optionalFloatFromYogaValue(style.border(yoga::Edge::All)));
   return builder.build();
 }
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void YogaStylableProps::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
-    MapBufferBuilder &builder) const {
+    const Props* oldPropsPtr,
+    MapBufferBuilder& builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
     YogaStylableProps defaultProps{};
@@ -46,29 +60,36 @@ void YogaStylableProps::propsDiffMapBuffer(
   // Delegate to base classes
   Props::propsDiffMapBuffer(oldPropsPtr, builder);
 
-  YogaStylableProps const &oldProps =
-      *(static_cast<const YogaStylableProps *>(oldPropsPtr));
-  YogaStylableProps const &newProps = *this;
+  const YogaStylableProps& oldProps =
+      *(static_cast<const YogaStylableProps*>(oldPropsPtr));
+  const YogaStylableProps& newProps = *this;
 
   if (oldProps.yogaStyle != newProps.yogaStyle) {
-    auto const &oldStyle = oldProps.yogaStyle;
-    auto const &newStyle = newProps.yogaStyle;
+    const auto& oldStyle = oldProps.yogaStyle;
+    const auto& newStyle = newProps.yogaStyle;
 
-    if (!(oldStyle.border() == newStyle.border())) {
-      builder.putMapBuffer(
-          YG_BORDER_WIDTH, convertBorderWidths(newStyle.border()));
+    bool areBordersEqual = true;
+    for (auto edge : yoga::ordinals<yoga::Edge>()) {
+      if (oldStyle.border(edge) != newStyle.border(edge)) {
+        areBordersEqual = false;
+        break;
+      }
+    }
+
+    if (!areBordersEqual) {
+      builder.putMapBuffer(YG_BORDER_WIDTH, convertBorderWidths(newStyle));
     }
 
     if (oldStyle.overflow() != newStyle.overflow()) {
       int value;
       switch (newStyle.overflow()) {
-        case YGOverflowVisible:
+        case yoga::Overflow::Visible:
           value = 0;
           break;
-        case YGOverflowHidden:
+        case yoga::Overflow::Hidden:
           value = 1;
           break;
-        case YGOverflowScroll:
+        case yoga::Overflow::Scroll:
           value = 2;
           break;
       }

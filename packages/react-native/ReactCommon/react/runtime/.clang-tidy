@@ -1,0 +1,17 @@
+---
+InheritParentConfig: true
+Checks: '
+-cert-err60-cpp,
+-cppcoreguidelines-pro-bounds-pointer-arithmetic,
+-cppcoreguidelines-special-member-functions,
+-fuchsia-default-arguments-calls,
+-google-readability-casting,
+-google-runtime-references,
+-hicpp-special-member-functions,
+-llvm-header-guard,
+-misc-non-private-member-variables-in-classes,
+-misc-unused-parameters,
+-modernize-use-trailing-return-type,
+-performance-unnecessary-value-param,
+'
+...

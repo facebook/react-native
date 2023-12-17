@@ -301,7 +301,7 @@
                 localLayoutContext.absolutePosition.x += frame.origin.x;
                 localLayoutContext.absolutePosition.y += frame.origin.y;
 
-                [shadowView layoutWithMinimumSize:frame.size
+                [shadowView layoutWithMinimumSize:{shadowView.minWidth.value, shadowView.minHeight.value}
                                       maximumSize:frame.size
                                   layoutDirection:self.layoutMetrics.layoutDirection
                                     layoutContext:localLayoutContext];
@@ -368,8 +368,12 @@
   return size.height + maximumDescender;
 }
 
-static YGSize
-RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+static YGSize RCTTextShadowViewMeasure(
+    YGNodeConstRef node,
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode)
 {
   CGSize maximumSize = (CGSize){
       widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(width),
@@ -402,7 +406,7 @@ RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)};
 }
 
-static float RCTTextShadowViewBaseline(YGNodeRef node, const float width, const float height)
+static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, const float height)
 {
   RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
 

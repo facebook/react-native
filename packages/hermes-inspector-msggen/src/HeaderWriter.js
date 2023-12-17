@@ -8,14 +8,13 @@
  * @format
  */
 
-import {Writable} from 'stream';
-
+import {Command} from './Command';
+import {toCppNamespace} from './Converters';
+import {Event} from './Event';
 import {GeneratedHeader} from './GeneratedHeader';
 import {Property} from './Property';
 import {PropsType, Type} from './Type';
-import {Command} from './Command';
-import {Event} from './Event';
-import {toCppNamespace} from './Converters';
+import {Writable} from 'stream';
 
 export class HeaderWriter {
   stream: Writable;
@@ -51,14 +50,14 @@ export class HeaderWriter {
 
       #pragma once
 
-      #include <hermes/inspector/chrome/MessageInterfaces.h>
+      #include <hermes/inspector-modern/chrome/MessageInterfaces.h>
 
       #include <optional>
       #include <vector>
 
       namespace facebook {
       namespace hermes {
-      namespace inspector {
+      namespace inspector_modern {
       namespace chrome {
       namespace message {
 
@@ -160,7 +159,7 @@ void deleter(T* p);
     this.stream.write(`
         } // namespace message
         } // namespace chrome
-        } // namespace inspector
+        } // namespace inspector_modern
         } // namespace hermes
         } // namespace facebook
     `);

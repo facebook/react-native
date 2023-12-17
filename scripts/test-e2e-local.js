@@ -16,19 +16,17 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, pushd, popd, pwd, cd} = require('shelljs');
-const updateTemplatePackage = require('./update-template-package');
-const yargs = require('yargs');
-const path = require('path');
-const fs = require('fs');
-
 const {
   checkPackagerRunning,
-  maybeLaunchAndroidEmulator,
   launchPackagerInSeparateWindow,
-  setupCircleCIArtifacts,
+  maybeLaunchAndroidEmulator,
   prepareArtifacts,
+  setupCircleCIArtifacts,
 } = require('./testing-utils');
+const updateTemplatePackage = require('./update-template-package');
+const path = require('path');
+const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
+const yargs = require('yargs');
 
 const argv = yargs
   .option('t', {
@@ -38,8 +36,9 @@ const argv = yargs
   })
   .option('p', {
     alias: 'platform',
-    default: 'iOS',
-    choices: ['iOS', 'Android'],
+    default: 'ios',
+    coerce: platform => platform.toLowerCase(),
+    choices: ['ios', 'android'],
   })
   .option('h', {
     alias: 'hermes',
@@ -168,7 +167,7 @@ async function testRNTester(circleCIArtifacts, onReleaseBranch) {
   // see also https://github.com/shelljs/shelljs/issues/86
   pushd('packages/rn-tester');
 
-  if (argv.platform === 'iOS') {
+  if (argv.platform === 'ios') {
     await testRNTesterIOS(circleCIArtifacts, onReleaseBranch);
   } else {
     await testRNTesterAndroid(circleCIArtifacts);
@@ -184,20 +183,16 @@ async function testRNTestProject(circleCIArtifacts) {
   // create the local npm package to feed the CLI
 
   // base setup required (specular to publish-npm.js)
-  const baseVersion = require('../packages/react-native/package.json').version;
 
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
-  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
+  const shortCommit = exec('git rev-parse HEAD', {silent: true})
+    .toString()
+    .trim()
+    .slice(0, 9);
 
-  // we need to add the unique timestamp to avoid npm/yarn to use some local caches
-  const dateIdentifier = new Date()
-    .toISOString()
-    .slice(0, -8)
-    .replace(/[-:]/g, '')
-    .replace(/[T]/g, '-');
-
-  const releaseVersion = `${baseVersion}-${dateIdentifier}`;
+  const releaseVersion = `1000.0.0-${shortCommit}`;
+  const buildType = 'dry-run';
 
   // Prepare some variables for later use
   const repoRoot = pwd();
@@ -206,8 +201,9 @@ async function testRNTestProject(circleCIArtifacts) {
 
   const mavenLocalPath =
     circleCIArtifacts != null
-      ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local.zip')
+      ? path.join(circleCIArtifacts.baseTmpPath(), 'maven-local')
       : '/private/tmp/maven-local';
+
   const hermesPath = await prepareArtifacts(
     circleCIArtifacts,
     mavenLocalPath,
@@ -218,52 +214,51 @@ async function testRNTestProject(circleCIArtifacts) {
   );
 
   updateTemplatePackage({
-    'react-native': `file:${localNodeTGZPath}`,
+    'react-native': `file://${localNodeTGZPath}`,
   });
-
-  // create locally the node module
-  exec('npm pack --pack-destination ', {cwd: reactNativePackagePath});
-
-  // node pack does not creates a version of React Native with the right name on main.
-  // Let's add some defensive programming checks:
-  if (!fs.existsSync(localNodeTGZPath)) {
-    const tarfile = fs
-      .readdirSync(reactNativePackagePath)
-      .find(name => name.startsWith('react-native-') && name.endsWith('.tgz'));
-    if (!tarfile) {
-      throw new Error("Couldn't find a zipped version of react-native");
-    }
-    exec(
-      `cp ${path.join(reactNativePackagePath, tarfile)} ${localNodeTGZPath}`,
-    );
-  }
 
   pushd('/tmp/');
   // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${localNodeTGZPath} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${reactNativePackagePath} --skip-install`,
   );
 
   cd('RNTestProject');
   exec('yarn install');
 
+  // When using CircleCI artifacts, the CI will zip maven local into a
+  // /tmp/maven-local subfolder struct.
+  // When we generate the project manually, there is no such structure.
+  const expandedMavenLocal =
+    circleCIArtifacts == null
+      ? mavenLocalPath
+      : `${mavenLocalPath}/tmp/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
   );
 
-  // doing the pod install here so that it's easier to play around RNTestProject
-  cd('ios');
-  exec('bundle install');
-  exec(
-    `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-      argv.hermes ? 1 : 0
-    } bundle exec pod install --ansi`,
-  );
+  // Update gradle properties to set Hermes as false
+  if (!argv.hermes) {
+    sed(
+      '-i',
+      'hermesEnabled=true',
+      'hermesEnabled=false',
+      'android/gradle.properties',
+    );
+  }
 
-  cd('..');
+  if (argv.platform === 'ios') {
+    // doing the pod install here so that it's easier to play around RNTestProject
+    cd('ios');
+    exec('bundle install');
+    exec(
+      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
+        argv.hermes ? 1 : 0
+      } bundle exec pod install --ansi`,
+    );
 
-  if (argv.platform === 'iOS') {
+    cd('..');
     exec('yarn ios');
   } else {
     // android

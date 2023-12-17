@@ -199,7 +199,7 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV_MENU
     devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
-          [self.bridge.devMenu show];
+          [[self.moduleRegistry moduleForName:"DevMenu"] show];
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"devMenu"];
@@ -479,9 +479,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSNumber *const port = urlComponents.port;
     NSString *const scheme = urlComponents.scheme;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
-    [self.callableJSModules invokeModule:@"HMRClient"
-                                  method:@"setup"
-                                withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
+    [self.callableJSModules
+        invokeModule:@"HMRClient"
+              method:@"setup"
+            withArgs:@[ RCTPlatformName, path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
   }
 }
 

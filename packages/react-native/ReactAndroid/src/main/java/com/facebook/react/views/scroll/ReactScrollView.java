@@ -1188,7 +1188,8 @@ public class ReactScrollView extends ScrollView
     int count = getChildCount();
 
     Assertions.assertCondition(
-        count == 1, "React Native ScrollView always has exactly 1 child; a content View");
+        count <= 1,
+        "React Native ScrollView should not have more than one child, it should have exactly 1 child; a content View");
 
     if (count > 0) {
       for (int i = 0; i < count; i++) {

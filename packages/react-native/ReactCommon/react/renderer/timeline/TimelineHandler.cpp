@@ -13,10 +13,10 @@
 
 namespace facebook::react {
 
-TimelineHandler::TimelineHandler(Timeline const &timeline) noexcept
+TimelineHandler::TimelineHandler(const Timeline& timeline) noexcept
     : timeline_(&timeline) {}
 
-TimelineHandler::TimelineHandler(TimelineHandler &&other) noexcept {
+TimelineHandler::TimelineHandler(TimelineHandler&& other) noexcept {
   this->operator=(std::move(other));
 }
 
@@ -27,7 +27,7 @@ TimelineHandler::~TimelineHandler() noexcept {
   }
 }
 
-TimelineHandler &TimelineHandler::operator=(TimelineHandler &&other) noexcept {
+TimelineHandler& TimelineHandler::operator=(TimelineHandler&& other) noexcept {
   assert(other.timeline_ && "Moving from an empty `TimelineHandler`.");
   timeline_ = other.timeline_;
   other.timeline_ = nullptr;
@@ -61,7 +61,7 @@ TimelineFrame::List TimelineHandler::getFrames() const noexcept {
   return timeline_->getFrames();
 }
 
-void TimelineHandler::rewind(TimelineFrame const &frame) const noexcept {
+void TimelineHandler::rewind(const TimelineFrame& frame) const noexcept {
   ensureNotEmpty();
   return timeline_->rewind(frame);
 }

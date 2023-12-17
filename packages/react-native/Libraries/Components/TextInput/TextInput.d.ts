@@ -84,6 +84,9 @@ type DataDetectorTypes =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -332,6 +335,14 @@ export interface TextInputAndroidProps {
    * @platform android
    */
   cursorColor?: ColorValue | null | undefined;
+
+  /**
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  selectionHandleColor?: ColorValue | null | undefined;
 
   /**
    * Determines whether the individual fields in your app should be included in a
@@ -739,6 +750,11 @@ export interface TextInputProps
     | undefined;
 
   /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;
+
+  /**
    * Callback that is called when a touch is engaged.
    */
   onPressIn?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;
@@ -813,6 +829,11 @@ export interface TextInputProps
    * The text color of the placeholder string
    */
   placeholderTextColor?: ColorValue | undefined;
+
+  /**
+   * If `true`, text is not editable. The default value is `false`.
+   */
+  readOnly?: boolean | undefined;
 
   /**
    * enum('default', 'go', 'google', 'join', 'next', 'route', 'search', 'send', 'yahoo', 'done', 'emergency-call')
@@ -944,4 +965,9 @@ export class TextInput extends TextInputBase {
    * Removes all text from the input.
    */
   clear: () => void;
+
+  /**
+   * Sets the start and end positions of text selection.
+   */
+  setSelection: (start: number, end: number) => void;
 }

@@ -60,7 +60,7 @@ class ShadowNodeTraits {
     // Any Yoga node (not only Leaf ones) can have this trait.
     DirtyYogaNode = 1 << 7,
 
-    // Inherits `YogaLayoutableShadowNode` and enforces that the `YGNode` is a
+    // Inherits `YogaLayoutableShadowNode` and enforces that the yoga node is a
     // leaf.
     LeafYogaNode = 1 << 8,
 

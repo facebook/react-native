@@ -173,7 +173,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
   }
 
   @Override
-  public void onMessage(WebSocket webSocket, String text) {
+  public void onMessage(@Nullable WebSocket webSocket, String text) {
     Integer replyID = null;
 
     try {

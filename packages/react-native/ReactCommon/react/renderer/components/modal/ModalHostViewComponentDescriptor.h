@@ -22,12 +22,12 @@ class ModalHostViewComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    auto &layoutableShadowNode =
-        static_cast<YogaLayoutableShadowNode &>(*shadowNode);
-    auto &stateData =
-        static_cast<const ModalHostViewShadowNode::ConcreteState &>(
-            *shadowNode->getState())
+  void adopt(ShadowNode& shadowNode) const override {
+    auto& layoutableShadowNode =
+        static_cast<YogaLayoutableShadowNode&>(shadowNode);
+    auto& stateData =
+        static_cast<const ModalHostViewShadowNode::ConcreteState&>(
+            *shadowNode.getState())
             .getData();
 
     layoutableShadowNode.setSize(

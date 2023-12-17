@@ -39,13 +39,11 @@ const FileTemplate = ({
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${stateClasses}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `.trim();
 
 const StateTemplate = ({stateName}: {stateName: string}) =>

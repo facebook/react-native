@@ -26,7 +26,7 @@ import java.io.OutputStream;
  * @author Chris Nokleberg
  * @since 1.0
  */
-public class CountingOutputStream extends FilterOutputStream {
+class CountingOutputStream extends FilterOutputStream {
 
   private long mCount;
 

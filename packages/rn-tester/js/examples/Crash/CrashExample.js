@@ -9,8 +9,9 @@
  */
 
 import type {Node} from 'react';
-import {Button} from 'react-native';
+
 import React from 'react';
+import {Button} from 'react-native';
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';

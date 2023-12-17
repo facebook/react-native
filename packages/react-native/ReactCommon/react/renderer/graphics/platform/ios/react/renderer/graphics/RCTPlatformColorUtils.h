@@ -9,4 +9,4 @@
 #include <vector>
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(
-    std::vector<std::string> &semanticItems);
+    std::vector<std::string>& semanticItems);

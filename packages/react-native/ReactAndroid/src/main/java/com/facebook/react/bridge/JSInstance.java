@@ -11,7 +11,7 @@ package com.facebook.react.bridge;
  * This interface includes the methods needed to use a running JS instance, without specifying any
  * of the bridge-specific initialization or lifecycle management.
  */
-public interface JSInstance {
+interface JSInstance {
   void invokeCallback(int callbackID, NativeArrayInterface arguments);
   // TODO if this interface survives refactoring, think about adding
   // callFunction.

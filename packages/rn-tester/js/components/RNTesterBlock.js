@@ -8,8 +8,8 @@
  * @flow
  */
 
-import * as React from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
+import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{|

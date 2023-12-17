@@ -20,8 +20,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ArrayPropsNativeComponentComponentName[];
 
@@ -34,8 +33,7 @@ using ArrayPropsNativeComponentShadowNode = ConcreteViewShadowNode<
     ArrayPropsNativeComponentEventEmitter,
     ArrayPropsNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -60,8 +58,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ArrayPropsNativeComponentComponentName[];
 
@@ -74,8 +71,7 @@ using ArrayPropsNativeComponentShadowNode = ConcreteViewShadowNode<
     ArrayPropsNativeComponentEventEmitter,
     ArrayPropsNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -100,8 +96,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char BooleanPropNativeComponentComponentName[];
 
@@ -114,8 +109,7 @@ using BooleanPropNativeComponentShadowNode = ConcreteViewShadowNode<
     BooleanPropNativeComponentEventEmitter,
     BooleanPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -140,8 +134,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ColorPropNativeComponentComponentName[];
 
@@ -154,8 +147,7 @@ using ColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
     ColorPropNativeComponentEventEmitter,
     ColorPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -180,8 +172,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char CommandNativeComponentComponentName[];
 
@@ -194,8 +185,7 @@ using CommandNativeComponentShadowNode = ConcreteViewShadowNode<
     CommandNativeComponentEventEmitter,
     CommandNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -220,8 +210,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char CommandNativeComponentComponentName[];
 
@@ -234,8 +223,7 @@ using CommandNativeComponentShadowNode = ConcreteViewShadowNode<
     CommandNativeComponentEventEmitter,
     CommandNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -260,8 +248,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char DimensionPropNativeComponentComponentName[];
 
@@ -274,8 +261,7 @@ using DimensionPropNativeComponentShadowNode = ConcreteViewShadowNode<
     DimensionPropNativeComponentEventEmitter,
     DimensionPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -300,8 +286,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char DoublePropNativeComponentComponentName[];
 
@@ -314,8 +299,7 @@ using DoublePropNativeComponentShadowNode = ConcreteViewShadowNode<
     DoublePropNativeComponentEventEmitter,
     DoublePropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -340,8 +324,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char EventsNestedObjectNativeComponentComponentName[];
 
@@ -354,8 +337,7 @@ using EventsNestedObjectNativeComponentShadowNode = ConcreteViewShadowNode<
     EventsNestedObjectNativeComponentEventEmitter,
     EventsNestedObjectNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -380,8 +362,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char EventsNativeComponentComponentName[];
 
@@ -394,8 +375,7 @@ using EventsNativeComponentShadowNode = ConcreteViewShadowNode<
     EventsNativeComponentEventEmitter,
     EventsNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -420,13 +400,11 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -451,8 +429,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ExcludedAndroidComponentComponentName[];
 
@@ -465,8 +442,7 @@ using ExcludedAndroidComponentShadowNode = ConcreteViewShadowNode<
     ExcludedAndroidComponentEventEmitter,
     ExcludedAndroidComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -491,8 +467,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ExcludedAndroidIosComponentComponentName[];
 
@@ -505,8 +480,7 @@ using ExcludedAndroidIosComponentShadowNode = ConcreteViewShadowNode<
     ExcludedAndroidIosComponentEventEmitter,
     ExcludedAndroidIosComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -531,8 +505,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ExcludedIosComponentComponentName[];
 
@@ -556,8 +529,7 @@ using MultiFileIncludedNativeComponentShadowNode = ConcreteViewShadowNode<
     MultiFileIncludedNativeComponentEventEmitter,
     MultiFileIncludedNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -582,8 +554,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char FloatPropNativeComponentComponentName[];
 
@@ -596,8 +567,7 @@ using FloatPropNativeComponentShadowNode = ConcreteViewShadowNode<
     FloatPropNativeComponentEventEmitter,
     FloatPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -622,8 +592,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ImagePropNativeComponentComponentName[];
 
@@ -636,8 +605,7 @@ using ImagePropNativeComponentShadowNode = ConcreteViewShadowNode<
     ImagePropNativeComponentEventEmitter,
     ImagePropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -662,8 +630,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char InsetsPropNativeComponentComponentName[];
 
@@ -676,8 +643,7 @@ using InsetsPropNativeComponentShadowNode = ConcreteViewShadowNode<
     InsetsPropNativeComponentEventEmitter,
     InsetsPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -702,8 +668,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char Int32EnumPropsNativeComponentComponentName[];
 
@@ -716,8 +681,7 @@ using Int32EnumPropsNativeComponentShadowNode = ConcreteViewShadowNode<
     Int32EnumPropsNativeComponentEventEmitter,
     Int32EnumPropsNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -742,8 +706,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char IntegerPropNativeComponentComponentName[];
 
@@ -756,8 +719,7 @@ using IntegerPropNativeComponentShadowNode = ConcreteViewShadowNode<
     IntegerPropNativeComponentEventEmitter,
     IntegerPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -782,13 +744,11 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -813,8 +773,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char MixedPropNativeComponentComponentName[];
 
@@ -827,8 +786,7 @@ using MixedPropNativeComponentShadowNode = ConcreteViewShadowNode<
     MixedPropNativeComponentEventEmitter,
     MixedPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -853,8 +811,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ImageColorPropNativeComponentComponentName[];
 
@@ -867,8 +824,7 @@ using ImageColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
     ImageColorPropNativeComponentEventEmitter,
     ImageColorPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -893,8 +849,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char NoPropsNoEventsComponentComponentName[];
 
@@ -907,8 +862,7 @@ using NoPropsNoEventsComponentShadowNode = ConcreteViewShadowNode<
     NoPropsNoEventsComponentEventEmitter,
     NoPropsNoEventsComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -933,8 +887,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char ObjectPropsComponentName[];
 
@@ -947,8 +900,7 @@ using ObjectPropsShadowNode = ConcreteViewShadowNode<
     ObjectPropsEventEmitter,
     ObjectPropsState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -973,8 +925,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char PointPropNativeComponentComponentName[];
 
@@ -987,8 +938,7 @@ using PointPropNativeComponentShadowNode = ConcreteViewShadowNode<
     PointPropNativeComponentEventEmitter,
     PointPropNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1013,8 +963,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char StringEnumPropsNativeComponentComponentName[];
 
@@ -1027,8 +976,7 @@ using StringEnumPropsNativeComponentShadowNode = ConcreteViewShadowNode<
     StringEnumPropsNativeComponentEventEmitter,
     StringEnumPropsNativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1053,8 +1001,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char StringPropComponentComponentName[];
 
@@ -1067,8 +1014,7 @@ using StringPropComponentShadowNode = ConcreteViewShadowNode<
     StringPropComponentEventEmitter,
     StringPropComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1093,8 +1039,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char MultiFile1NativeComponentComponentName[];
 
@@ -1118,8 +1063,7 @@ using MultiFile2NativeComponentShadowNode = ConcreteViewShadowNode<
     MultiFile2NativeComponentEventEmitter,
     MultiFile2NativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -1144,8 +1088,7 @@ Map {
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSI_EXPORT extern const char MultiComponent1NativeComponentComponentName[];
 
@@ -1169,8 +1112,7 @@ using MultiComponent2NativeComponentShadowNode = ConcreteViewShadowNode<
     MultiComponent2NativeComponentEventEmitter,
     MultiComponent2NativeComponentState>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
