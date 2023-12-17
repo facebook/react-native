@@ -215,7 +215,7 @@ class YG_EXPORT Style {
     aspectRatio_ = value;
   }
 
-  Length resolveColumnGap() const {
+  Style::Length resolveColumnGap() const {
     if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
       return gap_[yoga::to_underlying(Gutter::Column)];
     } else {
