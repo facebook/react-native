@@ -10,7 +10,10 @@
 
 /*:: import type {ConfigT} from 'metro-config'; */
 
+const fastGlob = require('fast-glob');
 const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
@@ -35,6 +38,53 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '^\\[native code\\]$',
   ].join('|'),
 );
+
+/**
+ * Resolves the root of an NPM or Yarn workspace, by traversing the file tree upwards from a `candidatePath` in the search for
+ * - a directory with a package.json
+ * - which has a `workspaces` array of strings
+ * - which (possibly via a glob) includes the project root
+ * @param {string} projectRoot Project root to find a workspace root for
+ * @param {string | undefined} candidatePath Current path to search from
+ * @returns Path of a workspace root or `undefined`
+ */
+function getWorkspaceRoot(projectRoot, candidatePath = projectRoot) {
+  const packageJsonPath = path.resolve(candidatePath, 'package.json');
+  if (fs.existsSync(packageJsonPath)) {
+    try {
+      const { workspaces } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      if (Array.isArray(workspaces)) {
+        // If one of the workspaces match the project root, this is the workspace root
+        // Note: While NPM workspaces doesn't currently support globs, Yarn does.
+        const matches = fastGlob.sync(workspaces, {
+          cwd: candidatePath,
+          onlyDirectories: true,
+          absolute: true,
+        });
+        if (matches.includes(projectRoot)) {
+          return candidatePath;
+        }
+      }
+    } catch (err) {
+      console.warn(`Failed reading or parsing ${packageJsonPath}:`, err);
+    }
+  }
+  // Try one level up
+  const parentDir = path.dirname(candidatePath);
+  if (parentDir !== candidatePath) {
+    return getWorkspaceRoot(projectRoot, parentDir);
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Determine the watch folders
+ */
+function getWatchFolders(projectRoot) {
+  const workspaceRoot = getWorkspaceRoot(projectRoot);
+  return workspaceRoot ? [workspaceRoot] : [];
+}
 
 /**
  * Get the base Metro configuration for a React Native project.
@@ -82,7 +132,7 @@ function getDefaultConfig(
         },
       }),
     },
-    watchFolders: [],
+    watchFolders: getWatchFolders(projectRoot),
   };
 
   // Set global hook so that the CLI can detect when this config has been loaded
