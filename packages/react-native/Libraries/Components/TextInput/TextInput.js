@@ -1157,9 +1157,8 @@ function InternalTextInput(props: Props): React.Node {
   // that we have in JS.
   useLayoutEffect(() => {
     const nativeUpdate: {text?: string, selection?: Selection} = {};
-    const haveValue = typeof props.value === 'string';
 
-    if (lastNativeText !== props.value && haveValue) {
+    if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
       setLastNativeText(props.value);
     }
@@ -1182,7 +1181,7 @@ function InternalTextInput(props: Props): React.Node {
       viewCommands.setTextAndSelection(
         inputRef.current,
         mostRecentEventCount,
-        haveValue ? text : null,
+        typeof props.value === 'string' ? text : null,
         selection?.start ?? -1,
         selection?.end ?? -1,
       );
