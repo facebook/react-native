@@ -10,7 +10,9 @@ package com.facebook.react.views.modal;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -95,7 +97,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   @ReactProp(name = "visible")
   public void setVisible(ReactModalHostView view, boolean visible) {
-    // iOS only
+    view.setVisible(visible);
   }
 
   @Override
@@ -109,10 +111,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   @ReactProp(name = "supportedOrientations")
   public void setSupportedOrientations(ReactModalHostView view, @Nullable ReadableArray value) {}
-
-  @Override
-  @ReactProp(name = "identifier")
-  public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
   protected void addEventEmitters(
@@ -136,6 +134,14 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
                   new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
+      view.setOnDismissListener(
+          new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+              dispatcher.dispatchEvent(
+                  new DismissEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
+            }
+          });
       view.setEventDispatcher(dispatcher);
     }
   }
@@ -150,7 +156,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
         MapBuilder.<String, Object>builder()
             .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
             .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
-            // iOS only
             .put("topDismiss", MapBuilder.of("registrationName", "onDismiss"))
             // iOS only
             .put("topOrientationChange", MapBuilder.of("registrationName", "onOrientationChange"))
@@ -161,7 +166,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   protected void onAfterUpdateTransaction(ReactModalHostView view) {
     super.onAfterUpdateTransaction(view);
-    view.showOrUpdate();
+    view.showOrDismiss();
   }
 
   @Override
