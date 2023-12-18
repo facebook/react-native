@@ -26,6 +26,25 @@ class Utils {
     await driver.$(locator).click();
   }
 
+  async setElementText(locator: string, text: string): Promise<void> {
+    await driver.$(locator).waitForDisplayed();
+    await driver.$(locator).click();
+    await driver.$(locator).setValue(text);
+  }
+
+  async doubleTapKeyboardSpacebar(locator: string): Promise<void> {
+    await driver.$(locator).waitForDisplayed();
+    const screenSize = await driver.getWindowRect();
+
+    // Calculate the coordinates of the spacebar based on percentages
+    const keyboardX = screenSize.width * 0.5; // 50% from the left edge
+    const keyboardY = screenSize.height * 0.9; // 0.85 - 0.92 works from the top edge (adjust as needed)
+
+    await driver.executeScript('mobile: doubleTap', [
+      {x: keyboardX, y: keyboardY, duration: 1.0},
+    ]);
+  }
+
   async getElementText(locator: string): Promise<string> {
     await driver.$(locator).waitForDisplayed();
     return driver.$(locator).getText();

@@ -265,6 +265,29 @@ class AutogrowingTextInputExample extends React.Component<
   }
 }
 
+class RewriteDoubleSpaceExample extends React.Component<$FlowFixMeProps, any> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render(): React.Node {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          testID="rewrite_double_space"
+          // autoCorrect={false}
+          multiline={false}
+          onChangeText={text => {
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   default: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -325,617 +348,623 @@ const styles = StyleSheet.create({
 
 const examples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
-  // {
-  //   title: 'Live Re-Write (ひ -> 日)',
-  //   render: function (): React.Node {
-  //     return <RewriteExampleKana />;
-  //   },
-  // },
-  // {
-  //   title: 'Keyboard Input Accessory View',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInputAccessoryViewChangeTextExample />
-  //         <TextInputAccessoryViewChangeKeyboardExample />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: "Default Input Accessory View with returnKeyType = 'done'",
-  //   render: function (): React.Node {
-  //     const keyboardTypesWithDoneButton = [
-  //       'number-pad',
-  //       'phone-pad',
-  //       'decimal-pad',
-  //       'ascii-capable-number-pad',
-  //     ];
-  //     const examples = keyboardTypesWithDoneButton.map(type => {
-  //       return (
-  //         <WithLabel key={'keyboardType: ' + type} label={type}>
-  //           <TextInputAccessoryViewDefaultDoneButtonExample
-  //             key={type}
-  //             keyboardType={type}
-  //           />
-  //         </WithLabel>
-  //       );
-  //     });
-  //     return <View>{examples}</View>;
-  //   },
-  // },
-  // {
-  //   title: 'Nested content and `value` property',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="singleline">
-  //           <TextInput style={styles.default} value="(value property)">
-  //             (first raw text node)
-  //             <Text style={{color: 'red'}}>(internal raw text node)</Text>
-  //             (last raw text node)
-  //           </TextInput>
-  //         </WithLabel>
-  //         <WithLabel label="multiline">
-  //           <TextInput
-  //             style={styles.default}
-  //             multiline={true}
-  //             value="(value property)">
-  //             (first raw text node)
-  //             <Text style={{color: 'red'}}>(internal raw text node)</Text>
-  //             (last raw text node)
-  //           </TextInput>
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Keyboard appearance',
-  //   render: function (): React.Node {
-  //     const keyboardAppearance = ['default', 'light', 'dark'];
-  //     const examples = keyboardAppearance.map(type => {
-  //       return (
-  //         <WithLabel key={type} label={type}>
-  //           <TextInput keyboardAppearance={type} style={styles.default} />
-  //         </WithLabel>
-  //       );
-  //     });
-  //     return <View>{examples}</View>;
-  //   },
-  // },
-  // {
-  //   title: 'Return key types',
-  //   render: function (): React.Node {
-  //     const returnKeyTypes = [
-  //       'default',
-  //       'go',
-  //       'google',
-  //       'join',
-  //       'next',
-  //       'route',
-  //       'search',
-  //       'send',
-  //       'yahoo',
-  //       'done',
-  //       'emergency-call',
-  //     ];
-  //     const examples = returnKeyTypes.map(type => {
-  //       return (
-  //         <WithLabel key={type} label={type}>
-  //           <TextInput returnKeyType={type} style={styles.default} />
-  //         </WithLabel>
-  //       );
-  //     });
-  //     return <View>{examples}</View>;
-  //   },
-  // },
-  // {
-  //   title: 'Enable return key automatically',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="true">
-  //           <TextInput
-  //             enablesReturnKeyAutomatically={true}
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Secure text entry',
-  //   render: function (): React.Node {
-  //     return <SecureEntryExample />;
-  //   },
-  // },
-  // {
-  //   title: 'Colored input text',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           style={[styles.default, {color: 'blue'}]}
-  //           defaultValue="Blue"
-  //         />
-  //         <TextInput
-  //           style={[styles.default, {color: 'green'}]}
-  //           defaultValue="Green"
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Colored highlight/cursor for text input',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           style={styles.default}
-  //           selectionColor={'green'}
-  //           defaultValue="Highlight me"
-  //         />
-  //         <TextInput
-  //           style={styles.default}
-  //           selectionColor={'rgba(86, 76, 205, 1)'}
-  //           defaultValue="Highlight me"
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Clear button mode',
-  //   render: function (): React.Node {
-  //     const clearButtonModes = [
-  //       'never',
-  //       'while-editing',
-  //       'unless-editing',
-  //       'always',
-  //     ];
-  //     const examples = clearButtonModes.map(mode => {
-  //       return (
-  //         <WithLabel key={mode} label={mode}>
-  //           <TextInput
-  //             style={styles.default}
-  //             clearButtonMode={mode}
-  //             defaultValue={mode}
-  //           />
-  //         </WithLabel>
-  //       );
-  //     });
-  //     return <View>{examples}</View>;
-  //   },
-  // },
-  // {
-  //   title: 'Clear and select',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="clearTextOnFocus">
-  //           <TextInput
-  //             placeholder="text is cleared on focus"
-  //             defaultValue="text is cleared on focus"
-  //             style={styles.default}
-  //             clearTextOnFocus={true}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="selectTextOnFocus">
-  //           <TextInput
-  //             placeholder="text is selected on focus"
-  //             defaultValue="text is selected on focus"
-  //             style={styles.default}
-  //             selectTextOnFocus={true}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="clearTextOnFocus (multiline)">
-  //           <TextInput
-  //             placeholder="text is cleared on focus"
-  //             defaultValue="text is cleared on focus"
-  //             style={styles.default}
-  //             clearTextOnFocus={true}
-  //             multiline={true}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="selectTextOnFocus (multiline)">
-  //           <TextInput
-  //             placeholder="text is selected on focus"
-  //             defaultValue="text is selected on focus"
-  //             style={styles.default}
-  //             selectTextOnFocus={true}
-  //             multiline={true}
-  //           />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Multiline blur on submit',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           style={styles.multiline}
-  //           placeholder="blurOnSubmit = true"
-  //           returnKeyType="next"
-  //           blurOnSubmit={true}
-  //           multiline={true}
-  //           onSubmitEditing={event =>
-  //             Alert.alert('Alert', event.nativeEvent.text)
-  //           }
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Multiline',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           placeholder="multiline text input"
-  //           multiline={true}
-  //           style={styles.multiline}
-  //         />
-  //         <TextInput
-  //           placeholder="multiline text input with font styles and placeholder"
-  //           multiline={true}
-  //           clearTextOnFocus={true}
-  //           autoCorrect={true}
-  //           autoCapitalize="words"
-  //           placeholderTextColor="red"
-  //           keyboardType="url"
-  //           style={[styles.multiline, styles.multilineWithFontStyles]}
-  //         />
-  //         <TextInput
-  //           placeholder="multiline text input with max length"
-  //           maxLength={5}
-  //           multiline={true}
-  //           style={styles.multiline}
-  //         />
-  //         <TextInput
-  //           placeholder="uneditable multiline text input"
-  //           editable={false}
-  //           multiline={true}
-  //           style={styles.multiline}
-  //         />
-  //         <TextInput
-  //           defaultValue="uneditable multiline text input with phone number detection: 88888888."
-  //           editable={false}
-  //           multiline={true}
-  //           style={styles.multiline}
-  //           dataDetectorTypes="phoneNumber"
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Editable and Read only',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           placeholder="editable text input using editable prop"
-  //           style={styles.default}
-  //           editable
-  //         />
-  //         <TextInput
-  //           placeholder="uneditable text input using editable prop"
-  //           style={styles.default}
-  //           editable={false}
-  //         />
-  //         <TextInput
-  //           placeholder="editable text input using readOnly prop"
-  //           style={styles.default}
-  //           readOnly={false}
-  //         />
-  //         <TextInput
-  //           placeholder="uneditable text input using readOnly prop"
-  //           style={styles.default}
-  //           readOnly
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'TextInput Intrinsic Size',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <Text>Singleline TextInput</Text>
-  //         <View style={{height: 80}}>
-  //           <TextInput
-  //             style={{
-  //               position: 'absolute',
-  //               fontSize: 16,
-  //               backgroundColor: '#eeeeee',
-  //               borderColor: '#666666',
-  //               borderWidth: 5,
-  //               borderTopWidth: 20,
-  //               borderRadius: 10,
-  //               borderBottomRightRadius: 20,
-  //               padding: 10,
-  //               paddingTop: 20,
-  //             }}
-  //             testID="singleline_textinput"
-  //             placeholder="Placeholder defines intrinsic size"
-  //           />
-  //         </View>
-  //         <Text>Multiline TextInput</Text>
-  //         <View style={{height: 130}}>
-  //           <TextInput
-  //             style={{
-  //               position: 'absolute',
-  //               fontSize: 16,
-  //               backgroundColor: '#eeeeee',
-  //               borderColor: '#666666',
-  //               borderWidth: 5,
-  //               borderTopWidth: 20,
-  //               borderRadius: 10,
-  //               borderBottomRightRadius: 20,
-  //               padding: 10,
-  //               paddingTop: 20,
-  //               maxHeight: 100,
-  //             }}
-  //             testID="multiline_textinput"
-  //             multiline={true}
-  //             placeholder="Placeholder defines intrinsic size"
-  //           />
-  //         </View>
-  //         <View>
-  //           <TextInput
-  //             style={{
-  //               fontSize: 16,
-  //               backgroundColor: '#eeeeee',
-  //               borderColor: '#666666',
-  //               borderWidth: 5,
-  //               borderTopWidth: 20,
-  //               borderRadius: 10,
-  //               borderBottomRightRadius: 20,
-  //               padding: 10,
-  //               paddingTop: 20,
-  //             }}
-  //             testID="multiline_textinput_with_flex"
-  //             multiline={true}
-  //             placeholder="Placeholder defines intrinsic size"
-  //           />
-  //         </View>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Auto-expanding',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <TextInput
-  //           placeholder="height increases with content"
-  //           defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
-  //           multiline={true}
-  //           enablesReturnKeyAutomatically={true}
-  //           returnKeyType="go"
-  //           style={[styles.multiline, styles.multilineExpandable]}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Auto-expanding',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <AutogrowingTextInputExample
-  //           enablesReturnKeyAutomatically={true}
-  //           returnKeyType="done"
-  //           multiline={true}
-  //           style={{
-  //             maxHeight: 400,
-  //             minHeight: 20,
-  //             paddingTop: 0,
-  //             backgroundColor: '#eeeeee',
-  //             color: 'blue',
-  //           }}>
-  //           <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
-  //           generic generic generic
-  //           <Text style={{fontSize: 6, color: 'red'}}>
-  //             small small small small small small
-  //           </Text>
-  //           <Text>regular regular</Text>
-  //           <Text style={{fontSize: 30, color: 'green'}}>
-  //             huge huge huge huge huge
-  //           </Text>
-  //           generic generic generic
-  //         </AutogrowingTextInputExample>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'TextInput maxLength',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="maxLength: 5">
-  //           <TextInput maxLength={5} style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="maxLength: 5 with placeholder">
-  //           <TextInput
-  //             maxLength={5}
-  //             placeholder="ZIP code entry"
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="maxLength: 5 with default value already set">
-  //           <TextInput
-  //             maxLength={5}
-  //             defaultValue="94025"
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="maxLength: 5 with very long default value already set">
-  //           <TextInput
-  //             maxLength={5}
-  //             defaultValue="9402512345"
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Text Auto Complete',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="country">
-  //           <TextInput autoComplete="country" style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="one-time-code">
-  //           <TextInput autoComplete="one-time-code" style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="birthdate-full">
-  //           <TextInput autoComplete="birthdate-full" style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="cc-name">
-  //           <TextInput autoComplete="cc-name" style={styles.default} />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Text Content Type',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="emailAddress">
-  //           <TextInput textContentType="emailAddress" style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="name">
-  //           <TextInput textContentType="name" style={styles.default} />
-  //         </WithLabel>
-  //         <WithLabel label="postalCode, when autoComplete set">
-  //           <TextInput
-  //             textContentType="postalCode"
-  //             autoComplete="email"
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="creditCardExpiration">
-  //           <TextInput
-  //             textContentType="creditCardExpiration"
-  //             style={styles.default}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="birthdate">
-  //           <TextInput textContentType="birthdate" style={styles.default} />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'TextInput Placeholder Styles',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
-  //           <TextInput
-  //             placeholder="multiline text input"
-  //             multiline={true}
-  //             style={[styles.multiline, styles.multilinePlaceholderStyles]}
-  //           />
-  //         </WithLabel>
-  //         <WithLabel label="letterSpacing: 10 textAlign: 'center'">
-  //           <TextInput
-  //             placeholder="singleline"
-  //             style={[styles.default, styles.singlelinePlaceholderStyles]}
-  //           />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'showSoftInputOnFocus',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="showSoftInputOnFocus: false">
-  //           <TextInput showSoftInputOnFocus={false} style={[styles.default]} />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Line Break Strategy',
-  //   render: function (): React.Node {
-  //     const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
-  //     const textByCode = {
-  //       en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
-  //       ko: '한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행',
-  //       ja: 'かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう',
-  //       cn: '改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行',
-  //     };
-  //     return (
-  //       <View>
-  //         {lineBreakStrategy.map(strategy => {
-  //           return (
-  //             <View key={strategy} style={{marginBottom: 12}}>
-  //               <Text
-  //                 style={{
-  //                   backgroundColor: 'lightgrey',
-  //                 }}>{`Strategy: ${strategy}`}</Text>
-  //               {Object.keys(textByCode).map(code => {
-  //                 return (
-  //                   <View key={code}>
-  //                     <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-  //                     <TextInput
-  //                       multiline
-  //                       lineBreakStrategyIOS={strategy}
-  //                       style={styles.default}
-  //                       defaultValue={textByCode[code]}
-  //                     />
-  //                   </View>
-  //                 );
-  //               })}
-  //             </View>
-  //           );
-  //         })}
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'iOS autoformatting behaviors',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <WithLabel label="smartInsertDelete: true | undefined">
-  //           <TextInput style={styles.default} defaultValue="CopyAndPaste" />
-  //         </WithLabel>
-  //         <WithLabel label="smartInsertDelete: false">
-  //           <TextInput
-  //             smartInsertDelete={false}
-  //             style={styles.default}
-  //             defaultValue="CopyAndPaste"
-  //           />
-  //         </WithLabel>
-  //       </View>
-  //     );
-  //   },
-  // },
+  {
+    title: 'Live Re-Write (double space to period)',
+    render: function (): React.Node {
+      return <RewriteDoubleSpaceExample />;
+    },
+  },
+  {
+    title: 'Live Re-Write (ひ -> 日)',
+    render: function (): React.Node {
+      return <RewriteExampleKana />;
+    },
+  },
+  {
+    title: 'Keyboard Input Accessory View',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInputAccessoryViewChangeTextExample />
+          <TextInputAccessoryViewChangeKeyboardExample />
+        </View>
+      );
+    },
+  },
+  {
+    title: "Default Input Accessory View with returnKeyType = 'done'",
+    render: function (): React.Node {
+      const keyboardTypesWithDoneButton = [
+        'number-pad',
+        'phone-pad',
+        'decimal-pad',
+        'ascii-capable-number-pad',
+      ];
+      const examples = keyboardTypesWithDoneButton.map(type => {
+        return (
+          <WithLabel key={'keyboardType: ' + type} label={type}>
+            <TextInputAccessoryViewDefaultDoneButtonExample
+              key={type}
+              keyboardType={type}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
+    title: 'Nested content and `value` property',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="singleline">
+            <TextInput style={styles.default} value="(value property)">
+              (first raw text node)
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
+              (last raw text node)
+            </TextInput>
+          </WithLabel>
+          <WithLabel label="multiline">
+            <TextInput
+              style={styles.default}
+              multiline={true}
+              value="(value property)">
+              (first raw text node)
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
+              (last raw text node)
+            </TextInput>
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Keyboard appearance',
+    render: function (): React.Node {
+      const keyboardAppearance = ['default', 'light', 'dark'];
+      const examples = keyboardAppearance.map(type => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput keyboardAppearance={type} style={styles.default} />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
+    title: 'Return key types',
+    render: function (): React.Node {
+      const returnKeyTypes = [
+        'default',
+        'go',
+        'google',
+        'join',
+        'next',
+        'route',
+        'search',
+        'send',
+        'yahoo',
+        'done',
+        'emergency-call',
+      ];
+      const examples = returnKeyTypes.map(type => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput returnKeyType={type} style={styles.default} />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
+    title: 'Enable return key automatically',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="true">
+            <TextInput
+              enablesReturnKeyAutomatically={true}
+              style={styles.default}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Secure text entry',
+    render: function (): React.Node {
+      return <SecureEntryExample />;
+    },
+  },
+  {
+    title: 'Colored input text',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            style={[styles.default, {color: 'blue'}]}
+            defaultValue="Blue"
+          />
+          <TextInput
+            style={[styles.default, {color: 'green'}]}
+            defaultValue="Green"
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Colored highlight/cursor for text input',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={'green'}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            selectionColor={'rgba(86, 76, 205, 1)'}
+            defaultValue="Highlight me"
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Clear button mode',
+    render: function (): React.Node {
+      const clearButtonModes = [
+        'never',
+        'while-editing',
+        'unless-editing',
+        'always',
+      ];
+      const examples = clearButtonModes.map(mode => {
+        return (
+          <WithLabel key={mode} label={mode}>
+            <TextInput
+              style={styles.default}
+              clearButtonMode={mode}
+              defaultValue={mode}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    },
+  },
+  {
+    title: 'Clear and select',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="clearTextOnFocus">
+            <TextInput
+              placeholder="text is cleared on focus"
+              defaultValue="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus">
+            <TextInput
+              placeholder="text is selected on focus"
+              defaultValue="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+            />
+          </WithLabel>
+          <WithLabel label="clearTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is cleared on focus"
+              defaultValue="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is selected on focus"
+              defaultValue="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Multiline blur on submit',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            style={styles.multiline}
+            placeholder="blurOnSubmit = true"
+            returnKeyType="next"
+            blurOnSubmit={true}
+            multiline={true}
+            onSubmitEditing={event =>
+              Alert.alert('Alert', event.nativeEvent.text)
+            }
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Multiline',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="multiline text input"
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="multiline text input with font styles and placeholder"
+            multiline={true}
+            clearTextOnFocus={true}
+            autoCorrect={true}
+            autoCapitalize="words"
+            placeholderTextColor="red"
+            keyboardType="url"
+            style={[styles.multiline, styles.multilineWithFontStyles]}
+          />
+          <TextInput
+            placeholder="multiline text input with max length"
+            maxLength={5}
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="uneditable multiline text input"
+            editable={false}
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            defaultValue="uneditable multiline text input with phone number detection: 88888888."
+            editable={false}
+            multiline={true}
+            style={styles.multiline}
+            dataDetectorTypes="phoneNumber"
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Editable and Read only',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="editable text input using editable prop"
+            style={styles.default}
+            editable
+          />
+          <TextInput
+            placeholder="uneditable text input using editable prop"
+            style={styles.default}
+            editable={false}
+          />
+          <TextInput
+            placeholder="editable text input using readOnly prop"
+            style={styles.default}
+            readOnly={false}
+          />
+          <TextInput
+            placeholder="uneditable text input using readOnly prop"
+            style={styles.default}
+            readOnly
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'TextInput Intrinsic Size',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text>Singleline TextInput</Text>
+          <View style={{height: 80}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="singleline_textinput"
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <Text>Multiline TextInput</Text>
+          <View style={{height: 130}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+                maxHeight: 100,
+              }}
+              testID="multiline_textinput"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <View>
+            <TextInput
+              style={{
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="multiline_textinput_with_flex"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Auto-expanding',
+    render: function (): React.Node {
+      return (
+        <View>
+          <TextInput
+            placeholder="height increases with content"
+            defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="go"
+            style={[styles.multiline, styles.multilineExpandable]}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Auto-expanding',
+    render: function (): React.Node {
+      return (
+        <View>
+          <AutogrowingTextInputExample
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+            multiline={true}
+            style={{
+              maxHeight: 400,
+              minHeight: 20,
+              paddingTop: 0,
+              backgroundColor: '#eeeeee',
+              color: 'blue',
+            }}>
+            <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'TextInput maxLength',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="maxLength: 5">
+            <TextInput maxLength={5} style={styles.default} />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with placeholder">
+            <TextInput
+              maxLength={5}
+              placeholder="ZIP code entry"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="94025"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="maxLength: 5 with very long default value already set">
+            <TextInput
+              maxLength={5}
+              defaultValue="9402512345"
+              style={styles.default}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text Auto Complete',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="country">
+            <TextInput autoComplete="country" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="one-time-code">
+            <TextInput autoComplete="one-time-code" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="birthdate-full">
+            <TextInput autoComplete="birthdate-full" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="cc-name">
+            <TextInput autoComplete="cc-name" style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text Content Type',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="emailAddress">
+            <TextInput textContentType="emailAddress" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="name">
+            <TextInput textContentType="name" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="postalCode, when autoComplete set">
+            <TextInput
+              textContentType="postalCode"
+              autoComplete="email"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="creditCardExpiration">
+            <TextInput
+              textContentType="creditCardExpiration"
+              style={styles.default}
+            />
+          </WithLabel>
+          <WithLabel label="birthdate">
+            <TextInput textContentType="birthdate" style={styles.default} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'TextInput Placeholder Styles',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
+            <TextInput
+              placeholder="multiline text input"
+              multiline={true}
+              style={[styles.multiline, styles.multilinePlaceholderStyles]}
+            />
+          </WithLabel>
+          <WithLabel label="letterSpacing: 10 textAlign: 'center'">
+            <TextInput
+              placeholder="singleline"
+              style={[styles.default, styles.singlelinePlaceholderStyles]}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'showSoftInputOnFocus',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="showSoftInputOnFocus: false">
+            <TextInput showSoftInputOnFocus={false} style={[styles.default]} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Line Break Strategy',
+    render: function (): React.Node {
+      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const textByCode = {
+        en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
+        ko: '한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행',
+        ja: 'かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう かいぎょう',
+        cn: '改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行 改行',
+      };
+      return (
+        <View>
+          {lineBreakStrategy.map(strategy => {
+            return (
+              <View key={strategy} style={{marginBottom: 12}}>
+                <Text
+                  style={{
+                    backgroundColor: 'lightgrey',
+                  }}>{`Strategy: ${strategy}`}</Text>
+                {Object.keys(textByCode).map(code => {
+                  return (
+                    <View key={code}>
+                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <TextInput
+                        multiline
+                        lineBreakStrategyIOS={strategy}
+                        style={styles.default}
+                        defaultValue={textByCode[code]}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'iOS autoformatting behaviors',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="smartInsertDelete: true | undefined">
+            <TextInput style={styles.default} defaultValue="CopyAndPaste" />
+          </WithLabel>
+          <WithLabel label="smartInsertDelete: false">
+            <TextInput
+              smartInsertDelete={false}
+              style={styles.default}
+              defaultValue="CopyAndPaste"
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
 ];
 
 module.exports = ({
