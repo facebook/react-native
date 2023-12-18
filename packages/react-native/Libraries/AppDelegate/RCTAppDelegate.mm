@@ -11,7 +11,6 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppSetupUtils.h"
-#import "RCTLegacyInteropComponents.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -22,7 +21,6 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
@@ -98,7 +96,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
     [self createReactHost];
-    [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
@@ -116,10 +113,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                                                                    contextContainer:_contextContainer];
       self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-      [self unstable_registerLegacyComponents];
       [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     }
-
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -266,13 +261,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - New Arch Utilities
-
-- (void)unstable_registerLegacyComponents
-{
-  for (NSString *legacyComponent in [RCTLegacyInteropComponents legacyInteropComponents]) {
-    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:legacyComponent];
-  }
-}
 
 - (void)createReactHost
 {
