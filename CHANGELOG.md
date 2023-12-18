@@ -2,6 +2,30 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.73.1
+
+### Added
+
+- Add `enableNetworkInspector` experiment to enable Network panel and CDP handlers in inspector proxy ([8ef807bfb2](https://github.com/facebook/react-native/commit/8ef807bfb2e596bd70f0c8b17f1b6f698d98ae2a) by [@byCedric](https://github.com/byCedric))
+
+### Changed
+
+- Chore: bump CLI to 12.3.0 ([dff11ab993](https://github.com/facebook/react-native/commit/dff11ab993e57a097988537791afe8ef086e4ce4) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+- Fix last spacer constrain logic in VirtualizedList ([3ed4bf9046](https://github.com/facebook/react-native/commit/3ed4bf9046ae125d244283c3556892345bfd77e1) by [@janicduplessis](https://github.com/janicduplessis))
+
+
+#### Android specific
+
+- Fix type for unrecognisable field mBinding ([31d8a93bf3](https://github.com/facebook/react-native/commit/31d8a93bf3199432bcd2b577738fbf49e84c207d) by [@piaskowyk](https://github.com/piaskowyk))
+
+#### iOS specific
+
+- Fix NSAppTransportSecurity being overwritten during pod install ([a0b76d90b7](https://github.com/facebook/react-native/commit/a0b76d90b73ec0d3d9e0174004bfb96a5b6f3a3e) by [@robertying](https://github.com/robertying))
+
+
 ## v0.73.0
 
 ### Breaking
