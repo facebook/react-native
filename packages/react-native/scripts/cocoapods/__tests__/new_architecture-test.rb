@@ -163,6 +163,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-debug" },
                 { :dependency_name => "React-ImageManager" },
                 { :dependency_name => "React-rendererdebug" },
+                { :dependency_name => "DoubleConversion" },
                 { :dependency_name => "hermes-engine" }
         ])
     end
@@ -203,6 +204,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-debug" },
                 { :dependency_name => "React-ImageManager" },
                 { :dependency_name => "React-rendererdebug" },
+                { :dependency_name => "DoubleConversion" },
                 { :dependency_name => "hermes-engine" }
             ]
         )

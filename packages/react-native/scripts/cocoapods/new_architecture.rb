@@ -128,6 +128,8 @@ class NewArchitectureHelper
         spec.dependency "React-debug"
         spec.dependency "React-ImageManager"
         spec.dependency "React-rendererdebug"
+        # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
+        spec.dependency "DoubleConversion"
 
         if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
             spec.dependency "hermes-engine"
