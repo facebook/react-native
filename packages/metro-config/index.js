@@ -11,9 +11,9 @@
 /*:: import type {ConfigT} from 'metro-config'; */
 
 const fastGlob = require('fast-glob');
+const fs = require('fs');
 const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
-const fs = require('node:fs');
-const path = require('node:path');
+const path = require('path');
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
@@ -48,7 +48,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  * @param {string | undefined} candidatePath Current path to search from
  * @returns Path of a workspace root or `undefined`
  */
-function getWorkspaceRoot(projectRoot, candidatePath = projectRoot) {
+function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: string */ = projectRoot) /*: string | void */ {
   const packageJsonPath = path.resolve(candidatePath, 'package.json');
   if (fs.existsSync(packageJsonPath)) {
     try {
@@ -81,7 +81,7 @@ function getWorkspaceRoot(projectRoot, candidatePath = projectRoot) {
 /**
  * Determine the watch folders
  */
-function getWatchFolders(projectRoot) {
+function getWatchFolders(projectRoot /*: string */) {
   const workspaceRoot = getWorkspaceRoot(projectRoot);
   return workspaceRoot ? [workspaceRoot] : [];
 }
