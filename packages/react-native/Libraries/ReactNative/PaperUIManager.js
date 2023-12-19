@@ -18,7 +18,7 @@ const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty'
 const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
 
-const viewManagerConfigs: {[string]: any | null} = {};
+const viewConfigCache: {[string]: any | null} = {};
 
 const triedLoadingConfig = new Set<string>();
 
@@ -37,12 +37,12 @@ const getUIManagerConstantsCache = (function () {
 
 function getViewManagerConfig(viewManagerName: string): any {
   if (
-    viewManagerConfigs[viewManagerName] === undefined &&
+    viewConfigCache[viewManagerName] === undefined &&
     global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[viewManagerName] =
+      viewConfigCache[viewManagerName] =
         NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
@@ -51,11 +51,11 @@ function getViewManagerConfig(viewManagerName: string): any {
           "') threw an exception.",
         e,
       );
-      viewManagerConfigs[viewManagerName] = null;
+      viewConfigCache[viewManagerName] = null;
     }
   }
 
-  const config = viewManagerConfigs[viewManagerName];
+  const config = viewConfigCache[viewManagerName];
   if (config) {
     return config;
   }
@@ -78,7 +78,7 @@ function getViewManagerConfig(viewManagerName: string): any {
     }
   }
 
-  return viewManagerConfigs[viewManagerName];
+  return viewConfigCache[viewManagerName];
 }
 
 // $FlowFixMe[cannot-spread-interface]
@@ -90,7 +90,7 @@ const UIManagerJS: UIManagerJSInterface = {
     rootTag: RootTag,
     props: Object,
   ): void {
-    if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {
+    if (Platform.OS === 'ios' && viewConfigCache[viewName] === undefined) {
       // This is necessary to force the initialization of native viewManager
       // classes in iOS when using static ViewConfigs
       getViewManagerConfig(viewName);
@@ -118,7 +118,7 @@ NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
 function lazifyViewManagerConfig(viewName: string) {
   const viewConfig = getUIManagerConstantsCache()[viewName];
-  viewManagerConfigs[viewName] = viewConfig;
+  viewConfigCache[viewName] = viewConfig;
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: () => {
@@ -172,8 +172,8 @@ if (Platform.OS === 'ios') {
 if (!global.nativeCallSyncHook) {
   Object.keys(getUIManagerConstantsCache()).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
-      if (!viewManagerConfigs[viewManagerName]) {
-        viewManagerConfigs[viewManagerName] =
+      if (!viewConfigCache[viewManagerName]) {
+        viewConfigCache[viewManagerName] =
           getUIManagerConstantsCache()[viewManagerName];
       }
       defineLazyObjectProperty(NativeUIManager, viewManagerName, {
