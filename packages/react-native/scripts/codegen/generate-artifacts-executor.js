@@ -41,6 +41,10 @@ const REACT_NATIVE = 'react-native';
 
 // HELPERS
 
+function pkgJsonIncludesGeneratedCode(pkgJson) {
+  return pkgJson.codegenConfig && pkgJson.codegenConfig.includesGeneratedCode;
+}
+
 function isReactNativeCoreLibrary(libraryName) {
   return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
@@ -195,7 +199,12 @@ function computeOutputPath(projectRoot, baseOutputPath, pkgJson) {
       baseOutputPath = projectRoot;
     }
   }
-  return path.join(baseOutputPath, 'build', 'generated', 'ios');
+  if (pkgJsonIncludesGeneratedCode(pkgJson)) {
+    // Don't create nested directories for libraries to make importing generated headers easier.
+    return baseOutputPath;
+  } else {
+    return path.join(baseOutputPath, 'build', 'generated', 'ios');
+  }
 }
 
 function generateSchemaInfo(library) {
@@ -260,6 +269,16 @@ function needsThirdPartyComponentProvider(schemaInfo) {
   return !isReactNativeCoreLibrary(schemaInfo.library.config.name);
 }
 
+function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
+  // If library's 'codegenConfig' sets 'includesGeneratedCode' to 'true',
+  // then we assume that native code is shipped with the library,
+  // and we don't need to generate it.
+  return (
+    schemaInfo.library.libraryPath === includeLibraryPath ||
+    !schemaInfo.library.config.includesGeneratedCode
+  );
+}
+
 function createComponentProvider(schemas) {
   console.log('\n\n>>>>> Creating component provider');
   const outputDir = path.join(
@@ -281,10 +300,12 @@ function createComponentProvider(schemas) {
 }
 
 function findCodegenEnabledLibraries(pkgJson, projectRoot) {
-  return [
-    ...findExternalLibraries(pkgJson),
-    ...findProjectRootLibraries(pkgJson, projectRoot),
-  ];
+  const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
+  if (pkgJsonIncludesGeneratedCode(pkgJson)) {
+    return projectLibraries;
+  } else {
+    return [...projectLibraries, ...findExternalLibraries(pkgJson)];
+  }
 }
 
 // It removes all the empty files and empty folders
@@ -355,12 +376,19 @@ function execute(projectRoot, baseOutputPath) {
     const outputPath = computeOutputPath(projectRoot, baseOutputPath, pkgJson);
 
     const schemaInfos = generateSchemaInfos(libraries);
-    generateNativeCode(outputPath, schemaInfos);
+    generateNativeCode(
+      outputPath,
+      schemaInfos.filter(schemaInfo =>
+        mustGenerateNativeCode(projectRoot, schemaInfo),
+      ),
+    );
 
-    const schemas = schemaInfos
-      .filter(needsThirdPartyComponentProvider)
-      .map(schemaInfo => schemaInfo.schema);
-    createComponentProvider(schemas);
+    if (!pkgJsonIncludesGeneratedCode(pkgJson)) {
+      const schemas = schemaInfos
+        .filter(needsThirdPartyComponentProvider)
+        .map(schemaInfo => schemaInfo.schema);
+      createComponentProvider(schemas);
+    }
     cleanupEmptyFilesAndFolders(outputPath);
   } catch (err) {
     console.error(err);
