@@ -83,7 +83,7 @@
     "@react-native-community/cli-platform-android": "11.3.10",
     "@react-native-community/cli-platform-ios": "11.3.10",
     "@react-native/assets-registry": "^0.72.0",
-    "@react-native/codegen": "^0.72.7",
+    "@react-native/codegen": "^0.72.8",
     "@react-native/gradle-plugin": "^0.72.11",
     "@react-native/js-polyfills": "^0.72.1",
     "@react-native/normalize-colors": "^0.72.0",
