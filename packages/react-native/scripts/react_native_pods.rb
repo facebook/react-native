@@ -24,17 +24,16 @@ $FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
 
-# `@react-native-community/cli-platform-ios/native_modules` defines
-# use_native_modules. We use node to resolve its path to allow for
-# different packager and workspace setups. This is reliant on
-# `@react-native-community/cli-platform-ios` being a direct dependency
-# of `react-native`.
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "@react-native-community/cli-platform-ios/native_modules.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+# This function resolves a path using the node_modules resolution algorithm
+# Using this will allow for different packager and workspace setups.
+def resolve_node_module(request, from)
+  code = "require.resolve(process.argv[1], { paths: [process.argv[2]] })"
+  return Pod::Executable.execute_command('node', ['-p', code, request, from], true).strip
+end
 
+# `@react-native-community/cli-platform-ios/native_modules` defines use_native_modules.
+# This is reliant on `@react-native-community/cli-platform-ios` being a direct dependency of `react-native`.
+require resolve_node_module("@react-native-community/cli-platform-ios/native_modules.rb", __dir__)
 
 def min_ios_version_supported
   return Helpers::Constants.min_ios_version_supported
