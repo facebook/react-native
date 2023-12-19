@@ -420,23 +420,6 @@ bool Node::isLayoutDimensionDefined(const FlexDirection axis) {
   return yoga::isDefined(value) && value >= 0.0f;
 }
 
-bool Node::styleDefinesDimension(
-    const FlexDirection axis,
-    const float ownerSize) {
-  auto resolvedDimension = getResolvedDimension(dimension(axis));
-  if (!resolvedDimension.isDefined()) {
-    return false;
-  }
-
-  return !(
-      resolvedDimension.isAuto() ||
-      (resolvedDimension.unit() == Unit::Point &&
-       resolvedDimension.value().unwrap() < 0.0f) ||
-      (resolvedDimension.unit() == Unit::Percent &&
-       (resolvedDimension.value().unwrap() < 0.0f ||
-        yoga::isUndefined(ownerSize))));
-}
-
 // Setters
 
 void Node::setMeasureFunc(YGMeasureFunc measureFunc) {

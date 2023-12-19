@@ -130,7 +130,14 @@ class YG_EXPORT Node : public ::YGNode {
 
   bool isLayoutDimensionDefined(const FlexDirection axis);
 
-  bool styleDefinesDimension(const FlexDirection axis, const float ownerSize);
+  /**
+   * Whether the node has a "definite length" along the given axis.
+   * https://www.w3.org/TR/css-sizing-3/#definite
+   */
+  inline bool hasDefiniteLength(Dimension dimension, float ownerSize) {
+    auto usedValue = getResolvedDimension(dimension).resolve(ownerSize);
+    return usedValue.isDefined() && usedValue.unwrap() >= 0.0f;
+  }
 
   bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
