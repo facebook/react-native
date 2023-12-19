@@ -74,11 +74,12 @@ const getViewManagerConfig = (function () {
       const result = NativeUIManager.lazilyLoadView(viewManagerName);
       triedLoadingConfig.add(viewManagerName);
       if (result != null && result.viewConfig != null) {
-        getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
-        viewConfigCache[viewManagerName] = completeViewConfig(
+        const viewConfig = completeViewConfig(
           viewManagerName,
           result.viewConfig,
         );
+        getUIManagerConstantsCache()[viewManagerName] = viewConfig;
+        viewConfigCache[viewManagerName] = viewConfig;
       }
     }
 
