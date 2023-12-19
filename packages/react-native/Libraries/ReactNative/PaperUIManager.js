@@ -20,8 +20,6 @@ const UIManagerProperties = require('./UIManagerProperties');
 
 const viewConfigCache: {[string]: any | null} = {};
 
-const triedLoadingConfig = new Set<string>();
-
 const getUIManagerConstantsCache = (function () {
   let result = {};
   let wasCalledOnce = false;
@@ -35,54 +33,58 @@ const getUIManagerConstantsCache = (function () {
   };
 })();
 
-function getViewManagerConfig(viewManagerName: string): any {
-  if (
-    viewConfigCache[viewManagerName] === undefined &&
-    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
-    NativeUIManager.getConstantsForViewManager
-  ) {
-    try {
-      viewConfigCache[viewManagerName] =
-        NativeUIManager.getConstantsForViewManager(viewManagerName);
-    } catch (e) {
-      console.error(
-        "NativeUIManager.getConstantsForViewManager('" +
-          viewManagerName +
-          "') threw an exception.",
-        e,
-      );
-      viewConfigCache[viewManagerName] = null;
+const getViewManagerConfig = (function () {
+  const triedLoadingConfig = new Set<string>();
+
+  return (viewManagerName: string): any => {
+    if (
+      viewConfigCache[viewManagerName] === undefined &&
+      global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
+      NativeUIManager.getConstantsForViewManager
+    ) {
+      try {
+        viewConfigCache[viewManagerName] =
+          NativeUIManager.getConstantsForViewManager(viewManagerName);
+      } catch (e) {
+        console.error(
+          "NativeUIManager.getConstantsForViewManager('" +
+            viewManagerName +
+            "') threw an exception.",
+          e,
+        );
+        viewConfigCache[viewManagerName] = null;
+      }
     }
-  }
 
-  const config = viewConfigCache[viewManagerName];
-  if (config) {
-    return config;
-  }
-
-  // If we're in the Chrome Debugger, let's not even try calling the sync
-  // method.
-  if (!global.nativeCallSyncHook) {
-    return config;
-  }
-
-  if (
-    NativeUIManager.lazilyLoadView &&
-    !triedLoadingConfig.has(viewManagerName)
-  ) {
-    const result = NativeUIManager.lazilyLoadView(viewManagerName);
-    triedLoadingConfig.add(viewManagerName);
-    if (result != null && result.viewConfig != null) {
-      getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
-      viewConfigCache[viewManagerName] = completeViewConfig(
-        viewManagerName,
-        result.viewConfig,
-      );
+    const config = viewConfigCache[viewManagerName];
+    if (config) {
+      return config;
     }
-  }
 
-  return viewConfigCache[viewManagerName];
-}
+    // If we're in the Chrome Debugger, let's not even try calling the sync
+    // method.
+    if (!global.nativeCallSyncHook) {
+      return config;
+    }
+
+    if (
+      NativeUIManager.lazilyLoadView &&
+      !triedLoadingConfig.has(viewManagerName)
+    ) {
+      const result = NativeUIManager.lazilyLoadView(viewManagerName);
+      triedLoadingConfig.add(viewManagerName);
+      if (result != null && result.viewConfig != null) {
+        getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
+        viewConfigCache[viewManagerName] = completeViewConfig(
+          viewManagerName,
+          result.viewConfig,
+        );
+      }
+    }
+
+    return viewConfigCache[viewManagerName];
+  };
+})();
 
 // $FlowFixMe[cannot-spread-interface]
 const UIManagerJS: UIManagerJSInterface = {
