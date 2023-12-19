@@ -578,12 +578,10 @@ BOOL RCTForceTouchAvailable(void)
   static BOOL forceSupported;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    forceSupported =
-        [UITraitCollection class] && [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+    forceSupported = [UITraitCollection currentTraitCollection].forceTouchCapability == UIForceTouchCapabilityAvailable;
   });
 
-  return forceSupported &&
-      (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+  return forceSupported;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)
