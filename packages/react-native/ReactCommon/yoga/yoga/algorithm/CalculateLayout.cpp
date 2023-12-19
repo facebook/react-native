@@ -103,9 +103,9 @@ static void computeFlexBasisForChild(
   const FloatOptional resolvedFlexBasis =
       child->resolveFlexBasisPtr().resolve(mainAxisownerSize);
   const bool isRowStyleDimDefined =
-      child->styleDefinesDimension(FlexDirection::Row, ownerWidth);
+      child->hasDefiniteLength(Dimension::Width, ownerWidth);
   const bool isColumnStyleDimDefined =
-      child->styleDefinesDimension(FlexDirection::Column, ownerHeight);
+      child->hasDefiniteLength(Dimension::Height, ownerHeight);
 
   if (resolvedFlexBasis.isDefined() && yoga::isDefined(mainAxisSize)) {
     if (child->getLayout().computedFlexBasis.isUndefined() ||
@@ -676,8 +676,8 @@ static float distributeFreeSpaceSecondPass(
       childCrossSize += marginCross;
     } else if (
         !std::isnan(availableInnerCrossDim) &&
-        !currentLineChild->styleDefinesDimension(
-            crossAxis, availableInnerCrossDim) &&
+        !currentLineChild->hasDefiniteLength(
+            dimension(crossAxis), availableInnerCrossDim) &&
         sizingModeCrossDim == SizingMode::StretchFit &&
         !(isNodeFlexWrap && mainAxisOverflows) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
@@ -686,8 +686,8 @@ static float distributeFreeSpaceSecondPass(
         currentLineChild->marginTrailingValue(crossAxis).unit() != Unit::Auto) {
       childCrossSize = availableInnerCrossDim;
       childCrossSizingMode = SizingMode::StretchFit;
-    } else if (!currentLineChild->styleDefinesDimension(
-                   crossAxis, availableInnerCrossDim)) {
+    } else if (!currentLineChild->hasDefiniteLength(
+                   dimension(crossAxis), availableInnerCrossDim)) {
       childCrossSize = availableInnerCrossDim;
       childCrossSizingMode = yoga::isUndefined(childCrossSize)
           ? SizingMode::MaxContent
@@ -723,8 +723,9 @@ static float distributeFreeSpaceSecondPass(
         &childCrossSizingMode,
         &childCrossSize);
 
-    const bool requiresStretchLayout = !currentLineChild->styleDefinesDimension(
-                                           crossAxis, availableInnerCrossDim) &&
+    const bool requiresStretchLayout =
+        !currentLineChild->hasDefiniteLength(
+            dimension(crossAxis), availableInnerCrossDim) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
         currentLineChild->getFlexStartMarginValue(crossAxis).unit() !=
             Unit::Auto &&
@@ -1622,8 +1623,8 @@ static void calculateLayoutImpl(
               child->marginTrailingValue(crossAxis).unit() != Unit::Auto) {
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
-            if (!child->styleDefinesDimension(
-                    crossAxis, availableInnerCrossDim)) {
+            if (!child->hasDefiniteLength(
+                    dimension(crossAxis), availableInnerCrossDim)) {
               float childMainSize =
                   child->getLayout().measuredDimension(dimension(mainAxis));
               const auto& childStyle = child->getStyle();
@@ -1735,7 +1736,7 @@ static void calculateLayoutImpl(
 
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
-        : node->styleDefinesDimension(crossAxis, crossAxisownerSize)
+        : node->hasDefiniteLength(dimension(crossAxis), crossAxisownerSize)
         ? node->getResolvedDimension(dimension(crossAxis))
               .resolve(crossAxisownerSize)
               .unwrap()
@@ -1879,8 +1880,8 @@ static void calculateLayoutImpl(
 
                 // Remeasure child with the line height as it as been only
                 // measured with the owners height yet.
-                if (!child->styleDefinesDimension(
-                        crossAxis, availableInnerCrossDim)) {
+                if (!child->hasDefiniteLength(
+                        dimension(crossAxis), availableInnerCrossDim)) {
                   const float childWidth = isMainAxisRow
                       ? (child->getLayout().measuredDimension(
                              Dimension::Width) +
@@ -2427,7 +2428,7 @@ void calculateLayout(
   float width = YGUndefined;
   SizingMode widthSizingMode = SizingMode::MaxContent;
   const auto& style = node->getStyle();
-  if (node->styleDefinesDimension(FlexDirection::Row, ownerWidth)) {
+  if (node->hasDefiniteLength(Dimension::Width, ownerWidth)) {
     width =
         (node->getResolvedDimension(dimension(FlexDirection::Row))
              .resolve(ownerWidth)
@@ -2447,7 +2448,7 @@ void calculateLayout(
 
   float height = YGUndefined;
   SizingMode heightSizingMode = SizingMode::MaxContent;
-  if (node->styleDefinesDimension(FlexDirection::Column, ownerHeight)) {
+  if (node->hasDefiniteLength(Dimension::Height, ownerHeight)) {
     height =
         (node->getResolvedDimension(dimension(FlexDirection::Column))
              .resolve(ownerHeight)
