@@ -202,7 +202,7 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
-            if [[ << parameters.ruby_version >> == "2.6.10" ]]; then
+            if [[ $(echo << parameters.ruby_version >> | awk -F'.' '{print $1}') == "2" ]]; then
               gem install bundler -v 2.4.22
             else
               gem install bundler
