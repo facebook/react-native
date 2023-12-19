@@ -1743,8 +1743,9 @@ static void calculateLayoutImpl(
     float leadPerLine = 0;
     float currentLead = leadingPaddingAndBorderCross;
 
-    const float unclampedCrossDim =
-        node->styleDefinesDimension(crossAxis, crossAxisownerSize)
+    const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
+        ? availableInnerCrossDim + paddingAndBorderAxisCross
+        : node->styleDefinesDimension(crossAxis, crossAxisownerSize)
         ? yoga::resolveValue(
               node->getResolvedDimension(dimension(crossAxis)),
               crossAxisownerSize)
