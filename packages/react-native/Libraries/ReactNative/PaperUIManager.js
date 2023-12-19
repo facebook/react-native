@@ -22,7 +22,7 @@ const viewManagerConfigs: {[string]: any | null} = {};
 
 const triedLoadingConfig = new Set<string>();
 
-const getConstants = (function () {
+const getUIManagerConstantsCache = (function () {
   let result = {};
   let wasCalledOnce = false;
 
@@ -73,7 +73,7 @@ function getViewManagerConfig(viewManagerName: string): any {
     const result = NativeUIManager.lazilyLoadView(viewManagerName);
     triedLoadingConfig.add(viewManagerName);
     if (result != null && result.viewConfig != null) {
-      getConstants()[viewManagerName] = result.viewConfig;
+      getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
       lazifyViewManagerConfig(viewManagerName);
     }
   }
@@ -99,7 +99,7 @@ const UIManagerJS: UIManagerJSInterface = {
     NativeUIManager.createView(reactTag, viewName, rootTag, props);
   },
   getConstants(): Object {
-    return getConstants();
+    return getUIManagerConstantsCache();
   },
   getViewManagerConfig(viewManagerName: string): any {
     return getViewManagerConfig(viewManagerName);
@@ -117,7 +117,7 @@ const UIManagerJS: UIManagerJSInterface = {
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
 function lazifyViewManagerConfig(viewName: string) {
-  const viewConfig = getConstants()[viewName];
+  const viewConfig = getUIManagerConstantsCache()[viewName];
   viewManagerConfigs[viewName] = viewConfig;
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
@@ -158,10 +158,10 @@ function lazifyViewManagerConfig(viewName: string) {
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  Object.keys(getConstants()).forEach(viewName => {
+  Object.keys(getUIManagerConstantsCache()).forEach(viewName => {
     lazifyViewManagerConfig(viewName);
   });
-} else if (getConstants().ViewManagerNames) {
+} else if (getUIManagerConstantsCache().ViewManagerNames) {
   NativeUIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(NativeUIManager, viewManagerName, {
       get: () => NativeUIManager.getConstantsForViewManager(viewManagerName),
@@ -170,10 +170,11 @@ if (Platform.OS === 'ios') {
 }
 
 if (!global.nativeCallSyncHook) {
-  Object.keys(getConstants()).forEach(viewManagerName => {
+  Object.keys(getUIManagerConstantsCache()).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
       if (!viewManagerConfigs[viewManagerName]) {
-        viewManagerConfigs[viewManagerName] = getConstants()[viewManagerName];
+        viewManagerConfigs[viewManagerName] =
+          getUIManagerConstantsCache()[viewManagerName];
       }
       defineLazyObjectProperty(NativeUIManager, viewManagerName, {
         get: () => {
