@@ -24,6 +24,9 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 
+// jsinspector-modern
+#import <jsinspector-modern/InspectorFlags.h>
+
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
   RCTEnableTurboModule(turboModuleEnabled);
@@ -33,6 +36,20 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
   // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
   application.idleTimerDisabled = YES;
 #endif
+}
+
+void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled,
+    const facebook::react::ReactNativeConfig &reactNativeConfig)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  RCTAppSetupPrepareApp(application, turboModuleEnabled);
+#pragma clang diagnostic pop
+
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  inspectorFlags.initFromConfig(reactNativeConfig);
 }
 
 UIView *
