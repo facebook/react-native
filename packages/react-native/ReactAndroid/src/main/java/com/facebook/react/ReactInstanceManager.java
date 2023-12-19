@@ -1406,14 +1406,14 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      if (mUIManagerProvider != null) {
-        UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+    if (mUIManagerProvider != null) {
+      UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+      if (uiManager != null) {
         uiManager.initialize();
         catalystInstance.setFabricUIManager(uiManager);
-      } else {
-        catalystInstance.getJSIModule(JSIModuleType.UIManager);
       }
+    } else if (ReactFeatureFlags.enableFabricRenderer) {
+      catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

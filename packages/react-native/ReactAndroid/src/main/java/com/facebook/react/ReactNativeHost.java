@@ -132,7 +132,7 @@ public abstract class ReactNativeHost {
   }
 
   protected @Nullable UIManagerProvider getUIManagerProvider() {
-    return null;
+    return reactApplicationContext -> null;
   }
 
   /** Returns whether or not to treat it as normal if Activity is null. */
