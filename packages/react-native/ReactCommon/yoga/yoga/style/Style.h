@@ -24,31 +24,17 @@
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/Overflow.h>
 #include <yoga/enums/PositionType.h>
+#include <yoga/enums/Unit.h>
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
-#include <yoga/style/ValueFactories.h>
+#include <yoga/style/StyleLength.h>
 
 namespace facebook::yoga {
 
 class YG_EXPORT Style {
  public:
-  /**
-   * Style::Length represents a CSS Value which may be one of:
-   * 1. Undefined
-   * 2. A keyword (e.g. auto)
-   * 3. A CSS <length-percentage> value:
-   *    a. <length> value (e.g. 10px)
-   *    b. <percentage> value of a reference <length>
-   * 4. (soon) A math function which returns a <length-percentage> value
-   *
-   * References:
-   * 1. https://www.w3.org/TR/css-values-4/#lengths
-   * 2. https://www.w3.org/TR/css-values-4/#percentage-value
-   * 3. https://www.w3.org/TR/css-values-4/#mixed-percentages
-   * 4. https://www.w3.org/TR/css-values-4/#math
-   */
-  using Length = CompactValue;
+  using Length = StyleLength;
 
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
@@ -146,66 +132,66 @@ class YG_EXPORT Style {
   }
 
   Style::Length flexBasis() const {
-    return flexBasis_;
+    return (Style::Length)flexBasis_;
   }
   void setFlexBasis(Style::Length value) {
-    flexBasis_ = value;
+    flexBasis_ = CompactValue(value);
   }
 
   Style::Length margin(Edge edge) const {
-    return margin_[yoga::to_underlying(edge)];
+    return (Style::Length)margin_[yoga::to_underlying(edge)];
   }
   void setMargin(Edge edge, Style::Length value) {
-    margin_[yoga::to_underlying(edge)] = value;
+    margin_[yoga::to_underlying(edge)] = CompactValue(value);
   }
 
   Style::Length position(Edge edge) const {
-    return position_[yoga::to_underlying(edge)];
+    return (Style::Length)position_[yoga::to_underlying(edge)];
   }
   void setPosition(Edge edge, Style::Length value) {
-    position_[yoga::to_underlying(edge)] = value;
+    position_[yoga::to_underlying(edge)] = CompactValue(value);
   }
 
   Style::Length padding(Edge edge) const {
-    return padding_[yoga::to_underlying(edge)];
+    return (Style::Length)padding_[yoga::to_underlying(edge)];
   }
   void setPadding(Edge edge, Style::Length value) {
-    padding_[yoga::to_underlying(edge)] = value;
+    padding_[yoga::to_underlying(edge)] = CompactValue(value);
   }
 
   Style::Length border(Edge edge) const {
-    return border_[yoga::to_underlying(edge)];
+    return (Style::Length)border_[yoga::to_underlying(edge)];
   }
   void setBorder(Edge edge, Style::Length value) {
-    border_[yoga::to_underlying(edge)] = value;
+    border_[yoga::to_underlying(edge)] = CompactValue(value);
   }
 
   Style::Length gap(Gutter gutter) const {
-    return gap_[yoga::to_underlying(gutter)];
+    return (Style::Length)gap_[yoga::to_underlying(gutter)];
   }
   void setGap(Gutter gutter, Style::Length value) {
-    gap_[yoga::to_underlying(gutter)] = value;
+    gap_[yoga::to_underlying(gutter)] = CompactValue(value);
   }
 
   Style::Length dimension(Dimension axis) const {
-    return dimensions_[yoga::to_underlying(axis)];
+    return (Style::Length)dimensions_[yoga::to_underlying(axis)];
   }
   void setDimension(Dimension axis, Style::Length value) {
-    dimensions_[yoga::to_underlying(axis)] = value;
+    dimensions_[yoga::to_underlying(axis)] = CompactValue(value);
   }
 
   Style::Length minDimension(Dimension axis) const {
-    return minDimensions_[yoga::to_underlying(axis)];
+    return (Style::Length)minDimensions_[yoga::to_underlying(axis)];
   }
   void setMinDimension(Dimension axis, Style::Length value) {
-    minDimensions_[yoga::to_underlying(axis)] = value;
+    minDimensions_[yoga::to_underlying(axis)] = CompactValue(value);
   }
 
   Style::Length maxDimension(Dimension axis) const {
-    return maxDimensions_[yoga::to_underlying(axis)];
+    return (Style::Length)maxDimensions_[yoga::to_underlying(axis)];
   }
   void setMaxDimension(Dimension axis, Style::Length value) {
-    maxDimensions_[yoga::to_underlying(axis)] = value;
+    maxDimensions_[yoga::to_underlying(axis)] = CompactValue(value);
   }
 
   FloatOptional aspectRatio() const {
@@ -217,17 +203,17 @@ class YG_EXPORT Style {
 
   Style::Length resolveColumnGap() const {
     if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
-      return gap_[yoga::to_underlying(Gutter::Column)];
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::Column)];
     } else {
-      return gap_[yoga::to_underlying(Gutter::All)];
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
     }
   }
 
   Style::Length resolveRowGap() const {
     if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
-      return gap_[yoga::to_underlying(Gutter::Row)];
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::Row)];
     } else {
-      return gap_[yoga::to_underlying(Gutter::All)];
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
     }
   }
 
@@ -275,9 +261,9 @@ class YG_EXPORT Style {
   }
 
  private:
-  using Dimensions = std::array<Style::Length, ordinalCount<Dimension>()>;
-  using Edges = std::array<Style::Length, ordinalCount<Edge>()>;
-  using Gutters = std::array<Style::Length, ordinalCount<Gutter>()>;
+  using Dimensions = std::array<CompactValue, ordinalCount<Dimension>()>;
+  using Edges = std::array<CompactValue, ordinalCount<Edge>()>;
+  using Gutters = std::array<CompactValue, ordinalCount<Gutter>()>;
 
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;
   FlexDirection flexDirection_
@@ -295,13 +281,13 @@ class YG_EXPORT Style {
   FloatOptional flex_{};
   FloatOptional flexGrow_{};
   FloatOptional flexShrink_{};
-  Style::Length flexBasis_{value::ofAuto()};
+  CompactValue flexBasis_{CompactValue::ofAuto()};
   Edges margin_{};
   Edges position_{};
   Edges padding_{};
   Edges border_{};
   Gutters gap_{};
-  Dimensions dimensions_{value::ofAuto(), value::ofAuto()};
+  Dimensions dimensions_{CompactValue::ofAuto(), CompactValue::ofAuto()};
   Dimensions minDimensions_{};
   Dimensions maxDimensions_{};
   FloatOptional aspectRatio_{};

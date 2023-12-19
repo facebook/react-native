@@ -82,18 +82,19 @@ inline yoga::FloatOptional yogaOptionalFloatFromFloat(Float value) {
 }
 
 inline std::optional<Float> optionalFloatFromYogaValue(
-    const YGValue value,
+    const yoga::Style::Length& length,
     std::optional<Float> base = {}) {
-  switch (value.unit) {
-    case YGUnitUndefined:
+  switch (length.unit()) {
+    case yoga::Unit::Undefined:
       return {};
-    case YGUnitPoint:
-      return floatFromYogaFloat(value.value);
-    case YGUnitPercent:
+    case yoga::Unit::Point:
+      return floatFromYogaOptionalFloat(length.value());
+    case yoga::Unit::Percent:
       return base.has_value()
-          ? std::optional<Float>(base.value() * floatFromYogaFloat(value.value))
+          ? std::optional<Float>(
+                base.value() * floatFromYogaOptionalFloat(length.value()))
           : std::optional<Float>();
-    case YGUnitAuto:
+    case yoga::Unit::Auto:
       return {};
   }
 }
@@ -417,7 +418,7 @@ inline void fromRawValue(
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = YGValueAuto;
+      result = yoga::value::ofAuto();
       return;
     } else {
       if (stringValue.back() == '%') {
@@ -436,16 +437,16 @@ inline void fromRawValue(
       }
     }
   }
-  result = YGValueUndefined;
+  result = yoga::value::undefined();
 }
 
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     YGValue& result) {
-  yoga::Style::Length ygValue{};
-  fromRawValue(context, value, ygValue);
-  result = ygValue;
+  yoga::Style::Length length{};
+  fromRawValue(context, value, length);
+  result = (YGValue)length;
 }
 
 inline void fromRawValue(
@@ -772,15 +773,15 @@ inline std::string toString(const yoga::Display& value) {
   return YGDisplayToString(yoga::unscopedEnum(value));
 }
 
-inline std::string toString(const YGValue& value) {
-  switch (value.unit) {
-    case YGUnitUndefined:
+inline std::string toString(const yoga::Style::Length& length) {
+  switch (length.unit()) {
+    case yoga::Unit::Undefined:
       return "undefined";
-    case YGUnitPoint:
-      return folly::to<std::string>(value.value);
-    case YGUnitPercent:
-      return folly::to<std::string>(value.value) + "%";
-    case YGUnitAuto:
+    case yoga::Unit::Point:
+      return std::to_string(length.value().unwrap());
+    case yoga::Unit::Percent:
+      return std::to_string(length.value().unwrap()) + "%";
+    case yoga::Unit::Auto:
       return "auto";
   }
 }
@@ -790,7 +791,7 @@ inline std::string toString(const yoga::FloatOptional& value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
+  return std::to_string(value.unwrap());
 }
 
 inline std::string toString(const LayoutConformance& value) {
