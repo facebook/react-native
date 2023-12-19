@@ -74,7 +74,7 @@ function getViewManagerConfig(viewManagerName: string): any {
     triedLoadingConfig.add(viewManagerName);
     if (result != null && result.viewConfig != null) {
       getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
-      viewConfigCache[viewManagerName] = lazifyViewManagerConfig(
+      viewConfigCache[viewManagerName] = completeViewConfig(
         viewManagerName,
         result.viewConfig,
       );
@@ -119,7 +119,7 @@ const UIManagerJS: UIManagerJSInterface = {
 // $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
-function lazifyViewManagerConfig(viewName: string, viewConfig: Object): Object {
+function completeViewConfig(viewName: string, viewConfig: Object): Object {
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: getConstantsFromViewManager,
@@ -169,7 +169,7 @@ function lazifyViewManagerConfig(viewName: string, viewConfig: Object): Object {
 if (Platform.OS === 'ios') {
   Object.entries(getUIManagerConstantsCache()).forEach(
     ([viewName, viewConfig]) => {
-      viewConfigCache[viewName] = lazifyViewManagerConfig(viewName, viewConfig);
+      viewConfigCache[viewName] = completeViewConfig(viewName, viewConfig);
     },
   );
 } else if (getUIManagerConstantsCache().ViewManagerNames) {
