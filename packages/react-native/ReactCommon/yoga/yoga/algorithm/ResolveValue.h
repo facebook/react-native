@@ -14,19 +14,15 @@
 
 namespace facebook::yoga {
 
-inline FloatOptional resolveValue(const YGValue value, const float ownerSize) {
-  switch (value.unit) {
-    case YGUnitPoint:
-      return FloatOptional{value.value};
-    case YGUnitPercent:
-      return FloatOptional{value.value * ownerSize * 0.01f};
+inline FloatOptional resolveValue(Style::Length length, float ownerSize) {
+  switch (length.unit()) {
+    case Unit::Point:
+      return length.value();
+    case Unit::Percent:
+      return FloatOptional{length.value().unwrap() * ownerSize * 0.01f};
     default:
       return FloatOptional{};
   }
-}
-
-inline FloatOptional resolveValue(Style::Length value, float ownerSize) {
-  return resolveValue((YGValue)value, ownerSize);
 }
 
 } // namespace facebook::yoga

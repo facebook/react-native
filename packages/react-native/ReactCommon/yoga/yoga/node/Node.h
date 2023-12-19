@@ -45,8 +45,8 @@ class YG_EXPORT Node : public ::YGNode {
   Node* owner_ = nullptr;
   std::vector<Node*> children_ = {};
   const Config* config_;
-  std::array<YGValue, 2> resolvedDimensions_ = {
-      {YGValueUndefined, YGValueUndefined}};
+  std::array<Style::Length, 2> resolvedDimensions_ = {
+      {value::undefined(), value::undefined()}};
 
   float relativePosition(
       FlexDirection axis,
@@ -199,11 +199,11 @@ class YG_EXPORT Node : public ::YGNode {
     return isDirty_;
   }
 
-  std::array<YGValue, 2> getResolvedDimensions() const {
+  std::array<Style::Length, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
   }
 
-  YGValue getResolvedDimension(Dimension dimension) const {
+  Style::Length getResolvedDimension(Dimension dimension) const {
     return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
@@ -366,9 +366,9 @@ class YG_EXPORT Node : public ::YGNode {
       const float ownerWidth);
 
   // Other methods
-  YGValue getFlexStartMarginValue(FlexDirection axis) const;
-  YGValue marginTrailingValue(FlexDirection axis) const;
-  YGValue resolveFlexBasisPtr() const;
+  Style::Length getFlexStartMarginValue(FlexDirection axis) const;
+  Style::Length marginTrailingValue(FlexDirection axis) const;
+  Style::Length resolveFlexBasisPtr() const;
   void resolveDimension();
   Direction resolveDirection(const Direction ownerDirection);
   void clearChildren();

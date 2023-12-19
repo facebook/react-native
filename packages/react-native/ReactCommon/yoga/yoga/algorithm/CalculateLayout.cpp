@@ -687,9 +687,9 @@ static float distributeFreeSpaceSecondPass(
         sizingModeCrossDim == SizingMode::StretchFit &&
         !(isNodeFlexWrap && mainAxisOverflows) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
-        currentLineChild->getFlexStartMarginValue(crossAxis).unit !=
-            YGUnitAuto &&
-        currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
+        currentLineChild->getFlexStartMarginValue(crossAxis).unit() !=
+            Unit::Auto &&
+        currentLineChild->marginTrailingValue(crossAxis).unit() != Unit::Auto) {
       childCrossSize = availableInnerCrossDim;
       childCrossSizingMode = SizingMode::StretchFit;
     } else if (!currentLineChild->styleDefinesDimension(
@@ -706,8 +706,8 @@ static float distributeFreeSpaceSecondPass(
               .unwrap() +
           marginCross;
       const bool isLoosePercentageMeasurement =
-          currentLineChild->getResolvedDimension(dimension(crossAxis)).unit ==
-              YGUnitPercent &&
+          currentLineChild->getResolvedDimension(dimension(crossAxis)).unit() ==
+              Unit::Percent &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -733,9 +733,9 @@ static float distributeFreeSpaceSecondPass(
     const bool requiresStretchLayout = !currentLineChild->styleDefinesDimension(
                                            crossAxis, availableInnerCrossDim) &&
         resolveChildAlignment(node, currentLineChild) == Align::Stretch &&
-        currentLineChild->getFlexStartMarginValue(crossAxis).unit !=
-            YGUnitAuto &&
-        currentLineChild->marginTrailingValue(crossAxis).unit != YGUnitAuto;
+        currentLineChild->getFlexStartMarginValue(crossAxis).unit() !=
+            Unit::Auto &&
+        currentLineChild->marginTrailingValue(crossAxis).unit() != Unit::Auto;
 
     const float childWidth = isMainAxisRow ? childMainSize : childCrossSize;
     const float childHeight = !isMainAxisRow ? childMainSize : childCrossSize;
@@ -982,10 +982,10 @@ static void justifyMainAxis(
   for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
     auto child = node->getChild(i);
     if (child->getStyle().positionType() != PositionType::Absolute) {
-      if (child->getFlexStartMarginValue(mainAxis).unit == YGUnitAuto) {
+      if (child->getFlexStartMarginValue(mainAxis).unit() == Unit::Auto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
-      if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
+      if (child->marginTrailingValue(mainAxis).unit() == Unit::Auto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
     }
@@ -1062,7 +1062,7 @@ static void justifyMainAxis(
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
       if (childStyle.positionType() != PositionType::Absolute) {
-        if (child->getFlexStartMarginValue(mainAxis).unit == YGUnitAuto) {
+        if (child->getFlexStartMarginValue(mainAxis).unit() == Unit::Auto) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(numberOfAutoMarginsOnCurrentLine);
         }
@@ -1078,7 +1078,7 @@ static void justifyMainAxis(
           flexLine.layout.mainDim += betweenMainDim;
         }
 
-        if (child->marginTrailingValue(mainAxis).unit == YGUnitAuto) {
+        if (child->marginTrailingValue(mainAxis).unit() == Unit::Auto) {
           flexLine.layout.mainDim += flexLine.layout.remainingFreeSpace /
               static_cast<float>(numberOfAutoMarginsOnCurrentLine);
         }
@@ -1630,8 +1630,8 @@ static void calculateLayoutImpl(
           // time, this time forcing the cross-axis size to be the computed
           // cross size for the current line.
           if (alignItem == Align::Stretch &&
-              child->getFlexStartMarginValue(crossAxis).unit != YGUnitAuto &&
-              child->marginTrailingValue(crossAxis).unit != YGUnitAuto) {
+              child->getFlexStartMarginValue(crossAxis).unit() != Unit::Auto &&
+              child->marginTrailingValue(crossAxis).unit() != Unit::Auto) {
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
             if (!child->styleDefinesDimension(
@@ -1704,15 +1704,17 @@ static void calculateLayoutImpl(
             const float remainingCrossDim = containerCrossAxis -
                 child->dimensionWithMargin(crossAxis, availableInnerWidth);
 
-            if (child->getFlexStartMarginValue(crossAxis).unit == YGUnitAuto &&
-                child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
+            if (child->getFlexStartMarginValue(crossAxis).unit() ==
+                    Unit::Auto &&
+                child->marginTrailingValue(crossAxis).unit() == Unit::Auto) {
               leadingCrossDim +=
                   yoga::maxOrDefined(0.0f, remainingCrossDim / 2);
             } else if (
-                child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
+                child->marginTrailingValue(crossAxis).unit() == Unit::Auto) {
               // No-Op
             } else if (
-                child->getFlexStartMarginValue(crossAxis).unit == YGUnitAuto) {
+                child->getFlexStartMarginValue(crossAxis).unit() ==
+                Unit::Auto) {
               leadingCrossDim += yoga::maxOrDefined(0.0f, remainingCrossDim);
             } else if (alignItem == Align::FlexStart) {
               // No-Op
