@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.span;
 
 import android.graphics.Paint;
 import android.text.style.LineHeightSpan;

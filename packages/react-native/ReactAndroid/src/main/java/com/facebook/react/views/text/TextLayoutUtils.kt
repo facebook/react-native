@@ -9,13 +9,27 @@ package com.facebook.react.views.text
 
 import android.content.Context
 import android.graphics.Color
-import android.text.*
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.view.View
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.fragments.TextFragment
 import com.facebook.react.views.text.fragments.TextFragmentList
+import com.facebook.react.views.text.span.CustomLetterSpacingSpan
+import com.facebook.react.views.text.span.CustomLineHeightSpan
+import com.facebook.react.views.text.span.CustomStyleSpan
+import com.facebook.react.views.text.span.ReactAbsoluteSizeSpan
+import com.facebook.react.views.text.span.ReactBackgroundColorSpan
+import com.facebook.react.views.text.span.ReactClickableSpan
+import com.facebook.react.views.text.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.span.ReactStrikethroughSpan
+import com.facebook.react.views.text.span.ReactTagSpan
+import com.facebook.react.views.text.span.ReactUnderlineSpan
+import com.facebook.react.views.text.span.SetSpanOperation
+import com.facebook.react.views.text.span.ShadowStyleSpan
+import com.facebook.react.views.text.span.TextInlineViewPlaceholderSpan
 
 /** Utility methods for building [Spannable]s */
 internal object TextLayoutUtils {

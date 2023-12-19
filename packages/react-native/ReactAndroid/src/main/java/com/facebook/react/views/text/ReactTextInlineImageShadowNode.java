@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.views.text.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaNode;
 
 /** Base class for {@link YogaNode}s that represent inline images. */
