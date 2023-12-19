@@ -74,7 +74,10 @@ function getViewManagerConfig(viewManagerName: string): any {
     triedLoadingConfig.add(viewManagerName);
     if (result != null && result.viewConfig != null) {
       getUIManagerConstantsCache()[viewManagerName] = result.viewConfig;
-      lazifyViewManagerConfig(viewManagerName);
+      viewConfigCache[viewManagerName] = lazifyViewManagerConfig(
+        viewManagerName,
+        result.viewConfig,
+      );
     }
   }
 
@@ -116,9 +119,7 @@ const UIManagerJS: UIManagerJSInterface = {
 // $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
-function lazifyViewManagerConfig(viewName: string) {
-  const viewConfig = getUIManagerConstantsCache()[viewName];
-  viewConfigCache[viewName] = viewConfig;
+function lazifyViewManagerConfig(viewName: string, viewConfig: Object): Object {
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: getConstantsFromViewManager,
@@ -127,6 +128,8 @@ function lazifyViewManagerConfig(viewName: string) {
       get: mapViewManagerMethodsToIndex,
     });
   }
+
+  return viewConfig;
 
   function getConstantsFromViewManager() {
     const viewManager = NativeModules[viewConfig.Manager];
@@ -164,9 +167,11 @@ function lazifyViewManagerConfig(viewName: string) {
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  Object.keys(getUIManagerConstantsCache()).forEach(viewName => {
-    lazifyViewManagerConfig(viewName);
-  });
+  Object.entries(getUIManagerConstantsCache()).forEach(
+    ([viewName, viewConfig]) => {
+      viewConfigCache[viewName] = lazifyViewManagerConfig(viewName, viewConfig);
+    },
+  );
 } else if (getUIManagerConstantsCache().ViewManagerNames) {
   NativeUIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(NativeUIManager, viewManagerName, {
