@@ -121,34 +121,40 @@ function lazifyViewManagerConfig(viewName: string) {
   viewConfigCache[viewName] = viewConfig;
   if (viewConfig.Manager) {
     defineLazyObjectProperty(viewConfig, 'Constants', {
-      get: () => {
-        const viewManager = NativeModules[viewConfig.Manager];
-        const constants: {[string]: mixed} = {};
-        viewManager &&
-          Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value !== 'function') {
-              constants[key] = value;
-            }
-          });
-        return constants;
-      },
+      get: getConstantsFromViewManager,
     });
     defineLazyObjectProperty(viewConfig, 'Commands', {
-      get: () => {
-        const viewManager = NativeModules[viewConfig.Manager];
-        const commands: {[string]: number} = {};
-        let index = 0;
-        viewManager &&
-          Object.keys(viewManager).forEach(key => {
-            const value = viewManager[key];
-            if (typeof value === 'function') {
-              commands[key] = index++;
-            }
-          });
-        return commands;
-      },
+      get: mapViewManagerMethodsToIndex,
     });
+  }
+
+  function getConstantsFromViewManager() {
+    const viewManager = NativeModules[viewConfig.Manager];
+    const constants: {[string]: mixed} = {};
+    if (viewManager) {
+      Object.keys(viewManager).forEach(key => {
+        const value = viewManager[key];
+        if (typeof value !== 'function') {
+          constants[key] = value;
+        }
+      });
+    }
+    return constants;
+  }
+
+  function mapViewManagerMethodsToIndex() {
+    const viewManager = NativeModules[viewConfig.Manager];
+    const commands: {[string]: number} = {};
+    let index = 0;
+    if (viewManager) {
+      Object.keys(viewManager).forEach(key => {
+        const value = viewManager[key];
+        if (typeof value === 'function') {
+          commands[key] = index++;
+        }
+      });
+    }
+    return commands;
   }
 }
 
