@@ -343,9 +343,11 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
   }
 }
 
-function LayoutConformanceExample(): React.Node {
+function LayoutConformanceExample({
+  testID,
+}: $ReadOnly<{testID: ?string}>): React.Node {
   return (
-    <View style={{flexDirection: 'row', gap: 10}}>
+    <View style={{flexDirection: 'row', gap: 10}} testID={testID}>
       <View>
         <Text>Unset</Text>
         <LayoutConformanceBox />
@@ -367,8 +369,8 @@ function LayoutConformanceBox(): React.Node {
     <View
       style={{
         backgroundColor: 'blue',
-        width: 100,
-        height: 100,
+        width: 60,
+        height: 60,
         flexDirection: 'row',
         alignItems: 'center',
       }}>
@@ -378,7 +380,7 @@ function LayoutConformanceBox(): React.Node {
         }}>
         <View
           style={{
-            height: 50,
+            height: 30,
             backgroundColor: 'red',
             flexGrow: 1,
           }}
