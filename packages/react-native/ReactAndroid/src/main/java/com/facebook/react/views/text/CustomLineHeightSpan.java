@@ -54,10 +54,13 @@ public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
 
       // Round up for the negative values and down for the positive values  (arbitrary choice)
       // So that bottom - top equals additional even if it's an odd number.
-      fm.top -= Math.ceil(additional / 2.0f);
-      fm.bottom += Math.floor(additional / 2.0f);
-      fm.ascent = fm.top;
-      fm.descent = fm.bottom;
+      final int top = (int) (fm.top - Math.ceil(additional / 2.0f));
+      final int bottom = (int) (fm.bottom + Math.floor(additional / 2.0f));
+
+      fm.top = top;
+      fm.ascent = top;
+      fm.descent = bottom;
+      fm.bottom = bottom;
     }
   }
 }
