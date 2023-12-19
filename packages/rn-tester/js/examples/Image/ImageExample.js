@@ -130,6 +130,7 @@ class NetworkImageCallbackExample extends React.Component<
           source={this.props.source}
           style={[styles.base, styles.visibleOverflow]}
           onLoadStart={() =>
+            // prettier-ignore
             this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
           onProgress={event => {

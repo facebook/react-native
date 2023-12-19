@@ -28,18 +28,18 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-ft-flow": "^2.0.1",
-    "eslint-plugin-jest": "^26.5.3",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-jest": "^27.2.3",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-native": "^4.0.0"
   },
   "peerDependencies": {
     "eslint": ">=8",
-    "prettier": ">=2"
+    "prettier": ">=3"
   },
   "devDependencies": {
     "eslint": "^8.23.1",
-    "prettier": "2.8.8"
+    "prettier": "3.0.0"
   }
 }

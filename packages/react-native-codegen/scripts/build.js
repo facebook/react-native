@@ -57,7 +57,7 @@ function getBuildPath(file, buildFolder) {
   return path.resolve(pkgBuildPath, relativeToSrcPath);
 }
 
-function buildFile(file, silent) {
+async function buildFile(file, silent) {
   const destPath = getBuildPath(file, BUILD_DIR);
 
   mkdirp.sync(path.dirname(destPath));
@@ -80,7 +80,7 @@ function buildFile(file, silent) {
           '\n',
       );
   } else {
-    const transformed = prettier.format(
+    const transformed = await prettier.format(
       babel.transformFileSync(file, {}).code,
       {
         ...prettierConfig,
@@ -103,12 +103,16 @@ function buildFile(file, silent) {
   }
 }
 
-const srcDir = path.resolve(__dirname, '..', SRC_DIR);
-const pattern = path.resolve(srcDir, '**/*');
-const files = glob.sync(pattern, {nodir: true});
+(async () => {
+  const srcDir = path.resolve(__dirname, '..', SRC_DIR);
+  const pattern = path.resolve(srcDir, '**/*');
+  const files = glob.sync(pattern, {nodir: true});
 
-process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
+  process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 
-files.forEach(file => buildFile(file, !process.argv.includes('--verbose')));
+  for (const file of files) {
+    await buildFile(file, !process.argv.includes('--verbose'));
+  }
 
-process.stdout.write(`[  ${chalk.green('OK')}  ]\n`);
+  process.stdout.write(`[  ${chalk.green('OK')}  ]\n`);
+})();

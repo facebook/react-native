@@ -51,7 +51,7 @@
     "chalk": "^4.0.0",
     "hermes-estree": "0.18.0",
     "micromatch": "^4.0.4",
-    "prettier": "2.8.8",
+    "prettier": "3.0.0",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
