@@ -7,5 +7,7 @@
 
 #import <React/RCTViewManager.h>
 
+@class ScreenshotUtils;
+
 @interface ScreenshotManager : RCTViewManager
 @end

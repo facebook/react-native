@@ -22,5 +22,10 @@ Pod::Spec.new do |s|
   s.source_files    = "**/*.{h,m,mm,swift}"
   s.requires_arc    = true
 
+  s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
+    "SWIFT_OBJC_INTERFACE_HEADER_NAME" => "ScreenshotManager-Swift.h"
+  }
+
   install_modules_dependencies(s)
 end

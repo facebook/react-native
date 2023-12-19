@@ -9,6 +9,8 @@
 
 #import <React/RCTUIManager.h>
 
+#import "ScreenshotManager-Swift.h"
+
 @implementation ScreenshotManager
 
 RCT_EXPORT_MODULE();
@@ -57,14 +59,8 @@ RCT_EXPORT_METHOD(takeScreenshot
 
     // Convert image to data (on a background thread)
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSData *data;
-      if ([format isEqualToString:@"png"]) {
-        data = UIImagePNGRepresentation(image);
-      } else if ([format isEqualToString:@"jpeg"]) {
-        CGFloat quality = [RCTConvert CGFloat:options[@"quality"] ?: @1];
-        data = UIImageJPEGRepresentation(image, quality);
-      } else {
-        RCTLogError(@"Unsupported image format: %@", format);
+      NSData *data = [ScreenshotUtils getImageData:image format:format options:options];
+      if (data == nil) {
         return;
       }
 
