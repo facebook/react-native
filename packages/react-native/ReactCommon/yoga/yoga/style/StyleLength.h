@@ -71,6 +71,17 @@ class StyleLength {
     return unit_;
   }
 
+  constexpr FloatOptional resolve(float referenceLength) {
+    switch (unit_) {
+      case Unit::Point:
+        return value_;
+      case Unit::Percent:
+        return FloatOptional{value_.unwrap() * referenceLength * 0.01f};
+      default:
+        return FloatOptional{};
+    }
+  }
+
   explicit constexpr operator YGValue() const {
     return YGValue{value_.unwrap(), unscopedEnum(unit_)};
   }

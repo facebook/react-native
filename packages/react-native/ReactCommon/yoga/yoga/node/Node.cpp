@@ -10,7 +10,6 @@
 #include <iostream>
 
 #include <yoga/algorithm/FlexDirection.h>
-#include <yoga/algorithm/ResolveValue.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
@@ -166,7 +165,7 @@ float Node::getFlexStartPosition(
             flexStartEdge(axis))
       : computeEdgeValueForColumn<&Style::position>(flexStartEdge(axis));
 
-  return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
+  return leadingPosition.resolve(axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineStartPosition(
@@ -178,7 +177,7 @@ float Node::getInlineStartPosition(
       ? computeEdgeValueForRow<&Style::position>(Edge::Start, startEdge)
       : computeEdgeValueForColumn<&Style::position>(startEdge);
 
-  return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
+  return leadingPosition.resolve(axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getFlexEndPosition(
@@ -191,7 +190,7 @@ float Node::getFlexEndPosition(
             flexEndEdge(axis))
       : computeEdgeValueForColumn<&Style::position>(flexEndEdge(axis));
 
-  return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
+  return trailingPosition.resolve(axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineEndPosition(
@@ -203,7 +202,7 @@ float Node::getInlineEndPosition(
       ? computeEdgeValueForRow<&Style::position>(Edge::End, endEdge)
       : computeEdgeValueForColumn<&Style::position>(endEdge);
 
-  return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
+  return trailingPosition.resolve(axisSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getFlexStartMargin(
@@ -216,7 +215,7 @@ float Node::getFlexStartMargin(
             flexStartEdge(axis))
       : computeEdgeValueForColumn<&Style::margin>(flexStartEdge(axis));
 
-  return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
+  return leadingMargin.resolve(widthSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineStartMargin(
@@ -228,7 +227,7 @@ float Node::getInlineStartMargin(
       ? computeEdgeValueForRow<&Style::margin>(Edge::Start, startEdge)
       : computeEdgeValueForColumn<&Style::margin>(startEdge);
 
-  return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
+  return leadingMargin.resolve(widthSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getFlexEndMargin(
@@ -241,7 +240,7 @@ float Node::getFlexEndMargin(
             flexEndEdge(axis))
       : computeEdgeValueForColumn<&Style::margin>(flexEndEdge(axis));
 
-  return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
+  return trailingMargin.resolve(widthSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineEndMargin(
@@ -253,7 +252,7 @@ float Node::getInlineEndMargin(
       ? computeEdgeValueForRow<&Style::margin>(Edge::End, endEdge)
       : computeEdgeValueForColumn<&Style::margin>(endEdge);
 
-  return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
+  return trailingMargin.resolve(widthSize).unwrapOrDefault(0.0f);
 }
 
 float Node::getInlineStartBorder(FlexDirection axis, Direction direction)
@@ -304,7 +303,7 @@ float Node::getInlineStartPadding(
       ? computeEdgeValueForRow<&Style::padding>(Edge::Start, startEdge)
       : computeEdgeValueForColumn<&Style::padding>(startEdge);
 
-  return maxOrDefined(resolveValue(leadingPadding, widthSize).unwrap(), 0.0f);
+  return maxOrDefined(leadingPadding.resolve(widthSize).unwrap(), 0.0f);
 }
 
 float Node::getFlexStartPadding(
@@ -317,7 +316,7 @@ float Node::getFlexStartPadding(
             flexStartEdge(axis))
       : computeEdgeValueForColumn<&Style::padding>(flexStartEdge(axis));
 
-  return maxOrDefined(resolveValue(leadingPadding, widthSize).unwrap(), 0.0f);
+  return maxOrDefined(leadingPadding.resolve(widthSize).unwrap(), 0.0f);
 }
 
 float Node::getInlineEndPadding(
@@ -329,7 +328,7 @@ float Node::getInlineEndPadding(
       ? computeEdgeValueForRow<&Style::padding>(Edge::End, endEdge)
       : computeEdgeValueForColumn<&Style::padding>(endEdge);
 
-  return maxOrDefined(resolveValue(trailingPadding, widthSize).unwrap(), 0.0f);
+  return maxOrDefined(trailingPadding.resolve(widthSize).unwrap(), 0.0f);
 }
 
 float Node::getFlexEndPadding(
@@ -342,7 +341,7 @@ float Node::getFlexEndPadding(
             flexEndEdge(axis))
       : computeEdgeValueForColumn<&Style::padding>(flexEndEdge(axis));
 
-  return maxOrDefined(resolveValue(trailingPadding, widthSize).unwrap(), 0.0f);
+  return maxOrDefined(trailingPadding.resolve(widthSize).unwrap(), 0.0f);
 }
 
 float Node::getInlineStartPaddingAndBorder(
@@ -393,7 +392,7 @@ float Node::getGapForAxis(FlexDirection axis) const {
   auto gap = isRow(axis) ? style_.resolveColumnGap() : style_.resolveRowGap();
   // TODO: Validate percentage gap, and expose ability to set percentage to
   // public API
-  return maxOrDefined(resolveValue(gap, 0.0f /*ownerSize*/).unwrap(), 0.0f);
+  return maxOrDefined(gap.resolve(0.0f /*ownerSize*/).unwrap(), 0.0f);
 }
 
 YGSize Node::measure(

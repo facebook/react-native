@@ -22,7 +22,6 @@
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/algorithm/FlexLine.h>
 #include <yoga/algorithm/PixelGrid.h>
-#include <yoga/algorithm/ResolveValue.h>
 #include <yoga/algorithm/SizingMode.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
@@ -52,15 +51,14 @@ bool calculateLayoutInternal(
     const uint32_t generationCount);
 
 static void constrainMaxSizeForMode(
-    const yoga::Node* const node,
-    const enum FlexDirection axis,
-    const float ownerAxisSize,
-    const float ownerWidth,
-    SizingMode* mode,
-    float* size) {
+    const yoga::Node* node,
+    FlexDirection axis,
+    float ownerAxisSize,
+    float ownerWidth,
+    /*in_out*/ SizingMode* mode,
+    /*in_out*/ float* size) {
   const FloatOptional maxSize =
-      yoga::resolveValue(
-          node->getStyle().maxDimension(dimension(axis)), ownerAxisSize) +
+      node->getStyle().maxDimension(dimension(axis)).resolve(ownerAxisSize) +
       FloatOptional(node->getMarginForAxis(axis, ownerWidth));
   switch (*mode) {
     case SizingMode::StretchFit:
@@ -103,7 +101,7 @@ static void computeFlexBasisForChild(
   SizingMode childHeightSizingMode;
 
   const FloatOptional resolvedFlexBasis =
-      yoga::resolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize);
+      child->resolveFlexBasisPtr().resolve(mainAxisownerSize);
   const bool isRowStyleDimDefined =
       child->styleDefinesDimension(FlexDirection::Row, ownerWidth);
   const bool isColumnStyleDimDefined =
@@ -125,16 +123,14 @@ static void computeFlexBasisForChild(
         paddingAndBorderForAxis(child, FlexDirection::Row, ownerWidth));
 
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        yoga::resolveValue(
-            child->getResolvedDimension(Dimension::Width), ownerWidth),
+        child->getResolvedDimension(Dimension::Width).resolve(ownerWidth),
         paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
     const FloatOptional paddingAndBorder = FloatOptional(
         paddingAndBorderForAxis(child, FlexDirection::Column, ownerWidth));
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        yoga::resolveValue(
-            child->getResolvedDimension(Dimension::Height), ownerHeight),
+        child->getResolvedDimension(Dimension::Height).resolve(ownerHeight),
         paddingAndBorder));
   } else {
     // Compute the flex basis and hypothetical main size (i.e. the clamped flex
@@ -149,18 +145,16 @@ static void computeFlexBasisForChild(
         child->getMarginForAxis(FlexDirection::Column, ownerWidth);
 
     if (isRowStyleDimDefined) {
-      childWidth =
-          yoga::resolveValue(
-              child->getResolvedDimension(Dimension::Width), ownerWidth)
-              .unwrap() +
+      childWidth = child->getResolvedDimension(Dimension::Width)
+                       .resolve(ownerWidth)
+                       .unwrap() +
           marginRow;
       childWidthSizingMode = SizingMode::StretchFit;
     }
     if (isColumnStyleDimDefined) {
-      childHeight =
-          yoga::resolveValue(
-              child->getResolvedDimension(Dimension::Height), ownerHeight)
-              .unwrap() +
+      childHeight = child->getResolvedDimension(Dimension::Height)
+                        .resolve(ownerHeight)
+                        .unwrap() +
           marginColumn;
       childHeightSizingMode = SizingMode::StretchFit;
     }
@@ -477,13 +471,13 @@ static float calculateAvailableInnerDimension(
     // We want to make sure our available height does not violate min and max
     // constraints
     const FloatOptional minDimensionOptional =
-        yoga::resolveValue(node->getStyle().minDimension(dimension), ownerDim);
+        node->getStyle().minDimension(dimension).resolve(ownerDim);
     const float minInnerDim = minDimensionOptional.isUndefined()
         ? 0.0f
         : minDimensionOptional.unwrap() - paddingAndBorder;
 
     const FloatOptional maxDimensionOptional =
-        yoga::resolveValue(node->getStyle().maxDimension(dimension), ownerDim);
+        node->getStyle().maxDimension(dimension).resolve(ownerDim);
 
     const float maxInnerDim = maxDimensionOptional.isUndefined()
         ? FLT_MAX
@@ -700,9 +694,8 @@ static float distributeFreeSpaceSecondPass(
           : SizingMode::FitContent;
     } else {
       childCrossSize =
-          yoga::resolveValue(
-              currentLineChild->getResolvedDimension(dimension(crossAxis)),
-              availableInnerCrossDim)
+          currentLineChild->getResolvedDimension(dimension(crossAxis))
+              .resolve(availableInnerCrossDim)
               .unwrap() +
           marginCross;
       const bool isLoosePercentageMeasurement =
@@ -954,8 +947,8 @@ static void justifyMainAxis(
   if (sizingModeMainDim == SizingMode::FitContent &&
       flexLine.layout.remainingFreeSpace > 0) {
     if (style.minDimension(dimension(mainAxis)).isDefined() &&
-        yoga::resolveValue(
-            style.minDimension(dimension(mainAxis)), mainAxisownerSize)
+        style.minDimension(dimension(mainAxis))
+            .resolve(mainAxisownerSize)
             .isDefined()) {
       // This condition makes sure that if the size of main dimension(after
       // considering child nodes main dim, leading and trailing padding etc)
@@ -964,10 +957,9 @@ static void justifyMainAxis(
 
       // `minAvailableMainDim` denotes minimum available space in which child
       // can be laid out, it will exclude space consumed by padding and border.
-      const float minAvailableMainDim =
-          yoga::resolveValue(
-              style.minDimension(dimension(mainAxis)), mainAxisownerSize)
-              .unwrap() -
+      const float minAvailableMainDim = style.minDimension(dimension(mainAxis))
+                                            .resolve(mainAxisownerSize)
+                                            .unwrap() -
           leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
       const float occupiedSpaceByChildNodes =
           availableInnerMainDim - flexLine.layout.remainingFreeSpace;
@@ -1446,20 +1438,16 @@ static void calculateLayoutImpl(
     if (sizingModeMainDim != SizingMode::StretchFit) {
       const auto& style = node->getStyle();
       const float minInnerWidth =
-          yoga::resolveValue(style.minDimension(Dimension::Width), ownerWidth)
-              .unwrap() -
+          style.minDimension(Dimension::Width).resolve(ownerWidth).unwrap() -
           paddingAndBorderAxisRow;
       const float maxInnerWidth =
-          yoga::resolveValue(style.maxDimension(Dimension::Width), ownerWidth)
-              .unwrap() -
+          style.maxDimension(Dimension::Width).resolve(ownerWidth).unwrap() -
           paddingAndBorderAxisRow;
       const float minInnerHeight =
-          yoga::resolveValue(style.minDimension(Dimension::Height), ownerHeight)
-              .unwrap() -
+          style.minDimension(Dimension::Height).resolve(ownerHeight).unwrap() -
           paddingAndBorderAxisColumn;
       const float maxInnerHeight =
-          yoga::resolveValue(style.maxDimension(Dimension::Height), ownerHeight)
-              .unwrap() -
+          style.maxDimension(Dimension::Height).resolve(ownerHeight).unwrap() -
           paddingAndBorderAxisColumn;
 
       const float minInnerMainDim =
@@ -1748,9 +1736,8 @@ static void calculateLayoutImpl(
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
         : node->styleDefinesDimension(crossAxis, crossAxisownerSize)
-        ? yoga::resolveValue(
-              node->getResolvedDimension(dimension(crossAxis)),
-              crossAxisownerSize)
+        ? node->getResolvedDimension(dimension(crossAxis))
+              .resolve(crossAxisownerSize)
               .unwrap()
         : totalLineCrossDim + paddingAndBorderAxisCross;
 
@@ -2442,17 +2429,15 @@ void calculateLayout(
   const auto& style = node->getStyle();
   if (node->styleDefinesDimension(FlexDirection::Row, ownerWidth)) {
     width =
-        (yoga::resolveValue(
-             node->getResolvedDimension(dimension(FlexDirection::Row)),
-             ownerWidth)
+        (node->getResolvedDimension(dimension(FlexDirection::Row))
+             .resolve(ownerWidth)
              .unwrap() +
          node->getMarginForAxis(FlexDirection::Row, ownerWidth));
     widthSizingMode = SizingMode::StretchFit;
-  } else if (yoga::resolveValue(
-                 style.maxDimension(Dimension::Width), ownerWidth)
+  } else if (style.maxDimension(Dimension::Width)
+                 .resolve(ownerWidth)
                  .isDefined()) {
-    width = yoga::resolveValue(style.maxDimension(Dimension::Width), ownerWidth)
-                .unwrap();
+    width = style.maxDimension(Dimension::Width).resolve(ownerWidth).unwrap();
     widthSizingMode = SizingMode::FitContent;
   } else {
     width = ownerWidth;
@@ -2464,18 +2449,16 @@ void calculateLayout(
   SizingMode heightSizingMode = SizingMode::MaxContent;
   if (node->styleDefinesDimension(FlexDirection::Column, ownerHeight)) {
     height =
-        (yoga::resolveValue(
-             node->getResolvedDimension(dimension(FlexDirection::Column)),
-             ownerHeight)
+        (node->getResolvedDimension(dimension(FlexDirection::Column))
+             .resolve(ownerHeight)
              .unwrap() +
          node->getMarginForAxis(FlexDirection::Column, ownerWidth));
     heightSizingMode = SizingMode::StretchFit;
-  } else if (yoga::resolveValue(
-                 style.maxDimension(Dimension::Height), ownerHeight)
+  } else if (style.maxDimension(Dimension::Height)
+                 .resolve(ownerHeight)
                  .isDefined()) {
     height =
-        yoga::resolveValue(style.maxDimension(Dimension::Height), ownerHeight)
-            .unwrap();
+        style.maxDimension(Dimension::Height).resolve(ownerHeight).unwrap();
     heightSizingMode = SizingMode::FitContent;
   } else {
     height = ownerHeight;
