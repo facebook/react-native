@@ -10,11 +10,7 @@
 
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
-import type {
-  DirectEventHandler,
-  Int32,
-  WithDefault,
-} from '../Types/CodegenTypes';
+import type {DirectEventHandler, WithDefault} from '../Types/CodegenTypes';
 
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
 
@@ -126,11 +122,6 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#onorientationchange
    */
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
-
-  /**
-   * The `identifier` is the unique number for identifying Modal components.
-   */
-  identifier?: WithDefault<Int32, 0>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {

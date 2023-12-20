@@ -111,10 +111,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setSupportedOrientations(ReactModalHostView view, @Nullable ReadableArray value) {}
 
   @Override
-  @ReactProp(name = "identifier")
-  public void setIdentifier(ReactModalHostView view, int value) {}
-
-  @Override
   protected void addEventEmitters(
       final ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
