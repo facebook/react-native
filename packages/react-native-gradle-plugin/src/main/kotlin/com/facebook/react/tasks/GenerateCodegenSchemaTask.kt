@@ -9,6 +9,7 @@ package com.facebook.react.tasks
 
 import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
@@ -20,11 +21,9 @@ import org.gradle.api.tasks.*
  * `combine-js-to-schema-cli.js` on top of it (from `react-native-codegen`). The output is a
  * `schema.json` file that contains an intermediate representation of the code to be generated.
  */
-abstract class GenerateCodegenSchemaTask : Exec() {
+abstract class GenerateCodegenSchemaTask : DefaultTask() {
 
   @get:Internal abstract val jsRootDir: DirectoryProperty
-
-  @get:Internal abstract val codegenDir: DirectoryProperty
 
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
@@ -42,10 +41,13 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   @get:OutputFile
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")
 
-  override fun exec() {
+  @TaskAction
+  fun run() {
+    val codegenCombineScriptPath = resolveCodegenCombineScriptPath()
+    val codegenCombineCommand = getCodegenCombineCommand(codegenCombineScriptPath)
+
     wipeOutputDir()
-    setupCommandLine()
-    super.exec()
+    runCommand(codegenCombineCommand)
   }
 
   internal fun wipeOutputDir() {
@@ -55,22 +57,39 @@ abstract class GenerateCodegenSchemaTask : Exec() {
     }
   }
 
-  internal fun setupCommandLine() {
+  private fun runCommand(command: List<Any>) {
+    project.exec {
+      it.workingDir(project.projectDir)
+      it.commandLine(command)
+    }
+  }
+
+  internal fun getCodegenCombineCommand(codegenCombineScriptPath: String): List<Any> {
     val workingDir = project.projectDir
-    commandLine(
-        windowsAwareCommandLine(
-            *nodeExecutableAndArgs.get().toTypedArray(),
-            codegenDir
-                .file("lib/cli/combine/combine-js-to-schema-cli.js")
-                .get()
-                .asFile
-                .cliPath(workingDir),
-            "--platform",
-            "android",
-            "--exclude",
-            "NativeSampleTurboModule",
-            generatedSchemaFile.get().asFile.cliPath(workingDir),
-            jsRootDir.asFile.get().cliPath(workingDir),
-        ))
+    val command =
+        mutableListOf<String>().apply {
+          addAll(nodeExecutableAndArgs.get())
+          add(codegenCombineScriptPath)
+          add("--platform")
+          add("android")
+          add("--exclude")
+          add("NativeSampleTurboModule")
+          add(generatedSchemaFile.get().asFile.cliPath(workingDir))
+          add(jsRootDir.asFile.get().cliPath(workingDir))
+        }
+
+    return windowsAwareCommandLine(command)
+  }
+
+  private fun resolveCodegenCombineScriptPath(): String {
+    val nodeProcess =
+        Runtime.getRuntime()
+            .exec(
+                arrayOf(
+                    "node",
+                    "--print",
+                    "require.resolve('@react-native/codegen/cli/combine/combine-js-to-schema-cli.js');"))
+
+    return nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
   }
 }

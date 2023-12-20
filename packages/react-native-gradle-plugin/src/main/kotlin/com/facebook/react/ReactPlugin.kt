@@ -54,7 +54,6 @@ class ReactPlugin : Plugin<Project> {
       // defaults).
       rootExtension.root.set(extension.root)
       rootExtension.reactNativeDir.set(extension.reactNativeDir)
-      rootExtension.codegenDir.set(extension.codegenDir)
       rootExtension.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
 
       project.afterEvaluate {
@@ -151,7 +150,6 @@ class ReactPlugin : Plugin<Project> {
         project.tasks.register(
             "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-              it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
 
               // We're reading the package.json at configuration time to properly feed

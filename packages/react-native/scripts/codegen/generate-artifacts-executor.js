@@ -24,15 +24,7 @@ const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
-const REACT_NATIVE_REPOSITORY_ROOT = path.join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  '..',
-);
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
-const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
@@ -166,28 +158,6 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
   }
 
   return extractLibrariesFromJSON(pkgJson, projectRoot);
-}
-
-// CodeGen
-function buildCodegenIfNeeded() {
-  if (!fs.existsSync(CODEGEN_REPO_PATH)) {
-    return;
-  }
-  // Assuming we are working in the react-native repo. We might need to build the codegen.
-  // This will become unnecessary once we start using Babel Register for the codegen package.
-  const libPath = path.join(CODEGEN_REPO_PATH, 'lib');
-  if (fs.existsSync(libPath) && fs.readdirSync(libPath).length > 0) {
-    return;
-  }
-  console.log('\n\n[Codegen] >>>>> Building react-native-codegen package');
-  execSync('yarn install', {
-    cwd: CODEGEN_REPO_PATH,
-    stdio: 'inherit',
-  });
-  execSync('yarn build', {
-    cwd: CODEGEN_REPO_PATH,
-    stdio: 'inherit',
-  });
 }
 
 function computeOutputPath(projectRoot, baseOutputPath, pkgJson) {
@@ -363,9 +333,6 @@ function execute(projectRoot, baseOutputPath) {
     );
 
     const pkgJson = readPkgJsonInDirectory(projectRoot);
-
-    buildCodegenIfNeeded();
-
     const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
 
     if (libraries.length === 0) {

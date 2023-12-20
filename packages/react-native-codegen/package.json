@@ -3,12 +3,13 @@
   "version": "0.74.0",
   "description": "Code generation tools for React Native",
   "license": "MIT",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
+  "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-codegen"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
   "keywords": [
     "code",
     "generation",
@@ -16,17 +17,27 @@
     "tools",
     "react-native"
   ],
-  "bugs": "https://github.com/facebook/react-native/issues",
-  "engines": {
-    "node": ">=18"
-  },
-  "scripts": {
-    "build": "yarn clean && node scripts/build.js --verbose",
-    "clean": "rimraf lib",
-    "prepare": "yarn run build"
+  "exports": {
+    "./cli/combine/combine-js-to-schema": "./src/cli/combine/combine-js-to-schema.js",
+    "./cli/combine/combine-js-to-schema.js": "./src/cli/combine/combine-js-to-schema.js",
+    "./cli/combine/combine-js-to-schema-cli": "./src/cli/combine/combine-js-to-schema-cli.js",
+    "./cli/combine/combine-js-to-schema-cli.js": "./src/cli/combine/combine-js-to-schema-cli.js",
+    "./cli/generators/generate-all": "./src/cli/generators/generate-all.js",
+    "./cli/generators/generate-all.js": "./src/cli/generators/generate-all.js",
+    "./generators/RNCodegen": "./src/generators/RNCodegen.js",
+    "./generators/RNCodegen.js": "./src/generators/RNCodegen.js",
+    "./parsers/flow/parser": "./src/parsers/flow/parser.js",
+    "./parsers/flow/parser.js": "./src/parsers/flow/parser.js",
+    "./parsers/typescript/parser": "./src/parsers/typescript/parser.js",
+    "./parsers/typescript/parser.js": "./src/parsers/typescript/parser.js",
+    "./lib/*": "./src/*.js",
+    "./lib/*.js": "./src/*.js",
+    "./src/*": "./src/*.js",
+    "./src/*.js": "./src/*.js",
+    "./package.json": "./package.json"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "dependencies": {
     "@babel/parser": "^7.20.0",
@@ -57,5 +68,8 @@
   },
   "peerDependencies": {
     "@babel/preset-env": "^7.1.6"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

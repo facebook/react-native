@@ -80,8 +80,6 @@ tasks.register("clean", Delete::class.java) {
           "./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
-  delete(rootProject.file("./packages/react-native-codegen/lib"))
-  delete(rootProject.file("./node_modules/@react-native/codegen/lib"))
   delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
 }
 

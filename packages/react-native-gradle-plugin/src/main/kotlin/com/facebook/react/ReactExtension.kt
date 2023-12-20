@@ -123,6 +123,10 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    *
    * Default: ${rootProject.dir}/../node_modules/@react-native/codegen
    */
+  @Deprecated(
+      message =
+          "codegenDir is deprecated in React Native 0.74 and will be ignored. This option is safe to remove.",
+      level = DeprecationLevel.WARNING)
   val codegenDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 

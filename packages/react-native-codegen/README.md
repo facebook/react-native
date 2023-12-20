@@ -1,21 +1,21 @@
 # @react-native/codegen
 
-[![Version][version-badge]][package]
+![npm package](https://img.shields.io/npm/v/@react-native/codegen?color=brightgreen&label=npm%20package)
 
-## Installation
+Code generation tools for React Native.
+
+## Usage
+
+Codegen is invoked automatically by React Native every time an app is built. Learn more about using Codegen [in the docs](https://reactnative.dev/docs/the-new-architecture/pillars-codegen).
+
+## Contributing
+
+Changes to this package can be made locally and tested against the `rn-tester` app, per the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code). During development, this package is automatically run from source with no build step.
+
+### Tests
+
+To run tests scoped to this package during development, use the following command from the repo root.
 
 ```
-yarn add --dev @react-native/codegen
+yarn jest packages/react-native-codegen
 ```
-
-*Note: We're using `yarn` to install deps. Feel free to change commands to use `npm` 3+ and `npx` if you like*
-
-[version-badge]: https://img.shields.io/npm/v/@react-native/codegen?style=flat-square
-[package]: https://www.npmjs.com/package/@react-native/codegen
-
-## Testing
-
-To run the tests in this package, run the following commands from the React Native root folder:
-
-1. `yarn` to install the dependencies. You just need to run this once
-2. `yarn jest packages/react-native-codegen`.

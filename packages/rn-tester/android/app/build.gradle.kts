@@ -24,9 +24,6 @@ react {
   root = file("../../")
   //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
   reactNativeDir = file(reactNativeDirPath)
-  //   The folder where the react-native Codegen package is. Default is
-  // ../node_modules/@react-native/codegen
-  codegenDir = file("$rootDir/node_modules/@react-native/codegen")
   //   The cli.js file which is the React Native CLI entrypoint. Default is
   // ../node_modules/react-native/cli.js
   cliFile = file("$reactNativeDirPath/cli.js")
@@ -190,10 +187,4 @@ afterEvaluate {
     tasks.getByName("mergeJscDebugNativeLibs").mustRunAfter("externalNativeBuildHermesDebug")
     tasks.getByName("mergeJscReleaseNativeLibs").mustRunAfter("externalNativeBuildHermesRelease")
   }
-
-  // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
-  // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
-  tasks
-      .getByName("generateCodegenSchemaFromJavaScript")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
