@@ -21,16 +21,12 @@
 
 const int RECONNECT_DELAY_MS = 2000;
 
-@implementation RCTBundleStatus
-@end
-
 @interface RCTInspectorPackagerConnection () <SRWebSocketDelegate> {
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
   SRWebSocket *_webSocket;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
-  RCTBundleStatusProvider _bundleStatusProvider;
 }
 @end
 
@@ -58,11 +54,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     _inspectorConnections = [NSMutableDictionary new];
   }
   return self;
-}
-
-- (void)setBundleStatusProvider:(RCTBundleStatusProvider)bundleStatusProvider
-{
-  _bundleStatusProvider = bundleStatusProvider;
 }
 
 - (void)handleProxyMessage:(NSDictionary<NSString *, id> *)message
@@ -148,19 +139,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSArray<RCTInspectorPage *> *pages = [RCTInspector pages];
   NSMutableArray *array = [NSMutableArray arrayWithCapacity:pages.count];
 
-  RCTBundleStatusProvider statusProvider = _bundleStatusProvider;
-  RCTBundleStatus *bundleStatus = statusProvider == nil ? nil : statusProvider();
-
   for (RCTInspectorPage *page in pages) {
     NSDictionary *jsonPage = @{
       @"id" : [@(page.id) stringValue],
       @"title" : page.title,
       @"app" : [[NSBundle mainBundle] bundleIdentifier],
       @"vm" : page.vm,
-      @"isLastBundleDownloadSuccess" : bundleStatus == nil ? [NSNull null]
-                                                           : @(bundleStatus.isLastBundleDownloadSuccess),
-      @"bundleUpdateTimestamp" : bundleStatus == nil ? [NSNull null]
-                                                     : @((long)bundleStatus.bundleUpdateTimestamp * 1000),
     };
     [array addObject:jsonPage];
   }

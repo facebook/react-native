@@ -108,16 +108,13 @@ public class DevServerHelper {
 
   private @Nullable JSPackagerClient mPackagerClient;
   private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
-  private final InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
       String packageName,
-      InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider,
       PackagerConnectionSettings packagerConnectionSettings) {
     mSettings = developerSettings;
     mPackagerConnectionSettings = packagerConnectionSettings;
-    mBundlerStatusProvider = bundleStatusProvider;
     mClient =
         new OkHttpClient.Builder()
             .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -214,8 +211,7 @@ public class DevServerHelper {
       @Override
       protected Void doInBackground(Void... params) {
         mInspectorPackagerConnection =
-            new InspectorPackagerConnection(
-                getInspectorDeviceUrl(), mPackageName, mBundlerStatusProvider);
+            new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
