@@ -77,6 +77,7 @@ type LibraryOptions = $ReadOnly<{
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
+  useLocalIncludePaths?: boolean,
 }>;
 
 type SchemasOptions = $ReadOnly<{
@@ -232,16 +233,24 @@ module.exports = {
       outputDirectory,
       packageName,
       assumeNonnull,
+      useLocalIncludePaths,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
     schemaValidator.validate(schema);
 
+    const defaultHeaderPrefix = 'react/renderer/components';
+    const headerPrefix =
+      useLocalIncludePaths === true
+        ? ''
+        : `${defaultHeaderPrefix}/${libraryName}/`;
     function composePath(intermediate: string) {
       return path.join(outputDirectory, intermediate, libraryName);
     }
 
-    const componentIOSOutput = composePath('react/renderer/components/');
+    const componentIOSOutput = composePath(
+      useLocalIncludePaths === true ? '' : defaultHeaderPrefix,
+    );
     const modulesIOSOutput = composePath('./');
 
     const outputFoldersForGenerators = {
@@ -262,15 +271,19 @@ module.exports = {
 
     for (const name of generators) {
       for (const generator of LIBRARY_GENERATORS[name]) {
-        generator(libraryName, schema, packageName, assumeNonnull).forEach(
-          (contents: string, fileName: string) => {
-            generatedFiles.push({
-              name: fileName,
-              content: contents,
-              outputDir: outputFoldersForGenerators[name],
-            });
-          },
-        );
+        generator(
+          libraryName,
+          schema,
+          packageName,
+          assumeNonnull,
+          headerPrefix,
+        ).forEach((contents: string, fileName: string) => {
+          generatedFiles.push({
+            name: fileName,
+            content: contents,
+            outputDir: outputFoldersForGenerators[name],
+          });
+        });
       }
     }
     return checkOrWriteFiles(generatedFiles, test);
