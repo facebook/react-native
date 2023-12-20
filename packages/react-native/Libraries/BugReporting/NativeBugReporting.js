@@ -15,7 +15,6 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +startReportAProblemFlow: () => void;
   +setExtraData: (extraData: Object, extraFiles: Object) => void;
-  +setCategoryID: (categoryID: string) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('BugReporting'): ?Spec);
