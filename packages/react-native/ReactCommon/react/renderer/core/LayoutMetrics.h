@@ -73,7 +73,8 @@ struct LayoutMetrics {
                this->displayType,
                this->layoutDirection,
                this->pointScaleFactor,
-               this->overflowInset) ==
+               this->overflowInset,
+               this->positionType) ==
         std::tie(
                rhs.frame,
                rhs.contentInsets,
@@ -81,7 +82,8 @@ struct LayoutMetrics {
                rhs.displayType,
                rhs.layoutDirection,
                rhs.pointScaleFactor,
-               rhs.overflowInset);
+               rhs.overflowInset,
+               rhs.positionType);
   }
 
   bool operator!=(const LayoutMetrics& rhs) const {
