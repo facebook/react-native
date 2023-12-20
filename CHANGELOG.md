@@ -395,6 +395,14 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 - Purge children from view registry on `RCTUIManager` invalidation. ([bc63e44b23](https://github.com/facebook/react-native/commit/bc63e44b23baddf579d8e42b70af0473314f8e48) by [@kkafar](https://github.com/kkafar))
 - Fix React-ImageManager dependencies ([830c2e7c57](https://github.com/facebook/react-native/commit/830c2e7c571650f49b645e7f9f9445a021e8a0a2) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.8
+
+### Fixed
+
+- Fix `build_codegen!` not finding `@react-native/codegen` in pnpm setups ([e70166a3a8](https://github.com/facebook/react-native/commit/e70166a3a8b9ddf1a7e322db602c548aaa60102d) by [@tido64](https://github.com/tido64))
+- Correctly declare runtime dependencies ([df2bbba50b](https://github.com/facebook/react-native/commit/df2bbba50bf1484edf88079b965b8841fc7849a8) by [@tido64](https://github.com/tido64))
+- Prevent LogBox from crashing on very long messages ([c3c6cf4](https://github.com/facebook/react-native/commit/c3c6cf4646999e9bf971d2c0e63c41e550069f25) by [@motiz88](https://github.com/motiz88))
+
 ## v0.72.7
 
 ### Changed
