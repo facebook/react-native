@@ -181,8 +181,16 @@ static bool shouldFirstPairComesBeforeSecondOne(
     // Tiebreakers look at the positioning and then document order
     auto lhsLayoutableShadowNode =
         traitCast<const LayoutableShadowNode*>(lhs->shadowNode);
-    const auto rhsLayoutableShadowNode =
+    auto rhsLayoutableShadowNode =
         traitCast<const LayoutableShadowNode*>(rhs->shadowNode);
+
+    if (lhsLayoutableShadowNode->getLayoutMetrics().positionType ==
+            PositionType::Static ||
+        rhsLayoutableShadowNode->getLayoutMetrics().positionType ==
+            PositionType::Static) {
+      rhsLayoutableShadowNode =
+          traitCast<const LayoutableShadowNode*>(rhs->shadowNode);
+    }
 
     if (lhsLayoutableShadowNode != nullptr &&
         rhsLayoutableShadowNode != nullptr &&
