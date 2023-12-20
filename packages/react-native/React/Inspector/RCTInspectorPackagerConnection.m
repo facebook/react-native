@@ -197,15 +197,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onMessage(...)
-- (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
+- (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)messageText
 {
-  // warn but don't die on unrecognized messages
-  if (![opaqueMessage isKindOfClass:[NSString class]]) {
-    RCTLogWarn(@"Unrecognized inspector message, object is of type: %@", [opaqueMessage class]);
-    return;
-  }
-
-  NSString *messageText = opaqueMessage;
   NSError *error = nil;
   id parsedJSON = RCTJSONParse(messageText, &error);
   if (error) {
