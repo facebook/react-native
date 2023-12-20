@@ -24,7 +24,13 @@ fixtures.forEach(fixture => {
   it(`GenerateShadowNodeCpp can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(libName, schema, undefined, false);
+    const output = generator.generate(
+      libName,
+      schema,
+      '',
+      false,
+      `react/renderer/components/${libName}/`,
+    );
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

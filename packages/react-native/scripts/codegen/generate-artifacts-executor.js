@@ -226,13 +226,14 @@ function generateSchemaInfo(library) {
   };
 }
 
-function generateCode(iosOutputDir, schemaInfo) {
+function generateCode(iosOutputDir, schemaInfo, includesGeneratedCode) {
   const tmpDir = fs.mkdtempSync(
     path.join(os.tmpdir(), schemaInfo.library.config.name),
   );
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
+  const useLocalIncludePaths = includesGeneratedCode;
   generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
     'ios',
     schemaInfo.schema,
@@ -240,6 +241,7 @@ function generateCode(iosOutputDir, schemaInfo) {
     schemaInfo.library.config.name,
     'com.facebook.fbreact.specs',
     schemaInfo.library.config.type,
+    useLocalIncludePaths,
   );
 
   // Finally, copy artifacts to the final output directory.
@@ -256,9 +258,9 @@ function generateSchemaInfos(libraries) {
   return libraries.map(generateSchemaInfo);
 }
 
-function generateNativeCode(iosOutputDir, schemaInfos) {
+function generateNativeCode(iosOutputDir, schemaInfos, includesGeneratedCode) {
   return schemaInfos.map(schemaInfo => {
-    generateCode(iosOutputDir, schemaInfo);
+    generateCode(iosOutputDir, schemaInfo, includesGeneratedCode);
   });
 }
 
@@ -381,6 +383,7 @@ function execute(projectRoot, baseOutputPath) {
       schemaInfos.filter(schemaInfo =>
         mustGenerateNativeCode(projectRoot, schemaInfo),
       ),
+      pkgJsonIncludesGeneratedCode(pkgJson),
     );
 
     if (!pkgJsonIncludesGeneratedCode(pkgJson)) {

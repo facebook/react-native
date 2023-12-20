@@ -36,12 +36,6 @@ function createOutputDirectoryIfNeeded(outputDirectory, libraryName) {
   mkdirp.sync(outputDirectory);
 }
 
-function createFolderIfDefined(folder) {
-  if (folder) {
-    mkdirp.sync(folder);
-  }
-}
-
 /**
  * This function read a JSON schema from a path and parses it.
  * It throws if the schema don't exists or it can't be parsed.
@@ -77,25 +71,17 @@ function generateSpecFromInMemorySchema(
   libraryName,
   packageName,
   libraryType,
+  useLocalIncludePaths,
 ) {
   validateLibraryType(libraryType);
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
-  function composePath(intermediate) {
-    return path.join(outputDirectory, intermediate, libraryName);
-  }
-
-  // These are hardcoded and should not be changed.
-  // The codegen creates some C++ code with #include directive
-  // which uses these paths. Those directive are not customizable yet.
-  createFolderIfDefined(composePath('react/renderer/components/'));
-  createFolderIfDefined(composePath('./'));
-
   utils.getCodegen().generate(
     {
       libraryName,
       schema,
       outputDirectory,
       packageName,
+      useLocalIncludePaths,
     },
     {
       generators: GENERATORS[libraryType][platform],
