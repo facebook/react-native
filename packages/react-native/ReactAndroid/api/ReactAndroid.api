@@ -2041,7 +2041,7 @@ public class com/facebook/react/devsupport/DefaultDevSupportManagerFactory : com
 
 public class com/facebook/react/devsupport/DevServerHelper {
 	public static final field RELOAD_APP_EXTRA_JS_PROXY Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Ljava/lang/String;Lcom/facebook/react/devsupport/InspectorPackagerConnection$BundleStatusProvider;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
+	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Ljava/lang/String;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public fun closeInspectorConnection ()V
 	public fun closePackagerConnection ()V
 	public fun disableDebugger ()V
@@ -2198,21 +2198,10 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 }
 
 public class com/facebook/react/devsupport/InspectorPackagerConnection {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/devsupport/InspectorPackagerConnection$BundleStatusProvider;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public fun closeQuietly ()V
 	public fun connect ()V
 	public fun sendEventToAllConnections (Ljava/lang/String;)V
-}
-
-public class com/facebook/react/devsupport/InspectorPackagerConnection$BundleStatus {
-	public field isLastDownloadSuccess Ljava/lang/Boolean;
-	public field updateTimestamp J
-	public fun <init> ()V
-	public fun <init> (Ljava/lang/Boolean;J)V
-}
-
-public abstract interface class com/facebook/react/devsupport/InspectorPackagerConnection$BundleStatusProvider {
-	public abstract fun getBundleStatus ()Lcom/facebook/react/devsupport/InspectorPackagerConnection$BundleStatus;
 }
 
 public class com/facebook/react/devsupport/JSCHeapCapture : com/facebook/fbreact/specs/NativeJSCHeapCaptureSpec {
