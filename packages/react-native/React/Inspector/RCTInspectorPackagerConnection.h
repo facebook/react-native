@@ -30,7 +30,6 @@ typedef RCTBundleStatus * (^RCTBundleStatusProvider)(void);
 @interface RCTInspectorRemoteConnection : NSObject
 - (void)onMessage:(NSString *)message;
 - (void)onDisconnect;
-- (void)handleBackgroundEvent:(NSNotification *)notification;
 @end
 
 #endif
