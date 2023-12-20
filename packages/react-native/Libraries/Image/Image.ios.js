@@ -246,12 +246,6 @@ Image.queryCache = queryCache;
 // $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
 
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
-
 const styles = StyleSheet.create({
   base: {
     overflow: 'hidden',

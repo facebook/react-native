@@ -109,7 +109,6 @@
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "base64-js": "^1.5.1",
-    "deprecated-react-native-prop-types": "^5.0.0",
     "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
