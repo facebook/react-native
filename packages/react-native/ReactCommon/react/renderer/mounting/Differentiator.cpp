@@ -9,6 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <algorithm>
 #include "ShadowView.h"
@@ -176,6 +177,21 @@ class TinyMap final {
 static bool shouldFirstPairComesBeforeSecondOne(
     const ShadowViewNodePair* lhs,
     const ShadowViewNodePair* rhs) noexcept {
+  if (lhs->shadowNode->getOrderIndex() == rhs->shadowNode->getOrderIndex()) {
+    // Tiebreakers look at the positioning and then document order
+    auto lhsLayoutableShadowNode =
+        traitCast<const LayoutableShadowNode*>(lhs->shadowNode);
+    const auto rhsLayoutableShadowNode =
+        traitCast<const LayoutableShadowNode*>(rhs->shadowNode);
+
+    if (lhsLayoutableShadowNode != nullptr &&
+        rhsLayoutableShadowNode != nullptr &&
+        lhsLayoutableShadowNode->getLayoutMetrics().positionType !=
+            rhsLayoutableShadowNode->getLayoutMetrics().positionType) {
+      return lhsLayoutableShadowNode->getLayoutMetrics().positionType ==
+          PositionType::Static;
+    }
+  }
   return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
 }
 
@@ -190,7 +206,11 @@ static void reorderInPlaceIfNeeded(
 
   auto isReorderNeeded = false;
   for (const auto& pair : pairs) {
-    if (pair->shadowNode->getOrderIndex() != 0) {
+    auto layoutableShadowNode =
+        traitCast<const LayoutableShadowNode*>(pair->shadowNode);
+    if (pair->shadowNode->getOrderIndex() != 0 ||
+        layoutableShadowNode->getLayoutMetrics().positionType ==
+            PositionType::Static) {
       isReorderNeeded = true;
       break;
     }
