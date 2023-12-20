@@ -80,6 +80,7 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   _invalidated = YES;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 static BOOL RCTIsIPhoneNotched()
