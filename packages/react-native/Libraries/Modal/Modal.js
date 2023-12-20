@@ -172,12 +172,6 @@ class Modal extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
-    if (this._eventSubscription) {
-      this._eventSubscription.remove();
-    }
-  }
-
   componentDidUpdate(prevProps: Props) {
     if (prevProps.visible !== true && this.props.visible === true) {
       this.setState({isRendering: true});
