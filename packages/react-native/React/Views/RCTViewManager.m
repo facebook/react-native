@@ -284,9 +284,9 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
 RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
-#if !TARGET_OS_OSX // [macOS]
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
+  #if !TARGET_OS_OSX // [macOS]
   UIAccessibilityTraits accessibilityRoleTraits =
       json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
   if (view.reactAccessibilityElement.accessibilityRoleTraits != accessibilityRoleTraits) {
@@ -294,8 +294,16 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityRole = json ? [RCTConvert NSString:json] : nil;
     [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
   }
+  #else // [macOS
+    if (json) {
+      view.reactAccessibilityElement.accessibilityRole = [RCTConvert accessibilityRoleFromTraits:json];
+    } else {
+      view.reactAccessibilityElement.accessibilityRole = defaultView.accessibilityRole;
+    }
+  #endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
 {
   UIAccessibilityTraits roleTraits = json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
