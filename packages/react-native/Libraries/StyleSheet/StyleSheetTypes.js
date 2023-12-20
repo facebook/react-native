@@ -484,7 +484,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
-  position?: 'absolute' | 'relative',
+  position?: 'absolute' | 'relative' | 'static',
 
   /** `flexDirection` controls which directions children of a container go.
    *  `row` goes left to right, `column` goes top to bottom, and you may
