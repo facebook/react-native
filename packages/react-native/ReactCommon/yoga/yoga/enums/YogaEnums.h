@@ -9,6 +9,7 @@
 
 #include <bit>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 
 namespace facebook::yoga {
@@ -53,8 +54,11 @@ constexpr auto to_underlying(Enumeration auto e) noexcept {
  * a range-based for loop.
  */
 template <HasOrdinality EnumT>
-auto ordinals() {
+std::ranges::input_range auto ordinals() {
   struct Iterator {
+    using difference_type = int;
+    using value_type = EnumT;
+
     EnumT e{};
 
     EnumT operator*() const {
@@ -65,10 +69,12 @@ auto ordinals() {
       e = static_cast<EnumT>(to_underlying(e) + 1);
       return *this;
     }
+    void operator++(int){};
 
     bool operator==(const Iterator& other) const = default;
     bool operator!=(const Iterator& other) const = default;
   };
+  static_assert(std::input_iterator<Iterator>);
 
   struct Range {
     Iterator begin() const {
@@ -78,6 +84,7 @@ auto ordinals() {
       return Iterator{static_cast<EnumT>(ordinalCount<EnumT>())};
     }
   };
+  static_assert(std::ranges::input_range<Range>);
 
   return Range{};
 }

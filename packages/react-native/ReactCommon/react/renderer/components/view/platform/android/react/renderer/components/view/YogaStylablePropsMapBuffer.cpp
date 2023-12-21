@@ -7,6 +7,8 @@
 
 #include "ViewPropsMapBuffer.h"
 
+#include <algorithm>
+
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/viewPropConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
@@ -68,13 +70,10 @@ void YogaStylableProps::propsDiffMapBuffer(
     const auto& oldStyle = oldProps.yogaStyle;
     const auto& newStyle = newProps.yogaStyle;
 
-    bool areBordersEqual = true;
-    for (auto edge : yoga::ordinals<yoga::Edge>()) {
-      if (oldStyle.border(edge) != newStyle.border(edge)) {
-        areBordersEqual = false;
-        break;
-      }
-    }
+    bool areBordersEqual =
+        std::ranges::all_of(yoga::ordinals<yoga::Edge>(), [&](auto edge) {
+          return oldStyle.border(edge) == newStyle.border(edge);
+        });
 
     if (!areBordersEqual) {
       builder.putMapBuffer(YG_BORDER_WIDTH, convertBorderWidths(newStyle));

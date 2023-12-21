@@ -6,6 +6,9 @@
  */
 
 #include "ViewShadowNode.h"
+
+#include <algorithm>
+
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
 #include <react/renderer/components/view/primitives.h>
@@ -36,17 +39,14 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
+static bool hasDefinedBorder(const yoga::Style& yogaStyle) {
+  return std::ranges::any_of(yoga::ordinals<yoga::Edge>(), [&](auto edge) {
+    return yogaStyle.border(edge).isDefined();
+  });
+}
+
 void ViewShadowNode::initialize() noexcept {
   auto& viewProps = static_cast<const ViewProps&>(*props_);
-
-  auto hasBorder = [&]() {
-    for (auto edge : yoga::ordinals<yoga::Edge>()) {
-      if (viewProps.yogaStyle.border(edge).isDefined()) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
@@ -64,8 +64,8 @@ void ViewShadowNode::initialize() noexcept {
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
-      isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
-      !viewProps.testId.empty() ||
+      isColorMeaningful(viewProps.backgroundColor) ||
+      hasDefinedBorder(viewProps.yogaStyle) || !viewProps.testId.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {
