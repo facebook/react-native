@@ -23,6 +23,7 @@
 #include <yoga/algorithm/FlexLine.h>
 #include <yoga/algorithm/PixelGrid.h>
 #include <yoga/algorithm/SizingMode.h>
+#include <yoga/algorithm/TrailingPosition.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>

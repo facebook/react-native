@@ -9,6 +9,7 @@
 #include <yoga/algorithm/Align.h>
 #include <yoga/algorithm/BoundAxis.h>
 #include <yoga/algorithm/CalculateLayout.h>
+#include <yoga/algorithm/TrailingPosition.h>
 
 namespace facebook::yoga {
 
