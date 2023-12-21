@@ -35,21 +35,6 @@ namespace facebook::yoga {
 
 std::atomic<uint32_t> gCurrentGenerationCount(0);
 
-bool calculateLayoutInternal(
-    yoga::Node* const node,
-    const float availableWidth,
-    const float availableHeight,
-    const Direction ownerDirection,
-    const SizingMode widthSizingMode,
-    const SizingMode heightSizingMode,
-    const float ownerWidth,
-    const float ownerHeight,
-    const bool performLayout,
-    const LayoutPassReason reason,
-    LayoutData& layoutMarkerData,
-    const uint32_t depth,
-    const uint32_t generationCount);
-
 static void constrainMaxSizeForMode(
     const yoga::Node* node,
     FlexDirection axis,
