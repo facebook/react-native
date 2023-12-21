@@ -152,7 +152,7 @@ function findExternalLibraries(pkgJson) {
   };
   // Determine which of these are codegen-enabled libraries
   console.log(
-    '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the project dependencies.',
+    '[Codegen] Searching for codegen-enabled libraries in the project dependencies.',
   );
   // Handle third-party libraries
   return Object.keys(dependencies).flatMap(dependency => {
@@ -170,9 +170,7 @@ function findExternalLibraries(pkgJson) {
 }
 
 function findProjectRootLibraries(pkgJson, projectRoot) {
-  console.log(
-    '\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in the app',
-  );
+  console.log('[Codegen] Searching for codegen-enabled libraries in the app.');
 
   if (pkgJson.codegenConfig == null) {
     console.log(
@@ -182,7 +180,7 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
   }
 
   if (typeof pkgJson.codegenConfig !== 'object') {
-    throw '[Codegen] "codegenConfig" field must be an Object.';
+    throw '[Codegen] The "codegenConfig" field must be an Object.';
   }
 
   return extractLibrariesFromJSON(pkgJson, projectRoot);
@@ -199,7 +197,7 @@ function buildCodegenIfNeeded() {
   if (fs.existsSync(libPath) && fs.readdirSync(libPath).length > 0) {
     return;
   }
-  console.log('\n\n[Codegen] >>>>> Building react-native-codegen package');
+  console.log('[Codegen] Building react-native-codegen package.');
   execSync('yarn install', {
     cwd: CODEGEN_REPO_PATH,
     stdio: 'inherit',
@@ -277,7 +275,7 @@ function generateSchemaInfo(library, platform) {
     library.libraryPath,
     library.config.jsSrcsDir,
   );
-  console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
+  console.log(`[Codegen] Processing ${library.config.name}`);
   // Generate one schema for the entire library...
   return {
     library: library,
@@ -298,7 +296,7 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  console.log(`[Codegen] >>>>> Generating Native Code for ${platform}`);
+  console.log(`[Codegen] Generating Native Code for ${platform}`);
   const useLocalIncludePaths = includesGeneratedCode;
   generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
     platform,
@@ -359,7 +357,7 @@ function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
 }
 
 function createComponentProvider(schemas) {
-  console.log('\n\n>>>>> Creating component provider');
+  console.log('[Codegen] Creating component provider.');
   const outputDir = path.join(
     REACT_NATIVE_PACKAGE_ROOT_FOLDER,
     'React',
@@ -375,7 +373,7 @@ function createComponentProvider(schemas) {
       generators: ['providerIOS'],
     },
   );
-  console.log(`Generated provider in: ${outputDir}`);
+  console.log(`[Codegen] Generated provider in: ${outputDir}`);
 }
 
 function findCodegenEnabledLibraries(pkgJson, projectRoot) {
@@ -501,7 +499,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
     process.exitCode = 1;
   }
 
-  console.log('\n\n[Codegen] Done.');
+  console.log('[Codegen] Done.');
   return;
 }
 
