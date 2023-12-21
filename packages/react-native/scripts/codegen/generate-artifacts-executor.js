@@ -34,8 +34,28 @@ const REACT_NATIVE_REPOSITORY_ROOT = path.join(
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-  rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
-  FBReactNativeSpec: null,
+  rncore: {
+    ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
+    android: path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'ReactAndroid',
+      'build',
+      'generated',
+      'source',
+      'codegen',
+    ),
+  },
+  FBReactNativeSpec: {
+    ios: null,
+    android: path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'ReactAndroid',
+      'build',
+      'generated',
+      'source',
+      'codegen',
+    ),
+  },
 };
 const REACT_NATIVE = 'react-native';
 
@@ -190,11 +210,45 @@ function buildCodegenIfNeeded() {
   });
 }
 
-function computeOutputPath(projectRoot, baseOutputPath, pkgJson) {
+function readOutputDirFromPkgJson(pkgJson, platform) {
+  const codegenConfig = pkgJson.codegenConfig;
+  if (codegenConfig == null || typeof codegenConfig !== 'object') {
+    return null;
+  }
+  const outputDir = codegenConfig.outputDir;
+  if (outputDir == null) {
+    return null;
+  }
+  if (typeof outputDir === 'string') {
+    return outputDir;
+  }
+  if (typeof outputDir === 'object') {
+    return outputDir[platform];
+  }
+  return null;
+}
+
+function defaultOutputPathForAndroid(baseOutputPath) {
+  return path.join(
+    baseOutputPath,
+    'android',
+    'app',
+    'build',
+    'generated',
+    'source',
+    'codegen',
+  );
+}
+
+function defaultOutputPathForIOS(baseOutputPath) {
+  return path.join(baseOutputPath, 'build', 'generated', 'ios');
+}
+
+function computeOutputPath(projectRoot, baseOutputPath, pkgJson, platform) {
   if (baseOutputPath == null) {
-    const baseOutputPathOverride = pkgJson.codegenConfig.outputDir;
-    if (baseOutputPathOverride && typeof baseOutputPathOverride === 'string') {
-      baseOutputPath = baseOutputPathOverride;
+    const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
+    if (outputDirFromPkgJson != null) {
+      baseOutputPath = outputDirFromPkgJson;
     } else {
       baseOutputPath = projectRoot;
     }
@@ -202,12 +256,23 @@ function computeOutputPath(projectRoot, baseOutputPath, pkgJson) {
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     // Don't create nested directories for libraries to make importing generated headers easier.
     return baseOutputPath;
-  } else {
-    return path.join(baseOutputPath, 'build', 'generated', 'ios');
   }
+  if (platform === 'android') {
+    return defaultOutputPathForAndroid(baseOutputPath);
+  }
+  if (platform === 'ios') {
+    return defaultOutputPathForIOS(baseOutputPath);
+  }
+  return baseOutputPath;
 }
 
-function generateSchemaInfo(library) {
+function reactNativeCoreLibraryOutputPath(libraryName, platform) {
+  return CORE_LIBRARIES_WITH_OUTPUT_FOLDER[libraryName]
+    ? CORE_LIBRARIES_WITH_OUTPUT_FOLDER[libraryName][platform]
+    : null;
+}
+
+function generateSchemaInfo(library, platform) {
   const pathToJavaScriptSources = path.join(
     library.libraryPath,
     library.config.jsSrcsDir,
@@ -220,22 +285,23 @@ function generateSchemaInfo(library) {
       .getCombineJSToSchema()
       .combineSchemasInFileList(
         [pathToJavaScriptSources],
-        'ios',
+        platform,
         /NativeSampleTurboModule/,
       ),
   };
 }
 
-function generateCode(iosOutputDir, schemaInfo, includesGeneratedCode) {
+function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   const tmpDir = fs.mkdtempSync(
     path.join(os.tmpdir(), schemaInfo.library.config.name),
   );
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
+  console.log(`[Codegen] >>>>> Generating Native Code for ${platform}`);
   const useLocalIncludePaths = includesGeneratedCode;
   generateSpecsCLIExecutor.generateSpecFromInMemorySchema(
-    'ios',
+    platform,
     schemaInfo.schema,
     tmpOutputDir,
     schemaInfo.library.config.name,
@@ -246,8 +312,10 @@ function generateCode(iosOutputDir, schemaInfo, includesGeneratedCode) {
 
   // Finally, copy artifacts to the final output directory.
   const outputDir =
-    CORE_LIBRARIES_WITH_OUTPUT_FOLDER[schemaInfo.library.config.name] ??
-    iosOutputDir;
+    reactNativeCoreLibraryOutputPath(
+      schemaInfo.library.config.name,
+      platform,
+    ) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
   // TODO: Fix this. This will not work on Windows.
   execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
@@ -258,17 +326,26 @@ function generateSchemaInfos(libraries) {
   return libraries.map(generateSchemaInfo);
 }
 
-function generateNativeCode(iosOutputDir, schemaInfos, includesGeneratedCode) {
+function generateNativeCode(
+  outputPath,
+  schemaInfos,
+  includesGeneratedCode,
+  platform,
+) {
   return schemaInfos.map(schemaInfo => {
-    generateCode(iosOutputDir, schemaInfo, includesGeneratedCode);
+    generateCode(outputPath, schemaInfo, includesGeneratedCode, platform);
   });
 }
 
-function needsThirdPartyComponentProvider(schemaInfo) {
+function rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform) {
+  return !pkgJsonIncludesGeneratedCode(pkgJson) && platform === 'ios';
+}
+
+function dependencyNeedsThirdPartyComponentProvider(schemaInfo, platform) {
   // Filter the react native core library out.
   // In the future, core library and third party library should
   // use the same way to generate/register the fabric components.
-  return !isReactNativeCoreLibrary(schemaInfo.library.config.name);
+  return !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform);
 }
 
 function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
@@ -354,15 +431,28 @@ function cleanupEmptyFilesAndFolders(filepath) {
  *
  * @parameter projectRoot: the directory with the app source code, where the package.json lives.
  * @parameter baseOutputPath: the base output path for the CodeGen.
+ * @parameter targetPlatform: the target platform. Supported values: 'android', 'ios', 'all'.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, baseOutputPath) {
+function execute(projectRoot, targetPlatform, baseOutputPath) {
   try {
     console.log(
       `[Codegen] Analyzing ${path.join(projectRoot, 'package.json')}`,
     );
+
+    const supportedPlatforms = ['android', 'ios'];
+    if (
+      targetPlatform !== 'all' &&
+      !supportedPlatforms.includes(targetPlatform)
+    ) {
+      throw new Error(
+        `Invalid target platform: ${targetPlatform}. Supported values are: ${supportedPlatforms.join(
+          ', ',
+        )}, all`,
+      );
+    }
 
     const pkgJson = readPkgJsonInDirectory(projectRoot);
 
@@ -375,24 +465,37 @@ function execute(projectRoot, baseOutputPath) {
       return;
     }
 
-    const outputPath = computeOutputPath(projectRoot, baseOutputPath, pkgJson);
+    let platforms =
+      targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
-    const schemaInfos = generateSchemaInfos(libraries);
-    generateNativeCode(
-      outputPath,
-      schemaInfos.filter(schemaInfo =>
-        mustGenerateNativeCode(projectRoot, schemaInfo),
-      ),
-      pkgJsonIncludesGeneratedCode(pkgJson),
-    );
+    for (const platform of platforms) {
+      const outputPath = computeOutputPath(
+        projectRoot,
+        baseOutputPath,
+        pkgJson,
+        platform,
+      );
 
-    if (!pkgJsonIncludesGeneratedCode(pkgJson)) {
-      const schemas = schemaInfos
-        .filter(needsThirdPartyComponentProvider)
-        .map(schemaInfo => schemaInfo.schema);
-      createComponentProvider(schemas);
+      const schemaInfos = generateSchemaInfos(libraries);
+      generateNativeCode(
+        outputPath,
+        schemaInfos.filter(schemaInfo =>
+          mustGenerateNativeCode(projectRoot, schemaInfo),
+        ),
+        pkgJsonIncludesGeneratedCode(pkgJson),
+        platform,
+      );
+
+      if (
+        rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform)
+      ) {
+        const schemas = schemaInfos
+          .filter(dependencyNeedsThirdPartyComponentProvider)
+          .map(schemaInfo => schemaInfo.schema);
+        createComponentProvider(schemas);
+      }
+      cleanupEmptyFilesAndFolders(outputPath);
     }
-    cleanupEmptyFilesAndFolders(outputPath);
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
