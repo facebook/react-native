@@ -123,8 +123,12 @@ const RNTesterApp = ({
   const handleOpenUrlRequest = React.useCallback(
     ({url}: {url: string, ...}) => {
       // Supported URL pattern(s):
-      // *  rntester://example/<key>
-      const match = /^rntester:\/\/example\/(.+)$/.exec(url);
+      // *  rntester://example/<moduleKey>
+      // *  rntester://example/<moduleKey>/<exampleKey>
+      const match =
+        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
+          url,
+        );
       if (!match) {
         console.warn(
           `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
@@ -132,22 +136,61 @@ const RNTesterApp = ({
         return;
       }
 
-      const key = match[1];
-      const exampleModule = RNTesterList.Modules[key];
-      if (exampleModule == null) {
-        console.warn(
-          `handleOpenUrlRequest: Unable to find requested module with key: '${key}'`,
-        );
+      const rawModuleKey = match[1];
+      const exampleKey = match[2];
+
+      // For tooling compatibility, allow all these variants for each module key:
+      const validModuleKeys = [
+        rawModuleKey,
+        `${rawModuleKey}Index`,
+        `${rawModuleKey}Example`,
+      ].filter(k => RNTesterList.Modules[k] != null);
+      if (validModuleKeys.length !== 1) {
+        if (validModuleKeys.length === 0) {
+          console.error(
+            `handleOpenUrlRequest: Unable to find requested module with key: '${rawModuleKey}'`,
+          );
+        } else {
+          console.error(
+            `handleOpenUrlRequest: Found multiple matching module with key: '${rawModuleKey}', unable to resolve`,
+          );
+        }
         return;
       }
 
-      console.log(`handleOpenUrlRequest: Opening example '${key}'`);
+      const resolvedModuleKey = validModuleKeys[0];
+      const exampleModule = RNTesterList.Modules[resolvedModuleKey];
+
+      if (exampleKey != null) {
+        const validExampleKeys = exampleModule.examples.filter(
+          e => e.name === exampleKey,
+        );
+        if (validExampleKeys.length !== 1) {
+          if (validExampleKeys.length === 0) {
+            console.error(
+              `handleOpenUrlRequest: Unable to find requested example with key: '${exampleKey}' within module: '${resolvedModuleKey}'`,
+            );
+          } else {
+            console.error(
+              `handleOpenUrlRequest: Found multiple matching example with key: '${exampleKey}' within module: '${resolvedModuleKey}', unable to resolve`,
+            );
+          }
+          return;
+        }
+      }
+
+      console.log(
+        `handleOpenUrlRequest: Opening module: '${resolvedModuleKey}', example: '${
+          exampleKey || 'null'
+        }'`,
+      );
 
       dispatch({
         type: RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST,
         data: {
-          key,
-          title: exampleModule.title || key,
+          key: resolvedModuleKey,
+          title: exampleModule.title || resolvedModuleKey,
+          exampleKey,
         },
       });
     },
