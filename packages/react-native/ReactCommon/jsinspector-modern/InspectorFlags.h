@@ -33,6 +33,12 @@ class InspectorFlags {
    */
   bool getEnableModernCDPRegistry() const;
 
+  /**
+   * Flag determining if the C++ implementation of InspectorPackagerConnection
+   * should be used instead of the per-platform one.
+   */
+  bool getEnableCxxInspectorPackagerConnection() const;
+
  private:
   InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
@@ -40,6 +46,7 @@ class InspectorFlags {
   ~InspectorFlags() = default;
 
   std::optional<bool> enableModernCDPRegistry_;
+  std::optional<bool> enableCxxInspectorPackagerConnection_;
 };
 
 } // namespace facebook::react::jsinspector_modern

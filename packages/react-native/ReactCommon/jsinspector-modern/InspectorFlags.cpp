@@ -27,6 +27,15 @@ void InspectorFlags::initFromConfig(
         "Flag value was changed after init");
   }
   enableModernCDPRegistry_ = enableModernCDPRegistry;
+  bool enableCxxInspectorPackagerConnection = reactNativeConfig.getBool(
+      "react_native_devx:enable_cxx_inspector_packager_connection");
+  if (enableCxxInspectorPackagerConnection_.has_value()) {
+    assert(
+        *enableCxxInspectorPackagerConnection_ ==
+            enableCxxInspectorPackagerConnection &&
+        "Flag value was changed after init");
+  }
+  enableCxxInspectorPackagerConnection_ = enableCxxInspectorPackagerConnection;
 }
 
 bool InspectorFlags::getEnableModernCDPRegistry() const {
@@ -35,6 +44,14 @@ bool InspectorFlags::getEnableModernCDPRegistry() const {
         << "InspectorFlags::getEnableModernCDPRegistry was called before init";
   }
   return enableModernCDPRegistry_.value_or(false);
+}
+
+bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
+  if (!enableCxxInspectorPackagerConnection_.has_value()) {
+    LOG(WARNING)
+        << "InspectorFlags::getEnableCxxInspectorPackagerConnection was called before init";
+  }
+  return enableCxxInspectorPackagerConnection_.value_or(false);
 }
 
 } // namespace facebook::react::jsinspector_modern
