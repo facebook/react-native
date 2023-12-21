@@ -258,6 +258,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
     return nullptr;
   }
 
+  // If the given shadow node is of the same family as the root shadow node,
+  // return the latest root shadow node
+  if (ShadowNode::sameFamily(*ancestorShadowNode, shadowNode)) {
+    return ancestorShadowNode;
+  }
+
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
 
   if (ancestors.empty()) {

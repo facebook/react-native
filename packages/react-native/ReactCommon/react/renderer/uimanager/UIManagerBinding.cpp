@@ -97,28 +97,32 @@ void UIManagerBinding::dispatchEvent(
     const EventPayload& eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
-  if (eventTarget != nullptr &&
-      eventPayload.getType() == EventPayloadType::PointerEvent) {
+  if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
-    auto dispatchCallback = [this](
-                                jsi::Runtime& runtime,
-                                const EventTarget* eventTarget,
+    auto dispatchCallback = [this, &runtime](
+                                const ShadowNode& targetNode,
                                 const std::string& type,
                                 ReactEventPriority priority,
                                 const EventPayload& eventPayload) {
-      eventTarget->retain(runtime);
-      this->dispatchEventToJS(
-          runtime, eventTarget, type, priority, eventPayload);
-      eventTarget->release(runtime);
+      auto eventTarget = targetNode.getEventEmitter()->getEventTarget();
+      if (eventTarget != nullptr) {
+        eventTarget->retain(runtime);
+        this->dispatchEventToJS(
+            runtime, eventTarget.get(), type, priority, eventPayload);
+        eventTarget->release(runtime);
+      }
     };
-    pointerEventsProcessor_.interceptPointerEvent(
-        runtime,
-        eventTarget,
-        type,
-        priority,
-        pointerEvent,
-        dispatchCallback,
-        *uiManager_);
+    auto targetNode = PointerEventsProcessor::getShadowNodeFromEventTarget(
+        runtime, eventTarget);
+    if (targetNode != nullptr) {
+      pointerEventsProcessor_.interceptPointerEvent(
+          targetNode,
+          type,
+          priority,
+          pointerEvent,
+          dispatchCallback,
+          *uiManager_);
+    }
   } else {
     dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
   }
