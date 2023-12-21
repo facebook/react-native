@@ -636,12 +636,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (NSColor *)tintColor
 {
-  return _imageView.contentTintColor;
+  return _imageView.tintColor;
 }
 
 - (void)setTintColor:(NSColor *)tintColor
 {
-  _imageView.contentTintColor = tintColor;
+  [_imageView setTintColor:tintColor];
 }
 #endif // macOS]
 
