@@ -547,13 +547,20 @@ UIWindow *__nullable RCTKeyWindow(void)
   if (RCTRunningInAppExtension()) {
     return nil;
   }
+    
+  for (UIScene* scene in RCTSharedApplication().connectedScenes) {
+    if (scene.activationState != UISceneActivationStateForegroundActive || ![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
 
-  // TODO: replace with a more robust solution
-  for (UIWindow *window in RCTSharedApplication().windows) {
-    if (window.keyWindow) {
-      return window;
+    for (UIWindow *window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
     }
   }
+    
   return nil;
 }
 
