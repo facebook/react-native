@@ -324,7 +324,7 @@ const examples = ([
     },
   },
   {
-    name: 'pressableStickyHeaders',
+    name: 'pressableStickyHeader',
     title: '<ScrollView> Pressable Sticky Header\n',
     description:
       'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
