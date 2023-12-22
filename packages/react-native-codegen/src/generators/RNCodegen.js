@@ -83,6 +83,7 @@ type LibraryOptions = $ReadOnly<{
 type SchemasOptions = $ReadOnly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
+  supportedApplePlatforms?: {[string]: {[string]: boolean}},
 }>;
 
 type LibraryGenerators =
@@ -289,7 +290,7 @@ module.exports = {
     return checkOrWriteFiles(generatedFiles, test);
   },
   generateFromSchemas(
-    {schemas, outputDirectory}: SchemasOptions,
+    {schemas, outputDirectory, supportedApplePlatforms}: SchemasOptions,
     {generators, test}: SchemasConfig,
   ): boolean {
     Object.keys(schemas).forEach(libraryName =>
@@ -300,13 +301,15 @@ module.exports = {
 
     for (const name of generators) {
       for (const generator of SCHEMAS_GENERATORS[name]) {
-        generator(schemas).forEach((contents: string, fileName: string) => {
-          generatedFiles.push({
-            name: fileName,
-            content: contents,
-            outputDir: outputDirectory,
-          });
-        });
+        generator(schemas, supportedApplePlatforms).forEach(
+          (contents: string, fileName: string) => {
+            generatedFiles.push({
+              name: fileName,
+              content: contents,
+              outputDir: outputDirectory,
+            });
+          },
+        );
       }
     }
     return checkOrWriteFiles(generatedFiles, test);
