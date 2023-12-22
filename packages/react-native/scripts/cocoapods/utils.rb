@@ -86,6 +86,31 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.set_ccache_compiler_and_linker_build_settings(installer, react_native_path)
+        projects = self.extract_projects(installer)
+
+        ccache_path = `command -v ccache`.strip
+
+        if !ccache_path.empty?
+            Pod::UI.puts("⚡️".yellow + "Ccache detected (found at %s): Setting CC, LD, CXX & LDPLUSPLUS build settings" % [ccache_path.italic])
+            # Using scripts wrapping the ccache executable, to allow injection of configurations
+            ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
+            ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
+
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    # Using the un-qualified names means you can swap in different implementations, for example ccache
+                    config.build_settings["CC"] = ccache_clang_sh
+                    config.build_settings["LD"] = ccache_clang_sh
+                    config.build_settings["CXX"] = ccache_clangpp_sh
+                    config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
+                end
+
+                project.save()
+            end
+        end
+    end
+
     def self.fix_library_search_paths(installer)
         projects = self.extract_projects(installer)
 
