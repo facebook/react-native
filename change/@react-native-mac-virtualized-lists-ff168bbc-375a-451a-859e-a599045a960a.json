@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Force bump @react-native-mac/virtualized-lists to 0.73.3-0",
+  "packageName": "@react-native-mac/virtualized-lists",
+  "email": "adgleitm@microsoft.com",
+  "dependentChangeType": "patch"
+}
