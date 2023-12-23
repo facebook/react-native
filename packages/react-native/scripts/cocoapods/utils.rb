@@ -86,13 +86,16 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.set_ccache_compiler_and_linker_build_settings(installer, react_native_path)
+    def self.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
         projects = self.extract_projects(installer)
 
         ccache_path = `command -v ccache`.strip
+        ccache_available = !ccache_path.empty?
 
-        if !ccache_path.empty?
-            Pod::UI.puts("⚡️".yellow + "Ccache detected (found at %s): Setting CC, LD, CXX & LDPLUSPLUS build settings" % [ccache_path.italic])
+        message_prefix = ccache_available ? "⚡️".yellow + "Ccache detected (found at %s): " % [ccache_path.italic] : "Unable to locate ccache: "
+
+        if ccache_available and ccache_enabled
+            Pod::UI.puts(message_prefix + "Setting CC, LD, CXX & LDPLUSPLUS build settings")
             # Using scripts wrapping the ccache executable, to allow injection of configurations
             ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
             ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
@@ -108,6 +111,10 @@ class ReactNativePodsUtils
 
                 project.save()
             end
+        elsif ccache_available and !ccache_enabled
+            Pod::UI.puts(message_prefix + "Pass %s to %s in your Podfile or set environment variable %s to increase the speed of subsequent builds" % [":ccache_enabled => true".italic, "react_native_post_install".italic, "USE_CCACHE=1".italic])
+        elsif !ccache_available and ccache_enabled
+            Pod::UI.warn(message_prefix + "Install ccache or ensure your neither passing %s nor setting environment variable %s" % [":ccache_enabled => true", "USE_CCACHE=1"])
         end
     end
 
