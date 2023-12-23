@@ -27,7 +27,6 @@ class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
-    private val eagerlyInitializedModules: List<String>,
     cxxReactPackages: List<CxxReactPackage>,
 ) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
@@ -36,25 +35,10 @@ private constructor(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
 
-  override fun getEagerInitModuleNames(): List<String> {
-    if (unstable_isLazyTurboModuleDelegate()) {
-      return eagerlyInitializedModules
-    }
-
-    // Use ReactModuleInfo to get the eager init module names
-    return super.getEagerInitModuleNames()
-  }
-
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
-    private var eagerInitModuleNames: List<String> = emptyList()
     private var cxxReactPackageProviders:
         MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
         mutableListOf()
-
-    fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
-      this.eagerInitModuleNames = eagerInitModuleNames
-      return this
-    }
 
     fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
       this.cxxReactPackageProviders.add({ _ -> provider() })
@@ -77,8 +61,7 @@ private constructor(
         cxxReactPackages.add(cxxReactPackageProvider(context))
       }
 
-      return DefaultTurboModuleManagerDelegate(
-          context, packages, eagerInitModuleNames, cxxReactPackages)
+      return DefaultTurboModuleManagerDelegate(context, packages, cxxReactPackages)
     }
   }
 
