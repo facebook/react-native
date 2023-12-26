@@ -49,6 +49,14 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+  // FB-internal app backgrounding setup.
+  RCTFBAppInitApplicationDidEnterBackground(application);
+#endif
+}
+
 - (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = [NSMutableDictionary new];
