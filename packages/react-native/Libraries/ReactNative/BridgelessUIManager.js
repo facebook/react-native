@@ -17,10 +17,12 @@ import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryU
 
 let cachedConstants = null;
 
-const errorMessageForMethod = (methodName: string): string =>
-  "[ReactNative Architecture][JS] '" +
-  methodName +
-  "' is not available in the new React Native architecture.";
+function raiseSoftError(methodName: string, details?: string): void {
+  console.error(
+    `[ReactNative Architecture][JS] '${methodName}' is not available in the new React Native architecture.` +
+      (details ? ` ${details}` : ''),
+  );
+}
 
 function nativeViewConfigsInBridgelessModeEnabled(): boolean {
   return global.RN$LegacyInterop_UIManager_getConstants !== undefined;
@@ -38,10 +40,9 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     if (nativeViewConfigsInBridgelessModeEnabled()) {
       return getCachedConstants()[viewManagerName];
     } else {
-      console.error(
-        errorMessageForMethod('getViewManagerConfig') +
-          'Use hasViewManagerConfig instead. viewManagerName: ' +
-          viewManagerName,
+      raiseSoftError(
+        'getViewManagerConfig',
+        `Use hasViewManagerConfig instead. viewManagerName: ${viewManagerName}`,
       );
       return null;
     }
@@ -53,20 +54,20 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     if (nativeViewConfigsInBridgelessModeEnabled()) {
       return getCachedConstants();
     } else {
-      console.error(errorMessageForMethod('getConstants'));
+      raiseSoftError('getConstants');
       return null;
     }
   },
   getConstantsForViewManager: (viewManagerName: string): Object => {
-    console.error(errorMessageForMethod('getConstantsForViewManager'));
+    raiseSoftError('getConstantsForViewManager');
     return {};
   },
   getDefaultEventTypes: (): Array<string> => {
-    console.error(errorMessageForMethod('getDefaultEventTypes'));
+    raiseSoftError('getDefaultEventTypes');
     return [];
   },
   lazilyLoadView: (name: string): Object => {
-    console.error(errorMessageForMethod('lazilyLoadView'));
+    raiseSoftError('lazilyLoadView');
     return {};
   },
   createView: (
@@ -74,13 +75,11 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     viewName: string,
     rootTag: RootTag,
     props: Object,
-  ): void => console.error(errorMessageForMethod('createView')),
+  ): void => raiseSoftError('createView'),
   updateView: (reactTag: number, viewName: string, props: Object): void =>
-    console.error(errorMessageForMethod('updateView')),
-  focus: (reactTag: ?number): void =>
-    console.error(errorMessageForMethod('focus')),
-  blur: (reactTag: ?number): void =>
-    console.error(errorMessageForMethod('blur')),
+    raiseSoftError('updateView'),
+  focus: (reactTag: ?number): void => raiseSoftError('focus'),
+  blur: (reactTag: ?number): void => raiseSoftError('blur'),
   findSubviewIn: (
     reactTag: ?number,
     point: Array<number>,
@@ -91,12 +90,12 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void => console.error(errorMessageForMethod('findSubviewIn')),
+  ): void => raiseSoftError('findSubviewIn'),
   dispatchViewManagerCommand: (
     reactTag: ?number,
     commandID: number,
     commandArgs: ?Array<string | number | boolean>,
-  ): void => console.error(errorMessageForMethod('dispatchViewManagerCommand')),
+  ): void => raiseSoftError('dispatchViewManagerCommand'),
   measure: (
     reactTag: ?number,
     callback: (
@@ -107,16 +106,16 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       pageX: number,
       pageY: number,
     ) => void,
-  ): void => console.error(errorMessageForMethod('measure')),
+  ): void => raiseSoftError('measure'),
   measureInWindow: (
     reactTag: ?number,
     callback: (x: number, y: number, width: number, height: number) => void,
-  ): void => console.error(errorMessageForMethod('measureInWindow')),
+  ): void => raiseSoftError('measureInWindow'),
   viewIsDescendantOf: (
     reactTag: ?number,
     ancestorReactTag: ?number,
     callback: (result: Array<boolean>) => void,
-  ): void => console.error(errorMessageForMethod('viewIsDescendantOf')),
+  ): void => raiseSoftError('viewIsDescendantOf'),
   measureLayout: (
     reactTag: ?number,
     ancestorReactTag: ?number,
@@ -127,7 +126,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void => console.error(errorMessageForMethod('measureLayout')),
+  ): void => raiseSoftError('measureLayout'),
   measureLayoutRelativeToParent: (
     reactTag: ?number,
     errorCallback: (error: Object) => void,
@@ -137,23 +136,21 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void =>
-    console.error(errorMessageForMethod('measureLayoutRelativeToParent')),
+  ): void => raiseSoftError('measureLayoutRelativeToParent'),
   setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void =>
-    console.error(errorMessageForMethod('setJSResponder')),
+    raiseSoftError('setJSResponder'),
   clearJSResponder: (): void => {}, // Don't log error here because we're aware it gets called
   configureNextLayoutAnimation: (
     config: Object,
     callback: () => void,
     errorCallback: (error: Object) => void,
-  ): void =>
-    console.error(errorMessageForMethod('configureNextLayoutAnimation')),
+  ): void => raiseSoftError('configureNextLayoutAnimation'),
   removeSubviewsFromContainerWithID: (containerID: number): void =>
-    console.error(errorMessageForMethod('removeSubviewsFromContainerWithID')),
+    raiseSoftError('removeSubviewsFromContainerWithID'),
   replaceExistingNonRootView: (reactTag: ?number, newReactTag: ?number): void =>
-    console.error(errorMessageForMethod('replaceExistingNonRootView')),
+    raiseSoftError('replaceExistingNonRootView'),
   setChildren: (containerTag: ?number, reactTags: Array<number>): void =>
-    console.error(errorMessageForMethod('setChildren')),
+    raiseSoftError('setChildren'),
   manageChildren: (
     containerTag: ?number,
     moveFromIndices: Array<number>,
@@ -161,26 +158,23 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     addChildReactTags: Array<number>,
     addAtIndices: Array<number>,
     removeAtIndices: Array<number>,
-  ): void => console.error(errorMessageForMethod('manageChildren')),
+  ): void => raiseSoftError('manageChildren'),
 
   // Android only
   setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-    console.error(
-      errorMessageForMethod('setLayoutAnimationEnabledExperimental'),
-    );
+    raiseSoftError('setLayoutAnimationEnabledExperimental');
   },
   // Please use AccessibilityInfo.sendAccessibilityEvent instead.
   // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
   sendAccessibilityEvent: (reactTag: ?number, eventType: number): void =>
-    console.error(errorMessageForMethod('sendAccessibilityEvent')),
+    raiseSoftError('sendAccessibilityEvent'),
   showPopupMenu: (
     reactTag: ?number,
     items: Array<string>,
     error: (error: Object) => void,
     success: (event: string, selected?: number) => void,
-  ): void => console.error(errorMessageForMethod('showPopupMenu')),
-  dismissPopupMenu: (): void =>
-    console.error(errorMessageForMethod('dismissPopupMenu')),
+  ): void => raiseSoftError('showPopupMenu'),
+  dismissPopupMenu: (): void => raiseSoftError('dismissPopupMenu'),
 };
 
 if (nativeViewConfigsInBridgelessModeEnabled()) {
