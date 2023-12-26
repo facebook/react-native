@@ -14,8 +14,7 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
-
-let cachedConstants = null;
+import nullthrows from 'nullthrows';
 
 function raiseSoftError(methodName: string, details?: string): void {
   console.error(
@@ -24,21 +23,25 @@ function raiseSoftError(methodName: string, details?: string): void {
   );
 }
 
-function nativeViewConfigsInBridgelessModeEnabled(): boolean {
-  return global.RN$LegacyInterop_UIManager_getConstants !== undefined;
-}
+const getUIManagerConstants: ?() => {[viewManagerName: string]: Object} =
+  global.RN$LegacyInterop_UIManager_getConstants;
 
-function getCachedConstants(): Object {
-  if (!cachedConstants) {
-    cachedConstants = global.RN$LegacyInterop_UIManager_getConstants();
-  }
-  return cachedConstants;
-}
+const getUIManagerConstantsCache = (function () {
+  let wasCalledOnce = false;
+  let result = {};
+  return () => {
+    if (!wasCalledOnce) {
+      result = nullthrows(getUIManagerConstants)();
+      wasCalledOnce = true;
+    }
+    return result;
+  };
+})();
 
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
-    if (nativeViewConfigsInBridgelessModeEnabled()) {
-      return getCachedConstants()[viewManagerName];
+    if (getUIManagerConstants) {
+      return getUIManagerConstantsCache()[viewManagerName];
     } else {
       raiseSoftError(
         'getViewManagerConfig',
@@ -51,8 +54,8 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     return unstable_hasComponent(viewManagerName);
   },
   getConstants: (): Object => {
-    if (nativeViewConfigsInBridgelessModeEnabled()) {
-      return getCachedConstants();
+    if (getUIManagerConstants) {
+      return getUIManagerConstantsCache();
     } else {
       raiseSoftError('getConstants');
       return null;
@@ -177,9 +180,9 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   dismissPopupMenu: (): void => raiseSoftError('dismissPopupMenu'),
 };
 
-if (nativeViewConfigsInBridgelessModeEnabled()) {
-  Object.keys(getCachedConstants()).forEach(viewConfigName => {
-    UIManagerJS[viewConfigName] = getCachedConstants()[viewConfigName];
+if (getUIManagerConstants) {
+  Object.keys(getUIManagerConstantsCache()).forEach(viewConfigName => {
+    UIManagerJS[viewConfigName] = getUIManagerConstantsCache()[viewConfigName];
   });
 }
 
