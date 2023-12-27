@@ -45,12 +45,12 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  * - which has a `workspaces` array of strings
  * - which (possibly via a glob) includes the project root
  * @param {string} projectRoot Project root to find a workspace root for
- * @param {string | undefined} candidatePath Current path to search from
+ * @param {string | null | undefined} candidatePath Current path to search from
  * @returns Path of a workspace root or `undefined`
  */
-function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: string */ = projectRoot) /*: string | void */ {
+function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: ?string */ = projectRoot) /*: ?string */ {
   const packageJsonPath = path.resolve(candidatePath, 'package.json');
-  if (fs.existsSync(packageJsonPath)) {
+  if (fs.accessSync(packageJsonPath, fs.constants.R_OK)) {
     try {
       const { workspaces } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
       if (Array.isArray(workspaces)) {
@@ -74,7 +74,7 @@ function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: string */
   if (parentDir !== candidatePath) {
     return getWorkspaceRoot(projectRoot, parentDir);
   } else {
-    return undefined;
+    return null;
   }
 }
 
