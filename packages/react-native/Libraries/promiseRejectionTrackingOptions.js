@@ -36,7 +36,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       }
       // It could although this object is not a standard error, it still has stack information to unwind
       if (rejection.stack) {
-        stack = rejection.stack
+        stack = rejection.stack;
       }
     }
 
