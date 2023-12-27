@@ -38,7 +38,66 @@ const getUIManagerConstantsCache = (function () {
   };
 })();
 
+/**
+ * UIManager.js overrides these APIs.
+ * Pull them out from the BridgelessUIManager implementation. So, we can ignore them.
+ */
+const UIManagerJSOverridenAPIs = {
+  measure: (
+    reactTag: ?number,
+    callback: (
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+      pageX: number,
+      pageY: number,
+    ) => void,
+  ): void => {
+    raiseSoftError('measure');
+  },
+  measureInWindow: (
+    reactTag: ?number,
+    callback: (x: number, y: number, width: number, height: number) => void,
+  ): void => {
+    raiseSoftError('measureInWindow');
+  },
+  measureLayout: (
+    reactTag: ?number,
+    ancestorReactTag: ?number,
+    errorCallback: (error: Object) => void,
+    callback: (
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+    ) => void,
+  ): void => {
+    raiseSoftError('measureLayout');
+  },
+  measureLayoutRelativeToParent: (
+    reactTag: ?number,
+    errorCallback: (error: Object) => void,
+    callback: (
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+    ) => void,
+  ): void => {
+    raiseSoftError('measureLayoutRelativeToParent');
+  },
+  dispatchViewManagerCommand: (
+    reactTag: ?number,
+    commandID: number,
+    commandArgs: ?Array<string | number | boolean>,
+  ): void => {
+    raiseSoftError('dispatchViewManagerCommand');
+  },
+};
+
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
+  ...UIManagerJSOverridenAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       return getUIManagerConstantsCache()[viewManagerName];
@@ -103,63 +162,12 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ): void => {
     raiseSoftError('findSubviewIn');
   },
-  dispatchViewManagerCommand: (
-    reactTag: ?number,
-    commandID: number,
-    commandArgs: ?Array<string | number | boolean>,
-  ): void => {
-    raiseSoftError('dispatchViewManagerCommand');
-  },
-  measure: (
-    reactTag: ?number,
-    callback: (
-      left: number,
-      top: number,
-      width: number,
-      height: number,
-      pageX: number,
-      pageY: number,
-    ) => void,
-  ): void => {
-    raiseSoftError('measure');
-  },
-  measureInWindow: (
-    reactTag: ?number,
-    callback: (x: number, y: number, width: number, height: number) => void,
-  ): void => {
-    raiseSoftError('measureInWindow');
-  },
   viewIsDescendantOf: (
     reactTag: ?number,
     ancestorReactTag: ?number,
     callback: (result: Array<boolean>) => void,
   ): void => {
     raiseSoftError('viewIsDescendantOf');
-  },
-  measureLayout: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
-    errorCallback: (error: Object) => void,
-    callback: (
-      left: number,
-      top: number,
-      width: number,
-      height: number,
-    ) => void,
-  ): void => {
-    raiseSoftError('measureLayout');
-  },
-  measureLayoutRelativeToParent: (
-    reactTag: ?number,
-    errorCallback: (error: Object) => void,
-    callback: (
-      left: number,
-      top: number,
-      width: number,
-      height: number,
-    ) => void,
-  ): void => {
-    raiseSoftError('measureLayoutRelativeToParent');
   },
   setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
     raiseSoftError('setJSResponder');
