@@ -176,4 +176,4 @@ extends:
                displayName: "Publish beachball packages to npmjs.org"
                inputs:
                  script: |
-                   npx beachball publish --scope '!packages/react-native' --branch origin/$(Build.SourceBranchName) -n NOAUTH -yes -m "applying package updates ***NO_CI***" --access public
+                   npx beachball publish --scope '!packages/react-native' --branch origin/$(Build.SourceBranchName) -n $(npmAuthToken) -yes -m "applying package updates ***NO_CI***" --access public
