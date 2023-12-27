@@ -90,25 +90,22 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
     ++otherIt;
   }
 
-  auto removedViews =
-      std::ranges::subrange{myIt, myEventPath.rend()} |
-      std::views::transform(
-          [this, &uiManager](const ShadowNode& node) -> const ShadowNode* {
-            return this->getLatestNode(node, uiManager);
-          }) |
-      std::views::filter([](auto n) -> bool { return n != nullptr; }) |
-      std::views::transform([](auto n) -> ShadowNode const& { return *n; });
-  EventPath removed(removedViews.begin(), removedViews.end());
+  EventPath removed;
+  for (const auto& node : std::ranges::subrange{myIt, myEventPath.rend()}) {
+    const auto& latestNode = getLatestNode(node, uiManager);
+    if (latestNode != nullptr) {
+      removed.push_back(*latestNode);
+    }
+  }
 
-  auto addedViews =
-      std::ranges::subrange{otherIt, otherEventPath.rend()} |
-      std::views::transform(
-          [&other, &uiManager](const ShadowNode& node) -> const ShadowNode* {
-            return other.getLatestNode(node, uiManager);
-          }) |
-      std::views::filter([](auto n) -> bool { return n != nullptr; }) |
-      std::views::transform([](auto n) -> ShadowNode const& { return *n; });
-  EventPath added(addedViews.begin(), addedViews.end());
+  EventPath added;
+  for (const auto& node :
+       std::ranges::subrange{otherIt, otherEventPath.rend()}) {
+    const auto& latestNode = other.getLatestNode(node, uiManager);
+    if (latestNode != nullptr) {
+      added.push_back(*latestNode);
+    }
+  }
 
   return std::make_tuple(removed, added);
 }
