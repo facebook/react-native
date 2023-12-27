@@ -10,9 +10,9 @@
 
 /*:: import type {ConfigT} from 'metro-config'; */
 
-const fastGlob = require('fast-glob');
 const fs = require('fs');
 const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
+const micromatch = require('micromatch');
 const path = require('path');
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
@@ -50,22 +50,19 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  */
 function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: ?string */ = projectRoot) /*: ?string */ {
   const packageJsonPath = path.resolve(candidatePath, 'package.json');
-  if (fs.accessSync(packageJsonPath, fs.constants.R_OK)) {
-    try {
-      const { workspaces } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      if (Array.isArray(workspaces)) {
-        // If one of the workspaces match the project root, this is the workspace root
-        // Note: While NPM workspaces doesn't currently support globs, Yarn does.
-        const matches = fastGlob.sync(workspaces, {
-          cwd: candidatePath,
-          onlyDirectories: true,
-          absolute: true,
-        });
-        if (matches.includes(projectRoot)) {
-          return candidatePath;
-        }
+  try {
+    // If the access sync succeeds, it's safe to read the file
+    const { workspaces } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    if (Array.isArray(workspaces)) {
+      // If one of the workspaces match the project root, this is the workspace root
+      // Note: While NPM workspaces doesn't currently support globs, Yarn does, which is why we use micromatch
+      const relativePath = path.relative(candidatePath, projectRoot);
+      if (micromatch.isMatch(relativePath, workspaces)) {
+        return candidatePath;
       }
-    } catch (err) {
+    }
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
       console.warn(`Failed reading or parsing ${packageJsonPath}:`, err);
     }
   }
@@ -144,4 +141,4 @@ function getDefaultConfig(
   );
 }
 
-module.exports = {getDefaultConfig, mergeConfig};
+module.exports = {getDefaultConfig, mergeConfig, getWorkspaceRoot};
