@@ -78,11 +78,18 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     viewName: string,
     rootTag: RootTag,
     props: Object,
-  ): void => raiseSoftError('createView'),
-  updateView: (reactTag: number, viewName: string, props: Object): void =>
-    raiseSoftError('updateView'),
-  focus: (reactTag: ?number): void => raiseSoftError('focus'),
-  blur: (reactTag: ?number): void => raiseSoftError('blur'),
+  ): void => {
+    raiseSoftError('createView');
+  },
+  updateView: (reactTag: number, viewName: string, props: Object): void => {
+    raiseSoftError('updateView');
+  },
+  focus: (reactTag: ?number): void => {
+    raiseSoftError('focus');
+  },
+  blur: (reactTag: ?number): void => {
+    raiseSoftError('blur');
+  },
   findSubviewIn: (
     reactTag: ?number,
     point: Array<number>,
@@ -93,12 +100,16 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void => raiseSoftError('findSubviewIn'),
+  ): void => {
+    raiseSoftError('findSubviewIn');
+  },
   dispatchViewManagerCommand: (
     reactTag: ?number,
     commandID: number,
     commandArgs: ?Array<string | number | boolean>,
-  ): void => raiseSoftError('dispatchViewManagerCommand'),
+  ): void => {
+    raiseSoftError('dispatchViewManagerCommand');
+  },
   measure: (
     reactTag: ?number,
     callback: (
@@ -109,16 +120,22 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       pageX: number,
       pageY: number,
     ) => void,
-  ): void => raiseSoftError('measure'),
+  ): void => {
+    raiseSoftError('measure');
+  },
   measureInWindow: (
     reactTag: ?number,
     callback: (x: number, y: number, width: number, height: number) => void,
-  ): void => raiseSoftError('measureInWindow'),
+  ): void => {
+    raiseSoftError('measureInWindow');
+  },
   viewIsDescendantOf: (
     reactTag: ?number,
     ancestorReactTag: ?number,
     callback: (result: Array<boolean>) => void,
-  ): void => raiseSoftError('viewIsDescendantOf'),
+  ): void => {
+    raiseSoftError('viewIsDescendantOf');
+  },
   measureLayout: (
     reactTag: ?number,
     ancestorReactTag: ?number,
@@ -129,7 +146,9 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void => raiseSoftError('measureLayout'),
+  ): void => {
+    raiseSoftError('measureLayout');
+  },
   measureLayoutRelativeToParent: (
     reactTag: ?number,
     errorCallback: (error: Object) => void,
@@ -139,21 +158,34 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       width: number,
       height: number,
     ) => void,
-  ): void => raiseSoftError('measureLayoutRelativeToParent'),
-  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void =>
-    raiseSoftError('setJSResponder'),
-  clearJSResponder: (): void => {}, // Don't log error here because we're aware it gets called
+  ): void => {
+    raiseSoftError('measureLayoutRelativeToParent');
+  },
+  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
+    raiseSoftError('setJSResponder');
+  },
+  clearJSResponder: (): void => {
+    // Don't log error here because we're aware it gets called
+  },
   configureNextLayoutAnimation: (
     config: Object,
     callback: () => void,
     errorCallback: (error: Object) => void,
-  ): void => raiseSoftError('configureNextLayoutAnimation'),
-  removeSubviewsFromContainerWithID: (containerID: number): void =>
-    raiseSoftError('removeSubviewsFromContainerWithID'),
-  replaceExistingNonRootView: (reactTag: ?number, newReactTag: ?number): void =>
-    raiseSoftError('replaceExistingNonRootView'),
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void =>
-    raiseSoftError('setChildren'),
+  ): void => {
+    raiseSoftError('configureNextLayoutAnimation');
+  },
+  removeSubviewsFromContainerWithID: (containerID: number): void => {
+    raiseSoftError('removeSubviewsFromContainerWithID');
+  },
+  replaceExistingNonRootView: (
+    reactTag: ?number,
+    newReactTag: ?number,
+  ): void => {
+    raiseSoftError('replaceExistingNonRootView');
+  },
+  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
+    raiseSoftError('setChildren');
+  },
   manageChildren: (
     containerTag: ?number,
     moveFromIndices: Array<number>,
@@ -161,7 +193,9 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     addChildReactTags: Array<number>,
     addAtIndices: Array<number>,
     removeAtIndices: Array<number>,
-  ): void => raiseSoftError('manageChildren'),
+  ): void => {
+    raiseSoftError('manageChildren');
+  },
 
   // Android only
   setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
@@ -169,15 +203,20 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   },
   // Please use AccessibilityInfo.sendAccessibilityEvent instead.
   // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
-  sendAccessibilityEvent: (reactTag: ?number, eventType: number): void =>
-    raiseSoftError('sendAccessibilityEvent'),
+  sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
+    raiseSoftError('sendAccessibilityEvent');
+  },
   showPopupMenu: (
     reactTag: ?number,
     items: Array<string>,
     error: (error: Object) => void,
     success: (event: string, selected?: number) => void,
-  ): void => raiseSoftError('showPopupMenu'),
-  dismissPopupMenu: (): void => raiseSoftError('dismissPopupMenu'),
+  ): void => {
+    raiseSoftError('showPopupMenu');
+  },
+  dismissPopupMenu: (): void => {
+    raiseSoftError('dismissPopupMenu');
+  },
 };
 
 if (getUIManagerConstants) {
