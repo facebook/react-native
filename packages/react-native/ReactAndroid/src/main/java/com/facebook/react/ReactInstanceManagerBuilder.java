@@ -20,7 +20,6 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.UIManagerProvider;
@@ -68,7 +67,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
-  private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable UIManagerProvider mUIManagerProvider;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
@@ -78,12 +76,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable ChoreographerProvider mChoreographerProvider = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
-
-  public ReactInstanceManagerBuilder setJSIModulesPackage(
-      @Nullable JSIModulePackage jsiModulePackage) {
-    mJSIModulesPackage = jsiModulePackage;
-    return this;
-  }
 
   /** Factory for desired implementation of JavaScriptExecutor. */
   public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
@@ -361,7 +353,6 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-        mJSIModulesPackage,
         mUIManagerProvider,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,

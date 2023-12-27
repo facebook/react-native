@@ -55,8 +55,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -186,7 +184,6 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
-  private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
@@ -235,7 +232,6 @@ public class ReactInstanceManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
-      @Nullable JSIModulePackage jsiModulePackage,
       @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
@@ -296,7 +292,6 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
-    mJSIModulePackage = jsiModulePackage;
     mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
@@ -1401,19 +1396,15 @@ public class ReactInstanceManager {
       }
     }
 
-    if (mJSIModulePackage != null) {
-      catalystInstance.addJSIModules(
-          mJSIModulePackage.getJSIModules(
-              reactContext, catalystInstance.getJavaScriptContextHolder()));
-    }
     if (mUIManagerProvider != null) {
       UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
       if (uiManager != null) {
+        catalystInstance.setFabricUIManager(uiManager);
+
+        // Initialize the UIManager
         uiManager.initialize();
         catalystInstance.setFabricUIManager(uiManager);
       }
-    } else if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
