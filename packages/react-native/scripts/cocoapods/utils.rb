@@ -116,7 +116,7 @@ class ReactNativePodsUtils
                 project.save()
             end
         elsif ccache_available and !ccache_enabled
-            Pod::UI.puts("#{message_prefix}: Pass #{":ccache_enabled => true".italic} to #{"react_native_post_install".italic} in your Podfile or set environment variable #{"USE_CCACHE=1".italic} to increase the speed of subsequent builds")
+            Pod::UI.puts("#{message_prefix}: Pass ':ccache_enabled => true' to 'react_native_post_install' in your Podfile or set environment variable 'USE_CCACHE=1' to increase the speed of subsequent builds")
         elsif !ccache_available and ccache_enabled
             Pod::UI.warn("#{message_prefix}: Install ccache or ensure your neither passing ':ccache_enabled => true' nor setting environment variable 'USE_CCACHE=1'")
         end
