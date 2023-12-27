@@ -12,11 +12,9 @@ import androidx.annotation.Nullable;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,11 +28,6 @@ import java.util.List;
 @SuppressLint("JavatestsIncorrectFolder")
 public class ReactInstanceSpecForTest {
 
-  public abstract static class JSIModuleBuilder {
-    @Nullable
-    protected abstract List<JSIModuleSpec> build(ReactApplicationContext context);
-  }
-
   private final List<NativeModule> mNativeModules =
       new ArrayList<NativeModule>(Arrays.asList(new FakeWebSocketModule()));
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
@@ -44,7 +37,6 @@ public class ReactInstanceSpecForTest {
   @Nullable private FabricUIManagerFactory mFabricUIManagerFactory = null;
   @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
   @Nullable private ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder = null;
-  @Nullable private JSIModuleBuilder mJSIModuleBuilder = null;
 
   public ReactInstanceSpecForTest addNativeModule(NativeModule module) {
     mNativeModules.add(module);
@@ -96,16 +88,6 @@ public class ReactInstanceSpecForTest {
   protected ReactPackageTurboModuleManagerDelegate.Builder
       getReactPackageTurboModuleManagerDelegateBuilder() {
     return mTMMDelegateBuilder;
-  }
-
-  public ReactInstanceSpecForTest setJSIModuleBuilder(@Nullable JSIModuleBuilder builder) {
-    mJSIModuleBuilder = builder;
-    return this;
-  }
-
-  @Nullable
-  protected JSIModuleBuilder getJSIModuleBuilder() {
-    return mJSIModuleBuilder;
   }
 
   public ReactInstanceSpecForTest addPackages(List<ReactPackage> reactPackages) {

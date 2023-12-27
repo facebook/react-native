@@ -12,7 +12,6 @@ import android.annotation.SuppressLint
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
@@ -80,9 +79,6 @@ class NativeAnimatedNodeTraversalTest {
     }
 
     catalystInstanceMock = mock(CatalystInstance::class.java)
-    whenever(catalystInstanceMock.getJSIModule(any(JSIModuleType::class.java))).thenAnswer {
-      uiManagerMock
-    }
     whenever(reactApplicationContextMock.getFabricUIManager()).thenAnswer { uiManagerMock }
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java)).thenAnswer {
       uiManagerMock
