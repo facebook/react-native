@@ -48,7 +48,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  * @param {string | null | undefined} candidatePath Current path to search from
  * @returns Path of a workspace root or `undefined`
  */
-function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: ?string */ = projectRoot) /*: ?string */ {
+function getWorkspaceRoot(projectRoot /*: string */, candidatePath /*: string */ = projectRoot) /*: ?string */ {
   const packageJsonPath = path.resolve(candidatePath, 'package.json');
   try {
     // If the access sync succeeds, it's safe to read the file
