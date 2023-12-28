@@ -59,7 +59,7 @@ function getOverrideConfig(
     );
   }
 
-  return {
+  const overrides: InputConfigT = {
     resolver,
     serializer: {
       // We can include multiple copies of InitializeCore here because metro will
@@ -76,11 +76,13 @@ function getOverrideConfig(
         ),
       ],
     },
-    watchFolders:
-      typeof config.watchFolders === 'undefined'
-        ? getWatchFolders(ctx.root)
-        : undefined,
   };
+
+  if (config.watchFolders.length === 0) {
+    overrides.watchFolders = getWatchFolders(ctx.root);
+  }
+
+  return overrides;
 }
 
 /**
