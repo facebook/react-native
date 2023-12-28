@@ -200,7 +200,7 @@ function ModalPresentation() {
             key="onDismiss"
             style={styles.option}
             label="onDismiss"
-            multiSelect={true}
+            disabled={false}
             onPress={() =>
               setProps(prev => ({
                 ...prev,
