@@ -104,7 +104,7 @@ fi
 
 BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
 
-EXTRA_ARGS=
+EXTRA_ARGS=()
 
 case "$PLATFORM_NAME" in
   "macosx")
@@ -131,12 +131,12 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
   fi
-  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
+  EXTRA_ARGS+=("--sourcemap-output" "$PACKAGER_SOURCEMAP_FILE")
 fi
 
 # Hermes doesn't require JS minification.
 if [[ $USE_HERMES != false && $DEV == false ]]; then
-  EXTRA_ARGS="$EXTRA_ARGS --minify false"
+  EXTRA_ARGS+=("--minify" "false")
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
@@ -147,7 +147,7 @@ fi
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
-  $EXTRA_ARGS \
+  "${EXTRA_ARGS[@]}" \
   $EXTRA_PACKAGER_ARGS
 
 if [[ $USE_HERMES == false ]]; then
