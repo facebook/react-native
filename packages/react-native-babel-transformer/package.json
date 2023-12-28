@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.20.0",
-    "@react-native/babel-preset": "*",
+    "@react-native/babel-preset": "0.73.18",
     "hermes-parser": "0.15.0",
     "nullthrows": "^1.1.1"
   },
