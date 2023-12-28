@@ -27,11 +27,6 @@ export type ConfigLoadingContext = $ReadOnly<{
   ...
 }>;
 
-function getWatchFolders(projectRoot: string) {
-  const workspaceRoot = getWorkspaceRoot(projectRoot);
-  return typeof workspaceRoot === 'string' ? [workspaceRoot] : undefined;
-}
-
 /**
  * Get the config options to override based on RN CLI inputs.
  */
@@ -78,8 +73,13 @@ function getOverrideConfig(
     },
   };
 
-  if (config.watchFolders.length === 0) {
-    overrides.watchFolders = getWatchFolders(ctx.root);
+  // Applying the heuristic of appending workspace root as watch folder,
+  // only if no other watch folder (beside the project root) has been given.
+  if (!config.watchFolders.some(folder => folder !== ctx.root)) {
+    const workspaceRoot = getWorkspaceRoot(ctx.root);
+    if (typeof workspaceRoot === 'string') {
+      overrides.watchFolders = [...config.watchFolders, workspaceRoot];
+    }
   }
 
   return overrides;
