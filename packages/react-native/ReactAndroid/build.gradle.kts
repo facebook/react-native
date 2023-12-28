@@ -747,10 +747,6 @@ dependencies {
   testImplementation(libs.mockito)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
-
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.androidx.test.rules)
-  androidTestImplementation(libs.mockito)
 }
 
 react {
