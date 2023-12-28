@@ -15,7 +15,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -35,7 +34,7 @@ import java.util.Map;
  * has a C++ counterpart This class installs the JSI bindings. It also implements the method to get
  * a Java module, that the C++ counterpart calls.
  */
-public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
+public class TurboModuleManager implements TurboModuleRegistry {
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
@@ -431,9 +430,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
   private native void installJSIBindings(
       boolean shouldCreateLegacyModules, boolean enableSyncVoidMethods);
-
-  @Override
-  public void initialize() {}
 
   @Override
   public void invalidate() {
