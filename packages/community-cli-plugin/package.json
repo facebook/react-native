@@ -22,10 +22,10 @@
     "dist"
   ],
   "dependencies": {
-    "@react-native/dev-middleware": "^0.73.6",
+    "@react-native/dev-middleware": "0.73.6",
     "@react-native-community/cli-server-api": "12.3.0",
     "@react-native-community/cli-tools": "12.3.0",
-    "@react-native/metro-babel-transformer": "^0.73.12",
+    "@react-native/metro-babel-transformer": "0.73.12",
     "chalk": "^4.0.0",
     "execa": "^5.1.1",
     "metro": "^0.80.0",
