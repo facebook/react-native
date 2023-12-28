@@ -12,6 +12,7 @@
 import type {Config} from '@react-native-community/cli-types';
 import type {ConfigT, InputConfigT, YargArguments} from 'metro-config';
 
+import {getWorkspaceRoot} from './getWorkspaceRoot';
 import {reactNativePlatformResolver} from './metroPlatformResolver';
 import {CLIError, logger} from '@react-native-community/cli-tools';
 import {loadConfig, mergeConfig, resolveConfig} from 'metro-config';
@@ -25,6 +26,11 @@ export type ConfigLoadingContext = $ReadOnly<{
   platforms: Config['platforms'],
   ...
 }>;
+
+function getWatchFolders(projectRoot: string) {
+  const workspaceRoot = getWorkspaceRoot(projectRoot);
+  return typeof workspaceRoot === 'string' ? [workspaceRoot] : undefined;
+}
 
 /**
  * Get the config options to override based on RN CLI inputs.
@@ -70,6 +76,10 @@ function getOverrideConfig(
         ),
       ],
     },
+    watchFolders:
+      typeof config.watchFolders === 'undefined'
+        ? getWatchFolders(ctx.root)
+        : undefined,
   };
 }
 
