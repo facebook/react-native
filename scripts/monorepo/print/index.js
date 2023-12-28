@@ -7,40 +7,67 @@
  * @format
  */
 
-const {echo, exit} = require('shelljs');
+const {getLatestVersionBySpec} = require('../../npm-utils');
 const forEachPackage = require('../for-each-package');
+const {exit} = require('shelljs');
 const yargs = require('yargs');
 
 const {
-  argv: {private, public},
+  argv: {type, minor},
 } = yargs
-  .option('private', {
-    type: 'boolean',
-    describe: 'Only list private packages',
+  .option('type', {
+    type: 'string',
+    describe: 'Choose which packages to list, default is all',
+    choices: ['all', 'public', 'private'],
+    default: 'all',
   })
-  .option('public', {
-    type: 'boolean',
-    describe: 'Only list public packages',
+  .option('minor', {
+    type: 'number',
+    describe:
+      'List latest version for specified minor. Ex. 72, 73. Note this will make a network request to npm',
+    default: 0,
+  })
+  .check(argv => {
+    if (argv.minor > 0 && argv.minor < 70) {
+      throw new Error('Invalid minor. No monorepo packages before 70');
+    }
+    return true;
   })
   .strict();
 
 const main = () => {
+  const data = [];
   forEachPackage(
     (_packageAbsolutePath, _packageRelativePathFromRoot, packageManifest) => {
-      const packageName = packageManifest.name;
       const isPublic = !packageManifest.private;
-      if ((public && isPublic) || (private && !isPublic)) {
-        echo(`${packageName} ${packageManifest.version}`);
-      } else if (!private && !public) {
-        echo(
-          `${isPublic ? '\u{1F4E6}' : '\u{1F512}'} ${packageName} ${
-            packageManifest.version
-          }`,
-        );
+      if (
+        type === 'all' ||
+        (type === 'private' && !isPublic) ||
+        (type === 'public' && isPublic)
+      ) {
+        const packageInfo = {
+          'Public?': isPublic ? '\u{2705}' : '\u{274C}',
+          Name: packageManifest.name,
+          'Version (main)': packageManifest.version,
+        };
+
+        if (isPublic && minor !== 0) {
+          try {
+            const version = getLatestVersionBySpec(
+              packageManifest.name,
+              `^0.${minor}.0`,
+            );
+            packageInfo[`Version (${minor})`] = version;
+          } catch (e) {
+            packageInfo[`Version (${minor})`] = 'n/a';
+          }
+        }
+        data.push(packageInfo);
       }
     },
     {includeReactNative: true},
   );
+  console.table(data);
   exit(0);
 };
 

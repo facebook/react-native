@@ -90,18 +90,6 @@ function getNpmInfo(buildType) {
   };
 }
 
-function getPackageVersionStrByTag(packageName, tag) {
-  const npmString = tag
-    ? `npm view ${packageName}@${tag} version`
-    : `npm view ${packageName} version`;
-  const result = exec(npmString, {silent: true});
-
-  if (result.code) {
-    throw new Error(`Failed to get ${tag} version from npm\n${result.stderr}`);
-  }
-  return result.stdout.trim();
-}
-
 function publishPackage(packagePath, packageOptions, execOptions) {
   const {tag, otp} = packageOptions;
   const tagFlag = tag ? ` --tag ${tag}` : '';
@@ -165,10 +153,46 @@ function applyPackageVersions(originalPackageJson, packageVersions) {
   return packageJson;
 }
 
+/**
+ * `packageName`: name of npm package
+ * `tag`: npm tag like `latest` or `next`
+ *
+ * This will fetch version of `packageName` with npm tag specified
+ */
+function getPackageVersionStrByTag(packageName, tag) {
+  const npmString = tag
+    ? `npm view ${packageName}@${tag} version`
+    : `npm view ${packageName} version`;
+  const result = exec(npmString, {silent: true});
+
+  if (result.code) {
+    throw new Error(`Failed to get ${tag} version from npm\n${result.stderr}`);
+  }
+  return result.stdout.trim();
+}
+
+/**
+ * `packageName`: name of npm package
+ * `spec`: spec range ex. '^0.72.0'
+ *
+ * This will fetch the latest version of the spec range
+ */
+function getLatestVersionBySpec(packageName, spec) {
+  const npmString = `npm view ${packageName}@'${spec}' version --json`;
+  const result = exec(npmString, {silent: true});
+
+  if (result.code) {
+    throw new Error(`Failed to get versions for ${packageName}@${spec}`);
+  }
+  const versions = JSON.parse(result.stdout).sort();
+  return versions[versions.length - 1];
+}
+
 module.exports = {
   applyPackageVersions,
   getNpmInfo,
   getPackageVersionStrByTag,
+  getLatestVersionBySpec,
   publishPackage,
   diffPackages,
   pack,
