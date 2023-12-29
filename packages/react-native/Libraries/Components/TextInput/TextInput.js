@@ -1159,6 +1159,8 @@ function InternalTextInput(props: Props): React.Node {
       ? props.value
       : typeof props.defaultValue === 'string'
       ? props.defaultValue
+      : typeof props.value === 'undefined'
+      ? null
       : '';
 
   // This is necessary in case native updates the text and JS decides

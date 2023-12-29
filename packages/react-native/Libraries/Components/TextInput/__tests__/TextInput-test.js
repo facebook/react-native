@@ -198,7 +198,7 @@ describe('TextInput tests', () => {
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
+        text={null}
         textContentType="emailAddress"
         underlineColorAndroid="transparent"
       />
@@ -244,7 +244,7 @@ describe('TextInput', () => {
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
+        text={null}
         underlineColorAndroid="transparent"
       />
     `);
@@ -291,7 +291,7 @@ describe('TextInput compat with web', () => {
         selection={null}
         submitBehavior="blurAndSubmit"
         testID="testID"
-        text=""
+        text={null}
         underlineColorAndroid="transparent"
       />
     `);
@@ -423,7 +423,7 @@ describe('TextInput compat with web', () => {
         role="main"
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
+        text={null}
         underlineColorAndroid="transparent"
       />
     `);
@@ -475,7 +475,7 @@ describe('TextInput compat with web', () => {
           }
         }
         submitBehavior="blurAndSubmit"
-        text=""
+        text={null}
         underlineColorAndroid="transparent"
       />
     `);
