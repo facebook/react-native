@@ -7,7 +7,7 @@
  * @format
  */
 
-const {getLatestVersionBySpec} = require('../../npm-utils');
+const {getVersionsBySpec} = require('../../npm-utils');
 const forEachPackage = require('../for-each-package');
 const {exit} = require('shelljs');
 const yargs = require('yargs');
@@ -35,6 +35,12 @@ const {
   })
   .strict();
 
+function reversePatchComp(semverA, semverB) {
+  const patchA = parseInt(semverA.split('.')[2], 10);
+  const patchB = parseInt(semverB.split('.')[2], 10);
+  return patchB - patchA;
+}
+
 const main = () => {
   const data = [];
   forEachPackage(
@@ -53,13 +59,13 @@ const main = () => {
 
         if (isPublic && minor !== 0) {
           try {
-            const version = getLatestVersionBySpec(
+            const versions = getVersionsBySpec(
               packageManifest.name,
               `^0.${minor}.0`,
-            );
-            packageInfo[`Version (${minor})`] = version;
+            ).sort(reversePatchComp);
+            packageInfo[`Version (${minor})`] = versions[0];
           } catch (e) {
-            packageInfo[`Version (${minor})`] = 'n/a';
+            packageInfo[`Version (${minor})`] = e.message;
           }
         }
         data.push(packageInfo);

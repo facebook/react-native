@@ -175,24 +175,51 @@ function getPackageVersionStrByTag(packageName, tag) {
  * `packageName`: name of npm package
  * `spec`: spec range ex. '^0.72.0'
  *
- * This will fetch the latest version of the spec range
+ * Return an array of versions of the specified spec range or throw an error
  */
-function getLatestVersionBySpec(packageName, spec) {
+function getVersionsBySpec(packageName, spec) {
   const npmString = `npm view ${packageName}@'${spec}' version --json`;
   const result = exec(npmString, {silent: true});
 
   if (result.code) {
-    throw new Error(`Failed to get versions for ${packageName}@${spec}`);
+    // Special handling if no such package spec exists
+    if (result.stderr.includes('npm ERR! code E404')) {
+      /**
+       * npm ERR! code E404
+       * npm ERR! 404 No match found for version ^0.72.0
+       * npm ERR! 404
+       * npm ERR! 404  '@react-native/community-cli-plugin@^0.72.0' is not in this registry.
+       * npm ERR! 404
+       * npm ERR! 404 Note that you can also install from a
+       * npm ERR! 404 tarball, folder, http url, or git url.
+       * {
+       *   "error": {
+       *     "code": "E404",
+       *     "summary": "No match found for version ^0.72.0",
+       *     "detail": "\n '@react-native/community-cli-plugin@^0.72.0' is not in this registry.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+       *   }
+       * }
+       */
+      const error = JSON.parse(
+        result.stderr
+          .split('\n')
+          .filter(line => !line.includes('npm ERR'))
+          .join(''),
+      ).error;
+      throw new Error(error.summary);
+    } else {
+      throw new Error(`Failed: ${npmString}`);
+    }
   }
-  const versions = JSON.parse(result.stdout).sort();
-  return versions[versions.length - 1];
+  const versions = JSON.parse(result.stdout.trim());
+  return !Array.isArray(versions) ? [versions] : versions;
 }
 
 module.exports = {
   applyPackageVersions,
   getNpmInfo,
   getPackageVersionStrByTag,
-  getLatestVersionBySpec,
+  getVersionsBySpec,
   publishPackage,
   diffPackages,
   pack,
