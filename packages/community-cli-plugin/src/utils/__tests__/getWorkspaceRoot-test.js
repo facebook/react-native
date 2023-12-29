@@ -41,6 +41,19 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
+  test('supports a Yarn workspace (object style)', () => {
+    const tempWorkspaceRootPath = createTempPackage({
+      name: 'package-root',
+      workspaces: {
+        packages: ['packages/*'],
+      },
+    });
+    const tempPackagePath = createTempPackage({
+      name: 'my-app',
+    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
+  });
+
   test.skip('supports a pnpm workspace', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
