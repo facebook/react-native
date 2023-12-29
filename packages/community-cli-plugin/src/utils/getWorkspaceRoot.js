@@ -12,25 +12,48 @@
 const fs = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
+const yaml = require('yaml');
 
 /**
  * Get the workspace paths from the path of a potential workspace root.
+ *
+ * This supports:
+ * - [NPM workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces)
+ * - [Yarn workspaces](https://yarnpkg.com/features/workspaces)
+ * - [PNPM workspaces](https://pnpm.io/workspaces)
  */
 function getWorkspacePaths(packagePath /*: string */) /*: string[] */ {
-  const packageJsonPath = path.resolve(packagePath, 'package.json');
-  const {workspaces} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  if (Array.isArray(workspaces)) {
-    return workspaces;
-  } else if (
-    typeof workspaces === 'object' &&
-    Array.isArray(workspaces.packages)
-  ) {
-    // An alternative way for Yarn to declare workspace packages
-    return workspaces.packages;
-  } else {
-    return [];
+  const result /*: string[] */ = [];
+  try {
+    const packageJsonPath = path.resolve(packagePath, 'package.json');
+    const {workspaces} = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    if (Array.isArray(workspaces)) {
+      result.push(...workspaces);
+    } else if (
+      typeof workspaces === 'object' &&
+      Array.isArray(workspaces.packages)
+    ) {
+      // An alternative way for Yarn to declare workspace packages
+      result.push(...workspaces.packages);
+    }
+    // Falling back to PNPN workspaces
+    const pnpmWorkspacePath = path.resolve(packagePath, 'pnpm-workspace.yaml');
+    const pnpmWorkspaceConfig = yaml.parse(
+      fs.readFileSync(pnpmWorkspacePath, 'utf8'),
+    );
+    if (
+      typeof pnpmWorkspaceConfig === 'object' &&
+      Array.isArray(pnpmWorkspaceConfig.packages)
+    ) {
+      result.push(...pnpmWorkspaceConfig.packages);
+    }
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.warn(`Failed getting workspace root from ${packagePath}:`, err);
+    }
+  } finally {
+    return result;
   }
-  // TODO: Support PNPN workspaces
 }
 
 /**
@@ -43,18 +66,13 @@ export function getWorkspaceRoot(
   projectRoot /*: string */,
   candidatePath /*: string */ = projectRoot,
 ) /*: ?string */ {
-  try {
-    const workspacePaths = getWorkspacePaths(candidatePath);
-    // If one of the workspaces match the project root, this is the workspace root
-    // Note: While NPM workspaces doesn't currently support globs, Yarn does, which is why we use micromatch
-    const relativePath = path.relative(candidatePath, projectRoot);
-    if (micromatch.isMatch(relativePath, workspacePaths)) {
-      return candidatePath;
-    }
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      console.warn(`Failed getting workspace root from ${candidatePath}:`, err);
-    }
+  const workspacePaths = getWorkspacePaths(candidatePath);
+  // If one of the workspaces match the project root, this is the workspace root
+  // Note: While NPM workspaces doesn't currently support globs, Yarn does, which is why we use micromatch
+  const relativePath = path.relative(candidatePath, projectRoot);
+  // Using this instead of `micromatch.isMatch` to enable excluding patterns
+  if (micromatch([relativePath], workspacePaths).length > 0) {
+    return candidatePath;
   }
   // Try one level up
   const parentDir = path.dirname(candidatePath);

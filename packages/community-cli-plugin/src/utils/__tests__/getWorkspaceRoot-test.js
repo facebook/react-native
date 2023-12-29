@@ -54,7 +54,7 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
-  test.skip('supports a pnpm workspace', () => {
+  test('supports a pnpm workspace', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
     });
@@ -67,7 +67,7 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
-  test.skip('supports a pnpm workspace exclusion', () => {
+  test('supports a pnpm workspace exclusion', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
     });
