@@ -1159,6 +1159,8 @@ function InternalTextInput(props: Props): React.Node {
       ? props.value
       : typeof props.defaultValue === 'string'
       ? props.defaultValue
+      : typeof props.value === 'undefined'
+      ? null
       : '';
 
   // This is necessary in case native updates the text and JS decides
@@ -1502,7 +1504,7 @@ function InternalTextInput(props: Props): React.Node {
           useMultilineDefaultStyle ? styles.multilineDefault : null,
           style,
         )}
-        text={text}
+        text={text || ''}
       />
     );
   } else if (Platform.OS === 'android') {
@@ -1568,7 +1570,7 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
         style={style}
-        text={text}
+        text={text || ''}
         textBreakStrategy={props.textBreakStrategy}
       />
     );
