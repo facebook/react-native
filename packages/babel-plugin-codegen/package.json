@@ -11,7 +11,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@react-native/codegen": "*"
+    "@react-native/codegen": "0.72.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
