@@ -77,7 +77,7 @@ typedef NSURL RCTFileURL;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
 #if !TARGET_OS_TV
-+ (UIBarStyle)UIBarStyle:(id)json;
++ (UIBarStyle)UIBarStyle:(id)json __deprecated;
 #endif
 
 + (CGFloat)CGFloat:(id)json;
