@@ -19,20 +19,16 @@
  */
 function tryExecNTimes(funcToRetry, retriesLeft, onEveryError) {
   let exitCode = funcToRetry();
-
   while (exitCode !== 0 && retriesLeft > 0) {
     if (onEveryError) {
       onEveryError();
     }
-    
     --retriesLeft;
     console.warn(`Command failed, ${retriesLeft} retries left`);
-
     if (retriesLeft > 0) {
       exitCode = funcToRetry();
     }
   }
-
   return exitCode;
 }
 
