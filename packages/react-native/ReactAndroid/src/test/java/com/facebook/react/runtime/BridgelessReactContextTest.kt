@@ -9,7 +9,6 @@ package com.facebook.react.runtime
 
 import android.app.Activity
 import android.content.Context
-import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.testutils.shadows.ShadowSoLoader
@@ -49,17 +48,11 @@ class BridgelessReactContextTest {
     Assertions.assertThat(uiManagerModule).isEqualTo(mUiManagerModule)
   }
 
-  @Test(expected = UnsupportedOperationException::class)
-  fun getJSIModule_throwsException() {
-    bridgelessReactContext.getJSIModule(JSIModuleType.TurboModuleManager)
-  }
-
   @Test
-  fun getJSIModuleTest() {
+  fun getFabricUIManagerTest() {
     val fabricUiManager = Mockito.mock(FabricUIManager::class.java)
     doReturn(fabricUiManager).`when`(reactHost).uiManager
-    Assertions.assertThat(bridgelessReactContext.getJSIModule(JSIModuleType.UIManager))
-        .isEqualTo(fabricUiManager)
+    Assertions.assertThat(bridgelessReactContext.getFabricUIManager()).isEqualTo(fabricUiManager)
   }
 
   @Test(expected = UnsupportedOperationException::class)

@@ -547,14 +547,6 @@ public class ReactContext extends ContextWrapper {
     return null;
   }
 
-  public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
-    if (!hasActiveReactInstance()) {
-      throw new IllegalStateException(
-          "Unable to retrieve a JSIModule if CatalystInstance is not active.");
-    }
-    return mCatalystInstance.getJSIModule(moduleType);
-  }
-
   @DeprecatedInNewArchitecture(
       message =
           "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
