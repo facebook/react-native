@@ -21,7 +21,7 @@ type NativeProps = $ReadOnly<{|
 |}>;
 export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
 export type Overlay = {
-  rect: {left: number, top: number, width: number, height: number},
+  rect: ElementRectangle,
   color: ?ProcessedColorValue,
 };
 
