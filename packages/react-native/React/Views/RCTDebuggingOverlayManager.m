@@ -22,13 +22,13 @@ RCT_EXPORT_MODULE(DebuggingOverlay)
   return [RCTDebuggingOverlay new];
 }
 
-RCT_EXPORT_METHOD(draw : (nonnull NSNumber *)viewTag nodes : (NSString *)serializedNodes)
+RCT_EXPORT_METHOD(highlightTraceUpdates : (nonnull NSNumber *)viewTag nodes : (NSString *)serializedUpdates)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
 
     if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
-      [(RCTDebuggingOverlay *)view draw:serializedNodes];
+      [(RCTDebuggingOverlay *)view highlightTraceUpdates:serializedUpdates];
     } else {
       RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
     }
