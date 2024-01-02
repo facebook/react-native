@@ -10,6 +10,7 @@
 const {
   applyPackageVersions,
   getPackageVersionStrByTag,
+  getVersionsBySpec,
   publishPackage,
 } = require('../npm-utils');
 
@@ -102,6 +103,51 @@ describe('npm-utils', () => {
         'npm publish --tag latest --otp otp',
         {cwd: 'path/to/my-package'},
       );
+    });
+  });
+
+  describe('getVersionsBySpec', () => {
+    it('should return array when single version returned', () => {
+      execMock.mockImplementationOnce(() => ({code: 0, stdout: '"0.72.0" \n'}));
+
+      const versions = getVersionsBySpec('mypackage', '^0.72.0');
+      expect(versions).toEqual(['0.72.0']);
+    });
+
+    it('should return array of versions', () => {
+      execMock.mockImplementationOnce(() => ({
+        code: 0,
+        stdout: '[\n"0.73.0",\n"0.73.1"\n]\n',
+      }));
+
+      const versions = getVersionsBySpec('mypackage', '^0.73.0');
+      expect(versions).toEqual(['0.73.0', '0.73.1']);
+    });
+
+    it('should return error summary if E404', () => {
+      const error =
+        `npm ERR! code E404\n` +
+        `npm ERR! 404 No match found for version ^0.72.0\n` +
+        `npm ERR! 404\n` +
+        `npm ERR! 404  '@react-native/community-cli-plugin@^0.72.0' is not in this registry.\n` +
+        `npm ERR! 404\n` +
+        `npm ERR! 404 Note that you can also install from a\n` +
+        `npm ERR! 404 tarball, folder, http url, or git url.\n` +
+        `{\n` +
+        `  "error": {\n` +
+        `    "code": "E404",\n` +
+        `    "summary": "No match found for version ^0.72.0",\n` +
+        `    "detail": "\n '@react-native/community-cli-plugin@^0.72.0' is not in this registry.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."\n` +
+        `  }\n` +
+        `}\n`;
+      execMock.mockImplementationOnce(() => ({
+        code: 1,
+        stderr: error,
+      }));
+
+      expect(() => {
+        getVersionsBySpec('mypackage', '^0.72.0');
+      }).toThrow('No match found for version ^0.72.0');
     });
   });
 });

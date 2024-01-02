@@ -25,6 +25,7 @@
     "lint-java": "node ./scripts/lint-java.js",
     "lint": "eslint .",
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
+    "print-packages": "node ./scripts/monorepo/print",
     "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "start": "cd packages/rn-tester && npm run start",
     "test-android": "./gradlew :packages:react-native:ReactAndroid:test",
