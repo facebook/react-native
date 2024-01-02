@@ -22,7 +22,7 @@ const yaml = require('yaml');
  * - [Yarn workspaces](https://yarnpkg.com/features/workspaces)
  * - [PNPM workspaces](https://pnpm.io/workspaces)
  */
-function getWorkspacePaths(packagePath /*: string */) /*: string[] */ {
+function getWorkspacePaths(packagePath: string): Array<string> {
   const result /*: string[] */ = [];
   try {
     const packageJsonPath = path.resolve(packagePath, 'package.json');
@@ -57,7 +57,8 @@ function getWorkspacePaths(packagePath /*: string */) /*: string[] */ {
 }
 
 /**
- * Resolves the root of an NPM or Yarn workspace, by traversing the file tree upwards from a `candidatePath` in the search for
+ * Resolves the root of an npm or Yarn workspace, by traversing the file tree
+ * upwards from a `candidatePath` in the search for
  * - a directory with a package.json
  * - which has a `workspaces` array of strings
  * - which (possibly via a glob) includes the project root
@@ -78,7 +79,6 @@ export function getWorkspaceRoot(
   const parentDir = path.dirname(candidatePath);
   if (parentDir !== candidatePath) {
     return getWorkspaceRoot(projectRoot, parentDir);
-  } else {
-    return null;
   }
+  return null;
 }
