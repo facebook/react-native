@@ -9,20 +9,24 @@
  * @oncall react_native
  */
 
-import type {AppContainerRootViewRef} from '../ReactNative/AppContainer-dev';
+import type {
+  AppContainerRootViewRef,
+  DebuggingOverlayRef,
+} from '../ReactNative/AppContainer-dev';
 
 import DebuggingRegistry from './DebuggingRegistry';
 import {useEffect} from 'react';
 
 const useSubscribeToDebuggingRegistry = (
   rootViewRef: AppContainerRootViewRef,
+  debuggingOverlayRef: DebuggingOverlayRef,
 ) => {
   useEffect(() => {
-    const subscriber = {rootViewRef};
+    const subscriber = {rootViewRef, debuggingOverlayRef};
 
     DebuggingRegistry.subscribe(subscriber);
     return () => DebuggingRegistry.unsubscribe(subscriber);
-  }, [rootViewRef]);
+  }, [rootViewRef, debuggingOverlayRef]);
 };
 
 export default useSubscribeToDebuggingRegistry;
