@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.debuggingoverlay.DebuggingOverlay.Overlay;
@@ -61,6 +62,47 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
         } catch (JSONException e) {
           FLog.e(REACT_CLASS, "Failed to parse overlays: ", e);
         }
+        break;
+
+      case "highlightElements":
+        if (args == null) {
+          return;
+        }
+
+        String serializedElements = args.getString(0);
+        if (serializedElements == null) {
+          return;
+        }
+
+        try {
+          JSONArray deserializedElements = new JSONArray(serializedElements);
+          List<RectF> elementsRectangles = new ArrayList<>();
+          for (int i = 0; i < deserializedElements.length(); i++) {
+            JSONObject element = deserializedElements.getJSONObject(i);
+
+            float left = (float) element.getDouble("x");
+            float top = (float) element.getDouble("y");
+            float right = (float) (left + element.getDouble("width"));
+            float bottom = (float) (top + element.getDouble("height"));
+            RectF rect =
+                new RectF(
+                    PixelUtil.toPixelFromDIP(left),
+                    PixelUtil.toPixelFromDIP(top),
+                    PixelUtil.toPixelFromDIP(right),
+                    PixelUtil.toPixelFromDIP(bottom));
+
+            elementsRectangles.add(rect);
+          }
+
+          view.setHighlightedElementsRectangles(elementsRectangles);
+        } catch (JSONException e) {
+          FLog.e(REACT_CLASS, "Failed to parse highlightElements payload: ", e);
+        }
+        break;
+
+      case "clearElementsHighlights":
+        view.clearElementsHighlights();
+
         break;
 
       default:

@@ -35,4 +35,30 @@ RCT_EXPORT_METHOD(draw : (nonnull NSNumber *)viewTag nodes : (NSString *)seriali
   }];
 }
 
+RCT_EXPORT_METHOD(highlightElements : (nonnull NSNumber *)viewTag elements : (NSString *)serializedElements)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+
+    if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
+      [(RCTDebuggingOverlay *)view highlightElements:serializedElements];
+    } else {
+      RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(clearElementsHighlights : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+
+    if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
+      [(RCTDebuggingOverlay *)view clearElementsHighlights];
+    } else {
+      RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
+    }
+  }];
+}
+
 @end
