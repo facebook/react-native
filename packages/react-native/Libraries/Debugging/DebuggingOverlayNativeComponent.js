@@ -25,6 +25,13 @@ export type Overlay = {
   color: ?ProcessedColorValue,
 };
 
+export type ElementRectangle = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+};
+
 interface NativeCommands {
   +draw: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
