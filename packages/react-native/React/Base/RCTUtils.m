@@ -33,6 +33,20 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 // Determines if a given image URL refers to a image in Home directory (~)
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
+// Whether the New Architecture is enabled or not
+static BOOL _newArchEnabled = false;
+BOOL RCTIsNewArchEnabled(void)
+{
+  return _newArchEnabled;
+}
+void RCTSetNewArchEnabled(BOOL enabled)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _newArchEnabled = enabled;
+  });
+}
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {
