@@ -29,7 +29,11 @@ class SharedColor {
 
   SharedColor(Color color) : color_(color) {}
 
-  Color operator*() const {
+  Color& operator*() {
+    return color_;
+  }
+
+  const Color& operator*() const {
     return color_;
   }
 
@@ -61,7 +65,7 @@ SharedColor whiteColor();
 
 template <>
 struct std::hash<facebook::react::SharedColor> {
-  size_t operator()(facebook::react::SharedColor color) const {
-    return std::hash<decltype(*color)>{}(*color);
+  size_t operator()(const facebook::react::SharedColor& color) const {
+    return std::hash<facebook::react::Color>{}(*color);
   }
 };

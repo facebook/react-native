@@ -5,8 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/renderer/graphics/ColorComponents.h>
-#include <vector>
+#pragma once
+
+#import <UIKit/UIKit.h>
+#import <react/renderer/graphics/HostPlatformColor.h>
+#import <vector>
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(
     std::vector<std::string>& semanticItems);
+
+UIColor* RCTPlatformColorFromColor(const facebook::react::Color& color);
