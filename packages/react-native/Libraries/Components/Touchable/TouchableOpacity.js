@@ -314,6 +314,10 @@ class TouchableOpacity extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount(): void {
+    this.state.pressability.configure(this._createPressabilityConfig());
+  }
+
   componentWillUnmount(): void {
     this.state.pressability.reset();
   }
