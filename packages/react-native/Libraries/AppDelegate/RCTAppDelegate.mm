@@ -10,6 +10,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <React/RCTUtils.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppSetupUtils.h"
 
@@ -79,9 +80,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  RCTSetNewArchEnabled([self newArchEnabled]);
   BOOL enableTM = self.turboModuleEnabled;
-  BOOL enableBridgeless = self.bridgelessEnabled;
   BOOL fabricEnabled = self.fabricEnabled;
+  BOOL enableBridgeless = self.bridgelessEnabled;
 
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
