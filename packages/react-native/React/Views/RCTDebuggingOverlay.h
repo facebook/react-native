@@ -12,5 +12,8 @@
 @interface RCTDebuggingOverlay : RCTView
 
 - (void)draw:(NSString *)serializedNodes;
+- (void)clearTraceUpdatesViews;
+- (void)highlightElements:(NSString *)serializedElements;
+- (void)clearElementsHighlights;
 
 @end
