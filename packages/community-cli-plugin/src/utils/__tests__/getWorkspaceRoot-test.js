@@ -9,10 +9,10 @@
  * @oncall react_native
  */
 
-const {getWorkspaceRoot} = require('../getWorkspaceRoot');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import {getWorkspaceRoot} from '../getWorkspaceRoot';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 function createTempPackage(
   packageJson: {...},
@@ -39,7 +39,7 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(null);
   });
 
-  test('supports an NPM workspace', () => {
+  test('supports an npm workspace', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
       workspaces: ['packages/my-app', 'packages/my-lib'],
@@ -53,7 +53,7 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
-  test('supports a Yarn workspace', () => {
+  test('supports a yarn workspace', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
       workspaces: ['packages/*'],
@@ -67,7 +67,7 @@ describe('getWorkspaceRoot', () => {
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
-  test('supports a Yarn workspace (object style)', () => {
+  test('supports a yarn workspace (object style)', () => {
     const tempWorkspaceRootPath = createTempPackage({
       name: 'package-root',
       workspaces: {
