@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
@@ -33,6 +34,18 @@ const reactDevToolsHook: ?ReactDevToolsGlobalHook =
 export type DebuggingRegistrySubscriberProtocol = {
   rootViewRef: AppContainerRootViewRef,
   debuggingOverlayRef: DebuggingOverlayRef,
+};
+
+type ModernNodeUpdate = {
+  id: number,
+  instance: ReactNativeElement,
+  color: string,
+};
+
+type LegacyNodeUpdate = {
+  id: number,
+  instance: NativeMethods,
+  color: string,
 };
 
 class DebuggingRegistry {
@@ -99,24 +112,77 @@ class DebuggingRegistry {
   #onDrawTraceUpdates: (
     ...ReactDevToolsAgentEvents['drawTraceUpdates']
   ) => void = traceUpdates => {
-    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
+    const modernNodesUpdates: Array<ModernNodeUpdate> = [];
+    const legacyNodesUpdates: Array<LegacyNodeUpdate> = [];
 
-    traceUpdates.forEach(({node, color}) => {
+    for (const {node, color} of traceUpdates) {
       const publicInstance = this.#getPublicInstanceFromInstance(node);
-
       if (publicInstance == null) {
         return;
       }
 
-      const frameToDrawPromise = new Promise<TraceUpdate>((resolve, reject) => {
-        // TODO(T171095283): We should refactor this to use `getBoundingClientRect` when Paper is no longer supported.
-        publicInstance.measure((x, y, width, height, left, top) => {
-          const id = findNodeHandle(node);
-          if (id == null) {
-            reject();
-            return;
-          }
+      const instanceReactTag = findNodeHandle(node);
+      if (instanceReactTag == null) {
+        return;
+      }
 
+      // Lazy import to avoid dependency cycle.
+      const ReactNativeElementClass =
+        require('../DOM/Nodes/ReactNativeElement').default;
+      if (publicInstance instanceof ReactNativeElementClass) {
+        modernNodesUpdates.push({
+          id: instanceReactTag,
+          instance: publicInstance,
+          color,
+        });
+      } else {
+        legacyNodesUpdates.push({
+          id: instanceReactTag,
+          instance: publicInstance,
+          color,
+        });
+      }
+    }
+
+    if (modernNodesUpdates.length > 0) {
+      this.#drawTraceUpdatesModern(modernNodesUpdates);
+    }
+
+    if (legacyNodesUpdates.length > 0) {
+      this.#drawTraceUpdatesLegacy(legacyNodesUpdates);
+    }
+  };
+
+  #drawTraceUpdatesModern(updates: Array<ModernNodeUpdate>): void {
+    const resolvedTraceUpdates: Array<TraceUpdate> = updates.map(
+      ({id, instance, color}) => {
+        const {x, y, width, height} = instance.getBoundingClientRect();
+
+        return {
+          id,
+          rectangle: {x, y, width, height},
+          color: processColor(color),
+        };
+      },
+    );
+
+    for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
+      const rootViewReactTag = findNodeHandle(rootViewRef.current);
+      if (rootViewReactTag == null) {
+        continue;
+      }
+
+      debuggingOverlayRef.current?.highlightTraceUpdates(resolvedTraceUpdates);
+    }
+  }
+
+  // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
+  #drawTraceUpdatesLegacy(updates: Array<LegacyNodeUpdate>): void {
+    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
+
+    for (const {id, instance, color} of updates) {
+      const frameToDrawPromise = new Promise<TraceUpdate>(resolve => {
+        instance.measure((x, y, width, height, left, top) => {
           resolve({
             id,
             rectangle: {x: left, y: top, width, height},
@@ -126,13 +192,18 @@ class DebuggingRegistry {
       });
 
       promisesToResolve.push(frameToDrawPromise);
-    });
+    }
 
     Promise.all(promisesToResolve).then(
-      updates => {
-        for (const subscriber of this.#registry) {
-          subscriber.debuggingOverlayRef.current?.highlightTraceUpdates(
-            updates,
+      resolvedTraceUpdates => {
+        for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
+          const rootViewReactTag = findNodeHandle(rootViewRef.current);
+          if (rootViewReactTag == null) {
+            continue;
+          }
+
+          debuggingOverlayRef.current?.highlightTraceUpdates(
+            resolvedTraceUpdates,
           );
         }
       },
@@ -140,7 +211,7 @@ class DebuggingRegistry {
         console.error(`Failed to measure updated traces. Error: ${err}`);
       },
     );
-  };
+  }
 
   #onHighlightElements: (
     ...ReactDevToolsAgentEvents['showNativeHighlight']
@@ -155,14 +226,36 @@ class DebuggingRegistry {
       return;
     }
 
+    // Lazy import to avoid dependency cycle.
+    const ReactNativeElementClass =
+      require('../DOM/Nodes/ReactNativeElement').default;
+    if (publicInstance instanceof ReactNativeElementClass) {
+      this.#onHighlightElementsModern(publicInstance);
+    } else {
+      this.#onHighlightElementsLegacy(publicInstance);
+    }
+  };
+
+  #onHighlightElementsModern(publicInstance: ReactNativeElement): void {
+    const {x, y, width, height} = publicInstance.getBoundingClientRect();
+
+    for (const subscriber of this.#registry) {
+      subscriber.debuggingOverlayRef.current?.highlightElements([
+        {x, y, width, height},
+      ]);
+    }
+  }
+
+  // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
+  #onHighlightElementsLegacy(publicInstance: NativeMethods): void {
     publicInstance.measure((x, y, width, height, left, top) => {
-      for (const subscriber of this.#registry) {
-        subscriber.debuggingOverlayRef.current?.highlightElements([
+      for (const {debuggingOverlayRef} of this.#registry) {
+        debuggingOverlayRef.current?.highlightElements([
           {x: left, y: top, width, height},
         ]);
       }
     });
-  };
+  }
 
   #onClearElementsHighlights: (
     ...ReactDevToolsAgentEvents['hideNativeHighlight']
