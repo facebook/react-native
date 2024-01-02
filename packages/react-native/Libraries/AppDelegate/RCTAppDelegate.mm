@@ -131,6 +131,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return YES;
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  // Noop
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   [NSException raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
