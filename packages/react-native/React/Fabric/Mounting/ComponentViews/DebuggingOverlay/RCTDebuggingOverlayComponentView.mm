@@ -55,6 +55,16 @@ using namespace facebook::react;
   [_overlay draw:overlays];
 }
 
+- (void)highlightElements:(NSString *)elements
+{
+  [_overlay highlightElements:elements];
+}
+
+- (void)clearElementsHighlights
+{
+  [_overlay clearElementsHighlights];
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RCTDebuggingOverlayCls(void)
