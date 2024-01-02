@@ -66,9 +66,9 @@ function getWorkspacePaths(packagePath: string): Array<string> {
  * - which (possibly via a glob) includes the project root
  */
 export function getWorkspaceRoot(
-  projectRoot /*: string */,
-  candidatePath /*: string */ = projectRoot,
-) /*: ?string */ {
+  projectRoot: string,
+  candidatePath: string = projectRoot,
+): ?string {
   const workspacePaths = getWorkspacePaths(candidatePath);
   // If one of the workspaces match the project root, this is the workspace root
   // Note: While npm workspaces doesn't currently support globs, yarn does, which is why we use micromatch
