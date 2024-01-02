@@ -32,10 +32,18 @@ interface NativeCommands {
     // Array type is not supported in RN codegen for building native commands.
     overlays: string,
   ) => void;
+  +highlightElements: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+    // TODO(T144046177): Codegen doesn't support array type for native commands yet.
+    elements: string,
+  ) => void;
+  +clearElementsHighlights: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+  ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['draw'],
+  supportedCommands: ['draw', 'highlightElements', 'clearElementsHighlights'],
 });
 
 export default (codegenNativeComponent<NativeProps>(
