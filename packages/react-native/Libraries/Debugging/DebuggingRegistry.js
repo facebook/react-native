@@ -189,9 +189,19 @@ class DebuggingRegistry {
       }
 
       const {x, y, width, height} = instance.getBoundingClientRect();
+
+      const rootViewInstance = parent.rootViewRef.current;
+      if (rootViewInstance == null) {
+        continue;
+      }
+
+      const {x: parentX, y: parentY} =
+        // $FlowFixMe[prop-missing] React Native View is not a descendant of ReactNativeElement yet. We should be able to remove it once Paper is no longer supported.
+        rootViewInstance.getBoundingClientRect();
+
       traceUpdatesForParent.push({
         id,
-        rectangle: {x, y, width, height},
+        rectangle: {x: x - parentX, y: y - parentY, width, height},
         color: processColor(color),
       });
     }
@@ -267,9 +277,19 @@ class DebuggingRegistry {
 
     const parent =
       this.#findLowestParentFromRegistryForInstance(publicInstance);
+
     if (parent) {
+      const rootViewInstance = parent.rootViewRef.current;
+      if (rootViewInstance == null) {
+        return;
+      }
+
+      const {x: parentX, y: parentY} =
+        // $FlowFixMe[prop-missing] React Native View is not a descendant of ReactNativeElement yet. We should be able to remove it once Paper is no longer supported.
+        rootViewInstance.getBoundingClientRect();
+
       parent.debuggingOverlayRef.current?.highlightElements([
-        {x, y, width, height},
+        {x: x - parentX, y: y - parentY, width, height},
       ]);
     }
   }
