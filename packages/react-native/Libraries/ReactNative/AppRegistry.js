@@ -361,7 +361,9 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless !== true) {
+if (global.RN$Bridgeless === true) {
+  console.log('Bridgeless mode is enabled');
+} else {
   BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 }
 
