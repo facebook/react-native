@@ -7,6 +7,7 @@
 
 #import "RCTAppDelegate.h"
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -117,6 +118,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     }
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
+  [self customizeRootView:(RCTRootView *)rootView];
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
@@ -144,16 +146,37 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
+- (void)customizeRootView:(RCTRootView *)rootView
+{
+  // Override point for customization after application launch.
+}
+
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
+  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
   BOOL enableFabric = self.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
+}
+
+// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
+- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
+{
+  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
+  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
+  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
+  if (currentClassImp != baseClassImp) {
+    NSString *warnMessage =
+        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
+         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
+         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
+    RCTLogWarn(@"%@", warnMessage);
+  }
 }
 
 - (UIViewController *)createRootViewController
