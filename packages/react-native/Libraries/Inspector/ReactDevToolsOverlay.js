@@ -17,7 +17,6 @@ import type {InspectedElement} from './Inspector';
 import View from '../Components/View/View';
 import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import Dimensions from '../Utilities/Dimensions';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 
@@ -130,7 +129,8 @@ export default function ReactDevToolsOverlay({
     [onResponderMove],
   );
 
-  let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
+  const highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
+
   if (isInspecting) {
     const events =
       // Pointer events only work on fabric
@@ -149,7 +149,7 @@ export default function ReactDevToolsOverlay({
     return (
       <View
         nativeID="devToolsInspectorOverlay"
-        style={[styles.inspector, {height: Dimensions.get('window').height}]}
+        style={styles.inspector}
         {...events}>
         {highlight}
       </View>
@@ -166,5 +166,6 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     right: 0,
+    bottom: 0,
   },
 });
