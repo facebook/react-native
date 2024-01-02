@@ -1,12 +1,32 @@
-const { getWorkspaceRoot } = require('../getWorkspaceRoot');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ * @oncall react_native
+ */
 
-function createTempPackage(packageJson, packagePath = fs.mkdtempSync(path.join(os.tmpdir(), 'rn-metro-config-test-'))) {
-  fs.mkdirSync(packagePath, { recursive: true });
+const {getWorkspaceRoot} = require('../getWorkspaceRoot');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+function createTempPackage(
+  packageJson: {...},
+  packagePath: string = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'rn-metro-config-test-'),
+  ),
+) {
+  fs.mkdirSync(packagePath, {recursive: true});
   if (typeof packageJson === 'object') {
-    fs.writeFileSync(path.join(packagePath, 'package.json'), JSON.stringify(packageJson), 'utf8');
+    fs.writeFileSync(
+      path.join(packagePath, 'package.json'),
+      JSON.stringify(packageJson),
+      'utf8',
+    );
   }
   return packagePath;
 }
@@ -24,9 +44,12 @@ describe('getWorkspaceRoot', () => {
       name: 'package-root',
       workspaces: ['packages/my-app', 'packages/my-lib'],
     });
-    const tempPackagePath = createTempPackage({
-      name: 'my-app',
-    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    const tempPackagePath = createTempPackage(
+      {
+        name: 'my-app',
+      },
+      path.join(tempWorkspaceRootPath, 'packages', 'my-app'),
+    );
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
@@ -35,9 +58,12 @@ describe('getWorkspaceRoot', () => {
       name: 'package-root',
       workspaces: ['packages/*'],
     });
-    const tempPackagePath = createTempPackage({
-      name: 'my-app',
-    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    const tempPackagePath = createTempPackage(
+      {
+        name: 'my-app',
+      },
+      path.join(tempWorkspaceRootPath, 'packages', 'my-app'),
+    );
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
@@ -48,9 +74,12 @@ describe('getWorkspaceRoot', () => {
         packages: ['packages/*'],
       },
     });
-    const tempPackagePath = createTempPackage({
-      name: 'my-app',
-    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    const tempPackagePath = createTempPackage(
+      {
+        name: 'my-app',
+      },
+      path.join(tempWorkspaceRootPath, 'packages', 'my-app'),
+    );
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
@@ -60,10 +89,17 @@ describe('getWorkspaceRoot', () => {
     });
     // Create the pnpm workspace configuration (see https://pnpm.io/pnpm-workspace_yaml)
     const workspacesConfig = 'packages: ["packages/*"]';
-    fs.writeFileSync(path.join(tempWorkspaceRootPath, 'pnpm-workspace.yaml'), workspacesConfig, 'utf8');
-    const tempPackagePath = createTempPackage({
-      name: 'my-app',
-    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    fs.writeFileSync(
+      path.join(tempWorkspaceRootPath, 'pnpm-workspace.yaml'),
+      workspacesConfig,
+      'utf8',
+    );
+    const tempPackagePath = createTempPackage(
+      {
+        name: 'my-app',
+      },
+      path.join(tempWorkspaceRootPath, 'packages', 'my-app'),
+    );
     expect(getWorkspaceRoot(tempPackagePath)).toBe(tempWorkspaceRootPath);
   });
 
@@ -73,11 +109,17 @@ describe('getWorkspaceRoot', () => {
     });
     // Create the pnpm workspace configuration (see https://pnpm.io/pnpm-workspace_yaml)
     const workspacesConfig = 'packages: ["packages/*", "!packages/*-app"]';
-    fs.writeFileSync(path.join(tempWorkspaceRootPath, 'pnpm-workspace.yaml'), workspacesConfig, 'utf8');
-    const tempPackagePath = createTempPackage({
-      name: 'my-app',
-    }, path.join(tempWorkspaceRootPath, 'packages', 'my-app'));
+    fs.writeFileSync(
+      path.join(tempWorkspaceRootPath, 'pnpm-workspace.yaml'),
+      workspacesConfig,
+      'utf8',
+    );
+    const tempPackagePath = createTempPackage(
+      {
+        name: 'my-app',
+      },
+      path.join(tempWorkspaceRootPath, 'packages', 'my-app'),
+    );
     expect(getWorkspaceRoot(tempPackagePath)).toBe(null);
   });
 });
-
