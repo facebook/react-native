@@ -189,6 +189,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     this.state.pressability.configure(createPressabilityConfig(this.props));
   }
 
+  componentDidMount(): mixed {
+    this.state.pressability.configure(createPressabilityConfig(this.props));
+  }
+
   componentWillUnmount(): void {
     this.state.pressability.reset();
   }
