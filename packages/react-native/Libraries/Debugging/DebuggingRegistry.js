@@ -22,7 +22,10 @@ import type {
   ReactDevToolsAgentEvents,
   ReactDevToolsGlobalHook,
 } from '../Types/ReactDevToolsTypes';
-import type {TraceUpdate} from './DebuggingOverlayNativeComponent';
+import type {
+  ElementRectangle,
+  TraceUpdate,
+} from './DebuggingOverlayNativeComponent';
 
 import {
   findNodeHandle,
@@ -90,9 +93,9 @@ class DebuggingRegistry {
     agent.addListener('hideNativeHighlight', this.#onClearElementsHighlights);
   };
 
-  #getPublicInstanceFromInstance(
+  #getPublicInstanceFromInstance = (
     instanceHandle: InstanceFromReactDevTools,
-  ): NativeMethods | null {
+  ): NativeMethods | null => {
     // `canonical.publicInstance` => Fabric
     if (instanceHandle.canonical?.publicInstance != null) {
       return instanceHandle.canonical?.publicInstance;
@@ -111,7 +114,7 @@ class DebuggingRegistry {
     }
 
     return null;
-  }
+  };
 
   #findLowestParentFromRegistryForInstance(
     instance: ReactNativeElement,
@@ -352,34 +355,63 @@ class DebuggingRegistry {
 
   #onHighlightElements: (
     ...ReactDevToolsAgentEvents['showNativeHighlight']
-  ) => void = node => {
+  ) => void = nodes => {
     // First clear highlights for every container
     for (const subscriber of this.#registry) {
       subscriber.debuggingOverlayRef.current?.clearElementsHighlight();
     }
 
-    const publicInstance = this.#getPublicInstanceFromInstance(node);
-    if (publicInstance == null) {
-      return;
-    }
-
     // Lazy import to avoid dependency cycle.
     const ReactNativeElementClass =
       require('../DOM/Nodes/ReactNativeElement').default;
-    if (publicInstance instanceof ReactNativeElementClass) {
-      this.#onHighlightElementsModern(publicInstance);
-    } else {
-      this.#onHighlightElementsLegacy(publicInstance);
+
+    const reactNativeElements: Array<ReactNativeElement> = [];
+    const legacyPublicInstances: Array<NativeMethods> = [];
+
+    for (const node of nodes) {
+      const publicInstance = this.#getPublicInstanceFromInstance(node);
+      if (publicInstance == null) {
+        continue;
+      }
+
+      if (publicInstance instanceof ReactNativeElementClass) {
+        reactNativeElements.push(publicInstance);
+      } else {
+        legacyPublicInstances.push(publicInstance);
+      }
+    }
+
+    if (reactNativeElements.length > 0) {
+      this.#onHighlightElementsModern(reactNativeElements);
+    }
+
+    if (legacyPublicInstances.length > 0) {
+      this.#onHighlightElementsLegacy(legacyPublicInstances);
     }
   };
 
-  #onHighlightElementsModern(publicInstance: ReactNativeElement): void {
-    const {x, y, width, height} = publicInstance.getBoundingClientRect();
+  #onHighlightElementsModern(elements: Array<ReactNativeElement>): void {
+    const parentToElementsMap = new Map<
+      DebuggingRegistrySubscriberProtocol,
+      Array<ReactNativeElement>,
+    >();
 
-    const parent =
-      this.#findLowestParentFromRegistryForInstance(publicInstance);
+    for (const element of elements) {
+      const parent = this.#findLowestParentFromRegistryForInstance(element);
+      if (parent == null) {
+        continue;
+      }
 
-    if (parent) {
+      let childElementOfAParent = parentToElementsMap.get(parent);
+      if (childElementOfAParent == null) {
+        childElementOfAParent = [];
+        parentToElementsMap.set(parent, childElementOfAParent);
+      }
+
+      childElementOfAParent.push(element);
+    }
+
+    for (const [parent, elementsToHighlight] of parentToElementsMap.entries()) {
       const rootViewInstance = parent.rootViewRef.current;
       if (rootViewInstance == null) {
         return;
@@ -389,23 +421,59 @@ class DebuggingRegistry {
         // $FlowFixMe[prop-missing] React Native View is not a descendant of ReactNativeElement yet. We should be able to remove it once Paper is no longer supported.
         rootViewInstance.getBoundingClientRect();
 
-      parent.debuggingOverlayRef.current?.highlightElements([
-        {x: x - parentX, y: y - parentY, width, height},
-      ]);
+      const elementsRectangles = elementsToHighlight.map(element => {
+        const {x, y, width, height} = element.getBoundingClientRect();
+        return {x: x - parentX, y: y - parentY, width, height};
+      });
+
+      parent.debuggingOverlayRef.current?.highlightElements(elementsRectangles);
     }
   }
 
   // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
-  #onHighlightElementsLegacy(publicInstance: NativeMethods): void {
-    const container =
-      this.#findLowestParentFromRegistryForInstanceLegacy(publicInstance);
+  #onHighlightElementsLegacy(elements: Array<NativeMethods>): void {
+    const parentToElementsMap = new Map<
+      DebuggingRegistrySubscriberProtocol,
+      Array<NativeMethods>,
+    >();
 
-    if (container != null) {
-      publicInstance.measure((x, y, width, height, left, top) => {
-        container.debuggingOverlayRef.current?.highlightElements([
-          {x: left, y: top, width, height},
-        ]);
-      });
+    for (const element of elements) {
+      const parent =
+        this.#findLowestParentFromRegistryForInstanceLegacy(element);
+      if (parent == null) {
+        continue;
+      }
+
+      let childElementOfAParent = parentToElementsMap.get(parent);
+      if (childElementOfAParent == null) {
+        childElementOfAParent = [];
+        parentToElementsMap.set(parent, childElementOfAParent);
+      }
+
+      childElementOfAParent.push(element);
+    }
+
+    for (const [parent, elementsToHighlight] of parentToElementsMap.entries()) {
+      const promises = elementsToHighlight.map(
+        element =>
+          new Promise<ElementRectangle>(resolve => {
+            element.measure((x, y, width, height, left, top) => {
+              resolve({x: left, y: top, width, height});
+            });
+          }),
+      );
+
+      Promise.all(promises).then(
+        resolvedElementsRectangles =>
+          parent.debuggingOverlayRef.current?.highlightElements(
+            resolvedElementsRectangles,
+          ),
+        err => {
+          console.error(
+            `Failed to measure elements for highlighting. Error: ${err}`,
+          );
+        },
+      );
     }
   }
 
