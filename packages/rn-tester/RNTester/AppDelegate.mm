@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
@@ -21,26 +22,12 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
-// FB-internal imports
-#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
-#import <RCTFBAppInit/RCTFBAppInit.h>
-#endif
-
-#if BUNDLE_PATH
-NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterBundle.js";
-#else
-NSString *kBundlePath = @"js/RNTesterApp.ios";
-#endif
+static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
-  // FB-internal app init setup.
-  RCTFBAppInitApplicationDidFinishLaunching(launchOptions);
-#endif
-
   self.moduleName = @"RNTesterApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -51,10 +38,7 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
-  // FB-internal app backgrounding setup.
-  RCTFBAppInitApplicationDidEnterBackground(application);
-#endif
+  [super applicationDidEnterBackground:application];
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -130,6 +114,13 @@ NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 
 #endif
+
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)bridgelessEnabled
+{
+  return [super bridgelessEnabled];
+}
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
