@@ -98,6 +98,13 @@
   return self;
 }
 
+#if TARGET_OS_OSX // [macOS
+- (RCTPlatformView *)reactAccessibilityElement
+{
+    return _textView;
+}
+#endif // macOS]
+
 #if DEBUG // [macOS] description is a debug-only feature
 - (NSString *)description
 {

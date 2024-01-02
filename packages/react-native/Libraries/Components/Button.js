@@ -451,7 +451,10 @@ class Button extends React.Component<ButtonProps> {
         tooltip={tooltip} // [macOS]
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
-          <Text style={textStyles} disabled={disabled}>
+          <Text
+            style={textStyles}
+            disabled={disabled}
+            accessible={Platform.OS !== 'macos' /* [macOS] */}>
             {formattedTitle}
           </Text>
         </View>
