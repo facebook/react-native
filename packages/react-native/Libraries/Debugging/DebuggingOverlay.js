@@ -10,7 +10,7 @@
 
 import type {
   ElementRectangle,
-  Overlay,
+  TraceUpdate,
 } from './DebuggingOverlayNativeComponent';
 
 import View from '../Components/View/View';
@@ -26,7 +26,7 @@ const isNativeComponentReady =
   UIManager.hasViewManagerConfig('DebuggingOverlay');
 
 type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: Overlay[]): void,
+  highlightTraceUpdates(updates: TraceUpdate[]): void,
   highlightElements(elements: ElementRectangle[]): void,
   clearElementsHighlight(): void,
 };
@@ -44,11 +44,11 @@ function DebuggingOverlay(
         }
 
         const nonEmptyRectangles = updates.filter(
-          ({rect, color}) => rect.width >= 0 && rect.height >= 0,
+          ({rectangle, color}) => rectangle.width >= 0 && rectangle.height >= 0,
         );
 
         if (nativeComponentRef.current != null) {
-          Commands.draw(
+          Commands.highlightTraceUpdates(
             nativeComponentRef.current,
             JSON.stringify(nonEmptyRectangles),
           );
