@@ -434,7 +434,7 @@ namespace JS {
       struct Builder {
         struct Input {
           std::optional<bool> D;
-          id<NSObject> _Nullable  A;
+          id<NSObject> _Nullable A;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
@@ -1780,7 +1780,7 @@ namespace JS {
       struct Builder {
         struct Input {
           std::optional<bool> D;
-          id<NSObject> _Nullable  A;
+          id<NSObject> _Nullable A;
           std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
