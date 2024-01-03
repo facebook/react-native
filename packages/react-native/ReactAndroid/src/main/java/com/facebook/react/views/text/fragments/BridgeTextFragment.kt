@@ -8,21 +8,21 @@ import com.facebook.react.views.text.TextAttributeProps
 /**
  * A [TextFragment] implementation backed by a a [ReadableMap]
  */
-internal class BridgeTextFragment(private val mFragment: ReadableMap) : TextFragment {
+internal class BridgeTextFragment(private val fragment: ReadableMap) : TextFragment {
   override fun getTextAttributeProps(): TextAttributeProps =
-    TextAttributeProps.fromReadableMap(ReactStylesDiffMap(mFragment.getMap("textAttributes")))
+    TextAttributeProps.fromReadableMap(ReactStylesDiffMap(fragment.getMap("textAttributes")))
 
-  override fun getString(): String? = mFragment.getString("string")
+  override fun getString(): String? = fragment.getString("string")
 
-  override fun hasReactTag(): Boolean = mFragment.hasKey("reactTag")
+  override fun hasReactTag(): Boolean = fragment.hasKey("reactTag")
 
-  override fun getReactTag(): Int = mFragment.getInt("reactTag")
+  override fun getReactTag(): Int = fragment.getInt("reactTag")
 
-  override fun hasIsAttachment(): Boolean = mFragment.hasKey(ViewProps.IS_ATTACHMENT)
+  override fun hasIsAttachment(): Boolean = fragment.hasKey(ViewProps.IS_ATTACHMENT)
 
-  override fun isAttachment(): Boolean = mFragment.getBoolean(ViewProps.IS_ATTACHMENT)
+  override fun isAttachment(): Boolean = fragment.getBoolean(ViewProps.IS_ATTACHMENT)
 
-  override fun getWidth(): Double = mFragment.getDouble(ViewProps.WIDTH)
+  override fun getWidth(): Double = fragment.getDouble(ViewProps.WIDTH)
 
-  override fun getHeight(): Double = mFragment.getDouble(ViewProps.HEIGHT)
+  override fun getHeight(): Double = fragment.getDouble(ViewProps.HEIGHT)
 }
