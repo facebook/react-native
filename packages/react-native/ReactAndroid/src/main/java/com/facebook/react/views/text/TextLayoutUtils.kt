@@ -36,15 +36,15 @@ internal object TextLayoutUtils {
       val start = sb.length
 
       // ReactRawText
-      val textAttributes = fragment.getTextAttributeProps()
+      val textAttributes = fragment.textAttributeProps
 
-      addText(sb, fragment.getString(), textAttributes)
+      addText(sb, fragment.string, textAttributes)
 
       val end = sb.length
-      val reactTag = if (fragment.hasReactTag()) fragment.getReactTag() else View.NO_ID
-      if (fragment.hasIsAttachment() && fragment.isAttachment()) {
-        val width = PixelUtil.toPixelFromSP(fragment.getWidth())
-        val height = PixelUtil.toPixelFromSP(fragment.getHeight())
+      val reactTag = if (fragment.hasReactTag()) fragment.reactTag else View.NO_ID
+      if (fragment.hasIsAttachment() && fragment.isAttachment) {
+        val width = PixelUtil.toPixelFromSP(fragment.width)
+        val height = PixelUtil.toPixelFromSP(fragment.height)
 
         addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height)
       } else if (end >= start) {

@@ -6,19 +6,19 @@ import com.facebook.react.views.text.TextAttributeProps
  * Interface for a text fragment
  */
 internal interface TextFragment {
-  fun getTextAttributeProps(): TextAttributeProps
+  val textAttributeProps: TextAttributeProps
 
-  fun getString(): String?
+  val string: String?
 
   fun hasReactTag(): Boolean
 
-  fun getReactTag(): Int
+  val reactTag: Int
 
   fun hasIsAttachment(): Boolean
 
-  fun isAttachment(): Boolean
+  val isAttachment: Boolean
 
-  fun getWidth(): Double
+  val width: Double
 
-  fun getHeight(): Double
+  val height: Double
 }
