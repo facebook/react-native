@@ -65,24 +65,7 @@ struct LayoutMetrics {
             frame.size.height - borderWidth.top - borderWidth.bottom}};
   }
 
-  bool operator==(const LayoutMetrics& rhs) const {
-    return std::tie(
-               this->frame,
-               this->contentInsets,
-               this->borderWidth,
-               this->displayType,
-               this->layoutDirection,
-               this->pointScaleFactor,
-               this->overflowInset) ==
-        std::tie(
-               rhs.frame,
-               rhs.contentInsets,
-               rhs.borderWidth,
-               rhs.displayType,
-               rhs.layoutDirection,
-               rhs.pointScaleFactor,
-               rhs.overflowInset);
-  }
+  bool operator==(const LayoutMetrics& rhs) const = default;
 
   bool operator!=(const LayoutMetrics& rhs) const {
     return !(*this == rhs);
