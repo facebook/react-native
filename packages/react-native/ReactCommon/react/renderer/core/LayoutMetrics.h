@@ -30,7 +30,7 @@ struct LayoutMetrics {
   // See `DisplayType` for all possible options.
   DisplayType displayType{DisplayType::Flex};
   // See `PositionType` for all possible options.
-  PositionType positionType{PositionType::Static};
+  PositionType positionType{PositionType::Relative};
   // See `LayoutDirection` for all possible options.
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
   // Whether React Native treated cardinal directions as flow-relative

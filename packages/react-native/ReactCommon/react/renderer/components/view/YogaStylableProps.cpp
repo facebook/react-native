@@ -36,14 +36,7 @@ YogaStylableProps::YogaStylableProps(
 };
 
 /*static*/ const yoga::Style& YogaStylableProps::defaultStyle() {
-  static const auto defaultStyle = []() {
-    yoga::Style style;
-    style.setPositionType(
-        CoreFeatures::positionRelativeDefault ? yoga::PositionType::Relative
-                                              : yoga::PositionType::Static);
-    return style;
-  }();
-
+  static const auto defaultStyle = []() { return yoga::Style{}; }();
   return defaultStyle;
 }
 
