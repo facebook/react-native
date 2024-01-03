@@ -255,11 +255,11 @@ function getParamObjCType(
     case 'NumberTypeAnnotation':
       return isRequired ? 'double' : 'NSNumber *';
     case 'FloatTypeAnnotation':
-      return isRequired ? 'double' : 'NSNumber *';
+      return isRequired ? 'float' : 'NSNumber *';
     case 'DoubleTypeAnnotation':
       return isRequired ? 'double' : 'NSNumber *';
     case 'Int32TypeAnnotation':
-      return isRequired ? 'double' : 'NSNumber *';
+      return isRequired ? 'NSInteger' : 'NSNumber *';
     case 'BooleanTypeAnnotation':
       return isRequired ? 'BOOL' : 'NSNumber *';
     case 'EnumDeclaration':
