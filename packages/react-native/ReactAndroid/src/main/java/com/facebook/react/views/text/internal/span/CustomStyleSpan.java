@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.text.internal.span;
 
+import static com.facebook.react.views.text.FontAttributeProviderKt.findEffectiveTypeface;
+
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -16,10 +18,10 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.assets.ReactFontManager;
-import com.facebook.react.views.text.ReactTypefaceUtils;
+import com.facebook.react.views.text.FontAttributeProvider;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
+public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan, FontAttributeProvider {
 
   /**
    * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.
@@ -34,8 +36,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
    */
   private final AssetManager mAssetManager;
 
-  private final int mStyle;
-  private final int mWeight;
+  private final int mFontStyle;
+  private final int mFontWeight;
   private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
 
@@ -45,8 +47,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
       AssetManager assetManager) {
-    mStyle = fontStyle;
-    mWeight = fontWeight;
+    mFontStyle = fontStyle;
+    mFontWeight = fontWeight;
     mFeatureSettings = fontFeatureSettings;
     mFontFamily = fontFamily;
     mAssetManager = assetManager;
@@ -54,20 +56,24 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(ds);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
+    apply(paint);
   }
 
-  public int getStyle() {
-    return mStyle == ReactConstants.UNSET ? Typeface.NORMAL : mStyle;
+  @Override
+  public int getFontStyle() {
+    return mFontStyle == ReactConstants.UNSET ? Typeface.NORMAL : mFontStyle;
   }
 
-  public int getWeight() {
-    return mWeight == ReactConstants.UNSET ? ReactFontManager.TypefaceStyle.NORMAL : mWeight;
+  @Override
+  public int getFontWeight() {
+    return mFontWeight == ReactConstants.UNSET
+        ? ReactFontManager.TypefaceStyle.NORMAL
+        : mFontWeight;
   }
 
   public @Nullable String getFontFamily() {
@@ -78,16 +84,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     return mFeatureSettings;
   }
 
-  private static void apply(
-      Paint paint,
-      int style,
-      int weight,
-      @Nullable String fontFeatureSettings,
-      @Nullable String family,
-      AssetManager assetManager) {
-    Typeface typeface =
-        ReactTypefaceUtils.applyStyles(paint.getTypeface(), style, weight, family, assetManager);
-    paint.setFontFeatureSettings(fontFeatureSettings);
+  private void apply(Paint paint) {
+    final Typeface typeface = findEffectiveTypeface(this, paint.getTypeface(), mAssetManager);
+
+    paint.setFontFeatureSettings(mFeatureSettings);
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);
   }

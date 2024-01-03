@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate
  * Interface for an entity providing basic text attributes of a text node/fragment. "Basic" means
  * that they can be provided trivially, without processing the parent element.
  */
-internal interface BasicTextAttributeProvider {
+internal interface BasicTextAttributeProvider : FontAttributeProvider {
   val role: ReactAccessibilityDelegate.Role?
 
   val accessibilityRole: ReactAccessibilityDelegate.AccessibilityRole?
@@ -25,12 +25,6 @@ internal interface BasicTextAttributeProvider {
   val isColorSet: Boolean
 
   val color: Int
-
-  val fontStyle: Int
-
-  val fontWeight: Int
-
-  val fontFamily: String?
 
   val fontFeatureSettings: String?
 
