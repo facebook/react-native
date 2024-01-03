@@ -15,6 +15,10 @@ import type {ConstantsStruct, StructTypeAnnotation} from '../StructCollector';
 import type {StructSerilizationOutput} from './serializeStruct';
 
 const {unwrapNullable} = require('../../../../parsers/parsers-commons');
+const {wrapOptional: wrapCxxOptional} = require('../../../TypeUtils/Cxx');
+const {
+  wrapOptional: wrapObjCOptional,
+} = require('../../../TypeUtils/Objective-C');
 const {capitalize} = require('../../../Utils');
 const {getNamespacedStructName, getSafePropertyName} = require('../Utils');
 
@@ -78,15 +82,12 @@ function toObjCType(
 ): string {
   const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
   const isRequired = !nullable && !isOptional;
-  const wrapOptional = (type: string) => {
-    return isRequired ? type : `std::optional<${type}>`;
-  };
 
   switch (typeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return wrapOptional('double');
+          return wrapCxxOptional('double', isRequired);
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
@@ -94,19 +95,19 @@ function toObjCType(
     case 'StringTypeAnnotation':
       return 'NSString *';
     case 'NumberTypeAnnotation':
-      return wrapOptional('double');
+      return wrapCxxOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrapOptional('double');
+      return wrapCxxOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrapOptional('double');
+      return wrapCxxOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
-      return wrapOptional('double');
+      return wrapCxxOptional('double', isRequired);
     case 'BooleanTypeAnnotation':
-      return wrapOptional('bool');
+      return wrapCxxOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrapOptional('double');
+          return wrapCxxOptional('double', isRequired);
         case 'StringTypeAnnotation':
           return 'NSString *';
         default:
@@ -115,17 +116,18 @@ function toObjCType(
           );
       }
     case 'GenericObjectTypeAnnotation':
-      return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable ';
+      return wrapObjCOptional('id<NSObject>', isRequired);
     case 'ArrayTypeAnnotation':
       if (typeAnnotation.elementType == null) {
-        return isRequired ? 'id<NSObject> ' : 'id<NSObject> _Nullable ';
+        return wrapObjCOptional('id<NSObject>', isRequired);
       }
 
-      return wrapOptional(
+      return wrapCxxOptional(
         `std::vector<${toObjCType(
           hasteModuleName,
           typeAnnotation.elementType,
         )}>`,
+        isRequired,
       );
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
@@ -133,7 +135,7 @@ function toObjCType(
         hasteModuleName,
         structName,
       );
-      return wrapOptional(`${namespacedStructName}::Builder`);
+      return wrapCxxOptional(`${namespacedStructName}::Builder`, isRequired);
     default:
       (typeAnnotation.type: empty);
       throw new Error(
