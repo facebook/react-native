@@ -568,6 +568,10 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if ([self reactLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = _scrollView.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     CGRect maxRect = CGRectMake(
         fmin(-_scrollView.contentInset.left, 0),
