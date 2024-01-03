@@ -127,6 +127,10 @@ function getTypeAnnotationForArray<+T>(
       return {
         type: 'Int32TypeAnnotation',
       };
+    case 'NumberTypeAnnotation':
+      return {
+        type: 'NumberTypeAnnotation',
+      };
     case 'Double':
       return {
         type: 'DoubleTypeAnnotation',
@@ -303,6 +307,11 @@ function getTypeAnnotation<+T>(
         type: 'Int32TypeAnnotation',
         default: ((defaultValue ? defaultValue : 0): number),
       };
+    case 'NumberTypeAnnotation':
+      return {
+        type: 'NumberTypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'Double':
       return {
         type: 'DoubleTypeAnnotation',
@@ -371,10 +380,6 @@ function getTypeAnnotation<+T>(
     case 'ObjectTypeAnnotation':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": object types must be declared using $ReadOnly<>`,
-      );
-    case 'NumberTypeAnnotation':
-      throw new Error(
-        `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
     case 'UnsafeMixed':
       return {

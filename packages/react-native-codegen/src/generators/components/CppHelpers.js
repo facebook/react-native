@@ -25,6 +25,7 @@ function getCppTypeForAnnotation(
   type:
     | 'BooleanTypeAnnotation'
     | 'StringTypeAnnotation'
+    | 'NumberTypeAnnotation'
     | 'Int32TypeAnnotation'
     | 'DoubleTypeAnnotation'
     | 'FloatTypeAnnotation'
@@ -35,6 +36,8 @@ function getCppTypeForAnnotation(
       return 'bool';
     case 'StringTypeAnnotation':
       return 'std::string';
+    case 'NumberTypeAnnotation':
+      return 'double';
     case 'Int32TypeAnnotation':
       return 'int';
     case 'DoubleTypeAnnotation':

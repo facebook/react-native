@@ -405,35 +405,6 @@ export default (codegenNativeComponent<ModuleProps>(
 ): HostComponent<ModuleProps>);
 `;
 
-const PROP_NUMBER_TYPE = `
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow strict-local
- */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  someProp: number
-|}>;
-
-export default (codegenNativeComponent<ModuleProps>(
-  'Module',
-): HostComponent<ModuleProps>);
-`;
-
 const PROP_MIXED_ENUM = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -591,7 +562,6 @@ module.exports = {
   PROPS_CONFLICT_NAMES,
   PROPS_CONFLICT_WITH_SPREAD_PROPS,
   PROPS_SPREAD_CONFLICTS_WITH_PROPS,
-  PROP_NUMBER_TYPE,
   PROP_MIXED_ENUM,
   PROP_ENUM_BOOLEAN,
   PROP_ARRAY_MIXED_ENUM,

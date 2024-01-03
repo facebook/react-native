@@ -163,6 +163,8 @@ function getObjCParamType(param: Param): string {
       }
     case 'BooleanTypeAnnotation':
       return 'BOOL';
+    case 'NumberTypeAnnotation':
+      return 'double';
     case 'DoubleTypeAnnotation':
       return 'double';
     case 'FloatTypeAnnotation':
@@ -192,6 +194,8 @@ function getObjCExpectedKindParamType(param: Param): string {
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
       }
     case 'BooleanTypeAnnotation':
+      return '[NSNumber class]';
+    case 'NumberTypeAnnotation':
       return '[NSNumber class]';
     case 'DoubleTypeAnnotation':
       return '[NSNumber class]';
@@ -223,6 +227,8 @@ function getReadableExpectedKindParamType(param: Param): string {
       }
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'NumberTypeAnnotation':
+      return 'double';
     case 'DoubleTypeAnnotation':
       return 'double';
     case 'FloatTypeAnnotation':
@@ -256,6 +262,8 @@ function getObjCRightHandAssignmentParamType(
       }
     case 'BooleanTypeAnnotation':
       return `[(NSNumber *)arg${index} boolValue]`;
+    case 'NumberTypeAnnotation':
+      return `[(NSNumber *)arg${index} doubleValue]`;
     case 'DoubleTypeAnnotation':
       return `[(NSNumber *)arg${index} doubleValue]`;
     case 'FloatTypeAnnotation':

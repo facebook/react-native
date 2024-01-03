@@ -80,6 +80,11 @@ function buildCommandSchema(
           type: 'BooleanTypeAnnotation',
         };
         break;
+      case 'NumberTypeAnnotation':
+        returnType = {
+          type: 'NumberTypeAnnotation',
+        };
+        break;
       case 'Int32':
         returnType = {
           type: 'Int32TypeAnnotation',

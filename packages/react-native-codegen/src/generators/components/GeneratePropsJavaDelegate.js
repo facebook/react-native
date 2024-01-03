@@ -194,6 +194,8 @@ function getCommandArgJavaType(
       }
     case 'BooleanTypeAnnotation':
       return `args.getBoolean(${index})`;
+    case 'NumberTypeAnnotation':
+      return `args.getDouble(${index})`;
     case 'DoubleTypeAnnotation':
       return `args.getDouble(${index})`;
     case 'FloatTypeAnnotation':

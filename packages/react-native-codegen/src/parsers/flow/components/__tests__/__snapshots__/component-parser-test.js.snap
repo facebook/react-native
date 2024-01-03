@@ -26,8 +26,6 @@ exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] =
 
 exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")."`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
-
 exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
 
 exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_WITH_SPREAD_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;

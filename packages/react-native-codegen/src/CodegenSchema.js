@@ -33,6 +33,10 @@ export type BooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NumberTypeAnnotation = $ReadOnly<{
+  type: 'NumberTypeAnnotation',
+}>;
+
 export type Int32TypeAnnotation = $ReadOnly<{
   type: 'Int32TypeAnnotation',
 }>;
@@ -210,6 +214,7 @@ export type CommandTypeAnnotation = FunctionTypeAnnotation<
 export type CommandParamTypeAnnotation =
   | ReservedTypeAnnotation
   | BooleanTypeAnnotation
+  | NumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

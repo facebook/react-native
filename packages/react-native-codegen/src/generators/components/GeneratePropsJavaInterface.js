@@ -163,6 +163,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       }
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'NumberTypeAnnotation':
+      return 'double';
     case 'DoubleTypeAnnotation':
       return 'double';
     case 'FloatTypeAnnotation':
