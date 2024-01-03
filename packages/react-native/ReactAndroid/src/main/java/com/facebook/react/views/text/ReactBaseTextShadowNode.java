@@ -20,11 +20,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.IntConstants;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.assets.ReactFontManager;
-import com.facebook.react.views.text.BasicTextAttributeProvider;
-import com.facebook.react.views.text.HierarchicTextAttributeProvider;
-import com.facebook.react.views.text.TextLayoutUtils;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -59,7 +56,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
   // character.
   // https://en.wikipedia.org/wiki/Bi-directional_text#weak_characters
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
-  public static final int UNSET = ReactFontManager.TypefaceStyle.UNSET;
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
   public static final String PROP_SHADOW_OFFSET_WIDTH = "width";
@@ -212,8 +208,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
           || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
         ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
-      if (textShadowNode.mFontStyle != UNSET
-          || textShadowNode.mFontWeight != UNSET
+      if (textShadowNode.mFontStyle != IntConstants.UNSET
+          || textShadowNode.mFontWeight != IntConstants.UNSET
           || textShadowNode.mFontFamily != null) {
         ops.add(
             new SetSpanOperation(
@@ -429,7 +425,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
 
-  protected int mNumberOfLines = UNSET;
+  protected int mNumberOfLines = IntConstants.UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
   protected int mHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE;
@@ -451,9 +447,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
    * Typeface#NORMAL} or {@link Typeface#BOLD}.
    */
-  protected int mFontStyle = UNSET;
+  protected int mFontStyle = IntConstants.UNSET;
 
-  protected int mFontWeight = UNSET;
+  protected int mFontWeight = IntConstants.UNSET;
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -506,9 +502,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
     return textAlign;
   }
 
-  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = IntConstants.UNSET)
   public void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? IntConstants.UNSET : numberOfLines;
     markUpdated();
   }
 

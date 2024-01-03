@@ -1,5 +1,7 @@
 package com.facebook.react.views.text
 
+import com.facebook.react.common.IntConstants
+
 /**
  * Implementation of [EffectiveTextAttributeProvider] that provides effective text
  * attributes based on a [ReactBaseTextShadowNode] instance and its parent.
@@ -33,7 +35,7 @@ internal class HierarchicTextAttributeProvider(
       return if (parentTextAttributes == null || parentTextAttributes.effectiveFontSize != fontSize) {
         fontSize
       } else {
-        EffectiveTextAttributeProvider.UNSET
+        IntConstants.UNSET
       }
     }
 

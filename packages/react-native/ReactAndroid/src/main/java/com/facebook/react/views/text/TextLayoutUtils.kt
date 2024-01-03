@@ -11,7 +11,7 @@ import android.content.Context
 import android.graphics.Color
 import android.text.*
 import android.view.View
-import com.facebook.react.common.assets.ReactFontManager
+import com.facebook.react.common.IntConstants
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.fragments.TextFragmentList
@@ -21,7 +21,6 @@ import com.facebook.react.views.text.fragments.TextFragmentList
  */
 internal object TextLayoutUtils {
   private const val INLINE_VIEW_PLACEHOLDER = "0"
-  private const val UNSET = ReactFontManager.TypefaceStyle.UNSET
 
   @JvmStatic
   fun buildSpannableFromTextFragmentList(
@@ -180,7 +179,7 @@ internal object TextLayoutUtils {
   ) {
     val effectiveFontSize = textAttributeProvider.effectiveFontSize
 
-    if (effectiveFontSize != UNSET) {
+    if (effectiveFontSize != IntConstants.UNSET) {
       ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(effectiveFontSize)))
     }
   }
@@ -198,7 +197,7 @@ internal object TextLayoutUtils {
     val fontWeight = textAttributeProvider.fontWeight
     val fontFamily = textAttributeProvider.fontFamily
 
-    if (fontStyle != UNSET || fontWeight != UNSET || fontFamily != null) {
+    if (fontStyle != IntConstants.UNSET || fontWeight != IntConstants.UNSET || fontFamily != null) {
       ops.add(
         SetSpanOperation(
           start, end, CustomStyleSpan(

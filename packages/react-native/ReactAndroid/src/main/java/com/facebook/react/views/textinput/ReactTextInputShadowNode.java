@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.common.IntConstants;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.Spacing;
@@ -36,7 +37,7 @@ import com.facebook.yoga.YogaNode;
 public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     implements YogaMeasureFunction {
 
-  private int mMostRecentEventCount = UNSET;
+  private int mMostRecentEventCount = IntConstants.UNSET;
   private @Nullable EditText mInternalEditText;
   private @Nullable ReactTextInputLocalData mLocalData;
 
@@ -108,7 +109,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-      if (mNumberOfLines != UNSET) {
+      if (mNumberOfLines != IntConstants.UNSET) {
         editText.setLines(mNumberOfLines);
       }
 
@@ -191,7 +192,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mMostRecentEventCount != UNSET) {
+    if (mMostRecentEventCount != IntConstants.UNSET) {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
               spannedFromShadowNode(

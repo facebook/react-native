@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.IntConstants;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
@@ -62,8 +63,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
 
-  public static final int UNSET = -1;
-
   private static final String PROP_SHADOW_OFFSET = "textShadowOffset";
   private static final String PROP_SHADOW_OFFSET_WIDTH = "width";
   private static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
@@ -85,15 +84,15 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
 
-  protected int mNumberOfLines = UNSET;
-  protected int mFontSize = UNSET;
-  protected float mFontSizeInput = UNSET;
-  protected float mLineHeightInput = UNSET;
+  protected int mNumberOfLines = IntConstants.UNSET;
+  protected int mFontSize = IntConstants.UNSET;
+  protected float mFontSizeInput = IntConstants.UNSET;
+  protected float mLineHeightInput = IntConstants.UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
 
-  // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
-  protected int mLayoutDirection = UNSET;
+  // `IntConstants.UNSET` is -1, same as `LayoutDirection.UNDEFINED` (which is a hidden symbol)
+  protected int mLayoutDirection = IntConstants.UNSET;
 
   @NonNull
   protected TextTransform mTextTransform = TextTransform.NONE;
@@ -110,8 +109,8 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   protected @Nullable AccessibilityRole mAccessibilityRole = null;
   protected @Nullable Role mRole = null;
 
-  protected int mFontStyle = UNSET;
-  protected int mFontWeight = UNSET;
+  protected int mFontStyle = IntConstants.UNSET;
+  protected int mFontWeight = IntConstants.UNSET;
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
@@ -235,11 +234,11 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   public static TextAttributeProps fromReadableMap(ReactStylesDiffMap props) {
     TextAttributeProps result = new TextAttributeProps();
-    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, UNSET));
-    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, UNSET));
+    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, IntConstants.UNSET));
+    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, IntConstants.UNSET));
     result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
     result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
-    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, UNSET));
+    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, IntConstants.UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
         props.hasKey(ViewProps.FOREGROUND_COLOR)
@@ -355,12 +354,12 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   }
 
   private void setNumberOfLines(int numberOfLines) {
-    mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
+    mNumberOfLines = numberOfLines == 0 ? IntConstants.UNSET : numberOfLines;
   }
 
   private void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
-    if (lineHeight == UNSET) {
+    if (lineHeight == IntConstants.UNSET) {
       mLineHeight = Float.NaN;
     } else {
       mLineHeight =
@@ -416,7 +415,7 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
 
   private void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
-    if (fontSize != UNSET) {
+    if (fontSize != IntConstants.UNSET) {
       fontSize =
           mAllowFontScaling
               ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
@@ -660,14 +659,14 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   public static int getLayoutDirection(@Nullable String layoutDirection) {
     int androidLayoutDirection;
     if (layoutDirection == null || "undefined".equals(layoutDirection)) {
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = IntConstants.UNSET;
     } else if ("rtl".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.RTL;
     } else if ("ltr".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.LTR;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid layoutDirection: " + layoutDirection);
-      androidLayoutDirection = UNSET;
+      androidLayoutDirection = IntConstants.UNSET;
     }
     return androidLayoutDirection;
   }
