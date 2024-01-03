@@ -27,6 +27,7 @@ import type {
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {wrapOptional} = require('../TypeUtils/Cxx');
 const {getEnumName, toSafeCppString} = require('../Utils');
 const {indent} = require('../Utils');
 const {
@@ -139,26 +140,21 @@ function translatePrimitiveJSTypeToCpp(
   const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
   );
-  const isRequired = !optional && !nullable;
   const isRecursiveType = isDirectRecursiveMember(
     parentObjectAliasName,
     nullableTypeAnnotation,
   );
-
+  const isRequired = (!optional && !nullable) || isRecursiveType;
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
-  }
-
-  function wrap(type: string) {
-    return isRequired || isRecursiveType ? type : `std::optional<${type}>`;
   }
 
   switch (realTypeAnnotation.type) {
     case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
-          return wrap('double');
+          return wrapOptional('double', isRequired);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -166,49 +162,49 @@ function translatePrimitiveJSTypeToCpp(
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
-      return wrap('jsi::String');
+      return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
-      return wrap('double');
+      return wrapOptional('double', isRequired);
     case 'Int32TypeAnnotation':
-      return wrap('int');
+      return wrapOptional('int', isRequired);
     case 'BooleanTypeAnnotation':
-      return wrap('bool');
+      return wrapOptional('bool', isRequired);
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrap('jsi::Value');
+          return wrapOptional('jsi::Value', isRequired);
         case 'StringTypeAnnotation':
-          return wrap('jsi::String');
+          return wrapOptional('jsi::String', isRequired);
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'GenericObjectTypeAnnotation':
-      return wrap('jsi::Object');
+      return wrapOptional('jsi::Object', isRequired);
     case 'UnionTypeAnnotation':
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrap('double');
+          return wrapOptional('double', isRequired);
         case 'ObjectTypeAnnotation':
-          return wrap('jsi::Object');
+          return wrapOptional('jsi::Object', isRequired);
         case 'StringTypeAnnotation':
-          return wrap('jsi::String');
+          return wrapOptional('jsi::String', isRequired);
         default:
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'ObjectTypeAnnotation':
-      return wrap('jsi::Object');
+      return wrapOptional('jsi::Object', isRequired);
     case 'ArrayTypeAnnotation':
-      return wrap('jsi::Array');
+      return wrapOptional('jsi::Array', isRequired);
     case 'FunctionTypeAnnotation':
-      return wrap('jsi::Function');
+      return wrapOptional('jsi::Function', isRequired);
     case 'PromiseTypeAnnotation':
-      return wrap('jsi::Value');
+      return wrapOptional('jsi::Value', isRequired);
     case 'MixedTypeAnnotation':
-      return wrap('jsi::Value');
+      return wrapOptional('jsi::Value', isRequired);
     default:
       (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));
