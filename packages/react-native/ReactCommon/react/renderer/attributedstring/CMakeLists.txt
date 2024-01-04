@@ -12,7 +12,6 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_attributedstring_SRC CONFIGURE_DEPENDS *.cpp)
