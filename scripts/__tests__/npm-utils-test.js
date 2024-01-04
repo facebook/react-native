@@ -111,6 +111,29 @@ describe('npm-utils', () => {
         {cwd: 'path/to/my-package'},
       );
     });
+
+    it('should handle multiple tags', () => {
+      publishPackage('path/to/my-package', {
+        tags: ['next', '0.72-stable'],
+        otp: 'otp',
+      });
+      expect(execMock).toHaveBeenCalledWith(
+        'npm publish --tag next --tag 0.72-stable --otp otp',
+        {cwd: 'path/to/my-package'},
+      );
+    });
+
+    it('should be able to handle tag and tags, although shouldnt be encouraged', () => {
+      publishPackage('path/to/my-package', {
+        tags: ['next', '0.72-stable'],
+        tag: 'latest',
+        otp: 'otp',
+      });
+      expect(execMock).toHaveBeenCalledWith(
+        'npm publish --tag latest --tag next --tag 0.72-stable --otp otp',
+        {cwd: 'path/to/my-package'},
+      );
+    });
   });
 
   describe('getNpmInfo', () => {

@@ -7,6 +7,8 @@
  * @format
  */
 
+const {getBranchName} = require('../../scm-utils');
+const {isReleaseBranch} = require('../../version-utils');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
 const {
@@ -148,6 +150,57 @@ const main = async () => {
   alignPackageVersions();
   echo(chalk.green('Done!\n'));
 
+  // Figure out the npm dist-tags we want for all monorepo packages we're bumping
+  const branchName = getBranchName();
+  let defaultTag = branchName;
+
+  if (branchName === 'main') {
+    const {minorVersion} = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'minorVersion',
+        message: 'What minor version are you targetting? Ex. 0.74, 0.75?',
+      },
+    ]);
+    defaultTag = `${minorVersion}-stable`;
+  } else if (!isReleaseBranch(branchName)) {
+    echo(
+      'You should be running `yarn bump-all-updated-packages` only from release or main branch',
+    );
+    exit(1);
+  }
+
+  const {tags} = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'tags',
+      message: `Select what npm tags to use for *ALL* packages being published. We suggest ${defaultTag}.`,
+      choices: [
+        {
+          name: `"${defaultTag}"`,
+          value: defaultTag,
+          checked: true,
+        },
+        {
+          name: '"latest" - Only use if you are targetting the *latest* stable React Native version',
+          value: 'latest',
+          checked: false,
+        },
+        {
+          name: '"nightly"',
+          value: 'nightly',
+          checked: false,
+        },
+        {
+          name: '"experimental"',
+          value: 'experimental',
+          checked: false,
+        },
+      ],
+    },
+  ]);
+  const tagString = '&' + tags.join('&');
+
   await inquirer
     .prompt([
       {
@@ -174,12 +227,11 @@ const main = async () => {
       switch (commitChoice) {
         case NO_COMMIT_CHOICE: {
           echo('Not submitting a commit, but keeping all changes');
-
           break;
         }
 
         case COMMIT_WITH_GENERIC_MESSAGE_CHOICE: {
-          exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}"`, {
+          exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}${tagString}"`, {
             cwd: ROOT_LOCATION,
             silent: true,
           });
@@ -197,7 +249,7 @@ const main = async () => {
             silent: true,
           }).stdout.trim();
           const commitMessageWithTag =
-            enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}`;
+            enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}${tagString}`;
 
           exec(`git commit --amend -m "${commitMessageWithTag}"`, {
             cwd: ROOT_LOCATION,
