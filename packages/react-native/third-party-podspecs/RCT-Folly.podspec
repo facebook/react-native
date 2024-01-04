@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-folly_release_version = '2023.08.07.00'
+folly_release_version = '2024.01.01.00'
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'

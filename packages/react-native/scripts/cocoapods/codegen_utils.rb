@@ -69,7 +69,7 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: '2024.01.01.00', hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
@@ -277,7 +277,7 @@ class CodegenUtils
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
-      folly_version: '2023.08.07.00',
+      folly_version: '2024.01.01.00',
       codegen_utils: CodegenUtils.new(),
       file_manager: File
       )

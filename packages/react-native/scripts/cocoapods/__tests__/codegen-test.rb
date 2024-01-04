@@ -59,7 +59,7 @@ class CodegenTests < Test::Unit::TestCase
             :codegen_output_dir=>"build/generated/ios",
             :config_file_dir=>"",
             :fabric_enabled=>false,
-            :folly_version=>"2023.08.07.00",
+            :folly_version=>"2024.01.01.00",
             :react_native_path=>"../node_modules/react-native"
         }])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params, [])

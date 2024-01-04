@@ -18,7 +18,7 @@ end
 
 folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_version = '2024.01.01.00'
 boost_compiler_flags = '-Wno-documentation'
 
 header_search_paths = [

@@ -20,7 +20,7 @@ require_relative './cocoapods/helpers.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2023.08.07.00'
+$FOLLY_VERSION = '2024.01.01.00'
 
 $START_TIME = Time.now.to_i
 
