@@ -11,15 +11,20 @@
 import {
   UtilsSingleton as Utils,
   iOSName,
+  iOSChildType,
   androidWidget,
 } from '../../helpers/utils';
 
 type TextInputComponentScreenType = {
   textInputScreenElement: string,
   textInputReWriteElement: string,
+  textInputReWriteChildElement: () => string,
   textInputNoSpaceAllowElement: string,
+  textInputNoSpaceAllowChildElement: () => string,
   textInputReWriteClearElement: string,
+  textInputReWriteClearChildElement: () => string,
   textInputControlledDoubleSpaceElement: string,
+  textInputControlledDoubleSpaceChildElement: () => string,
   btnClearElement: string,
   checkTextIsReWrited: () => Promise<string>,
   checkLongTextIsReWrited: () => Promise<string>,
@@ -27,6 +32,7 @@ type TextInputComponentScreenType = {
   checkAddTextAndClearButton: () => Promise<string>,
   checkDoubleSpaceControlledTextInput: () => Promise<string>,
   scrollToTextAndClearButtonElement: () => Promise<void>,
+  scrollToTextNoSpaceAllowElement: () => Promise<void>,
   scrollToDoubleSpaceElement: () => Promise<void>,
   scrollUntilTextInputComponentIsDisplayed: () => Promise<void>,
 };
@@ -37,7 +43,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     ios: iOSName('TextInput'),
     android: androidWidget('TextView', 'text', 'TextInput'),
   }),
-  // References to elements within the Button Component screen
+  // References to elements within the TextInput Component screen
   textInputReWriteElement: Utils.platformSelect({
     ios: iOSName('rewrite_sp_underscore_input'),
     android: androidWidget(
@@ -46,14 +52,41 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
       'rewrite_sp_underscore_input',
     ),
   }),
+  textInputReWriteChildElement: function () {
+    return Utils.platformSelect({
+      ios: iOSChildType(
+        this.textInputReWriteElement,
+        'XCUIElementTypeTextField',
+      ),
+      android: this.textInputReWriteElement,
+    });
+  },
   textInputNoSpaceAllowElement: Utils.platformSelect({
     ios: iOSName('rewrite_no_sp_input'),
     android: androidWidget('EditText', 'resource-id', 'rewrite_no_sp_input'),
   }),
+  textInputNoSpaceAllowChildElement: function () {
+    return Utils.platformSelect({
+      ios: iOSChildType(
+        this.textInputNoSpaceAllowElement,
+        'XCUIElementTypeTextField',
+      ),
+      android: this.textInputNoSpaceAllowElement,
+    });
+  },
   textInputReWriteClearElement: Utils.platformSelect({
     ios: iOSName('rewrite_clear_input'),
     android: androidWidget('EditText', 'resource-id', 'rewrite_clear_input'),
   }),
+  textInputReWriteClearChildElement: function () {
+    return Utils.platformSelect({
+      ios: iOSChildType(
+        this.textInputReWriteClearElement,
+        'XCUIElementTypeTextView',
+      ),
+      android: this.textInputReWriteClearElement,
+    });
+  },
   btnClearElement: Utils.platformSelect({
     ios: iOSName('rewrite_clear_button'),
     android: androidWidget('Button', 'resource-id', 'rewrite_clear_button'),
@@ -62,6 +95,15 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     ios: iOSName('rewrite_double_space'),
     android: androidWidget('Button', 'resource-id', 'rewrite_double_space'),
   }),
+  textInputControlledDoubleSpaceChildElement: function () {
+    return Utils.platformSelect({
+      ios: iOSChildType(
+        this.textInputControlledDoubleSpaceElement,
+        'XCUIElementTypeTextField',
+      ),
+      android: this.textInputControlledDoubleSpaceElement,
+    });
+  },
   // Methods to interact with the elements
   checkTextIsReWrited: async function (
     this: TextInputComponentScreenType,
@@ -69,7 +111,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     const text = 'foo space replace';
     await Utils.clickElement(this.textInputReWriteElement);
     await Utils.setElementText(this.textInputReWriteElement, text);
-    return await Utils.getElementText(this.textInputReWriteElement);
+    return await Utils.getElementText(this.textInputReWriteChildElement());
   },
   checkLongTextIsReWrited: async function (
     this: TextInputComponentScreenType,
@@ -77,7 +119,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     const text = 'foobars space replacement';
     await Utils.clickElement(this.textInputReWriteElement);
     await Utils.setElementText(this.textInputReWriteElement, text);
-    return Utils.getElementText(this.textInputReWriteElement);
+    return Utils.getElementText(this.textInputReWriteChildElement());
   },
   checkNoSpaceAllowed: async function (
     this: TextInputComponentScreenType,
@@ -85,7 +127,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     const text = 'foo bar no space test';
     await Utils.clickElement(this.textInputNoSpaceAllowElement);
     await Utils.setElementText(this.textInputNoSpaceAllowElement, text);
-    return await Utils.getElementText(this.textInputNoSpaceAllowElement);
+    return await Utils.getElementText(this.textInputNoSpaceAllowChildElement());
   },
   checkAddTextAndClearButton: async function (
     this: TextInputComponentScreenType,
@@ -94,7 +136,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     await Utils.clickElement(this.textInputReWriteClearElement);
     await Utils.setElementText(this.textInputReWriteClearElement, text);
     await Utils.clickElement(this.btnClearElement);
-    return await Utils.getElementText(this.textInputReWriteClearElement);
+    return await Utils.getElementText(this.textInputReWriteClearChildElement());
   },
   checkDoubleSpaceControlledTextInput: async function (
     this: TextInputComponentScreenType,
@@ -108,7 +150,7 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
       this.textInputControlledDoubleSpaceElement,
     );
     return await Utils.getElementText(
-      this.textInputControlledDoubleSpaceElement,
+      this.textInputControlledDoubleSpaceChildElement(),
     );
   },
   clickSubmitApplication: async function (
@@ -120,6 +162,11 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     this: TextInputComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.textInputScreenElement);
+  },
+  scrollToTextNoSpaceAllowElement: async function (
+    this: TextInputComponentScreenType,
+  ): Promise<void> {
+    await Utils.scrollToElement(this.textInputNoSpaceAllowElement);
   },
   scrollToTextAndClearButtonElement: async function (
     this: TextInputComponentScreenType,

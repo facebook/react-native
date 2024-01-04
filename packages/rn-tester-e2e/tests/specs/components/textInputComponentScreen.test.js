@@ -13,6 +13,8 @@ const {
   TextInputComponentScreen,
 } = require('../../screens/components/textInputComponent.screen.js');
 
+const isIOS = (process?.env?.E2E_DEVICE || 'ios') === 'ios';
+
 describe('Test is checking text replacement', () => {
   test('Should replace properly space by underscore', async () => {
     TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
@@ -40,7 +42,8 @@ describe('Test is checking text replacement', () => {
     expect(
       await ComponentsScreen.checkTextInputComponentIsDisplayed(),
     ).toBeTruthy();
-    // await ComponentsScreen.clickTextInputComponent();
+    await ComponentsScreen.clickTextInputComponent();
+    await TextInputComponentScreen.scrollToTextNoSpaceAllowElement();
     expect(await TextInputComponentScreen.checkNoSpaceAllowed()).toEqual(
       'foobarnospacetest',
     );
@@ -61,16 +64,18 @@ describe('Test is clearing text by Button', () => {
   });
 });
 
-describe('Test double space to dot', () => {
-  test('Should replace to dot in a Controlled TextInput', async () => {
-    TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
-    expect(
-      await ComponentsScreen.checkTextInputComponentIsDisplayed(),
-    ).toBeTruthy();
-    await ComponentsScreen.clickTextInputComponent();
-    await TextInputComponentScreen.scrollToDoubleSpaceElement();
-    expect(
-      await TextInputComponentScreen.checkDoubleSpaceControlledTextInput(),
-    ).toEqual('testing. ');
+if (isIOS) {
+  describe('Test double space to dot', () => {
+    test('Should replace to dot in a Controlled TextInput', async () => {
+      TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+      expect(
+        await ComponentsScreen.checkTextInputComponentIsDisplayed(),
+      ).toBeTruthy();
+      await ComponentsScreen.clickTextInputComponent();
+      await TextInputComponentScreen.scrollToDoubleSpaceElement();
+      expect(
+        await TextInputComponentScreen.checkDoubleSpaceControlledTextInput(),
+      ).toEqual('testing. ');
+    });
   });
-});
+}

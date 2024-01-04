@@ -34,15 +34,19 @@ class Utils {
 
   async doubleTapKeyboardSpacebar(locator: string): Promise<void> {
     await driver.$(locator).waitForDisplayed();
-    const screenSize = await driver.getWindowRect();
+    const {width, height} = await driver.getWindowRect();
 
-    // Calculate the coordinates of the spacebar based on percentages
-    const keyboardX = screenSize.width * 0.5; // 50% from the left edge
-    const keyboardY = screenSize.height * 0.9; // 0.85 - 0.92 works from the top edge (adjust as needed)
+    try {
+      // Calculate the coordinates of the spacebar based on percentages
+      const keyboardX = width * 0.5; // 50% from the left edge
+      const keyboardY = height * 0.9; // 0.85 - 0.92 works all iPhones from the top edge (adjust as needed)
 
-    await driver.executeScript('mobile: doubleTap', [
-      {x: keyboardX, y: keyboardY, duration: 1.0},
-    ]);
+      await driver.executeScript('mobile: doubleTap', [
+        {x: keyboardX, y: keyboardY, duration: 1.0},
+      ]);
+    } catch (err) {
+      console.log('Can not double tap the spacebar');
+    }
   }
 
   async getElementText(locator: string): Promise<string> {
@@ -100,6 +104,10 @@ export const iOSLabel = (label: string): string => {
 
 export const iOSName = (name: string): string => {
   return `[name="${name}"]`;
+};
+
+export const iOSChildType = (parentLocator: string, name: string): string => {
+  return `${parentLocator} [type="${name}"]`;
 };
 
 export const androidWidget = (

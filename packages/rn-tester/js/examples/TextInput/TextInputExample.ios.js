@@ -275,7 +275,6 @@ class RewriteDoubleSpaceExample extends React.Component<$FlowFixMeProps, any> {
       <View style={styles.rewriteContainer}>
         <TextInput
           testID="rewrite_double_space"
-          // autoCorrect={false}
           multiline={false}
           onChangeText={text => {
             this.setState({text});
