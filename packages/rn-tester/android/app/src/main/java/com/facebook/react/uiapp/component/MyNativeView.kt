@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // As we want to test RCTEventEmitter here
+
 package com.facebook.react.uiapp.component
 
 import android.graphics.Color
