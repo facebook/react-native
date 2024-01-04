@@ -234,7 +234,7 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 
 // MARK: - New Architecture Validation - Enable Reporting
 
-#if RCT_ONLY_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
 static RCTNotAllowedValidation minValidationLevel = RCTNotAllowedInBridgeless;
 #else
 static RCTNotAllowedValidation minValidationLevel = RCTNotAllowedValidationDisabled;
@@ -242,7 +242,7 @@ static RCTNotAllowedValidation minValidationLevel = RCTNotAllowedValidationDisab
 
 __attribute__((used)) RCT_EXTERN void RCTNewArchitectureSetMinValidationLevel(RCTNotAllowedValidation level)
 {
-#if RCT_ONLY_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
   // Cannot disable the reporting in this mode.
 #else
   minValidationLevel = level;
@@ -325,7 +325,7 @@ void RCTEnforceNewArchitectureValidation(RCTNotAllowedValidation type, id contex
 
 void RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-#if RCT_ONLY_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
   newArchitectureValidationInternal(RCTLogLevelFatal, type, context, extra);
 #else
   newArchitectureValidationInternal(RCTLogLevelError, type, context, extra);
@@ -339,7 +339,7 @@ void RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, N
 
 void RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-#if RCT_ONLY_NEW_ARCHITECTURE
+#if RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
   newArchitectureValidationInternal(RCTLogLevelInfo, type, context, extra);
 #endif
 }

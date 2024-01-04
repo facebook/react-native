@@ -118,6 +118,17 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
   turboModuleInteropBridgeProxyEnabled = enabled;
 }
 
+static BOOL fabricInteropLayerEnabled = YES;
+BOOL RCTFabricInteropLayerEnabled()
+{
+  return fabricInteropLayerEnabled;
+}
+
+void RCTEnableFabricInteropLayer(BOOL enabled)
+{
+  fabricInteropLayerEnabled = enabled;
+}
+
 static RCTBridgeProxyLoggingLevel bridgeProxyLoggingLevel = kRCTBridgeProxyLoggingLevelNone;
 RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void)
 {

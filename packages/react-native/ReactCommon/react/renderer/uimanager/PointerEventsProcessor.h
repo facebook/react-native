@@ -10,6 +10,7 @@
 #include <functional>
 
 #include <jsi/jsi.h>
+#include <react/renderer/uimanager/PointerHoverTracker.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -18,18 +19,23 @@ namespace facebook::react {
 // Helper struct to package a PointerEvent and SharedEventTarget together
 struct PointerEventTarget {
   PointerEvent event;
-  SharedEventTarget target;
+  ShadowNode::Shared target;
 };
 
 // Helper struct to contain an active pointer's event data along with additional
 // metadata
 struct ActivePointer {
   PointerEvent event;
+
+  /*
+   * Informs the event system that when the touch is released it should be
+   * treated as the pointer leaving the screen entirely.
+   */
+  bool shouldLeaveWhenReleased{};
 };
 
 using DispatchEvent = std::function<void(
-    jsi::Runtime& runtime,
-    const EventTarget* eventTarget,
+    const ShadowNode& targetNode,
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& payload)>;
@@ -40,12 +46,17 @@ using CaptureTargetOverrideRegistry =
 
 using ActivePointerRegistry =
     std::unordered_map<PointerIdentifier, ActivePointer>;
+using PointerHoverTrackerRegistry =
+    std::unordered_map<PointerIdentifier, PointerHoverTracker::Unique>;
 
 class PointerEventsProcessor final {
  public:
-  void interceptPointerEvent(
+  static ShadowNode::Shared getShadowNodeFromEventTarget(
       jsi::Runtime& runtime,
-      const EventTarget* eventTarget,
+      const EventTarget* target);
+
+  void interceptPointerEvent(
+      const ShadowNode::Shared& target,
       const std::string& type,
       ReactEventPriority priority,
       const PointerEvent& event,
@@ -71,7 +82,6 @@ class PointerEventsProcessor final {
 
   void processPendingPointerCapture(
       const PointerEvent& event,
-      jsi::Runtime& runtime,
       const DispatchEvent& eventDispatcher,
       const UIManager& uiManager);
 
@@ -79,6 +89,24 @@ class PointerEventsProcessor final {
 
   CaptureTargetOverrideRegistry pendingPointerCaptureTargetOverrides_;
   CaptureTargetOverrideRegistry activePointerCaptureTargetOverrides_;
+
+  /*
+   * Private method which is used for tracking the location of pointer events to
+   * manage the entering/leaving events. The primary idea is that a pointer's
+   * presence & movement is dicated by a variety of underlying events such as
+   * down, move, and up — and they should all be treated the same when it comes
+   * to tracking the entering & leaving of pointers to views. This method
+   * accomplishes that by receiving the pointer event, and the target view (can
+   * be null in cases when the event indicates that the pointer has left the
+   * screen entirely)
+   */
+  void handleIncomingPointerEventOnNode(
+      const PointerEvent& event,
+      const ShadowNode::Shared& targetNode,
+      const DispatchEvent& eventDispatcher,
+      const UIManager& uiManager);
+
+  PointerHoverTrackerRegistry previousHoverTrackersPerPointer_;
 };
 
 } // namespace facebook::react

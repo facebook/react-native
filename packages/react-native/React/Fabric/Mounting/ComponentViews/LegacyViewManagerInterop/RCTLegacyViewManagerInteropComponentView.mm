@@ -8,6 +8,7 @@
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTConstants.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
@@ -106,6 +107,12 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return supported;
 }
 
++ (NSMutableDictionary<NSString *, Class> *)_supportedLegacyViewComponents
+{
+  static NSMutableDictionary<NSString *, Class> *suppoerted = [NSMutableDictionary new];
+  return suppoerted;
+}
+
 + (BOOL)isSupported:(NSString *)componentName
 {
   // Step 1: check if ViewManager with specified name is supported.
@@ -118,6 +125,29 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   // Step 2: check if component has supported prefix.
   for (NSString *item in [RCTLegacyViewManagerInteropComponentView supportedViewManagersPrefixes]) {
     if ([componentName hasPrefix:item]) {
+      return YES;
+    }
+  }
+
+  // Step 3: check if the module has been registered
+  NSArray<Class> *registeredModules = RCTGetModuleClasses();
+  NSMutableDictionary<NSString *, Class> *supportedLegacyViewComponents =
+      [RCTLegacyViewManagerInteropComponentView _supportedLegacyViewComponents];
+  if (supportedLegacyViewComponents[componentName] != NULL) {
+    return YES;
+  }
+
+  for (Class moduleClass in registeredModules) {
+    id<RCTBridgeModule> bridgeModule = (id<RCTBridgeModule>)moduleClass;
+    NSString *moduleName = [[bridgeModule moduleName] isEqualToString:@""]
+        ? [NSStringFromClass(moduleClass) stringByReplacingOccurrencesOfString:@"Manager" withString:@""]
+        : [bridgeModule moduleName];
+
+    if (supportedLegacyViewComponents[moduleName] == NULL) {
+      supportedLegacyViewComponents[moduleName] = moduleClass;
+    }
+
+    if ([moduleName isEqualToString:componentName]) {
       return YES;
     }
   }

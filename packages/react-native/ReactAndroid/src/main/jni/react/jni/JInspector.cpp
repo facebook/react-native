@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#ifdef WITH_INSPECTOR
-
 namespace facebook::react {
 
 namespace {
@@ -111,5 +109,3 @@ void JInspector::registerNatives() {
 }
 
 } // namespace facebook::react
-
-#endif

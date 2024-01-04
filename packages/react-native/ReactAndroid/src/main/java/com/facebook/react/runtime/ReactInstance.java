@@ -208,11 +208,12 @@ final class ReactInstance {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
 
-    mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
+    mReactPackages = new ArrayList<>();
     mReactPackages.add(
         new CoreReactPackage(
             bridgelessReactContext.getDevSupportManager(),
             bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
+    mReactPackages.addAll(mDelegate.getReactPackages());
 
     TurboModuleManagerDelegate turboModuleManagerDelegate =
         mDelegate

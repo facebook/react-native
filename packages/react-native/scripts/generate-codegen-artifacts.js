@@ -17,11 +17,15 @@ const argv = yargs
     alias: 'path',
     description: 'Path to the React Native project root.',
   })
+  .option('t', {
+    alias: 'targetPlatform',
+    description: 'Target platform. Supported values: "android", "ios", "all".',
+  })
   .option('o', {
     alias: 'outputPath',
     description: 'Path where generated artifacts will be output to.',
   })
-  .usage('Usage: $0 -p [path to app]')
-  .demandOption(['p']).argv;
+  .usage('Usage: $0 -p [path to app] -t [target platform] -o [output path]')
+  .demandOption(['p', 't']).argv;
 
-executor.execute(argv.path, argv.outputPath);
+executor.execute(argv.path, argv.targetPlatform, argv.outputPath);

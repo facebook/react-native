@@ -28,20 +28,15 @@ enum class Edge : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Edge>() {
+constexpr int32_t ordinalCount<Edge>() {
   return 9;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Edge>() {
-  return 4;
-} 
-
-constexpr inline Edge scopedEnum(YGEdge unscoped) {
+constexpr Edge scopedEnum(YGEdge unscoped) {
   return static_cast<Edge>(unscoped);
 }
 
-constexpr inline YGEdge unscopedEnum(Edge scoped) {
+constexpr YGEdge unscopedEnum(Edge scoped) {
   return static_cast<YGEdge>(scoped);
 }
 

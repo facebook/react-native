@@ -206,7 +206,7 @@ namespace facebook::react {
 
 #pragma mark - SampleTurboModuleCxxEnumInt
 
-enum SampleTurboModuleCxxEnumInt { IA, IB };
+enum class SampleTurboModuleCxxEnumInt { IA, IB };
 
 template <>
 struct Bridging<SampleTurboModuleCxxEnumInt> {
@@ -234,7 +234,7 @@ struct Bridging<SampleTurboModuleCxxEnumInt> {
 
 #pragma mark - SampleTurboModuleCxxEnumFloat
 
-enum SampleTurboModuleCxxEnumFloat { FA, FB };
+enum class SampleTurboModuleCxxEnumFloat { FA, FB };
 
 template <>
 struct Bridging<SampleTurboModuleCxxEnumFloat> {
@@ -262,7 +262,7 @@ struct Bridging<SampleTurboModuleCxxEnumFloat> {
 
 #pragma mark - SampleTurboModuleCxxEnumNone
 
-enum SampleTurboModuleCxxEnumNone { NA, NB };
+enum class SampleTurboModuleCxxEnumNone { NA, NB };
 
 template <>
 struct Bridging<SampleTurboModuleCxxEnumNone> {
@@ -290,7 +290,7 @@ struct Bridging<SampleTurboModuleCxxEnumNone> {
 
 #pragma mark - SampleTurboModuleCxxEnumStr
 
-enum SampleTurboModuleCxxEnumStr { SA, SB };
+enum class SampleTurboModuleCxxEnumStr { SA, SB };
 
 template <>
 struct Bridging<SampleTurboModuleCxxEnumStr> {
@@ -995,12 +995,12 @@ public:
   virtual jsi::Array getArray(jsi::Runtime &rt, jsi::Array arg) = 0;
   virtual bool getBool(jsi::Runtime &rt, bool arg) = 0;
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
-  virtual int getCustomEnum(jsi::Runtime &rt, int arg) = 0;
+  virtual jsi::Value getCustomEnum(jsi::Runtime &rt, jsi::Value arg) = 0;
   virtual jsi::Object getCustomHostObject(jsi::Runtime &rt) = 0;
   virtual jsi::String consumeCustomHostObject(jsi::Runtime &rt, jsi::Object customHostObject) = 0;
   virtual jsi::Object getBinaryTreeNode(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual jsi::Object getGraphNode(jsi::Runtime &rt, jsi::Object arg) = 0;
-  virtual double getNumEnum(jsi::Runtime &rt, int arg) = 0;
+  virtual jsi::Value getNumEnum(jsi::Runtime &rt, jsi::Value arg) = 0;
   virtual jsi::String getStrEnum(jsi::Runtime &rt, jsi::String arg) = 0;
   virtual jsi::Object getMap(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual double getNumber(jsi::Runtime &rt, double arg) = 0;
@@ -1066,12 +1066,12 @@ private:
       return bridging::callFromJs<jsi::Object>(
           rt, &T::getConstants, jsInvoker_, instance_);
     }
-    int getCustomEnum(jsi::Runtime &rt, int arg) override {
+    jsi::Value getCustomEnum(jsi::Runtime &rt, jsi::Value arg) override {
       static_assert(
           bridging::getParameterCount(&T::getCustomEnum) == 2,
           \\"Expected getCustomEnum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<int>(
+      return bridging::callFromJs<jsi::Value>(
           rt, &T::getCustomEnum, jsInvoker_, instance_, std::move(arg));
     }
     jsi::Object getCustomHostObject(jsi::Runtime &rt) override {
@@ -1106,12 +1106,12 @@ private:
       return bridging::callFromJs<jsi::Object>(
           rt, &T::getGraphNode, jsInvoker_, instance_, std::move(arg));
     }
-    double getNumEnum(jsi::Runtime &rt, int arg) override {
+    jsi::Value getNumEnum(jsi::Runtime &rt, jsi::Value arg) override {
       static_assert(
           bridging::getParameterCount(&T::getNumEnum) == 2,
           \\"Expected getNumEnum(...) to have 2 parameters\\");
 
-      return bridging::callFromJs<double>(
+      return bridging::callFromJs<jsi::Value>(
           rt, &T::getNumEnum, jsInvoker_, instance_, std::move(arg));
     }
     jsi::String getStrEnum(jsi::Runtime &rt, jsi::String arg) override {
@@ -2598,7 +2598,7 @@ namespace facebook::react {
 
 #pragma mark - SampleTurboModuleNumEnum
 
-enum SampleTurboModuleNumEnum { ONE, TWO };
+enum class SampleTurboModuleNumEnum { ONE, TWO };
 
 template <>
 struct Bridging<SampleTurboModuleNumEnum> {
@@ -2626,7 +2626,7 @@ struct Bridging<SampleTurboModuleNumEnum> {
 
 #pragma mark - SampleTurboModuleFloatEnum
 
-enum SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+enum class SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
 
 template <>
 struct Bridging<SampleTurboModuleFloatEnum> {
@@ -2658,7 +2658,7 @@ struct Bridging<SampleTurboModuleFloatEnum> {
 
 #pragma mark - SampleTurboModuleStringEnum
 
-enum SampleTurboModuleStringEnum { HELLO, GoodBye };
+enum class SampleTurboModuleStringEnum { HELLO, GoodBye };
 
 template <>
 struct Bridging<SampleTurboModuleStringEnum> {
@@ -2697,11 +2697,11 @@ public:
   virtual jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual double getRootTag(jsi::Runtime &rt, double arg) = 0;
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
-  virtual int getEnumReturn(jsi::Runtime &rt) = 0;
+  virtual jsi::Value getEnumReturn(jsi::Runtime &rt) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
   virtual jsi::Value getValueWithOptionalArg(jsi::Runtime &rt, std::optional<jsi::Object> parameter) = 0;
-  virtual jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) = 0;
+  virtual jsi::String getEnums(jsi::Runtime &rt, jsi::Value enumInt, jsi::Value enumFloat, jsi::String enumString) = 0;
 
 };
 
@@ -2797,12 +2797,12 @@ private:
       return bridging::callFromJs<jsi::Object>(
           rt, &T::getValue, jsInvoker_, instance_, std::move(x), std::move(y), std::move(z));
     }
-    int getEnumReturn(jsi::Runtime &rt) override {
+    jsi::Value getEnumReturn(jsi::Runtime &rt) override {
       static_assert(
           bridging::getParameterCount(&T::getEnumReturn) == 1,
           \\"Expected getEnumReturn(...) to have 1 parameters\\");
 
-      return bridging::callFromJs<int>(
+      return bridging::callFromJs<jsi::Value>(
           rt, &T::getEnumReturn, jsInvoker_, instance_);
     }
     void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) override {
@@ -2829,7 +2829,7 @@ private:
       return bridging::callFromJs<jsi::Value>(
           rt, &T::getValueWithOptionalArg, jsInvoker_, instance_, std::move(parameter));
     }
-    jsi::String getEnums(jsi::Runtime &rt, int enumInt, double enumFloat, jsi::String enumString) override {
+    jsi::String getEnums(jsi::Runtime &rt, jsi::Value enumInt, jsi::Value enumFloat, jsi::String enumString) override {
       static_assert(
           bridging::getParameterCount(&T::getEnums) == 4,
           \\"Expected getEnums(...) to have 4 parameters\\");

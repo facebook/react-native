@@ -87,6 +87,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
+  add_dependency(s, "React-jsinspector")
 
   if use_hermes
     s.dependency "React-hermes"
@@ -94,19 +95,4 @@ Pod::Spec.new do |s|
   else
     s.dependency "React-jsc"
   end
-
-  rel_path_from_pods_root_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(Pod::Config.instance.installation_root)
-  rel_path_from_pods_to_app = Pathname.new(ENV['APP_PATH']).relative_path_from(File.join(Pod::Config.instance.installation_root, 'Pods'))
-
-  s.script_phases = {
-    :name => "Generate Legacy Components Interop",
-    :script => "
-WITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
-source $WITH_ENVIRONMENT
-${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{rel_path_from_pods_to_app} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
-    ",
-    :execution_position => :before_compile,
-    :input_files => ["#{rel_path_from_pods_root_to_app}/react-native.config.js"],
-    :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
-  }
 end

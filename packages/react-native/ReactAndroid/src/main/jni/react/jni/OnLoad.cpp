@@ -16,15 +16,13 @@
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
 #include "JCallback.h"
+#include "JInspector.h"
+#include "JInspectorFlags.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
-
-#ifdef WITH_INSPECTOR
-#include "JInspector.h"
-#endif
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -86,10 +84,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
     JReactMarker::registerNatives();
-
-#ifdef WITH_INSPECTOR
     JInspector::registerNatives();
-#endif
+    JInspectorFlags::registerNatives();
   });
 }
 

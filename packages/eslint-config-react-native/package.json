@@ -22,7 +22,7 @@
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.20.0",
-    "@react-native/eslint-plugin": "^0.74.0",
+    "@react-native/eslint-plugin": "0.74.0",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "eslint-config-prettier": "^8.5.0",

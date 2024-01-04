@@ -12,43 +12,6 @@
 'use strict';
 
 const path = require('path');
-const util = require('util');
-
-function parseArgs(args: string[]): {
-  platform: ?string,
-  outfile: string,
-  fileList: string[],
-  exclude: ?RegExp,
-} {
-  const parsedArgs = util.parseArgs({
-    args: args.slice(2),
-    options: {
-      platform: {
-        short: 'p',
-        type: 'string',
-      },
-      exclude: {
-        short: 'e',
-        type: 'string',
-      },
-    },
-    allowPositionals: true,
-  });
-
-  const {
-    values: {platform, exclude},
-    positionals: files,
-  } = parsedArgs;
-
-  const [outfile, ...fileList] = files;
-
-  return {
-    platform: platform ?? null,
-    outfile,
-    fileList,
-    exclude: exclude != null && exclude !== '' ? new RegExp(exclude) : null,
-  };
-}
 
 /**
  * This function is used by the CLI to decide whether a JS/TS file has to be processed or not by the Codegen.
@@ -97,6 +60,5 @@ function filterJSFile(
 }
 
 module.exports = {
-  parseArgs,
   filterJSFile,
 };

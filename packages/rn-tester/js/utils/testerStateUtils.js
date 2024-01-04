@@ -29,6 +29,7 @@ export const initialNavigationState: RNTesterNavigationState = {
   activeModuleExampleKey: null,
   screen: Screens.COMPONENTS,
   recentlyUsed: {components: [], apis: []},
+  hadDeepLink: false,
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {

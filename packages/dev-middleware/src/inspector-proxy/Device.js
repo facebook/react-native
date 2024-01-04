@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type {EventReporter} from '../types/EventReporter';
 import type {
   DebuggerRequest,
   ErrorResponse,
@@ -22,10 +23,9 @@ import type {
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
-import * as path from 'path';
 import fetch from 'node-fetch';
+import * as path from 'path';
 import WS from 'ws';
-import type {EventReporter} from '../types/EventReporter';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -674,7 +674,7 @@ export default class Device {
   // Fetch text, raising an exception if the text could not be fetched,
   // or is too large.
   async _fetchText(url: URL): Promise<string> {
-    if (url.hostname !== 'localhost') {
+    if (!['localhost', '127.0.0.1'].includes(url.hostname)) {
       throw new Error('remote fetches not permitted');
     }
 

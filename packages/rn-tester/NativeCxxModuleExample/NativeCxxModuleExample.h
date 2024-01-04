@@ -47,11 +47,12 @@ struct Bridging<ValueStruct>
     : NativeCxxModuleExampleCxxValueStructBridging<ValueStruct> {};
 
 #pragma mark - enums
-enum CustomEnumInt { A = 23, B = 42 };
+enum class CustomEnumInt : int32_t { A = 23, B = 42 };
 
 template <>
 struct Bridging<CustomEnumInt> {
-  static CustomEnumInt fromJs(jsi::Runtime& rt, int32_t value) {
+  static CustomEnumInt fromJs(jsi::Runtime& rt, jsi::Value rawValue) {
+    auto value = static_cast<int32_t>(rawValue.asNumber());
     if (value == 23) {
       return CustomEnumInt::A;
     } else if (value == 42) {

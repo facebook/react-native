@@ -7,4 +7,3 @@ build/
 src/main/third-party/
 # Exclude Android & JVM tests
 src/test/
-src/androidTest/

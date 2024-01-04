@@ -29,65 +29,9 @@ struct YGNode {};
 namespace facebook::yoga {
 
 class YG_EXPORT Node : public ::YGNode {
- private:
-  bool hasNewLayout_ : 1 = true;
-  bool isReferenceBaseline_ : 1 = false;
-  bool isDirty_ : 1 = false;
-  NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
-  void* context_ = nullptr;
-  YGMeasureFunc measureFunc_ = {nullptr};
-  YGBaselineFunc baselineFunc_ = {nullptr};
-  YGPrintFunc printFunc_ = {nullptr};
-  YGDirtiedFunc dirtiedFunc_ = nullptr;
-  Style style_ = {};
-  LayoutResults layout_ = {};
-  size_t lineIndex_ = 0;
-  Node* owner_ = nullptr;
-  std::vector<Node*> children_ = {};
-  const Config* config_;
-  std::array<YGValue, 2> resolvedDimensions_ = {
-      {YGValueUndefined, YGValueUndefined}};
-
-  float relativePosition(
-      FlexDirection axis,
-      Direction direction,
-      const float axisSize) const;
-
-  Edge getInlineStartEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getInlineEndEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexStartRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexEndRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-
-  void useWebDefaults() {
-    style_.setFlexDirection(FlexDirection::Row);
-    style_.setAlignContent(Align::Stretch);
-  }
-
-  template <auto Field>
-  Style::Length computeEdgeValueForColumn(Edge edge) const;
-
-  template <auto Field>
-  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
-
-  // DANGER DANGER DANGER!
-  // If the node assigned to has children, we'd either have to deallocate
-  // them (potentially incorrect) or ignore them (danger of leaks). Only ever
-  // use this after checking that there are no children.
-  // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
-  Node& operator=(Node&&) = default;
-
  public:
   Node();
   explicit Node(const Config* config);
-  ~Node() = default; // cleanup of owner/children relationships in YGNodeFree
 
   Node(Node&&);
 
@@ -130,7 +74,14 @@ class YG_EXPORT Node : public ::YGNode {
 
   bool isLayoutDimensionDefined(const FlexDirection axis);
 
-  bool styleDefinesDimension(const FlexDirection axis, const float ownerSize);
+  /**
+   * Whether the node has a "definite length" along the given axis.
+   * https://www.w3.org/TR/css-sizing-3/#definite
+   */
+  inline bool hasDefiniteLength(Dimension dimension, float ownerSize) {
+    auto usedValue = getResolvedDimension(dimension).resolve(ownerSize);
+    return usedValue.isDefined() && usedValue.unwrap() >= 0.0f;
+  }
 
   bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
@@ -174,11 +125,6 @@ class YG_EXPORT Node : public ::YGNode {
     return owner_;
   }
 
-  // Deprecated, use getOwner() instead.
-  Node* getParent() const {
-    return getOwner();
-  }
-
   const std::vector<Node*>& getChildren() const {
     return children_;
   }
@@ -199,11 +145,11 @@ class YG_EXPORT Node : public ::YGNode {
     return isDirty_;
   }
 
-  std::array<YGValue, 2> getResolvedDimensions() const {
+  std::array<Style::Length, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
   }
 
-  YGValue getResolvedDimension(Dimension dimension) const {
+  Style::Length getResolvedDimension(Dimension dimension) const {
     return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
@@ -366,9 +312,9 @@ class YG_EXPORT Node : public ::YGNode {
       const float ownerWidth);
 
   // Other methods
-  YGValue getFlexStartMarginValue(FlexDirection axis) const;
-  YGValue marginTrailingValue(FlexDirection axis) const;
-  YGValue resolveFlexBasisPtr() const;
+  Style::Length getFlexStartMarginValue(FlexDirection axis) const;
+  Style::Length marginTrailingValue(FlexDirection axis) const;
+  Style::Length resolveFlexBasisPtr() const;
   void resolveDimension();
   Direction resolveDirection(const Direction ownerDirection);
   void clearChildren();
@@ -386,6 +332,57 @@ class YG_EXPORT Node : public ::YGNode {
   float resolveFlexShrink() const;
   bool isNodeFlexible();
   void reset();
+
+ private:
+  // Used to allow resetting the node
+  Node& operator=(Node&&) = default;
+
+  float relativePosition(
+      FlexDirection axis,
+      Direction direction,
+      const float axisSize) const;
+
+  Edge getInlineStartEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getInlineEndEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getFlexStartRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getFlexEndRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+
+  void useWebDefaults() {
+    style_.setFlexDirection(FlexDirection::Row);
+    style_.setAlignContent(Align::Stretch);
+  }
+
+  template <auto Field>
+  Style::Length computeEdgeValueForColumn(Edge edge) const;
+
+  template <auto Field>
+  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
+
+  bool hasNewLayout_ : 1 = true;
+  bool isReferenceBaseline_ : 1 = false;
+  bool isDirty_ : 1 = false;
+  NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
+  void* context_ = nullptr;
+  YGMeasureFunc measureFunc_ = {nullptr};
+  YGBaselineFunc baselineFunc_ = {nullptr};
+  YGPrintFunc printFunc_ = {nullptr};
+  YGDirtiedFunc dirtiedFunc_ = nullptr;
+  Style style_ = {};
+  LayoutResults layout_ = {};
+  size_t lineIndex_ = 0;
+  Node* owner_ = nullptr;
+  std::vector<Node*> children_ = {};
+  const Config* config_;
+  std::array<Style::Length, 2> resolvedDimensions_ = {
+      {value::undefined(), value::undefined()}};
 };
 
 inline Node* resolveRef(const YGNodeRef ref) {

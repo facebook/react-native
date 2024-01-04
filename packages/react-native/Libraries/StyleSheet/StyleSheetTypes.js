@@ -912,7 +912,10 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<
-  <T>(GenericStyleProp<T>) => T,
-  TStyleProp,
->;
+export type ____FlattenStyleProp_Internal<
+  +TStyleProp: GenericStyleProp<mixed>,
+> = TStyleProp extends null | void | false | ''
+  ? empty
+  : TStyleProp extends $ReadOnlyArray<infer V>
+  ? ____FlattenStyleProp_Internal<V>
+  : TStyleProp;

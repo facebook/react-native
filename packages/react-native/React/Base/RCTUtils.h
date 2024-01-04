@@ -16,6 +16,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Whether the New Architecture is enabled or not
+RCT_EXTERN BOOL RCTIsNewArchEnabled(void);
+RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled);
+
 // JSON serialization/deserialization
 RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error);
 RCT_EXTERN id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error);

@@ -143,11 +143,13 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
 
 public interface CommandNativeComponentManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
   void handleRootTag(T view, double rootTag);
   void hotspotUpdate(T view, int x, int y);
+  void addItems(T view, ReadableArray items);
 }
 ",
 }

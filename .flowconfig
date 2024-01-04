@@ -17,6 +17,9 @@
 ; Checked-in build output
 <PROJECT_ROOT>/packages/debugger-frontend/dist/
 
+; Generated build output
+<PROJECT_ROOT>/packages/.*/dist
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -82,4 +85,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.223.3
+^0.225.1

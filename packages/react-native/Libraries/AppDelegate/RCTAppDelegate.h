@@ -11,6 +11,7 @@
 @class RCTBridge;
 @protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
+@class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
 
 /**
@@ -86,6 +87,26 @@
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps;
+/**
+ * This method can be used to customize the rootView that is passed to React Native.
+ * A typical example is to override this method in the AppDelegate to change the background color.
+ * To achieve this, add in your `AppDelegate.mm`:
+ * ```
+ * - (void)customizeRootView:(RCTRootView *)rootView
+ * {
+ *   rootView.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traitCollection) {
+ *     if ([traitCollection userInterfaceStyle] == UIUserInterfaceStyleDark) {
+ *       return [UIColor blackColor];
+ *     } else {
+ *       return [UIColor whiteColor];
+ *     }
+ *   }];
+ * }
+ * ```
+ *
+ * @parameter: rootView - The root view to customize.
+ */
+- (void)customizeRootView:(RCTRootView *)rootView;
 
 /**
  * It creates the RootViewController.

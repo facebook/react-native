@@ -72,14 +72,26 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
         val sentColor: Int = Color.parseColor(args?.getString(0))
         view.setBackgroundColor(sentColor)
       }
+      COMMAND_ADD_OVERLAYS -> {
+        val overlayColors: ReadableArray = args!!.getArray(0)
+        view.addOverlays(overlayColors)
+      }
+      COMMAND_REMOVE_OVERLAYS -> {
+        view.removeOverlays()
+      }
     }
   }
 
   override fun getCommandsMap(): Map<String, Int> =
-      mapOf("changeBackgroundColor" to COMMAND_CHANGE_BACKGROUND_COLOR)
+      mapOf(
+          "changeBackgroundColor" to COMMAND_CHANGE_BACKGROUND_COLOR,
+          "addOverlays" to COMMAND_ADD_OVERLAYS,
+          "removeOverlays" to COMMAND_REMOVE_OVERLAYS)
 
   companion object {
     const val REACT_CLASS = "RNTMyLegacyNativeView"
-    const val COMMAND_CHANGE_BACKGROUND_COLOR = 42
+    const val COMMAND_CHANGE_BACKGROUND_COLOR = 1
+    const val COMMAND_ADD_OVERLAYS = 2
+    const val COMMAND_REMOVE_OVERLAYS = 3
   }
 }

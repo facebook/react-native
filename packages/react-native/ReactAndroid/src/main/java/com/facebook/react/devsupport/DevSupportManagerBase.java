@@ -33,6 +33,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultJSExceptionHandler;
+import com.facebook.react.bridge.InspectorFlags;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -113,8 +114,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
   private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
 
-  private final InspectorPackagerConnection.BundleStatus mBundleStatus;
-
   private @Nullable final Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
   private @Nullable final SurfaceDelegateFactory mSurfaceDelegateFactory;
@@ -134,12 +133,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
-    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
             mDevSettings,
             mApplicationContext.getPackageName(),
-            () -> mBundleStatus,
             mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
@@ -886,10 +883,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onSuccess() {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = true;
-              mBundleStatus.updateTimestamp = System.currentTimeMillis();
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -911,9 +904,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onFailure(final Exception cause) {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = false;
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
@@ -1043,8 +1033,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void onPackagerReloadCommand() {
-              // Disable debugger to resume the JsVM & avoid thread locks while reloading
-              mDevServerHelper.disableDebugger();
+              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+                // Disable debugger to resume the JsVM & avoid thread locks while reloading
+                mDevServerHelper.disableDebugger();
+              }
               UiThreadUtil.runOnUiThread(() -> handleReloadJS());
             }
 

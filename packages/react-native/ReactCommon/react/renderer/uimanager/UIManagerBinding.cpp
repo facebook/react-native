@@ -99,23 +99,30 @@ void UIManagerBinding::dispatchEvent(
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
-    auto dispatchCallback = [this](
-                                jsi::Runtime& runtime,
-                                const EventTarget* eventTarget,
+    auto dispatchCallback = [this, &runtime](
+                                const ShadowNode& targetNode,
                                 const std::string& type,
                                 ReactEventPriority priority,
                                 const EventPayload& eventPayload) {
-      this->dispatchEventToJS(
-          runtime, eventTarget, type, priority, eventPayload);
+      auto eventTarget = targetNode.getEventEmitter()->getEventTarget();
+      if (eventTarget != nullptr) {
+        eventTarget->retain(runtime);
+        this->dispatchEventToJS(
+            runtime, eventTarget.get(), type, priority, eventPayload);
+        eventTarget->release(runtime);
+      }
     };
-    pointerEventsProcessor_.interceptPointerEvent(
-        runtime,
-        eventTarget,
-        type,
-        priority,
-        pointerEvent,
-        dispatchCallback,
-        *uiManager_);
+    auto targetNode = PointerEventsProcessor::getShadowNodeFromEventTarget(
+        runtime, eventTarget);
+    if (targetNode != nullptr) {
+      pointerEventsProcessor_.interceptPointerEvent(
+          targetNode,
+          type,
+          priority,
+          pointerEvent,
+          dispatchCallback,
+          *uiManager_);
+    }
   } else {
     dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
   }
@@ -1107,52 +1114,52 @@ jsi::Value UIManagerBinding::get(
 
           auto newestCloneOfShadowNode =
               uiManager->getNewestCloneOfShadowNode(*shadowNode);
-          auto newestParentOfShadowNode =
-              uiManager->getNewestParentOfShadowNode(*shadowNode);
+          auto newestPositionedAncestorOfShadowNode =
+              uiManager->getNewestPositionedAncestorOfShadowNode(*shadowNode);
           // The node is no longer part of an active shadow tree, or it is the
           // root node
           if (newestCloneOfShadowNode == nullptr ||
-              newestParentOfShadowNode == nullptr) {
+              newestPositionedAncestorOfShadowNode == nullptr) {
             return jsi::Value::undefined();
           }
 
           // If the node is not displayed (itself or any of its ancestors has
           // "display: none"), this returns an empty layout metrics object.
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNode, nullptr, {/* .includeTransform = */ false});
-
-          if (layoutMetrics == EmptyLayoutMetrics) {
+          auto shadowNodeLayoutMetricsRelativeToRoot =
+              uiManager->getRelativeLayoutMetrics(
+                  *shadowNode, nullptr, {/* .includeTransform = */ false});
+          if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
 
-          auto layoutableShadowNode = traitCast<LayoutableShadowNode const*>(
-              newestCloneOfShadowNode.get());
-          // This should never happen
-          if (layoutableShadowNode == nullptr) {
+          auto positionedAncestorLayoutMetricsRelativeToRoot =
+              uiManager->getRelativeLayoutMetrics(
+                  *newestPositionedAncestorOfShadowNode,
+                  nullptr,
+                  {/* .includeTransform = */ false});
+          if (positionedAncestorLayoutMetricsRelativeToRoot ==
+              EmptyLayoutMetrics) {
             return jsi::Value::undefined();
           }
 
-          auto layoutableParentShadowNode =
-              traitCast<LayoutableShadowNode const*>(
-                  newestParentOfShadowNode.get());
-          // This should never happen
-          if (layoutableParentShadowNode == nullptr) {
-            return jsi::Value::undefined();
-          }
-
-          auto originRelativeToParentOuterBorder =
-              layoutableShadowNode->getLayoutMetrics().frame.origin;
+          auto shadowNodeOriginRelativeToRoot =
+              shadowNodeLayoutMetricsRelativeToRoot.frame.origin;
+          auto positionedAncestorOriginRelativeToRoot =
+              positionedAncestorLayoutMetricsRelativeToRoot.frame.origin;
 
           // On the Web, offsets are computed from the inner border of the
           // parent.
-          auto offsetTop = originRelativeToParentOuterBorder.y -
-              layoutableParentShadowNode->getLayoutMetrics().borderWidth.top;
-          auto offsetLeft = originRelativeToParentOuterBorder.x -
-              layoutableParentShadowNode->getLayoutMetrics().borderWidth.left;
+          auto offsetTop = shadowNodeOriginRelativeToRoot.y -
+              positionedAncestorOriginRelativeToRoot.y -
+              positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.top;
+          auto offsetLeft = shadowNodeOriginRelativeToRoot.x -
+              positionedAncestorOriginRelativeToRoot.x -
+              positionedAncestorLayoutMetricsRelativeToRoot.borderWidth.left;
 
           return jsi::Array::createWithElements(
               runtime,
-              (*newestParentOfShadowNode).getInstanceHandle(runtime),
+              (*newestPositionedAncestorOfShadowNode)
+                  .getInstanceHandle(runtime),
               jsi::Value{runtime, (double)offsetTop},
               jsi::Value{runtime, (double)offsetLeft});
         });

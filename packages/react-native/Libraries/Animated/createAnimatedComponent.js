@@ -13,6 +13,7 @@ import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 
+// $FlowFixMe[deprecated-type]
 export type AnimatedProps<Props: {...}> = $ObjMap<
   Props &
     $ReadOnly<{

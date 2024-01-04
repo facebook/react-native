@@ -67,9 +67,6 @@ class CoreFeatures {
   // Report paint time inside the Event Timing API implementation
   // (PerformanceObserver).
   static bool enableReportEventPaintTime;
-
-  // Sets the default position of nodes to be relative instead of static
-  static bool positionRelativeDefault;
 };
 
 } // namespace facebook::react

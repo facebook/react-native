@@ -13,13 +13,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<
   $ReadOnly<{||}>,
@@ -31,9 +25,7 @@ class ViewBorderStyleExample extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableWithoutFeedback
-        testID="border-style-button"
-        onPress={this._handlePress}>
+      <Pressable testID="border-style-button" onPress={this._handlePress}>
         <View>
           <View
             style={[
@@ -66,7 +58,7 @@ class ViewBorderStyleExample extends React.Component<
             <Text style={{fontSize: 11}}>Dotted border style</Text>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 
@@ -96,7 +88,7 @@ class OffscreenAlphaCompositing extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableWithoutFeedback
+      <Pressable
         testID="offscreen-alpha-compositing-button"
         onPress={this._handlePress}>
         <View>
@@ -149,7 +141,7 @@ class OffscreenAlphaCompositing extends React.Component<
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 
@@ -181,9 +173,7 @@ class ZIndexExample extends React.Component<
   render(): React.Node {
     const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
     return (
-      <TouchableWithoutFeedback
-        testID="z-index-button"
-        onPress={this._handlePress}>
+      <Pressable testID="z-index-button" onPress={this._handlePress}>
         <View>
           <Text style={{paddingBottom: 10}}>Tap to flip sorting order</Text>
           <View
@@ -231,7 +221,7 @@ class ZIndexExample extends React.Component<
             <Text>ZIndex {indices[3]}</Text>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 
@@ -252,9 +242,7 @@ class DisplayNoneStyle extends React.Component<
 
   render(): React.Node {
     return (
-      <TouchableWithoutFeedback
-        testID="display-none-button"
-        onPress={this._handlePress}>
+      <Pressable testID="display-none-button" onPress={this._handlePress}>
         <View>
           <Text style={{paddingBottom: 10}}>
             Press to toggle `display: none`
@@ -300,7 +288,7 @@ class DisplayNoneStyle extends React.Component<
             }}
           />
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 
@@ -343,9 +331,13 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
   }
 }
 
-function LayoutConformanceExample(): React.Node {
+function LayoutConformanceExample({
+  testID,
+}: $ReadOnly<{testID: ?string}>): React.Node {
   return (
-    <View style={{flexDirection: 'row', gap: 10}}>
+    <View
+      style={{flexDirection: 'row', gap: 10}}
+      testID="view-test-layout-conformance">
       <View>
         <Text>Unset</Text>
         <LayoutConformanceBox />
@@ -367,8 +359,8 @@ function LayoutConformanceBox(): React.Node {
     <View
       style={{
         backgroundColor: 'blue',
-        width: 100,
-        height: 100,
+        width: 60,
+        height: 60,
         flexDirection: 'row',
         alignItems: 'center',
       }}>
@@ -378,7 +370,7 @@ function LayoutConformanceBox(): React.Node {
         }}>
         <View
           style={{
-            height: 50,
+            height: 30,
             backgroundColor: 'red',
             flexGrow: 1,
           }}
@@ -399,10 +391,10 @@ export default ({
     {
       title: 'Background Color',
       name: 'background-color',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
           <View
-            testID={testID}
+            testID="view-test-background-color"
             style={{backgroundColor: '#527FE4', padding: 5}}>
             <Text style={{fontSize: 11}}>Blue background</Text>
           </View>
@@ -412,10 +404,10 @@ export default ({
     {
       title: 'Border',
       name: 'border',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
           <View
-            testID={testID}
+            testID="view-test-border"
             style={{borderColor: '#527FE4', borderWidth: 5, padding: 10}}>
             <Text style={{fontSize: 11}}>5px blue border</Text>
           </View>
@@ -425,7 +417,7 @@ export default ({
     {
       title: 'Padding/Margin',
       name: 'padding-margin',
-      render({testID}): React.Node {
+      render(): React.Node {
         const styles = StyleSheet.create({
           box: {
             backgroundColor: '#527FE4',
@@ -435,7 +427,7 @@ export default ({
         });
         return (
           <View
-            testID={testID}
+            testID="view-test-padding-margin"
             style={{borderColor: '#bb0000', borderWidth: 0.5}}>
             <View style={[styles.box, {padding: 5}]}>
               <Text style={{fontSize: 11}}>5px padding</Text>
@@ -458,9 +450,9 @@ export default ({
     {
       title: 'Border Radius',
       name: 'border-radius',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
-          <View testID={testID}>
+          <View testID="view-test-border-radius">
             <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
               <Text style={{fontSize: 11}}>
                 Too much use of `borderRadius` (especially large radii) on
@@ -496,10 +488,10 @@ export default ({
     {
       title: 'Rounded Borders',
       name: 'rounded-borders',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
           <View
-            testID={testID}
+            testID="view-test-rounded-borders"
             style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             <View
               style={{
@@ -586,7 +578,7 @@ export default ({
     {
       title: 'Overflow',
       name: 'overflow',
-      render({testID}): React.Node {
+      render(): React.Node {
         const styles = StyleSheet.create({
           container: {
             borderWidth: StyleSheet.hairlineWidth,
@@ -604,7 +596,7 @@ export default ({
         // NOTE: The <View> that sets `overflow` should only have other layout
         // styles so that we can accurately test view flattening optimizations.
         return (
-          <View testID={testID} style={{flexDirection: 'row'}}>
+          <View testID="view-test-overflow" style={{flexDirection: 'row'}}>
             <View style={styles.container}>
               <View style={[StyleSheet.absoluteFill]}>
                 <Text style={styles.content}>undefined</Text>
@@ -627,9 +619,9 @@ export default ({
     {
       title: 'Opacity',
       name: 'opacity',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
-          <View testID={testID}>
+          <View testID="view-test-opacity">
             <View style={{opacity: 0}}>
               <Text>Opacity 0</Text>
             </View>
@@ -658,8 +650,10 @@ export default ({
     {
       title: 'Offscreen Alpha Compositing',
       name: 'offscreen-alpha-compositing',
-      render({testID}): React.Node {
-        return <OffscreenAlphaCompositing testID={testID} />;
+      render(): React.Node {
+        return (
+          <OffscreenAlphaCompositing testID="view-test-offscreen-alpha-compositing" />
+        );
       },
     },
     {
@@ -679,9 +673,9 @@ export default ({
     {
       title: 'BackfaceVisibility',
       name: 'backface-visibility',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
-          <View testID={testID}>
+          <View testID="view-test-backface-visibility">
             <Text style={{paddingBottom: 10}}>
               View #1, front is visible, back is hidden.
             </Text>
@@ -748,10 +742,10 @@ export default ({
     {
       title: 'View with aria-label="label"',
       name: 'aria-label',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
           <View
-            testID={testID}
+            testID="view-test-aria-label"
             aria-label="Blue background View with Text"
             style={{backgroundColor: '#527FE4', padding: 5}}>
             <Text style={{fontSize: 11}}>Blue background</Text>
@@ -762,16 +756,16 @@ export default ({
     {
       title: 'FlexGap',
       name: 'flexgap',
-      render({testID}): React.Node {
-        return <FlexGapExample testID={testID} />;
+      render(): React.Node {
+        return <FlexGapExample testID="view-test-flexgap" />;
       },
     },
     {
       title: 'Insets',
       name: 'insets',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
-          <View testID={testID} style={{rowGap: 10}}>
+          <View testID="view-test-insets" style={{rowGap: 10}}>
             <View style={{position: 'relative', height: 50, borderWidth: 1}}>
               <View
                 style={{
@@ -856,9 +850,9 @@ export default ({
     {
       title: 'Logical Border Color',
       name: 'logical-border-color',
-      render({testID}): React.Node {
+      render(): React.Node {
         return (
-          <View testID={testID} style={{rowGap: 10}}>
+          <View testID="view-test-logical-border-color" style={{rowGap: 10}}>
             <View style={{position: 'relative', height: 50, borderWidth: 1}}>
               <View
                 style={{

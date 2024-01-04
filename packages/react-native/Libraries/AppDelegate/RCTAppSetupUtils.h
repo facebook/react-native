@@ -11,6 +11,8 @@
 
 #ifdef __cplusplus
 
+#import <react/config/ReactNativeConfig.h>
+
 #import <memory>
 
 #ifndef RCT_USE_HERMES
@@ -44,11 +46,22 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler);
 
+/**
+ * Register features and experiments prior to app initialization.
+ */
+void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled,
+    const facebook::react::ReactNativeConfig &reactNativeConfig);
+
 #endif // __cplusplus
 
 RCT_EXTERN_C_BEGIN
 
-void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled);
+[[deprecated("Use the 3-argument overload of RCTAppSetupPrepareApp instead")]] void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled);
+
 UIView *RCTAppSetupDefaultRootView(
     RCTBridge *bridge,
     NSString *moduleName,

@@ -52,6 +52,39 @@ export function callNativeMethodToChangeBackgroundColor(
   );
 }
 
+export function callNativeMethodToAddOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+  overlayColors: $ReadOnlyArray<string>,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  UIManager.dispatchViewManagerCommand(
+    ReactNative.findNodeHandle(viewRef),
+    UIManager.getViewManagerConfig(
+      'RNTMyLegacyNativeView',
+    ).Commands.addOverlays.toString(),
+    [overlayColors],
+  );
+}
+
+export function callNativeMethodToRemoveOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  UIManager.dispatchViewManagerCommand(
+    ReactNative.findNodeHandle(viewRef),
+    UIManager.getViewManagerConfig(
+      'RNTMyLegacyNativeView',
+    ).Commands.removeOverlays.toString(),
+    [],
+  );
+}
+
 export default (requireNativeComponent(
   'RNTMyLegacyNativeView',
 ): HostComponent<NativeProps>);

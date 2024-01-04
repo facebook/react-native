@@ -35,6 +35,7 @@ interface Registration<TArgs> {
   +remove: () => void;
 }
 
+// $FlowFixMe[deprecated-type]
 type Registry<TEventToArgsMap: {...}> = $ObjMap<
   TEventToArgsMap,
   <TArgs>(TArgs) => Set<Registration<TArgs>>,

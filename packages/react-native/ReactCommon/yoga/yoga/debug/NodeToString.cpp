@@ -46,14 +46,18 @@ static void appendFloatOptionalIfDefined(
 static void appendNumberIfNotUndefined(
     std::string& base,
     const std::string key,
-    const YGValue number) {
-  if (number.unit != YGUnitUndefined) {
-    if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Undefined) {
+    if (number.unit() == Unit::Auto) {
       base.append(key + ": auto; ");
     } else {
-      std::string unit = number.unit == YGUnitPoint ? "px" : "%%";
+      std::string unit = number.unit() == Unit::Point ? "px" : "%%";
       appendFormattedString(
-          base, "%s: %g%s; ", key.c_str(), number.value, unit.c_str());
+          base,
+          "%s: %g%s; ",
+          key.c_str(),
+          number.value().unwrap(),
+          unit.c_str());
     }
   }
 }
@@ -61,8 +65,8 @@ static void appendNumberIfNotUndefined(
 static void appendNumberIfNotAuto(
     std::string& base,
     const std::string& key,
-    const YGValue number) {
-  if (number.unit != YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Auto) {
     appendNumberIfNotUndefined(base, key, number);
   }
 }
@@ -70,10 +74,10 @@ static void appendNumberIfNotAuto(
 static void appendNumberIfNotZero(
     std::string& base,
     const std::string& str,
-    const YGValue number) {
-  if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() == Unit::Auto) {
     base.append(str + ": auto; ");
-  } else if (!yoga::inexactEquals(number.value, 0)) {
+  } else if (!yoga::inexactEquals(number.value().unwrap(), 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }

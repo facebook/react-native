@@ -9,7 +9,7 @@
 #include <yoga/algorithm/Align.h>
 #include <yoga/algorithm/BoundAxis.h>
 #include <yoga/algorithm/CalculateLayout.h>
-#include <yoga/algorithm/ResolveValue.h>
+#include <yoga/algorithm/TrailingPosition.h>
 
 namespace facebook::yoga {
 
@@ -322,11 +322,10 @@ void layoutAbsoluteChild(
   auto marginColumn =
       child->getMarginForAxis(FlexDirection::Column, containingBlockWidth);
 
-  if (child->styleDefinesDimension(FlexDirection::Row, containingBlockWidth)) {
-    childWidth =
-        yoga::resolveValue(
-            child->getResolvedDimension(Dimension::Width), containingBlockWidth)
-            .unwrap() +
+  if (child->hasDefiniteLength(Dimension::Width, containingBlockWidth)) {
+    childWidth = child->getResolvedDimension(Dimension::Width)
+                     .resolve(containingBlockWidth)
+                     .unwrap() +
         marginRow;
   } else {
     // If the child doesn't have a specified width, compute the width based on
@@ -350,11 +349,9 @@ void layoutAbsoluteChild(
     }
   }
 
-  if (child->styleDefinesDimension(
-          FlexDirection::Column, containingBlockHeight)) {
-    childHeight = yoga::resolveValue(
-                      child->getResolvedDimension(Dimension::Height),
-                      containingBlockHeight)
+  if (child->hasDefiniteLength(Dimension::Height, containingBlockHeight)) {
+    childHeight = child->getResolvedDimension(Dimension::Height)
+                      .resolve(containingBlockHeight)
                       .unwrap() +
         marginColumn;
   } else {

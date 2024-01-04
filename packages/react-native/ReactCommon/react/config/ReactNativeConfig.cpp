@@ -9,19 +9,15 @@
 
 namespace facebook::react {
 
-/**
- * ReactNative configuration as provided by the hosting app.
- * Provide a sub-class implementation to allow app specific customization.
- */
-ReactNativeConfig::ReactNativeConfig() {}
-
-ReactNativeConfig::~ReactNativeConfig() {}
-
-EmptyReactNativeConfig::EmptyReactNativeConfig() {}
-
 bool EmptyReactNativeConfig::getBool(const std::string& param) const {
   if (param == "react_fabric:enabled_layout_animations_ios") {
     return true;
+  }
+  if (param == "react_native_devx:enable_modern_cdp_registry") {
+    return false;
+  }
+  if (param == "react_native_devx:enable_cxx_inspector_packager_connection") {
+    return false;
   }
   return false;
 }
