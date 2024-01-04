@@ -592,7 +592,7 @@ function UncontrolledExample() {
 
   return (
     <TextInput
-      defaultValue=""
+      defaultValue="Hello World!"
       testID="uncontrolled-textinput"
       style={isFocused ? styles.focusedUncontrolled : styles.default}
       onFocus={() => setIsFocused(true)}
