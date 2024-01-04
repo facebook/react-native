@@ -9,6 +9,7 @@
  */
 
 import type {EventReporter} from '../types/EventReporter';
+
 import TTLCache from '@isaacs/ttlcache';
 
 type PendingCommand = {

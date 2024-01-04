@@ -23,21 +23,11 @@ enum class PrintOptions : uint32_t {
 
 YG_DEFINE_ENUM_FLAG_OPERATORS(PrintOptions)
 
-template <>
-constexpr inline int32_t ordinalCount<PrintOptions>() {
-  return 3;
-} 
-
-template <>
-constexpr inline int32_t bitCount<PrintOptions>() {
-  return 2;
-} 
-
-constexpr inline PrintOptions scopedEnum(YGPrintOptions unscoped) {
+constexpr PrintOptions scopedEnum(YGPrintOptions unscoped) {
   return static_cast<PrintOptions>(unscoped);
 }
 
-constexpr inline YGPrintOptions unscopedEnum(PrintOptions scoped) {
+constexpr YGPrintOptions unscopedEnum(PrintOptions scoped) {
   return static_cast<YGPrintOptions>(scoped);
 }
 

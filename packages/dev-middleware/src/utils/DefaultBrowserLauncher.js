@@ -15,8 +15,8 @@ import {promises as fs} from 'fs';
 import path from 'path';
 import osTempDir from 'temp-dir';
 
+const {Launcher: EdgeLauncher} = require('@rnx-kit/chromium-edge-launcher');
 const ChromeLauncher = require('chrome-launcher');
-const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
 
 /**
  * Default `BrowserLauncher` implementation which opens URLs on the host

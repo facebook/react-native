@@ -23,7 +23,7 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 
 using namespace facebook::react;
 
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
 @end
 
 @implementation RCTHost {
@@ -147,7 +147,7 @@ using namespace facebook::react;
     [_instance invalidate];
   }
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
@@ -214,7 +214,7 @@ using namespace facebook::react;
   }
 
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
@@ -245,6 +245,17 @@ using namespace facebook::react;
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+#pragma mark - RCTInstanceDelegateInternal
+
+- (BOOL)useModernRuntimeScheduler:(RCTHost *)host
+{
+  if ([_hostDelegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
+    return [(id)_hostDelegate useModernRuntimeScheduler:self];
+  }
+
+  return NO;
 }
 
 #pragma mark - RCTContextContainerHandling
@@ -290,10 +301,10 @@ using namespace facebook::react;
   return surfaces;
 }
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)_provideJSEngine
+- (std::shared_ptr<facebook::react::JSRuntimeFactory>)_provideJSEngine
 {
   RCTAssert(_jsEngineProvider, @"_jsEngineProvider must be non-nil");
-  std::shared_ptr<facebook::react::JSEngineInstance> jsEngine = _jsEngineProvider();
+  std::shared_ptr<facebook::react::JSRuntimeFactory> jsEngine = _jsEngineProvider();
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;

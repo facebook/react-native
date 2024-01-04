@@ -15,6 +15,7 @@ const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 /* $FlowFixMe[cannot-resolve-module] (>=0.99.0 site=react_native_ios_fb) This
  * comment suppresses an error found when Flow v0.99 was deployed. To see the
  * error, delete this comment and run Flow. */
+// $FlowFixMe[missing-platform-support]
 const ProgressBarAndroid = require('../ProgressBarAndroid.android');
 const React = require('react');
 

@@ -12,10 +12,10 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
+const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
+
 const {NativeAppEventEmitter, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
-
-const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
 
 const TEST_PAYLOAD = {foo: 'bar'};
 

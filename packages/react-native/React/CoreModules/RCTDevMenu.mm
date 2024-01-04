@@ -211,11 +211,15 @@ RCT_EXPORT_MODULE()
 
 - (void)toggle
 {
+  if (_actionSheet.isBeingPresented || _actionSheet.beingDismissed) {
+    return;
+  }
   if (_actionSheet) {
     [_actionSheet dismissViewControllerAnimated:YES
-                                     completion:^(void){
+                                     completion:^(void) {
+                                       self->_actionSheet = nil;
                                      }];
-    _actionSheet = nil;
+
   } else {
     [self show];
   }
@@ -279,8 +283,7 @@ RCT_EXPORT_MODULE()
 
   [items addObject:[RCTDevMenuItem
                        buttonItemWithTitleBlock:^NSString * {
-                         return devSettings.isElementInspectorShown ? @"Hide Element Inspector"
-                                                                    : @"Show Element Inspector";
+                         return @"Toggle Element Inspector";
                        }
                        handler:^{
                          [devSettings toggleElementInspector];

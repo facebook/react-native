@@ -158,12 +158,12 @@ class RN_EXPORT Instance {
     bool m_shouldBuffer = true;
     std::list<std::function<void()>> m_workBuffer;
 
-    void scheduleAsync(std::function<void()>&& work);
+    void scheduleAsync(std::function<void()>&& work) noexcept;
 
    public:
     void setNativeToJsBridgeAndFlushCalls(
         std::weak_ptr<NativeToJsBridge> nativeToJsBridge);
-    void invokeAsync(std::function<void()>&& work) override;
+    void invokeAsync(std::function<void()>&& work) noexcept override;
     void invokeSync(std::function<void()>&& work) override;
   };
 

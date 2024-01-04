@@ -18,9 +18,11 @@ class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
-using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
+using RawPerformanceEntryType = int32_t;
+
+using RawPerformanceEntry = NativePerformanceObserverCxxRawPerformanceEntry<
     std::string,
-    int32_t,
+    RawPerformanceEntryType,
     double,
     double,
     // For "event" entries only:
@@ -30,25 +32,18 @@ using RawPerformanceEntry = NativePerformanceObserverCxxBaseRawPerformanceEntry<
 
 template <>
 struct Bridging<RawPerformanceEntry>
-    : NativePerformanceObserverCxxBaseRawPerformanceEntryBridging<
-          std::string,
-          int32_t,
-          double,
-          double,
-          std::optional<double>,
-          std::optional<double>,
-          std::optional<uint32_t>> {};
+    : NativePerformanceObserverCxxRawPerformanceEntryBridging<
+          RawPerformanceEntry> {};
 
 using GetPendingEntriesResult =
-    NativePerformanceObserverCxxBaseGetPendingEntriesResult<
+    NativePerformanceObserverCxxGetPendingEntriesResult<
         std::vector<RawPerformanceEntry>,
         uint32_t>;
 
 template <>
 struct Bridging<GetPendingEntriesResult>
-    : NativePerformanceObserverCxxBaseGetPendingEntriesResultBridging<
-          std::vector<RawPerformanceEntry>,
-          uint32_t> {};
+    : NativePerformanceObserverCxxGetPendingEntriesResultBridging<
+          GetPendingEntriesResult> {};
 
 #pragma mark - implementation
 
@@ -93,6 +88,9 @@ class NativePerformanceObserver
       jsi::Runtime& rt,
       std::optional<int32_t> entryType,
       std::optional<std::string> entryName);
+
+  std::vector<RawPerformanceEntryType> getSupportedPerformanceEntryTypes(
+      jsi::Runtime& rt);
 
  private:
 };

@@ -7,6 +7,7 @@
     <string name="image_description" gender="unknown">Кескін</string>
     <string name="imagebutton_description" gender="unknown">Түйме, кескін</string>
     <string name="combobox_description" gender="unknown">Біріктірілген тізім</string>
+    <string name="menu_description" gender="unknown">Мәзір</string>
     <string name="state_on_description" gender="unknown">қосулы</string>
     <string name="state_off_description" gender="unknown">өшірулі</string>
 </resources>

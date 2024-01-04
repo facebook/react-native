@@ -12,9 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Point;
@@ -53,7 +51,6 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSPointerDispatcher;
@@ -62,6 +59,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -94,7 +92,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mAppProperties;
-  private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag =
@@ -452,14 +449,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     startReactApplication(reactInstanceManager, moduleName, null);
   }
 
-  /** {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle, String)} */
-  public void startReactApplication(
-      ReactInstanceManager reactInstanceManager,
-      String moduleName,
-      @Nullable Bundle initialProperties) {
-    startReactApplication(reactInstanceManager, moduleName, initialProperties, null);
-  }
-
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
@@ -470,8 +459,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle initialProperties,
-      @Nullable String initialUITemplate) {
+      @Nullable Bundle initialProperties) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
     try {
       UiThreadUtil.assertOnUiThread();
@@ -486,7 +474,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
-      mInitialUITemplate = initialUITemplate;
 
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
@@ -611,7 +598,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onStage(int stage) {
+  public void onStage(@ReactStage int stage) {
     switch (stage) {
       case ReactStage.ON_ATTACH_TO_INSTANCE:
         onAttachedToReactInstance();
@@ -649,11 +636,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   public @Nullable Bundle getAppProperties() {
     return mAppProperties;
-  }
-
-  @Override
-  public @Nullable String getInitialUITemplate() {
-    return mInitialUITemplate;
   }
 
   @ThreadConfined(UI)
@@ -872,14 +854,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    private Activity getActivity() {
-      Context context = getContext();
-      while (!(context instanceof Activity) && context instanceof ContextWrapper) {
-        context = ((ContextWrapper) context).getBaseContext();
-      }
-      return (Activity) context;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
@@ -897,7 +871,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
-          int softInputMode = getActivity().getWindow().getAttributes().softInputMode;
+          ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
+          Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
+
+          int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height

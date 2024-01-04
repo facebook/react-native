@@ -25,18 +25,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * React package supporting lazy creation of native modules.
- *
- * <p>TODO(t11394819): Make this default and deprecate ReactPackage
- */
+/** React package supporting lazy creation of native modules. */
+@Deprecated(since = "This class is deprecated, please use BaseReactPackage instead.")
 public abstract class LazyReactPackage implements ReactPackage {
-
-  @Deprecated
-  public static ReactModuleInfoProvider getReactModuleInfoProviderViaReflection(
-      LazyReactPackage lazyReactPackage) {
-    return Collections::emptyMap;
-  }
 
   /**
    * We return an iterable

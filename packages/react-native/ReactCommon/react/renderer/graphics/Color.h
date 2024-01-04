@@ -25,9 +25,7 @@ namespace facebook::react {
  */
 class SharedColor {
  public:
-  static const Color UndefinedColor = HostPlatformColor::UndefinedColor;
-
-  SharedColor() : color_(UndefinedColor) {}
+  SharedColor() : color_(HostPlatformColor::UndefinedColor) {}
 
   SharedColor(Color color) : color_(color) {}
 
@@ -44,7 +42,7 @@ class SharedColor {
   }
 
   operator bool() const {
-    return color_ != UndefinedColor;
+    return color_ != HostPlatformColor::UndefinedColor;
   }
 
  private:

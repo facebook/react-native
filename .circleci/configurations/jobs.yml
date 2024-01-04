@@ -250,9 +250,9 @@ jobs:
     executor: reactnativeandroid-xlarge
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     steps:
       - checkout
@@ -286,7 +286,6 @@ jobs:
             - packages/react-native/ReactAndroid/build/
             - packages/react-native/ReactAndroid/hermes-engine/.cxx/
             - packages/react-native/ReactAndroid/hermes-engine/build/
-            - packages/react-native/ReactAndroid/flipper-integration/build/
             - packages/react-native/ReactAndroid/src/main/jni/prebuilt/
             - packages/react-native-gradle-plugin/.gradle/
             - packages/react-native-gradle-plugin/build/
@@ -387,7 +386,6 @@ jobs:
   #    JOBS: Test iOS Template
   # -------------------------
   test_ios_template:
-    executor: reactnativeios
     parameters:
       flavor:
         default: "Debug"
@@ -404,11 +402,6 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
-      flipper:
-        default: "WithFlipper"
-        description: Whether Flipper is enabled. Must be one of "WithFlipper", "WithoutFlipper".
-        type: enum
-        enum: ["WithFlipper", "WithoutFlipper"]
       use_frameworks:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
@@ -430,6 +423,11 @@ jobs:
       cocoapods_cache_key:
         type: string
         default: *template_cocoapods_cache_key
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -466,7 +464,7 @@ jobs:
           podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
           steps:
             - run:
-                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
+                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
                 command: |
                   cd /tmp/$PROJECT_NAME/ios
 
@@ -476,10 +474,6 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
-                  fi
-
-                  if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
-                    export NO_FLIPPER=1
                   fi
 
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
@@ -502,7 +496,7 @@ jobs:
   #    JOBS: Test iOS RNTester
   # -------------------------
   test_ios_rntester:
-    executor: reactnativeios
+
     parameters:
       jsengine:
         default: "Hermes"
@@ -527,6 +521,11 @@ jobs:
         description: whether unit tests should run or not.
         default: false
         type: boolean
+      executor:
+        description: The executor to use
+        default: reactnativeios
+        type: string
+    executor: << parameters.executor >>
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -562,7 +561,6 @@ jobs:
                         fi
 
                         if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                          export NO_FLIPPER=1
                           export USE_FRAMEWORKS=dynamic
                         fi
 
@@ -621,7 +619,7 @@ jobs:
       - run:
           name: Install Node JS
           # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs-lts
+          command: choco install nodejs --version=18.18.0 --allow-downgrade
 
       # Setup Dependencies
       - run:
@@ -681,7 +679,16 @@ jobs:
             apt update
 
             apt install -y wget git curl jq
-            curl -sL https://deb.nodesource.com/setup_18.x | bash -
+
+            apt-get update
+            apt-get install -y ca-certificates curl gnupg
+            mkdir -p /etc/apt/keyrings
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+            NODE_MAJOR=18
+            echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+            apt-get update
+
             apt install -y nodejs
             npm install --global yarn
       - checkout
@@ -888,6 +895,22 @@ jobs:
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
             mv build_"$SLICE" "$FINAL_PATH"
+
+            # check whether everything is there
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework" ]]; then
+              echo "Successfully built hermes.framework for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework for $SLICE in $FLAVOR"
+              exit 1
+            fi
+
+            if [[ -d "$FINAL_PATH/API/hermes/hermes.framework.dSYM" ]]; then
+              echo "Successfully built hermes.framework.dSYM for $SLICE in $FLAVOR"
+            else
+              echo "Failed to built hermes.framework.dSYM for $SLICE in $FLAVOR"
+              echo "Please try again"
+              exit 1
+            fi
       - save_cache:
           key: << parameters.slice_base_cache_key >>-<< parameters.slice >>-<< parameters.flavor >>
           paths:
@@ -1159,9 +1182,9 @@ jobs:
   build_npm_package:
     parameters:
       release_type:
-        description: The type of release to build. Must be one of "nightly", "release", "dry-run".
+        description: The type of release to build. Must be one of "nightly", "release", "dry-run", or "prealpha".
         type: enum
-        enum: ["nightly", "release", "dry-run"]
+        enum: ["nightly", "release", "dry-run", "prealpha"]
         default: "dry-run"
     executor: reactnativeandroid-xlarge
     environment:
@@ -1201,7 +1224,7 @@ jobs:
       - attach_workspace:
           at: .
 
-      # START: Stables and nightlies
+      # START: Stables, nightlies and prealphas
       # This conditional step sets up the necessary credentials for publishing react-native to npm.
       - when:
           condition:
@@ -1210,7 +1233,7 @@ jobs:
               - equal: [ "nightly", << parameters.release_type >> ]
           steps:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      # END: Stables and nightlies
+      # END: Stables, prealpha and nightlies
 
       - with_gradle_cache:
           steps:
@@ -1287,19 +1310,6 @@ jobs:
           name: Poll Maven for Artifacts
           command: |
             node scripts/circleci/poll-maven.js
-
-
-  # -------------------------
-  #    JOBS: Nightly
-  # -------------------------
-  nightly_job:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - run:
-          name: Nightly
-          command: |
-            echo "Nightly build run"
 
   find_and_publish_bumped_packages:
     executor: nodelts

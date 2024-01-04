@@ -16,7 +16,7 @@ import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ForwardingDrawable;
 import javax.annotation.Nullable;
 
-public class ReactImageDownloadListener<INFO> extends ForwardingDrawable
+class ReactImageDownloadListener<INFO> extends ForwardingDrawable
     implements ControllerListener<INFO> {
 
   private static final int MAX_LEVEL = 10000;

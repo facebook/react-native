@@ -34,15 +34,15 @@ namespace chrome {
 class ConnectionDemux {
  public:
   explicit ConnectionDemux(
-      facebook::react::jsinspector_modern::IInspector &inspector);
+      facebook::react::jsinspector_modern::IInspector& inspector);
   ~ConnectionDemux();
 
-  ConnectionDemux(const ConnectionDemux &) = delete;
-  ConnectionDemux &operator=(const ConnectionDemux &) = delete;
+  ConnectionDemux(const ConnectionDemux&) = delete;
+  ConnectionDemux& operator=(const ConnectionDemux&) = delete;
 
   DebugSessionToken enableDebugging(
       std::unique_ptr<RuntimeAdapter> adapter,
-      const std::string &title);
+      const std::string& title);
   void disableDebugging(DebugSessionToken session);
 
  private:
@@ -50,7 +50,7 @@ class ConnectionDemux {
       std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn);
   void removePage(int pageId);
 
-  facebook::react::jsinspector_modern::IInspector &globalInspector_;
+  facebook::react::jsinspector_modern::IInspector& globalInspector_;
 
   std::mutex mutex_;
   std::unordered_map<

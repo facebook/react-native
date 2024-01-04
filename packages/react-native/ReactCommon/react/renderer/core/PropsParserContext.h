@@ -29,12 +29,6 @@ struct PropsParserContext {
 
   const SurfaceId surfaceId;
   const ContextContainer& contextContainer;
-
-  // Temporary feature flags
-  bool treatAutoAsYGValueUndefined() const;
-
- private:
-  mutable std::optional<bool> treatAutoAsYGValueUndefined_;
 };
 
 } // namespace facebook::react

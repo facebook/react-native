@@ -12,6 +12,7 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
 
@@ -32,6 +33,7 @@ class TextLayoutManager {
   TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
+      const TextLayoutContext& layoutContext,
       LayoutConstraints layoutConstraints,
       std::shared_ptr<void> hostTextStorage) const;
 

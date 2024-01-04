@@ -18,8 +18,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     const PropsParserContext &context,
@@ -40,8 +39,7 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     arrayOfArrayOfObject(convertRawProp(context, rawProps, \\"arrayOfArrayOfObject\\", sourceProps.arrayOfArrayOfObject, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -62,8 +60,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     const PropsParserContext &context,
@@ -73,8 +70,7 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     nativePrimitives(convertRawProp(context, rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -95,8 +91,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
     const PropsParserContext &context,
@@ -106,8 +101,7 @@ BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -128,8 +122,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     const PropsParserContext &context,
@@ -139,8 +132,7 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     tintColor(convertRawProp(context, rawProps, \\"tintColor\\", sourceProps.tintColor, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -161,8 +153,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CommandNativeComponentProps::CommandNativeComponentProps(
     const PropsParserContext &context,
@@ -172,8 +163,7 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -194,8 +184,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CommandNativeComponentProps::CommandNativeComponentProps(
     const PropsParserContext &context,
@@ -205,8 +194,7 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -228,8 +216,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 DimensionPropNativeComponentProps::DimensionPropNativeComponentProps(
     const PropsParserContext &context,
@@ -239,8 +226,7 @@ DimensionPropNativeComponentProps::DimensionPropNativeComponentProps(
     marginBack(convertRawProp(context, rawProps, \\"marginBack\\", sourceProps.marginBack, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -261,8 +247,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 DoublePropNativeComponentProps::DoublePropNativeComponentProps(
     const PropsParserContext &context,
@@ -277,8 +262,7 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
     blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -299,8 +283,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
     const PropsParserContext &context,
@@ -310,8 +293,7 @@ EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -332,8 +314,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventsNativeComponentProps::EventsNativeComponentProps(
     const PropsParserContext &context,
@@ -343,8 +324,7 @@ EventsNativeComponentProps::EventsNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -365,8 +345,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const PropsParserContext &context,
@@ -376,8 +355,7 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -398,8 +376,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ExcludedAndroidComponentProps::ExcludedAndroidComponentProps(
     const PropsParserContext &context,
@@ -409,8 +386,7 @@ ExcludedAndroidComponentProps::ExcludedAndroidComponentProps(
     
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -431,8 +407,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
     const PropsParserContext &context,
@@ -442,8 +417,7 @@ ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
     
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -464,8 +438,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ExcludedIosComponentProps::ExcludedIosComponentProps(
     const PropsParserContext &context,
@@ -482,8 +455,7 @@ MultiFileIncludedNativeComponentProps::MultiFileIncludedNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -504,8 +476,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 FloatPropNativeComponentProps::FloatPropNativeComponentProps(
     const PropsParserContext &context,
@@ -520,8 +491,7 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
     blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -543,8 +513,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     const PropsParserContext &context,
@@ -554,8 +523,7 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -576,8 +544,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 InsetsPropNativeComponentProps::InsetsPropNativeComponentProps(
     const PropsParserContext &context,
@@ -587,8 +554,7 @@ InsetsPropNativeComponentProps::InsetsPropNativeComponentProps(
     contentInset(convertRawProp(context, rawProps, \\"contentInset\\", sourceProps.contentInset, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -609,8 +575,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
     const PropsParserContext &context,
@@ -620,8 +585,7 @@ Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
     maxInterval(convertRawProp(context, rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -642,8 +606,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     const PropsParserContext &context,
@@ -655,8 +618,7 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     progress3(convertRawProp(context, rawProps, \\"progress3\\", sourceProps.progress3, {10}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -677,8 +639,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const PropsParserContext &context,
@@ -688,8 +649,7 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -711,8 +671,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 MixedPropNativeComponentProps::MixedPropNativeComponentProps(
     const PropsParserContext &context,
@@ -722,8 +681,7 @@ MixedPropNativeComponentProps::MixedPropNativeComponentProps(
     mixedProp(convertRawProp(context, rawProps, \\"mixedProp\\", sourceProps.mixedProp, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -745,8 +703,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
     const PropsParserContext &context,
@@ -759,8 +716,7 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
     point(convertRawProp(context, rawProps, \\"point\\", sourceProps.point, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -781,8 +737,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
     const PropsParserContext &context,
@@ -792,8 +747,7 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
     
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -815,8 +769,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ObjectPropsProps::ObjectPropsProps(
     const PropsParserContext &context,
@@ -826,8 +779,7 @@ ObjectPropsProps::ObjectPropsProps(
     objectProp(convertRawProp(context, rawProps, \\"objectProp\\", sourceProps.objectProp, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -848,8 +800,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 PointPropNativeComponentProps::PointPropNativeComponentProps(
     const PropsParserContext &context,
@@ -859,8 +810,7 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
     startPoint(convertRawProp(context, rawProps, \\"startPoint\\", sourceProps.startPoint, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -881,8 +831,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
     const PropsParserContext &context,
@@ -892,8 +841,7 @@ StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
     alignment(convertRawProp(context, rawProps, \\"alignment\\", sourceProps.alignment, {StringEnumPropsNativeComponentAlignment::Center}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -914,8 +862,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 StringPropComponentProps::StringPropComponentProps(
     const PropsParserContext &context,
@@ -926,8 +873,7 @@ StringPropComponentProps::StringPropComponentProps(
     accessibilityRole(convertRawProp(context, rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -948,8 +894,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 MultiFile1NativeComponentProps::MultiFile1NativeComponentProps(
     const PropsParserContext &context,
@@ -966,8 +911,7 @@ MultiFile2NativeComponentProps::MultiFile2NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -988,8 +932,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 MultiComponent1NativeComponentProps::MultiComponent1NativeComponentProps(
     const PropsParserContext &context,
@@ -1006,8 +949,7 @@ MultiComponent2NativeComponentProps::MultiComponent2NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
       {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

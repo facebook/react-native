@@ -11,24 +11,24 @@
 'use strict';
 
 import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
+  ExtendsPropsShape,
   NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMemberType,
-  NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
   PropTypeAnnotation,
-  ExtendsPropsShape,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
-  ParserErrorCapturer,
-  TypeDeclarationMap,
-  PropAST,
   ASTNode,
+  ParserErrorCapturer,
+  PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
 
@@ -169,9 +169,11 @@ export interface Parser {
   /**
    * Given the content of a file, it returns an AST.
    * @parameter contents: the content of the file.
+   * @parameter filename: the name of the file, if available.
+   * @throws if there is a syntax error.
    * @returns: the AST of the file.
    */
-  getAst(contents: string): $FlowFixMe;
+  getAst(contents: string, filename?: ?string): $FlowFixMe;
 
   /**
    * Given a FunctionTypeAnnotation, it returns an array of its parameters.

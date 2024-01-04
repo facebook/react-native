@@ -234,6 +234,10 @@ export const Commands = {
 
     hotspotUpdate(ref, x, y) {
         dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+    },
+
+    addItems(ref, items) {
+        dispatchCommand(ref, \\"addItems\\", [items]);
     }
 };
 ",

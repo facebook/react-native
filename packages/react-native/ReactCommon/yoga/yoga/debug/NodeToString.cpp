@@ -9,8 +9,6 @@
 
 #include <stdarg.h>
 
-#include <yoga/YGEnums.h>
-
 #include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
 #include <yoga/numeric/Comparison.h>
@@ -21,12 +19,6 @@ static void indent(std::string& base, uint32_t level) {
   for (uint32_t i = 0; i < level; ++i) {
     base.append("  ");
   }
-}
-
-static bool areFourValuesEqual(const Style::Edges& four) {
-  return yoga::inexactEquals(four[0], four[1]) &&
-      yoga::inexactEquals(four[0], four[2]) &&
-      yoga::inexactEquals(four[0], four[3]);
 }
 
 static void appendFormattedString(std::string& str, const char* fmt, ...) {
@@ -46,7 +38,7 @@ static void appendFloatOptionalIfDefined(
     std::string& base,
     const std::string key,
     const FloatOptional num) {
-  if (!num.isUndefined()) {
+  if (num.isDefined()) {
     appendFormattedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
 }
@@ -54,14 +46,18 @@ static void appendFloatOptionalIfDefined(
 static void appendNumberIfNotUndefined(
     std::string& base,
     const std::string key,
-    const YGValue number) {
-  if (number.unit != YGUnitUndefined) {
-    if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Undefined) {
+    if (number.unit() == Unit::Auto) {
       base.append(key + ": auto; ");
     } else {
-      std::string unit = number.unit == YGUnitPoint ? "px" : "%%";
+      std::string unit = number.unit() == Unit::Point ? "px" : "%%";
       appendFormattedString(
-          base, "%s: %g%s; ", key.c_str(), number.value, unit.c_str());
+          base,
+          "%s: %g%s; ",
+          key.c_str(),
+          number.value().unwrap(),
+          unit.c_str());
     }
   }
 }
@@ -69,8 +65,8 @@ static void appendNumberIfNotUndefined(
 static void appendNumberIfNotAuto(
     std::string& base,
     const std::string& key,
-    const YGValue number) {
-  if (number.unit != YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Auto) {
     appendNumberIfNotUndefined(base, key, number);
   }
 }
@@ -78,39 +74,21 @@ static void appendNumberIfNotAuto(
 static void appendNumberIfNotZero(
     std::string& base,
     const std::string& str,
-    const YGValue number) {
-  if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() == Unit::Auto) {
     base.append(str + ": auto; ");
-  } else if (!yoga::inexactEquals(number.value, 0)) {
+  } else if (!yoga::inexactEquals(number.value().unwrap(), 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }
 
-static void appendEdges(
-    std::string& base,
-    const std::string& key,
-    const Style::Edges& edges) {
-  if (areFourValuesEqual(edges)) {
-    auto edgeValue = yoga::Node::computeEdgeValueForColumn(edges, YGEdgeLeft);
-    appendNumberIfNotUndefined(base, key, edgeValue);
-  } else {
-    for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
-      std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
-      appendNumberIfNotZero(base, str, edges[static_cast<size_t>(edge)]);
-    }
+template <auto Field>
+static void
+appendEdges(std::string& base, const std::string& key, const Style& style) {
+  for (auto edge : ordinals<Edge>()) {
+    std::string str = key + "-" + toString(edge);
+    appendNumberIfNotZero(base, str, (style.*Field)(edge));
   }
-}
-
-static void appendEdgeIfNotUndefined(
-    std::string& base,
-    const std::string& str,
-    const Style::Edges& edges,
-    const YGEdge edge) {
-  // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
-  auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
-      ? yoga::Node::computeEdgeValueForRow(edges, edge, edge)
-      : yoga::Node::computeEdgeValueForColumn(edges, edge);
-  appendNumberIfNotUndefined(base, str, value);
 }
 
 void nodeToString(
@@ -128,9 +106,9 @@ void nodeToString(
     appendFormattedString(
         str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
-        str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
+        str, "top: %g; ", node->getLayout().position(Edge::Top));
     appendFormattedString(
-        str, "left: %g;", node->getLayout().position[YGEdgeLeft]);
+        str, "left: %g;", node->getLayout().position(Edge::Left));
     appendFormattedString(str, "\" ");
   }
 
@@ -173,11 +151,11 @@ void nodeToString(
     if (style.display() != yoga::Node{}.getStyle().display()) {
       appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
-    appendEdges(str, "margin", style.margin());
-    appendEdges(str, "padding", style.padding());
-    appendEdges(str, "border", style.border());
+    appendEdges<&Style::margin>(str, "margin", style);
+    appendEdges<&Style::padding>(str, "padding", style);
+    appendEdges<&Style::border>(str, "border", style);
 
-    if (!style.gap(Gutter::All).isUndefined()) {
+    if (style.gap(Gutter::All).isDefined()) {
       appendNumberIfNotUndefined(str, "gap", style.gap(Gutter::All));
     } else {
       appendNumberIfNotUndefined(str, "column-gap", style.gap(Gutter::Column));
@@ -200,10 +178,7 @@ void nodeToString(
           str, "position: %s; ", toString(style.positionType()));
     }
 
-    appendEdgeIfNotUndefined(str, "left", style.position(), YGEdgeLeft);
-    appendEdgeIfNotUndefined(str, "right", style.position(), YGEdgeRight);
-    appendEdgeIfNotUndefined(str, "top", style.position(), YGEdgeTop);
-    appendEdgeIfNotUndefined(str, "bottom", style.position(), YGEdgeBottom);
+    appendEdges<&Style::position>(str, "position", style);
     appendFormattedString(str, "\" ");
 
     if (node->hasMeasureFunc()) {

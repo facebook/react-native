@@ -14,7 +14,6 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerInteropComponentDescriptor.h>
-#include <rncore.h>
 
 namespace facebook {
 namespace react {
@@ -50,7 +49,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
   if (module != nullptr) {
     return module;
   };
-  return rncore_ModuleProvider(name, params);
+  return nullptr;
 }
 
 } // namespace react

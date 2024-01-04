@@ -1,6 +1,6 @@
 {
   "name": "@react-native/typescript-config",
-  "version": "0.73.0",
+  "version": "0.74.0",
   "description": "Default TypeScript configuration for React Native apps",
   "license": "MIT",
   "repository": {
@@ -9,7 +9,11 @@
     "directory": "packages/typescript-config"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/typescript-config#readme",
-  "keywords": ["typescript", "tsconfig", "react-native"],
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "main": "tsconfig.json"
 }

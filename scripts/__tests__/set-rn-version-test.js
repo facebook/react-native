@@ -134,4 +134,68 @@ describe('set-rn-version', () => {
       'react-native': version,
     });
   });
+
+  it('should set prealpha version', () => {
+    catMock.mockImplementation(path => {
+      if (path === 'packages/react-native/package.json') {
+        return '{"name": "myPackage", "version": 2, "dependencies": {"@react-native/package-a": "prealpha", "@react-native/package-b": "^0.73.0"}}';
+      } else if (
+        path === 'scripts/versiontemplates/ReactNativeVersion.java.template' ||
+        path === 'scripts/versiontemplates/RCTVersion.m.template' ||
+        path === 'scripts/versiontemplates/ReactNativeVersion.h.template' ||
+        path === 'scripts/versiontemplates/ReactNativeVersion.js.template'
+      ) {
+        return '{major: ${major}, minor: ${minor}, patch: ${patch}, prerelease: ${prerelease}}';
+      } else {
+        throw new Error(`Invalid path passed for package dir. Path: ${path}`);
+      }
+    });
+
+    sedMock.mockReturnValueOnce({code: 0});
+
+    const version = '0.0.0-prealpha-2023100415';
+    const nightlyVersions = {
+      '@react-native/package-a': version,
+    };
+    setReactNativeVersion(version, nightlyVersions, 'prealpha');
+
+    expect(sedMock).toHaveBeenCalledWith(
+      '-i',
+      /^VERSION_NAME=.*/,
+      `VERSION_NAME=${version}`,
+      'packages/react-native/ReactAndroid/gradle.properties',
+    );
+    expect(writeFileSyncMock.mock.calls.length).toBe(5);
+    expect(writeFileSyncMock.mock.calls[0][0]).toBe(
+      'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+    );
+    expect(writeFileSyncMock.mock.calls[0][1]).toBe(
+      '{major: 0, minor: 0, patch: 0, prerelease: "prealpha-2023100415"}',
+    );
+    expect(writeFileSyncMock.mock.calls[1][0]).toBe(
+      'packages/react-native/React/Base/RCTVersion.m',
+    );
+    expect(writeFileSyncMock.mock.calls[2][0]).toBe(
+      'packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h',
+    );
+    expect(writeFileSyncMock.mock.calls[3][0]).toBe(
+      'packages/react-native/Libraries/Core/ReactNativeVersion.js',
+    );
+    expect(writeFileSyncMock.mock.calls[4][0]).toBe(
+      'packages/react-native/package.json',
+    );
+    expect(writeFileSyncMock.mock.calls[4][1]).toBe(`{
+  "name": "myPackage",
+  "version": "${version}",
+  "dependencies": {
+    "@react-native/package-a": "0.0.0-prealpha-2023100415",
+    "@react-native/package-b": "^0.73.0"
+  }
+}`);
+
+    expect(updateTemplatePackageMock).toHaveBeenCalledWith({
+      '@react-native/package-a': '0.0.0-prealpha-2023100415',
+      'react-native': version,
+    });
+  });
 });

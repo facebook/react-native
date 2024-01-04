@@ -9,6 +9,7 @@ package com.facebook.react.runtime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -134,9 +135,11 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
       public View createRootView(String appKey) {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
-          ReactSurfaceImpl reactSurface =
-              ReactSurfaceImpl.createWithView(currentActivity, appKey, null);
+          Bundle launchOptions = new Bundle();
+          launchOptions.putBoolean("concurrentRoot", true);
 
+          ReactSurfaceImpl reactSurface =
+              ReactSurfaceImpl.createWithView(currentActivity, appKey, launchOptions);
           reactSurface.attach(reactHost);
           reactSurface.start();
 

@@ -26,7 +26,7 @@ namespace {
 class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
+      "Lcom/facebook/react/internal/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
 
   JavaInteropTurboModule::MethodDescriptor toMethodDescriptor() {
     return JavaInteropTurboModule::MethodDescriptor{
@@ -128,14 +128,15 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-TurboModuleProviderFunctionType
-TurboModuleManager::createTurboModuleProvider() {
+TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
+    bool enableSyncVoidMethods) {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
           nativeMethodCallInvoker_ =
               std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
-          javaPart_ = jni::make_weak(javaPart_)](
+          javaPart_ = jni::make_weak(javaPart_),
+          enableSyncVoidMethods](
              const std::string& name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
@@ -196,7 +197,8 @@ TurboModuleManager::createTurboModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -270,7 +272,8 @@ TurboModuleManager::createLegacyModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeMethodCallInvoker = nativeMethodCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker,
+          .shouldVoidMethodsExecuteSync = false};
 
       static auto getMethodDescriptorsFromModule =
           javaPart->getClass()
@@ -300,21 +303,27 @@ TurboModuleManager::createLegacyModuleProvider() {
   };
 }
 
-void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
+void TurboModuleManager::installJSIBindings(
+    bool shouldCreateLegacyModules,
+    bool enableSyncVoidMethods) {
   if (!jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
   bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
-  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime& runtime) {
+  runtimeExecutor_([this, isInteropLayerDisabled, enableSyncVoidMethods](
+                       jsi::Runtime& runtime) {
     if (isInteropLayerDisabled) {
-      TurboModuleBinding::install(runtime, createTurboModuleProvider());
+      TurboModuleBinding::install(
+          runtime, createTurboModuleProvider(enableSyncVoidMethods));
       return;
     }
 
     TurboModuleBinding::install(
-        runtime, createTurboModuleProvider(), createLegacyModuleProvider());
+        runtime,
+        createTurboModuleProvider(enableSyncVoidMethods),
+        createLegacyModuleProvider());
   });
 }
 

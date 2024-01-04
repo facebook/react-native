@@ -31,6 +31,7 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/rn-tester/e2e',
   ],

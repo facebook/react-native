@@ -7,16 +7,19 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
-
 const {PUBLISH_PACKAGES_TAG} = require('../constants');
-const forEachPackage = require('../for-each-package');
 const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
+const forEachPackage = require('../for-each-package');
+const {spawnSync} = require('child_process');
 
 jest.mock('child_process', () => ({spawnSync: jest.fn()}));
 jest.mock('../for-each-package', () => jest.fn());
 
 describe('findAndPublishAllBumpedPackages', () => {
+  beforeEach(() => {
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
   it('throws an error if updated version is not 0.x.y', () => {
     const mockedPackageNewVersion = '1.0.0';
 

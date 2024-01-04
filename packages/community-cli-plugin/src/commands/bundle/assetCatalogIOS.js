@@ -11,16 +11,16 @@
 
 import type {AssetData} from 'metro/src/Assets';
 
-import path from 'path';
-import fs from 'fs';
 import assetPathUtils from './assetPathUtils';
+import fs from 'fs';
+import path from 'path';
 
 export function cleanAssetCatalog(catalogDir: string): void {
   const files = fs
     .readdirSync(catalogDir)
     .filter(file => file.endsWith('.imageset'));
   for (const file of files) {
-    fs.rmSync(path.join(catalogDir, file));
+    fs.rmSync(path.join(catalogDir, file), {recursive: true, force: true});
   }
 }
 

@@ -126,6 +126,10 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       return getCounter(FABRIC_LAYOUT_AFFECTED_NODES);
     }
 
+    public long getAffectedLayoutNodesCountTime() {
+      return getTimestamp(FABRIC_LAYOUT_AFFECTED_NODES);
+    }
+
     public long getBatchExecutionStart() {
       return getTimestamp(FABRIC_BATCH_EXECUTION_START);
     }

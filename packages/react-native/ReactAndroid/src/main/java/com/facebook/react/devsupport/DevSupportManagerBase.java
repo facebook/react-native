@@ -33,6 +33,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultJSExceptionHandler;
+import com.facebook.react.bridge.InspectorFlags;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -40,6 +41,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
+import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.SurfaceDelegate;
@@ -112,8 +114,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
   private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
 
-  private final InspectorPackagerConnection.BundleStatus mBundleStatus;
-
   private @Nullable final Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
   private @Nullable final SurfaceDelegateFactory mSurfaceDelegateFactory;
@@ -133,12 +133,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
-    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
             mDevSettings,
             mApplicationContext.getPackageName(),
-            () -> mBundleStatus,
             mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
@@ -210,13 +208,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       cause = cause.getCause();
     }
 
-    if (e instanceof JSException) {
+    if (e instanceof JavascriptException) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      String stack = ((JSException) e).getStack();
-      message.append("\n\n").append(stack);
-
-      // TODO #11638796: convert the stack into something useful
-      showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      showNewError(
+          e.getMessage().toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
     } else {
       showNewJavaError(message.toString(), e);
     }
@@ -365,15 +360,16 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           }
         });
 
-    if (mDevSettings.isDeviceDebugEnabled()) {
-      // On-device JS debugging (CDP). Render action to open debugger frontend.
+    if (mDevSettings.isRemoteJSDebugEnabled()) {
+      // [Deprecated in React Native 0.73] Remote JS debugging. Handle reload
+      // via external JS executor. This capability will be removed in a future
+      // release.
+      mDevSettings.setRemoteJSDebugEnabled(false);
+      handleReloadJS();
+    }
 
-      // Reset the old debugger setting so no one gets stuck.
-      // TODO: Remove in a few weeks.
-      if (mDevSettings.isRemoteJSDebugEnabled()) {
-        mDevSettings.setRemoteJSDebugEnabled(false);
-        handleReloadJS();
-      }
+    if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
+      // On-device JS debugging (CDP). Render action to open debugger frontend.
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
           () ->
@@ -415,9 +411,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     options.put(
-        mDevSettings.isElementInspectorEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_inspector_stop)
-            : mApplicationContext.getString(R.string.catalyst_inspector),
+        mApplicationContext.getString(R.string.catalyst_inspector_toggle),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -695,7 +689,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mDevServerHelper;
   }
 
-  protected ReactInstanceDevHelper getReactInstanceDevHelper() {
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceDevHelper() {
     return mReactInstanceDevHelper;
   }
 
@@ -885,10 +883,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onSuccess() {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = true;
-              mBundleStatus.updateTimestamp = System.currentTimeMillis();
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onSuccess();
             }
@@ -910,9 +904,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void onFailure(final Exception cause) {
             hideDevLoadingView();
-            synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSuccess = false;
-            }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);
             }
@@ -1042,8 +1033,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void onPackagerReloadCommand() {
-              // Disable debugger to resume the JsVM & avoid thread locks while reloading
-              mDevServerHelper.disableDebugger();
+              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+                // Disable debugger to resume the JsVM & avoid thread locks while reloading
+                mDevServerHelper.disableDebugger();
+              }
               UiThreadUtil.runOnUiThread(() -> handleReloadJS());
             }
 

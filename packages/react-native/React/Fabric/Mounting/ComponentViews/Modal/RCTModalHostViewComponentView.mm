@@ -110,8 +110,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ModalHostViewProps>();
-    _props = defaultProps;
+    _props = ModalHostViewShadowNode::defaultSharedProps();
     _shouldAnimatePresentation = YES;
 
     _isPresented = NO;

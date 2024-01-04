@@ -36,6 +36,9 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       const RawProps& rawProps);
   virtual ~Props() = default;
 
+  Props(const Props& other) = delete;
+  Props& operator=(const Props& other) = delete;
+
   /**
    * Set a prop value via iteration (see enableIterator above).
    * If setProp is defined for a particular props struct, it /must/

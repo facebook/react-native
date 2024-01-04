@@ -69,7 +69,7 @@ struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
   bool busy{false};
-  bool expanded{false};
+  std::optional<bool> expanded{std::nullopt};
   enum { Unchecked, Checked, Mixed, None } checked{None};
 };
 

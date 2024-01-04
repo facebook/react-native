@@ -21,20 +21,15 @@ enum class ExperimentalFeature : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<ExperimentalFeature>() {
+constexpr int32_t ordinalCount<ExperimentalFeature>() {
   return 2;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<ExperimentalFeature>() {
-  return 1;
-} 
-
-constexpr inline ExperimentalFeature scopedEnum(YGExperimentalFeature unscoped) {
+constexpr ExperimentalFeature scopedEnum(YGExperimentalFeature unscoped) {
   return static_cast<ExperimentalFeature>(unscoped);
 }
 
-constexpr inline YGExperimentalFeature unscopedEnum(ExperimentalFeature scoped) {
+constexpr YGExperimentalFeature unscopedEnum(ExperimentalFeature scoped) {
   return static_cast<YGExperimentalFeature>(scoped);
 }
 

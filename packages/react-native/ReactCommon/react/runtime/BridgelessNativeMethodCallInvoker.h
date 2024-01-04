@@ -16,8 +16,9 @@ class BridgelessNativeMethodCallInvoker : public NativeMethodCallInvoker {
  public:
   explicit BridgelessNativeMethodCallInvoker(
       std::shared_ptr<MessageQueueThread> messageQueueThread);
-  void invokeAsync(const std::string& methodName, std::function<void()>&& func)
-      override;
+  void invokeAsync(
+      const std::string& methodName,
+      std::function<void()>&& func) noexcept override;
   void invokeSync(const std::string& methodName, std::function<void()>&& func)
       override;
 

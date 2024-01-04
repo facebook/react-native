@@ -120,12 +120,12 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
         assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DNDEBUG")
-        assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
+        assert_nil(react_core_release_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(yoga_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_nil(yoga_release_config.build_settings["OTHER_CFLAGS"])
     end
 
     # =================================== #
@@ -140,7 +140,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1")
         assert_equal(
@@ -163,6 +163,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-debug" },
                 { :dependency_name => "React-ImageManager" },
                 { :dependency_name => "React-rendererdebug" },
+                { :dependency_name => "DoubleConversion" },
                 { :dependency_name => "hermes-engine" }
         ])
     end
@@ -181,14 +182,30 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
                 { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
-                { :dependency_name => "glog" }
+                { :dependency_name => "glog" },
+                { :dependency_name => "React-RCTFabric" },
+                { :dependency_name => "React-Codegen" },
+                { :dependency_name => "RCTRequired" },
+                { :dependency_name => "RCTTypeSafety" },
+                { :dependency_name => "ReactCommon/turbomodule/bridging" },
+                { :dependency_name => "ReactCommon/turbomodule/core" },
+                { :dependency_name => "React-NativeModulesApple" },
+                { :dependency_name => "Yoga" },
+                { :dependency_name => "React-Fabric" },
+                { :dependency_name => "React-graphics" },
+                { :dependency_name => "React-utils" },
+                { :dependency_name => "React-debug" },
+                { :dependency_name => "React-ImageManager" },
+                { :dependency_name => "React-rendererdebug" },
+                { :dependency_name => "DoubleConversion" },
+                { :dependency_name => "hermes-engine" }
             ]
         )
     end
@@ -284,7 +301,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = true
         ENV['RCT_NEW_ARCH_ENABLED'] = nil
 
@@ -295,7 +312,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnv1_returnTrueWithWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = true
         ENV['RCT_NEW_ARCH_ENABLED'] = "1"
 
@@ -308,7 +325,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
 
     def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalseAndEnv0_returnTrueWithWarning
-        version = '1.0.0-prealpha.0'
+        version = '0.0.0-prealpha.0'
         new_arch_enabled = false
         ENV['RCT_NEW_ARCH_ENABLED'] = "0"
 
@@ -320,7 +337,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
-        version = '1.0.0-prealpha-0'
+        version = '0.0.0-prealpha-0'
         new_arch_enabled = false
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
@@ -329,7 +346,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     end
 
     def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
-        version = '1.0.0-prealpha0'
+        version = '0.0.0-prealpha0'
         new_arch_enabled = false
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
@@ -343,7 +360,8 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
 
-        assert_equal("1", isEnabled)
+        assert_equal("0", isEnabled)
+        assert_equal([], Pod::UI.collected_warns);
     end
 
     # =================================== #

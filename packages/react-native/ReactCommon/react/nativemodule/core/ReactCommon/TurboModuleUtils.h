@@ -37,6 +37,7 @@ jsi::Value createPromiseAsJSIValue(
     jsi::Runtime& rt,
     PromiseSetupFunctionType&& func);
 
+// Deprecated. Use AsyncCallback instead.
 class RAIICallbackWrapperDestroyer {
  public:
   RAIICallbackWrapperDestroyer(std::weak_ptr<CallbackWrapper> callbackWrapper)

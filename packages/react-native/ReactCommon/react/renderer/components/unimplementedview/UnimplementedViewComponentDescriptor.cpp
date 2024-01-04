@@ -21,19 +21,19 @@ ComponentName UnimplementedViewComponentDescriptor::getComponentName() const {
 Props::Shared UnimplementedViewComponentDescriptor::cloneProps(
     const PropsParserContext& context,
     const Props::Shared& props,
-    const RawProps& rawProps) const {
+    RawProps rawProps) const {
   auto clonedProps =
       ConcreteComponentDescriptor<UnimplementedViewShadowNode>::cloneProps(
-          context, props, rawProps);
+          context, props, std::move(rawProps));
 
   // We have to clone `Props` object one more time to make sure that we have
   // an unshared (and non-`const`) copy of it which we can mutate.
   RawProps emptyRawProps{};
-  emptyRawProps.parse(rawPropsParser_, context);
+  emptyRawProps.parse(rawPropsParser_);
   auto unimplementedViewProps = std::make_shared<UnimplementedViewProps>(
       context,
       static_cast<const UnimplementedViewProps&>(*clonedProps),
-      emptyRawProps);
+      std::move(emptyRawProps));
 
   unimplementedViewProps->setComponentName(getComponentName());
   return unimplementedViewProps;

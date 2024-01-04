@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -14,8 +15,8 @@
 #include <yoga/YGMacros.h>
 #include <yoga/YGValue.h>
 
-#include <yoga/bits/BitCast.h>
 #include <yoga/numeric/Comparison.h>
+#include <yoga/style/StyleLength.h>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -42,44 +43,13 @@ namespace facebook::yoga {
 //            0x40000000         0x7f7fffff
 // - Zero is supported, negative zero is not
 // - values outside of the representable range are clamped
-class YG_EXPORT CompactValue {
+class CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
  public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
-
-  template <YGUnit Unit>
-  static CompactValue of(float value) noexcept {
-    if (value == 0.0f || (value < LOWER_BOUND && value > -LOWER_BOUND)) {
-      constexpr auto zero =
-          Unit == YGUnitPercent ? ZERO_BITS_PERCENT : ZERO_BITS_POINT;
-      return {zero};
-    }
-
-    constexpr auto upperBound =
-        Unit == YGUnitPercent ? UPPER_BOUND_PERCENT : UPPER_BOUND_POINT;
-    if (value > upperBound || value < -upperBound) {
-      value = copysignf(upperBound, value);
-    }
-
-    uint32_t unitBit = Unit == YGUnitPercent ? PERCENT_BIT : 0;
-    auto data = yoga::bit_cast<uint32_t>(value);
-    data -= BIAS;
-    data |= unitBit;
-    return {data};
-  }
-
-  template <YGUnit Unit>
-  static CompactValue ofMaybe(float value) noexcept {
-    return std::isnan(value) || std::isinf(value) ? ofUndefined()
-                                                  : of<Unit>(value);
-  }
-
-  static constexpr CompactValue ofZero() noexcept {
-    return CompactValue{ZERO_BITS_POINT};
-  }
 
   static constexpr CompactValue ofUndefined() noexcept {
     return CompactValue{};
@@ -89,52 +59,58 @@ class YG_EXPORT CompactValue {
     return CompactValue{AUTO_BITS};
   }
 
-  constexpr CompactValue() noexcept : repr_(0x7FC00000) {}
+  constexpr CompactValue() noexcept = default;
 
-  CompactValue(const YGValue& x) noexcept : repr_(uint32_t{0}) {
-    switch (x.unit) {
-      case YGUnitUndefined:
+  explicit constexpr CompactValue(const StyleLength& x) noexcept {
+    switch (x.unit()) {
+      case Unit::Undefined:
         *this = ofUndefined();
         break;
-      case YGUnitAuto:
+      case Unit::Auto:
         *this = ofAuto();
         break;
-      case YGUnitPoint:
-        *this = of<YGUnitPoint>(x.value);
+      case Unit::Point:
+        *this = of<Unit::Point>(x.value().unwrap());
         break;
-      case YGUnitPercent:
-        *this = of<YGUnitPercent>(x.value);
+      case Unit::Percent:
+        *this = of<Unit::Percent>(x.value().unwrap());
         break;
     }
   }
 
-  operator YGValue() const noexcept {
-    switch (repr_) {
-      case AUTO_BITS:
-        return YGValueAuto;
-      case ZERO_BITS_POINT:
-        return YGValue{0.0f, YGUnitPoint};
-      case ZERO_BITS_PERCENT:
-        return YGValue{0.0f, YGUnitPercent};
+  explicit operator StyleLength() const noexcept {
+    if (repr_ == 0x7FC00000) {
+      return value::undefined();
     }
 
-    if (std::isnan(yoga::bit_cast<float>(repr_))) {
-      return YGValueUndefined;
+    switch (repr_) {
+      case AUTO_BITS:
+        return value::ofAuto();
+      case ZERO_BITS_POINT:
+        return value::points(0);
+      case ZERO_BITS_PERCENT:
+        return value::percent(0);
     }
 
     auto data = repr_;
     data &= ~PERCENT_BIT;
     data += BIAS;
 
-    return YGValue{
-        yoga::bit_cast<float>(data),
-        repr_ & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+    if (repr_ & 0x40000000) {
+      return value::percent(std::bit_cast<float>(data));
+    } else {
+      return value::points(std::bit_cast<float>(data));
+    }
   }
 
   bool isUndefined() const noexcept {
     return (
         repr_ != AUTO_BITS && repr_ != ZERO_BITS_POINT &&
-        repr_ != ZERO_BITS_PERCENT && std::isnan(yoga::bit_cast<float>(repr_)));
+        repr_ != ZERO_BITS_PERCENT && std::isnan(std::bit_cast<float>(repr_)));
+  }
+
+  bool isDefined() const noexcept {
+    return !isUndefined();
   }
 
   bool isAuto() const noexcept {
@@ -142,7 +118,28 @@ class YG_EXPORT CompactValue {
   }
 
  private:
-  uint32_t repr_;
+  template <Unit UnitT>
+  static CompactValue of(float value) noexcept {
+    if (value == 0.0f || (value < LOWER_BOUND && value > -LOWER_BOUND)) {
+      constexpr auto zero =
+          UnitT == Unit::Percent ? ZERO_BITS_PERCENT : ZERO_BITS_POINT;
+      return {zero};
+    }
+
+    constexpr auto upperBound =
+        UnitT == Unit::Percent ? UPPER_BOUND_PERCENT : UPPER_BOUND_POINT;
+    if (value > upperBound || value < -upperBound) {
+      value = copysignf(upperBound, value);
+    }
+
+    uint32_t unitBit = UnitT == Unit::Percent ? PERCENT_BIT : 0;
+    auto data = std::bit_cast<uint32_t>(value);
+    data -= BIAS;
+    data |= unitBit;
+    return {data};
+  }
+
+  uint32_t repr_{0x7FC00000};
 
   static constexpr uint32_t BIAS = 0x20000000;
   static constexpr uint32_t PERCENT_BIT = 0x40000000;
@@ -161,13 +158,9 @@ class YG_EXPORT CompactValue {
 };
 
 template <>
-CompactValue CompactValue::of<YGUnitUndefined>(float) noexcept = delete;
+CompactValue CompactValue::of<Unit::Undefined>(float) noexcept = delete;
 template <>
-CompactValue CompactValue::of<YGUnitAuto>(float) noexcept = delete;
-template <>
-CompactValue CompactValue::ofMaybe<YGUnitUndefined>(float) noexcept = delete;
-template <>
-CompactValue CompactValue::ofMaybe<YGUnitAuto>(float) noexcept = delete;
+CompactValue CompactValue::of<Unit::Auto>(float) noexcept = delete;
 
 constexpr bool operator==(CompactValue a, CompactValue b) noexcept {
   return a.repr_ == b.repr_;
@@ -178,7 +171,7 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
 }
 
 inline bool inexactEquals(CompactValue a, CompactValue b) {
-  return inexactEquals((YGValue)a, (YGValue)b);
+  return inexactEquals((StyleLength)a, (StyleLength)b);
 }
 
 } // namespace facebook::yoga

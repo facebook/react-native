@@ -134,9 +134,9 @@ class PermissionsAndroid {
     WRITE_EXTERNAL_STORAGE: string,
   |} = PERMISSIONS;
   RESULTS: {|
-    DENIED: $TEMPORARY$string<'denied'>,
-    GRANTED: $TEMPORARY$string<'granted'>,
-    NEVER_ASK_AGAIN: $TEMPORARY$string<'never_ask_again'>,
+    DENIED: 'denied',
+    GRANTED: 'granted',
+    NEVER_ASK_AGAIN: 'never_ask_again',
   |} = PERMISSION_REQUEST_RESULT;
 
   /**

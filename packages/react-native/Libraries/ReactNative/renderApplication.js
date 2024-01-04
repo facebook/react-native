@@ -22,7 +22,7 @@ import * as React from 'react';
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type OffscreenType = React.AbstractComponent<{
+type ActivityType = React.AbstractComponent<{
   mode: 'visible' | 'hidden',
   children: React.Node,
 }>;
@@ -73,13 +73,19 @@ export default function renderApplication<Props: Object>(
   if (useOffscreen && displayMode != null) {
     // $FlowFixMe[incompatible-type]
     // $FlowFixMe[prop-missing]
-    const Offscreen: OffscreenType = React.unstable_Offscreen;
+    const Activity: ActivityType = React.unstable_Activity;
 
     renderable = (
-      <Offscreen
+      <Activity
         mode={displayMode === DisplayMode.VISIBLE ? 'visible' : 'hidden'}>
         {renderable}
-      </Offscreen>
+      </Activity>
+    );
+  }
+
+  if (fabric && !useConcurrentRoot) {
+    console.warn(
+      'Using Fabric without concurrent root is deprecated. Please enable concurrent root for this application.',
     );
   }
 

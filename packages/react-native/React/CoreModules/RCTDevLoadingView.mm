@@ -114,13 +114,11 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
-      CGSize screenSize = [UIScreen mainScreen].bounds.size;
-
       UIWindow *window = RCTSharedApplication().keyWindow;
-      self->_window =
-          [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
-      self->_label =
-          [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
+      CGFloat windowWidth = window.bounds.size.width;
+
+      self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, windowWidth, window.safeAreaInsets.top + 10)];
+      self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, windowWidth, 20)];
       [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;

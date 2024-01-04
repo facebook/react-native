@@ -62,13 +62,13 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
        *
        * <p>TODO: T45627020
        */
-      if (reactPackage instanceof TurboReactPackage) {
-        TurboReactPackage turboReactPackage = (TurboReactPackage) reactPackage;
-        ReactModuleInfoProvider moduleInfoProvider = turboReactPackage.getReactModuleInfoProvider();
+      if (reactPackage instanceof BaseReactPackage) {
+        BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
+        ReactModuleInfoProvider moduleInfoProvider = baseReactPackage.getReactModuleInfoProvider();
         Map<String, ReactModuleInfo> moduleInfos = moduleInfoProvider.getReactModuleInfos();
 
         for (final String moduleName : moduleInfos.keySet()) {
-          moduleMap.put(moduleName, turboReactPackage.getModule(moduleName, reactContext));
+          moduleMap.put(moduleName, baseReactPackage.getModule(moduleName, reactContext));
         }
 
         continue;

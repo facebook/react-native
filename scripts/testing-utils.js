@@ -9,23 +9,20 @@
 
 'use strict';
 
-const {exec, cp} = require('shelljs');
-const fs = require('fs');
-const os = require('os');
-const {spawn} = require('node:child_process');
-const path = require('path');
-
-const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
-
-const {
-  generateAndroidArtifacts,
-  generateiOSArtifacts,
-} = require('./release-utils');
-
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
 } = require('../packages/react-native/scripts/hermes/hermes-utils.js');
+const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
+const {
+  generateAndroidArtifacts,
+  generateiOSArtifacts,
+} = require('./release-utils');
+const fs = require('fs');
+const {spawn} = require('node:child_process');
+const os = require('os');
+const path = require('path');
+const {cp, exec} = require('shelljs');
 
 /*
  * Android related utils - leverages android tooling
@@ -170,16 +167,21 @@ async function downloadArtifactsFromCircleCI(
 ) {
   const mavenLocalURL = await circleCIArtifacts.artifactURLForMavenLocal();
   const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
+  const reactNativeURL = await circleCIArtifacts.artifactURLForReactNative();
 
   const hermesPath = path.join(
     circleCIArtifacts.baseTmpPath(),
     'hermes-ios-debug.tar.gz',
   );
 
-  console.info('[Download] Maven Local Artifacts');
-  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalPath);
+  console.info(`[Download] Maven Local Artifacts from ${mavenLocalURL}`);
+  const mavenLocalZipPath = `${mavenLocalPath}.zip`;
+  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalZipPath);
+  exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
   console.info('[Download] Hermes');
   circleCIArtifacts.downloadArtifact(hermesURL, hermesPath);
+  console.info(`[Download] React Native from  ${reactNativeURL}`);
+  circleCIArtifacts.downloadArtifact(reactNativeURL, localNodeTGZPath);
 
   return hermesPath;
 }

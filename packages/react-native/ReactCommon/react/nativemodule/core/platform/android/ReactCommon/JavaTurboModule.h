@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <functional>
 #include <string>
-#include <unordered_set>
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
@@ -21,7 +19,7 @@ namespace facebook::react {
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
+      "Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModule;";
 };
 
 class JSI_EXPORT JavaTurboModule : public TurboModule {
@@ -32,6 +30,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
     jni::alias_ref<jobject> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
+    bool shouldVoidMethodsExecuteSync;
   };
 
   JavaTurboModule(const InitParams& params);
@@ -50,6 +49,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   // instance_ can be of type JTurboModule, or JNativeModule
   jni::global_ref<jobject> instance_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
+  bool shouldVoidMethodsExecuteSync_;
 };
 
 } // namespace facebook::react

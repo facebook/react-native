@@ -1172,7 +1172,8 @@ RCT_ENUM_CONVERTER(
       @"stretch" : @(YGAlignStretch),
       @"baseline" : @(YGAlignBaseline),
       @"space-between" : @(YGAlignSpaceBetween),
-      @"space-around" : @(YGAlignSpaceAround)
+      @"space-around" : @(YGAlignSpaceAround),
+      @"space-evenly" : @(YGAlignSpaceEvenly)
     }),
     YGAlignFlexStart,
     intValue)

@@ -11,9 +11,9 @@
 
 'use strict';
 
-const {TypeScriptParser} = require('../../parser');
-const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
+const fixtures = require('../__test_fixtures__/fixtures.js');
+const {TypeScriptParser} = require('../../parser');
 jest.mock('fs', () => ({
   readFileSync: filename => {
     // Jest in the OSS does not allow to capture variables in closures.

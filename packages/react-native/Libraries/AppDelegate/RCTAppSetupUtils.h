@@ -11,6 +11,8 @@
 
 #ifdef __cplusplus
 
+#import <react/config/ReactNativeConfig.h>
+
 #import <memory>
 
 #ifndef RCT_USE_HERMES
@@ -26,16 +28,12 @@
 #endif
 #endif
 
-#if RCT_NEW_ARCH_ENABLED
 #import <ReactCommon/RCTTurboModuleManager.h>
-#endif
 
 // Forward declaration to decrease compilation coupling
 namespace facebook::react {
 class RuntimeScheduler;
 }
-
-#if RCT_NEW_ARCH_ENABLED
 
 RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
 
@@ -43,17 +41,27 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
     RCTBridge *bridge,
     RCTTurboModuleManager *turboModuleManager,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler);
-#else
+
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler);
-#endif
+
+/**
+ * Register features and experiments prior to app initialization.
+ */
+void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled,
+    const facebook::react::ReactNativeConfig &reactNativeConfig);
 
 #endif // __cplusplus
 
 RCT_EXTERN_C_BEGIN
 
-void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled);
+[[deprecated("Use the 3-argument overload of RCTAppSetupPrepareApp instead")]] void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled);
+
 UIView *RCTAppSetupDefaultRootView(
     RCTBridge *bridge,
     NSString *moduleName,

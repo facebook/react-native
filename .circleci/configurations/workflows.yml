@@ -90,7 +90,6 @@ workflows:
   nightly:
     when: << pipeline.parameters.run_nightly_workflow >>
     jobs:
-      - nightly_job
       - prepare_hermes_workspace
       - build_android:
           release_type: "nightly"

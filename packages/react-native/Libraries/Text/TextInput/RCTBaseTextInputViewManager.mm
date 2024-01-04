@@ -71,7 +71,7 @@ RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 
 RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(placeholder, NSString)
-RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
+RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTDirectEventBlock)
 
 RCT_CUSTOM_VIEW_PROPERTY(multiline, BOOL, UIView)
 {

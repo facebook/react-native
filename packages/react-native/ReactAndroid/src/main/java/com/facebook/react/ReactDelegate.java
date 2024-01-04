@@ -72,12 +72,12 @@ public class ReactDelegate {
       @Nullable String appKey,
       @Nullable Bundle launchOptions,
       boolean fabricEnabled) {
+    mFabricEnabled = fabricEnabled;
     mActivity = activity;
     mMainComponentName = appKey;
     mLaunchOptions = composeLaunchOptions(launchOptions);
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
-    mFabricEnabled = fabricEnabled;
   }
 
   public void onHostResume() {

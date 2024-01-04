@@ -7,8 +7,8 @@
 
 #include "HermesInstance.h"
 
-#include <JSITracing.h>
 #include <jsi/jsilib.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
 #ifdef HERMES_ENABLE_DEBUGGER
 #include <hermes/inspector-modern/chrome/Registration.h>
@@ -90,7 +90,7 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
-std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
+std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> cm,
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
@@ -106,6 +106,17 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   auto heapSizeMB = heapSizeConfig > 0
       ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
       : 3072;
+
+#ifdef ANDROID
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_android")
+      : false;
+#else
+  bool enableMicrotasks = reactNativeConfig
+      ? reactNativeConfig->getBool("react_fabric:enable_microtasks_ios")
+      : false;
+#endif
+
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
@@ -120,6 +131,7 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
                             .build())
           .withES6Proxy(false)
           .withEnableSampleProfiling(true)
+          .withMicrotaskQueue(enableMicrotasks)
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (cm) {
@@ -129,16 +141,17 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   std::unique_ptr<HermesRuntime> hermesRuntime =
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
 
-  jsi::addNativeTracingHooks(*hermesRuntime);
-
 #ifdef HERMES_ENABLE_DEBUGGER
-  std::unique_ptr<DecoratedRuntime> decoratedRuntime =
-      std::make_unique<DecoratedRuntime>(
-          std::move(hermesRuntime), msgQueueThread);
-  return decoratedRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    std::unique_ptr<DecoratedRuntime> decoratedRuntime =
+        std::make_unique<DecoratedRuntime>(
+            std::move(hermesRuntime), msgQueueThread);
+    return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
+  }
 #endif
 
-  return hermesRuntime;
+  return std::make_unique<JSIRuntimeHolder>(std::move(hermesRuntime));
 }
 
 } // namespace facebook::react

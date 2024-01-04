@@ -21,17 +21,12 @@
 
 const int RECONNECT_DELAY_MS = 2000;
 
-@implementation RCTBundleStatus
-@end
-
 @interface RCTInspectorPackagerConnection () <SRWebSocketDelegate> {
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
   SRWebSocket *_webSocket;
-  dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
-  RCTBundleStatusProvider _bundleStatusProvider;
 }
 @end
 
@@ -57,14 +52,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   if (self = [super init]) {
     _url = url;
     _inspectorConnections = [NSMutableDictionary new];
-    _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   }
   return self;
-}
-
-- (void)setBundleStatusProvider:(RCTBundleStatusProvider)bundleStatusProvider
-{
-  _bundleStatusProvider = bundleStatusProvider;
 }
 
 - (void)handleProxyMessage:(NSDictionary<NSString *, id> *)message
@@ -150,19 +139,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSArray<RCTInspectorPage *> *pages = [RCTInspector pages];
   NSMutableArray *array = [NSMutableArray arrayWithCapacity:pages.count];
 
-  RCTBundleStatusProvider statusProvider = _bundleStatusProvider;
-  RCTBundleStatus *bundleStatus = statusProvider == nil ? nil : statusProvider();
-
   for (RCTInspectorPage *page in pages) {
     NSDictionary *jsonPage = @{
       @"id" : [@(page.id) stringValue],
       @"title" : page.title,
       @"app" : [[NSBundle mainBundle] bundleIdentifier],
       @"vm" : page.vm,
-      @"isLastBundleDownloadSuccess" : bundleStatus == nil ? [NSNull null]
-                                                           : @(bundleStatus.isLastBundleDownloadSuccess),
-      @"bundleUpdateTimestamp" : bundleStatus == nil ? [NSNull null]
-                                                     : @((long)bundleStatus.bundleUpdateTimestamp * 1000),
     };
     [array addObject:jsonPage];
   }
@@ -199,15 +181,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onMessage(...)
-- (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
+- (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessageWithString:(nonnull NSString *)messageText
 {
-  // warn but don't die on unrecognized messages
-  if (![opaqueMessage isKindOfClass:[NSString class]]) {
-    RCTLogWarn(@"Unrecognized inspector message, object is of type: %@", [opaqueMessage class]);
-    return;
-  }
-
-  NSString *messageText = opaqueMessage;
   NSError *error = nil;
   id parsedJSON = RCTJSONParse(messageText, &error);
   if (error) {
@@ -247,7 +222,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // timeouts, but our previous class, RCTSRWebSocket didn't have the same
   // implemented options. Might be worth reinvestigating for SRWebSocket?
   _webSocket = [[SRWebSocket alloc] initWithURL:_url];
-  [_webSocket setDelegateDispatchQueue:_jsQueue];
   _webSocket.delegate = self;
   [_webSocket open];
 }
@@ -282,7 +256,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)sendToPackager:(NSDictionary *)messageObject
 {
   __weak RCTInspectorPackagerConnection *weakSelf = self;
-  dispatch_async(_jsQueue, ^{
+  dispatch_async(dispatch_get_main_queue(), ^{
     RCTInspectorPackagerConnection *strongSelf = weakSelf;
     if (strongSelf && !strongSelf->_closed) {
       NSError *error;

@@ -118,6 +118,17 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
   turboModuleInteropBridgeProxyEnabled = enabled;
 }
 
+static BOOL fabricInteropLayerEnabled = YES;
+BOOL RCTFabricInteropLayerEnabled()
+{
+  return fabricInteropLayerEnabled;
+}
+
+void RCTEnableFabricInteropLayer(BOOL enabled)
+{
+  fabricInteropLayerEnabled = enabled;
+}
+
 static RCTBridgeProxyLoggingLevel bridgeProxyLoggingLevel = kRCTBridgeProxyLoggingLevelNone;
 RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void)
 {
@@ -148,6 +159,29 @@ BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
 {
   gTurboModuleEnableSyncVoidMethods = enabled;
+}
+
+// Use a shared queue for executing module methods
+static BOOL gTurboModuleEnableSharedQueue = NO;
+BOOL RCTTurboModuleSharedQueueEnabled(void)
+{
+  return gTurboModuleEnableSharedQueue;
+}
+
+void RCTEnableTurboModuleSharedQueue(BOOL enabled)
+{
+  gTurboModuleEnableSharedQueue = enabled;
+}
+
+BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
+{
+  return kDispatchAccessibilityManagerInitOntoMain;
+}
+
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
+{
+  kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>

@@ -52,6 +52,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -59,7 +60,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
@@ -74,7 +74,7 @@ public class SurfaceMountingManager {
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
-  private ConcurrentLinkedQueue<MountItem> mOnViewAttachItems = new ConcurrentLinkedQueue<>();
+  private Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
@@ -181,9 +181,10 @@ public class SurfaceMountingManager {
     return mTagToViewState.containsKey(tag);
   }
 
-  @AnyThread
-  public void executeOnViewAttach(MountItem item) {
-    mOnViewAttachItems.add(item);
+  @UiThread
+  @ThreadConfined(UI)
+  public void scheduleMountItemOnViewAttach(MountItem item) {
+    mOnViewAttachMountItems.add(item);
   }
 
   @AnyThread
@@ -233,7 +234,7 @@ public class SurfaceMountingManager {
           }
           mRootViewAttached = true;
 
-          executeViewAttachMountItems();
+          executeMountItemsOnViewAttach();
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -245,8 +246,8 @@ public class SurfaceMountingManager {
 
   @UiThread
   @ThreadConfined(UI)
-  private void executeViewAttachMountItems() {
-    mMountItemExecutor.executeItems(mOnViewAttachItems);
+  private void executeMountItemsOnViewAttach() {
+    mMountItemExecutor.executeItems(mOnViewAttachMountItems);
   }
 
   /**
@@ -319,7 +320,7 @@ public class SurfaceMountingManager {
           mRootViewManager = null;
           mMountItemExecutor = null;
           mThemedReactContext = null;
-          mOnViewAttachItems.clear();
+          mOnViewAttachMountItems.clear();
 
           if (ReactFeatureFlags.enableViewRecycling) {
             mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
