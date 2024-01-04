@@ -11,8 +11,6 @@
 'use strict';
 
 const React = require('react');
-const TouchableBounce = require('react-native/Libraries/Components/Touchable/TouchableBounce');
-
 const {
   Image,
   StyleSheet,
@@ -23,6 +21,7 @@ const {
   TouchableWithoutFeedback,
   View,
 } = require('react-native');
+const TouchableBounce = require('react-native/Libraries/Components/Touchable/TouchableBounce');
 
 /**
  * All the views implemented on Android, each with the nativeID property set.

@@ -9,13 +9,13 @@
 
 'use strict';
 
-const {exec} = require('shelljs');
-const {parseVersion} = require('./version-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
+const {parseVersion} = require('./version-utils');
+const {exec} = require('shelljs');
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
@@ -47,6 +47,24 @@ function getNpmInfo(buildType) {
     };
   }
 
+  if (buildType === 'prealpha') {
+    const mainVersion = '0.0.0';
+    // Date in the format of YYYYMMDDHH.
+    // This is a progressive int that can track subsequent
+    // releases and it is smaller of 2^32-1.
+    // It is unlikely that we can trigger two prealpha in less
+    // than an hour given that nightlies take ~ 1 hr to complete.
+    const dateIdentifier = new Date()
+      .toISOString()
+      .slice(0, -10)
+      .replace(/[-T:]/g, '');
+
+    return {
+      version: `${mainVersion}-prealpha-${dateIdentifier}`,
+      tag: 'prealpha',
+    };
+  }
+
   const {version, major, minor, prerelease} = parseVersion(
     process.env.CIRCLE_TAG,
     buildType,
@@ -73,7 +91,10 @@ function getNpmInfo(buildType) {
 }
 
 function getPackageVersionStrByTag(packageName, tag) {
-  const result = exec(`npm view ${packageName}@${tag} version`, {silent: true});
+  const npmString = tag
+    ? `npm view ${packageName}@${tag} version`
+    : `npm view ${packageName} version`;
+  const result = exec(npmString, {silent: true});
 
   if (result.code) {
     throw new Error(`Failed to get ${tag} version from npm\n${result.stderr}`);

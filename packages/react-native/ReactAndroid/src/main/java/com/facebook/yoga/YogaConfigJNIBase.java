@@ -60,7 +60,7 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
     return mLogger;
   }
 
-  long getNativePointer() {
+  protected long getNativePointer() {
     return mNativePointer;
   }
 }

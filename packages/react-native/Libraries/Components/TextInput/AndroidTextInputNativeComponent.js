@@ -486,6 +486,11 @@ export type NativeProps = $ReadOnly<{|
   selectionColor?: ?ColorValue,
 
   /**
+   * The text selection handle color.
+   */
+  selectionHandleColor?: ?ColorValue,
+
+  /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
@@ -692,6 +697,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     fontStyle: true,
     textShadowOffset: true,
     selectionColor: {process: require('../../StyleSheet/processColor').default},
+    selectionHandleColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
     placeholderTextColor: {
       process: require('../../StyleSheet/processColor').default,
     },

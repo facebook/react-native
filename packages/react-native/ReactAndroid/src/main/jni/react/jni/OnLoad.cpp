@@ -14,7 +14,7 @@
 #include <fbjni/fbjni.h>
 
 #include "CatalystInstanceImpl.h"
-#include "CxxModuleWrapper.h"
+#include "CxxModuleWrapperBase.h"
 #include "JCallback.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
@@ -78,7 +78,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
-    CxxModuleWrapper::registerNatives();
     JCxxCallbackImpl::registerNatives();
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

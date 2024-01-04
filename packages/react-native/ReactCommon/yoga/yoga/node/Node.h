@@ -14,12 +14,13 @@
 #include <yoga/Yoga.h>
 
 #include <yoga/config/Config.h>
+#include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
 #include <yoga/node/LayoutResults.h>
-#include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
 
 // Tag struct used to form the opaque YGNodeRef for the public C API
@@ -47,13 +48,34 @@ class YG_EXPORT Node : public ::YGNode {
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
-  FloatOptional relativePosition(const FlexDirection axis, const float axisSize)
-      const;
+  float relativePosition(
+      FlexDirection axis,
+      Direction direction,
+      const float axisSize) const;
+
+  Edge getInlineStartEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getInlineEndEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getFlexStartRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
+  Edge getFlexEndRelativeEdgeUsingErrata(
+      FlexDirection flexDirection,
+      Direction direction) const;
 
   void useWebDefaults() {
-    style_.flexDirection() = FlexDirection::Row;
-    style_.alignContent() = Align::Stretch;
+    style_.setFlexDirection(FlexDirection::Row);
+    style_.setAlignContent(Align::Stretch);
   }
+
+  template <auto Field>
+  Style::Length computeEdgeValueForColumn(Edge edge) const;
+
+  template <auto Field>
+  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
 
   // DANGER DANGER DANGER!
   // If the node assigned to has children, we'd either have to deallocate
@@ -103,6 +125,12 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   float baseline(float width, float height) const;
+
+  float dimensionWithMargin(const FlexDirection axis, const float widthSize);
+
+  bool isLayoutDimensionDefined(const FlexDirection axis);
+
+  bool styleDefinesDimension(const FlexDirection axis, const float ownerSize);
 
   bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
@@ -175,63 +203,93 @@ class YG_EXPORT Node : public ::YGNode {
     return resolvedDimensions_;
   }
 
-  YGValue getResolvedDimension(YGDimension dimension) const {
+  YGValue getResolvedDimension(Dimension dimension) const {
     return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
-  static CompactValue computeEdgeValueForColumn(
-      const Style::Edges& edges,
-      YGEdge edge,
-      CompactValue defaultValue);
-
-  static CompactValue computeEdgeValueForRow(
-      const Style::Edges& edges,
-      YGEdge rowEdge,
-      YGEdge edge,
-      CompactValue defaultValue);
-
-  static CompactValue computeRowGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
-
-  static CompactValue computeColumnGap(
-      const Style::Gutters& gutters,
-      CompactValue defaultValue);
-
   // Methods related to positions, margin, padding and border
-  FloatOptional getLeadingPosition(
-      const FlexDirection axis,
-      const float axisSize) const;
-  bool isLeadingPositionDefined(const FlexDirection axis) const;
-  bool isTrailingPosDefined(const FlexDirection axis) const;
-  FloatOptional getTrailingPosition(
-      const FlexDirection axis,
-      const float axisSize) const;
-  FloatOptional getLeadingMargin(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingMargin(
-      const FlexDirection axis,
-      const float widthSize) const;
-  float getLeadingBorder(const FlexDirection flexDirection) const;
-  float getTrailingBorder(const FlexDirection flexDirection) const;
-  FloatOptional getLeadingPadding(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingPadding(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getLeadingPaddingAndBorder(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getTrailingPaddingAndBorder(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getMarginForAxis(
-      const FlexDirection axis,
-      const float widthSize) const;
-  FloatOptional getGapForAxis(const FlexDirection axis, const float widthSize)
+  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
       const;
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+      const;
+  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const;
+  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+      const;
+  float getFlexStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getFlexEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getInlineEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const;
+  float getFlexStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineStartBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
+      const;
+  float getFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getFlexEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getInlineEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const;
+  float getBorderForAxis(FlexDirection axis) const;
+  float getMarginForAxis(FlexDirection axis, float widthSize) const;
+  float getGapForAxis(FlexDirection axis) const;
   // Setters
 
   void setContext(void* context) {
@@ -293,26 +351,23 @@ class YG_EXPORT Node : public ::YGNode {
   void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
-  void setLayoutMeasuredDimension(
-      float measuredDimension,
-      YGDimension dimension);
+  void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float dimensionValue, YGDimension dimension);
+  void setLayoutDimension(float LengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
-  void setLayoutMargin(float margin, YGEdge edge);
-  void setLayoutBorder(float border, YGEdge edge);
-  void setLayoutPadding(float padding, YGEdge edge);
-  void setLayoutPosition(float position, YGEdge edge);
+  void setLayoutMargin(float margin, Edge edge);
+  void setLayoutBorder(float border, Edge edge);
+  void setLayoutPadding(float padding, Edge edge);
+  void setLayoutPosition(float position, Edge edge);
   void setPosition(
       const Direction direction,
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void markDirtyAndPropagateDownwards();
 
   // Other methods
-  YGValue marginLeadingValue(const FlexDirection axis) const;
-  YGValue marginTrailingValue(const FlexDirection axis) const;
+  YGValue getFlexStartMarginValue(FlexDirection axis) const;
+  YGValue marginTrailingValue(FlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
   Direction resolveDirection(const Direction ownerDirection);

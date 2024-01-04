@@ -11,6 +11,8 @@
 #import <React/RCTDefines.h>
 #import <React/RCTJSThread.h>
 
+#import <RCTDeprecation/RCTDeprecation.h>
+
 #import "RCTBundleManager.h"
 
 @class RCTBridge;
@@ -146,7 +148,7 @@ RCT_EXTERN_C_END
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
  * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
-@property (nonatomic, weak, readonly) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge RCT_DEPRECATED;
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this

@@ -121,6 +121,19 @@ const QuickPerformanceLogger = {
     }
   },
 
+  // Checks whether the given QPL marker is going to be sent to server or not
+  // (the latter may be the case due to e.g. downsampling).
+  // Note that markerStart is expected to have been already called at this point.
+  isMarkerOn(
+    markerId: number,
+    instanceKey?: number = DUMMY_INSTANCE_KEY,
+  ): boolean {
+    if (global.nativeQPLIsMarkerOn) {
+      return global.nativeQPLIsMarkerOn(markerId, instanceKey);
+    }
+    return true;
+  },
+
   markEvent(
     markerId: number,
     type: string,

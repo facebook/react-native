@@ -58,6 +58,10 @@ Returns the list of available WebSocket targets for all connected React Native a
 
 Returns version metadata used by Chrome DevTools.
 
+#### GET `/debugger-frontend`
+
+Subpaths of this endpoint are reserved to serve the JavaScript debugger frontend.
+
 #### POST `/open-debugger`
 
 Open the JavaScript debugger for a given CDP target (direct Hermes debugging).

@@ -37,6 +37,7 @@ const Platform: PlatformType = {
       prerelease: ?number,
     |},
     systemName: string,
+    isMacCatalyst?: boolean,
   |} {
     // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
@@ -68,6 +69,11 @@ const Platform: PlatformType = {
   get isDisableAnimations(): boolean {
     // $FlowFixMe[object-this-reference]
     return this.constants.isDisableAnimations ?? this.isTesting;
+  },
+  // $FlowFixMe[unsafe-getters-setters]
+  get isMacCatalyst(): boolean {
+    // $FlowFixMe[object-this-reference]
+    return this.constants.isMacCatalyst ?? false;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
     // $FlowFixMe[incompatible-return]

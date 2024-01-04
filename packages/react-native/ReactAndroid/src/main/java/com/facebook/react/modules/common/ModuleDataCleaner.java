@@ -12,6 +12,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import java.util.Collection;
 
 /**
  * Cleans sensitive user data from native modules that implement the {@code Cleanable} interface.
@@ -45,16 +46,15 @@ public class ModuleDataCleaner {
    */
   @Deprecated
   public static void cleanDataFromModules(CatalystInstance catalystInstance) {
-    for (NativeModule nativeModule : catalystInstance.getNativeModules()) {
-      if (nativeModule instanceof Cleanable) {
-        FLog.d(ReactConstants.TAG, "Cleaning data from " + nativeModule.getName());
-        ((Cleanable) nativeModule).clearSensitiveData();
-      }
-    }
+    cleanDataFromModules(catalystInstance.getNativeModules());
   }
 
   public static void cleanDataFromModules(ReactContext reactContext) {
-    for (NativeModule nativeModule : reactContext.getNativeModules()) {
+    cleanDataFromModules(reactContext.getNativeModules());
+  }
+
+  private static void cleanDataFromModules(Collection<NativeModule> nativeModules) {
+    for (NativeModule nativeModule : nativeModules) {
       if (nativeModule instanceof Cleanable) {
         FLog.d(ReactConstants.TAG, "Cleaning data from " + nativeModule.getName());
         ((Cleanable) nativeModule).clearSensitiveData();

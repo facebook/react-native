@@ -23,14 +23,17 @@ import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Builder class for {@link ReactInstanceManager} */
+@StableReactNativeAPI
 public class ReactInstanceManagerBuilder {
 
   private static final String TAG = ReactInstanceManagerBuilder.class.getSimpleName();
@@ -65,11 +69,13 @@ public class ReactInstanceManagerBuilder {
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
   private @Nullable JSIModulePackage mJSIModulesPackage;
+  private @Nullable UIManagerProvider mUIManagerProvider;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
   private @Nullable DevLoadingViewManager mDevLoadingViewManager;
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
+  private @Nullable ChoreographerProvider mChoreographerProvider = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -83,6 +89,11 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
       @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
     mJavaScriptExecutorFactory = javaScriptExecutorFactory;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUIManagerProvider(UIManagerProvider uIManagerProvider) {
+    mUIManagerProvider = uIManagerProvider;
     return this;
   }
 
@@ -285,6 +296,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setChoreographerProvider(
+      @Nullable ChoreographerProvider choreographerProvider) {
+    mChoreographerProvider = choreographerProvider;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}. Before calling {@code build}, the following
    * must be called:
@@ -345,10 +362,12 @@ public class ReactInstanceManagerBuilder {
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
+        mUIManagerProvider,
         mCustomPackagerCommandHandlers,
         mTMMDelegateBuilder,
         mSurfaceDelegateFactory,
-        mDevLoadingViewManager);
+        mDevLoadingViewManager,
+        mChoreographerProvider);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

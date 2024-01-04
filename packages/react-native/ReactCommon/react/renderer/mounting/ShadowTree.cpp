@@ -291,8 +291,8 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  const auto fragment = ShadowNodeFamilyFragment{surfaceId, surfaceId, nullptr};
-  auto family = globalRootComponentDescriptor->createFamily(fragment);
+  auto family = globalRootComponentDescriptor->createFamily(
+      {surfaceId, surfaceId, nullptr});
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(
@@ -352,7 +352,7 @@ CommitStatus ShadowTree::commit(
     const CommitOptions& commitOptions) const {
   SystraceSection s("ShadowTree::commit");
 
-  int attempts = 0;
+  [[maybe_unused]] int attempts = 0;
 
   while (true) {
     attempts++;

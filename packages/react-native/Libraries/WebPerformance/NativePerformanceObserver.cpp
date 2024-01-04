@@ -10,6 +10,9 @@
 #include "NativePerformanceObserver.h"
 #include "PerformanceEntryReporter.h"
 
+#include <react/renderer/uimanager/UIManagerBinding.h>
+#include <react/utils/CoreFeatures.h>
+
 #include "Plugins.h"
 
 std::shared_ptr<facebook::react::TurboModule>
@@ -34,15 +37,33 @@ NativePerformanceObserver::~NativePerformanceObserver() {
 void NativePerformanceObserver::startReporting(
     jsi::Runtime& rt,
     int32_t entryType) {
-  PerformanceEntryReporter::getInstance().startReporting(
-      static_cast<PerformanceEntryType>(entryType));
+  PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
+
+  PerformanceEntryType entryTypeEnum =
+      static_cast<PerformanceEntryType>(entryType);
+  reporter.startReporting(entryTypeEnum);
+
+  if (entryTypeEnum == PerformanceEntryType::EVENT &&
+      CoreFeatures::enableReportEventPaintTime) {
+    UIManagerBinding::getBinding(rt)->getUIManager().registerMountHook(
+        reporter);
+  }
 }
 
 void NativePerformanceObserver::stopReporting(
     jsi::Runtime& rt,
     int32_t entryType) {
-  PerformanceEntryReporter::getInstance().stopReporting(
-      static_cast<PerformanceEntryType>(entryType));
+  PerformanceEntryReporter& reporter = PerformanceEntryReporter::getInstance();
+
+  PerformanceEntryType entryTypeEnum =
+      static_cast<PerformanceEntryType>(entryType);
+  reporter.stopReporting(entryTypeEnum);
+
+  if (entryTypeEnum == PerformanceEntryType::EVENT &&
+      CoreFeatures::enableReportEventPaintTime) {
+    UIManagerBinding::getBinding(rt)->getUIManager().unregisterMountHook(
+        reporter);
+  }
 }
 
 void NativePerformanceObserver::setIsBuffered(
@@ -105,6 +126,15 @@ std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
       entryType ? static_cast<PerformanceEntryType>(*entryType)
                 : PerformanceEntryType::UNDEFINED,
       entryName ? entryName->c_str() : nullptr);
+}
+
+std::vector<RawPerformanceEntryType>
+NativePerformanceObserver::getSupportedPerformanceEntryTypes(jsi::Runtime& rt) {
+  return {
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MARK),
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::MEASURE),
+      static_cast<RawPerformanceEntryType>(PerformanceEntryType::EVENT),
+  };
 }
 
 } // namespace facebook::react

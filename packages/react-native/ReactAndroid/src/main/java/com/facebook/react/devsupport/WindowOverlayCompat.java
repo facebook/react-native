@@ -16,15 +16,10 @@ import android.view.WindowManager;
  */
 /* package */ class WindowOverlayCompat {
 
-  private static final int ANDROID_OREO = 26;
   private static final int TYPE_APPLICATION_OVERLAY = 2038;
 
-  static final int TYPE_SYSTEM_ALERT =
-      Build.VERSION.SDK_INT < ANDROID_OREO
-          ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
-          : TYPE_APPLICATION_OVERLAY;
   static final int TYPE_SYSTEM_OVERLAY =
-      Build.VERSION.SDK_INT < ANDROID_OREO
+      Build.VERSION.SDK_INT < Build.VERSION_CODES.O
           ? WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
           : TYPE_APPLICATION_OVERLAY;
 }

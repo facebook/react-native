@@ -8,10 +8,10 @@
  * @flow
  */
 
-import React, {useEffect, useState} from 'react';
-import {Animated, StyleSheet, Text, View, Easing} from 'react-native';
+import type {Element, Node} from 'react';
 
-import type {Node, Element} from 'react';
+import React, {useEffect, useState} from 'react';
+import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
 
 function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));

@@ -60,7 +60,7 @@ internal class MyNativeViewManager :
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> =
       MapBuilder.builder<String, Any>()
           .put(
-              "onIntArrayChanged",
+              "topIntArrayChanged",
               MapBuilder.of<String, Any>(
                   "phasedRegistrationNames",
                   MapBuilder.of(

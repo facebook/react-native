@@ -99,6 +99,9 @@ type DataDetectorTypesType =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -328,6 +331,14 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   cursorColor?: ?ColorValue,
+
+  /**
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  selectionHandleColor?: ?ColorValue,
 
   /**
    * When `false`, if there is a small amount of space available around a text input
@@ -765,6 +776,11 @@ export type Props = $ReadOnly<{|
    * @platform ios
    */
   unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
+
+  /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ?(event: PressEvent) => mixed,
 
   /**
    * Called when a touch is engaged.

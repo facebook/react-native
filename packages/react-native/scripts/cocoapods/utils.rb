@@ -23,7 +23,6 @@ class ReactNativePodsUtils
         flags = {
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :flipper_configuration => FlipperConfiguration.disabled
         }
 
         if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
@@ -57,31 +56,6 @@ class ReactNativePodsUtils
                         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
                     end
                 end
-            end
-        end
-    end
-
-    def self.exclude_i386_architecture_while_using_hermes(installer)
-        is_using_hermes = self.has_pod(installer, 'hermes-engine')
-
-        if is_using_hermes
-            key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
-
-            projects = self.extract_projects(installer)
-
-            projects.each do |project|
-                project.build_configurations.each do |config|
-                    current_setting = config.build_settings[key] || ""
-
-                    excluded_archs_includes_I386 = current_setting.include?("i386")
-
-                    if !excluded_archs_includes_I386
-                        # Hermes does not support `i386` architecture
-                        config.build_settings[key] = "#{current_setting} i386".strip
-                    end
-                end
-
-                project.save()
             end
         end
     end
@@ -162,24 +136,15 @@ class ReactNativePodsUtils
             project.build_configurations.each do |config|
                 # fix for weak linking
                 self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
+                if self.is_using_xcode15_or_greater(:xcodebuild_manager => xcodebuild_manager)
                     self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
                 else
-                    self.remove_value_to_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
+                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
                 end
             end
             project.save()
         end
 
-    end
-
-    def self.apply_flags_for_fabric(installer, fabric_enabled: false)
-        fabric_flag = "-DRN_FABRIC_ENABLED"
-        if fabric_enabled
-            self.add_compiler_flag_to_project(installer, fabric_flag)
-        else
-            self.remove_compiler_flag_from_project(installer, fabric_flag)
-        end
     end
 
     private
@@ -254,6 +219,46 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
+        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+        search_paths = []
+
+        if platforms.empty?() || platforms.length() == 1
+            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+        else
+            platforms.each { |platform|
+                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+            }
+        end
+        return search_paths
+    end
+
+    # Add a new dependency to an existing spec, configuring also the headers search paths
+    def self.add_dependency(spec, dependency_name, base_folder_for_frameworks, framework_name, additional_paths: [], version: nil, subspec_dependency: nil)
+        # Update Search Path
+        optional_current_search_path = spec.to_hash["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"]
+        current_search_paths = (optional_current_search_path != nil ? optional_current_search_path : "")
+            .split(" ")
+        create_header_search_path_for_frameworks(base_folder_for_frameworks, dependency_name, framework_name, additional_paths)
+            .each { |path|
+                wrapped_path = "\"#{path}\""
+                current_search_paths << wrapped_path
+            }
+        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"]
+        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] = current_search_paths.join(" ")
+        spec.pod_target_xcconfig = current_pod_target_xcconfig
+
+        actual_dependency = subspec_dependency != nil ? "#{dependency_name}/#{subspec_dependency}" : dependency_name
+        # Set Dependency
+        if !version
+            spec.dependency actual_dependency
+        else
+            spec.dependency actual_dependency, version
+        end
+    end
+
     def self.update_search_paths(installer)
         return if ENV['USE_FRAMEWORKS'] == nil
 
@@ -264,12 +269,14 @@ class ReactNativePodsUtils
 
                 header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
 
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
+                ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon-Samples", "ReactCommon_Samples", ["platform/ios"]))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"], false))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"]))
+                    .each{ |search_path|
+                        header_search_paths = self.add_search_path_if_not_included(header_search_paths, search_path)
+                    }
 
                 config.build_settings["HEADER_SEARCH_PATHS"] = header_search_paths
             end
@@ -290,35 +297,32 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.updateIphoneOSDeploymentTarget(installer)
-        pod_to_update = Set.new([
-            "boost",
-            "CocoaAsyncSocket",
-            "Flipper",
-            "Flipper-DoubleConversion",
-            "Flipper-Fmt",
-            "Flipper-Boost-iOSX",
-            "Flipper-Folly",
-            "Flipper-Glog",
-            "Flipper-PeerTalk",
-            "FlipperKit",
-            "fmt",
-            "libevent",
-            "OpenSSL-Universal",
-            "RCT-Folly",
-            "SocketRocket",
-            "YogaKit"
-        ])
-
+    def self.updateOSDeploymentTarget(installer)
         installer.target_installation_results.pod_target_installation_results
             .each do |pod_name, target_installation_result|
-                unless pod_to_update.include?(pod_name)
-                    next
-                end
                 target_installation_result.native_target.build_configurations.each do |config|
-                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
+                    old_iphone_deploy_target = config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] ?
+                        config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] :
+                        Helpers::Constants.min_ios_version_supported
+                    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = [Helpers::Constants.min_ios_version_supported.to_f, old_iphone_deploy_target.to_f].max.to_s
                 end
             end
+    end
+
+    def self.set_dynamic_frameworks_flags(installer)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+
+            # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
+            # This helps with backward compatibility.
+            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+                Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
+                rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
+                target_installation_result.native_target.build_configurations.each do |config|
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
+                end
+            end
+        end
     end
 
     # ========= #
@@ -341,24 +345,30 @@ class ReactNativePodsUtils
 
     def self.add_value_to_setting_if_missing(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if !old_config.include?(value)
-            config.build_settings[setting_name] << value
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if !old_config.include?(trimmed_value)
+            config.build_settings[setting_name] = "#{old_config.strip()} #{trimmed_value}".strip()
         end
     end
 
-    def self.remove_value_to_setting_if_present(config, setting_name, value)
+    def self.remove_value_from_setting_if_present(config, setting_name, value)
         old_config = config.build_settings[setting_name]
-        if old_config.include?(value)
-            # Old config can be either an Array or a String
-            if old_config.is_a?(Array)
-                old_config = old_config.join(" ")
-            end
-            new_config = old_config.gsub(value,  "")
-            config.build_settings[setting_name] = new_config
+        if old_config.is_a?(Array)
+            old_config = old_config.join(" ")
+        end
+
+        trimmed_value = value.strip()
+        if old_config.include?(trimmed_value)
+            new_config = old_config.gsub(trimmed_value,  "")
+            config.build_settings[setting_name] = new_config.strip()
         end
     end
 
-    def self.is_using_xcode15_or_greter(xcodebuild_manager: Xcodebuild)
+    def self.is_using_xcode15_or_greater(xcodebuild_manager: Xcodebuild)
         xcodebuild_version = xcodebuild_manager.version
 
         # The output of xcodebuild -version is something like
@@ -482,34 +492,31 @@ class ReactNativePodsUtils
     end
 
     def self.set_codegen_search_paths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Codegen", "React_Codegen", [])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", header_search_paths)
     end
 
     def self.set_reactcommon_searchpaths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-        ])
-
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", header_search_paths)
     end
 
     def self.set_rctfabric_search_paths(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", [])
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Graphics", "React_graphics", ["react/renderer/graphics/platform/ios"]))
+            .map { |search_path| "\"#{search_path}\"" }
+
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", header_search_paths)
     end
 
     def self.set_imagemanager_search_path(target_installation_result)
-        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
-            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
-        ])
+        header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/imagemanager/platform/ios"])
+            .map { |search_path| "\"#{search_path}\"" }
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
     def self.get_plist_paths_from(user_project)
@@ -592,8 +599,60 @@ class ReactNativePodsUtils
             "fmt",
             "glog",
             "hermes-engine",
-            "libevent",
             "React-hermes",
         ]
+    end
+
+    def self.add_search_path_to_result(result, base_path, additional_paths, include_base_path)
+        if (include_base_path)
+            result << base_path
+        end
+
+        additional_paths.each { |extra_path|
+            result << File.join(base_path, extra_path)
+        }
+        return result
+    end
+
+    def self.add_ndebug_flag_to_pods_in_release(installer)
+        ndebug_flag = " -DNDEBUG"
+
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config_file.attributes, 'OTHER_CFLAGS', ndebug_flag);
+
+                xcconfig_path = aggregate_target.xcconfig_path(config_name)
+                config_file.save_as(xcconfig_path)
+            end
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                unless is_release
+                    next
+                end
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CPLUSPLUSFLAGS', ndebug_flag);
+                self.add_flag_to_map_with_inheritance(config.build_settings, 'OTHER_CFLAGS', ndebug_flag);
+            end
+        end
+    end
+
+    def self.add_flag_to_map_with_inheritance(map, field, flag)
+        if map[field] == nil
+            map[field] = "$(inherited)" + flag
+        else
+            unless map[field].include?(flag)
+                map[field] = map[field] + flag
+            end
+            unless map[field].include?("$(inherited)")
+                map[field] = "$(inherited) " + map[field]
+            end
+        end
     end
 end

@@ -46,8 +46,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ViewProps>();
-    _props = defaultProps;
+    _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
   }
@@ -252,7 +251,7 @@ using namespace facebook::react;
   // `shouldRasterize`
   if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
     self.layer.shouldRasterize = newViewProps.shouldRasterize;
-    self.layer.rasterizationScale = newViewProps.shouldRasterize ? [UIScreen mainScreen].scale : 1.0;
+    self.layer.rasterizationScale = newViewProps.shouldRasterize ? self.traitCollection.displayScale : 1.0;
   }
 
   // `pointerEvents`
@@ -265,8 +264,11 @@ using namespace facebook::react;
        oldViewProps.transformOrigin != newViewProps.transformOrigin) &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
-    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
-    self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
+    CATransform3D caTransform = RCTCATransform3DFromTransformMatrix(newTransform);
+
+    self.layer.transform = caTransform;
+    // Enable edge antialiasing in rotation, skew, or perspective transforms
+    self.layer.allowsEdgeAntialiasing = caTransform.m12 != 0.0f || caTransform.m21 != 0.0f || caTransform.m34 != 0.0f;
   }
 
   // `hitSlop`
@@ -335,10 +337,11 @@ using namespace facebook::react;
   // `accessibilityState`
   if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
     self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
-    if (newViewProps.accessibilityState.selected) {
+    const auto accessibilityState = newViewProps.accessibilityState.value_or(AccessibilityState{});
+    if (accessibilityState.selected) {
       self.accessibilityTraits |= UIAccessibilityTraitSelected;
     }
-    if (newViewProps.accessibilityState.disabled) {
+    if (accessibilityState.disabled) {
       self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     }
   }
@@ -725,12 +728,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (NSString *)accessibilityValue
 {
   const auto &props = static_cast<const ViewProps &>(*_props);
+  const auto accessibilityState = props.accessibilityState.value_or(AccessibilityState{});
 
   // Handle Switch.
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
-    if (props.accessibilityState.checked == AccessibilityState::Checked) {
+    if (accessibilityState.checked == AccessibilityState::Checked) {
       return @"1";
-    } else if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+    } else if (accessibilityState.checked == AccessibilityState::Unchecked) {
       return @"0";
     }
   }
@@ -756,25 +760,25 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   // Handle states which haven't already been handled.
-  if (props.accessibilityState.checked == AccessibilityState::Checked) {
+  if (accessibilityState.checked == AccessibilityState::Checked) {
     [valueComponents
         addObject:RCTLocalizedString("checked", "a checkbox, radio button, or other widget which is checked")];
   }
-  if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+  if (accessibilityState.checked == AccessibilityState::Unchecked) {
     [valueComponents
         addObject:RCTLocalizedString("unchecked", "a checkbox, radio button, or other widget which is unchecked")];
   }
-  if (props.accessibilityState.checked == AccessibilityState::Mixed) {
+  if (accessibilityState.checked == AccessibilityState::Mixed) {
     [valueComponents
         addObject:RCTLocalizedString(
                       "mixed", "a checkbox, radio button, or other widget which is both checked and unchecked")];
   }
-  if (props.accessibilityState.expanded) {
+  if (accessibilityState.expanded.value_or(false)) {
     [valueComponents
         addObject:RCTLocalizedString("expanded", "a menu, dialog, accordian panel, or other widget which is expanded")];
   }
 
-  if (props.accessibilityState.busy) {
+  if (accessibilityState.busy) {
     [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 

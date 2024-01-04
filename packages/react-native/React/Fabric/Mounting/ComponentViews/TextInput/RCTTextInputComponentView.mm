@@ -71,11 +71,10 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TextInputProps>();
+    const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
     _props = defaultProps;
-    auto &props = *defaultProps;
 
-    _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+    _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -239,7 +238,6 @@ using namespace facebook::react;
     return;
   }
   _stateUpdated = YES;
-
   auto data = _state->getData();
 
   if (!oldState) {
@@ -573,6 +571,12 @@ using namespace facebook::react;
   if (!_state) {
     return;
   }
+  if (_stateUpdated) {
+    return;
+  }
+  
+  _stateUpdated = YES;
+
   NSAttributedString *attributedString = _backedTextInputView.attributedText;
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;

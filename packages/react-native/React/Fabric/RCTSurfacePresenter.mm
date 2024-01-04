@@ -264,10 +264,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:use_native_state")) {
-    CoreFeatures::useNativeState = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
@@ -280,16 +276,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableMountHooks = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_scroll_event_throttle_requirement")) {
-    CoreFeatures::disableScrollEventThrottleRequirement = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_default_async_batched_priority")) {
     CoreFeatures::enableDefaultAsyncBatchedPriority = true;
   }
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
     CoreFeatures::enableClonelessStateProgression = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:position_relative_default")) {
+    CoreFeatures::positionRelativeDefault = true;
   }
 
   auto componentRegistryFactory =

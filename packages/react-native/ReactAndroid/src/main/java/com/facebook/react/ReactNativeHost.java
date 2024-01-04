@@ -14,18 +14,24 @@ import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.ChoreographerProvider;
 import java.util.List;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
  * {@link Application class} (see {@link ReactApplication}), or as a static field.
  */
+@DeprecatedInNewArchitecture(
+    message =
+        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of React Native.")
 public abstract class ReactNativeHost {
 
   private final Application mApplication;
@@ -80,10 +86,12 @@ public abstract class ReactNativeHost {
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setJSIModulesPackage(getJSIModulePackage())
+            .setUIManagerProvider(getUIManagerProvider())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
-            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm());
+            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
+            .setChoreographerProvider(getChoreographerProvider());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -120,6 +128,10 @@ public abstract class ReactNativeHost {
   }
 
   protected @Nullable JSIModulePackage getJSIModulePackage() {
+    return null;
+  }
+
+  protected @Nullable UIManagerProvider getUIManagerProvider() {
     return null;
   }
 
@@ -207,6 +219,14 @@ public abstract class ReactNativeHost {
    * will try to load JSC first and fallback to Hermes if JSC is not available.
    */
   protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return null;
+  }
+
+  /**
+   * Returns a custom implementation of ChoreographerProvider to be used this host. If null - React
+   * will use default direct android.view.Choreographer-based provider.
+   */
+  protected @Nullable ChoreographerProvider getChoreographerProvider() {
     return null;
   }
 }

@@ -26,6 +26,10 @@ gradlePlugin {
       id = "com.facebook.react"
       implementationClass = "com.facebook.react.ReactPlugin"
     }
+    create("reactrootproject") {
+      id = "com.facebook.react.rootproject"
+      implementationClass = "com.facebook.react.ReactRootProjectPlugin"
+    }
   }
 }
 
@@ -66,6 +70,7 @@ tasks.withType<KotlinCompile>().configureEach {
     apiVersion = "1.5"
     // See comment above on JDK 11 support
     jvmTarget = "11"
+    allWarningsAsErrors = true
   }
 }
 

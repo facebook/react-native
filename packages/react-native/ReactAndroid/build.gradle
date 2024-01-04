@@ -67,7 +67,6 @@ def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
 def FMT_VERSION = libs.versions.fmt.get()
 def FOLLY_VERSION = libs.versions.folly.get()
 def GLOG_VERSION = libs.versions.glog.get()
-def LIBEVENT_VERSION = libs.versions.libevent.get()
 def GTEST_VERSION = libs.versions.gtest.get()
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
@@ -105,6 +104,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             new PrefabPreprocessingEntry(
                 "react_newarchdefaults",
                 new Pair("src/main/jni/react/newarchdefaults", "")
+            ),
+            new PrefabPreprocessingEntry(
+                "react_cxxreactpackage",
+                new Pair("src/main/jni/react/runtime/cxxreactpackage", "")
             ),
             new PrefabPreprocessingEntry(
                 "react_render_animations",
@@ -326,22 +329,6 @@ task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
     into("$thirdPartyNdkDir/fmt")
 }
 
-task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
-    onlyIfModified(true)
-    overwrite(false)
-    retries(5)
-    dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
-}
-
-
-final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTask) {
-    it.dependsOn(dependenciesPath ? [] : [downloadLibevent])
-    it.libeventPath.setFrom(dependenciesPath ?: tarTree(downloadLibevent.dest))
-    it.libeventVersion.set(LIBEVENT_VERSION)
-    it.outputDir.set(new File(thirdPartyNdkDir, "libevent"))
-}
-
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfModified(true)
@@ -392,6 +379,10 @@ task prepareKotlinBuildScriptModel {
 final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
     it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
     it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
+    it.onlyIf {
+        // For build from source scenario, we don't need to build the codegen at all.
+        rootProject.name != "react-native-build-from-source"
+    }
 }
 
 /**
@@ -521,7 +512,6 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21",
                     // Due to https://github.com/android/ndk/issues/1693 we're losing Android
                     // specific compilation flags. This can be removed once we moved to NDK 25/26
                     "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
@@ -544,6 +534,7 @@ android {
                     "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_cxxreactpackage",
                     "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
@@ -600,7 +591,6 @@ android {
             prepareGlog,
             prepareGtest,
             prepareJSC,
-            prepareLibevent,
             preparePrefab
     )
     generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
@@ -613,6 +603,7 @@ android {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
             srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
+            exclude("com/facebook/annotationprocessors")
             exclude("com/facebook/react/processing")
             exclude("com/facebook/react/module/processing")
         }
@@ -663,6 +654,9 @@ android {
         }
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
+        }
+        react_cxxreactpackage {
+            headers(new File(prefabHeadersDir, "react_cxxreactpackage").absolutePath)
         }
         react_render_animations {
             headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
@@ -766,6 +760,7 @@ dependencies {
     api(libs.okhttp3.urlconnection)
     api(libs.okhttp3)
     api(libs.okio)
+    compileOnly(libs.javax.annotation.api)
     api(libs.javax.inject)
 
     // It's up to the consumer to decide if hermes should be included or not.
@@ -790,8 +785,20 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+// For build from source, we need to override the privateReact extension.
+// This is neeeded as the build-from-source won't have a com.android.application
+// module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
+if (rootProject.name == "react-native-build-from-source") {
+    privateReact {
+        codegenDir = file("$rootDir/../@react-native/codegen")
+        reactNativeDir = file("$rootDir")
+    }
+}
+
 kotlin {
     jvmToolchain(17)
+
+    explicitApi()
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

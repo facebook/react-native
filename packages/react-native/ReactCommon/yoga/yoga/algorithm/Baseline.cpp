@@ -19,8 +19,8 @@ float calculateBaseline(const yoga::Node* node) {
     Event::publish<Event::NodeBaselineStart>(node);
 
     const float baseline = node->baseline(
-        node->getLayout().measuredDimensions[YGDimensionWidth],
-        node->getLayout().measuredDimensions[YGDimensionHeight]);
+        node->getLayout().measuredDimension(Dimension::Width),
+        node->getLayout().measuredDimension(Dimension::Height));
 
     Event::publish<Event::NodeBaselineEnd>(node);
 
@@ -53,11 +53,11 @@ float calculateBaseline(const yoga::Node* node) {
   }
 
   if (baselineChild == nullptr) {
-    return node->getLayout().measuredDimensions[YGDimensionHeight];
+    return node->getLayout().measuredDimension(Dimension::Height);
   }
 
   const float baseline = calculateBaseline(baselineChild);
-  return baseline + baselineChild->getLayout().position[YGEdgeTop];
+  return baseline + baselineChild->getLayout().position(Edge::Top);
 }
 
 bool isBaselineLayout(const yoga::Node* node) {

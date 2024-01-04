@@ -159,6 +159,7 @@ void* TextLayoutManager::getNativeTextLayoutManager() const {
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void> /* hostTextStorage */) const {
   auto& attributedString = attributedStringBox.getValue();

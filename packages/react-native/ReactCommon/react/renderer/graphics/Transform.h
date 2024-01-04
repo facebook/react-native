@@ -10,13 +10,13 @@
 #include <array>
 #include <vector>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <react/renderer/graphics/Vector.h>
+#include <react/utils/hash_combine.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -232,8 +232,7 @@ namespace std {
 template <>
 struct hash<facebook::react::Transform> {
   size_t operator()(const facebook::react::Transform& transform) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         transform.matrix[0],
         transform.matrix[1],
         transform.matrix[2],

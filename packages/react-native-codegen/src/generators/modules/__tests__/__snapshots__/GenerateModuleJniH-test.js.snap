@@ -18,8 +18,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeSampleTurboModule'
@@ -33,8 +32,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> SampleWithUppercaseName_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -104,8 +102,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeSampleTurboModule'
@@ -119,8 +116,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> complex_objects_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -190,16 +186,14 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
 JSI_EXPORT
 std::shared_ptr<TurboModule> cxx_only_native_modules_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -269,8 +263,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeSampleTurboModule'
@@ -284,8 +277,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> empty_native_modules_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -355,8 +347,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'AliasTurboModule'
@@ -370,8 +361,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> native_modules_with_type_aliases_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -441,8 +431,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeCameraRollManager'
@@ -464,8 +453,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> real_module_example_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -535,8 +523,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeSampleTurboModule'
@@ -550,8 +537,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> simple_native_modules_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -621,8 +607,7 @@ Map {
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * JNI C++ class for module 'NativeSampleTurboModule'
@@ -644,8 +629,7 @@ public:
 JSI_EXPORT
 std::shared_ptr<TurboModule> two_modules_different_files_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #

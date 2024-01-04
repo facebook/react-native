@@ -6,23 +6,25 @@
  */
 
 #include "ParagraphLayoutManager.h"
-#include <folly/Hash.h>
 #include <react/utils/CoreFeatures.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
 TextMeasurement ParagraphLayoutManager::measure(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
     LayoutConstraints layoutConstraints) const {
   if (CoreFeatures::cacheLastTextMeasurement) {
-    bool shouldMeasure = shoudMeasureString(
+    bool shouldMeasure = shouldMeasureString(
         attributedString, paragraphAttributes, layoutConstraints);
 
     if (shouldMeasure) {
       cachedTextMeasurement_ = textLayoutManager_->measure(
           AttributedStringBox(attributedString),
           paragraphAttributes,
+          layoutContext,
           layoutConstraints,
           hostTextStorage_);
       lastAvailableWidth_ = layoutConstraints.maximumSize.width;
@@ -33,17 +35,18 @@ TextMeasurement ParagraphLayoutManager::measure(
     return textLayoutManager_->measure(
         AttributedStringBox(attributedString),
         paragraphAttributes,
+        layoutContext,
         layoutConstraints,
         nullptr);
   }
 }
 
-bool ParagraphLayoutManager::shoudMeasureString(
+bool ParagraphLayoutManager::shouldMeasureString(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   size_t newParagraphInputHash =
-      folly::hash::hash_combine(0, attributedString, paragraphAttributes);
+      hash_combine(attributedString, paragraphAttributes);
 
   if (newParagraphInputHash != paragraphInputHash_) {
     // AttributedString or ParagraphAttributes have changed.

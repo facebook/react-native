@@ -38,7 +38,6 @@ target_link_libraries(
         react_render_runtimescheduler
         react_render_scheduler
         react_render_telemetry
-        react_render_templateprocessor
         react_render_textlayoutmanager
         react_render_uimanager
         react_utils

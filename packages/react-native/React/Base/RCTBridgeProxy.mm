@@ -351,6 +351,11 @@ using namespace facebook;
   return (RCTUIManager *)_uiManagerProxy;
 }
 
+- (RCTBridgeProxy *)object
+{
+  return self;
+}
+
 /**
  * NSProxy setup
  */
@@ -387,12 +392,14 @@ using namespace facebook;
 
 @implementation RCTUIManagerProxy {
   RCTViewRegistry *_viewRegistry;
+  NSMutableDictionary<NSNumber *, UIView *> *_legacyViewRegistry;
 }
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
 {
   self = [super self];
   if (self) {
     _viewRegistry = viewRegistry;
+    _legacyViewRegistry = [NSMutableDictionary new];
   }
   return self;
 }
@@ -404,20 +411,21 @@ using namespace facebook;
 {
   [self logWarning:@"Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
                cmd:_cmd];
-  return [_viewRegistry viewForReactTag:reactTag];
+  return [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
+                                                  : [_legacyViewRegistry objectForKey:reactTag];
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
   [self
       logWarning:
-          @"This method isn't implemented faithfully: the viewRegistry passed to RCTViewManagerUIBlock is nil. Please migrate to RCTViewRegistry: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
+          @"This method isn't implemented faithfully. Please migrate to RCTViewRegistry if possible: @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED."
              cmd:_cmd];
   __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      block((RCTUIManager *)strongSelf, nil);
+      block((RCTUIManager *)strongSelf, strongSelf->_legacyViewRegistry);
     }
   });
 }

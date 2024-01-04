@@ -11,11 +11,11 @@
 
 'use strict';
 
-const {FlowParser} = require('../../../src/parsers/flow/parser');
-const generator = require('../../../src/generators/modules/GenerateModuleObjCpp');
-const fs = require('fs');
-
 import type {SchemaType} from '../../../src/CodegenSchema';
+
+const generator = require('../../../src/generators/modules/GenerateModuleObjCpp');
+const {FlowParser} = require('../../../src/parsers/flow/parser');
+const fs = require('fs');
 
 const FIXTURE_DIR = `${__dirname}/../../__test_fixtures__/modules`;
 

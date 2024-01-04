@@ -70,17 +70,22 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     return BaseShadowNodeT::BaseTraits();
   }
 
+  static ShadowNodeTraits::Trait IdentifierTrait() {
+    return BaseShadowNodeT::IdentifierTrait();
+  }
+
   static UnsharedConcreteProps Props(
       const PropsParserContext& context,
       const RawProps& rawProps,
       const Props::Shared& baseProps = nullptr) {
     return std::make_shared<PropsT>(
         context,
-        baseProps ? static_cast<const PropsT&>(*baseProps) : PropsT(),
+        baseProps ? static_cast<const PropsT&>(*baseProps)
+                  : *defaultSharedProps(),
         rawProps);
   }
 
-  static SharedConcreteProps defaultSharedProps() {
+  static const SharedConcreteProps& defaultSharedProps() {
     static const SharedConcreteProps defaultSharedProps =
         std::make_shared<const PropsT>();
     return defaultSharedProps;

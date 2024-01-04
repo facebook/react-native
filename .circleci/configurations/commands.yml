@@ -46,10 +46,6 @@ commands:
               echo "rbenv found; Skipping installation"
             fi
 
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
-
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
               # ensure that `ruby-build` can see all the available versions of Ruby

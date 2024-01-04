@@ -11,9 +11,7 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
-#if RCT_NEW_ARCH_ENABLED
 // Turbo Module
-#import <React/CoreModulesPlugins.h>
 #import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
@@ -25,38 +23,10 @@
 // Fabric
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
-#endif
-
-#ifdef FB_SONARKIT_ENABLED
-#import <FlipperKit/FlipperClient.h>
-#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
-#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
-#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
-#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
-#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
-
-static void InitializeFlipper(UIApplication *application)
-{
-  FlipperClient *client = [FlipperClient sharedClient];
-  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
-  [client addPlugin:[[FlipperKitLayoutPlugin alloc] initWithRootNode:application
-                                                withDescriptorMapper:layoutDescriptorMapper]];
-  [client addPlugin:[[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
-  [client addPlugin:[FlipperKitReactPlugin new]];
-  [client addPlugin:[[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
-  [client start];
-}
-#endif
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-#ifdef FB_SONARKIT_ENABLED
-  InitializeFlipper(application);
-#endif
-
-#if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(turboModuleEnabled);
-#endif
 
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
@@ -68,18 +38,15 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-#if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
     id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
                                                                    moduleName:moduleName
                                                             initialProperties:initialProperties];
     return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
-#endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-#if RCT_NEW_ARCH_ENABLED
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.
@@ -140,8 +107,6 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
           }));
 }
 
-#else // else !RCT_NEW_ARCH_ENABLED
-
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
@@ -160,4 +125,3 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
         }
       }));
 }
-#endif // end RCT_NEW_ARCH_ENABLED

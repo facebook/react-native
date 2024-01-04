@@ -59,6 +59,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
+  public static final short TA_KEY_TEXT_TRANSFORM = 27;
 
   public static final int UNSET = -1;
 
@@ -73,10 +74,8 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-  private static final int DEFAULT_BREAK_STRATEGY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  private static final int DEFAULT_HYPHENATION_FREQUENCY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+  private static final int DEFAULT_BREAK_STRATEGY = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY = Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -219,6 +218,9 @@ public class TextAttributeProps {
         case TA_KEY_ROLE:
           result.setRole(Role.values()[entry.getIntValue()]);
           break;
+        case TA_KEY_TEXT_TRANSFORM:
+          result.setTextTransform(entry.getStringValue());
+          break;
       }
     }
 
@@ -226,7 +228,6 @@ public class TextAttributeProps {
     // setNumberOfLines
     // setColor
     // setIncludeFontPadding
-    // setTextTransform
     return result;
   }
 

@@ -9,8 +9,8 @@
 
 #include <tuple>
 
-#include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -63,7 +63,7 @@ namespace std {
 template <>
 struct hash<facebook::react::Point> {
   size_t operator()(const facebook::react::Point& point) const noexcept {
-    return folly::hash::hash_combine(0, point.x, point.y);
+    return facebook::react::hash_combine(point.x, point.y);
   }
 };
 

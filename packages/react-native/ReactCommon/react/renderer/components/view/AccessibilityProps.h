@@ -37,7 +37,7 @@ class AccessibilityProps {
 #pragma mark - Props
 
   bool accessible{false};
-  AccessibilityState accessibilityState;
+  std::optional<AccessibilityState> accessibilityState{std::nullopt};
   std::string accessibilityLabel{""};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{

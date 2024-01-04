@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // As we want to test RCTEventEmitter here
 package com.facebook.react.uiapp.component
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.View
@@ -15,13 +15,15 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class MyNativeView(context: Context) : View(context) {
+class MyNativeView(context: ThemedReactContext) : View(context) {
   private var currentColor = 0
   private var background: GradientDrawable = GradientDrawable()
+  private var reactContext: ReactContext = context.reactApplicationContext
 
   override fun setBackgroundColor(color: Int) {
     if (color != currentColor) {
@@ -33,13 +35,14 @@ class MyNativeView(context: Context) : View(context) {
   }
 
   fun setCornerRadius(cornerRadius: Float) {
-    background.setCornerRadius(cornerRadius)
+    background.cornerRadius = cornerRadius
     setBackground(background)
   }
 
   private fun emitNativeEvent(color: Int) {
     val event = Arguments.createMap()
     val hsv = FloatArray(3)
+    Color.colorToHSV(color, hsv)
     val backgroundColor =
         Arguments.createMap().apply {
           putDouble("hue", hsv[0].toDouble())
@@ -48,10 +51,8 @@ class MyNativeView(context: Context) : View(context) {
           putDouble("alpha", Color.alpha(color).toDouble())
         }
 
-    Color.colorToHSV(color, hsv)
     event.putMap("backgroundColor", backgroundColor)
 
-    val reactContext = context as ReactContext
     reactContext.getJSModule(RCTEventEmitter::class.java).receiveEvent(id, "onColorChanged", event)
   }
 
@@ -110,7 +111,7 @@ class MyNativeView(context: Context) : View(context) {
       viewId: Int,
       private val payload: WritableMap
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
-    override fun getEventName() = "onIntArrayChanged"
+    override fun getEventName() = "topIntArrayChanged"
 
     override fun getEventData() = payload
   }

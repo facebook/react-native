@@ -7,11 +7,11 @@
 
 package com.facebook.react.modules.debug;
 
+import android.view.Choreographer;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.uimanager.UIManagerModule;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,7 +26,7 @@ import java.util.TreeMap;
  * idle and not trying to update the UI. This is different from the FPS above since JS rendering is
  * async.
  */
-public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
+public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
 
   public static class FpsInfo {
 
@@ -56,9 +56,9 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
     }
   }
 
-  private static final double EXPECTED_FRAME_TIME = 16.9;
+  private static final double DEFAULT_FPS = 60.0;
 
-  private @Nullable ChoreographerCompat mChoreographer;
+  private @Nullable Choreographer mChoreographer;
   private final ReactContext mReactContext;
   private final UIManagerModule mUIManagerModule;
   private final DidJSUpdateUiDuringFrameDetector mDidJSUpdateUiDuringFrameDetector;
@@ -70,6 +70,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   private int m4PlusFrameStutters = 0;
   private int mNumFrameCallbacksWithBatchDispatches = 0;
   private boolean mIsRecordingFpsInfoAtEachFrame = false;
+  private double mTargetFps = DEFAULT_FPS;
   private @Nullable TreeMap<Long, FpsInfo> mTimeToFps;
 
   public FpsDebugFrameCallback(ReactContext reactContext) {
@@ -113,24 +114,26 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
       mTimeToFps.put(System.currentTimeMillis(), info);
     }
     mExpectedNumFramesPrev = expectedNumFrames;
+
     if (mChoreographer != null) {
       mChoreographer.postFrameCallback(this);
     }
   }
 
   public void start() {
+    start(mTargetFps);
+  }
+
+  public void start(double targetFps) {
     mReactContext
         .getCatalystInstance()
         .addBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
-    final FpsDebugFrameCallback fpsDebugFrameCallback = this;
+    mTargetFps = targetFps;
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mChoreographer = ChoreographerCompat.getInstance();
-            mChoreographer.postFrameCallback(fpsDebugFrameCallback);
-          }
+        () -> {
+          mChoreographer = Choreographer.getInstance();
+          mChoreographer.postFrameCallback(this);
         });
   }
 
@@ -145,14 +148,10 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
         .getCatalystInstance()
         .removeBridgeIdleDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
-    final FpsDebugFrameCallback fpsDebugFrameCallback = this;
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mChoreographer = ChoreographerCompat.getInstance();
-            mChoreographer.removeFrameCallback(fpsDebugFrameCallback);
-          }
+        () -> {
+          mChoreographer = Choreographer.getInstance();
+          mChoreographer.removeFrameCallback(this);
         });
   }
 
@@ -180,7 +179,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   public int getExpectedNumFrames() {
     double totalTimeMS = getTotalTimeMS();
-    int expectedFrames = (int) (totalTimeMS / EXPECTED_FRAME_TIME + 1);
+    int expectedFrames = (int) (mTargetFps * totalTimeMS / 1000 + 1);
     return expectedFrames;
   }
 

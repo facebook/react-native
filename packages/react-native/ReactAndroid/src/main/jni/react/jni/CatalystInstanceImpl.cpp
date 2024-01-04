@@ -7,12 +7,8 @@
 
 #include "CatalystInstanceImpl.h"
 
-#include <condition_variable>
 #include <fstream>
 #include <memory>
-#include <mutex>
-#include <sstream>
-#include <vector>
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <cxxreact/CxxNativeModule.h>
@@ -34,7 +30,6 @@
 
 #include <logger/react_native_log.h>
 
-#include "CxxModuleWrapper.h"
 #include "JReactCxxErrorHandler.h"
 #include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
@@ -47,24 +42,17 @@ namespace facebook::react {
 
 namespace {
 
-class Exception : public jni::JavaClass<Exception> {
+class InstanceCallbackImpl : public InstanceCallback {
  public:
-};
-
-class JInstanceCallback : public InstanceCallback {
- public:
-  explicit JInstanceCallback(
-      alias_ref<ReactCallback::javaobject> jobj,
-      std::shared_ptr<JMessageQueueThread> messageQueueThread)
-      : jobj_(make_global(jobj)),
-        messageQueueThread_(std::move(messageQueueThread)) {}
+  explicit InstanceCallbackImpl(alias_ref<JInstanceCallback::javaobject> jobj)
+      : jobj_(make_global(jobj)) {}
 
   void onBatchComplete() override {
-    messageQueueThread_->runOnQueue([this] {
-      static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-          "onBatchComplete");
-      method(jobj_);
-    });
+    jni::ThreadScope guard;
+    static auto method =
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "onBatchComplete");
+    method(jobj_);
   }
 
   void incrementPendingJSCalls() override {
@@ -72,21 +60,22 @@ class JInstanceCallback : public InstanceCallback {
     // managed by the module, via callJSCallback or callJSFunction.  So,
     // we ensure that it is registered with the JVM.
     jni::ThreadScope guard;
-    static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-        "incrementPendingJSCalls");
+    static auto method =
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "incrementPendingJSCalls");
     method(jobj_);
   }
 
   void decrementPendingJSCalls() override {
     jni::ThreadScope guard;
-    static auto method = ReactCallback::javaClassStatic()->getMethod<void()>(
-        "decrementPendingJSCalls");
+    static auto method =
+        JInstanceCallback::javaClassStatic()->getMethod<void()>(
+            "decrementPendingJSCalls");
     method(jobj_);
   }
 
  private:
-  global_ref<ReactCallback::javaobject> jobj_;
-  std::shared_ptr<JMessageQueueThread> messageQueueThread_;
+  global_ref<JInstanceCallback::javaobject> jobj_;
 };
 
 } // namespace
@@ -160,7 +149,7 @@ void log(ReactNativeLogLevel level, const char* message) {
 }
 
 void CatalystInstanceImpl::initializeBridge(
-    jni::alias_ref<ReactCallback::javaobject> callback,
+    jni::alias_ref<JInstanceCallback::javaobject> callback,
     // This executor is actually a factory holder.
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
@@ -201,7 +190,7 @@ void CatalystInstanceImpl::initializeBridge(
       moduleMessageQueue_));
 
   instance_->initializeBridge(
-      std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
+      std::make_unique<InstanceCallbackImpl>(callback),
       jseh->getExecutorFactory(),
       std::make_unique<JMessageQueueThread>(jsQueue),
       moduleRegistry_);
@@ -362,7 +351,7 @@ CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
           : messageQueueThread_(messageQueueThread) {}
       void invokeAsync(
           const std::string& methodName,
-          std::function<void()>&& work) override {
+          std::function<void()>&& work) noexcept override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
       void invokeSync(

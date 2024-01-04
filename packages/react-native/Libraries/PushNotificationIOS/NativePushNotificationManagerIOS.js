@@ -20,17 +20,45 @@ type Permissions = {|
 
 type Notification = {|
   +alertTitle?: ?string,
-  // Actual type: string | number
-  +fireDate?: ?number,
   +alertBody?: ?string,
-  +alertAction?: ?string,
   +userInfo?: ?Object,
+  /**
+   * Identifier for the notification category. See the [Apple documentation](https://developer.apple.com/documentation/usernotifications/declaring_your_actionable_notification_types)
+   * for more details.
+   */
   +category?: ?string,
-  // Actual type: 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute'
-  +repeatInterval?: ?string,
+  /**
+   * Actual type: string | number
+   *
+   * Schedule notifications using EITHER `fireDate` or `fireIntervalSeconds`.
+   * If both are specified, `fireDate` takes precedence.
+   * If you use `presentLocalNotification`, both will be ignored
+   * and the notification will be shown immediately.
+   */
+  +fireDate?: ?number,
+  /**
+   * Seconds from now to display the notification.
+   *
+   * Schedule notifications using EITHER `fireDate` or `fireIntervalSeconds`.
+   * If both are specified, `fireDate` takes precedence.
+   * If you use `presentLocalNotification`, both will be ignored
+   * and the notification will be shown immediately.
+   */
+  +fireIntervalSeconds?: ?number,
+  /** Badge count to display on the app icon. */
   +applicationIconBadgeNumber?: ?number,
+  /** Whether to silence the notification sound. */
   +isSilent?: ?boolean,
+  /**
+   * Custom notification sound to play. Write-only: soundName will be null when
+   * accessing already created notifications using getScheduledLocalNotifications
+   * or getDeliveredNotifications.
+   */
   +soundName?: ?string,
+  /** DEPRECATED. This was used for iOS's legacy UILocalNotification. */
+  +alertAction?: ?string,
+  /** DEPRECATED. Use `fireDate` or `fireIntervalSeconds` instead. */
+  +repeatInterval?: ?string,
 |};
 
 export interface Spec extends TurboModule {

@@ -10,19 +10,19 @@
 
 'use strict';
 import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  NamedShape,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
 const {
-  getImports,
-  toSafeJavaString,
-  getInterfaceJavaClassName,
   getDelegateJavaClassName,
+  getImports,
+  getInterfaceJavaClassName,
+  toSafeJavaString,
 } = require('./JavaHelpers');
 
 // File path -> contents

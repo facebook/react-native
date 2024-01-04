@@ -9,13 +9,12 @@
 
 'use strict';
 
-const yargs = require('yargs');
-const {execSync} = require('child_process');
-const path = require('path');
-
+const {retry} = require('../circleci/retry');
 const forEachPackage = require('../monorepo/for-each-package');
 const setupVerdaccio = require('../setup-verdaccio');
-const {retry} = require('../circleci/retry');
+const {execSync} = require('child_process');
+const path = require('path');
+const yargs = require('yargs');
 
 const {argv} = yargs
   .option('r', {
@@ -63,6 +62,11 @@ async function install() {
     forEachPackage(
       (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
         if (packageManifest.private) {
+          return;
+        }
+
+        // TODO: Fix normalize-colors publishing in Verdaccio
+        if (packageManifest.name === '@react-native/normalize-colors') {
           return;
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "@react-native/babel-preset",
-  "version": "0.73.16",
+  "version": "0.74.0",
   "description": "Babel preset for React Native applications",
   "main": "src/index.js",
   "repository": {
@@ -19,6 +19,7 @@
     "@babel/plugin-proposal-class-properties": "^7.18.0",
     "@babel/plugin-proposal-export-default-from": "^7.0.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.0",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.18.0",
     "@babel/plugin-proposal-numeric-separator": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.0",
     "@babel/plugin-proposal-optional-catch-binding": "^7.0.0",
@@ -55,7 +56,7 @@
     "@babel/template": "^7.0.0",
     "@react-native/babel-plugin-codegen": "*",
     "babel-plugin-transform-flow-enums": "^0.0.2",
-    "react-refresh": "^0.4.0"
+    "react-refresh": "^0.14.0"
   },
   "peerDependencies": {
     "@babel/core": "*"

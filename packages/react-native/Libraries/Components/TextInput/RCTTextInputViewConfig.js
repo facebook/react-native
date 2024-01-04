@@ -31,12 +31,6 @@ const RCTTextInputViewConfig = {
         captured: 'onChangeCapture',
       },
     },
-    topContentSizeChange: {
-      phasedRegistrationNames: {
-        captured: 'onContentSizeChangeCapture',
-        bubbled: 'onContentSizeChange',
-      },
-    },
     topEndEditing: {
       phasedRegistrationNames: {
         bubbled: 'onEndEditing',
@@ -96,6 +90,9 @@ const RCTTextInputViewConfig = {
     },
     topChangeSync: {
       registrationName: 'onChangeSync',
+    },
+    topContentSizeChange: {
+      registrationName: 'onContentSizeChange',
     },
   },
   validAttributes: {

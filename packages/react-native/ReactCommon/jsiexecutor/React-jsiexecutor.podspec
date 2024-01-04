@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2022.05.16.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2023.08.07.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
-  s.dependency 'fmt' , '~> 6.2.1'
+  s.dependency "fmt", "9.1.0"
   s.dependency "glog"
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"

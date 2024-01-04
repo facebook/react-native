@@ -86,9 +86,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         surfaceDelegateFactory,
         devLoadingViewManager);
 
-    mReactInstanceManagerHelper = reactInstanceManagerHelper;
-    mDevLoadingViewManager = devLoadingViewManager;
-
     if (getDevSettings().isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
       if (!mIsSamplingProfilerEnabled) {
@@ -110,14 +107,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
             toggleJSSamplingProfiler();
           }
         });
-  }
-
-  public DevLoadingViewManager getDevLoadingViewManager() {
-    return mDevLoadingViewManager;
-  }
-
-  public ReactInstanceDevHelper getReactInstanceManagerHelper() {
-    return mReactInstanceManagerHelper;
   }
 
   @Override

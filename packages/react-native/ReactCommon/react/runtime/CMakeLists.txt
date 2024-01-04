@@ -34,4 +34,5 @@ target_link_libraries(
         fb
         jsi
         jsireact
+        react_utils
 )

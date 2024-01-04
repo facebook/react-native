@@ -9,10 +9,10 @@
 
 #include <limits>
 
-#include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -88,8 +88,7 @@ template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
       const facebook::react::ParagraphAttributes& attributes) const {
-    return folly::hash::hash_combine(
-        0,
+    return facebook::react::hash_combine(
         attributes.maximumNumberOfLines,
         attributes.ellipsizeMode,
         attributes.textBreakStrategy,

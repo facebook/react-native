@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @see Task#whenAll(java.util.Collection)
  */
-public class AggregateException extends Exception {
+class AggregateException extends Exception {
   private static final long serialVersionUID = 1L;
 
   private static final String DEFAULT_MESSAGE = "There were multiple errors.";

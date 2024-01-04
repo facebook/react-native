@@ -13,11 +13,11 @@
 namespace facebook::yoga {
 
 bool LayoutResults::operator==(LayoutResults layout) const {
-  bool isEqual = yoga::inexactEquals(position, layout.position) &&
-      yoga::inexactEquals(dimensions, layout.dimensions) &&
-      yoga::inexactEquals(margin, layout.margin) &&
-      yoga::inexactEquals(border, layout.border) &&
-      yoga::inexactEquals(padding, layout.padding) &&
+  bool isEqual = yoga::inexactEquals(position_, layout.position_) &&
+      yoga::inexactEquals(dimensions_, layout.dimensions_) &&
+      yoga::inexactEquals(margin_, layout.margin_) &&
+      yoga::inexactEquals(border_, layout.border_) &&
+      yoga::inexactEquals(padding_, layout.padding_) &&
       direction() == layout.direction() &&
       hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
@@ -30,15 +30,15 @@ bool LayoutResults::operator==(LayoutResults layout) const {
     isEqual = isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
   }
 
-  if (!yoga::isUndefined(measuredDimensions[0]) ||
-      !yoga::isUndefined(layout.measuredDimensions[0])) {
+  if (!yoga::isUndefined(measuredDimensions_[0]) ||
+      !yoga::isUndefined(layout.measuredDimensions_[0])) {
     isEqual =
-        isEqual && (measuredDimensions[0] == layout.measuredDimensions[0]);
+        isEqual && (measuredDimensions_[0] == layout.measuredDimensions_[0]);
   }
-  if (!yoga::isUndefined(measuredDimensions[1]) ||
-      !yoga::isUndefined(layout.measuredDimensions[1])) {
+  if (!yoga::isUndefined(measuredDimensions_[1]) ||
+      !yoga::isUndefined(layout.measuredDimensions_[1])) {
     isEqual =
-        isEqual && (measuredDimensions[1] == layout.measuredDimensions[1]);
+        isEqual && (measuredDimensions_[1] == layout.measuredDimensions_[1]);
   }
 
   return isEqual;

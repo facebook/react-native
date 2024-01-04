@@ -15,8 +15,8 @@ const {
   LayoutAnimation,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
+  View,
 } = require('react-native');
 
 type ExampleViewSpec = {|

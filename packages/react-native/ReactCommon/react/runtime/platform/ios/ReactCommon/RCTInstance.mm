@@ -67,7 +67,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 @implementation RCTInstance {
   std::unique_ptr<ReactInstance> _reactInstance;
-  std::shared_ptr<JSEngineInstance> _jsEngineInstance;
+  std::shared_ptr<JSRuntimeFactory> _jsRuntimeFactory;
   __weak id<RCTTurboModuleManagerDelegate> _appTMMDelegate;
   __weak id<RCTInstanceDelegate> _delegate;
   RCTSurfacePresenter *_surfacePresenter;
@@ -86,7 +86,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #pragma mark - Public
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
@@ -98,7 +98,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [_performanceLogger markStartForTag:RCTPLReactInstanceInit];
 
     _delegate = delegate;
-    _jsEngineInstance = jsEngineInstance;
+    _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
@@ -149,7 +149,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
     // Clean up all the Resources
     self->_reactInstance = nullptr;
-    self->_jsEngineInstance = nullptr;
+    self->_jsRuntimeFactory = nullptr;
     self->_appTMMDelegate = nil;
     self->_delegate = nil;
     self->_displayLink = nil;
@@ -216,35 +216,40 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   __weak __typeof(self) weakSelf = self;
   auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
 
+  auto useModernRuntimeScheduler = false;
+  if ([_delegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
+    useModernRuntimeScheduler = [(id)_delegate useModernRuntimeScheduler:self];
+  }
+
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsEngineInstance->createJSRuntime(_jsThreadManager.jsMessageThread),
+      _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc);
+      jsErrorHandlingFunc,
+      useModernRuntimeScheduler);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  RCTBridgeProxy *bridgeProxy = RCTTurboModuleInteropEnabled() && RCTTurboModuleInteropBridgeProxyEnabled()
-      ? [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
-            moduleRegistry:_bridgeModuleDecorator.moduleRegistry
-            bundleManager:_bridgeModuleDecorator.bundleManager
-            callableJSModules:_bridgeModuleDecorator.callableJSModules
-            dispatchToJSThread:^(dispatch_block_t block) {
-              __strong __typeof(self) strongSelf = weakSelf;
-              if (strongSelf && strongSelf->_valid) {
-                strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
-              }
+  RCTBridgeProxy *bridgeProxy =
+      [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
+          moduleRegistry:_bridgeModuleDecorator.moduleRegistry
+          bundleManager:_bridgeModuleDecorator.bundleManager
+          callableJSModules:_bridgeModuleDecorator.callableJSModules
+          dispatchToJSThread:^(dispatch_block_t block) {
+            __strong __typeof(self) strongSelf = weakSelf;
+            if (strongSelf && strongSelf->_valid) {
+              strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
             }
-            registerSegmentWithId:^(NSNumber *segmentId, NSString *path) {
-              __strong __typeof(self) strongSelf = weakSelf;
-              if (strongSelf && strongSelf->_valid) {
-                [strongSelf registerSegmentWithId:segmentId path:path];
-              }
-            }]
-      : nil;
+          }
+          registerSegmentWithId:^(NSNumber *segmentId, NSString *path) {
+            __strong __typeof(self) strongSelf = weakSelf;
+            if (strongSelf && strongSelf->_valid) {
+              [strongSelf registerSegmentWithId:segmentId path:path];
+            }
+          }];
 
   // Set up TurboModules
   _turboModuleManager = [[RCTTurboModuleManager alloc]
@@ -269,6 +274,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
   contextContainer->insert("RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
+  contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
 
   _surfacePresenter = [[RCTSurfacePresenter alloc]
         initWithContextContainer:contextContainer

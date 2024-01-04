@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include <folly/Hash.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/flags.h>
+#include <react/utils/hash_combine.h>
 
 namespace facebook::react {
 
@@ -124,7 +124,7 @@ namespace std {
 template <>
 struct hash<facebook::react::ShadowView> {
   size_t operator()(const facebook::react::ShadowView& shadowView) const {
-    return folly::hash::hash_combine(
+    return facebook::react::hash_combine(
         0,
         shadowView.surfaceId,
         shadowView.componentHandle,

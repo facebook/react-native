@@ -84,6 +84,9 @@ type DataDetectorTypes =
   | 'link'
   | 'address'
   | 'calendarEvent'
+  | 'trackingNumber'
+  | 'flightNumber'
+  | 'lookupSuggestion'
   | 'none'
   | 'all';
 
@@ -332,6 +335,14 @@ export interface TextInputAndroidProps {
    * @platform android
    */
   cursorColor?: ColorValue | null | undefined;
+
+  /**
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
+   * @platform android
+   */
+  selectionHandleColor?: ColorValue | null | undefined;
 
   /**
    * Determines whether the individual fields in your app should be included in a
@@ -737,6 +748,11 @@ export interface TextInputProps
   onEndEditing?:
     | ((e: NativeSyntheticEvent<TextInputEndEditingEventData>) => void)
     | undefined;
+
+  /**
+   * Called when a single tap gesture is detected.
+   */
+  onPress?: ((e: NativeSyntheticEvent<NativeTouchEvent>) => void) | undefined;
 
   /**
    * Callback that is called when a touch is engaged.

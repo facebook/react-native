@@ -14,6 +14,7 @@
 #include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/runtime/BufferedRuntimeExecutor.h>
+#include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/TimerManager.h>
 
 namespace facebook::react {
@@ -29,10 +30,11 @@ class ReactInstance final {
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
 
   ReactInstance(
-      std::unique_ptr<jsi::Runtime> runtime,
+      std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc);
+      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
+      bool useModernRuntimeScheduler = false);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -63,7 +65,7 @@ class ReactInstance final {
   void handleMemoryPressureJs(int pressureLevel);
 
  private:
-  std::shared_ptr<jsi::Runtime> runtime_;
+  std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
   std::shared_ptr<TimerManager> timerManager_;

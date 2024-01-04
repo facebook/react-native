@@ -15,7 +15,7 @@ import type {
 import type {PerformanceEntryType} from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
-import {PerformanceEventTiming} from './PerformanceEventTiming';
+import PerformanceEventTiming from './PerformanceEventTiming';
 
 export const RawPerformanceEntryTypeValues = {
   UNDEFINED: 0,

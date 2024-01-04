@@ -12,8 +12,10 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
-import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
@@ -22,6 +24,7 @@ import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -36,6 +39,7 @@ class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
+    checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
     // like codegen config can be propagated from app project to libraries.
@@ -64,9 +68,10 @@ class ReactPlugin : Plugin<Project> {
       }
 
       configureReactNativeNdk(project, extension)
-      configureBuildConfigFields(project, extension)
+      configureBuildConfigFieldsForApp(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
+      configureJavaToolChains(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
@@ -77,12 +82,11 @@ class ReactPlugin : Plugin<Project> {
     }
 
     // Library Only Configuration
+    configureBuildConfigFieldsForLibraries(project)
+    configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
-
-    // Library and App Configurations
-    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
@@ -101,6 +105,23 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
+    }
+  }
+
+  private fun checkIfNewArchFlagIsSet(project: Project, extension: ReactExtension) {
+    if (project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension)) {
+      project.logger.warn(
+          """
+
+      ********************************************************************************
+
+      WARNING: This version of React Native is ignoring the `newArchEnabled` flag you set. Please set it to true or remove it to suppress this warning.
+
+
+      ********************************************************************************
+
+      """
+              .trimIndent())
     }
   }
 

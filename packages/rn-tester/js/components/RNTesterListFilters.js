@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-
 const {StyleSheet, Text, TouchableOpacity, View} = require('react-native');
 
 const filters = ['Basic', 'UI', 'ListView', 'iOS', 'Android'];

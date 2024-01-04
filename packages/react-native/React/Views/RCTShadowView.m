@@ -304,7 +304,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   if (!RCTLayoutMetricsEqualToLayoutMetrics(self.layoutMetrics, layoutMetrics)) {
     self.layoutMetrics = layoutMetrics;
-    [layoutContext.affectedShadowViews addObject:self];
+    [layoutContext.affectedShadowViews addPointer:((__bridge void *)self)];
   }
 }
 
@@ -365,6 +365,13 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
   YGNodeFree(clonedYogaNode);
+
+  // `setOwner()` for children unlinked by `YGNodeFree()`
+  int childCount = YGNodeGetChildCount(self.yogaNode);
+  for (int i = 0; i < childCount; i++) {
+    YGNodeRef child = YGNodeGetChild(self.yogaNode, i);
+    YGNodeSwapChild(self.yogaNode, child, i);
+  }
 
   return measuredSize;
 }

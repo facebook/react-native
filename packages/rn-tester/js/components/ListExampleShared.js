@@ -11,17 +11,16 @@
 'use strict';
 
 const React = require('react');
-
 const {
   ActivityIndicator,
   Animated,
   Image,
   Platform,
-  TouchableHighlight,
   StyleSheet,
   Switch,
   Text,
   TextInput,
+  TouchableHighlight,
   View,
 } = require('react-native');
 

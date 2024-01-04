@@ -358,20 +358,24 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 
   auto borderWidths = CascadedBorderWidths{
-      /* .left = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeLeft]),
-      /* .top = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeTop]),
+      /* .left = */ optionalFloatFromYogaValue(
+          yogaStyle.border(yoga::Edge::Left)),
+      /* .top = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
       /* .right = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeRight]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
       /* .bottom = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeBottom]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
       /* .start = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeStart]),
-      /* .end = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeEnd]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
+      /* .end = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
       /* .horizontal = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeHorizontal]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
       /* .vertical = */
-      optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeVertical]),
-      /* .all = */ optionalFloatFromYogaValue(yogaStyle.border()[YGEdgeAll]),
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
+      /* .all = */
+      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
 
   return {

@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_runtimescheduler_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_runtimescheduler SHARED ${react_render_runtimescheduler_SRC})
+add_library(react_render_runtimescheduler STATIC ${react_render_runtimescheduler_SRC})
 
 target_include_directories(react_render_runtimescheduler PUBLIC ${REACT_COMMON_DIR})
 
@@ -26,4 +26,5 @@ target_link_libraries(react_render_runtimescheduler
         react_debug
         react_render_core
         react_render_debug
+        react_utils
         runtimeexecutor)

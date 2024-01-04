@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_scrollview_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_scrollview SHARED ${rrc_scrollview_SRC})
+add_library(rrc_scrollview STATIC ${rrc_scrollview_SRC})
 
 target_include_directories(rrc_scrollview PUBLIC ${REACT_COMMON_DIR})
 

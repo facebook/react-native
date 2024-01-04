@@ -16,8 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
-folly_version = '2022.05.16.00'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
+folly_version = '2023.08.07.00'
 boost_compiler_flags = '-Wno-documentation'
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 Pod::Spec.new do |s|
@@ -48,10 +48,12 @@ Pod::Spec.new do |s|
     s.dependency "React-callinvoker"
     s.dependency "React-Core"
     s.dependency "React-cxxreact"
-    s.dependency "React-runtimeexecutor"
     s.dependency "React-jsi"
+    s.dependency "React-runtimeexecutor"
 
     if using_hermes
       s.dependency "hermes-engine"
+    else
+      s.dependency "React-jsc"
     end
 end

@@ -21,12 +21,12 @@
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
 
-const {echo, exec, exit, ls} = require('shelljs');
-
-const argv = require('yargs').argv;
-const numberOfRetries = argv.retries || 1;
 const tryExecNTimes = require('./try-n-times');
 const path = require('path');
+const {echo, exec, exit, ls} = require('shelljs');
+const argv = require('yargs').argv;
+
+const numberOfRetries = argv.retries || 1;
 
 // Flaky tests ignored on Circle CI. They still run internally at fb.
 const ignoredTests = [

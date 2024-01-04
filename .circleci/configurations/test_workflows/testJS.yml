@@ -9,3 +9,4 @@
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
+      - test_windows

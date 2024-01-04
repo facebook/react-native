@@ -11,7 +11,6 @@
 'use strict';
 
 import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
-
 import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 

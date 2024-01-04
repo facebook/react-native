@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 #import <react/renderer/core/ReactPrimitives.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 
 #import "RCTInstance.h"
 
@@ -35,13 +35,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * This is a private protocol used to configure internal behavior of the runtime.
+ * DO NOT USE THIS OUTSIDE OF THE REACT NATIVE CODEBASE.
+ */
+@protocol RCTHostDelegateInternal <NSObject>
+
+// TODO(T166383606): Remove this method when we remove the legacy runtime scheduler or we have access to
+// ReactNativeConfig before we initialize it.
+- (BOOL)useModernRuntimeScheduler:(RCTHost *)host;
+
+@end
+
 @protocol RCTHostRuntimeDelegate <NSObject>
 
 - (void)host:(RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
 @end
 
-typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProvider)(void);
+typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProvider)(void);
 
 @interface RCTHost : NSObject
 

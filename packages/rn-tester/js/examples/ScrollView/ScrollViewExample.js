@@ -82,6 +82,7 @@ class AppendingList extends React.Component<
           nestedScrollEnabled
           style={styles.scrollView}>
           {this.state.items.map(item =>
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             React.cloneElement(item, {key: item.props.msg}),
           )}
         </ScrollView>
@@ -94,6 +95,7 @@ class AppendingList extends React.Component<
           }}
           style={[styles.scrollView, styles.horizontalScrollView]}>
           {this.state.items.map(item =>
+            // $FlowFixMe[prop-missing] React.Element internal inspection
             React.cloneElement(item, {key: item.props.msg, style: null}),
           )}
         </ScrollView>

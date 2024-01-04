@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-
-const {StyleSheet, View, Text, Button, Share} = require('react-native');
+const {Button, Share, StyleSheet, Text, View} = require('react-native');
 
 const shareMessage = () => {
   // $FlowFixMe[unused-promise]

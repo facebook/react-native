@@ -304,6 +304,7 @@ const validAttributesForEventProps = {
   onTouchCancel: true,
 
   // Pointer events
+  onClick: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

@@ -50,7 +50,6 @@ add_react_third_party_ndk_subdir(glog)
 add_react_third_party_ndk_subdir(boost)
 add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fmt)
-add_react_third_party_ndk_subdir(libevent)
 add_react_third_party_ndk_subdir(folly)
 add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
@@ -77,7 +76,6 @@ add_react_common_subdir(react/renderer/componentregistry)
 add_react_common_subdir(react/renderer/mounting)
 add_react_common_subdir(react/renderer/scheduler)
 add_react_common_subdir(react/renderer/telemetry)
-add_react_common_subdir(react/renderer/templateprocessor)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/element)
@@ -123,6 +121,7 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
+add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
@@ -164,7 +163,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/SchedulerPriorityTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/telemetry/tests/TransactionTelemetryTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
 
@@ -192,7 +190,6 @@ add_executable(reactnative_unittest
 
   target_link_libraries(reactnative_unittest
   folly_runtime
-  folly_futures
   glog
   glog_init
   gtest_main
@@ -209,7 +206,6 @@ add_executable(reactnative_unittest
   react_render_graphics
   react_render_mapbuffer
   react_render_mounting
-  react_render_templateprocessor
   react_render_textlayoutmanager
   react_render_uimanager
   react_utils

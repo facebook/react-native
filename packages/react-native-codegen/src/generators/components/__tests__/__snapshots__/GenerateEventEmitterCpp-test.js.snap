@@ -15,11 +15,9 @@ Map {
 #include <react/renderer/components/ARRAY_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -39,11 +37,9 @@ Map {
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -63,11 +59,9 @@ Map {
 #include <react/renderer/components/BOOLEAN_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -87,11 +81,9 @@ Map {
 #include <react/renderer/components/COLOR_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -111,11 +103,9 @@ Map {
 #include <react/renderer/components/COMMANDS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -135,11 +125,9 @@ Map {
 #include <react/renderer/components/COMMANDS_AND_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -159,11 +147,9 @@ Map {
 #include <react/renderer/components/DIMENSION_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -183,11 +169,9 @@ Map {
 #include <react/renderer/components/DOUBLE_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -207,8 +191,7 @@ Map {
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -228,8 +211,7 @@ void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange $event) co
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -249,8 +231,7 @@ Map {
 #include <react/renderer/components/EVENT_PROPS/EventEmitters.h>
 #include <jsi/JSIDynamic.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void EventsNativeComponentEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -357,8 +338,7 @@ void EventsNativeComponentEventEmitter::onEventWithMixedPropAttribute(OnEventWit
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -378,8 +358,7 @@ Map {
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -398,8 +377,7 @@ void InterfaceOnlyComponentEventEmitter::onDirectChange(OnDirectChange $event) c
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -419,11 +397,9 @@ Map {
 #include <react/renderer/components/EXCLUDE_ANDROID/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -443,11 +419,9 @@ Map {
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -467,12 +441,10 @@ Map {
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -492,11 +464,9 @@ Map {
 #include <react/renderer/components/FLOAT_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -516,11 +486,9 @@ Map {
 #include <react/renderer/components/IMAGE_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -540,11 +508,9 @@ Map {
 #include <react/renderer/components/INSETS_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -564,11 +530,9 @@ Map {
 #include <react/renderer/components/INT32_ENUM_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -588,11 +552,9 @@ Map {
 #include <react/renderer/components/INTEGER_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -612,8 +574,7 @@ Map {
 #include <react/renderer/components/INTERFACE_ONLY/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
   dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
@@ -623,8 +584,7 @@ void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -644,11 +604,9 @@ Map {
 #include <react/renderer/components/MIXED_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -668,11 +626,9 @@ Map {
 #include <react/renderer/components/MULTI_NATIVE_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -692,11 +648,9 @@ Map {
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -716,11 +670,9 @@ Map {
 #include <react/renderer/components/OBJECT_PROPS/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -740,11 +692,9 @@ Map {
 #include <react/renderer/components/POINT_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -764,11 +714,9 @@ Map {
 #include <react/renderer/components/STRING_ENUM_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -788,11 +736,9 @@ Map {
 #include <react/renderer/components/STRING_PROP/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -812,12 +758,10 @@ Map {
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -837,12 +781,10 @@ Map {
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/EventEmitters.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

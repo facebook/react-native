@@ -11,7 +11,6 @@
 'use strict';
 
 const {ParserError} = require('./errors');
-
 const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};

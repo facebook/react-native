@@ -11,69 +11,65 @@
 'use strict';
 
 import type {
-  Nullable,
+  EventTypeAnnotation,
+  EventTypeShape,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleSchema,
-  NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
-  SchemaType,
-  NativeModuleEnumMap,
+  NativeModuleSchema,
+  NativeModuleTypeAnnotation,
+  Nullable,
+  ObjectTypeAnnotation,
   OptionsShape,
   PropTypeAnnotation,
-  EventTypeAnnotation,
-  ObjectTypeAnnotation,
-  EventTypeShape,
+  SchemaType,
 } from '../CodegenSchema.js';
-
-import type {Parser} from './parser';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from './utils';
-import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
-  getConfigType,
-  extractNativeModuleName,
-  createParserErrorCapturer,
-  visit,
-  isModuleRegistryCall,
-  verifyPlatforms,
-} = require('./utils');
-
-const {
+  throwIfConfigNotfound,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfModuleInterfaceIsMisnamed,
+  throwIfModuleInterfaceNotFound,
+  throwIfModuleTypeIsUnsupported,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfMoreThanOneConfig,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
   throwIfPropertyValueTypeIsUnsupported,
+  throwIfTypeAliasIsNotInterface,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
-  throwIfModuleTypeIsUnsupported,
-  throwIfUnusedModuleInterfaceParserError,
-  throwIfMoreThanOneModuleRegistryCalls,
-  throwIfWrongNumberOfCallExpressionArgs,
   throwIfUntypedModule,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
-  throwIfModuleInterfaceNotFound,
-  throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneCodegenNativecommands,
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-  throwIfTypeAliasIsNotInterface,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfWrongNumberOfCallExpressionArgs,
 } = require('./error-utils');
-
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
-
+const {
+  createParserErrorCapturer,
+  extractNativeModuleName,
+  getConfigType,
+  isModuleRegistryCall,
+  verifyPlatforms,
+  visit,
+} = require('./utils');
 const invariant = require('invariant');
 
 export type CommandOptions = $ReadOnly<{
@@ -105,6 +101,7 @@ function wrapModuleSchema(
   };
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   x: Nullable<T>,
 ): [T, boolean] {
@@ -115,6 +112,7 @@ function unwrapNullable<+T: NativeModuleTypeAnnotation>(
   return [x, false];
 }
 
+// $FlowFixMe[unsupported-variance-annotation]
 function wrapNullable<+T: NativeModuleTypeAnnotation>(
   nullable: boolean,
   typeAnnotation: T,
@@ -173,6 +171,7 @@ function isObjectProperty(property: $FlowFixMe, language: ParserType): boolean {
 }
 
 function parseObjectProperty(
+  parentObject?: $FlowFixMe,
   property: $FlowFixMe,
   hasteModuleName: string,
   types: TypeDeclarationMap,
@@ -193,6 +192,34 @@ function parseObjectProperty(
       ? property.typeAnnotation.typeAnnotation
       : property.value;
 
+  // Handle recursive types
+  if (parentObject) {
+    const propertyType = parser.getResolveTypeAnnotationFN()(
+      languageTypeAnnotation,
+      types,
+      parser,
+    );
+    if (
+      propertyType.typeResolutionStatus.successful === true &&
+      propertyType.typeResolutionStatus.type === 'alias' &&
+      (language === 'TypeScript'
+        ? parentObject.typeName &&
+          parentObject.typeName.name === languageTypeAnnotation.typeName?.name
+        : parentObject.id &&
+          parentObject.id.name === languageTypeAnnotation.id?.name)
+    ) {
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'TypeAliasTypeAnnotation',
+          name: propertyType.typeResolutionStatus.name,
+        },
+      };
+    }
+  }
+
+  // Handle non-recursive types
   const [propertyTypeAnnotation, isPropertyNullable] =
     unwrapNullable<$FlowFixMe>(
       translateTypeAnnotation(
@@ -208,7 +235,7 @@ function parseObjectProperty(
     );
 
   if (
-    propertyTypeAnnotation.type === 'FunctionTypeAnnotation' ||
+    (propertyTypeAnnotation.type === 'FunctionTypeAnnotation' && !cxxOnly) ||
     propertyTypeAnnotation.type === 'PromiseTypeAnnotation' ||
     propertyTypeAnnotation.type === 'VoidTypeAnnotation'
   ) {
@@ -482,7 +509,7 @@ function buildSchema(
     return {modules: {}};
   }
 
-  const ast = parser.getAst(contents);
+  const ast = parser.getAst(contents, filename);
   const configType = getConfigType(ast, Visitor);
 
   return buildSchemaFromConfigType(
@@ -705,6 +732,7 @@ function findNativeComponentType(
   // expression so we need to go one level deeper
   if (
     declaration.type === 'TSAsExpression' ||
+    declaration.type === 'AsExpression' ||
     declaration.type === 'TypeCastExpression'
   ) {
     declaration = declaration.expression;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -29,6 +29,7 @@ const refreshControlComponentLabel =
   'RefreshControl Adds pull-to-refresh support to a scrollview.';
 const scrollViewSimpleExampleComponentLabel =
   'ScrollViewSimpleExample Component that enables scrolling through child components.';
+const textInputComponentLabel = 'TextInput Single and multi-line text inputs.';
 
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
@@ -41,6 +42,7 @@ type ComponentsScreenType = {
   pressableComponentLabelElement: string,
   refreshControlComponentLabelElement: string,
   scrollViewSimpleExampleComponentLabelElement: string,
+  textInputComponentLabelElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
   checkKeyboardAvoidingViewComponentIsDisplayed: () => Promise<boolean>,
@@ -51,6 +53,7 @@ type ComponentsScreenType = {
   checkPressableComponentIsDisplayed: () => Promise<boolean>,
   checkRefreshControlComponentIsDisplayed: () => Promise<boolean>,
   checkScrollViewSimpleExampleComponentIsDisplayed: () => Promise<boolean>,
+  checkTextInputComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
   clickKeyboardAvoidingViewComponent: () => Promise<void>,
@@ -61,6 +64,7 @@ type ComponentsScreenType = {
   clickPressableComponent: () => Promise<void>,
   clickRefreshControlComponent: () => Promise<void>,
   clickScrollViewSimpleExampleComponent: () => Promise<void>,
+  clickTextInputComponent: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -105,6 +109,11 @@ export const ComponentsScreen: ComponentsScreenType = {
     ios: iOSLabel(scrollViewSimpleExampleComponentLabel),
     android: `~${scrollViewSimpleExampleComponentLabel}`,
   }),
+  textInputComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(textInputComponentLabel),
+    android: `~${textInputComponentLabel}`,
+  }),
+
   // Methods to interact with top level elements in the list
   checkButtonComponentIsDisplayed: async function (
     this: ComponentsScreenType,
@@ -172,6 +181,14 @@ export const ComponentsScreen: ComponentsScreenType = {
       this.scrollViewSimpleExampleComponentLabelElement,
     );
   },
+  checkTextInputComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(
+      this.textInputComponentLabelElement,
+    );
+  },
+
   clickButtonComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
@@ -221,5 +238,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<void> {
     await Utils.clickElement(this.scrollViewSimpleExampleComponentLabelElement);
+  },
+  clickTextInputComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.textInputComponentLabelElement);
   },
 };

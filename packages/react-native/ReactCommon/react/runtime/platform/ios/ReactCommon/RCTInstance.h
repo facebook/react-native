@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 #import <react/renderer/mapbuffer/MapBuffer.h>
-#import <react/runtime/JSEngineInstance.h>
+#import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
 
 #import "RCTContextContainerHandling.h"
@@ -46,6 +46,18 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @end
 
+/**
+ * This is a private protocol used to configure internal behavior of the runtime.
+ * DO NOT USE THIS OUTSIDE OF THE REACT NATIVE CODEBASE.
+ */
+@protocol RCTInstanceDelegateInternal <NSObject>
+
+// TODO(T166383606): Remove this method when we remove the legacy runtime scheduler or we have access to
+// ReactNativeConfig before we initialize it.
+- (BOOL)useModernRuntimeScheduler:(RCTInstance *)instance;
+
+@end
+
 typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 
 /**
@@ -56,7 +68,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 @interface RCTInstance : NSObject
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
+                jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad

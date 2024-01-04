@@ -13,7 +13,6 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
-#include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JRuntimeExecutor.h"
 #include "JRuntimeScheduler.h"
@@ -27,9 +26,9 @@ class Instance;
 class JavaScriptExecutorHolder;
 class NativeArray;
 
-struct ReactCallback : public jni::JavaClass<ReactCallback> {
+struct JInstanceCallback : public jni::JavaClass<JInstanceCallback> {
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/ReactCallback;";
+      "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
 };
 
 class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
@@ -51,7 +50,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   CatalystInstanceImpl();
 
   void initializeBridge(
-      jni::alias_ref<ReactCallback::javaobject> callback,
+      jni::alias_ref<JInstanceCallback::javaobject> callback,
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,

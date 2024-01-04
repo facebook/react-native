@@ -10,10 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-
-const {Alert, Button, View, StyleSheet} = require('react-native');
 const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
+const React = require('react');
+const {Alert, Button, StyleSheet, View} = require('react-native');
 
 function onButtonPress(buttonName: string) {
   Alert.alert(`Your application has been ${buttonName}!`);

@@ -15,7 +15,6 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
-#import "RCTTransformOrigin.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -122,13 +121,6 @@ RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
 
-+ (RCTTransformOrigin)RCTTransformOrigin:(id)json
-{
-  RCTTransformOrigin transformOrigin = {
-      [RCTConvert YGValue:json[0]], [RCTConvert YGValue:json[1]], [RCTConvert CGFloat:json[2]]};
-  return transformOrigin;
-}
-
 @end
 
 @implementation RCTViewManager
@@ -221,7 +213,7 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale =
-      view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
+      view.layer.shouldRasterize ? view.traitCollection.displayScale : defaultView.layer.rasterizationScale;
 }
 
 RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)

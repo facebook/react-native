@@ -139,6 +139,40 @@ void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
   useTurboModuleInteropForAllTurboModules = enabled;
 }
 
+// Turn on TurboModule sync execution of void methods
+static BOOL gTurboModuleEnableSyncVoidMethods = NO;
+BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
+{
+  return gTurboModuleEnableSyncVoidMethods;
+}
+void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
+{
+  gTurboModuleEnableSyncVoidMethods = enabled;
+}
+
+// Use a shared queue for executing module methods
+static BOOL gTurboModuleEnableSharedQueue = NO;
+BOOL RCTTurboModuleSharedQueueEnabled(void)
+{
+  return gTurboModuleEnableSharedQueue;
+}
+
+void RCTEnableTurboModuleSharedQueue(BOOL enabled)
+{
+  gTurboModuleEnableSharedQueue = enabled;
+}
+
+BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
+BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
+{
+  return kDispatchAccessibilityManagerInitOntoMain;
+}
+
+void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
+{
+  kDispatchAccessibilityManagerInitOntoMain = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 

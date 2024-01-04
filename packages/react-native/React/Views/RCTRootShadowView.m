@@ -23,7 +23,7 @@
   return self;
 }
 
-- (void)layoutWithAffectedShadowViews:(NSHashTable<RCTShadowView *> *)affectedShadowViews
+- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
 {
   NSHashTable<NSString *> *other = [NSHashTable new];
 

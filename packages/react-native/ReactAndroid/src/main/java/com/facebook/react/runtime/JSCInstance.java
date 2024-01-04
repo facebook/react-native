@@ -13,7 +13,7 @@ import com.facebook.jni.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class JSCInstance extends JSEngineInstance {
+public class JSCInstance extends JSRuntimeFactory {
   static {
     SoLoader.loadLibrary("jscinstance");
   }

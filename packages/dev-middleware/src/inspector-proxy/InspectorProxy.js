@@ -9,19 +9,19 @@
  * @oncall react_native
  */
 
+import type {EventReporter} from '../types/EventReporter';
+import type {Experiments} from '../types/Experiments';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
   Page,
   PageDescription,
 } from './types';
-import type {EventReporter} from '../types/EventReporter';
-import type {Experiments} from '../types/Experiments';
 import type {IncomingMessage, ServerResponse} from 'http';
 
+import Device from './Device';
 import url from 'url';
 import WS from 'ws';
-import Device from './Device';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -94,12 +94,13 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response: ServerResponse,
     next: (?Error) => mixed,
   ) {
+    const pathname = url.parse(request.url).pathname;
     if (
-      request.url === PAGES_LIST_JSON_URL ||
-      request.url === PAGES_LIST_JSON_URL_2
+      pathname === PAGES_LIST_JSON_URL ||
+      pathname === PAGES_LIST_JSON_URL_2
     ) {
       this._sendJsonResponse(response, this.getPageDescriptions());
-    } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
+    } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this._sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
         'Protocol-Version': '1.1',
@@ -148,6 +149,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
       webSocketDebuggerUrl,
       vm: page.vm,
       deviceName: device.getName(),
+      reactNative: {
+        logicalDeviceId: deviceId,
+      },
     };
   }
 
@@ -176,6 +180,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: true,
+      // Don't crash on exceptionally large messages - assume the device is
+      // well-behaved and the debugger is prepared to handle large messages.
+      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
@@ -228,6 +235,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
+      // Don't crash on exceptionally large messages - assume the debugger is
+      // well-behaved and the device is prepared to handle large messages.
+      maxPayload: 0,
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {

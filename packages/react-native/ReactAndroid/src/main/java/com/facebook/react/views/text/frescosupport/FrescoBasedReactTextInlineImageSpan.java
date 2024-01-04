@@ -40,7 +40,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
  * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
  * or draws, we need to update this as well.
  */
-public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
+class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
   private @Nullable Drawable mDrawable;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;

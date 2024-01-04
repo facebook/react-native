@@ -276,8 +276,36 @@ TEST_F(BridgingTest, asyncCallbackTest) {
   cb(func, "hello");
 
   flushQueue(); // Run scheduled async work
-
   EXPECT_EQ("hello"s, output);
+
+  // Test with lambda invocation
+  cb.call([func, jsInvoker = invoker](jsi::Runtime& rt, jsi::Function& f) {
+    f.call(
+        rt,
+        bridging::toJs(rt, func, jsInvoker),
+        bridging::toJs(rt, "hello again", jsInvoker));
+  });
+
+  flushQueue();
+  EXPECT_EQ("hello again"s, output);
+}
+
+TEST_F(BridgingTest, asyncCallbackInvalidation) {
+  std::string output;
+  std::function<void(std::string)> func = [&](auto str) { output = str; };
+
+  auto jsCallback = bridging::fromJs<AsyncCallback<>>(
+      rt, bridging::toJs(rt, func, invoker), invoker);
+  jsCallback.call(
+      [](jsi::Runtime& rt, jsi::Function& f) { f.call(rt, "hello"); });
+
+  // LongLivedObjectCollection goes away before callback is executed
+  LongLivedObjectCollection::get().clear();
+
+  flushQueue();
+
+  // Assert native callback is never invoked
+  ASSERT_EQ(""s, output);
 }
 
 TEST_F(BridgingTest, asyncCallbackImplicitBridgingTest) {

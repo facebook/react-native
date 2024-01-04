@@ -19,7 +19,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 
-public class ReactEventEmitter implements RCTModernEventEmitter {
+class ReactEventEmitter implements RCTModernEventEmitter {
 
   private static final String TAG = "ReactEventEmitter";
 

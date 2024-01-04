@@ -14,7 +14,7 @@ import okio.BufferedSink;
 import okio.Okio;
 import okio.Sink;
 
-public class ProgressRequestBody extends RequestBody {
+class ProgressRequestBody extends RequestBody {
 
   private final RequestBody mRequestBody;
   private final ProgressListener mProgressListener;

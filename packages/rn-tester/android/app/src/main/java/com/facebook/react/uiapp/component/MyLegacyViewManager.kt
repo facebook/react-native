@@ -26,8 +26,8 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
-      MyNativeView(reactContext).apply { setBackgroundColor(Color.RED) }
+  override fun createViewInstance(themedReactContext: ThemedReactContext): MyNativeView =
+      MyNativeView(themedReactContext)
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {
@@ -35,15 +35,15 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   }
 
   @ReactProp(name = ViewProps.COLOR)
-  fun setColor(view: MyNativeView, color: String) {
-    view.setBackgroundColor(Color.parseColor(color))
-  }
+  fun setColor(view: MyNativeView, color: String?): Unit =
+      when (color) {
+        null -> view.setBackgroundColor(Color.TRANSPARENT)
+        else -> view.setBackgroundColor(Color.parseColor(color))
+      }
 
   @ReactProp(name = "cornerRadius")
   fun setCornerRadius(view: MyNativeView, cornerRadius: Float) {
-    if (cornerRadius !== null) {
-      view.setCornerRadius(cornerRadius)
-    }
+    view.setCornerRadius(cornerRadius)
   }
 
   override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)

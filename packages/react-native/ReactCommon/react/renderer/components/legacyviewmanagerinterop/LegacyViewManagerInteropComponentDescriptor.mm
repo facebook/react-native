@@ -8,6 +8,7 @@
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
+#include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
@@ -73,18 +74,44 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
+static Class getViewManagerClass(const std::string &componentName, RCTBridge *bridge, RCTBridgeProxy *bridgeProxy)
+{
+  Class viewManager = getViewManagerFromComponentName(componentName);
+  if (viewManager != nil) {
+    return viewManager;
+  }
+
+  // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
+  if (bridge != nil) {
+    return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
+  }
+
+  if (bridgeProxy != nil) {
+    return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+  }
+
+  return nil;
+}
+
 static const std::shared_ptr<void> constructCoordinator(
     const ContextContainer::Shared &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {
-  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
-  Class viewManagerClass = getViewManagerFromComponentName(componentName);
-  assert(viewManagerClass);
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");
   RCTBridge *bridge;
   if (optionalBridge) {
     bridge = unwrapManagedObjectWeakly(optionalBridge.value());
   }
+
+  RCTBridgeProxy *bridgeProxy;
+  auto optionalBridgeProxy = contextContainer->find<std::shared_ptr<void>>("RCTBridgeProxy");
+  if (optionalBridgeProxy) {
+    bridgeProxy = unwrapManagedObjectWeakly(optionalBridgeProxy.value());
+  }
+
+  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
+  Class viewManagerClass = getViewManagerClass(componentName, bridge, bridgeProxy);
+  assert(viewManagerClass);
 
   auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
   RCTEventDispatcher *eventDispatcher;
@@ -104,6 +131,7 @@ static const std::shared_ptr<void> constructCoordinator(
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
       initWithComponentData:componentData
                      bridge:bridge
+                bridgeProxy:bridgeProxy
       bridgelessInteropData:bridgeModuleDecorator]);
 }
 

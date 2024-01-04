@@ -3,6 +3,4 @@
 <!-- @generated -->
 <!-- FB Locale: mr_IN -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="catalyst_dev_menu_header" gender="unknown">मुळ डीईव्ही मेनू प्रतिक्रिया द्या (%1$s)</string>
-    <string name="catalyst_dev_menu_sub_header" gender="unknown">प्रसारित होत आहे %1$s</string>
 </resources>
