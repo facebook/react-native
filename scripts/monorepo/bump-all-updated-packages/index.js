@@ -174,7 +174,7 @@ const main = async () => {
     {
       type: 'checkbox',
       name: 'tags',
-      message: `Select what npm tags to use for *ALL* packages being published. We suggest ${defaultTag}.`,
+      message: `Select what npm tags to use for *ALL* packages being published. We suggest "${defaultTag}".`,
       choices: [
         {
           name: `"${defaultTag}"`,
@@ -227,6 +227,7 @@ const main = async () => {
       switch (commitChoice) {
         case NO_COMMIT_CHOICE: {
           echo('Not submitting a commit, but keeping all changes');
+
           break;
         }
 

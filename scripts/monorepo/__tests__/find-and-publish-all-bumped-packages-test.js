@@ -24,7 +24,6 @@ describe('findAndPublishAllBumpedPackages', () => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
   });
   it('throws an error if updated version is not 0.x.y', () => {
-    console.log('we setting up the mocks');
     const mockedPackageNewVersion = '1.0.0';
 
     forEachPackage.mockImplementationOnce(callback => {
