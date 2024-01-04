@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as RCTEventEmitter is part of the API
+
 package com.facebook.testutils.fakes
 
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
