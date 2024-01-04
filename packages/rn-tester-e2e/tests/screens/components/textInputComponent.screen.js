@@ -10,9 +10,9 @@
 
 import {
   UtilsSingleton as Utils,
-  iOSName,
-  iOSChildType,
   androidWidget,
+  iOSChildType,
+  iOSName,
 } from '../../helpers/utils';
 
 type TextInputComponentScreenType = {
