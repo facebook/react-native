@@ -29,7 +29,7 @@ class RCTComponentViewClassDescriptor final {
   bool observesMountingTransactionDidMount{false};
   
   /*
-   * Indicates that the component should not be recycled
+   * Whether the component can be recycled or not
    */
   bool shouldBeRecycled{true};
     
