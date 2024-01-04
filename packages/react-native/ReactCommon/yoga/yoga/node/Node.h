@@ -375,13 +375,13 @@ class YG_EXPORT Node : public ::YGNode {
   YGBaselineFunc baselineFunc_ = {nullptr};
   YGPrintFunc printFunc_ = {nullptr};
   YGDirtiedFunc dirtiedFunc_ = nullptr;
-  Style style_ = {};
-  LayoutResults layout_ = {};
+  Style style_;
+  LayoutResults layout_;
   size_t lineIndex_ = 0;
   Node* owner_ = nullptr;
-  std::vector<Node*> children_ = {};
+  std::vector<Node*> children_;
   const Config* config_;
-  std::array<Style::Length, 2> resolvedDimensions_ = {
+  std::array<Style::Length, 2> resolvedDimensions_{
       {value::undefined(), value::undefined()}};
 };
 
