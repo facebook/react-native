@@ -38,7 +38,7 @@ end
 module Helpers
     class Constants
         def self.min_ios_version_supported
-            return '12.4'
+            return '13.4'
         end
     end
 end
