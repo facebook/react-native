@@ -17,7 +17,7 @@ const isIOS = (process?.env?.E2E_DEVICE || 'ios') === 'ios';
 
 describe('Test is checking text replacement', () => {
   test('Should replace properly space by underscore', async () => {
-    TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+    await TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkTextInputComponentIsDisplayed(),
     ).toBeTruthy();
@@ -27,7 +27,7 @@ describe('Test is checking text replacement', () => {
     );
   });
   test('Should replace properly space by underscore and limit character amount', async () => {
-    TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+    await TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkTextInputComponentIsDisplayed(),
     ).toBeTruthy();
@@ -38,7 +38,7 @@ describe('Test is checking text replacement', () => {
   });
 
   test('Should remove all spaces ', async () => {
-    TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+    await TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkTextInputComponentIsDisplayed(),
     ).toBeTruthy();
@@ -52,7 +52,7 @@ describe('Test is checking text replacement', () => {
 
 describe('Test is clearing text by Button', () => {
   test('Should remove properly the text when clear button clicked', async () => {
-    TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+    await TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkTextInputComponentIsDisplayed(),
     ).toBeTruthy();
@@ -67,7 +67,7 @@ describe('Test is clearing text by Button', () => {
 if (isIOS) {
   describe('Test double space to dot', () => {
     test('Should replace to dot in a Controlled TextInput', async () => {
-      TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
+      await TextInputComponentScreen.scrollUntilTextInputComponentIsDisplayed();
       expect(
         await ComponentsScreen.checkTextInputComponentIsDisplayed(),
       ).toBeTruthy();

@@ -52,7 +52,9 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
       'rewrite_sp_underscore_input',
     ),
   }),
-  textInputReWriteChildElement: function () {
+  textInputReWriteChildElement: function (
+    this: TextInputComponentScreenType,
+  ): string {
     return Utils.platformSelect({
       ios: iOSChildType(
         this.textInputReWriteElement,
@@ -65,7 +67,9 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     ios: iOSName('rewrite_no_sp_input'),
     android: androidWidget('EditText', 'resource-id', 'rewrite_no_sp_input'),
   }),
-  textInputNoSpaceAllowChildElement: function () {
+  textInputNoSpaceAllowChildElement: function (
+    this: TextInputComponentScreenType,
+  ): string {
     return Utils.platformSelect({
       ios: iOSChildType(
         this.textInputNoSpaceAllowElement,
@@ -78,7 +82,9 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     ios: iOSName('rewrite_clear_input'),
     android: androidWidget('EditText', 'resource-id', 'rewrite_clear_input'),
   }),
-  textInputReWriteClearChildElement: function () {
+  textInputReWriteClearChildElement: function (
+    this: TextInputComponentScreenType,
+  ): string {
     return Utils.platformSelect({
       ios: iOSChildType(
         this.textInputReWriteClearElement,
@@ -95,7 +101,9 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     ios: iOSName('rewrite_double_space'),
     android: androidWidget('Button', 'resource-id', 'rewrite_double_space'),
   }),
-  textInputControlledDoubleSpaceChildElement: function () {
+  textInputControlledDoubleSpaceChildElement: function (
+    this: TextInputComponentScreenType,
+  ): string {
     return Utils.platformSelect({
       ios: iOSChildType(
         this.textInputControlledDoubleSpaceElement,
@@ -152,11 +160,6 @@ export const TextInputComponentScreen: TextInputComponentScreenType = {
     return await Utils.getElementText(
       this.textInputControlledDoubleSpaceChildElement(),
     );
-  },
-  clickSubmitApplication: async function (
-    this: TextInputComponentScreenType,
-  ): Promise<void> {
-    await Utils.clickElement(this.btnSubmitElement);
   },
   scrollUntilTextInputComponentIsDisplayed: async function (
     this: TextInputComponentScreenType,
