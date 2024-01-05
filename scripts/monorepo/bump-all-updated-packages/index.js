@@ -7,11 +7,11 @@
  * @format
  */
 
+const {getPackageVersionStrByTag} = require('../../npm-utils');
 const {getBranchName} = require('../../scm-utils');
 const {isReleaseBranch, parseVersion} = require('../../version-utils');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
-const {getPackageVersionStrByTag} = require('../../npm-utils');
 const {
   COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
   COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
