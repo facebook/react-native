@@ -334,9 +334,9 @@ function translateReturnTypeToJniType(
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return nullable ? 'Ljava/lang/Double;' : 'D';
+      return nullable ? 'Ljava/lang/Float;' : 'F';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Double;' : 'D';
+      return nullable ? 'Ljava/lang/Integer;' : 'I';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
