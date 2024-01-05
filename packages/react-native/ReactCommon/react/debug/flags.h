@@ -17,5 +17,7 @@
 // control and use as a more reliable xplat flag. For any build that doesn't
 // have NDEBUG defined, we enable REACT_NATIVE_DEBUG for convenience.
 #ifndef NDEBUG
+#ifndef COCOAPODS
 #define REACT_NATIVE_DEBUG 1
+#endif
 #endif
