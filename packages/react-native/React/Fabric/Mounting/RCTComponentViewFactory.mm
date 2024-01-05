@@ -96,6 +96,9 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMount:withSurfaceTelemetry:)),
     .observesMountingTransactionDidMount =
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMount:withSurfaceTelemetry:)),
+    .shouldBeRecycled = [viewClass respondsToSelector:@selector(shouldBeRecycled)]
+        ? (bool)[viewClass performSelector:@selector(shouldBeRecycled)]
+        : true,
   };
 #pragma clang diagnostic pop
 }
@@ -210,6 +213,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
       .view = [viewClass new],
       .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
       .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
+      .shouldBeRecycled = componentViewClassDescriptor.shouldBeRecycled,
   };
 }
 
