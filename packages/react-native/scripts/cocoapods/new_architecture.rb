@@ -106,7 +106,7 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2023.08.07.00'
+        spec.dependency "RCT-Folly", '2024.01.01.00'
         spec.dependency "glog"
 
         if new_arch_enabled

@@ -136,7 +136,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         spec = SpecMock.new
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, true, '2023.08.07.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, true, '2024.01.01.00')
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
@@ -147,7 +147,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "React-Codegen" },
@@ -178,7 +178,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         }
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, false, '2023.08.07.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, false, '2024.01.01.00')
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
@@ -188,7 +188,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2023.08.07.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "React-Codegen" },

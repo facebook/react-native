@@ -30,7 +30,7 @@ def run_codegen!(
   codegen_output_dir: 'build/generated/ios',
   config_key: 'codegenConfig',
   package_json_file: '~/app/package.json',
-  folly_version: '2023.08.07.00',
+  folly_version: '2024.01.01.00',
   codegen_utils: CodegenUtils.new()
   )
 
