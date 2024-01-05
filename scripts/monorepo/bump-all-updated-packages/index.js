@@ -8,9 +8,10 @@
  */
 
 const {getBranchName} = require('../../scm-utils');
-const {isReleaseBranch} = require('../../version-utils');
+const {isReleaseBranch, parseVersion} = require('../../version-utils');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
+const {getPackageVersionStrByTag} = require('../../npm-utils');
 const {
   COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
   COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
@@ -152,7 +153,9 @@ const main = async () => {
 
   // Figure out the npm dist-tags we want for all monorepo packages we're bumping
   const branchName = getBranchName();
+  const latestVersion = getPackageVersionStrByTag('react-native', 'latest');
   let defaultTag = branchName;
+  let suggestLatest = false;
 
   if (branchName === 'main') {
     const {minorVersion} = await inquirer.prompt([
@@ -163,7 +166,10 @@ const main = async () => {
       },
     ]);
     defaultTag = `${minorVersion}-stable`;
-  } else if (!isReleaseBranch(branchName)) {
+  } else if (isReleaseBranch(branchName)) {
+    const {major, minor} = parseVersion(latestVersion, 'release');
+    suggestLatest = `${major}.${minor}-stable` === branchName;
+  } else {
     echo(
       'You should be running `yarn bump-all-updated-packages` only from release or main branch',
     );
@@ -174,7 +180,9 @@ const main = async () => {
     {
       type: 'checkbox',
       name: 'tags',
-      message: `Select what npm tags to use for *ALL* packages being published. We suggest "${defaultTag}".`,
+      message: `Select what npm tags to use for *ALL* packages being published. We suggest "${defaultTag}"${
+        suggestLatest ? ' and "latest"' : ''
+      }.`,
       choices: [
         {
           name: `"${defaultTag}"`,
@@ -182,9 +190,9 @@ const main = async () => {
           checked: true,
         },
         {
-          name: '"latest" - Only use if you are targetting the *latest* stable React Native version',
+          name: `"latest" - react-native@latest is ${latestVersion}`,
           value: 'latest',
-          checked: false,
+          checked: suggestLatest,
         },
         {
           name: '"nightly"',

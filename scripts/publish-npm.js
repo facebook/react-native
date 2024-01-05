@@ -96,7 +96,7 @@ function publishNpm(buildType) {
 
   const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
   const result = publishPackage(packagePath, {
-    tag,
+    tags: [tag],
     otp: process.env.NPM_CONFIG_OTP,
   });
 

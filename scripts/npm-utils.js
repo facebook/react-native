@@ -91,15 +91,14 @@ function getNpmInfo(buildType) {
 }
 
 function publishPackage(packagePath, packageOptions, execOptions) {
-  const {tag, otp, tags} = packageOptions;
+  const {otp, tags} = packageOptions;
   const tagsFlag = tags ? tags.map(t => ` --tag ${t}`).join('') : '';
-  const tagFlag = tag ? ` --tag ${tag}` : '';
   const otpFlag = otp ? ` --otp ${otp}` : '';
   const options = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
 
-  return exec(`npm publish${tagFlag}${tagsFlag}${otpFlag}`, options);
+  return exec(`npm publish${tagsFlag}${otpFlag}`, options);
 }
 
 function diffPackages(packageSpecA, packageSpecB, options) {

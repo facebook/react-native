@@ -95,7 +95,7 @@ describe('npm-utils', () => {
     it('should run publish command', () => {
       publishPackage(
         'path/to/my-package',
-        {tag: 'latest', otp: 'otp'},
+        {tags: ['latest'], otp: 'otp'},
         {silent: true, cwd: 'i/expect/this/to/be/overriden'},
       );
       expect(execMock).toHaveBeenCalledWith(
@@ -105,7 +105,7 @@ describe('npm-utils', () => {
     });
 
     it('should run publish command when no execOptions', () => {
-      publishPackage('path/to/my-package', {tag: 'latest', otp: 'otp'});
+      publishPackage('path/to/my-package', {tags: ['latest'], otp: 'otp'});
       expect(execMock).toHaveBeenCalledWith(
         'npm publish --tag latest --otp otp',
         {cwd: 'path/to/my-package'},
@@ -119,18 +119,6 @@ describe('npm-utils', () => {
       });
       expect(execMock).toHaveBeenCalledWith(
         'npm publish --tag next --tag 0.72-stable --otp otp',
-        {cwd: 'path/to/my-package'},
-      );
-    });
-
-    it('should be able to handle tag and tags, although shouldnt be encouraged', () => {
-      publishPackage('path/to/my-package', {
-        tags: ['next', '0.72-stable'],
-        tag: 'latest',
-        otp: 'otp',
-      });
-      expect(execMock).toHaveBeenCalledWith(
-        'npm publish --tag latest --tag next --tag 0.72-stable --otp otp',
         {cwd: 'path/to/my-package'},
       );
     });
