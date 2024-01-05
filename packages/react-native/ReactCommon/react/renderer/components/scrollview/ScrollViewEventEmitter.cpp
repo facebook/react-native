@@ -64,14 +64,6 @@ void ScrollViewEventEmitter::onScroll(
   });
 }
 
-void ScrollViewEventEmitter::onScrollToTop(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchUniqueEvent(
-      "scrollToTop", [scrollViewMetrics](jsi::Runtime& runtime) {
-        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
-      });
-}
-
 void ScrollViewEventEmitter::onScrollBeginDrag(
     const ScrollViewMetrics& scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollBeginDrag", scrollViewMetrics);
