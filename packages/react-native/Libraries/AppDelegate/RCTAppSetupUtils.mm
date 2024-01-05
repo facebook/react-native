@@ -107,11 +107,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller(
           [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
             if (!bridge || !turboModuleManager) {
@@ -128,11 +128,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;
