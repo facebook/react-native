@@ -153,22 +153,24 @@ const main = async () => {
 
   // Figure out the npm dist-tags we want for all monorepo packages we're bumping
   const branchName = getBranchName();
-  const latestVersion = getPackageVersionStrByTag('react-native', 'latest');
-  let defaultTag = branchName;
-  let suggestLatest = false;
+  const choices = [];
 
   if (branchName === 'main') {
-    const {minorVersion} = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'minorVersion',
-        message: 'What minor version are you targetting? Ex. 0.74, 0.75?',
-      },
-    ]);
-    defaultTag = `${minorVersion}-stable`;
+    choices.push({name: '"nightly"', value: 'nightly', checked: true});
   } else if (isReleaseBranch(branchName)) {
+    choices.push({
+      name: `"${branchName}"`,
+      value: branchName,
+      checked: true,
+    });
+
+    const latestVersion = getPackageVersionStrByTag('react-native', 'latest');
     const {major, minor} = parseVersion(latestVersion, 'release');
-    suggestLatest = `${major}.${minor}-stable` === branchName;
+    choices.push({
+      name: '"latest"',
+      value: 'latest',
+      checked: `${major}.${minor}-stable` === branchName,
+    });
   } else {
     echo(
       'You should be running `yarn bump-all-updated-packages` only from release or main branch',
@@ -180,33 +182,25 @@ const main = async () => {
     {
       type: 'checkbox',
       name: 'tags',
-      message: `Select what npm tags to use for *ALL* packages being published. We suggest "${defaultTag}"${
-        suggestLatest ? ' and "latest"' : ''
-      }.`,
-      choices: [
-        {
-          name: `"${defaultTag}"`,
-          value: defaultTag,
-          checked: true,
-        },
-        {
-          name: `"latest" - react-native@latest is ${latestVersion}`,
-          value: 'latest',
-          checked: suggestLatest,
-        },
-        {
-          name: '"nightly"',
-          value: 'nightly',
-          checked: false,
-        },
-        {
-          name: '"experimental"',
-          value: 'experimental',
-          checked: false,
-        },
-      ],
+      message: 'Select suggested npm tags.',
+      choices,
+      required: true,
     },
   ]);
+
+  const {confirm} = await inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: `Confirm these tags for *ALL* packages being bumped: ${tags
+      .map(t => `"${t}"`)
+      .join()}`,
+  });
+
+  if (!confirm) {
+    echo('Exiting without commiting...');
+    exit(0);
+  }
+
   const tagString = '&' + tags.join('&');
 
   await inquirer
