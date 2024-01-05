@@ -1668,13 +1668,14 @@ class ScrollView extends React.Component<Props, State> {
 
     const {stickyHeaderIndices} = this.props;
     let children = this.props.children;
+    /**
+     * This function can cause unnecessary remount when nested in conditionals as it causes remap of children keys.
+     * https://react.dev/reference/react/Children#children-toarray-caveats
+     */
+    children = React.Children.toArray<$FlowFixMe>(children);
 
     if (stickyHeaderIndices != null && stickyHeaderIndices.length > 0) {
-      const childArray = React.Children.toArray<$FlowFixMe>(
-        this.props.children,
-      );
-
-      children = childArray.map((child, index) => {
+      children = children.map((child, index) => {
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
         if (indexOfIndex > -1) {
           const key = child.key;
@@ -1686,7 +1687,7 @@ class ScrollView extends React.Component<Props, State> {
               key={key}
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
-                this._getKeyForIndex(nextIndex, childArray),
+                this._getKeyForIndex(nextIndex, children),
               )}
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
               scrollAnimatedValue={this._scrollAnimatedValue}
