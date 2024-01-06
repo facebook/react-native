@@ -17,6 +17,11 @@ namespace react {
 // It should be used as infrequently as possible - most props can and should
 // be parsed without any context.
 struct PropsParserContext {
+  PropsParserContext(
+      SurfaceId const surfaceId,
+      ContextContainer const &contextContainer)
+      : surfaceId(surfaceId), contextContainer(contextContainer) {}
+
   // Non-copyable
   PropsParserContext(const PropsParserContext &) = delete;
   PropsParserContext &operator=(const PropsParserContext &) = delete;
