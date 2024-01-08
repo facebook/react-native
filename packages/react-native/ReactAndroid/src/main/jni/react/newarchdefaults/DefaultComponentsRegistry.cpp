@@ -40,15 +40,17 @@ DefaultComponentsRegistry::initHybrid(
       [](const EventDispatcher::Weak& eventDispatcher,
          const ContextContainer::Shared& contextContainer)
       -> ComponentDescriptorRegistry::Shared {
+    ComponentDescriptorParameters params{
+        .eventDispatcher = eventDispatcher,
+        .contextContainer = contextContainer,
+        .flavor = nullptr};
+
     auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(
-                            {eventDispatcher, contextContainer});
+                        ->createComponentDescriptorRegistry(params);
 
     auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
     mutableRegistry.setFallbackComponentDescriptor(
-        std::make_shared<UnimplementedNativeViewComponentDescriptor>(
-            ComponentDescriptorParameters{
-                eventDispatcher, contextContainer, nullptr}));
+        std::make_shared<UnimplementedNativeViewComponentDescriptor>(params));
 
     return registry;
   };
