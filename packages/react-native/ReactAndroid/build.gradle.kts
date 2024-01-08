@@ -254,7 +254,7 @@ val downloadBoost by
     tasks.creating(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
-          "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
+          "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
