@@ -943,9 +943,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Update node installation on debian (0.71) ([bdc0ef3466](https://github.com/facebook/react-native/commit/bdc0ef34664b7f1a2b8598ad6092a2ec6cf089ce) by [@cipolleschi](https://github.com/cipolleschi))
 - Bump cli to 10.2.6 ([0bc2dd03c1](https://github.com/facebook/react-native/commit/0bc2dd03c1ccb4ab6ecf55add249f222c5757f06) by [@hurali97](https://github.com/hurali97))
-- Fix version of react-native-codegen ([c74602fe47](https://github.com/facebook/react-nati
-ve/commit/c74602fe47ca12a151eb173203fb6fce7f3cc964) by [@lunaleaps](https://gith
-ub.com/lunaleaps))
+- Fix version of react-native-codegen ([c74602fe47](https://github.com/facebook/react-native/commit/c74602fe47ca12a151eb173203fb6fce7f3cc964) by [@lunaleaps](https://github.com/lunaleaps))
 
 ## v0.71.14
 
