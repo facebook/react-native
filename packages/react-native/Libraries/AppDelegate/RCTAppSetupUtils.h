@@ -55,9 +55,10 @@ void RCTAppSetupPrepareApp(
 
 RCT_EXTERN_C_BEGIN
 
-[[deprecated("Use the 3-argument overload of RCTAppSetupPrepareApp instead")]] void RCTAppSetupPrepareApp(
+void RCTAppSetupPrepareApp(
     UIApplication *application,
-    BOOL turboModuleEnabled);
+    BOOL turboModuleEnabled)
+  __deprecated_msg("Use the 3-argument overload of RCTAppSetupPrepareApp instead");
 
 UIView *RCTAppSetupDefaultRootView(
     RCTBridge *bridge,
