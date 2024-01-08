@@ -13,7 +13,7 @@
 # ./with-environment.sh command
 
 # Start with a default
-NODE_BINARY=$(command -v node)
+NODE_BINARY=$(command -v node || echo "")
 export NODE_BINARY
 
 # Override the default with the global environment
