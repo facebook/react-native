@@ -22,7 +22,13 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++20)
+add_compile_options(
+  -fexceptions
+  -frtti
+  -std=c++20
+  -Wall
+  -Wpedantic
+  -Werror)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})

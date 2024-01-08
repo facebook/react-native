@@ -6,13 +6,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
-
 file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS *.cpp *.h)
 
 add_library(runtimeexecutor SHARED ${runtimeexecutor_SRC})

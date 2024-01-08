@@ -37,9 +37,4 @@ target_compile_options(
         rrc_switch
         PRIVATE
         -DLOG_TAG=\"Fabric\"
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
 )

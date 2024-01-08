@@ -6,14 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
-
+add_compile_definitions(LOG_TAG="ReactNative")
 
 file(GLOB react_nativemodule_core_SRC CONFIGURE_DEPENDS
         ReactCommon/*.cpp

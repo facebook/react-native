@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+add_compile_definitions(LOG_TAG="Fabric")
 
 file(GLOB react_render_mounting_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_render_mounting STATIC ${react_render_mounting_SRC})

@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+add_compile_definitions(LOG_TAG="Fabric")
 
 file(GLOB rrc_progressbar_SRC CONFIGURE_DEPENDS android/react/renderer/components/progressbar/*.cpp)
 add_library(rrc_progressbar STATIC ${rrc_progressbar_SRC})

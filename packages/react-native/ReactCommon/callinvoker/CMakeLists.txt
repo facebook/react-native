@@ -6,13 +6,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
-
 add_library(callinvoker INTERFACE)
 
 target_include_directories(callinvoker INTERFACE .)

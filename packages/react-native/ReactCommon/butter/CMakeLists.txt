@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -DLOG_TAG=\"Butter\"
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
+add_compile_definitions(LOG_TAG="Butter")
 
 add_library(butter INTERFACE)
 
