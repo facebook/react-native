@@ -441,6 +441,91 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenCloseSocket) {
   EXPECT_FALSE(localConnections_[0]);
 }
 
+TEST_F(InspectorPackagerConnectionTest, TestConnectThenSocketFailure) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Notify that the socket was closed (implicitly, as the result of an error).
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didFailWithError(ECONNABORTED, "Test error");
+  EXPECT_FALSE(localConnections_[0]);
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Notify that the socket was closed (implicitly, as the result of an error).
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+
+  // For convenience, the mock scheduleCallback usually calls the callback
+  // immediately. However, here we want the async behaviour so we can ensure
+  // only one reconnection gets scheduled.
+  std::function<void()> scheduledCallback;
+  EXPECT_CALL(*packagerConnectionDelegate(), scheduleCallback(_, _))
+      .WillOnce(
+          [&](std::function<void(void)> callback, std::chrono::milliseconds) {
+            EXPECT_FALSE(scheduledCallback);
+            scheduledCallback = callback;
+          })
+      .RetiresOnSaturation();
+
+  {
+    // The WebSocket instance gets destroyed during didFailWithError, so extract
+    // the delegate in order to call didClose.
+    std::shared_ptr webSocketDelegate = webSockets_[0]->delegate.lock();
+
+    webSocketDelegate->didFailWithError(ECONNABORTED, "Test error");
+    webSocketDelegate->didClose();
+  }
+
+  ASSERT_FALSE(localConnections_[0]);
+  // We're still disconnected since we haven't called the reconnect callback.
+  ASSERT_FALSE(packagerConnection_->isConnected());
+
+  // Flush the callback queue.
+  EXPECT_TRUE(scheduledCallback);
+  scheduledCallback();
+
+  ASSERT_TRUE(packagerConnection_->isConnected());
+}
+
 TEST_F(
     InspectorPackagerConnectionTest,
     TestConnectWhileAlreadyConnectedCausesDisconnection) {
@@ -640,6 +725,53 @@ TEST_F(InspectorPackagerConnectionTest, TestReconnectFailure) {
   packagerConnection_->closeQuietly();
 
   EXPECT_FALSE(webSockets_[2]);
+  EXPECT_FALSE(packagerConnection_->isConnected());
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestReconnectOnSocketError) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  ASSERT_TRUE(webSockets_[0]);
+  EXPECT_CALL(*packagerConnectionDelegate(), scheduleCallback(_, _))
+      .RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didFailWithError(ECONNRESET, "Test error");
+  EXPECT_FALSE(webSockets_[0]);
+  EXPECT_TRUE(webSockets_[1]);
+  EXPECT_TRUE(packagerConnection_->isConnected());
+
+  // Stops attempting to reconnect after closeQuietly
+
+  packagerConnection_->closeQuietly();
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestReconnectOnSocketErrorWithNoCode) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  ASSERT_TRUE(webSockets_[0]);
+  EXPECT_CALL(*packagerConnectionDelegate(), scheduleCallback(_, _))
+      .RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didFailWithError(std::nullopt, "Test error");
+  EXPECT_FALSE(webSockets_[0]);
+  EXPECT_TRUE(webSockets_[1]);
+  EXPECT_TRUE(packagerConnection_->isConnected());
+
+  // Stops attempting to reconnect after closeQuietly
+
+  packagerConnection_->closeQuietly();
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestNoReconnectOnConnectionRefused) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  ASSERT_TRUE(webSockets_[0]);
+  webSockets_[0]->getDelegate().didFailWithError(ECONNREFUSED, "Test error");
+  EXPECT_FALSE(webSockets_[0]);
   EXPECT_FALSE(packagerConnection_->isConnected());
 }
 
