@@ -81,6 +81,9 @@ class InspectorPackagerConnection::Impl
   std::unique_ptr<IWebSocket> webSocket_;
   bool closed_{false};
   bool suppressConnectionErrors_{false};
+
+  // Whether a reconnection is currently pending.
+  bool reconnectPending_{false};
 };
 
 class InspectorPackagerConnection::RemoteConnectionImpl

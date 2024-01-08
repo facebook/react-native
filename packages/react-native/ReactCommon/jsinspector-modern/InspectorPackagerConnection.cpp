@@ -25,15 +25,6 @@ static folly::dynamic makePageIdPayload(std::string_view pageId) {
   return folly::dynamic::object("id", pageId);
 }
 
-/*
-TODO(moti): Remove this comment, which is only here to help the diff tool
-understand the relationship between this file and
-RCTInspectorPackagerConnection.m.
-
-@implementation RCTInspectorPackagerConnection
-
-*/
-
 // InspectorPackagerConnection::Impl method definitions
 
 std::shared_ptr<InspectorPackagerConnection::Impl>
@@ -178,6 +169,9 @@ void InspectorPackagerConnection::Impl::didFailWithError(
   if (webSocket_) {
     abort(posixCode, "WebSocket exception", error);
   }
+  if (!closed_ && posixCode != ECONNREFUSED) {
+    reconnect();
+  }
 }
 
 void InspectorPackagerConnection::Impl::didReceiveMessage(
@@ -215,6 +209,9 @@ void InspectorPackagerConnection::Impl::connect() {
 }
 
 void InspectorPackagerConnection::Impl::reconnect() {
+  if (reconnectPending_) {
+    return;
+  }
   if (closed_) {
     LOG(ERROR)
         << "Illegal state: Can't reconnect after having previously been closed.";
@@ -226,10 +223,13 @@ void InspectorPackagerConnection::Impl::reconnect() {
     suppressConnectionErrors_ = true;
   }
 
+  reconnectPending_ = true;
+
   delegate_->scheduleCallback(
       [weakSelf = weak_from_this()] {
         auto strongSelf = weakSelf.lock();
         if (strongSelf && !strongSelf->closed_) {
+          strongSelf->reconnectPending_ = false;
           strongSelf->connect();
         }
       },
@@ -266,18 +266,6 @@ void InspectorPackagerConnection::Impl::abort(
 void InspectorPackagerConnection::Impl::disposeWebSocket() {
   webSocket_.reset();
 }
-
-/*
-
-@end
-
-TODO(moti): Remove this comment, which is only here to help the diff tool
-understand the relationship between this file and
-RCTInspectorPackagerConnection.m.
-
-@implementation RCTInspectorRemoteConnection
-
-*/
 
 // InspectorPackagerConnection::RemoteConnectionImpl method definitions
 
