@@ -8,7 +8,10 @@
  */
 
 const {PUBLISH_PACKAGES_TAG} = require('../constants');
-const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
+const {
+  findAndPublishAllBumpedPackages,
+  getTagsFromCommitMessage,
+} = require('../find-and-publish-all-bumped-packages');
 const forEachPackage = require('../for-each-package');
 const {spawnSync} = require('child_process');
 
@@ -40,5 +43,16 @@ describe('findAndPublishAllBumpedPackages', () => {
     expect(() => findAndPublishAllBumpedPackages()).toThrow(
       `Package version expected to be 0.x.y, but received ${mockedPackageNewVersion}`,
     );
+  });
+});
+
+describe('getTagsFromCommitMessage', () => {
+  it('should parse tags out', () => {
+    const commitMsg = `This may be any commit message before it like tag a \n\n${PUBLISH_PACKAGES_TAG}&tagA&tagB&tagA\n`;
+    expect(getTagsFromCommitMessage(commitMsg)).toEqual([
+      'tagA',
+      'tagB',
+      'tagA',
+    ]);
   });
 });
