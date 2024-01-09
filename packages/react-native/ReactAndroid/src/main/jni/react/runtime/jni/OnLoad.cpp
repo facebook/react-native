@@ -8,7 +8,6 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/JReactMarker.h>
 
-#include "DefaultTurboModuleManagerDelegate.h"
 #include "JJSTimerExecutor.h"
 #include "JReactInstance.h"
 
@@ -16,7 +15,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*unused*/) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::JReactMarker::setLogPerfMarkerIfNeeded();
     facebook::react::JReactInstance::registerNatives();
-    facebook::react::DefaultTurboModuleManagerDelegate::registerNatives();
     facebook::react::JJSTimerExecutor::registerNatives();
   });
 }

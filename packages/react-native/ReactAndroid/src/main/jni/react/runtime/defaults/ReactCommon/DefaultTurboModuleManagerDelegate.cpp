@@ -7,6 +7,8 @@
 
 #include "DefaultTurboModuleManagerDelegate.h"
 
+#include <rncore.h>
+
 #include <algorithm>
 #import <cassert>
 
@@ -75,9 +77,13 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
     const std::string& name,
     const JavaTurboModule::InitParams& params) {
   auto moduleProvider = DefaultTurboModuleManagerDelegate::javaModuleProvider;
-  auto resolvedModule = moduleProvider(name, params);
-  assert(resolvedModule != nullptr && "Native Modules are not properly setup.");
-  return resolvedModule;
+  if (moduleProvider) {
+    if (auto resolvedModule = moduleProvider(name, params)) {
+      return resolvedModule;
+    }
+  }
+  // return nullptr;
+  return rncore_ModuleProvider(name, params);
 }
 
 } // namespace facebook::react

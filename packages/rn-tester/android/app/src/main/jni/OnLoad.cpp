@@ -8,12 +8,12 @@
 #include <AppSpecs.h>
 #include <DefaultComponentsRegistry.h>
 #include <NativeCxxModuleExample.h>
+#include <ReactCommon/DefaultTurboModuleManagerDelegate.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerInteropComponentDescriptor.h>
-#include <react/runtime/jni/DefaultTurboModuleManagerDelegate.h>
 
 namespace facebook {
 namespace react {

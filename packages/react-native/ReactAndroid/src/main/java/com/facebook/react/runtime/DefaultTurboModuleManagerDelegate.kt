@@ -70,6 +70,7 @@ private constructor(
     init {
       // DefaultSoLoader.maybeLoadSoLibrary()
       // TODO
+      SoLoader.loadLibrary("react_defaults") // loads the DefaultTurboModuleManagerDelegate.cpp
       SoLoader.loadLibrary("rninstance")
       SoLoader.loadLibrary("appmodules")
     }
