@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <ReactCommon/LongLivedObject.h>
 #include <cxxreact/SystraceSection.h>
 
 using namespace facebook;
@@ -95,13 +94,16 @@ static void defineReadOnlyGlobal(
  */
 
 TurboModuleBinding::TurboModuleBinding(
-    TurboModuleProviderFunctionType&& moduleProvider)
-    : moduleProvider_(std::move(moduleProvider)) {}
+    TurboModuleProviderFunctionType&& moduleProvider,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
+    : moduleProvider_(std::move(moduleProvider)),
+      longLivedObjectCollection_(std::move(longLivedObjectCollection)) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime& runtime,
     TurboModuleProviderFunctionType&& moduleProvider,
-    TurboModuleProviderFunctionType&& legacyModuleProvider) {
+    TurboModuleProviderFunctionType&& legacyModuleProvider,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -109,7 +111,8 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
-          [binding = TurboModuleBinding(std::move(moduleProvider))](
+          [binding = TurboModuleBinding(
+               std::move(moduleProvider), longLivedObjectCollection)](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
@@ -132,7 +135,8 @@ void TurboModuleBinding::install(
               runtime,
               std::make_shared<BridgelessNativeModuleProxy>(
                   std::make_unique<TurboModuleBinding>(
-                      std::move(legacyModuleProvider)))));
+                      std::move(legacyModuleProvider),
+                      longLivedObjectCollection))));
     } else {
       defineReadOnlyGlobal(
           runtime,
@@ -144,7 +148,11 @@ void TurboModuleBinding::install(
 }
 
 TurboModuleBinding::~TurboModuleBinding() {
-  LongLivedObjectCollection::get().clear();
+  if (longLivedObjectCollection_) {
+    longLivedObjectCollection_->clear();
+  } else {
+    LongLivedObjectCollection::get().clear();
+  }
 }
 
 jsi::Value TurboModuleBinding::getModule(
