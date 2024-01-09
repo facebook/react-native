@@ -67,9 +67,7 @@ struct LayoutMetrics {
 
   bool operator==(const LayoutMetrics& rhs) const = default;
 
-  bool operator!=(const LayoutMetrics& rhs) const {
-    return !(*this == rhs);
-  }
+  bool operator!=(const LayoutMetrics& rhs) const = default;
 };
 
 /*
