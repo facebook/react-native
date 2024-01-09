@@ -219,7 +219,7 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 /**
  * Creates JS error value with current JS runtime and error details.
  */
-static jsi::Value convertJSErrorDetailsToJSValue(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
 {
   // From JS documentation:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#cause an
@@ -304,7 +304,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
               reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                auto jsError = convertJSErrorDetailsToJSValue(rt, jsErrorDetails);
+                auto jsError = convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails);
                 jsFunction.call(rt, jsError);
               });
               resolveWasCalled = NO;
