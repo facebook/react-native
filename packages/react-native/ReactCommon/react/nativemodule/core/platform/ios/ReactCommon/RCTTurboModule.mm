@@ -294,8 +294,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
               reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                auto jsError = convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails);
-                jsFunction.call(rt, jsError);
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
               });
               resolveWasCalled = NO;
               resolve = std::nullopt;
