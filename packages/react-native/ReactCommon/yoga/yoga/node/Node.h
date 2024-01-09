@@ -48,6 +48,10 @@ class YG_EXPORT Node : public ::YGNode {
     return context_;
   }
 
+  bool alwaysFormsContainingBlock() const {
+    return alwaysFormsContainingBlock_;
+  }
+
   void print();
 
   bool getHasNewLayout() const {
@@ -242,6 +246,10 @@ class YG_EXPORT Node : public ::YGNode {
     context_ = context;
   }
 
+  void setAlwaysFormsContainingBlock(bool alwaysFormsContainingBlock) {
+    alwaysFormsContainingBlock_ = alwaysFormsContainingBlock;
+  }
+
   void setPrintFunc(YGPrintFunc printFunc) {
     printFunc_ = printFunc;
   }
@@ -369,6 +377,7 @@ class YG_EXPORT Node : public ::YGNode {
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
   bool isDirty_ : 1 = false;
+  bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
   YGMeasureFunc measureFunc_ = {nullptr};

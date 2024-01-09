@@ -383,6 +383,11 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
 
   yogaNode_.setStyle(styleResult);
+  if (getTraits().check(ShadowNodeTraits::ViewKind)) {
+    auto& viewProps = static_cast<const ViewProps&>(*props_);
+    YGNodeSetAlwaysFormsContainingBlock(
+        &yogaNode_, viewProps.transform != Transform::Identity());
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
