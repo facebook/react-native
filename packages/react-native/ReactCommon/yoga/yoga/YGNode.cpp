@@ -328,6 +328,12 @@ void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
   resolveRef(node)->setPrintFunc(printFunc);
 }
 
+void YGNodeSetAlwaysFormsContainingBlock(
+    YGNodeRef node,
+    bool alwaysFormsContainingBlock) {
+  resolveRef(node)->setAlwaysFormsContainingBlock(alwaysFormsContainingBlock);
+}
+
 #ifdef DEBUG
 void YGNodePrint(const YGNodeConstRef node, const YGPrintOptions options) {
   yoga::print(resolveRef(node), scopedEnum(options));
