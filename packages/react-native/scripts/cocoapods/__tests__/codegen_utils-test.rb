@@ -6,6 +6,7 @@
 require "test/unit"
 require "json"
 require_relative "../codegen_utils.rb"
+require_relative "../helpers.rb"
 require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/DirMock.rb"
 require_relative "./test_utils/PodMock.rb"
@@ -363,7 +364,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             :react_native_path => "../node_modules/react-native"}
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
-            :folly_version=>"2024.01.01.00",
+            :folly_version=>Helpers::Constants.folly_config()[:version],
             :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])

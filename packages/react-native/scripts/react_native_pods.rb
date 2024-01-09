@@ -20,7 +20,6 @@ require_relative './cocoapods/helpers.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2024.01.01.00'
 
 $START_TIME = Time.now.to_i
 
@@ -158,6 +157,7 @@ def use_react_native! (
   pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
+  folly_config = get_folly_config()
   run_codegen!(
     app_path,
     config_file_dir,
@@ -168,7 +168,7 @@ def use_react_native! (
     :hermes_enabled => hermes_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
-    :folly_version => $FOLLY_VERSION
+    :folly_version => folly_config[:version]
   )
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
@@ -238,7 +238,8 @@ end
 # - spec: The spec that has to be configured with the New Architecture code
 # - new_arch_enabled: Whether the module should install dependencies for the new architecture
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
-  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
+  folly_config = get_folly_config()
+  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
 end
 
 # It returns the default flags.
@@ -247,6 +248,15 @@ def get_default_flags()
   warn 'get_default_flags is deprecated. Please remove the keys from the `use_react_native!` function'
   warn 'if you are using the default already and pass the value you need in case you don\'t want the default'
   return ReactNativePodsUtils.get_default_flags()
+end
+
+# This method returns an hash with the folly version and the folli compiler flags
+# that can be used to configure libraries.
+# In this way, we can update those values in react native, and all the libraries will benefit
+# from it.
+# @return an hash with the `:version` and `:compiler_flags` fields.
+def get_folly_config()
+  return Helpers::Constants.folly_config
 end
 
 # Function that executes after React Native has been installed to configure some flags and build settings.
