@@ -147,7 +147,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
       supportedLegacyViewComponents[moduleName] = moduleClass;
     }
 
-    if ([moduleName isEqualToString:componentName]) {
+    if ([moduleName isEqualToString:componentName] ||
+        [moduleName isEqualToString:[@"RCT" stringByAppendingString:componentName]]) {
       return YES;
     }
   }
