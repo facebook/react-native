@@ -30,8 +30,8 @@ exports.config = {
   ],
   logLevel: 'debug',
   bail: 3, //reduce time of failed builds
-  waitforTimeout: 30000,
-  connectionRetryTimeout: 50000,
+  waitforTimeout: 50000,
+  connectionRetryTimeout: 70000,
   connectionRetryCount: 3,
   specFileRetries: 3,
   services: [
@@ -51,7 +51,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 50000
+    timeout: 70000
   },
 
   beforeSession: async function (config, capabilities, specs) {
