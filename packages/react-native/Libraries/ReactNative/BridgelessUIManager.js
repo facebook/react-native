@@ -182,8 +182,8 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       return getUIManagerConstantsCache()[viewManagerName];
     } else {
       raiseSoftError(
-        'getViewManagerConfig',
-        `Use hasViewManagerConfig instead. viewManagerName: ${viewManagerName}`,
+        `getViewManagerConfig('${viewManagerName}')`,
+        `If '${viewManagerName}' has a ViewManager and you want to retrieve its native ViewConfig, please turn on the native ViewConfig interop layer. If you want to see if this component is registered with React Native, please call hasViewManagerConfig('${viewManagerName}') instead.`,
       );
       return null;
     }
