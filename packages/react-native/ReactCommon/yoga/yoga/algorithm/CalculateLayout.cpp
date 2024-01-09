@@ -2034,7 +2034,7 @@ static void calculateLayoutImpl(
       // Let the containing block layout its absolute descendants. By definition
       // the containing block will not be static unless we are at the root.
       if (node->getStyle().positionType() != PositionType::Static ||
-          depth == 1) {
+          node->alwaysFormsContainingBlock() || depth == 1) {
         layoutAbsoluteDescendants(
             node,
             node,

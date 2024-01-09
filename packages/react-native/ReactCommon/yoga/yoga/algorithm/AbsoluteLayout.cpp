@@ -528,7 +528,9 @@ void layoutAbsoluteDescendants(
       if (needsTrailingPosition(crossAxis)) {
         setChildTrailingPosition(currentNode, child, crossAxis);
       }
-    } else if (child->getStyle().positionType() == PositionType::Static) {
+    } else if (
+        child->getStyle().positionType() == PositionType::Static &&
+        !child->alwaysFormsContainingBlock()) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
       const float childMainOffsetFromContainingBlock =
