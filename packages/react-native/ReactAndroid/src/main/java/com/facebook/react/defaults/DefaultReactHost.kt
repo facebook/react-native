@@ -16,6 +16,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler
+import com.facebook.react.runtime.DefaultTurboModuleManagerDelegate
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
