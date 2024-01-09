@@ -293,6 +293,7 @@ const DEFAULT_MIN_PRESS_DURATION = 130;
 
 const DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE = 10;
 let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
+
 /**
  * Pressability implements press handling capabilities.
  *
@@ -313,7 +314,8 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  * bounds should trigger deactivation, but moving the same finger back within an
  * element's bounds should trigger reactivation.
  *
- * In order to use `Pressability`, do the following:
+ * This should be consumed by functional components using `usePressability`. The
+ * following steps are only relevant for using `Pressability` in classes:
  *
  * 1. Instantiate `Pressability` and store it on your component's state.
  *
@@ -330,7 +332,15 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  *      <View {...this.state.pressability.getEventHandlers()} />
  *    );
  *
- * 3. Reset `Pressability` when your component unmounts.
+ * 3. Update `Pressability` when your component mounts, updates, and unmounts.
+ *
+ *    componentDidMount() {
+ *      this.state.pressability.configure(...);
+ *    }
+ *
+ *    componentDidUpdate() {
+ *      this.state.pressability.configure(...);
+ *    }
  *
  *    componentWillUnmount() {
  *      this.state.pressability.reset();
