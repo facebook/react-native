@@ -926,6 +926,25 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.15
+
+### Fixed
+
+#### Android specific
+- Fix Android crash when apply PlatformColor to borders ([265af222aa](https://github.com/facebook/react-native/commit/265af222aa8acb3b514e22a7db191d66755f553b) by [@axinvd](https://github.com/axinvd))
+- Fixed crash occurring in certain native views when keyboard events are fired. ([9497203957](https://github.com/facebook/react-native/commit/94972039571e1f3b387e0f63227a6ad13740eaf3) by [@kot331107](https://github.com/kot331107))
+
+#### iOS specific
+
+- Migrate away from JFrog to download boost ([ab19fd6aef](https://github.com/facebook/react-native/commit/ab19fd6aef43a739f78cf62155fec59d95f577d3) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix overriding `EXCLUDED_ARCHS` when installing Hermes on RN v0.71 ([16a605b6a3](https://github.com/facebook/react-native/commit/16a605b6a3c320f93b6cda9198d738672086e851) by [@ken0nek](https://github.com/ken0nek))
+
+### Changed
+
+- Update node installation on debian (0.71) ([bdc0ef3466](https://github.com/facebook/react-native/commit/bdc0ef34664b7f1a2b8598ad6092a2ec6cf089ce) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump cli to 10.2.6 ([0bc2dd03c1](https://github.com/facebook/react-native/commit/0bc2dd03c1ccb4ab6ecf55add249f222c5757f06) by [@hurali97](https://github.com/hurali97))
+- Fix version of react-native-codegen ([c74602fe47](https://github.com/facebook/react-native/commit/c74602fe47ca12a151eb173203fb6fce7f3cc964) by [@lunaleaps](https://github.com/lunaleaps))
+
 ## v0.71.14
 
 ### Fixed
