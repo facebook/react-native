@@ -86,10 +86,6 @@ export interface Spec extends TurboModule {
     callback: () => void, // check what is returned here
     errorCallback: (error: Object) => void,
   ) => void;
-  +replaceExistingNonRootView: (
-    reactTag: ?number,
-    newReactTag: ?number,
-  ) => void;
   +setChildren: (containerTag: ?number, reactTags: Array<number>) => void;
   +manageChildren: (
     containerTag: ?number,
