@@ -31,7 +31,8 @@ Pod::Spec.new do |spec|
   spec.header_dir = 'yoga'
   spec.requires_arc = false
   spec.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES'
+      'DEFINES_MODULE' => 'YES',
+      'HEADER_SEARCH_PATHS' => ['$(inherited)', '${PODS_ROOT}/../../node_modules/react-native/ReactCommon/yoga']
   }
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',
