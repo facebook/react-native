@@ -192,6 +192,11 @@ static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string 
   return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
 }
 
+static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message, jsi::Object &options)
+{
+  return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message, options);
+}
+
 /**
  * Creates JSError with current JS runtime and NSException stack trace.
  */
@@ -209,6 +214,24 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return {runtime, std::move(error)};
+}
+
+/**
+ * Creates JS error value with current JS runtime and error details.
+ */
+static jsi::Value convertJSErrorDetailsToJSValue(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+{
+  // From JS documentation:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#cause an
+  // Error can be created with `new Error(message, option);`. the `option` param is a JS object with the
+  // `cause` property. Create a valid `option` object
+  jsi::Object jsErrorOptions = jsi::Object(runtime);
+  jsErrorOptions.setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+  NSString *message = jsErrorDetails[@"message"];
+
+  auto jsError = createJSRuntimeError(runtime, [message UTF8String], jsErrorOptions);
+
+  return jsError;
 }
 
 }
@@ -281,16 +304,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
               reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                // From JS documentation:
-                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#cause an
-                // Error can be created with `new Error(message, option);`. the `option` param is a JS object with the
-                // `cause` property. Create a valid `option` object
-                NSDictionary<NSString *, id> *jsErrorOptions = @{@"cause" : jsErrorDetails};
-                auto jsiObjCError = convertObjCObjectToJSIValue(rt, jsErrorOptions);
-                NSString *message =
-                    jsErrorDetails[@"message"] ? jsErrorDetails[@"message"] : @"Unknown error from a native module";
-                auto jsError =
-                    rt.global().getPropertyAsFunction(rt, "Error").call(rt, [message UTF8String], jsiObjCError);
+                auto jsError = convertJSErrorDetailsToJSValue(rt, jsErrorDetails);
                 jsFunction.call(rt, jsError);
               });
               resolveWasCalled = NO;
