@@ -524,6 +524,7 @@ android {
             "hermesinstancejni",
             "uimanagerjni",
             "jscinstance",
+            "react_devsupportjni",
             // prefab targets
             "reactnativejni",
             "react_render_debug",

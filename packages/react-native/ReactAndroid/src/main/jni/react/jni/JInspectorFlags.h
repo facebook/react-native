@@ -21,6 +21,8 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
 
   static bool getEnableModernCDPRegistry(jni::alias_ref<jclass>);
 
+  static bool getEnableCxxInspectorPackagerConnection(jni::alias_ref<jclass>);
+
   static void registerNatives();
 
  private:
