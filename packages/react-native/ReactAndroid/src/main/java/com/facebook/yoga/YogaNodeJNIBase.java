@@ -504,6 +504,11 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeSetHasMeasureFuncJNI(mNativePointer, measureFunction != null);
   }
 
+  @Override
+  public void setAlwaysFormsContainingBlock(boolean alwaysFormsContainingBlock) {
+    YogaNative.jni_YGNodeSetAlwaysFormsContainingBlockJNI(mNativePointer, alwaysFormsContainingBlock);
+  }
+
   // Implementation Note: Why this method needs to stay final
   //
   // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
