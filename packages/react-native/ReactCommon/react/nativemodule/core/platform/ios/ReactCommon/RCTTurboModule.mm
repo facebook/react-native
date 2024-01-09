@@ -192,11 +192,6 @@ static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string 
   return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
 }
 
-static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message, jsi::Object &options)
-{
-  return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message, options);
-}
-
 /**
  * Creates JSError with current JS runtime and NSException stack trace.
  */
@@ -221,15 +216,10 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
  */
 static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
 {
-  // From JS documentation:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#cause an
-  // Error can be created with `new Error(message, option);`. the `option` param is a JS object with the
-  // `cause` property. Create a valid `option` object
-  jsi::Object jsErrorOptions = jsi::Object(runtime);
-  jsErrorOptions.setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
   NSString *message = jsErrorDetails[@"message"];
 
-  auto jsError = createJSRuntimeError(runtime, [message UTF8String], jsErrorOptions);
+  auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
+  jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
 
   return jsError;
 }
