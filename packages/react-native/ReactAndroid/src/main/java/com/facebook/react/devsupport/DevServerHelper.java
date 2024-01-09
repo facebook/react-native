@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.InspectorFlags;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -107,7 +108,7 @@ public class DevServerHelper {
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
-  private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
+  private @Nullable IInspectorPackagerConnection mInspectorPackagerConnection;
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
@@ -210,8 +211,13 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection =
-            new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
+          mInspectorPackagerConnection =
+              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        } else {
+          mInspectorPackagerConnection =
+              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+        }
         mInspectorPackagerConnection.connect();
         return null;
       }

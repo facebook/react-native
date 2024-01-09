@@ -19,5 +19,8 @@ public class InspectorFlags {
   @DoNotStrip
   public static native boolean getEnableModernCDPRegistry();
 
+  @DoNotStrip
+  public static native boolean getEnableCxxInspectorPackagerConnection();
+
   private InspectorFlags() {}
 }

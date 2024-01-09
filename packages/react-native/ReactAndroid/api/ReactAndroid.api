@@ -733,6 +733,7 @@ public abstract interface class com/facebook/react/bridge/Inspector$RemoteConnec
 }
 
 public class com/facebook/react/bridge/InspectorFlags {
+	public static fun getEnableCxxInspectorPackagerConnection ()Z
 	public static fun getEnableModernCDPRegistry ()Z
 }
 
@@ -2197,7 +2198,7 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V
 }
 
-public class com/facebook/react/devsupport/InspectorPackagerConnection {
+public class com/facebook/react/devsupport/InspectorPackagerConnection : com/facebook/react/devsupport/IInspectorPackagerConnection {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public fun closeQuietly ()V
 	public fun connect ()V
