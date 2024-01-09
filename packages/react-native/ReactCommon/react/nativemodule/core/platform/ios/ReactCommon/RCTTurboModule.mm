@@ -278,9 +278,20 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
                 }
                 return;
               }
-              reject->call([message](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(
-                    rt, createJSRuntimeError(rt, [message ?: @"Unknown error from a native module" UTF8String]));
+
+              NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                // From JS documentation:
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#cause an
+                // Error can be created with `new Error(message, option);`. the `option` param is a JS object with the
+                // `cause` property. Create a valid `option` object
+                NSDictionary<NSString *, id> *jsErrorOptions = @{@"cause" : jsErrorDetails};
+                auto jsiObjCError = convertObjCObjectToJSIValue(rt, jsErrorOptions);
+                NSString *message =
+                    jsErrorDetails[@"message"] ? jsErrorDetails[@"message"] : @"Unknown error from a native module";
+                auto jsError =
+                    rt.global().getPropertyAsFunction(rt, "Error").call(rt, [message UTF8String], jsiObjCError);
+                jsFunction.call(rt, jsError);
               });
               resolveWasCalled = NO;
               resolve = std::nullopt;
