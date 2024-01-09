@@ -701,31 +701,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 }
 
 /**
- * A method to be called from JS, which takes a container ID and then releases
- * all subviews for that container upon receipt.
- */
-RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID : (nonnull NSNumber *)containerID)
-{
-  RCTLogWarn(
-      @"RCTUIManager.removeSubviewsFromContainerWithID method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  id<RCTComponent> container = _shadowViewRegistry[containerID];
-  RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
-
-  NSUInteger subviewsCount = [container reactSubviews].count;
-  NSMutableArray<NSNumber *> *indices = [[NSMutableArray alloc] initWithCapacity:subviewsCount];
-  for (NSUInteger childIndex = 0; childIndex < subviewsCount; childIndex++) {
-    [indices addObject:@(childIndex)];
-  }
-
-  [self manageChildren:containerID
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:nil
-           addAtIndices:nil
-        removeAtIndices:indices];
-}
-
-/**
  * Disassociates children from container. Doesn't remove from registries.
  * TODO: use [NSArray getObjects:buffer] to reuse same fast buffer each time.
  *

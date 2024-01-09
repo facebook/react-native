@@ -481,27 +481,6 @@ public class UIImplementation {
   }
 
   /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt. TODO: The method name is incorrect and will be renamed, #6033872
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   */
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    ReactShadowNode containerNode = mShadowNodeRegistry.getNode(containerTag);
-    if (containerNode == null) {
-      throw new IllegalViewOperationException(
-          "Trying to remove subviews of an unknown view tag: " + containerTag);
-    }
-
-    WritableArray indicesToRemove = Arguments.createArray();
-    for (int childIndex = 0; childIndex < containerNode.getChildCount(); childIndex++) {
-      indicesToRemove.pushInt(childIndex);
-    }
-
-    manageChildren(containerTag, null, null, null, null, indicesToRemove);
-  }
-
-  /**
    * Find the touch target child native view in the supplied root view hierarchy, given a react
    * target location.
    *
