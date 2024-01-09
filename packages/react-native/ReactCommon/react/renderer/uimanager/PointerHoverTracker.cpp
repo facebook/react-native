@@ -91,17 +91,16 @@ std::tuple<EventPath, EventPath> PointerHoverTracker::diffEventPath(
   }
 
   EventPath removed;
-  for (const auto& node : std::ranges::subrange{myIt, myEventPath.rend()}) {
-    const auto& latestNode = getLatestNode(node, uiManager);
+  for (auto nodeIt = myIt; nodeIt != myEventPath.rend(); nodeIt++) {
+    const auto& latestNode = getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
       removed.push_back(*latestNode);
     }
   }
 
   EventPath added;
-  for (const auto& node :
-       std::ranges::subrange{otherIt, otherEventPath.rend()}) {
-    const auto& latestNode = other.getLatestNode(node, uiManager);
+  for (auto nodeIt = otherIt; nodeIt != otherEventPath.rend(); nodeIt++) {
+    const auto& latestNode = other.getLatestNode(*nodeIt, uiManager);
     if (latestNode != nullptr) {
       added.push_back(*latestNode);
     }
@@ -141,8 +140,8 @@ EventPath PointerHoverTracker::getEventPathTargets() const {
   auto ancestors = target_->getFamily().getAncestors(*root_);
 
   result.emplace_back(*target_);
-  for (const auto& ancestor : std::ranges::reverse_view(ancestors)) {
-    result.push_back(ancestor.first);
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    result.push_back(it->first);
   }
 
   return result;
