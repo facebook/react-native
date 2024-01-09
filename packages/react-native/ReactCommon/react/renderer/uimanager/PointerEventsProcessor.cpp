@@ -7,8 +7,6 @@
 
 #include "PointerEventsProcessor.h"
 
-#include <ranges>
-
 namespace facebook::react {
 
 ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
@@ -74,8 +72,8 @@ static bool isAnyViewInPathToRootListeningToEvents(
   auto ancestors = nodeFamily.getAncestors(*owningRootShadowNode);
 
   // Check for listeners from the target's parent to the root
-  for (auto& ancestor : std::ranges::reverse_view(ancestors)) {
-    auto& currentNode = ancestor.first.get();
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    auto& currentNode = it->first.get();
     if (isViewListeningToEvents(currentNode, eventTypes)) {
       return true;
     }
@@ -481,8 +479,11 @@ void PointerEventsProcessor::handleIncomingPointerEventOnNode(
   }
 
   // Actually emit the leave events (in order from target to root)
-  for (auto it : std::ranges::reverse_view(targetsToEmitLeaveTo)) {
-    eventDispatcher(it, "topPointerLeave", ReactEventPriority::Discrete, event);
+  for (auto it = targetsToEmitLeaveTo.rbegin();
+       it != targetsToEmitLeaveTo.rend();
+       it++) {
+    eventDispatcher(
+        *it, "topPointerLeave", ReactEventPriority::Discrete, event);
   }
 
   // Over
