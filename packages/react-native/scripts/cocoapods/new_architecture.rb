@@ -5,14 +5,11 @@
 
 require 'json'
 
-require_relative "./utils"
-
+require_relative "./utils.rb"
+require_relative "./helpers.rb"
+\
 class NewArchitectureHelper
-    @@shared_flags = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1"
-
-    @@folly_compiler_flags = "#{@@shared_flags} -Wno-comma -Wno-shorten-64-to-32"
-
-    @@new_arch_cpp_flags = " -DRCT_NEW_ARCH_ENABLED=1 #{@@shared_flags}"
+    @@new_arch_cpp_flags = " -DRCT_NEW_ARCH_ENABLED=1 #{Helpers::Constants.folly_config()[:compiler_flags]}"
 
     @@cplusplus_version = "c++20"
 
@@ -70,9 +67,12 @@ class NewArchitectureHelper
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version)
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
+        folly_config = get_folly_config()
+        folly_compiler_flags = folly_config[:compiler_flags]
+
         hash = spec.to_hash
 
         compiler_flags = hash["compiler_flags"] ? hash["compiler_flags"] : ""
@@ -98,7 +98,7 @@ class NewArchitectureHelper
                 }
         end
         header_search_paths_string = header_search_paths.join(" ")
-        spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
+        spec.compiler_flags = compiler_flags.empty? ? folly_compiler_flags : "#{compiler_flags} #{compiler_flags}"
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
             header_search_paths_string :
             "#{current_headers} #{header_search_paths_string}"
@@ -106,7 +106,7 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2024.01.01.00'
+        spec.dependency "RCT-Folly", folly_version
         spec.dependency "glog"
 
         if new_arch_enabled
@@ -141,7 +141,8 @@ class NewArchitectureHelper
     end
 
     def self.folly_compiler_flags
-        return @@folly_compiler_flags
+        folly_config = get_folly_config()
+        return folly_config[:compiler_flags]
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
