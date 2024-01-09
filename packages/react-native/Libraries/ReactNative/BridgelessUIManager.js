@@ -14,6 +14,7 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
+import Platform from '../Utilities/Platform';
 import nullthrows from 'nullthrows';
 
 function raiseSoftError(methodName: string, details?: string): void {
@@ -96,8 +97,53 @@ const UIManagerJSOverridenAPIs = {
   },
 };
 
+const UIManagerJSPlatformAPIs = Platform.select({
+  android: {
+    getConstantsForViewManager: (viewManagerName: string): Object => {
+      raiseSoftError('getConstantsForViewManager');
+      return {};
+    },
+    getDefaultEventTypes: (): Array<string> => {
+      raiseSoftError('getDefaultEventTypes');
+      return [];
+    },
+    setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
+      raiseSoftError('setLayoutAnimationEnabledExperimental');
+    },
+    // Please use AccessibilityInfo.sendAccessibilityEvent instead.
+    // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
+    sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
+      raiseSoftError('sendAccessibilityEvent');
+    },
+    showPopupMenu: (
+      reactTag: ?number,
+      items: Array<string>,
+      error: (error: Object) => void,
+      success: (event: string, selected?: number) => void,
+    ): void => {
+      raiseSoftError('showPopupMenu');
+    },
+    dismissPopupMenu: (): void => {
+      raiseSoftError('dismissPopupMenu');
+    },
+  },
+  ios: {
+    lazilyLoadView: (name: string): Object => {
+      raiseSoftError('lazilyLoadView');
+      return {};
+    },
+    focus: (reactTag: ?number): void => {
+      raiseSoftError('focus');
+    },
+    blur: (reactTag: ?number): void => {
+      raiseSoftError('blur');
+    },
+  },
+});
+
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSPlatformAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       return getUIManagerConstantsCache()[viewManagerName];
@@ -120,18 +166,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       return null;
     }
   },
-  getConstantsForViewManager: (viewManagerName: string): Object => {
-    raiseSoftError('getConstantsForViewManager');
-    return {};
-  },
-  getDefaultEventTypes: (): Array<string> => {
-    raiseSoftError('getDefaultEventTypes');
-    return [];
-  },
-  lazilyLoadView: (name: string): Object => {
-    raiseSoftError('lazilyLoadView');
-    return {};
-  },
   createView: (
     reactTag: ?number,
     viewName: string,
@@ -142,12 +176,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   },
   updateView: (reactTag: number, viewName: string, props: Object): void => {
     raiseSoftError('updateView');
-  },
-  focus: (reactTag: ?number): void => {
-    raiseSoftError('focus');
-  },
-  blur: (reactTag: ?number): void => {
-    raiseSoftError('blur');
   },
   findSubviewIn: (
     reactTag: ?number,
@@ -203,27 +231,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     removeAtIndices: Array<number>,
   ): void => {
     raiseSoftError('manageChildren');
-  },
-
-  // Android only
-  setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-    raiseSoftError('setLayoutAnimationEnabledExperimental');
-  },
-  // Please use AccessibilityInfo.sendAccessibilityEvent instead.
-  // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
-  sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
-    raiseSoftError('sendAccessibilityEvent');
-  },
-  showPopupMenu: (
-    reactTag: ?number,
-    items: Array<string>,
-    error: (error: Object) => void,
-    success: (event: string, selected?: number) => void,
-  ): void => {
-    raiseSoftError('showPopupMenu');
-  },
-  dismissPopupMenu: (): void => {
-    raiseSoftError('dismissPopupMenu');
   },
 };
 
