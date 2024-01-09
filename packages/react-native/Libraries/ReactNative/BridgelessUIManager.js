@@ -15,6 +15,7 @@ import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
 import Platform from '../Utilities/Platform';
+import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
 
 function raiseSoftError(methodName: string, details?: string): void {
@@ -230,7 +231,12 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     callback: () => void,
     errorCallback: (error: Object) => void,
   ): void => {
-    raiseSoftError('configureNextLayoutAnimation');
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    FabricUIManager.configureNextLayoutAnimation(
+      config,
+      callback,
+      errorCallback,
+    );
   },
 };
 
