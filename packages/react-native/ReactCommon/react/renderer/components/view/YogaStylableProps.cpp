@@ -35,11 +35,6 @@ YogaStylableProps::YogaStylableProps(
   }
 };
 
-/*static*/ const yoga::Style& YogaStylableProps::defaultStyle() {
-  static const auto defaultStyle = []() { return yoga::Style{}; }();
-  return defaultStyle;
-}
-
 template <typename T>
 static inline T const getFieldValue(
     const PropsParserContext& context,
@@ -54,10 +49,10 @@ static inline T const getFieldValue(
   return defaultValue;
 }
 
-#define REBUILD_FIELD_SWITCH_CASE2(field, setter, fieldName)                 \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                            \
-    yogaStyle.setter(getFieldValue(context, value, defaultStyle().field())); \
-    return;                                                                  \
+#define REBUILD_FIELD_SWITCH_CASE2(field, setter, fieldName)             \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                        \
+    yogaStyle.setter(getFieldValue(context, value, ygDefaults.field())); \
+    return;                                                              \
   }
 
 #define REBUILD_FIELD_SWITCH_CASE_YSP(field, setter) \
@@ -66,7 +61,7 @@ static inline T const getFieldValue(
 #define REBUILD_YG_FIELD_SWITCH_CASE_INDEXED(field, setter, index, fieldName) \
   case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                             \
     yogaStyle.setter(                                                         \
-        index, getFieldValue(context, value, defaultStyle().field(index)));   \
+        index, getFieldValue(context, value, ygDefaults.field(index)));       \
     return;                                                                   \
   }
 
@@ -130,6 +125,7 @@ void YogaStylableProps::setProp(
     RawPropsPropNameHash hash,
     const char* propName,
     const RawValue& value) {
+  static const auto ygDefaults = yoga::Style{};
   static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
@@ -185,225 +181,228 @@ void YogaStylableProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
+  const auto defaultYogaStyle = yoga::Style{};
   return {
       debugStringConvertibleItem(
-          "direction", yogaStyle.direction(), defaultStyle().direction()),
+          "direction", yogaStyle.direction(), defaultYogaStyle.direction()),
       debugStringConvertibleItem(
           "flexDirection",
           yogaStyle.flexDirection(),
-          defaultStyle().flexDirection()),
+          defaultYogaStyle.flexDirection()),
       debugStringConvertibleItem(
           "justifyContent",
           yogaStyle.justifyContent(),
-          defaultStyle().justifyContent()),
+          defaultYogaStyle.justifyContent()),
       debugStringConvertibleItem(
           "alignContent",
           yogaStyle.alignContent(),
-          defaultStyle().alignContent()),
+          defaultYogaStyle.alignContent()),
       debugStringConvertibleItem(
-          "alignItems", yogaStyle.alignItems(), defaultStyle().alignItems()),
+          "alignItems", yogaStyle.alignItems(), defaultYogaStyle.alignItems()),
       debugStringConvertibleItem(
-          "alignSelf", yogaStyle.alignSelf(), defaultStyle().alignSelf()),
+          "alignSelf", yogaStyle.alignSelf(), defaultYogaStyle.alignSelf()),
       debugStringConvertibleItem(
           "positionType",
           yogaStyle.positionType(),
-          defaultStyle().positionType()),
+          defaultYogaStyle.positionType()),
       debugStringConvertibleItem(
-          "flexWrap", yogaStyle.flexWrap(), defaultStyle().flexWrap()),
+          "flexWrap", yogaStyle.flexWrap(), defaultYogaStyle.flexWrap()),
       debugStringConvertibleItem(
-          "overflow", yogaStyle.overflow(), defaultStyle().overflow()),
+          "overflow", yogaStyle.overflow(), defaultYogaStyle.overflow()),
       debugStringConvertibleItem(
-          "display", yogaStyle.display(), defaultStyle().display()),
+          "display", yogaStyle.display(), defaultYogaStyle.display()),
       debugStringConvertibleItem(
-          "flex", yogaStyle.flex(), defaultStyle().flex()),
+          "flex", yogaStyle.flex(), defaultYogaStyle.flex()),
       debugStringConvertibleItem(
-          "flexGrow", yogaStyle.flexGrow(), defaultStyle().flexGrow()),
+          "flexGrow", yogaStyle.flexGrow(), defaultYogaStyle.flexGrow()),
       debugStringConvertibleItem(
           "rowGap",
           yogaStyle.gap(yoga::Gutter::Row),
-          defaultStyle().gap(yoga::Gutter::Row)),
+          defaultYogaStyle.gap(yoga::Gutter::Row)),
       debugStringConvertibleItem(
           "columnGap",
           yogaStyle.gap(yoga::Gutter::Column),
-          defaultStyle().gap(yoga::Gutter::Column)),
+          defaultYogaStyle.gap(yoga::Gutter::Column)),
       debugStringConvertibleItem(
           "gap",
           yogaStyle.gap(yoga::Gutter::All),
-          defaultStyle().gap(yoga::Gutter::All)),
+          defaultYogaStyle.gap(yoga::Gutter::All)),
       debugStringConvertibleItem(
-          "flexShrink", yogaStyle.flexShrink(), defaultStyle().flexShrink()),
+          "flexShrink", yogaStyle.flexShrink(), defaultYogaStyle.flexShrink()),
       debugStringConvertibleItem(
-          "flexBasis", yogaStyle.flexBasis(), defaultStyle().flexBasis()),
+          "flexBasis", yogaStyle.flexBasis(), defaultYogaStyle.flexBasis()),
       debugStringConvertibleItem(
           "marginLeft",
           yogaStyle.margin(yoga::Edge::Left),
-          defaultStyle().margin(yoga::Edge::Left)),
+          defaultYogaStyle.margin(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "marginTop",
           yogaStyle.margin(yoga::Edge::Top),
-          defaultStyle().margin(yoga::Edge::Top)),
+          defaultYogaStyle.margin(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "marginRight",
           yogaStyle.margin(yoga::Edge::Right),
-          defaultStyle().margin(yoga::Edge::Right)),
+          defaultYogaStyle.margin(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "marginBottom",
           yogaStyle.margin(yoga::Edge::Bottom),
-          defaultStyle().margin(yoga::Edge::Bottom)),
+          defaultYogaStyle.margin(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "marginStart",
           yogaStyle.margin(yoga::Edge::Start),
-          defaultStyle().margin(yoga::Edge::Start)),
+          defaultYogaStyle.margin(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "marginEnd",
           yogaStyle.margin(yoga::Edge::End),
-          defaultStyle().margin(yoga::Edge::End)),
+          defaultYogaStyle.margin(yoga::Edge::End)),
       debugStringConvertibleItem(
           "marginHorizontal",
           yogaStyle.margin(yoga::Edge::Horizontal),
-          defaultStyle().margin(yoga::Edge::Horizontal)),
+          defaultYogaStyle.margin(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "marginVertical",
           yogaStyle.margin(yoga::Edge::Vertical),
-          defaultStyle().margin(yoga::Edge::Vertical)),
+          defaultYogaStyle.margin(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "margin",
           yogaStyle.margin(yoga::Edge::All),
-          defaultStyle().margin(yoga::Edge::All)),
+          defaultYogaStyle.margin(yoga::Edge::All)),
       debugStringConvertibleItem(
           "left",
           yogaStyle.position(yoga::Edge::Left),
-          defaultStyle().position(yoga::Edge::Left)),
+          defaultYogaStyle.position(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "top",
           yogaStyle.position(yoga::Edge::Top),
-          defaultStyle().position(yoga::Edge::Top)),
+          defaultYogaStyle.position(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "right",
           yogaStyle.position(yoga::Edge::Right),
-          defaultStyle().position(yoga::Edge::Right)),
+          defaultYogaStyle.position(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "bottom",
           yogaStyle.position(yoga::Edge::Bottom),
-          defaultStyle().position(yoga::Edge::Bottom)),
+          defaultYogaStyle.position(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "start",
           yogaStyle.position(yoga::Edge::Start),
-          defaultStyle().position(yoga::Edge::Start)),
+          defaultYogaStyle.position(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "end",
           yogaStyle.position(yoga::Edge::End),
-          defaultStyle().position(yoga::Edge::End)),
+          defaultYogaStyle.position(yoga::Edge::End)),
       debugStringConvertibleItem(
           "inseInline",
           yogaStyle.position(yoga::Edge::Horizontal),
-          defaultStyle().position(yoga::Edge::Horizontal)),
+          defaultYogaStyle.position(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "insetBlock",
           yogaStyle.position(yoga::Edge::Vertical),
-          defaultStyle().position(yoga::Edge::Vertical)),
+          defaultYogaStyle.position(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "inset",
           yogaStyle.position(yoga::Edge::All),
-          defaultStyle().position(yoga::Edge::All)),
+          defaultYogaStyle.position(yoga::Edge::All)),
       debugStringConvertibleItem(
           "paddingLeft",
           yogaStyle.padding(yoga::Edge::Left),
-          defaultStyle().padding(yoga::Edge::Left)),
+          defaultYogaStyle.padding(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "paddingTop",
           yogaStyle.padding(yoga::Edge::Top),
-          defaultStyle().padding(yoga::Edge::Top)),
+          defaultYogaStyle.padding(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "paddingRight",
           yogaStyle.padding(yoga::Edge::Right),
-          defaultStyle().padding(yoga::Edge::Right)),
+          defaultYogaStyle.padding(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "paddingBottom",
           yogaStyle.padding(yoga::Edge::Bottom),
-          defaultStyle().padding(yoga::Edge::Bottom)),
+          defaultYogaStyle.padding(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "paddingStart",
           yogaStyle.padding(yoga::Edge::Start),
-          defaultStyle().padding(yoga::Edge::Start)),
+          defaultYogaStyle.padding(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "paddingEnd",
           yogaStyle.padding(yoga::Edge::End),
-          defaultStyle().padding(yoga::Edge::End)),
+          defaultYogaStyle.padding(yoga::Edge::End)),
       debugStringConvertibleItem(
           "paddingHorizontal",
           yogaStyle.padding(yoga::Edge::Horizontal),
-          defaultStyle().padding(yoga::Edge::Horizontal)),
+          defaultYogaStyle.padding(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "paddingVertical",
           yogaStyle.padding(yoga::Edge::Vertical),
-          defaultStyle().padding(yoga::Edge::Vertical)),
+          defaultYogaStyle.padding(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "padding",
           yogaStyle.padding(yoga::Edge::All),
-          defaultStyle().padding(yoga::Edge::All)),
+          defaultYogaStyle.padding(yoga::Edge::All)),
       debugStringConvertibleItem(
           "borderLeftWidth",
           yogaStyle.border(yoga::Edge::Left),
-          defaultStyle().border(yoga::Edge::Left)),
+          defaultYogaStyle.border(yoga::Edge::Left)),
       debugStringConvertibleItem(
           "borderTopWidth",
           yogaStyle.border(yoga::Edge::Top),
-          defaultStyle().border(yoga::Edge::Top)),
+          defaultYogaStyle.border(yoga::Edge::Top)),
       debugStringConvertibleItem(
           "borderRightWidth",
           yogaStyle.border(yoga::Edge::Right),
-          defaultStyle().border(yoga::Edge::Right)),
+          defaultYogaStyle.border(yoga::Edge::Right)),
       debugStringConvertibleItem(
           "borderBottomWidth",
           yogaStyle.border(yoga::Edge::Bottom),
-          defaultStyle().border(yoga::Edge::Bottom)),
+          defaultYogaStyle.border(yoga::Edge::Bottom)),
       debugStringConvertibleItem(
           "borderStartWidth",
           yogaStyle.border(yoga::Edge::Start),
-          defaultStyle().border(yoga::Edge::Start)),
+          defaultYogaStyle.border(yoga::Edge::Start)),
       debugStringConvertibleItem(
           "borderEndWidth",
           yogaStyle.border(yoga::Edge::End),
-          defaultStyle().border(yoga::Edge::End)),
+          defaultYogaStyle.border(yoga::Edge::End)),
       debugStringConvertibleItem(
           "borderHorizontalWidth",
           yogaStyle.border(yoga::Edge::Horizontal),
-          defaultStyle().border(yoga::Edge::Horizontal)),
+          defaultYogaStyle.border(yoga::Edge::Horizontal)),
       debugStringConvertibleItem(
           "borderVerticalWidth",
           yogaStyle.border(yoga::Edge::Vertical),
-          defaultStyle().border(yoga::Edge::Vertical)),
+          defaultYogaStyle.border(yoga::Edge::Vertical)),
       debugStringConvertibleItem(
           "bordeWidth",
           yogaStyle.border(yoga::Edge::All),
-          defaultStyle().border(yoga::Edge::All)),
+          defaultYogaStyle.border(yoga::Edge::All)),
       debugStringConvertibleItem(
           "width",
           yogaStyle.dimension(yoga::Dimension::Width),
-          defaultStyle().dimension(yoga::Dimension::Width)),
+          defaultYogaStyle.dimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "height",
           yogaStyle.dimension(yoga::Dimension::Height),
-          defaultStyle().dimension(yoga::Dimension::Height)),
+          defaultYogaStyle.dimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
           "minWidth",
           yogaStyle.minDimension(yoga::Dimension::Width),
-          defaultStyle().minDimension(yoga::Dimension::Width)),
+          defaultYogaStyle.minDimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "minHeight",
           yogaStyle.minDimension(yoga::Dimension::Height),
-          defaultStyle().minDimension(yoga::Dimension::Height)),
+          defaultYogaStyle.minDimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
           "maxWidth",
           yogaStyle.maxDimension(yoga::Dimension::Width),
-          defaultStyle().maxDimension(yoga::Dimension::Width)),
+          defaultYogaStyle.maxDimension(yoga::Dimension::Width)),
       debugStringConvertibleItem(
           "maxHeight",
           yogaStyle.maxDimension(yoga::Dimension::Height),
-          defaultStyle().maxDimension(yoga::Dimension::Height)),
+          defaultYogaStyle.maxDimension(yoga::Dimension::Height)),
       debugStringConvertibleItem(
-          "aspectRatio", yogaStyle.aspectRatio(), defaultStyle().aspectRatio()),
+          "aspectRatio",
+          yogaStyle.aspectRatio(),
+          defaultYogaStyle.aspectRatio()),
   };
 }
 #endif
