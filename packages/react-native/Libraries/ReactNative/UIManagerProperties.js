@@ -41,7 +41,6 @@ module.exports = [
   'measureLayout',
   'measureLayoutRelativeToParent',
   'removeRootView',
-  'removeSubviewsFromContainerWithID',
   'replaceExistingNonRootView',
   'sendAccessibilityEvent',
   'setChildren',
