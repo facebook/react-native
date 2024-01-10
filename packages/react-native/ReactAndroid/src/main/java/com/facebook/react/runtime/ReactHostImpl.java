@@ -202,10 +202,11 @@ public class ReactHostImpl implements ReactHost {
   @Override
   public TaskInterface<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return newGetOrCreateStartTask();
+      return Task.call(this::newGetOrCreateStartTask, mBGExecutor)
+          .continueWithTask(Task::getResult);
     }
 
-    return oldGetOrCreateStartTask();
+    return Task.call(this::oldGetOrCreateStartTask, mBGExecutor).continueWithTask(Task::getResult);
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
@@ -719,63 +720,53 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined("ReactHost")
   private @Nullable Task<Void> mStartTask = null;
 
+  @ThreadConfined("ReactHost")
   private Task<Void> oldGetOrCreateStartTask() {
-    final String method = "oldGetOrCreateStartTask()";
-    return Task.call(
-            () -> {
-              if (mStartTask == null) {
-                log(method, "Schedule");
-                mStartTask =
-                    getOrCreateReactInstance()
-                        .continueWithTask(
-                            task -> {
-                              if (task.isFaulted()) {
-                                destroy(
-                                    "oldGetOrCreateStartTask() failure: "
-                                        + task.getError().getMessage(),
-                                    task.getError());
-                                mReactHostDelegate.handleInstanceException(task.getError());
-                              }
+    if (mStartTask == null) {
+      final String method = "oldGetOrCreateStartTask()";
+      log(method, "Schedule");
+      mStartTask =
+          getOrCreateReactInstance()
+              .continueWithTask(
+                  task -> {
+                    if (task.isFaulted()) {
+                      destroy(
+                          "oldGetOrCreateStartTask() failure: " + task.getError().getMessage(),
+                          task.getError());
+                      mReactHostDelegate.handleInstanceException(task.getError());
+                    }
 
-                              return task;
-                            },
-                            mBGExecutor)
-                        .makeVoid();
-              }
-              return mStartTask;
-            },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+                    return task;
+                  },
+                  mBGExecutor)
+              .makeVoid();
+    }
+    return mStartTask;
   }
 
+  @ThreadConfined("ReactHost")
   private Task<Void> newGetOrCreateStartTask() {
-    final String method = "newGetOrCreateStartTask()";
-    return Task.call(
-            () -> {
-              if (mStartTask == null) {
-                log(method, "Schedule");
-                mStartTask =
-                    waitThenCallNewGetOrCreateReactInstanceTask()
-                        .continueWithTask(
-                            (task) -> {
-                              if (task.isFaulted()) {
-                                mReactHostDelegate.handleInstanceException(task.getError());
-                                // Wait for destroy to finish
-                                return newGetOrCreateDestroyTask(
-                                        "newGetOrCreateStartTask() failure: "
-                                            + task.getError().getMessage(),
-                                        task.getError())
-                                    .continueWithTask(destroyTask -> Task.forError(task.getError()))
-                                    .makeVoid();
-                              }
-                              return task.makeVoid();
-                            },
-                            mBGExecutor);
-              }
-              return mStartTask;
-            },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+    if (mStartTask == null) {
+      final String method = "newGetOrCreateStartTask()";
+      log(method, "Schedule");
+      mStartTask =
+          waitThenCallNewGetOrCreateReactInstanceTask()
+              .continueWithTask(
+                  (task) -> {
+                    if (task.isFaulted()) {
+                      mReactHostDelegate.handleInstanceException(task.getError());
+                      // Wait for destroy to finish
+                      return newGetOrCreateDestroyTask(
+                              "newGetOrCreateStartTask() failure: " + task.getError().getMessage(),
+                              task.getError())
+                          .continueWithTask(destroyTask -> Task.forError(task.getError()))
+                          .makeVoid();
+                    }
+                    return task.makeVoid();
+                  },
+                  mBGExecutor);
+    }
+    return mStartTask;
   }
 
   @ThreadConfined(UI)
