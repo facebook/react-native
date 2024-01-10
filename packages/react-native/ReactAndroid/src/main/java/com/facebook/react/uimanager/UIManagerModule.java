@@ -254,15 +254,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       return null;
     }
 
+    return getConstantsForViewManager(targetView, mCustomDirectEvents);
+  }
+
+  public static @Nullable WritableMap getConstantsForViewManager(
+      ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
-        .arg("ViewManager", targetView.getName())
+        .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
     try {
       Map<String, Object> viewManagerConstants =
           UIManagerModuleConstantsHelper.createConstantsForViewManager(
-              targetView, null, null, null, mCustomDirectEvents);
+              viewManager, null, null, null, customDirectEvents);
       if (viewManagerConstants != null) {
         return Arguments.makeNativeMap(viewManagerConstants);
       }

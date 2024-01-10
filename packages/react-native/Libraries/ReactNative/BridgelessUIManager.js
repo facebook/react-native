@@ -14,6 +14,7 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
+import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
 import Platform from '../Utilities/Platform';
 import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
@@ -28,12 +29,30 @@ function raiseSoftError(methodName: string, details?: string): void {
 const getUIManagerConstants: ?() => {[viewManagerName: string]: Object} =
   global.RN$LegacyInterop_UIManager_getConstants;
 
-const getUIManagerConstantsCache = (function () {
+const getUIManagerConstantsCached = (function () {
   let wasCalledOnce = false;
   let result = {};
-  return () => {
+  return (): {[viewManagerName: string]: Object} => {
     if (!wasCalledOnce) {
       result = nullthrows(getUIManagerConstants)();
+      wasCalledOnce = true;
+    }
+    return result;
+  };
+})();
+
+const getConstantsForViewManager: ?(viewManagerName: string) => Object =
+  global.RN$LegacyInterop_UIManager_getConstantsForViewManager;
+
+const getDefaultEventTypes: ?() => Object =
+  global.RN$LegacyInterop_UIManager_getDefaultEventTypes;
+
+const getDefaultEventTypesCached = (function () {
+  let wasCalledOnce = false;
+  let result = null;
+  return (): Object => {
+    if (!wasCalledOnce) {
+      result = nullthrows(getDefaultEventTypes)();
       wasCalledOnce = true;
     }
     return result;
@@ -133,10 +152,18 @@ const UIManagerJSUnusedAPIs = {
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
     getConstantsForViewManager: (viewManagerName: string): Object => {
+      if (getConstantsForViewManager) {
+        return getConstantsForViewManager(viewManagerName);
+      }
+
       raiseSoftError('getConstantsForViewManager');
       return {};
     },
     getDefaultEventTypes: (): Array<string> => {
+      if (getDefaultEventTypes) {
+        return getDefaultEventTypesCached();
+      }
+
       raiseSoftError('getDefaultEventTypes');
       return [];
     },
@@ -259,7 +286,15 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSUnusedAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
-      return getUIManagerConstantsCache()[viewManagerName];
+      const constants = getUIManagerConstantsCached();
+      if (
+        !constants[viewManagerName] &&
+        UIManagerJS.getConstantsForViewManager
+      ) {
+        constants[viewManagerName] =
+          UIManagerJS.getConstantsForViewManager(viewManagerName);
+      }
+      return constants[viewManagerName];
     } else {
       raiseSoftError(
         `getViewManagerConfig('${viewManagerName}')`,
@@ -273,7 +308,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   },
   getConstants: (): Object => {
     if (getUIManagerConstants) {
-      return getUIManagerConstantsCache();
+      return getUIManagerConstantsCached();
     } else {
       raiseSoftError('getConstants');
       return null;
@@ -320,9 +355,18 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
 };
 
 if (getUIManagerConstants) {
-  Object.keys(getUIManagerConstantsCache()).forEach(viewConfigName => {
-    UIManagerJS[viewConfigName] = getUIManagerConstantsCache()[viewConfigName];
+  Object.keys(getUIManagerConstantsCached()).forEach(viewConfigName => {
+    UIManagerJS[viewConfigName] = getUIManagerConstantsCached()[viewConfigName];
   });
+
+  if (UIManagerJS.getConstants().ViewManagerNames) {
+    UIManagerJS.getConstants().ViewManagerNames.forEach(viewManagerName => {
+      defineLazyObjectProperty(UIManagerJS, viewManagerName, {
+        get: () =>
+          nullthrows(UIManagerJS.getConstantsForViewManager)(viewManagerName),
+      });
+    });
+  }
 }
 
 module.exports = UIManagerJS;
