@@ -97,6 +97,38 @@ const UIManagerJSOverridenAPIs = {
   },
 };
 
+/**
+ * Leave Unimplemented: The only thing that called these methods was the paper renderer.
+ * In OSS, the New Architecture will just use the Fabric renderer, which uses
+ * different APIs.
+ */
+const UIManagerJSUnusedAPIs = {
+  createView: (
+    reactTag: ?number,
+    viewName: string,
+    rootTag: RootTag,
+    props: Object,
+  ): void => {
+    raiseSoftError('createView');
+  },
+  updateView: (reactTag: number, viewName: string, props: Object): void => {
+    raiseSoftError('updateView');
+  },
+  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
+    raiseSoftError('setChildren');
+  },
+  manageChildren: (
+    containerTag: ?number,
+    moveFromIndices: Array<number>,
+    moveToIndices: Array<number>,
+    addChildReactTags: Array<number>,
+    addAtIndices: Array<number>,
+    removeAtIndices: Array<number>,
+  ): void => {
+    raiseSoftError('manageChildren');
+  },
+};
+
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
     getConstantsForViewManager: (viewManagerName: string): Object => {
@@ -144,6 +176,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
   ...UIManagerJSPlatformAPIs,
+  ...UIManagerJSUnusedAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       return getUIManagerConstantsCache()[viewManagerName];
@@ -165,17 +198,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       raiseSoftError('getConstants');
       return null;
     }
-  },
-  createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object,
-  ): void => {
-    raiseSoftError('createView');
-  },
-  updateView: (reactTag: number, viewName: string, props: Object): void => {
-    raiseSoftError('updateView');
   },
   findSubviewIn: (
     reactTag: ?number,
@@ -218,19 +240,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     newReactTag: ?number,
   ): void => {
     raiseSoftError('replaceExistingNonRootView');
-  },
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
-    raiseSoftError('setChildren');
-  },
-  manageChildren: (
-    containerTag: ?number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>,
-  ): void => {
-    raiseSoftError('manageChildren');
   },
 };
 
