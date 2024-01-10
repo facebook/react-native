@@ -4861,7 +4861,6 @@ public class com/facebook/react/uimanager/UIImplementation {
 	public fun removeRootShadowNode (I)V
 	public fun removeRootView (I)V
 	protected final fun removeShadowNode (Lcom/facebook/react/uimanager/ReactShadowNode;)V
-	public fun replaceExistingNonRootView (II)V
 	public fun resolveRootTagFromReactTag (I)I
 	public final fun resolveShadowNode (I)Lcom/facebook/react/uimanager/ReactShadowNode;
 	protected final fun resolveViewManager (Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
@@ -4950,7 +4949,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun removeRootView (I)V
 	public fun removeUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun removeUIManagerListener (Lcom/facebook/react/uimanager/UIManagerModuleListener;)V
-	public fun replaceExistingNonRootView (II)V
 	public fun resolveCustomDirectEventName (Ljava/lang/String;)Ljava/lang/String;
 	public fun resolveRootTagFromReactTag (I)I
 	public fun resolveView (I)Landroid/view/View;

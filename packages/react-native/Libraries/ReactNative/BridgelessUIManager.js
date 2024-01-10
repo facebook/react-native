@@ -232,12 +232,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ): void => {
     raiseSoftError('configureNextLayoutAnimation');
   },
-  replaceExistingNonRootView: (
-    reactTag: ?number,
-    newReactTag: ?number,
-  ): void => {
-    raiseSoftError('replaceExistingNonRootView');
-  },
 };
 
 if (getUIManagerConstants) {
