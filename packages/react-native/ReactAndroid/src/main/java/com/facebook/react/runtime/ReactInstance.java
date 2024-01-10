@@ -23,7 +23,6 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -257,7 +256,35 @@ final class ReactInstance {
               // We want to match this beahavior.
               (UIConstantsProvider)
                   () -> {
-                    return getUIManagerConstants();
+                    List<ViewManager> viewManagers = new ArrayList<ViewManager>();
+                    boolean canLoadViewManagersLazily = true;
+
+                    List<ReactPackage> packages = mReactPackages;
+                    for (ReactPackage reactPackage : packages) {
+                      if (!(reactPackage instanceof ViewManagerOnDemandReactPackage)) {
+                        canLoadViewManagersLazily = false;
+                        break;
+                      }
+                    }
+                    // 1, Retrive view managers via on demand loading
+                    if (canLoadViewManagersLazily) {
+                      for (String viewManagerName : getViewManagerNames()) {
+                        viewManagers.add(createViewManager(viewManagerName));
+                      }
+                    } else {
+                      // 2, There are packages that don't implement ViewManagerOnDemandReactPackage
+                      // so we retrieve
+                      // view managers via eager loading
+                      for (ReactPackage reactPackage : packages) {
+                        List<ViewManager> viewManagersInPackage =
+                            reactPackage.createViewManagers(mBridgelessReactContext);
+                        viewManagers.addAll(viewManagersInPackage);
+                      }
+                    }
+                    Map<String, Object> constants =
+                        UIManagerModule.createConstants(
+                            viewManagers, new HashMap<>(), new HashMap<>());
+                    return Arguments.makeNativeMap(constants);
                   });
     }
 
@@ -553,35 +580,5 @@ final class ReactInstance {
       }
     }
     return uniqueNames;
-  }
-
-  private @NonNull NativeMap getUIManagerConstants() {
-    List<ViewManager> viewManagers = new ArrayList<ViewManager>();
-    boolean canLoadViewManagersLazily = true;
-
-    List<ReactPackage> packages = mReactPackages;
-    for (ReactPackage reactPackage : packages) {
-      if (!(reactPackage instanceof ViewManagerOnDemandReactPackage)) {
-        canLoadViewManagersLazily = false;
-        break;
-      }
-    }
-    // 1, Retrive view managers via on demand loading
-    if (canLoadViewManagersLazily) {
-      for (String viewManagerName : getViewManagerNames()) {
-        viewManagers.add(createViewManager(viewManagerName));
-      }
-    } else {
-      // 2, There are packages that don't implement ViewManagerOnDemandReactPackage so we retrieve
-      // view managers via eager loading
-      for (ReactPackage reactPackage : packages) {
-        List<ViewManager> viewManagersInPackage =
-            reactPackage.createViewManagers(mBridgelessReactContext);
-        viewManagers.addAll(viewManagersInPackage);
-      }
-    }
-    Map<String, Object> constants =
-        UIManagerModule.createConstants(viewManagers, new HashMap<>(), new HashMap<>());
-    return Arguments.makeNativeMap(constants);
   }
 }
