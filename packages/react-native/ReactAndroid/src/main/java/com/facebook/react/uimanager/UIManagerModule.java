@@ -500,19 +500,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt.
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   * @deprecated This method will not be available in Fabric UIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
-  }
-
-  /**
    * Determines the location on screen, width, and height of the given view and returns the values
    * via an async callback.
    */
