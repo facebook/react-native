@@ -141,7 +141,16 @@ const UIManagerJSPlatformAPIs = Platform.select({
       return [];
     },
     setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-      raiseSoftError('setLayoutAnimationEnabledExperimental');
+      /**
+       * Layout animations are always enabled in the New Architecture.
+       * They cannot be turned off.
+       */
+      if (!enabled) {
+        raiseSoftError(
+          'setLayoutAnimationEnabledExperimental(false)',
+          'Layout animations are always enabled in the New Architecture.',
+        );
+      }
     },
     // Please use AccessibilityInfo.sendAccessibilityEvent instead.
     // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
