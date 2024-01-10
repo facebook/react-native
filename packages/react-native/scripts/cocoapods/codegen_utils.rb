@@ -336,25 +336,25 @@ class CodegenUtils
       return @@CLEANUP_DONE
     end
 
-    def self.clean_up_build_folder(rn_path, app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.clean_up_build_folder(rn_path, codegen_dir, dir_manager: Dir, file_manager: File)
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
-      codegen_path = file_manager.join(app_path, ios_folder, codegen_dir)
+      ios_folder = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+      codegen_path = file_manager.join(ios_folder, codegen_dir)
       return if !dir_manager.exist?(codegen_path)
 
       FileUtils.rm_rf(dir_manager.glob("#{codegen_path}/*"))
       base_provider_path = file_manager.join(rn_path, 'React', 'Fabric', 'RCTThirdPartyFabricComponentsProvider')
       FileUtils.rm_rf("#{base_provider_path}.h")
       FileUtils.rm_rf("#{base_provider_path}.mm")
-      CodegenUtils.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: dir_manager, file_manager: file_manager)
+      CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: dir_manager)
     end
 
     # Need to split this function from the previous one to be able to test it properly.
-    def self.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.assert_codegen_folder_is_empty(codegen_path, dir_manager: Dir)
       # double check that the files have actually been deleted.
       # Emit an error message if not.
-      codegen_path = file_manager.join(app_path, ios_folder, codegen_dir)
       if dir_manager.exist?(codegen_path) && dir_manager.glob("#{codegen_path}/*").length() != 0
         Pod::UI.warn "Unable to remove the content of #{codegen_path} folder. Please run rm -rf #{codegen_path} and try again."
         abort
