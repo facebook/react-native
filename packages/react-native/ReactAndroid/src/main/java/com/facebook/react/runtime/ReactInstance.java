@@ -232,8 +232,7 @@ final class ReactInstance {
             unbufferedRuntimeExecutor,
             (ComponentNameResolver)
                 () -> {
-                  Collection<String> viewManagerNames =
-                      mViewManagerResolver.getLazyViewManagerNames();
+                  Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
                   if (viewManagerNames.size() < 1) {
                     FLog.e(TAG, "No ViewManager names found");
                     return new String[0];
