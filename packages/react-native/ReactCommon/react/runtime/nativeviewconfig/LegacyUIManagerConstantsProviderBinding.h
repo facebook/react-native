@@ -18,5 +18,12 @@ using ProviderType = std::function<jsi::Value()>;
  * runtime. It is supposed to be used as a substitute to UIManager.getConstants
  * in bridgeless mode.
  */
-void install(jsi::Runtime& runtime, ProviderType&& provider);
+void install(
+    jsi::Runtime& runtime,
+    const std::string& name,
+    std::function<jsi::Value()>&& provider);
+void install(
+    jsi::Runtime& runtime,
+    const std::string& name,
+    std::function<jsi::Value(std::string)>&& provider);
 } // namespace facebook::react::LegacyUIManagerConstantsProviderBinding
