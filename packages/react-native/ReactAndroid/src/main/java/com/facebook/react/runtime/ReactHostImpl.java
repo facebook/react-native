@@ -726,7 +726,7 @@ public class ReactHostImpl implements ReactHost {
               if (mStartTask == null) {
                 log(method, "Schedule");
                 mStartTask =
-                    getOrCreateReactInstanceTask()
+                    getOrCreateReactInstance()
                         .continueWithTask(
                             task -> {
                               if (task.isFaulted()) {
@@ -824,7 +824,7 @@ public class ReactHostImpl implements ReactHost {
       final String callingMethod, final VeniceThenable<ReactInstance> runnable) {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
-    return getOrCreateReactInstanceTask()
+    return getOrCreateReactInstance()
         .onSuccess(
             (Continuation<ReactInstance, Void>)
                 task -> {
@@ -863,7 +863,7 @@ public class ReactHostImpl implements ReactHost {
    * <p>If the ReactInstance is reloading, will return the reload task. If the ReactInstance is
    * destroying, will wait until destroy is finished, before creating.
    */
-  private Task<ReactInstance> getOrCreateReactInstanceTask() {
+  private Task<ReactInstance> getOrCreateReactInstance() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(this::waitThenCallNewGetOrCreateReactInstanceTask, mBGExecutor)
           .continueWithTask(Task::getResult);
