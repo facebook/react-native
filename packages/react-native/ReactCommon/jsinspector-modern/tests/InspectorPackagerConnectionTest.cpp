@@ -170,7 +170,7 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
               "/payload",
               ElementsAreArray({AllOf(
                   AtJsonPtr("/app", Eq("my-app")),
-                  AtJsonPtr("/title", Eq("mock-title")),
+                  AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
                   AtJsonPtr("/vm", Eq("mock-vm")),
                   AtJsonPtr("/id", Eq(std::to_string(pageId))))}))))))
       .RetiresOnSaturation();
