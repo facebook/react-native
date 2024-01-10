@@ -21,8 +21,8 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
-   * C++ CatalystInstanceImpl
+   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
+   * CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
@@ -168,9 +168,9 @@ public class ReactFeatureFlags {
 
   /*
    * When the app is completely migrated to Fabric, set this flag to true to
-   * disable parts of Paper infrastructre that are not needed anymore but consume
+   * disable parts of Paper infrastructure that are not needed anymore but consume
    * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
-   * longer work as they won't subscribe to ReactChoregrapher for updates.
+   * longer work as they won't subscribe to ReactChoreographer for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
 
