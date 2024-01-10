@@ -338,7 +338,53 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     ancestorReactTag: ?number,
     callback: (result: Array<boolean>) => void,
   ): void => {
-    raiseSoftError('viewIsDescendantOf');
+    if (reactTag == null) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot be called with ${String(
+          reactTag,
+        )} reactTag`,
+      );
+      return;
+    }
+
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+    if (!shadowNode) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot find view with reactTag ${reactTag}`,
+      );
+      return;
+    }
+
+    if (ancestorReactTag == null) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot be called with ${String(
+          ancestorReactTag,
+        )} ancestorReactTag`,
+      );
+      return;
+    }
+
+    const ancestorShadowNode =
+      FabricUIManager.findShadowNodeByTag_DEPRECATED(ancestorReactTag);
+    if (!ancestorShadowNode) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot find view with ancestorReactTag ${ancestorReactTag}`,
+      );
+      return;
+    }
+
+    // Keep this in sync with ReadOnlyNode.js
+    const DOCUMENT_POSITION_CONTAINED_BY = 16;
+
+    let result = FabricUIManager.compareDocumentPosition(
+      ancestorShadowNode,
+      shadowNode,
+    );
+
+    let isAncestor = (result & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+
+    callback([isAncestor]);
   },
   configureNextLayoutAnimation: (
     config: Object,
