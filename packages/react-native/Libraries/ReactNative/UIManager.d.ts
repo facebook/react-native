@@ -112,7 +112,9 @@ export interface UIManagerStatic {
    *
    *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
    */
-  setLayoutAnimationEnabledExperimental(value: boolean): void;
+  setLayoutAnimationEnabledExperimental?:
+    | ((value: boolean) => void)
+    | undefined;
 
   /**
    * Used to display an Android PopupMenu. If a menu item is pressed, the success callback will
@@ -126,12 +128,14 @@ export interface UIManagerStatic {
    *
    * Note that this works only on Android
    */
-  showPopupMenu(
-    node: number,
-    items: string[],
-    error: () => void /* currently unused */,
-    success: (item: string, index: number | undefined) => void,
-  ): void;
+  showPopupMenu?:
+    | ((
+        node: number,
+        items: string[],
+        error: () => void /* currently unused */,
+        success: (item: string, index: number | undefined) => void,
+      ) => void)
+    | undefined;
 
   getViewManagerConfig: (name: string) => {
     Commands: {[key: string]: number};
