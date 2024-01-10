@@ -93,7 +93,6 @@ jest
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
-    replaceExistingNonRootView: jest.fn(),
     setChildren: jest.fn(),
     updateView: jest.fn(),
     AndroidDrawerLayout: {
