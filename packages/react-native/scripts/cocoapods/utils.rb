@@ -137,7 +137,7 @@ class ReactNativePodsUtils
 
                 # fix for weak linking
                 self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_or_greter(:xcodebuild_manager => xcodebuild_manager)
+                if self.is_using_xcode15_0(:xcodebuild_manager => xcodebuild_manager)
                     self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
                 else
                     self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
@@ -321,7 +321,7 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.is_using_xcode15_or_greter(xcodebuild_manager: Xcodebuild)
+    def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
         xcodebuild_version = xcodebuild_manager.version
 
         # The output of xcodebuild -version is something like
@@ -332,7 +332,8 @@ class ReactNativePodsUtils
         regex = /(\d+)\.(\d+)(?:\.(\d+))?/
         if match_data = xcodebuild_version.match(regex)
             major = match_data[1].to_i
-            return major >= 15
+            minor = match_data[2].to_i
+            return major == 15 && minor == 0
         end
 
         return false
