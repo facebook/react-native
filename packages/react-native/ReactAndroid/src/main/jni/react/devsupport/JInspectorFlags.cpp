@@ -9,16 +9,16 @@
 
 #include <jsinspector-modern/InspectorFlags.h>
 
-namespace facebook::react {
+namespace facebook::react::jsinspector_modern {
 
 bool JInspectorFlags::getEnableModernCDPRegistry(jni::alias_ref<jclass>) {
-  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  auto& inspectorFlags = InspectorFlags::getInstance();
   return inspectorFlags.getEnableModernCDPRegistry();
 }
 
 bool JInspectorFlags::getEnableCxxInspectorPackagerConnection(
     jni::alias_ref<jclass>) {
-  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  auto& inspectorFlags = InspectorFlags::getInstance();
   return inspectorFlags.getEnableCxxInspectorPackagerConnection();
 }
 
@@ -33,4 +33,4 @@ void JInspectorFlags::registerNatives() {
   });
 }
 
-} // namespace facebook::react
+} // namespace facebook::react::jsinspector_modern

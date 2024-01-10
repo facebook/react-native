@@ -9,15 +9,15 @@
 
 #include <fbjni/fbjni.h>
 
-namespace facebook::react {
+namespace facebook::react::jsinspector_modern {
 
 /**
- * fbjni interface for reading `jsinspector_modern::InspectorFlags`.
+ * JNI wrapper for `jsinspector_modern::InspectorFlags`.
  */
 class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridge/InspectorFlags;";
+      "Lcom/facebook/react/devsupport/InspectorFlags;";
 
   static bool getEnableModernCDPRegistry(jni::alias_ref<jclass>);
 
@@ -29,4 +29,4 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
   JInspectorFlags();
 };
 
-} // namespace facebook::react
+} // namespace facebook::react::jsinspector_modern
