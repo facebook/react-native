@@ -38,16 +38,11 @@ private constructor(
 
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var cxxReactPackageProviders:
-        MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
+        MutableList<((context: ReactApplicationContext) -> List<CxxReactPackage>)> =
         mutableListOf()
 
-    fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
-      this.cxxReactPackageProviders.add({ _ -> provider() })
-      return this
-    }
-
-    fun addCxxReactPackage(
-        provider: (context: ReactApplicationContext) -> CxxReactPackage
+    fun addCxxReactPackages(
+        provider: (context: ReactApplicationContext) -> List<CxxReactPackage>
     ): Builder {
       this.cxxReactPackageProviders.add(provider)
       return this
@@ -57,10 +52,8 @@ private constructor(
         context: ReactApplicationContext,
         packages: List<ReactPackage>
     ): DefaultTurboModuleManagerDelegate {
-      val cxxReactPackages = mutableListOf<CxxReactPackage>()
-      for (cxxReactPackageProvider in cxxReactPackageProviders) {
-        cxxReactPackages.add(cxxReactPackageProvider(context))
-      }
+      val cxxReactPackages =
+          cxxReactPackageProviders.map { provider -> provider(context) }.flatten()
 
       return DefaultTurboModuleManagerDelegate(context, packages, cxxReactPackages)
     }

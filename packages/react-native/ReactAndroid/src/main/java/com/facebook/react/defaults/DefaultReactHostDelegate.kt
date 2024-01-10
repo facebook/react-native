@@ -11,11 +11,13 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
+import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
 
 /**
@@ -46,6 +48,9 @@ class DefaultReactHostDelegate(
     override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
     private val exceptionHandler: (Exception) -> Unit = {},
+    override val cxxReactPackages: (ReactApplicationContext) -> List<CxxReactPackage> = {
+      emptyList()
+    },
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 
