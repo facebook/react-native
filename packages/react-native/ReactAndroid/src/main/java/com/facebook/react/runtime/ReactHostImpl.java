@@ -200,7 +200,7 @@ public class ReactHostImpl implements ReactHost {
    */
   @Override
   public TaskInterface<Void> start() {
-    return Task.call(this::newGetOrCreateStartTask, mBGExecutor).continueWithTask(Task::getResult);
+    return Task.call(this::getOrCreateStartTask, mBGExecutor).continueWithTask(Task::getResult);
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
@@ -442,17 +442,17 @@ public class ReactHostImpl implements ReactHost {
                 log(method, "Waiting for destroy to finish, before reloading React Native.");
                 reloadTask =
                     mDestroyTask
-                        .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
+                        .continueWithTask(task -> getOrCreateReloadTask(reason), mBGExecutor)
                         .makeVoid();
               } else {
-                reloadTask = newGetOrCreateReloadTask(reason).makeVoid();
+                reloadTask = getOrCreateReloadTask(reason).makeVoid();
               }
 
               return reloadTask.continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
                       mReactHostDelegate.handleInstanceException(task.getError());
-                      return newGetOrCreateDestroyTask("Reload failed", task.getError());
+                      return getOrCreateDestroyTask("Reload failed", task.getError());
                     }
 
                     return task;
@@ -483,9 +483,9 @@ public class ReactHostImpl implements ReactHost {
                     method,
                     "Reloading React Native. Waiting for reload to finish before destroying React Native.");
                 return mReloadTask.continueWithTask(
-                    task -> newGetOrCreateDestroyTask(reason, ex), mBGExecutor);
+                    task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
               }
-              return newGetOrCreateDestroyTask(reason, ex);
+              return getOrCreateDestroyTask(reason, ex);
             },
             mBGExecutor)
         .continueWithTask(Task::getResult);
@@ -706,19 +706,19 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable Task<Void> mStartTask = null;
 
   @ThreadConfined("ReactHost")
-  private Task<Void> newGetOrCreateStartTask() {
+  private Task<Void> getOrCreateStartTask() {
+    final String method = "getOrCreateStartTask()";
     if (mStartTask == null) {
-      final String method = "newGetOrCreateStartTask()";
       log(method, "Schedule");
       mStartTask =
-          waitThenCallNewGetOrCreateReactInstanceTask()
+          waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(
                   (task) -> {
                     if (task.isFaulted()) {
                       mReactHostDelegate.handleInstanceException(task.getError());
                       // Wait for destroy to finish
-                      return newGetOrCreateDestroyTask(
-                              "newGetOrCreateStartTask() failure: " + task.getError().getMessage(),
+                      return getOrCreateDestroyTask(
+                              "getOrCreateStartTask() failure: " + task.getError().getMessage(),
                               task.getError())
                           .continueWithTask(destroyTask -> Task.forError(task.getError()))
                           .makeVoid();
@@ -818,19 +818,19 @@ public class ReactHostImpl implements ReactHost {
    * destroying, will wait until destroy is finished, before creating.
    */
   private Task<ReactInstance> getOrCreateReactInstance() {
-    return Task.call(this::waitThenCallNewGetOrCreateReactInstanceTask, mBGExecutor)
+    return Task.call(this::waitThenCallGetOrCreateReactInstanceTask, mBGExecutor)
         .continueWithTask(Task::getResult);
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> waitThenCallNewGetOrCreateReactInstanceTask() {
-    return waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(0, 4);
+  private Task<ReactInstance> waitThenCallGetOrCreateReactInstanceTask() {
+    return waitThenCallGetOrCreateReactInstanceTaskWithRetries(0, 4);
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(
+  private Task<ReactInstance> waitThenCallGetOrCreateReactInstanceTaskWithRetries(
       int tryNum, int maxTries) {
-    final String method = "waitThenCallNewGetOrCreateReactInstanceTaskWithRetries";
+    final String method = "waitThenCallGetOrCreateReactInstanceTaskWithRetries";
     if (mReloadTask != null) {
       log(method, "React Native is reloading. Return reload task.");
       return mReloadTask;
@@ -846,7 +846,7 @@ public class ReactHostImpl implements ReactHost {
                 + tryNum
                 + ").");
         return mDestroyTask.onSuccessTask(
-            (task) -> waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(tryNum + 1, maxTries),
+            (task) -> waitThenCallGetOrCreateReactInstanceTaskWithRetries(tryNum + 1, maxTries),
             mBGExecutor);
       }
 
@@ -855,12 +855,12 @@ public class ReactHostImpl implements ReactHost {
           "React Native is tearing down. Not wait for teardown to finish: reached max retries.");
     }
 
-    return newGetOrCreateReactInstanceTask();
+    return getOrCreateReactInstanceTask();
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> newGetOrCreateReactInstanceTask() {
-    final String method = "newGetOrCreateReactInstanceTask()";
+  private Task<ReactInstance> getOrCreateReactInstanceTask() {
+    final String method = "getOrCreateReactInstanceTask()";
     log(method);
 
     return mReactInstanceTaskRef.getOrCreate(
@@ -1150,8 +1150,8 @@ public class ReactHostImpl implements ReactHost {
    * ReactInstance task work throws an exception.
    */
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> newGetOrCreateReloadTask(String reason) {
-    final String method = "newGetOrCreateReloadTask()";
+  private Task<ReactInstance> getOrCreateReloadTask(String reason) {
+    final String method = "getOrCreateReloadTask()";
     log(method);
 
     // Log how React Native is destroyed
@@ -1262,7 +1262,7 @@ public class ReactHostImpl implements ReactHost {
                     mStartTask = null;
 
                     // Kickstart a new ReactInstance create
-                    return newGetOrCreateReactInstanceTask();
+                    return getOrCreateReactInstanceTask();
                   },
                   mBGExecutor)
               .continueWithTask(
@@ -1322,8 +1322,8 @@ public class ReactHostImpl implements ReactHost {
    * ReactInstance task work throws an exception.
    */
   @ThreadConfined("ReactHost")
-  private Task<Void> newGetOrCreateDestroyTask(final String reason, @Nullable Exception ex) {
-    final String method = "newGetOrCreateDestroyTask()";
+  private Task<Void> getOrCreateDestroyTask(final String reason, @Nullable Exception ex) {
+    final String method = "getOrCreateDestroyTask()";
     log(method);
 
     // Log how React Native is destroyed
