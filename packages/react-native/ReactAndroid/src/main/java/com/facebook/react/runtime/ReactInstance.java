@@ -232,7 +232,8 @@ final class ReactInstance {
             unbufferedRuntimeExecutor,
             (ComponentNameResolver)
                 () -> {
-                  Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
+                  Collection<String> viewManagerNames =
+                      mViewManagerResolver.getLazyViewManagerNames();
                   if (viewManagerNames.size() < 1) {
                     FLog.e(TAG, "No ViewManager names found");
                     return new String[0];
@@ -269,7 +270,8 @@ final class ReactInstance {
                     }
                     // 1, Retrive view managers via on demand loading
                     if (canLoadViewManagersLazily) {
-                      for (String viewManagerName : mViewManagerResolver.getViewManagerNames()) {
+                      for (String viewManagerName :
+                          mViewManagerResolver.getLazyViewManagerNames()) {
                         viewManagers.add(mViewManagerResolver.getViewManager(viewManagerName));
                       }
                     } else {
@@ -539,7 +541,10 @@ final class ReactInstance {
 
     @Override
     public synchronized Collection<String> getViewManagerNames() {
-      return getLazyViewManagerNames();
+      Set<String> allViewManagerNames = new HashSet<>();
+      allViewManagerNames.addAll(getLazyViewManagerNames());
+      allViewManagerNames.addAll(getEagerViewManagerMap().keySet());
+      return allViewManagerNames;
     }
 
     private Map<String, ViewManager> getEagerViewManagerMap() {
@@ -588,7 +593,7 @@ final class ReactInstance {
       return null;
     }
 
-    private Collection<String> getLazyViewManagerNames() {
+    public synchronized Collection<String> getLazyViewManagerNames() {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mReactPackages) {
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
