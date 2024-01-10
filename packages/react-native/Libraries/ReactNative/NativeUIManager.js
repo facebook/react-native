@@ -15,9 +15,6 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => Object;
-  +getConstantsForViewManager: (viewManagerName: string) => Object;
-  +getDefaultEventTypes: () => Array<string>;
-  +lazilyLoadView: (name: string) => Object; // revisit return
   +createView: (
     reactTag: ?number,
     viewName: string,
@@ -25,8 +22,6 @@ export interface Spec extends TurboModule {
     props: Object,
   ) => void;
   +updateView: (reactTag: number, viewName: string, props: Object) => void;
-  +focus: (reactTag: ?number) => void;
-  +blur: (reactTag: ?number) => void;
   +findSubviewIn: (
     reactTag: ?number,
     point: Array<number>,
@@ -91,11 +86,6 @@ export interface Spec extends TurboModule {
     callback: () => void, // check what is returned here
     errorCallback: (error: Object) => void,
   ) => void;
-  +removeSubviewsFromContainerWithID: (containerID: number) => void;
-  +replaceExistingNonRootView: (
-    reactTag: ?number,
-    newReactTag: ?number,
-  ) => void;
   +setChildren: (containerTag: ?number, reactTags: Array<number>) => void;
   +manageChildren: (
     containerTag: ?number,
@@ -107,15 +97,22 @@ export interface Spec extends TurboModule {
   ) => void;
 
   // Android only
-  +setLayoutAnimationEnabledExperimental: (enabled: boolean) => void;
-  +sendAccessibilityEvent: (reactTag: ?number, eventType: number) => void;
-  +showPopupMenu: (
+  +getConstantsForViewManager?: (viewManagerName: string) => Object;
+  +getDefaultEventTypes?: () => Array<string>;
+  +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
+  +sendAccessibilityEvent?: (reactTag: ?number, eventType: number) => void;
+  +showPopupMenu?: (
     reactTag: ?number,
     items: Array<string>,
     error: (error: Object) => void,
     success: (event: string, selected?: number) => void,
   ) => void;
-  +dismissPopupMenu: () => void;
+  +dismissPopupMenu?: () => void;
+
+  // ios only
+  +lazilyLoadView?: (name: string) => Object; // revisit return
+  +focus?: (reactTag: ?number) => void;
+  +blur?: (reactTag: ?number) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);

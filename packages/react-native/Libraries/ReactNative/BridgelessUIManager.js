@@ -14,6 +14,8 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
+import Platform from '../Utilities/Platform';
+import {getFabricUIManager} from './FabricUIManager';
 import nullthrows from 'nullthrows';
 
 function raiseSoftError(methodName: string, details?: string): void {
@@ -96,15 +98,144 @@ const UIManagerJSOverridenAPIs = {
   },
 };
 
+/**
+ * Leave Unimplemented: The only thing that called these methods was the paper renderer.
+ * In OSS, the New Architecture will just use the Fabric renderer, which uses
+ * different APIs.
+ */
+const UIManagerJSUnusedAPIs = {
+  createView: (
+    reactTag: ?number,
+    viewName: string,
+    rootTag: RootTag,
+    props: Object,
+  ): void => {
+    raiseSoftError('createView');
+  },
+  updateView: (reactTag: number, viewName: string, props: Object): void => {
+    raiseSoftError('updateView');
+  },
+  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
+    raiseSoftError('setChildren');
+  },
+  manageChildren: (
+    containerTag: ?number,
+    moveFromIndices: Array<number>,
+    moveToIndices: Array<number>,
+    addChildReactTags: Array<number>,
+    addAtIndices: Array<number>,
+    removeAtIndices: Array<number>,
+  ): void => {
+    raiseSoftError('manageChildren');
+  },
+};
+
+const UIManagerJSPlatformAPIs = Platform.select({
+  android: {
+    getConstantsForViewManager: (viewManagerName: string): Object => {
+      raiseSoftError('getConstantsForViewManager');
+      return {};
+    },
+    getDefaultEventTypes: (): Array<string> => {
+      raiseSoftError('getDefaultEventTypes');
+      return [];
+    },
+    setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
+      /**
+       * Layout animations are always enabled in the New Architecture.
+       * They cannot be turned off.
+       */
+      if (!enabled) {
+        raiseSoftError(
+          'setLayoutAnimationEnabledExperimental(false)',
+          'Layout animations are always enabled in the New Architecture.',
+        );
+      }
+    },
+    sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
+      if (reactTag == null) {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Cannot be called with ${String(
+            reactTag,
+          )} reactTag`,
+        );
+        return;
+      }
+
+      // Keep this in sync with java:FabricUIManager.sendAccessibilityEventFromJS
+      // and legacySendAccessibilityEvent.android.js
+      const AccessibilityEvent = {
+        TYPE_VIEW_FOCUSED: 0x00000008,
+        TYPE_WINDOW_STATE_CHANGED: 0x00000020,
+        TYPE_VIEW_CLICKED: 0x00000001,
+        TYPE_VIEW_HOVER_ENTER: 0x00000080,
+      };
+
+      let eventName = null;
+      if (eventType === AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+        eventName = 'focus';
+      } else if (eventType === AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        eventName = 'windowStateChange';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_CLICKED) {
+        eventName = 'click';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_HOVER_ENTER) {
+        eventName = 'viewHoverEnter';
+      } else {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Called with unsupported eventType: ${eventType}`,
+        );
+        return;
+      }
+
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Cannot find view with tag #${reactTag}`,
+        );
+        return;
+      }
+
+      FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
+    },
+    showPopupMenu: (
+      reactTag: ?number,
+      items: Array<string>,
+      error: (error: Object) => void,
+      success: (event: string, selected?: number) => void,
+    ): void => {
+      raiseSoftError('showPopupMenu');
+    },
+    dismissPopupMenu: (): void => {
+      raiseSoftError('dismissPopupMenu');
+    },
+  },
+  ios: {
+    lazilyLoadView: (name: string): Object => {
+      raiseSoftError('lazilyLoadView');
+      return {};
+    },
+    focus: (reactTag: ?number): void => {
+      raiseSoftError('focus');
+    },
+    blur: (reactTag: ?number): void => {
+      raiseSoftError('blur');
+    },
+  },
+});
+
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSPlatformAPIs,
+  ...UIManagerJSUnusedAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       return getUIManagerConstantsCache()[viewManagerName];
     } else {
       raiseSoftError(
-        'getViewManagerConfig',
-        `Use hasViewManagerConfig instead. viewManagerName: ${viewManagerName}`,
+        `getViewManagerConfig('${viewManagerName}')`,
+        `If '${viewManagerName}' has a ViewManager and you want to retrieve its native ViewConfig, please turn on the native ViewConfig interop layer. If you want to see if this component is registered with React Native, please call hasViewManagerConfig('${viewManagerName}') instead.`,
       );
       return null;
     }
@@ -119,35 +250,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       raiseSoftError('getConstants');
       return null;
     }
-  },
-  getConstantsForViewManager: (viewManagerName: string): Object => {
-    raiseSoftError('getConstantsForViewManager');
-    return {};
-  },
-  getDefaultEventTypes: (): Array<string> => {
-    raiseSoftError('getDefaultEventTypes');
-    return [];
-  },
-  lazilyLoadView: (name: string): Object => {
-    raiseSoftError('lazilyLoadView');
-    return {};
-  },
-  createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object,
-  ): void => {
-    raiseSoftError('createView');
-  },
-  updateView: (reactTag: number, viewName: string, props: Object): void => {
-    raiseSoftError('updateView');
-  },
-  focus: (reactTag: ?number): void => {
-    raiseSoftError('focus');
-  },
-  blur: (reactTag: ?number): void => {
-    raiseSoftError('blur');
   },
   findSubviewIn: (
     reactTag: ?number,
@@ -180,50 +282,12 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     callback: () => void,
     errorCallback: (error: Object) => void,
   ): void => {
-    raiseSoftError('configureNextLayoutAnimation');
-  },
-  removeSubviewsFromContainerWithID: (containerID: number): void => {
-    raiseSoftError('removeSubviewsFromContainerWithID');
-  },
-  replaceExistingNonRootView: (
-    reactTag: ?number,
-    newReactTag: ?number,
-  ): void => {
-    raiseSoftError('replaceExistingNonRootView');
-  },
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
-    raiseSoftError('setChildren');
-  },
-  manageChildren: (
-    containerTag: ?number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>,
-  ): void => {
-    raiseSoftError('manageChildren');
-  },
-
-  // Android only
-  setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-    raiseSoftError('setLayoutAnimationEnabledExperimental');
-  },
-  // Please use AccessibilityInfo.sendAccessibilityEvent instead.
-  // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
-  sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
-    raiseSoftError('sendAccessibilityEvent');
-  },
-  showPopupMenu: (
-    reactTag: ?number,
-    items: Array<string>,
-    error: (error: Object) => void,
-    success: (event: string, selected?: number) => void,
-  ): void => {
-    raiseSoftError('showPopupMenu');
-  },
-  dismissPopupMenu: (): void => {
-    raiseSoftError('dismissPopupMenu');
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    FabricUIManager.configureNextLayoutAnimation(
+      config,
+      callback,
+      errorCallback,
+    );
   },
 };
 
