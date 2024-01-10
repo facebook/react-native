@@ -211,6 +211,19 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   return {runtime, std::move(error)};
 }
 
+/**
+ * Creates JS error value with current JS runtime and error details.
+ */
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+{
+  NSString *message = jsErrorDetails[@"message"];
+
+  auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
+  jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+
+  return jsError;
+}
+
 }
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
@@ -279,11 +292,10 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
                 return;
               }
 
-              NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsError](jsi::Runtime &rt, jsi::Function &jsFunction) {
-                jsFunction.call(rt, convertObjCObjectToJSIValue(rt, jsError));
+              NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
               });
-
               resolveWasCalled = NO;
               resolve = std::nullopt;
               reject = std::nullopt;
