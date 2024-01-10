@@ -194,7 +194,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!isTurboModuleStableAPIEnabled() && !isTurboModule(moduleName)) {
+    if (!isTurboModule(moduleName)) {
       return null;
     }
 
@@ -202,10 +202,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
     return module instanceof CxxModuleWrapper && module instanceof TurboModule
         ? (CxxModuleWrapper) module
         : null;
-  }
-
-  public boolean isTurboModuleStableAPIEnabled() {
-    return mDelegate != null && mDelegate.unstable_isLazyTurboModuleDelegate();
   }
 
   // used from TurboModuleManager.cpp
@@ -221,7 +217,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
      */
-    if (!isTurboModuleStableAPIEnabled() && !isTurboModule(moduleName)) {
+    if (!isTurboModule(moduleName)) {
       return null;
     }
 
@@ -252,9 +248,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
                 + "\", but TurboModuleManager was tearing down. Returning null. Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + (isTurboModuleStableAPIEnabled()
-                    ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
-                    : isTurboModule(moduleName))
+                + isTurboModule(moduleName)
                 + ".");
         return null;
       }
@@ -338,9 +332,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
                 + "\". Was legacy: "
                 + isLegacyModule(moduleName)
                 + ". Was turbo: "
-                + (isTurboModuleStableAPIEnabled()
-                    ? "[TurboModuleStableAPI enabled for " + moduleName + "]"
-                    : isTurboModule(moduleName))
+                + isTurboModule(moduleName)
                 + ".");
       }
 
