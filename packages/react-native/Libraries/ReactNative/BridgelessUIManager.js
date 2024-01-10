@@ -152,10 +152,52 @@ const UIManagerJSPlatformAPIs = Platform.select({
         );
       }
     },
-    // Please use AccessibilityInfo.sendAccessibilityEvent instead.
-    // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
     sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
-      raiseSoftError('sendAccessibilityEvent');
+      if (reactTag == null) {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Cannot be called with ${String(
+            reactTag,
+          )} reactTag`,
+        );
+        return;
+      }
+
+      // Keep this in sync with java:FabricUIManager.sendAccessibilityEventFromJS
+      // and legacySendAccessibilityEvent.android.js
+      const AccessibilityEvent = {
+        TYPE_VIEW_FOCUSED: 0x00000008,
+        TYPE_WINDOW_STATE_CHANGED: 0x00000020,
+        TYPE_VIEW_CLICKED: 0x00000001,
+        TYPE_VIEW_HOVER_ENTER: 0x00000080,
+      };
+
+      let eventName = null;
+      if (eventType === AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+        eventName = 'focus';
+      } else if (eventType === AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        eventName = 'windowStateChange';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_CLICKED) {
+        eventName = 'click';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_HOVER_ENTER) {
+        eventName = 'viewHoverEnter';
+      } else {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Called with unsupported eventType: ${eventType}`,
+        );
+        return;
+      }
+
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Cannot find view with tag #${reactTag}`,
+        );
+        return;
+      }
+
+      FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
     },
     showPopupMenu: (
       reactTag: ?number,
