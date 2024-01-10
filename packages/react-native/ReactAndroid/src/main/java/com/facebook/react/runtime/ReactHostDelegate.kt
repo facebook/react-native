@@ -9,7 +9,6 @@ package com.facebook.react.runtime
 
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -48,9 +47,6 @@ interface ReactHostDelegate {
    */
   val jsBundleLoader: JSBundleLoader
 
-  /** TODO: combine getTurboModuleManagerDelegate inside [ReactPackage] */
-  val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
-
   /** list of [CxxReactPackage] to expose C++ Native Modules to JS */
   val cxxReactPackages: (ReactApplicationContext) -> List<CxxReactPackage>
     get() = { emptyList() }
@@ -75,8 +71,6 @@ interface ReactHostDelegate {
       override val jsMainModulePath: String,
       override val jsBundleLoader: JSBundleLoader,
       override val jsRuntimeFactory: JSRuntimeFactory,
-      override val turboModuleManagerDelegateBuilder:
-          ReactPackageTurboModuleManagerDelegate.Builder,
       override val cxxReactPackages: (ReactApplicationContext) -> List<CxxReactPackage> = {
         emptyList()
       },

@@ -13,13 +13,11 @@ import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
-import com.facebook.react.runtime.DefaultTurboModuleManagerDelegate
 import com.facebook.react.uimanager.ViewManagerRegistry
 
 /**
@@ -34,14 +32,6 @@ abstract class DefaultReactNativeHost
 protected constructor(
     application: Application,
 ) : ReactNativeHost(application) {
-
-  override fun getReactPackageTurboModuleManagerDelegateBuilder():
-      ReactPackageTurboModuleManagerDelegate.Builder? =
-      if (isNewArchEnabled) {
-        DefaultTurboModuleManagerDelegate.Builder()
-      } else {
-        null
-      }
 
   override fun getUIManagerProvider(): UIManagerProvider? =
       if (isNewArchEnabled) {
