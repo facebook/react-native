@@ -258,31 +258,13 @@ final class ReactInstance {
               (UIConstantsProvider)
                   () -> {
                     List<ViewManager> viewManagers = new ArrayList<ViewManager>();
-                    boolean canLoadViewManagersLazily = true;
 
-                    List<ReactPackage> packages = mReactPackages;
-                    for (ReactPackage reactPackage : packages) {
-                      if (!(reactPackage instanceof ViewManagerOnDemandReactPackage)) {
-                        canLoadViewManagersLazily = false;
-                        break;
-                      }
-                    }
-                    // 1, Retrive view managers via on demand loading
-                    if (canLoadViewManagersLazily) {
-                      for (String viewManagerName :
-                          mViewManagerResolver.getLazyViewManagerNames()) {
+                    synchronized (mViewManagerResolver) {
+                      for (String viewManagerName : mViewManagerResolver.getViewManagerNames()) {
                         viewManagers.add(mViewManagerResolver.getViewManager(viewManagerName));
                       }
-                    } else {
-                      // 2, There are packages that don't implement ViewManagerOnDemandReactPackage
-                      // so we retrieve
-                      // view managers via eager loading
-                      for (ReactPackage reactPackage : packages) {
-                        List<ViewManager> viewManagersInPackage =
-                            reactPackage.createViewManagers(mBridgelessReactContext);
-                        viewManagers.addAll(viewManagersInPackage);
-                      }
                     }
+
                     Map<String, Object> constants =
                         UIManagerModule.createConstants(
                             viewManagers, new HashMap<>(), new HashMap<>());
@@ -592,7 +574,7 @@ final class ReactInstance {
       return null;
     }
 
-    public synchronized Collection<String> getLazyViewManagerNames() {
+    private Collection<String> getLazyViewManagerNames() {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mReactPackages) {
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
