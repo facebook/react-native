@@ -27,5 +27,6 @@ target_link_libraries(
         fb
         jsi
         fbjni
+        react_cxxreactpackage
         bridgeless
 )
