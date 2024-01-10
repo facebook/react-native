@@ -232,9 +232,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ): void => {
     raiseSoftError('configureNextLayoutAnimation');
   },
-  removeSubviewsFromContainerWithID: (containerID: number): void => {
-    raiseSoftError('removeSubviewsFromContainerWithID');
-  },
   replaceExistingNonRootView: (
     reactTag: ?number,
     newReactTag: ?number,
