@@ -187,23 +187,6 @@ final class ReactInstance {
             isProfiling,
             useModernRuntimeScheduler);
 
-    RuntimeExecutor unbufferedRuntimeExecutor = getUnbufferedRuntimeExecutor();
-
-    // Initialize function for JS's UIManager.hasViewManagerConfig()
-    mComponentNameResolverManager =
-        new ComponentNameResolverManager(
-            // Use unbuffered RuntimeExecutor to install binding
-            unbufferedRuntimeExecutor,
-            (ComponentNameResolver)
-                () -> {
-                  Collection<String> viewManagerNames = getViewManagerNames();
-                  if (viewManagerNames.size() < 1) {
-                    FLog.e(TAG, "No ViewManager names found");
-                    return new String[0];
-                  }
-                  return viewManagerNames.toArray(new String[0]);
-                });
-
     // Set up TurboModules
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
@@ -222,6 +205,7 @@ final class ReactInstance {
             .setReactApplicationContext(mBridgelessReactContext)
             .build();
 
+    RuntimeExecutor unbufferedRuntimeExecutor = getUnbufferedRuntimeExecutor();
     mTurboModuleManager =
         new TurboModuleManager(
             // Use unbuffered RuntimeExecutor to install binding
@@ -236,6 +220,25 @@ final class ReactInstance {
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    // Set up Fabric
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initFabric");
+
+    // Initialize function for JS's UIManager.hasViewManagerConfig()
+    mComponentNameResolverManager =
+        new ComponentNameResolverManager(
+            // Use unbuffered RuntimeExecutor to install binding
+            unbufferedRuntimeExecutor,
+            (ComponentNameResolver)
+                () -> {
+                  Collection<String> viewManagerNames = getViewManagerNames();
+                  if (viewManagerNames.size() < 1) {
+                    FLog.e(TAG, "No ViewManager names found");
+                    return new String[0];
+                  }
+                  return viewManagerNames.toArray(new String[0]);
+                });
 
     // Initialize function for JS's UIManager.getViewManagerConfig()
     // It should come after getTurboModuleManagerDelegate as it relies on react packages being
@@ -257,10 +260,6 @@ final class ReactInstance {
                     return getUIManagerConstants();
                   });
     }
-
-    // Set up Fabric
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initFabric");
 
     ViewManagerRegistry viewManagerRegistry =
         new ViewManagerRegistry(
