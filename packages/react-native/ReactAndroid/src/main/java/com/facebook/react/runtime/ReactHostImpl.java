@@ -202,10 +202,10 @@ public class ReactHostImpl implements ReactHost {
   @Override
   public TaskInterface<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return newStart();
+      return newGetOrCreateStartTask();
     }
 
-    return oldStart();
+    return oldGetOrCreateStartTask();
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
@@ -719,8 +719,8 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined("ReactHost")
   private @Nullable Task<Void> mStartTask = null;
 
-  private Task<Void> oldStart() {
-    final String method = "oldStart()";
+  private Task<Void> oldGetOrCreateStartTask() {
+    final String method = "oldGetOrCreateStartTask()";
     return Task.call(
             () -> {
               if (mStartTask == null) {
@@ -731,7 +731,8 @@ public class ReactHostImpl implements ReactHost {
                             task -> {
                               if (task.isFaulted()) {
                                 destroy(
-                                    "oldStart() failure: " + task.getError().getMessage(),
+                                    "oldGetOrCreateStartTask() failure: "
+                                        + task.getError().getMessage(),
                                     task.getError());
                                 mReactHostDelegate.handleInstanceException(task.getError());
                               }
@@ -747,8 +748,8 @@ public class ReactHostImpl implements ReactHost {
         .continueWithTask(Task::getResult);
   }
 
-  private Task<Void> newStart() {
-    final String method = "newStart()";
+  private Task<Void> newGetOrCreateStartTask() {
+    final String method = "newGetOrCreateStartTask()";
     return Task.call(
             () -> {
               if (mStartTask == null) {
@@ -761,7 +762,8 @@ public class ReactHostImpl implements ReactHost {
                                 mReactHostDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
                                 return newGetOrCreateDestroyTask(
-                                        "newStart() failure: " + task.getError().getMessage(),
+                                        "newGetOrCreateStartTask() failure: "
+                                            + task.getError().getMessage(),
                                         task.getError())
                                     .continueWithTask(destroyTask -> Task.forError(task.getError()))
                                     .makeVoid();
