@@ -39,6 +39,6 @@ jsi::Value getConstants(facebook::jsi::Runtime &runtime)
 void installLegacyUIManagerConstantsProviderBinding(jsi::Runtime &runtime)
 {
   auto constantsProvider = [&runtime]() -> jsi::Value { return getConstants(runtime); };
-  LegacyUIManagerConstantsProviderBinding::install(runtime, std::move(constantsProvider));
+  LegacyUIManagerConstantsProviderBinding::install(runtime, "getConstants", std::move(constantsProvider));
 }
 } // namespace facebook::react
