@@ -217,10 +217,38 @@ const UIManagerJSPlatformAPIs = Platform.select({
       return {};
     },
     focus: (reactTag: ?number): void => {
-      raiseSoftError('focus');
+      if (reactTag == null) {
+        console.error(
+          `focus() noop: Cannot be called with ${String(reactTag)} reactTag`,
+        );
+        return;
+      }
+
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(`focus() noop: Cannot find view with tag #${reactTag}`);
+        return;
+      }
+      FabricUIManager.dispatchCommand(shadowNode, 'focus', []);
     },
     blur: (reactTag: ?number): void => {
-      raiseSoftError('blur');
+      if (reactTag == null) {
+        console.error(
+          `blur() noop: Cannot be called with ${String(reactTag)} reactTag`,
+        );
+        return;
+      }
+
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(`blur() noop: Cannot find view with tag #${reactTag}`);
+        return;
+      }
+      FabricUIManager.dispatchCommand(shadowNode, 'blur', []);
     },
   },
 });
