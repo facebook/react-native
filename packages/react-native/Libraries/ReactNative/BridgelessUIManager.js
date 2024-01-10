@@ -147,6 +147,12 @@ const UIManagerJSUnusedAPIs = {
   ): void => {
     raiseSoftError('manageChildren');
   },
+  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
+    raiseSoftError('setJSResponder');
+  },
+  clearJSResponder: (): void => {
+    raiseSoftError('clearJSResponder');
+  },
 };
 
 const UIManagerJSPlatformAPIs = Platform.select({
@@ -333,12 +339,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     callback: (result: Array<boolean>) => void,
   ): void => {
     raiseSoftError('viewIsDescendantOf');
-  },
-  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
-    raiseSoftError('setJSResponder');
-  },
-  clearJSResponder: (): void => {
-    // Don't log error here because we're aware it gets called
   },
   configureNextLayoutAnimation: (
     config: Object,
