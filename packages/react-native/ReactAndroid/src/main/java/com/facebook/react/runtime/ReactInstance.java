@@ -22,6 +22,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
+import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -54,9 +55,9 @@ import com.facebook.react.uimanager.ComponentNameResolver;
 import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.UIConstantsProvider;
 import com.facebook.react.uimanager.UIConstantsProviderManager;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerModuleConstantsHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.ViewManagerResolver;
@@ -245,6 +246,8 @@ final class ReactInstance {
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
     if (ReactFeatureFlags.useNativeViewConfigsInBridgelessMode) {
+      Map<String, Object> customDirectEvents = new HashMap<>();
+
       mUIConstantsProviderManager =
           new UIConstantsProviderManager(
               // Use unbuffered RuntimeExecutor to install binding
@@ -255,21 +258,36 @@ final class ReactInstance {
               // 2. genericBubblingEventTypes.
               // 3. genericDirectEventTypes.
               // We want to match this beahavior.
-              (UIConstantsProvider)
-                  () -> {
-                    List<ViewManager> viewManagers = new ArrayList<ViewManager>();
+              () -> {
+                return (NativeMap)
+                    Arguments.makeNativeMap(
+                        UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
+              },
+              (String viewManagerName) -> {
+                ViewManager viewManager = mViewManagerResolver.getViewManager(viewManagerName);
+                if (viewManager == null) {
+                  return null;
+                }
+                return (NativeMap)
+                    UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
+              },
+              () -> {
+                List<ViewManager> viewManagers =
+                    new ArrayList<ViewManager>(
+                        mViewManagerResolver.getEagerViewManagerMap().values());
 
-                    synchronized (mViewManagerResolver) {
-                      for (String viewManagerName : mViewManagerResolver.getViewManagerNames()) {
-                        viewManagers.add(mViewManagerResolver.getViewManager(viewManagerName));
-                      }
-                    }
+                Map<String, Object> constants =
+                    UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
 
-                    Map<String, Object> constants =
-                        UIManagerModule.createConstants(
-                            viewManagers, new HashMap<>(), new HashMap<>());
-                    return Arguments.makeNativeMap(constants);
-                  });
+                Collection<String> lazyViewManagers =
+                    mViewManagerResolver.getLazyViewManagerNames();
+                if (lazyViewManagers.size() > 0) {
+                  constants.put("ViewManagerNames", new ArrayList<>(lazyViewManagers));
+                  constants.put("LazyViewManagersEnabled", true);
+                }
+
+                return Arguments.makeNativeMap(constants);
+              });
     }
 
     EventBeatManager eventBeatManager = new EventBeatManager();
@@ -528,7 +546,7 @@ final class ReactInstance {
       return allViewManagerNames;
     }
 
-    private Map<String, ViewManager> getEagerViewManagerMap() {
+    public synchronized Map<String, ViewManager> getEagerViewManagerMap() {
       if (mEagerViewManagerMap != null) {
         return mEagerViewManagerMap;
       }
@@ -574,7 +592,7 @@ final class ReactInstance {
       return null;
     }
 
-    private Collection<String> getLazyViewManagerNames() {
+    public synchronized Collection<String> getLazyViewManagerNames() {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mReactPackages) {
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
