@@ -14,6 +14,10 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
+static NSString *const statusBarFrameDidChange = @"statusBarFrameDidChange";
+static NSString *const statusBarFrameWillChange = @"statusBarFrameWillChange";
+
+
 @implementation RCTConvert (UIStatusBar)
 
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json RCT_DYNAMIC
@@ -71,7 +75,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ @"statusBarFrameDidChange", @"statusBarFrameWillChange" ];
+  return @[ statusBarFrameDidChange, statusBarFrameWillChange ];
 }
 
 - (void)startObserving
@@ -108,12 +112,12 @@ RCT_EXPORT_MODULE()
 
 - (void)applicationDidChangeStatusBarFrame:(NSNotification *)notification
 {
-  [self emitEvent:@"statusBarFrameDidChange" forNotification:notification];
+  [self emitEvent:statusBarFrameDidChange forNotification:notification];
 }
 
 - (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
 {
-  [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
+  [self emitEvent:statusBarFrameWillChange forNotification:notification];
 }
 
 RCT_EXPORT_METHOD(setStyle : (NSString *)style animated : (BOOL)animated)
