@@ -18,8 +18,6 @@ export interface Spec extends TurboModule {
     +DEFAULT_BACKGROUND_COLOR?: number,
   |};
 
-  // TODO(T47754272) Can we remove this method?
-  +getHeight: (callback: (result: {|height: number|}) => void) => void;
   +setNetworkActivityIndicatorVisible: (visible: boolean) => void;
   +addListener: (eventType: string) => void;
   +removeListeners: (count: number) => void;
@@ -49,11 +47,6 @@ const NativeStatusBarManager = {
       constants = NativeModule.getConstants();
     }
     return constants;
-  },
-
-  // TODO(T47754272) Can we remove this method?
-  getHeight(callback: (result: {|height: number|}) => void): void {
-    NativeModule.getHeight(callback);
   },
 
   setNetworkActivityIndicatorVisible(visible: boolean): void {
