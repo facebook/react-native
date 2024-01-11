@@ -515,8 +515,7 @@ export type Props = $ReadOnly<{|
   onMomentumScrollEnd?: ?(event: ScrollEvent) => void,
 
   /**
-   * Fires at most once per frame during scrolling. The frequency of the
-   * events can be controlled using the `scrollEventThrottle` prop.
+   * Fires at most once per frame during scrolling.
    */
   onScroll?: ?(event: ScrollEvent) => void,
   /**
@@ -556,19 +555,10 @@ export type Props = $ReadOnly<{|
    */
   scrollEnabled?: ?boolean,
   /**
-   * This controls how often the scroll event will be fired while scrolling
-   * (as a time interval in ms). A lower number yields better accuracy for code
-   * that is tracking the scroll position, but can lead to scroll performance
-   * problems due to the volume of information being send over the bridge.
-   *
-   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
-   * will be disabled.
-   *
-   * If you do not need precise scroll position tracking, set this value higher
-   * to limit the information being sent across the bridge.
-   *
-   * The default value is zero, which results in the scroll event being sent only
-   * once each time the view is scrolled.
+   * Limits how often scroll events will be fired while scrolling, specified as
+   * a time interval in ms. This may be useful when expensive work is performed
+   * in response to scrolling. Values <= `16` will disable throttling,
+   * regardless of the refresh rate of the device.
    */
   scrollEventThrottle?: ?number,
   /**
