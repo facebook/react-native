@@ -481,12 +481,12 @@ export interface ScrollViewPropsIOS {
   pinchGestureEnabled?: boolean | undefined;
 
   /**
-   * This controls how often the scroll event will be fired while scrolling (as a time interval in ms).
-   * A lower number yields better accuracy for code that is tracking the scroll position,
-   * but can lead to scroll performance problems due to the volume of information being sent over the bridge.
-   * The default value is zero, which means the scroll event will be sent only once each time the view is scrolled.
+   * Limits how often scroll events will be fired while scrolling, specified as
+   * a time interval in ms. This may be useful when expensive work is performed
+   * in response to scrolling. Values <= `16` will disable throttling,
+   * regardless of the refresh rate of the device.
    */
-  scrollEventThrottle?: number | undefined; // null
+  scrollEventThrottle?: number | undefined;
 
   /**
    * The amount by which the scroll view indicators are inset from the edges of the scroll view.
@@ -663,7 +663,6 @@ export interface ScrollViewProps
 
   /**
    * Fires at most once per frame during scrolling.
-   * The frequency of the events can be contolled using the scrollEventThrottle prop.
    */
   onScroll?:
     | ((event: NativeSyntheticEvent<NativeScrollEvent>) => void)
