@@ -23,7 +23,7 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
   struct MethodDescriptor {
     std::string methodName;
     SEL selector;
-    int jsArgCount;
+    size_t jsArgCount;
     TurboModuleMethodValueKind jsReturnKind;
   };
 

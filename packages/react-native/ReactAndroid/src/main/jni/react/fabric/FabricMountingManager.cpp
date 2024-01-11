@@ -85,7 +85,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
 
 static inline void updateBufferSizes(
     CppMountItem::Type mountItemType,
-    int numInstructions,
+    size_t numInstructions,
     int& batchMountItemIntsSize,
     int& batchMountItemObjectsSize) {
   if (numInstructions == 0) {
@@ -182,7 +182,7 @@ static inline void computeBufferSizes(
 
 static inline void writeIntBufferTypePreamble(
     int mountItemType,
-    int numItems,
+    size_t numItems,
     _JNIEnv* env,
     jintArray& intBufferArray,
     int& intBufferPosition) {
@@ -193,7 +193,7 @@ static inline void writeIntBufferTypePreamble(
     intBufferPosition += 1;
   } else {
     temp[0] = mountItemType | CppMountItem::Type::Multiple;
-    temp[1] = numItems;
+    temp[1] = static_cast<jint>(numItems);
     env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
     intBufferPosition += 2;
   }

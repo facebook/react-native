@@ -595,7 +595,7 @@ void ObjCTurboModule::setInvocationArg(
      * Convert objects using RCTConvert.
      */
     if (objCArgType == @encode(id)) {
-      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, i);
+      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, static_cast<int>(i));
       if (argumentType != nil) {
         NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
         SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
@@ -776,19 +776,19 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   return returnValue;
 }
 
-BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex)
+BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
       ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
 }
 
-SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex)
+SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   assert(hasMethodArgConversionSelector(methodName, argIndex));
   return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
 }
 
-void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName)
+void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
   if (!methodArgConversionSelectors_) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];

@@ -173,8 +173,8 @@ void UIManager::completeSurface(
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
               ShadowNodeFragment{
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .children = */ rootChildren,
+                  .props = ShadowNodeFragment::propsPlaceholder(),
+                  .children = rootChildren,
               });
         },
         commitOptions);

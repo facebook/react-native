@@ -1162,9 +1162,10 @@ inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   }
 
   auto builder = MapBufferBuilder();
-  builder.putInt(
-      AS_KEY_HASH,
-      std::hash<facebook::react::AttributedString>{}(attributedString));
+  size_t hash =
+      std::hash<facebook::react::AttributedString>{}(attributedString);
+  // TODO: This truncates half the hash
+  builder.putInt(AS_KEY_HASH, static_cast<int>(hash));
   builder.putString(AS_KEY_STRING, attributedString.getString());
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);

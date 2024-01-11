@@ -12,7 +12,7 @@ namespace facebook::react {
 
 static MapBuffer convertAccessibilityActions(
     const std::vector<AccessibilityAction>& actions) {
-  MapBufferBuilder builder(actions.size());
+  MapBufferBuilder builder(static_cast<uint32_t>(actions.size()));
   for (auto i = 0; i < actions.size(); i++) {
     const auto& action = actions[i];
     MapBufferBuilder actionsBuilder(2);
@@ -28,7 +28,7 @@ static MapBuffer convertAccessibilityActions(
 
 static MapBuffer convertAccessibilityLabelledBy(
     const AccessibilityLabelledBy& labelledBy) {
-  MapBufferBuilder builder(labelledBy.value.size());
+  MapBufferBuilder builder(static_cast<uint32_t>(labelledBy.value.size()));
   for (auto i = 0; i < labelledBy.value.size(); i++) {
     builder.putString(i, labelledBy.value[i]);
   }

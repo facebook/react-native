@@ -501,8 +501,9 @@ jsi::Value UIManagerBinding::get(
             uiManager->completeSurface(
                 surfaceId,
                 shadowNodeList,
-                {/* .enableStateReconciliation = */ true,
-                 /* .mountSynchronously = */ false});
+                {.enableStateReconciliation = true,
+                 .mountSynchronously = false,
+                 .shouldYield = nullptr});
           } else {
             auto weakShadowNodeList =
                 weakShadowNodeListFromValue(runtime, arguments[1]);
