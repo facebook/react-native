@@ -84,33 +84,25 @@ Style::Length Node::computeEdgeValueForColumn(Edge edge) const {
 Edge Node::getInlineStartEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
-  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? flexStartEdge(flexDirection)
-      : inlineStartEdge(flexDirection, direction);
+  return inlineStartEdge(flexDirection, direction);
 }
 
 Edge Node::getInlineEndEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
-  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? flexEndEdge(flexDirection)
-      : inlineEndEdge(flexDirection, direction);
+  return inlineEndEdge(flexDirection, direction);
 }
 
 Edge Node::getFlexStartRelativeEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
-  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? Edge::Start
-      : flexStartRelativeEdge(flexDirection, direction);
+  return flexStartRelativeEdge(flexDirection, direction);
 }
 
 Edge Node::getFlexEndRelativeEdgeUsingErrata(
     FlexDirection flexDirection,
     Direction direction) const {
-  return hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? Edge::End
-      : flexEndRelativeEdge(flexDirection, direction);
+  return flexEndRelativeEdge(flexDirection, direction);
 }
 
 bool Node::isFlexStartPositionDefined(FlexDirection axis, Direction direction)
