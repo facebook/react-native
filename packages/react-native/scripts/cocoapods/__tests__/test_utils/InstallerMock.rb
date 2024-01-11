@@ -134,10 +134,12 @@ end
 class PBXFileRefMock
     attr_reader :name
     attr_reader :path
+    attr_reader :real_path
 
     def initialize(name)
         @name = name
         @path = name
+        @real_path = name
     end
 end
 

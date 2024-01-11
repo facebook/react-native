@@ -564,10 +564,9 @@ class ReactNativePodsUtils
         return info_plists
       end
 
-    def self.update_ats_in_plist(plistPaths, parent)
-        plistPaths.each do |plistPath|
-            fullPlistPath = File.join(parent, plistPath.path)
-            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
+    def self.update_ats_in_plist(plistFiles)
+        plistFiles.each do |plistFile|
+            plist = Xcodeproj::Plist.read_from_path(plistFile.real_path)
             ats_configs = {
                 "NSAllowsArbitraryLoads" => false,
                 "NSAllowsLocalNetworking" => true,
@@ -580,7 +579,7 @@ class ReactNativePodsUtils
                 plist["NSAppTransportSecurity"] ||= {}
                 plist["NSAppTransportSecurity"] = plist["NSAppTransportSecurity"].merge(ats_configs)
             end
-            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
+            Xcodeproj::Plist.write_to_path(plist, plistFile.real_path)
         end
     end
 
@@ -588,8 +587,8 @@ class ReactNativePodsUtils
         user_project = installer.aggregate_targets
                     .map{ |t| t.user_project }
                     .first
-        plistPaths = self.get_plist_paths_from(user_project)
-        self.update_ats_in_plist(plistPaths, user_project.path.parent)
+        plistFiles = self.get_plist_paths_from(user_project)
+        self.update_ats_in_plist(plistFiles)
     end
 
     def self.react_native_pods
