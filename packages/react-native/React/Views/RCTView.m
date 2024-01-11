@@ -676,7 +676,18 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
         return;
     }
     
-    UIShape *shape = [UIShape rectShapeWithCornerRadius:_borderRadius];
+    CGFloat cornerRadius = 0.0;
+    RCTCornerRadii cornerRadii = [self cornerRadii];
+    
+    if (RCTCornerRadiiAreEqual(cornerRadii)) {
+      cornerRadius = cornerRadii.topLeft;
+
+    } else {
+      // TODO: Handle a case when corner radius is different for each corner.
+      cornerRadius = cornerRadii.topLeft;
+    }
+    
+    UIShape *shape = [UIShape rectShapeWithCornerRadius:cornerRadius];
     id<UIHoverEffect> effect;
     
     if ([hoverEffect isEqualToString:@"lift"]) {
