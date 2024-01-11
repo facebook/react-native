@@ -7,29 +7,40 @@
 
 package com.facebook.react.fabric;
 
+import androidx.annotation.NonNull;
+import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
+
 /**
- * An empty {@link ReactNativeConfig} that is returning empty responses and false for all the
- * requested keys.
+ * An empty {@link ReactNativeConfig} that is backed by the C++ implementation where the defaults
+ * are store.
  */
+@DoNotStrip
 public class EmptyReactNativeConfig implements ReactNativeConfig {
 
-  @Override
-  public boolean getBool(final String s) {
-    return false;
+  @NonNull @DoNotStrip private final HybridData mHybridData;
+
+  @DoNotStrip
+  private static native HybridData initHybrid();
+
+  @DoNotStrip
+  public EmptyReactNativeConfig() {
+    mHybridData = initHybrid();
   }
 
   @Override
-  public long getInt64(final String s) {
-    return 0;
-  }
+  @DoNotStrip
+  public native boolean getBool(final String param);
 
   @Override
-  public String getString(final String s) {
-    return "";
-  }
+  @DoNotStrip
+  public native long getInt64(final String param);
 
   @Override
-  public double getDouble(final String s) {
-    return 0;
-  }
+  @DoNotStrip
+  public native String getString(final String param);
+
+  @Override
+  @DoNotStrip
+  public native double getDouble(final String param);
 }
