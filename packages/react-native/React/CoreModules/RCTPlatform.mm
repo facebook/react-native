@@ -30,6 +30,8 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
       return @"tv";
     case UIUserInterfaceIdiomCarPlay:
       return @"carplay";
+    case UIUserInterfaceIdiomVision:
+      return @"vision";
     default:
       return @"unknown";
   }
