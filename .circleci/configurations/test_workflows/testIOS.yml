@@ -71,10 +71,8 @@
             - build_hermes_macos
           name: "Test RNTester with Ruby 3.2.0"
           ruby_version: "3.2.0"
-          architecture: "NewArch"
           executor: reactnativeios-lts
       - test_ios_rntester:
-          architecture: "NewArch"
           requires:
             - build_hermes_macos
           matrix:
@@ -99,5 +97,4 @@
             - build_hermes_macos
           matrix:
             parameters:
-              architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
