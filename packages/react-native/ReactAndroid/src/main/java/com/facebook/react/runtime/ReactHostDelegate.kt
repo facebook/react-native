@@ -9,10 +9,11 @@ package com.facebook.react.runtime
 
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
-import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 
 /**
  * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
@@ -46,8 +47,9 @@ interface ReactHostDelegate {
    */
   val jsBundleLoader: JSBundleLoader
 
-  /** TODO: combine getTurboModuleManagerDelegate inside [ReactPackage] */
-  val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
+  /** list of [CxxReactPackage] to expose C++ Native Modules to JS */
+  val cxxReactPackages: (ReactApplicationContext) -> List<CxxReactPackage>
+    get() = { emptyList() }
 
   /**
    * Callback that can be used by React Native host applications to react to exceptions thrown by
@@ -69,8 +71,9 @@ interface ReactHostDelegate {
       override val jsMainModulePath: String,
       override val jsBundleLoader: JSBundleLoader,
       override val jsRuntimeFactory: JSRuntimeFactory,
-      override val turboModuleManagerDelegateBuilder:
-          ReactPackageTurboModuleManagerDelegate.Builder,
+      override val cxxReactPackages: (ReactApplicationContext) -> List<CxxReactPackage> = {
+        emptyList()
+      },
       override val reactPackages: List<ReactPackage> = emptyList(),
       override val bindingsInstaller: BindingsInstaller? = null,
       private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,

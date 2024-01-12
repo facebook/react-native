@@ -60,8 +60,7 @@ object DefaultReactHost {
               jsMainModulePath = jsMainModulePath,
               jsBundleLoader = jsBundleLoader,
               reactPackages = packageList,
-              jsRuntimeFactory = jsRuntimeFactory,
-              turboModuleManagerDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder())
+              jsRuntimeFactory = jsRuntimeFactory)
       val reactJsExceptionHandler = ReactJsExceptionHandler { _ -> }
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)

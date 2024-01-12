@@ -7,9 +7,10 @@
 
 #include "DefaultTurboModuleManagerDelegate.h"
 
-#include <algorithm>
-
 #include <rncore.h>
+
+#include <algorithm>
+#import <cassert>
 
 namespace facebook::react {
 
@@ -81,6 +82,7 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
       return resolvedModule;
     }
   }
+  // return nullptr;
   return rncore_ModuleProvider(name, params);
 }
 
