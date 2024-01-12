@@ -35,11 +35,12 @@ extern "C" {
 #endif
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
-
+#if RCT_NEW_ARCH_ENABLED
 #ifndef RCT_DYNAMIC_FRAMEWORKS
 
 ${lookupFuncs}
 
+#endif
 #endif
 
 #ifdef __cplusplus
