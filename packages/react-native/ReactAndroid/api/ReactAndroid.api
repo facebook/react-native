@@ -326,7 +326,6 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 	public fun getLegacyModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public fun getModule (Ljava/lang/String;)Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModule;
 	public fun unstable_enableSyncVoidMethods ()Z
-	public fun unstable_isLazyTurboModuleDelegate ()Z
 	public fun unstable_isLegacyModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_isModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_shouldEnableLegacyModuleInterop ()Z
@@ -1916,7 +1915,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableOnDemandReactChoreographer Z
 	public static field enableRemoveDeleteTreeInstruction Z
 	public static field enableTextSpannableCache Z
-	public static field enableTurboModuleStableAPI Z
 	public static field enableViewRecycling Z
 	public static field excludeYogaFromRawProps Z
 	public static field fixStoppedSurfaceTagSetLeak Z
@@ -1989,8 +1987,7 @@ public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/f
 
 public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
 	public static final field Companion Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun getEagerInitModuleNames ()Ljava/util/List;
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
 }
 
@@ -1999,7 +1996,6 @@ public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate
 	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
 	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
 	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-	public final fun setEagerInitModuleNames (Ljava/util/List;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
 }
 
 public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion {
