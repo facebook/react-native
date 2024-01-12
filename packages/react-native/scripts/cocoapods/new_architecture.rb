@@ -9,8 +9,6 @@ require_relative "./utils.rb"
 require_relative "./helpers.rb"
 \
 class NewArchitectureHelper
-    @@new_arch_cpp_flags = " -DRCT_NEW_ARCH_ENABLED=1 #{Helpers::Constants.folly_config()[:compiler_flags]}"
-
     @@cplusplus_version = "c++20"
 
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
@@ -42,26 +40,28 @@ class NewArchitectureHelper
         end
     end
 
+    def self.computeFlags(is_new_arch_enabled)
+        new_arch_flag = is_new_arch_enabled ? "-DRCT_NEW_ARCH_ENABLED=1 " : ""
+        return " #{new_arch_flag}#{Helpers::Constants.folly_config()[:compiler_flags]}"
+    end
+
     def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
-        unless is_new_arch_enabled
-            return
-        end
-        # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
+        # Add flags to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
+                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(is_new_arch_enabled))
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
             end
         end
 
-        # Add RCT_NEW_ARCH_ENABLED to generated pod target projects
+        # Add flags to Target pods xcconfig
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
             if pod_name.include? 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
-                    ReactNativePodsUtils.add_flag_to_map_with_inheritance(config.build_settings, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
+                    ReactNativePodsUtils.add_flag_to_map_with_inheritance(config.build_settings, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(is_new_arch_enabled))
                 end
             end
         end
@@ -109,9 +109,8 @@ class NewArchitectureHelper
         spec.dependency "RCT-Folly", folly_version
         spec.dependency "glog"
 
-        if new_arch_enabled
-            ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", @@new_arch_cpp_flags)
-        end
+
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
         spec.dependency "React-Codegen"

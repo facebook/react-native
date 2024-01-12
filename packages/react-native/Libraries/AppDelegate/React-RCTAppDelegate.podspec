@@ -19,11 +19,11 @@ end
 folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 
-is_new_arch_enabled = ENV["USE_NEW_ARCH"] == "1"
+is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
 use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
-new_arch_enabled_flag = (is_new_arch_enabled ? " -DUSE_NEW_ARCH" : "")
-is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
+new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
+is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
 hermes_flag = (use_hermes ? " -DUSE_HERMES" : "")
 other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + hermes_flag
 

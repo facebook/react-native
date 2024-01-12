@@ -72,7 +72,6 @@ class CodegenUtils
     def get_react_codegen_spec(package_json_file, folly_version: get_folly_config()[:version], hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
-        new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
         folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
         boost_compiler_flags = '-Wno-documentation'
