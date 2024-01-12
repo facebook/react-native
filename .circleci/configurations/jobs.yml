@@ -508,6 +508,11 @@ jobs:
         description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
         type: enum
         enum: ["StaticLibraries", "DynamicFrameworks"]
+      architecture:
+        default: "NewArch"
+        description: "The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup"
+        type: enum
+        enum: ["OldArch", "NewArch"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -556,9 +561,12 @@ jobs:
                           export USE_FRAMEWORKS=dynamic
                         fi
 
-                        export RCT_NEW_ARCH_ENABLED=1
-                        cd packages/rn-tester
+                        if [[ << parameters.architecture >> == "NewArch" ]]; then
+                          export RCT_NEW_ARCH_ENABLED=1
+                        fi
                         
+                        cd packages/rn-tester
+
                         bundle install
                         bundle exec pod install
                   - when:
