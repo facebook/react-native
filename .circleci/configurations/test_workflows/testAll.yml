@@ -107,3 +107,4 @@
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
+              architecture: ["NewArch", "OldArch"]
