@@ -77,13 +77,29 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 {
   RCTSetNewArchEnabled([self newArchEnabled]);
   BOOL enableTM = self.turboModuleEnabled;
+    
+  RCTAppSetupPrepareApp(application, enableTM, *_reactNativeConfig);
+
+  UIView *rootView = [self viewWithModuleName:self.moduleName initialProperties:[self prepareInitialProps] launchOptions:launchOptions];
+    
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [self createRootViewController];
+  [self setRootView:rootView toRootViewController:rootViewController];
+  self.window.rootViewController = rootViewController;
+  self.window.windowScene.delegate = self;
+  [self.window makeKeyAndVisible];
+
+  return YES;
+}
+
+- (UIView *)viewWithModuleName:(NSString *)moduleName 
+             initialProperties:(NSDictionary *)initialProperties
+                 launchOptions:(NSDictionary *)launchOptions {
   BOOL fabricEnabled = self.fabricEnabled;
   BOOL enableBridgeless = self.bridgelessEnabled;
-
-  NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
-
-  RCTAppSetupPrepareApp(application, enableTM);
-
+  
+  NSDictionary *initProps = updateInitialProps(initialProperties, fabricEnabled);
+  
   UIView *rootView;
   if (enableBridgeless) {
     // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
@@ -92,8 +108,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
-
-    [self createReactHost];
+    
+    if (!_reactHost) {
+      [self createReactHost];
+    }
+    
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
@@ -108,23 +127,19 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
     }
     if ([self newArchEnabled]) {
-      self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                                   contextContainer:_contextContainer];
-      self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
-
-      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+      if (!self.bridgeAdapter) {
+        self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                                     contextContainer:_contextContainer];
+        self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
+        
+        [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+      }
     }
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
   [self customizeRootView:(RCTRootView *)rootView];
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [self createRootViewController];
-  [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
-
-  return YES;
+  
+  return rootView;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
