@@ -394,16 +394,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    */
   @Override
   public void requestChildFocus(View child, View focused) {
-    /**
-     * This issue arises in a ScrollView containing a FlatList. The method now checks
-     * `mScrollEnabled` before handling focus requests to prevent unintended scroll behavior,
-     * ensuring proper functioning of nested scrolling components. when scrollEnabled={false}
-     */
-    if (!mScrollEnabled) {
-
-      return;
-    }
-
     if (focused != null && !mPagingEnabled) {
       scrollToChild(focused);
     }
