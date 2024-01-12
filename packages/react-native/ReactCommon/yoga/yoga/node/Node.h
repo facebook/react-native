@@ -350,18 +350,14 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction,
       const float axisSize) const;
 
-  Edge getInlineStartEdgeUsingErrata(
+  Edge getInlineStartEdge(FlexDirection flexDirection, Direction direction)
+      const;
+  Edge getInlineEndEdge(FlexDirection flexDirection, Direction direction) const;
+  Edge getFlexStartRelativeEdge(
       FlexDirection flexDirection,
       Direction direction) const;
-  Edge getInlineEndEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexStartRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexEndRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
+  Edge getFlexEndRelativeEdge(FlexDirection flexDirection, Direction direction)
+      const;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
