@@ -45,8 +45,6 @@ public abstract class TurboModuleManagerDelegate {
 
   public abstract boolean unstable_isModuleRegistered(String moduleName);
 
-  public abstract boolean unstable_isLazyTurboModuleDelegate();
-
   /**
    * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
    * TurboModule, return null.

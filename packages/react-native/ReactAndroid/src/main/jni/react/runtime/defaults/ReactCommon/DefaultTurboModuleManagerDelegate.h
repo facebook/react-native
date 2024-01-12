@@ -22,7 +22,7 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
                                               TurboModuleManagerDelegate> {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate;";
+      "Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate;";
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.defaults
+package com.facebook.react.runtime
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
@@ -14,6 +14,7 @@ import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
+import com.facebook.soloader.SoLoader
 
 /**
  * A utility class that allows you to simplify the setup of a
@@ -27,7 +28,6 @@ class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
-    private val eagerlyInitializedModules: List<String>,
     cxxReactPackages: List<CxxReactPackage>,
 ) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
@@ -36,25 +36,10 @@ private constructor(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
 
-  override fun getEagerInitModuleNames(): List<String> {
-    if (unstable_isLazyTurboModuleDelegate()) {
-      return eagerlyInitializedModules
-    }
-
-    // Use ReactModuleInfo to get the eager init module names
-    return super.getEagerInitModuleNames()
-  }
-
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
-    private var eagerInitModuleNames: List<String> = emptyList()
     private var cxxReactPackageProviders:
         MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
         mutableListOf()
-
-    fun setEagerInitModuleNames(eagerInitModuleNames: List<String>): Builder {
-      this.eagerInitModuleNames = eagerInitModuleNames
-      return this
-    }
 
     fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
       this.cxxReactPackageProviders.add({ _ -> provider() })
@@ -77,14 +62,17 @@ private constructor(
         cxxReactPackages.add(cxxReactPackageProvider(context))
       }
 
-      return DefaultTurboModuleManagerDelegate(
-          context, packages, eagerInitModuleNames, cxxReactPackages)
+      return DefaultTurboModuleManagerDelegate(context, packages, cxxReactPackages)
     }
   }
 
   companion object {
     init {
-      DefaultSoLoader.maybeLoadSoLibrary()
+      // DefaultSoLoader.maybeLoadSoLibrary()
+      // TODO
+      SoLoader.loadLibrary("react_defaults") // loads the DefaultTurboModuleManagerDelegate.cpp
+      SoLoader.loadLibrary("rninstance")
+      SoLoader.loadLibrary("appmodules")
     }
 
     @DoNotStrip
