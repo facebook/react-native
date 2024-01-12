@@ -52,14 +52,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
 
+  // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L854
+  private static final int DEFAULT_GRAVITY = Gravity.TOP | Gravity.START;
+
   private boolean mContainsImages;
-  private final int mDefaultGravityHorizontal;
-  private final int mDefaultGravityVertical;
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
-  private float mFontSize = Float.NaN;
-  private float mLetterSpacing = Float.NaN;
+  private float mFontSize;
+  private float mLetterSpacing;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
@@ -69,11 +70,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public ReactTextView(Context context) {
     super(context);
-
-    // Get these defaults only during the constructor - these should never be set otherwise
-    mDefaultGravityHorizontal = getGravityHorizontal();
-    mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
-
     initView();
   }
 
@@ -96,6 +92,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mNotifyOnInlineViewLayout = false;
     mTextIsSelectable = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
+    mFontSize = Float.NaN;
+    mLetterSpacing = 0.f;
 
     mSpanned = null;
   }
@@ -115,10 +113,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // reset text
     setLayoutParams(EMPTY_LAYOUT_PARAMS);
     super.setText(null);
+    applyTextAttributes();
 
     // Call setters to ensure that any super setters are called
-    setGravityHorizontal(mDefaultGravityHorizontal);
-    setGravityVertical(mDefaultGravityVertical);
+    setGravity(DEFAULT_GRAVITY);
     setNumberOfLines(mNumberOfLines);
     setAdjustFontSizeToFit(mAdjustsFontSizeToFit);
     setLinkifyMask(mLinkifyMaskType);
@@ -555,7 +553,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
-      gravityHorizontal = mDefaultGravityHorizontal;
+      gravityHorizontal =
+          DEFAULT_GRAVITY
+              & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     }
     setGravity(
         (getGravity()
@@ -566,7 +566,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   /* package */ void setGravityVertical(int gravityVertical) {
     if (gravityVertical == 0) {
-      gravityVertical = mDefaultGravityVertical;
+      gravityVertical = DEFAULT_GRAVITY & Gravity.VERTICAL_GRAVITY_MASK;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
   }
