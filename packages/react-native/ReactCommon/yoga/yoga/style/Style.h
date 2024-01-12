@@ -217,6 +217,70 @@ class YG_EXPORT Style {
     }
   }
 
+  Style::Length resolveLeft(Direction layoutDirection) const {
+    return resolveLeftEdge(position_, layoutDirection);
+  }
+
+  Style::Length resolveTop() const {
+    return resolveTopEdge(position_);
+  }
+
+  Style::Length resolveRight(Direction layoutDirection) const {
+    return resolveRightEdge(position_, layoutDirection);
+  }
+
+  Style::Length resolveBottom() const {
+    return resolveBottomEdge(position_);
+  }
+
+  Style::Length resolveMarginLeft(Direction layoutDirection) const {
+    return resolveLeftEdge(margin_, layoutDirection);
+  }
+
+  Style::Length resolveMarginTop() const {
+    return resolveTopEdge(margin_);
+  }
+
+  Style::Length resolveMarginRight(Direction layoutDirection) const {
+    return resolveRightEdge(margin_, layoutDirection);
+  }
+
+  Style::Length resolveMarginBottom() const {
+    return resolveBottomEdge(margin_);
+  }
+
+  Style::Length resolvePaddingLeft(Direction layoutDirection) const {
+    return resolveLeftEdge(padding_, layoutDirection);
+  }
+
+  Style::Length resolvePaddingTop() const {
+    return resolveTopEdge(padding_);
+  }
+
+  Style::Length resolvePaddingRight(Direction layoutDirection) const {
+    return resolveRightEdge(padding_, layoutDirection);
+  }
+
+  Style::Length resolvePaddingBottom() const {
+    return resolveBottomEdge(padding_);
+  }
+
+  Style::Length resolveBorderLeft(Direction layoutDirection) const {
+    return resolveLeftEdge(border_, layoutDirection);
+  }
+
+  Style::Length resolveBorderTop() const {
+    return resolveTopEdge(border_);
+  }
+
+  Style::Length resolveBorderRight(Direction layoutDirection) const {
+    return resolveRightEdge(border_, layoutDirection);
+  }
+
+  Style::Length resolveBorderBottom() const {
+    return resolveBottomEdge(border_);
+  }
+
   bool horizontalInsetsDefined() const {
     return position_[YGEdge::YGEdgeLeft].isDefined() ||
         position_[YGEdge::YGEdgeRight].isDefined() ||
@@ -264,6 +328,62 @@ class YG_EXPORT Style {
   using Dimensions = std::array<CompactValue, ordinalCount<Dimension>()>;
   using Edges = std::array<CompactValue, ordinalCount<Edge>()>;
   using Gutters = std::array<CompactValue, ordinalCount<Gutter>()>;
+
+  Style::Length resolveLeftEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Start)];
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::End)];
+    } else if (edges[yoga::to_underlying(Edge::Left)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Left)];
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Horizontal)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length resolveTopEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Top)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Top)];
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Vertical)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length resolveRightEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::End)];
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Start)];
+    } else if (edges[yoga::to_underlying(Edge::Right)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Right)];
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Horizontal)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length resolveBottomEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Bottom)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Bottom)];
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Vertical)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
 
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;
   FlexDirection flexDirection_

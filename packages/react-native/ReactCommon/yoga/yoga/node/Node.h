@@ -13,6 +13,7 @@
 
 #include <yoga/Yoga.h>
 
+#include <yoga/algorithm/FlexDirection.h>
 #include <yoga/config/Config.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
@@ -158,69 +159,154 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   // Methods related to positions, margin, padding and border
-  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const;
-  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  float getFlexStartPosition(
+  inline bool isFlexStartPositionDefined(
+      FlexDirection axis,
+      Direction direction) const {
+    return resolvePositionEdge(flexStartEdge(axis), direction).isDefined();
+  }
+  inline bool isInlineStartPositionDefined(
+      FlexDirection axis,
+      Direction direction) const {
+    return resolvePositionEdge(inlineStartEdge(axis, direction), direction)
+        .isDefined();
+  }
+  inline bool isFlexEndPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return resolvePositionEdge(flexEndEdge(axis), direction).isDefined();
+  }
+  inline bool isInlineEndPositionDefined(
+      FlexDirection axis,
+      Direction direction) const {
+    return resolvePositionEdge(inlineEndEdge(axis, direction), direction)
+        .isDefined();
+  }
+  inline float getFlexStartPosition(
       FlexDirection axis,
       Direction direction,
-      float axisSize) const;
-  float getInlineStartPosition(
+      float axisSize) const {
+    return resolvePositionEdge(flexStartEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineStartPosition(
       FlexDirection axis,
       Direction direction,
-      float axisSize) const;
-  float getFlexEndPosition(
+      float axisSize) const {
+    return resolvePositionEdge(inlineStartEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexEndPosition(
       FlexDirection axis,
       Direction direction,
-      float axisSize) const;
-  float getInlineEndPosition(
+      float axisSize) const {
+    return resolvePositionEdge(flexEndEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineEndPosition(
       FlexDirection axis,
       Direction direction,
-      float axisSize) const;
-  float getFlexStartMargin(
+      float axisSize) const {
+    return resolvePositionEdge(inlineEndEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexStartMargin(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getInlineStartMargin(
+      float widthSize) const {
+    return resolveMarginEdge(flexStartEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineStartMargin(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getFlexEndMargin(
+      float widthSize) const {
+    return resolveMarginEdge(inlineStartEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexEndMargin(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getInlineEndMargin(
+      float widthSize) const {
+    return resolveMarginEdge(flexEndEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineEndMargin(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getFlexStartBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getInlineStartBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getFlexEndBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getFlexStartPadding(
+      float widthSize) const {
+    return resolveMarginEdge(inlineEndEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexStartBorder(FlexDirection axis, Direction direction)
+      const {
+    return resolveBorderEdge(flexStartEdge(axis), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineStartBorder(FlexDirection axis, Direction direction)
+      const {
+    return resolveBorderEdge(inlineStartEdge(axis, direction), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexEndBorder(FlexDirection axis, Direction direction) const {
+    return resolveBorderEdge(flexEndEdge(axis), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getInlineEndBorder(FlexDirection axis, Direction direction)
+      const {
+    return resolveBorderEdge(inlineEndEdge(axis, direction), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+  inline float getFlexStartPadding(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getInlineStartPadding(
+      float widthSize) const {
+    return maxOrDefined(
+        resolvePaddingEdge(flexStartEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+  inline float getInlineStartPadding(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getFlexEndPadding(
+      float widthSize) const {
+    return maxOrDefined(
+        resolvePaddingEdge(inlineStartEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+  inline float getFlexEndPadding(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
-  float getInlineEndPadding(
+      float widthSize) const {
+    return maxOrDefined(
+        resolvePaddingEdge(flexEndEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+  inline float getInlineEndPadding(
       FlexDirection axis,
       Direction direction,
-      float widthSize) const;
+      float widthSize) const {
+    return maxOrDefined(
+        resolvePaddingEdge(inlineEndEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
   float getFlexStartPaddingAndBorder(
       FlexDirection axis,
       Direction direction,
@@ -350,29 +436,15 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction,
       const float axisSize) const;
 
-  Edge getInlineStartEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getInlineEndEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexStartRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexEndRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
+  Style::Length resolvePositionEdge(Edge edge, Direction direction) const;
+  Style::Length resolveMarginEdge(Edge edge, Direction direction) const;
+  Style::Length resolvePaddingEdge(Edge edge, Direction direction) const;
+  Style::Length resolveBorderEdge(Edge edge, Direction direction) const;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
     style_.setAlignContent(Align::Stretch);
   }
-
-  template <auto Field>
-  Style::Length computeEdgeValueForColumn(Edge edge) const;
-
-  template <auto Field>
-  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
 
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;

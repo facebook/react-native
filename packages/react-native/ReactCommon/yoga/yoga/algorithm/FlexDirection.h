@@ -99,32 +99,6 @@ inline Edge inlineEndEdge(
   return Edge::Bottom;
 }
 
-/**
- * The physical edges that Edge::Start and Edge::End correspond to (e.g.
- * left/right) are soley dependent on the direction. However, there are cases
- * where we want the flex start/end edge (i.e. which edge is the start/end
- * for laying out flex items), which can be distinct from the corresponding
- * inline edge. In these cases we need to know which "relative edge"
- * (Edge::Start/Edge::End) corresponds to the said flex start/end edge as these
- * relative edges can be used instead of physical ones when defining certain
- * attributes like border or padding.
- */
-inline Edge flexStartRelativeEdge(
-    FlexDirection flexDirection,
-    Direction direction) {
-  const Edge leadLayoutEdge = inlineStartEdge(flexDirection, direction);
-  const Edge leadFlexItemEdge = flexStartEdge(flexDirection);
-  return leadLayoutEdge == leadFlexItemEdge ? Edge::Start : Edge::End;
-}
-
-inline Edge flexEndRelativeEdge(
-    FlexDirection flexDirection,
-    Direction direction) {
-  const Edge trailLayoutEdge = inlineEndEdge(flexDirection, direction);
-  const Edge trailFlexItemEdge = flexEndEdge(flexDirection);
-  return trailLayoutEdge == trailFlexItemEdge ? Edge::End : Edge::Start;
-}
-
 inline Dimension dimension(const FlexDirection flexDirection) {
   switch (flexDirection) {
     case FlexDirection::Column:
