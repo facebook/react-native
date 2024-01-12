@@ -142,19 +142,19 @@
                      accessibilityIdentifier:@"redbox-extra"
                                     selector:@selector(showExtraDataViewController)
                                        block:nil];
-
-  [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [copyButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [extraButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
+  
+  [NSLayoutConstraint activateConstraints:@[
+    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
+  ]];
 
   UIStackView *buttonStackView = [[UIStackView alloc] init];
   buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonStackView.distribution = UIStackViewDistributionFillEqually;
   buttonStackView.alignment = UIStackViewAlignmentTop;
-
-  [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]].active = YES;
   buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
 
   [buttonStackView addArrangedSubview:dismissButton];
@@ -163,30 +163,14 @@
   [buttonStackView addArrangedSubview:extraButton];
 
   [self.view addSubview:buttonStackView];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeLeading
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeLeading
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeTrailing
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeTrailing
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeBottom
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeBottom
-                                                       multiplier:1.0
-                                                         constant:0]];
+    
+  [NSLayoutConstraint activateConstraints:@[
+    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+  ]];
+    
 
   for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
     UIButton *button = [self redBoxButton:_customButtonTitles[i]
@@ -203,30 +187,12 @@
   [topBorder.heightAnchor constraintEqualToConstant:1].active = YES;
 
   [self.view addSubview:topBorder];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeLeading
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeLeading
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeTrailing
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeTrailing
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeBottom
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:buttonStackView
-                                                        attribute:NSLayoutAttributeTop
-                                                       multiplier:1.0
-                                                         constant:0]];
+    
+  [NSLayoutConstraint activateConstraints:@[
+    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+  ]];
 }
 
 - (UIButton *)redBoxButton:(NSString *)title
