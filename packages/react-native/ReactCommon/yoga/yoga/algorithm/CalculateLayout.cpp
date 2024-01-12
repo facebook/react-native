@@ -920,13 +920,9 @@ static void justifyMainAxis(
   const auto& style = node->getStyle();
 
   const float leadingPaddingAndBorderMain =
-      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? node->getInlineStartPaddingAndBorder(mainAxis, direction, ownerWidth)
-      : node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
+      node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
   const float trailingPaddingAndBorderMain =
-      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? node->getInlineEndPaddingAndBorder(mainAxis, direction, ownerWidth)
-      : node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
+      node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
 
   const float gap = node->getGapForAxis(mainAxis);
   // If we are using "at most" rules in the main axis, make sure that
