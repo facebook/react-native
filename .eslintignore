@@ -4,6 +4,8 @@ docs/generatedComponentApiDocs.js
 packages/react-native/flow/
 packages/react-native/Libraries/Renderer/*
 packages/react-native/Libraries/vendor/**/*
+packages/react-native/Libraries/**/*.macos.js
+packages/react-native/Libraries/**/*.windows.js
 node_modules/
 packages/*/node_modules
 packages/*/dist
