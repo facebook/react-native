@@ -3,8 +3,12 @@ steps:
     inputs:
       versionSpec: '18.x'
 
-  - script: 'brew bundle --file .ado/Brewfile'
+  - task: CmdLine@2
     displayName: 'brew bundle'
+    inputs:
+      script: |
+        brew bundle --file .ado/Brewfile
+        cat .ado/Brewfile.lock.json
 
   - ${{ if ne(parameters.xcode_version, '')}}:
     - template: apple-xcode-select.yml
