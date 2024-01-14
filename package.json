@@ -88,6 +88,7 @@
     "flow-bin": "^0.226.0",
     "glob": "^7.1.1",
     "hermes-eslint": "0.18.2",
+    "hermes-transform": "0.18.2",
     "inquirer": "^7.1.0",
     "jest": "^29.6.3",
     "jest-junit": "^10.0.0",
