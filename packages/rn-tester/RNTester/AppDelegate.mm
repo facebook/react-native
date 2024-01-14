@@ -102,15 +102,6 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
-#if !TARGET_OS_OSX // [macOS]
-// Required to register for notifications
-- (void)application:(__unused UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
-}
-#endif // [macOS]
-
 // Required for the remoteNotificationsRegistered event.
 - (void)application:(__unused RCTUIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

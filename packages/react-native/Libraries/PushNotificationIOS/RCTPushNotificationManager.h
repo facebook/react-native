@@ -16,9 +16,6 @@ typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 #endif // [macOS]
 
 #if !TARGET_OS_UIKITFORMAC
-#if !TARGET_OS_OSX // [macOS]
-+ (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-#endif // [macOS]
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
 #if !TARGET_OS_OSX // [macOS]
