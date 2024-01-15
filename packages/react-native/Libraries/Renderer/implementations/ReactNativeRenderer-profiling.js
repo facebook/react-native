@@ -9040,6 +9040,9 @@ exports.findHostInstance_DEPRECATED = function(componentOrHandle) {
 };
 exports.findNodeHandle = findNodeHandle;
 exports.getInspectorDataForInstance = void 0;
+exports.isChildPublicInstance = function () {
+  throw Error("isChildPublicInstance() is not available in production.");
+};
 exports.render = function(element, containerTag, callback) {
   var root = roots.get(containerTag);
   if (!root) {
@@ -9102,4 +9105,3 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
