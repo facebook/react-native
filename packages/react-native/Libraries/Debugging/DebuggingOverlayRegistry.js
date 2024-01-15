@@ -68,6 +68,8 @@ class DebuggingOverlayRegistry {
     this.#reactDevToolsAgent = agent;
 
     agent.addListener('drawTraceUpdates', this.#onDrawTraceUpdates);
+    agent.addListener('showNativeHighlight', this.#onHighlightElements);
+    agent.addListener('hideNativeHighlight', this.#onClearElementsHighlights);
   };
 
   #getPublicInstanceFromInstance(
@@ -130,6 +132,36 @@ class DebuggingOverlayRegistry {
         console.error(`Failed to measure updated traces. Error: ${err}`);
       },
     );
+  };
+
+  #onHighlightElements: (
+    ...ReactDevToolsAgentEvents['showNativeHighlight']
+  ) => void = node => {
+    // First clear highlights for every container
+    for (const subscriber of this.#registry) {
+      subscriber.debuggingOverlayRef.current?.clearElementsHighlight();
+    }
+
+    const publicInstance = this.#getPublicInstanceFromInstance(node);
+    if (publicInstance == null) {
+      return;
+    }
+
+    publicInstance.measure((x, y, width, height, left, top) => {
+      for (const subscriber of this.#registry) {
+        subscriber.debuggingOverlayRef.current?.highlightElements([
+          {x: left, y: top, width, height},
+        ]);
+      }
+    });
+  };
+
+  #onClearElementsHighlights: (
+    ...ReactDevToolsAgentEvents['hideNativeHighlight']
+  ) => void = () => {
+    for (const subscriber of this.#registry) {
+      subscriber.debuggingOverlayRef.current?.clearElementsHighlight();
+    }
   };
 }
 
