@@ -18,10 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DebuggingOverlay extends View {
+
   private final Paint mOverlayPaint = new Paint();
   private List<Overlay> mOverlays = new ArrayList<Overlay>();
 
+  private final Paint mHighlightedElementsPaint = new Paint();
+  private List<RectF> mHighlightedElementsRectangles = new ArrayList<>();
+
   public static class Overlay {
+
     private final int mColor;
     private final RectF mRect;
 
@@ -45,8 +50,12 @@ public class DebuggingOverlay extends View {
 
   public DebuggingOverlay(Context context) {
     super(context);
+
     mOverlayPaint.setStyle(Paint.Style.STROKE);
     mOverlayPaint.setStrokeWidth(6);
+
+    mHighlightedElementsPaint.setStyle(Paint.Style.FILL);
+    mHighlightedElementsPaint.setColor(0xCCC8E6FF);
   }
 
   @UiThread
@@ -55,16 +64,30 @@ public class DebuggingOverlay extends View {
     invalidate();
   }
 
+  @UiThread
+  public void setHighlightedElementsRectangles(List<RectF> elementsRectangles) {
+    mHighlightedElementsRectangles = elementsRectangles;
+    invalidate();
+  }
+
+  @UiThread
+  public void clearElementsHighlights() {
+    mHighlightedElementsRectangles.clear();
+    invalidate();
+  }
+
   @Override
   public void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    if (!mOverlays.isEmpty()) {
-      // Draw border outside of the given overlays to be aligned with web trace highlights
-      for (Overlay overlay : mOverlays) {
-        mOverlayPaint.setColor(overlay.getColor());
-        canvas.drawRect(overlay.getPixelRect(), mOverlayPaint);
-      }
+    // Draw border outside of the given overlays to be aligned with web trace highlights
+    for (Overlay overlay : mOverlays) {
+      mOverlayPaint.setColor(overlay.getColor());
+      canvas.drawRect(overlay.getPixelRect(), mOverlayPaint);
+    }
+
+    for (RectF elementRectangle : mHighlightedElementsRectangles) {
+      canvas.drawRect(elementRectangle, mHighlightedElementsPaint);
     }
   }
 }
