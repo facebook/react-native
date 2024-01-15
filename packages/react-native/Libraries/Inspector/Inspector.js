@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
 import type {
   InspectorData,
   TouchedViewDataAtPoint,
@@ -46,7 +47,7 @@ export type InspectedElement = $ReadOnly<{
 export type ElementsHierarchy = InspectorData['hierarchy'];
 
 type Props = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   onRequestRerenderApp: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
