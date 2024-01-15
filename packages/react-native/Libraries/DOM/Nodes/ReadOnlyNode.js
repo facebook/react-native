@@ -18,7 +18,6 @@ import type NodeList from '../OldStyleCollections/NodeList';
 import type ReadOnlyElement from './ReadOnlyElement';
 
 import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
-import ReactFabric from '../../Renderer/shims/ReactFabric';
 import {createNodeList} from '../OldStyleCollections/NodeList';
 import nullthrows from 'nullthrows';
 
@@ -309,6 +308,9 @@ function setInstanceHandle(
 }
 
 export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
+  // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
+  // With a static import we can't use these classes for Paper-only variants.
+  const ReactFabric = require('../../Renderer/shims/ReactFabric');
   return ReactFabric.getNodeFromInternalInstanceHandle(getInstanceHandle(node));
 }
 
@@ -353,6 +355,9 @@ function getNodeSiblingsAndPosition(
 export function getPublicInstanceFromInternalInstanceHandle(
   instanceHandle: InternalInstanceHandle,
 ): ?ReadOnlyNode {
+  // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
+  // With a static import we can't use these classes for Paper-only variants.
+  const ReactFabric = require('../../Renderer/shims/ReactFabric');
   const mixedPublicInstance =
     ReactFabric.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
   // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
