@@ -263,7 +263,7 @@ using namespace facebook::react;
   if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
     self.layer.shouldRasterize = newViewProps.shouldRasterize;
 #if !TARGET_OS_OSX // [macOS]
-    self.layer.rasterizationScale = newViewProps.shouldRasterize ? [UIScreen mainScreen].scale : 1.0;
+    self.layer.rasterizationScale = newViewProps.shouldRasterize ? self.traitCollection.displayScale : 1.0;
 #else // [macOS
     self.layer.rasterizationScale = 1.0;
 #endif // macOS]

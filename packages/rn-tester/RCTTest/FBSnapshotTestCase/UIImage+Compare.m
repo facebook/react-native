@@ -45,14 +45,13 @@
       (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
 
 #if !TARGET_OS_OSX // [macOS]
-  CGFloat scaleFactor = [UIScreen mainScreen].scale;
+  CGFloat scaleFactor = [UITraitCollection currentTraitCollection].displayScale;
 #else // [macOS
   // The compareWithImage: method is used for integration test snapshot image comparison.
   // The _snapshotView: method that creates snapshot images that are *not* scaled for the screen.
   // By not using the screen scale factor in this method the test results are machine independent.
   CGFloat scaleFactor = 1;
 #endif // macOS]
-
   CGContextScaleCTM(referenceImageContext, scaleFactor, scaleFactor);
   CGContextScaleCTM(imageContext, scaleFactor, scaleFactor);
 

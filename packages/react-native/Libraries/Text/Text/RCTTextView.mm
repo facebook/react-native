@@ -37,10 +37,17 @@
 
 @end
 
-@interface RCTTextView () <NSTextViewDelegate>
-@end
-
 #endif // macOS]
+
+#if !TARGET_OS_OSX // [macOS]
+@interface RCTTextView () <UIEditMenuInteractionDelegate>
+
+@property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));
+#else // [macOS
+@interface RCTTextView () <NSTextViewDelegate>
+#endif // macOS]
+
+@end
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -351,6 +358,10 @@
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                               action:@selector(handleLongPress:)];
+ if (@available(iOS 16.0, *)) {
+    _editMenuInteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_editMenuInteraction];
+  }
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
@@ -362,8 +373,16 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
 #if !TARGET_OS_UIKITFORMAC
+  if (@available(iOS 16.0, *)) {
+    CGPoint location = [gesture locationInView:self];
+    UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
+    if (_editMenuInteraction) {
+      [_editMenuInteraction presentEditMenuWithConfiguration:config];
+    }
+    return;
+  }
+  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {
