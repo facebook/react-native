@@ -9,14 +9,46 @@
  * @oncall react_native
  */
 
-import type {AppContainerRootViewRef} from '../ReactNative/AppContainer-dev';
+import type {
+  AppContainerRootViewRef,
+  DebuggingOverlayRef,
+} from '../ReactNative/AppContainer-dev';
+import type {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
+import type {
+  InstanceFromReactDevTools,
+  ReactDevToolsAgent,
+  ReactDevToolsAgentEvents,
+  ReactDevToolsGlobalHook,
+} from '../Types/ReactDevToolsTypes';
+import type {Overlay} from './DebuggingOverlayNativeComponent';
+
+import processColor from '../StyleSheet/processColor';
+
+// TODO(T171193075): __REACT_DEVTOOLS_GLOBAL_HOOK__ is always injected in dev-bundles,
+// but it is not mocked in some Jest tests. We should update Jest tests setup, so it would be the same as expected testing environment.
+const reactDevToolsHook: ?ReactDevToolsGlobalHook =
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 export type DebuggingOverlayRegistrySubscriberProtocol = {
   rootViewRef: AppContainerRootViewRef,
+  debuggingOverlayRef: DebuggingOverlayRef,
 };
 
 class DebuggingOverlayRegistry {
   #registry: Set<DebuggingOverlayRegistrySubscriberProtocol> = new Set();
+  #reactDevToolsAgent: ReactDevToolsAgent | null = null;
+
+  constructor() {
+    if (reactDevToolsHook?.reactDevtoolsAgent != null) {
+      this.#onReactDevToolsAgentAttached(reactDevToolsHook.reactDevtoolsAgent);
+      return;
+    }
+
+    reactDevToolsHook?.on?.(
+      'react-devtools',
+      this.#onReactDevToolsAgentAttached,
+    );
+  }
 
   subscribe(subscriber: DebuggingOverlayRegistrySubscriberProtocol) {
     this.#registry.add(subscriber);
@@ -31,6 +63,74 @@ class DebuggingOverlayRegistry {
       );
     }
   }
+
+  #onReactDevToolsAgentAttached = (agent: ReactDevToolsAgent): void => {
+    this.#reactDevToolsAgent = agent;
+
+    agent.addListener('drawTraceUpdates', this.#onDrawTraceUpdates);
+  };
+
+  #getPublicInstanceFromInstance(
+    instanceHandle: InstanceFromReactDevTools,
+  ): NativeMethods | null {
+    // `canonical.publicInstance` => Fabric
+    if (instanceHandle.canonical?.publicInstance != null) {
+      return instanceHandle.canonical?.publicInstance;
+    }
+
+    // `canonical` => Legacy Fabric
+    if (instanceHandle.canonical != null) {
+      // $FlowFixMe[incompatible-return]
+      return instanceHandle.canonical;
+    }
+
+    // `instanceHandle` => Legacy renderer
+    if (instanceHandle.measure != null) {
+      // $FlowFixMe[incompatible-return]
+      return instanceHandle;
+    }
+
+    return null;
+  }
+
+  #onDrawTraceUpdates: (
+    ...ReactDevToolsAgentEvents['drawTraceUpdates']
+  ) => void = traceUpdates => {
+    const promisesToResolve: Array<Promise<Overlay>> = [];
+
+    traceUpdates.forEach(({node, color}) => {
+      const publicInstance = this.#getPublicInstanceFromInstance(node);
+
+      if (publicInstance == null) {
+        return;
+      }
+
+      const frameToDrawPromise = new Promise<Overlay>(resolve => {
+        // TODO(T171095283): We should refactor this to use `getBoundingClientRect` when Paper is no longer supported.
+        publicInstance.measure((x, y, width, height, left, top) => {
+          resolve({
+            rect: {left, top, width, height},
+            color: processColor(color),
+          });
+        });
+      });
+
+      promisesToResolve.push(frameToDrawPromise);
+    });
+
+    Promise.all(promisesToResolve).then(
+      updates => {
+        for (const subscriber of this.#registry) {
+          subscriber.debuggingOverlayRef.current?.highlightTraceUpdates(
+            updates,
+          );
+        }
+      },
+      err => {
+        console.error(`Failed to measure updated traces. Error: ${err}`);
+      },
+    );
+  };
 }
 
 const debuggingOverlayRegistryInstance: DebuggingOverlayRegistry =
