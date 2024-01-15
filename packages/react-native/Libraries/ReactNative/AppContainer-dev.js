@@ -18,6 +18,7 @@ import type {Props} from './AppContainer';
 import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
+import useSubscribeToDebuggingOverlayRegistry from '../Debugging/useSubscribeToDebuggingOverlayRegistry';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
 import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
@@ -40,7 +41,7 @@ if (reactDevToolsHook) {
 }
 
 type InspectorDeferredProps = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   onInspectedViewRerenderRequest: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
@@ -73,7 +74,9 @@ const AppContainer = ({
   showArchitectureIndicator,
   WrapperComponent,
 }: Props): React.Node => {
-  const innerViewRef = React.useRef<React.ElementRef<typeof View> | null>(null);
+  const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
+  const innerViewRef: InspectedViewRef = React.useRef(null);
+  useSubscribeToDebuggingOverlayRegistry(appContainerRootViewRef);
 
   const [key, setKey] = useState(0);
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
@@ -138,7 +141,10 @@ const AppContainer = ({
 
   return (
     <RootTagContext.Provider value={createRootTag(rootTag)}>
-      <View style={styles.container} pointerEvents="box-none">
+      <View
+        ref={appContainerRootViewRef}
+        style={styles.container}
+        pointerEvents="box-none">
         {innerView}
 
         {reactDevToolsAgent != null && (
@@ -169,4 +175,10 @@ const styles = StyleSheet.create({
   container: {flex: 1},
 });
 
+export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
+export type InspectedViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
 export default AppContainer;
