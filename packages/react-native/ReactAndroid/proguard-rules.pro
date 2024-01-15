@@ -30,8 +30,14 @@
 -keepclassmembers class * {
     @com.facebook.proguard.annotations.DoNotStrip *;
 }
-
 -keep @com.facebook.proguard.annotations.DoNotStripAny class * {
+    *;
+}
+-keep @com.facebook.jni.annotations.DoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.jni.annotations.DoNotStrip *;
+}
+-keep @com.facebook.jni.annotations.DoNotStripAny class * {
     *;
 }
 
