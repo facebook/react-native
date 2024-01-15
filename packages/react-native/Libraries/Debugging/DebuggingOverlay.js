@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {Overlay} from './DebuggingOverlayNativeComponent';
+import type {
+  ElementRectangle,
+  Overlay,
+} from './DebuggingOverlayNativeComponent';
 
 import View from '../Components/View/View';
 import UIManager from '../ReactNative/UIManager';
@@ -24,6 +27,8 @@ const isNativeComponentReady =
 
 type DebuggingOverlayHandle = {
   highlightTraceUpdates(updates: Overlay[]): void,
+  highlightElements(elements: ElementRectangle[]): void,
+  clearElementsHighlight(): void,
 };
 
 function DebuggingOverlay(
@@ -47,6 +52,27 @@ function DebuggingOverlay(
             nativeComponentRef.current,
             JSON.stringify(nonEmptyRectangles),
           );
+        }
+      },
+      highlightElements(elements) {
+        if (!isNativeComponentReady) {
+          return;
+        }
+
+        if (nativeComponentRef.current != null) {
+          Commands.highlightElements(
+            nativeComponentRef.current,
+            JSON.stringify(elements),
+          );
+        }
+      },
+      clearElementsHighlight() {
+        if (!isNativeComponentReady) {
+          return;
+        }
+
+        if (nativeComponentRef.current != null) {
+          Commands.clearElementsHighlights(nativeComponentRef.current);
         }
       },
     }),

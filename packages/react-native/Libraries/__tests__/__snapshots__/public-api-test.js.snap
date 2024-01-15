@@ -4752,6 +4752,8 @@ declare export function createNodeList<T>(
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
   highlightTraceUpdates(updates: Overlay[]): void,
+  highlightElements(elements: ElementRectangle[]): void,
+  clearElementsHighlight(): void,
 };
 declare const DebuggingOverlayWithForwardedRef: React.AbstractComponent<
   {},
@@ -4770,6 +4772,12 @@ export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
 export type Overlay = {
   rect: { left: number, top: number, width: number, height: number },
   color: ?ProcessedColorValue,
+};
+export type ElementRectangle = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 };
 interface NativeCommands {
   +draw: (
