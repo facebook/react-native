@@ -4776,6 +4776,13 @@ interface NativeCommands {
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
     overlays: string
   ) => void;
+  +highlightElements: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+    elements: string
+  ) => void;
+  +clearElementsHighlights: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>
+  ) => void;
 }
 declare export const Commands: NativeCommands;
 declare export default HostComponent<NativeProps>;
