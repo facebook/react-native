@@ -10,6 +10,7 @@
  */
 
 import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
+import type ReadOnlyElement from '../DOM/Nodes/ReadOnlyElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
@@ -109,6 +110,23 @@ class DebuggingOverlayRegistry {
     return null;
   }
 
+  #findLowestParentFromRegistryForInstance(
+    instance: ReactNativeElement,
+  ): ?DebuggingOverlayRegistrySubscriberProtocol {
+    let iterator: ?ReadOnlyElement = instance;
+    while (iterator != null) {
+      for (const subscriber of this.#registry) {
+        if (subscriber.rootViewRef.current === iterator) {
+          return subscriber;
+        }
+      }
+
+      iterator = iterator.parentElement;
+    }
+
+    return null;
+  }
+
   #onDrawTraceUpdates: (
     ...ReactDevToolsAgentEvents['drawTraceUpdates']
   ) => void = traceUpdates => {
@@ -154,25 +172,33 @@ class DebuggingOverlayRegistry {
   };
 
   #drawTraceUpdatesModern(updates: Array<ModernNodeUpdate>): void {
-    const resolvedTraceUpdates: Array<TraceUpdate> = updates.map(
-      ({id, instance, color}) => {
-        const {x, y, width, height} = instance.getBoundingClientRect();
-
-        return {
-          id,
-          rectangle: {x, y, width, height},
-          color: processColor(color),
-        };
-      },
-    );
-
-    for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
-      const rootViewReactTag = findNodeHandle(rootViewRef.current);
-      if (rootViewReactTag == null) {
+    const parentToTraceUpdatesMap = new Map<
+      DebuggingOverlayRegistrySubscriberProtocol,
+      Array<TraceUpdate>,
+    >();
+    for (const {id, instance, color} of updates) {
+      const parent = this.#findLowestParentFromRegistryForInstance(instance);
+      if (parent == null) {
         continue;
       }
 
-      debuggingOverlayRef.current?.highlightTraceUpdates(resolvedTraceUpdates);
+      let traceUpdatesForParent = parentToTraceUpdatesMap.get(parent);
+      if (traceUpdatesForParent == null) {
+        traceUpdatesForParent = [];
+        parentToTraceUpdatesMap.set(parent, traceUpdatesForParent);
+      }
+
+      const {x, y, width, height} = instance.getBoundingClientRect();
+      traceUpdatesForParent.push({
+        id,
+        rectangle: {x, y, width, height},
+        color: processColor(color),
+      });
+    }
+
+    for (const [parent, traceUpdates] of parentToTraceUpdatesMap.entries()) {
+      const {debuggingOverlayRef} = parent;
+      debuggingOverlayRef.current?.highlightTraceUpdates(traceUpdates);
     }
   }
 
@@ -246,8 +272,10 @@ class DebuggingOverlayRegistry {
   #onHighlightElementsModern(publicInstance: ReactNativeElement): void {
     const {x, y, width, height} = publicInstance.getBoundingClientRect();
 
-    for (const subscriber of this.#registry) {
-      subscriber.debuggingOverlayRef.current?.highlightElements([
+    const parent =
+      this.#findLowestParentFromRegistryForInstance(publicInstance);
+    if (parent) {
+      parent.debuggingOverlayRef.current?.highlightElements([
         {x, y, width, height},
       ]);
     }
