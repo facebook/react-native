@@ -88,5 +88,12 @@ export function getNodeFromPublicInstance(
 export function getInternalInstanceHandleFromPublicInstance(
   publicInstance: ReactFabricHostComponent | ReactNativeElement,
 ): InternalInstanceHandle {
+  // TODO(T174762768): Remove this once OSS versions of renderers will be synced.
+  // $FlowExpectedError[prop-missing] Keeping this for backwards-compatibility with the renderers versions in open source.
+  if (publicInstance._internalInstanceHandle != null) {
+    // $FlowExpectedError[incompatible-return] Keeping this for backwards-compatibility with the renderers versions in open source.
+    return publicInstance._internalInstanceHandle;
+  }
+
   return publicInstance.__internalInstanceHandle;
 }
