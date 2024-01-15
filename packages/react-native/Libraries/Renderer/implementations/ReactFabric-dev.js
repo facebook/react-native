@@ -3388,6 +3388,20 @@ function findCurrentHostFiberImpl(node) {
 
   return null;
 }
+function doesFiberContain(parentFiber, childFiber) {
+  var node = childFiber;
+  var parentFiberAlternate = parentFiber.alternate;
+
+  while (node !== null) {
+    if (node === parentFiber || node === parentFiberAlternate) {
+      return true;
+    }
+
+    node = node.return;
+  }
+
+  return false;
+}
 
 /**
  * In the future, we should cleanup callbacks by cancelling them instead of
@@ -24331,6 +24345,46 @@ function sendAccessibilityEvent(handle, eventType) {
   }
 }
 
+function isChildPublicInstance(parentInstance, childInstance) {
+  {
+    // Paper
+    if (
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[prop-missing] Don't check via `instanceof ReactNativeFiberHostComponent`, so it won't be leaked to Fabric.
+      parentInstance._internalFiberInstanceHandleDEV && // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[prop-missing] Don't check via `instanceof ReactNativeFiberHostComponent`, so it won't be leaked to Fabric.
+      childInstance._internalFiberInstanceHandleDEV
+    ) {
+      return doesFiberContain(
+        // $FlowExpectedError[incompatible-call]
+        parentInstance._internalFiberInstanceHandleDEV, // $FlowExpectedError[incompatible-call]
+        childInstance._internalFiberInstanceHandleDEV
+      );
+    }
+
+    var parentInternalInstanceHandle = // $FlowExpectedError[incompatible-call] Type for parentInstance should have been PublicInstance from ReactFiberConfigFabric.
+      ReactNativePrivateInterface.getInternalInstanceHandleFromPublicInstance(
+        parentInstance
+      );
+    var childInternalInstanceHandle = // $FlowExpectedError[incompatible-call] Type for childInstance should have been PublicInstance from ReactFiberConfigFabric.
+      ReactNativePrivateInterface.getInternalInstanceHandleFromPublicInstance(
+        childInstance
+      ); // Fabric
+
+    if (
+      parentInternalInstanceHandle != null &&
+      childInternalInstanceHandle != null
+    ) {
+      return doesFiberContain(
+        parentInternalInstanceHandle,
+        childInternalInstanceHandle
+      );
+    } // Means that one instance is from Fabric and other is from Paper.
+
+    return false;
+  }
+}
+
 function onRecoverableError(error$1) {
   // TODO: Expose onRecoverableError option to userspace
   // eslint-disable-next-line react-internal/no-production-logging, react-internal/warning-args
@@ -24401,6 +24455,7 @@ exports.createPortal = createPortal$1;
 exports.dispatchCommand = dispatchCommand;
 exports.findHostInstance_DEPRECATED = findHostInstance_DEPRECATED;
 exports.findNodeHandle = findNodeHandle;
+exports.isChildPublicInstance = isChildPublicInstance;
 exports.render = render;
 exports.sendAccessibilityEvent = sendAccessibilityEvent;
 exports.stopSurface = stopSurface;
@@ -24414,6 +24469,6 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }
