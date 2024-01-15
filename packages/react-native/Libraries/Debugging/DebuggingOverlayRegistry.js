@@ -189,9 +189,22 @@ class DebuggingOverlayRegistry {
       }
 
       const {x, y, width, height} = instance.getBoundingClientRect();
+
+      const rootViewInstance = parent.rootViewRef.current;
+      if (rootViewInstance == null) {
+        continue;
+      }
+
+      const {x: parentX, y: parentY} =
+        // $FlowFixMe[prop-missing] React Native View is not a descendant of ReactNativeElement yet. We should be able to remove it once Paper is no longer supported.
+        rootViewInstance.getBoundingClientRect();
+
+      // DebuggingOverlay will scale to the same size as a Root view. Substract Root view position from the element position
+      // to calculate the element's position relatively to its parent DebuggingOverlay.
+      // We can't call `getBoundingClientRect` on the debuggingOverlayRef, because its a ref for the native component, which doesn't have it, hopefully yet.
       traceUpdatesForParent.push({
         id,
-        rectangle: {x, y, width, height},
+        rectangle: {x: x - parentX, y: y - parentY, width, height},
         color: processColor(color),
       });
     }
@@ -274,9 +287,22 @@ class DebuggingOverlayRegistry {
 
     const parent =
       this.#findLowestParentFromRegistryForInstance(publicInstance);
+
     if (parent) {
+      const rootViewInstance = parent.rootViewRef.current;
+      if (rootViewInstance == null) {
+        return;
+      }
+
+      const {x: parentX, y: parentY} =
+        // $FlowFixMe[prop-missing] React Native View is not a descendant of ReactNativeElement yet. We should be able to remove it once Paper is no longer supported.
+        rootViewInstance.getBoundingClientRect();
+
+      // DebuggingOverlay will scale to the same size as a Root view. Substract Root view position from the element position
+      // to calculate the element's position relatively to its parent DebuggingOverlay.
+      // We can't call `getBoundingClientRect` on the debuggingOverlayRef, because its a ref for the native component, which doesn't have it, hopefully yet.
       parent.debuggingOverlayRef.current?.highlightElements([
-        {x, y, width, height},
+        {x: x - parentX, y: y - parentY, width, height},
       ]);
     }
   }
