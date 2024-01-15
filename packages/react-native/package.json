@@ -101,6 +101,7 @@
     "@react-native-community/cli": "13.5.1",
     "@react-native-community/cli-platform-android": "13.5.1",
     "@react-native-community/cli-platform-ios": "13.5.1",
+    "@react-native-community/cli-platform-apple": "13.5.1",
     "@react-native/assets-registry": "0.74.0",
     "@react-native/codegen": "0.74.0",
     "@react-native/community-cli-plugin": "0.74.0",

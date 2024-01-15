@@ -7137,7 +7137,7 @@ metro-minify-terser@0.80.3:
   dependencies:
     terser "^5.15.0"
 
-metro-resolver@0.80.3, metro-resolver@^0.80.3:
+metro-resolver@0.80.3, metro-resolver@^0.80.0, metro-resolver@^0.80.3:
   version "0.80.3"
   resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.80.3.tgz#f9676508583d81182c7afaabc908254dc928a345"
   integrity sha512-zwa0i32rj/TI3NivcvMXHJwTG2gUgo2dXdcnAJlhEKKQvyN+7AfhNdQSlDdDqMQmU7FaLRdeWORnQJbYCrprQQ==

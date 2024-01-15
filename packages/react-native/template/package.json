@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "visionos": "react-native run-visionos",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
