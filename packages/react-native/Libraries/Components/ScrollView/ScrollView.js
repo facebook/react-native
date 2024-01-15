@@ -764,22 +764,24 @@ class ScrollView extends React.Component<Props, State> {
     this._keyboardMetrics = Keyboard.metrics();
     this._additionalScrollOffset = 0;
 
-    this._subscriptionKeyboardWillShow = Keyboard.addListener(
-      'keyboardWillShow',
-      this.scrollResponderKeyboardWillShow,
-    );
-    this._subscriptionKeyboardWillHide = Keyboard.addListener(
-      'keyboardWillHide',
-      this.scrollResponderKeyboardWillHide,
-    );
-    this._subscriptionKeyboardDidShow = Keyboard.addListener(
-      'keyboardDidShow',
-      this.scrollResponderKeyboardDidShow,
-    );
-    this._subscriptionKeyboardDidHide = Keyboard.addListener(
-      'keyboardDidHide',
-      this.scrollResponderKeyboardDidHide,
-    );
+    if (Platform.isVisionOS) {
+      this._subscriptionKeyboardWillShow = Keyboard.addListener(
+        'keyboardWillShow',
+        this.scrollResponderKeyboardWillShow,
+      );
+      this._subscriptionKeyboardWillHide = Keyboard.addListener(
+        'keyboardWillHide',
+        this.scrollResponderKeyboardWillHide,
+      );
+      this._subscriptionKeyboardDidShow = Keyboard.addListener(
+        'keyboardDidShow',
+        this.scrollResponderKeyboardDidShow,
+      );
+      this._subscriptionKeyboardDidHide = Keyboard.addListener(
+        'keyboardDidHide',
+        this.scrollResponderKeyboardDidHide,
+      );
+    }
 
     this._updateAnimatedNodeAttachment();
   }

@@ -116,10 +116,6 @@ class Keyboard {
 
   constructor() {
     if (Platform.isVisionOS) {
-      warnOnce(
-        'Keyboard-unavailable',
-        'Keyboard is not available on visionOS platform. The system displays the keyboard in a separate window, leaving the app’s window unaffected by the keyboard’s appearance and disappearance',
-      );
       return;
     }
 
@@ -161,6 +157,10 @@ class Keyboard {
     context?: mixed,
   ): EventSubscription {
     if (Platform.isVisionOS) {
+      warnOnce(
+        'Keyboard-unavailable',
+        'Keyboard API is not available on visionOS platform. The system displays the keyboard in a separate window, leaving the app’s window unaffected by the keyboard’s appearance and disappearance',
+      );
       return {remove() {}};
     }
 
