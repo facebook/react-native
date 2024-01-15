@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
 import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {
@@ -29,7 +30,7 @@ const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint
 const {useEffect, useState, useCallback} = React;
 
 type Props = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   reactDevToolsAgent: ReactDevToolsAgent,
 };
 

@@ -4777,6 +4777,27 @@ declare export default HostComponent<NativeProps>;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlayRegistry.js 1`] = `
+"export type DebuggingOverlayRegistrySubscriberProtocol = {
+  rootViewRef: AppContainerRootViewRef,
+};
+declare class DebuggingOverlayRegistry {
+  subscribe(subscriber: DebuggingOverlayRegistrySubscriberProtocol): void;
+  unsubscribe(subscriber: DebuggingOverlayRegistrySubscriberProtocol): void;
+}
+declare const debuggingOverlayRegistryInstance: DebuggingOverlayRegistry;
+declare export default typeof debuggingOverlayRegistryInstance;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Debugging/useSubscribeToDebuggingOverlayRegistry.js 1`] = `
+"declare const useSubscribeToDebuggingOverlayRegistry: (
+  rootViewRef: AppContainerRootViewRef
+) => void;
+declare export default typeof useSubscribeToDebuggingOverlayRegistry;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/DevToolsSettings/DevToolsSettingsManager.android.js 1`] = `
 "declare module.exports: {
   setConsolePatchSettings(newSettings: string): void,
@@ -5406,8 +5427,7 @@ declare module.exports: resolveAssetSource;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/Inspector.js 1`] = `
-"declare const View: $FlowFixMe;
-declare const React: $FlowFixMe;
+"declare const React: $FlowFixMe;
 export type InspectedElementFrame = TouchedViewDataAtPoint[\\"frame\\"];
 export type InspectedElementSource = InspectorData[\\"source\\"];
 export type InspectedElement = $ReadOnly<{
@@ -5417,7 +5437,7 @@ export type InspectedElement = $ReadOnly<{
 }>;
 export type ElementsHierarchy = InspectorData[\\"hierarchy\\"];
 type Props = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   onRequestRerenderApp: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
@@ -5439,7 +5459,7 @@ declare module.exports: InspectorOverlay;
 
 exports[`public API should not change unintentionally Libraries/Inspector/ReactDevToolsOverlay.js 1`] = `
 "type Props = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   reactDevToolsAgent: ReactDevToolsAgent,
 };
 declare export default function ReactDevToolsOverlay(Props): React.Node;
@@ -7520,6 +7540,12 @@ declare module.exports: AppContainer;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppContainer-dev.js 1`] = `
 "declare const AppContainer: (Props) => React.Node;
+export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
+export type InspectedViewRef = React.RefObject<React.ElementRef<
+  typeof View,
+> | null>;
 declare export default typeof AppContainer;
 "
 `;
