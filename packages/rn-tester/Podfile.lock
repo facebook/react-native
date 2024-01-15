@@ -1321,11 +1321,11 @@ SPEC CHECKSUMS:
   RCTTypeSafety: e1ed3137728804fa98bce30b70e3da0b8e23054e
   React: 54070abee263d5773486987f1cf3a3616710ed52
   React-callinvoker: 794ea19cc4d8ce25921893141e131b9d6b7d02eb
-  React-Codegen: ce65efd1b934e22cb9767d79c5c615a1b59a9a40
+  React-Codegen: 56417b3402a3b85386470a72c338224d0b689998
   React-Core: 7e2a9c4594083ecc68b91fc4a3f4d567e8c8b3b3
   React-CoreModules: 87cc386c2200862672b76bb02c4574b4b1d11b3c
   React-cxxreact: 1100498800597e812f0ce4ec365f4ea47ac39719
-  React-debug: 4dca41301a67ab2916b2c99bef60344a7b653ac5
+  React-debug: 7af2049f3848bde3696276d4858ffea1274d8458
   React-Fabric: 955c896c324f7112e2da198647ff7d107b4ca63f
   React-graphics: 34b8df3af86c85fddb2bd1eb28bab4dad9fc6a25
   React-hermes: b871a77ba1c427ca00f075759dc0cc9670484c94
@@ -1351,8 +1351,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: 87c490b6f01746ab8f9b4e555f514cc030c06731
   React-rncore: c07cdca94018ebd0eb62d2b576c40094dec8bd93
   React-runtimeexecutor: 226ebef5f625878d3028b196cbecbbdeb6f208e4
-  React-runtimescheduler: a7b1442e155c6f131d8bdfaac47abdc303f50788
-  React-utils: a3ffbc321572ee91911d7bc30965abe9aa4e16af
+  React-runtimescheduler: 3a5ce2c31eda2f04394aa843cbe2816912ef2ae0
+  React-utils: d3f806d3658bec0360aab46000d251872689340b
   ReactCommon: 180205f326d59f52e12fa724f5278fcf8fb6afc3
   ReactCommon-Samples: b8bad7c14a16b074adcf1005d811f9c60b5df44b
   ScreenshotManager: 4e5729bfcd19014d277e57eb60e8e75db64b2953
