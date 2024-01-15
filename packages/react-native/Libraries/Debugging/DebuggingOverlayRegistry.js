@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
@@ -33,6 +34,18 @@ const reactDevToolsHook: ?ReactDevToolsGlobalHook =
 export type DebuggingOverlayRegistrySubscriberProtocol = {
   rootViewRef: AppContainerRootViewRef,
   debuggingOverlayRef: DebuggingOverlayRef,
+};
+
+type ModernNodeUpdate = {
+  id: number,
+  instance: ReactNativeElement,
+  color: string,
+};
+
+type LegacyNodeUpdate = {
+  id: number,
+  instance: NativeMethods,
+  color: string,
 };
 
 class DebuggingOverlayRegistry {
@@ -99,22 +112,80 @@ class DebuggingOverlayRegistry {
   #onDrawTraceUpdates: (
     ...ReactDevToolsAgentEvents['drawTraceUpdates']
   ) => void = traceUpdates => {
-    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
+    const modernNodesUpdates: Array<ModernNodeUpdate> = [];
+    const legacyNodesUpdates: Array<LegacyNodeUpdate> = [];
 
-    traceUpdates.forEach(({node, color}) => {
+    for (const {node, color} of traceUpdates) {
       const publicInstance = this.#getPublicInstanceFromInstance(node);
-
       if (publicInstance == null) {
         return;
       }
 
+      const instanceReactTag = findNodeHandle(node);
+      if (instanceReactTag == null) {
+        return;
+      }
+
+      // Lazy import to avoid dependency cycle.
+      const ReactNativeElementClass =
+        require('../DOM/Nodes/ReactNativeElement').default;
+      if (publicInstance instanceof ReactNativeElementClass) {
+        modernNodesUpdates.push({
+          id: instanceReactTag,
+          instance: publicInstance,
+          color,
+        });
+      } else {
+        legacyNodesUpdates.push({
+          id: instanceReactTag,
+          instance: publicInstance,
+          color,
+        });
+      }
+    }
+
+    if (modernNodesUpdates.length > 0) {
+      this.#drawTraceUpdatesModern(modernNodesUpdates);
+    }
+
+    if (legacyNodesUpdates.length > 0) {
+      this.#drawTraceUpdatesLegacy(legacyNodesUpdates);
+    }
+  };
+
+  #drawTraceUpdatesModern(updates: Array<ModernNodeUpdate>): void {
+    const resolvedTraceUpdates: Array<TraceUpdate> = updates.map(
+      ({id, instance, color}) => {
+        const {x, y, width, height} = instance.getBoundingClientRect();
+
+        return {
+          id,
+          rectangle: {x, y, width, height},
+          color: processColor(color),
+        };
+      },
+    );
+
+    for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
+      const rootViewReactTag = findNodeHandle(rootViewRef.current);
+      if (rootViewReactTag == null) {
+        continue;
+      }
+
+      debuggingOverlayRef.current?.highlightTraceUpdates(resolvedTraceUpdates);
+    }
+  }
+
+  // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
+  #drawTraceUpdatesLegacy(updates: Array<LegacyNodeUpdate>): void {
+    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
+
+    for (const {id, instance, color} of updates) {
       const frameToDrawPromise = new Promise<TraceUpdate>((resolve, reject) => {
-        // TODO(T171095283): We should refactor this to use `getBoundingClientRect` when Paper is no longer supported.
-        publicInstance.measure((x, y, width, height, left, top) => {
-          const id = findNodeHandle(node);
-          if (id == null) {
-            reject();
-            return;
+        instance.measure((x, y, width, height, left, top) => {
+          // measure can execute callback without any values provided to signal error.
+          if (left == null || top == null || width == null || height == null) {
+            reject('Unexpectedly failed to call measure on an instance.');
           }
 
           resolve({
@@ -126,21 +197,28 @@ class DebuggingOverlayRegistry {
       });
 
       promisesToResolve.push(frameToDrawPromise);
-    });
+    }
 
-    Promise.all(promisesToResolve).then(
-      updates => {
-        for (const subscriber of this.#registry) {
-          subscriber.debuggingOverlayRef.current?.highlightTraceUpdates(
-            updates,
+    Promise.all(promisesToResolve)
+      .then(resolvedTraceUpdates => {
+        for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
+          const rootViewReactTag = findNodeHandle(rootViewRef.current);
+          if (rootViewReactTag == null) {
+            continue;
+          }
+
+          debuggingOverlayRef.current?.highlightTraceUpdates(
+            resolvedTraceUpdates,
           );
         }
-      },
-      err => {
-        console.error(`Failed to measure updated traces. Error: ${err}`);
-      },
-    );
-  };
+      })
+      .catch(() => {
+        // noop. For legacy architecture (Paper) this can happen for root views or LogBox button.
+        // LogBox case: it has a separate React root, so `measure` fails.
+        // Calling `console.error` here would trigger rendering a new LogBox button, for which we will call measure again, this is a cycle.
+        // Don't spam the UI with errors for such cases.
+      });
+  }
 
   #onHighlightElements: (
     ...ReactDevToolsAgentEvents['showNativeHighlight']
@@ -155,14 +233,41 @@ class DebuggingOverlayRegistry {
       return;
     }
 
+    // Lazy import to avoid dependency cycle.
+    const ReactNativeElementClass =
+      require('../DOM/Nodes/ReactNativeElement').default;
+    if (publicInstance instanceof ReactNativeElementClass) {
+      this.#onHighlightElementsModern(publicInstance);
+    } else {
+      this.#onHighlightElementsLegacy(publicInstance);
+    }
+  };
+
+  #onHighlightElementsModern(publicInstance: ReactNativeElement): void {
+    const {x, y, width, height} = publicInstance.getBoundingClientRect();
+
+    for (const subscriber of this.#registry) {
+      subscriber.debuggingOverlayRef.current?.highlightElements([
+        {x, y, width, height},
+      ]);
+    }
+  }
+
+  // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
+  #onHighlightElementsLegacy(publicInstance: NativeMethods): void {
     publicInstance.measure((x, y, width, height, left, top) => {
-      for (const subscriber of this.#registry) {
-        subscriber.debuggingOverlayRef.current?.highlightElements([
+      // measure can execute callback without any values provided to signal error.
+      if (left == null || top == null || width == null || height == null) {
+        return;
+      }
+
+      for (const {debuggingOverlayRef} of this.#registry) {
+        debuggingOverlayRef.current?.highlightElements([
           {x: left, y: top, width, height},
         ]);
       }
     });
-  };
+  }
 
   #onClearElementsHighlights: (
     ...ReactDevToolsAgentEvents['hideNativeHighlight']
