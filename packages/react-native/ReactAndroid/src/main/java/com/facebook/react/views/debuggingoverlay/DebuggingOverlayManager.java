@@ -50,8 +50,8 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
           for (int i = 0; i < overlaysArr.length(); i++) {
             JSONObject overlay = overlaysArr.getJSONObject(i);
             JSONObject rectObj = overlay.getJSONObject("rect");
-            float left = (float) rectObj.getDouble("left");
-            float top = (float) rectObj.getDouble("top");
+            float left = (float) rectObj.getDouble("x");
+            float top = (float) rectObj.getDouble("y");
             float right = (float) (left + rectObj.getDouble("width"));
             float bottom = (float) (top + rectObj.getDouble("height"));
             RectF rect = new RectF(left, top, right, bottom);

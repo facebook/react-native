@@ -111,7 +111,7 @@ class DebuggingOverlayRegistry {
         // TODO(T171095283): We should refactor this to use `getBoundingClientRect` when Paper is no longer supported.
         publicInstance.measure((x, y, width, height, left, top) => {
           resolve({
-            rect: {left, top, width, height},
+            rect: {x: left, y: top, width, height},
             color: processColor(color),
           });
         });

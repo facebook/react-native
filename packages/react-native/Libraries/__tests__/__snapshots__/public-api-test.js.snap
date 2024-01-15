@@ -4770,7 +4770,7 @@ exports[`public API should not change unintentionally Libraries/Debugging/Debugg
 |}>;
 export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
 export type Overlay = {
-  rect: { left: number, top: number, width: number, height: number },
+  rect: ElementRectangle,
   color: ?ProcessedColorValue,
 };
 export type ElementRectangle = {
