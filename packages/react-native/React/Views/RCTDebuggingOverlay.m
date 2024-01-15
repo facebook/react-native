@@ -38,12 +38,7 @@
     NSDictionary *nodeRectangle = node[@"rect"];
     NSNumber *nodeColor = node[@"color"];
 
-    NSNumber *x = nodeRectangle[@"left"];
-    NSNumber *y = nodeRectangle[@"top"];
-    NSNumber *width = nodeRectangle[@"width"];
-    NSNumber *height = nodeRectangle[@"height"];
-
-    CGRect rect = CGRectMake(x.doubleValue, y.doubleValue, width.doubleValue, height.doubleValue);
+    CGRect rect = [RCTConvert CGRect:nodeRectangle];
 
     UIView *box = [[UIView alloc] initWithFrame:rect];
     box.backgroundColor = [UIColor clearColor];
