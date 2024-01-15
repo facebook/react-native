@@ -11,10 +11,7 @@
 import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
 import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {
-  InstanceFromReactDevTools,
-  ReactDevToolsAgent,
-} from '../Types/ReactDevToolsTypes';
+import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 import type {InspectedElement} from './Inspector';
 
 import View from '../Components/View/View';
@@ -42,47 +39,7 @@ export default function ReactDevToolsOverlay({
   const [isInspecting, setIsInspecting] = useState(false);
 
   useEffect(() => {
-    let hideTimeoutId = null;
-
-    function onAgentHideNativeHighlight() {
-      // we wait to actually hide in order to avoid flicker
-      clearTimeout(hideTimeoutId);
-      hideTimeoutId = setTimeout(() => {
-        setInspected(null);
-      }, 100);
-    }
-
-    function onAgentShowNativeHighlight(node?: InstanceFromReactDevTools) {
-      clearTimeout(hideTimeoutId);
-
-      // `canonical.publicInstance` => Fabric
-      // `canonical` => Legacy Fabric
-      // `node` => Legacy renderer
-      const component =
-        (node?.canonical && node.canonical.publicInstance) ??
-        // TODO: remove this check when syncing the new version of the renderer from React to React Native.
-        node?.canonical ??
-        node;
-      if (!component || !component.measure) {
-        return;
-      }
-
-      component.measure((x, y, width, height, left, top) => {
-        setInspected({
-          frame: {left, top, width, height},
-        });
-      });
-    }
-
     function cleanup() {
-      reactDevToolsAgent.removeListener(
-        'hideNativeHighlight',
-        onAgentHideNativeHighlight,
-      );
-      reactDevToolsAgent.removeListener(
-        'showNativeHighlight',
-        onAgentShowNativeHighlight,
-      );
       reactDevToolsAgent.removeListener('shutdown', cleanup);
       reactDevToolsAgent.removeListener(
         'startInspectingNative',
@@ -102,14 +59,6 @@ export default function ReactDevToolsOverlay({
       setIsInspecting(false);
     }
 
-    reactDevToolsAgent.addListener(
-      'hideNativeHighlight',
-      onAgentHideNativeHighlight,
-    );
-    reactDevToolsAgent.addListener(
-      'showNativeHighlight',
-      onAgentShowNativeHighlight,
-    );
     reactDevToolsAgent.addListener('shutdown', cleanup);
     reactDevToolsAgent.addListener(
       'startInspectingNative',
