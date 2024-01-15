@@ -20,8 +20,9 @@ import type {
   ReactDevToolsAgentEvents,
   ReactDevToolsGlobalHook,
 } from '../Types/ReactDevToolsTypes';
-import type {Overlay} from './DebuggingOverlayNativeComponent';
+import type {TraceUpdate} from './DebuggingOverlayNativeComponent';
 
+import {findNodeHandle} from '../ReactNative/RendererProxy';
 import processColor from '../StyleSheet/processColor';
 
 // TODO(T171193075): __REACT_DEVTOOLS_GLOBAL_HOOK__ is always injected in dev-bundles,
@@ -98,7 +99,7 @@ class DebuggingOverlayRegistry {
   #onDrawTraceUpdates: (
     ...ReactDevToolsAgentEvents['drawTraceUpdates']
   ) => void = traceUpdates => {
-    const promisesToResolve: Array<Promise<Overlay>> = [];
+    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
 
     traceUpdates.forEach(({node, color}) => {
       const publicInstance = this.#getPublicInstanceFromInstance(node);
@@ -107,11 +108,18 @@ class DebuggingOverlayRegistry {
         return;
       }
 
-      const frameToDrawPromise = new Promise<Overlay>(resolve => {
+      const frameToDrawPromise = new Promise<TraceUpdate>((resolve, reject) => {
         // TODO(T171095283): We should refactor this to use `getBoundingClientRect` when Paper is no longer supported.
         publicInstance.measure((x, y, width, height, left, top) => {
+          const id = findNodeHandle(node);
+          if (id == null) {
+            reject();
+            return;
+          }
+
           resolve({
-            rect: {x: left, y: top, width, height},
+            id,
+            rectangle: {x: left, y: top, width, height},
             color: processColor(color),
           });
         });
