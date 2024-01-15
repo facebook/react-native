@@ -24,7 +24,10 @@ import type {
 } from '../Types/ReactDevToolsTypes';
 import type {TraceUpdate} from './DebuggingOverlayNativeComponent';
 
-import {findNodeHandle} from '../ReactNative/RendererProxy';
+import {
+  findNodeHandle,
+  isChildPublicInstance,
+} from '../ReactNative/RendererProxy';
 import processColor from '../StyleSheet/processColor';
 
 // TODO(T171193075): __REACT_DEVTOOLS_GLOBAL_HOOK__ is always injected in dev-bundles,
@@ -127,6 +130,84 @@ class DebuggingOverlayRegistry {
     return null;
   }
 
+  #findLowestParentFromRegistryForInstanceLegacy(
+    instance: NativeMethods,
+  ): ?DebuggingOverlayRegistrySubscriberProtocol {
+    const candidates: Array<DebuggingOverlayRegistrySubscriberProtocol> = [];
+
+    for (const subscriber of this.#registry) {
+      if (
+        subscriber.rootViewRef.current != null &&
+        // $FlowFixMe[incompatible-call] There is a lot of stuff to untangle to make types for refs work.
+        isChildPublicInstance(subscriber.rootViewRef.current, instance)
+      ) {
+        candidates.push(subscriber);
+      }
+    }
+
+    if (candidates.length === 0) {
+      // In some cases, like with LogBox in custom integrations, the whole subtree for specific React root might not have an AppContainer.
+      return null;
+    }
+
+    if (candidates.length === 1) {
+      return candidates[0];
+    }
+
+    // If there are multiple candidates, we need to find the lowest.
+    // Imagine the case when there is a modal on the screen, both of them will have their own AppContainers,
+    // but modal's AppContainer is a child of screen's AppContainer.
+    const candidatesWithNoChildren: Array<DebuggingOverlayRegistrySubscriberProtocol> =
+      [];
+    for (const potentialParent of candidates) {
+      let shouldSkipThisParent = false;
+
+      if (potentialParent.rootViewRef.current == null) {
+        continue;
+      }
+
+      for (const potentialChild of candidates) {
+        if (potentialChild === potentialParent) {
+          continue;
+        }
+
+        if (potentialChild.rootViewRef.current == null) {
+          continue;
+        }
+
+        if (
+          isChildPublicInstance(
+            // $FlowFixMe[incompatible-call] There is a lot of stuff to untangle to make types for refs work.
+            potentialParent.rootViewRef.current,
+            // $FlowFixMe[incompatible-call] There is a lot of stuff to untangle to make types for refs work.
+            potentialChild.rootViewRef.current,
+          )
+        ) {
+          shouldSkipThisParent = true;
+          break;
+        }
+      }
+
+      if (!shouldSkipThisParent) {
+        candidatesWithNoChildren.push(potentialParent);
+      }
+    }
+
+    if (candidatesWithNoChildren.length === 0) {
+      console.error(
+        '[DebuggingOverlayRegistry] Unexpected circular relationship between AppContainers',
+      );
+      return null;
+    } else if (candidatesWithNoChildren.length > 1) {
+      console.error(
+        '[DebuggingOverlayRegistry] Unexpected multiple options for lowest parent AppContainer',
+      );
+      return null;
+    }
+
+    return candidatesWithNoChildren[0];
+  }
+
   #onDrawTraceUpdates: (
     ...ReactDevToolsAgentEvents['drawTraceUpdates']
   ) => void = traceUpdates => {
@@ -217,9 +298,29 @@ class DebuggingOverlayRegistry {
 
   // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
   #drawTraceUpdatesLegacy(updates: Array<LegacyNodeUpdate>): void {
-    const promisesToResolve: Array<Promise<TraceUpdate>> = [];
+    const parentToTraceUpdatesPromisesMap = new Map<
+      DebuggingOverlayRegistrySubscriberProtocol,
+      Array<Promise<TraceUpdate>>,
+    >();
 
     for (const {id, instance, color} of updates) {
+      const parent =
+        this.#findLowestParentFromRegistryForInstanceLegacy(instance);
+
+      if (parent == null) {
+        continue;
+      }
+
+      let traceUpdatesPromisesForParent =
+        parentToTraceUpdatesPromisesMap.get(parent);
+      if (traceUpdatesPromisesForParent == null) {
+        traceUpdatesPromisesForParent = [];
+        parentToTraceUpdatesPromisesMap.set(
+          parent,
+          traceUpdatesPromisesForParent,
+        );
+      }
+
       const frameToDrawPromise = new Promise<TraceUpdate>((resolve, reject) => {
         instance.measure((x, y, width, height, left, top) => {
           // measure can execute callback without any values provided to signal error.
@@ -235,28 +336,26 @@ class DebuggingOverlayRegistry {
         });
       });
 
-      promisesToResolve.push(frameToDrawPromise);
+      traceUpdatesPromisesForParent.push(frameToDrawPromise);
     }
 
-    Promise.all(promisesToResolve)
-      .then(resolvedTraceUpdates => {
-        for (const {rootViewRef, debuggingOverlayRef} of this.#registry) {
-          const rootViewReactTag = findNodeHandle(rootViewRef.current);
-          if (rootViewReactTag == null) {
-            continue;
-          }
-
-          debuggingOverlayRef.current?.highlightTraceUpdates(
+    for (const [
+      parent,
+      traceUpdatesPromises,
+    ] of parentToTraceUpdatesPromisesMap.entries()) {
+      Promise.all(traceUpdatesPromises)
+        .then(resolvedTraceUpdates =>
+          parent.debuggingOverlayRef.current?.highlightTraceUpdates(
             resolvedTraceUpdates,
-          );
-        }
-      })
-      .catch(() => {
-        // noop. For legacy architecture (Paper) this can happen for root views or LogBox button.
-        // LogBox case: it has a separate React root, so `measure` fails.
-        // Calling `console.error` here would trigger rendering a new LogBox button, for which we will call measure again, this is a cycle.
-        // Don't spam the UI with errors for such cases.
-      });
+          ),
+        )
+        .catch(() => {
+          // noop. For legacy architecture (Paper) this can happen for root views or LogBox button.
+          // LogBox case: it has a separate React root, so `measure` fails.
+          // Calling `console.error` here would trigger rendering a new LogBox button, for which we will call measure again, this is a cycle.
+          // Don't spam the UI with errors for such cases.
+        });
+    }
   }
 
   #onHighlightElements: (
@@ -309,18 +408,21 @@ class DebuggingOverlayRegistry {
 
   // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
   #onHighlightElementsLegacy(publicInstance: NativeMethods): void {
-    publicInstance.measure((x, y, width, height, left, top) => {
-      // measure can execute callback without any values provided to signal error.
-      if (left == null || top == null || width == null || height == null) {
-        return;
-      }
+    const container =
+      this.#findLowestParentFromRegistryForInstanceLegacy(publicInstance);
 
-      for (const {debuggingOverlayRef} of this.#registry) {
-        debuggingOverlayRef.current?.highlightElements([
+    if (container != null) {
+      publicInstance.measure((x, y, width, height, left, top) => {
+        // measure can execute callback without any values provided to signal error.
+        if (left == null || top == null || width == null || height == null) {
+          return;
+        }
+
+        container.debuggingOverlayRef.current?.highlightElements([
           {x: left, y: top, width, height},
         ]);
-      }
-    });
+      });
+    }
   }
 
   #onClearElementsHighlights: (
