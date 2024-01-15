@@ -15,9 +15,9 @@ import type {
 } from '../Types/ReactDevToolsTypes';
 import type {Props} from './AppContainer';
 
-import TraceUpdateOverlay from '../Components/TraceUpdateOverlay/TraceUpdateOverlay';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import View from '../Components/View/View';
+import DebuggingOverlay from '../Debugging/DebuggingOverlay';
 import useSubscribeToDebuggingOverlayRegistry from '../Debugging/useSubscribeToDebuggingOverlayRegistry';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
@@ -76,7 +76,12 @@ const AppContainer = ({
 }: Props): React.Node => {
   const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
   const innerViewRef: InspectedViewRef = React.useRef(null);
-  useSubscribeToDebuggingOverlayRegistry(appContainerRootViewRef);
+  const debuggingOverlayRef: DebuggingOverlayRef = React.useRef(null);
+
+  useSubscribeToDebuggingOverlayRegistry(
+    appContainerRootViewRef,
+    debuggingOverlayRef,
+  );
 
   const [key, setKey] = useState(0);
   const [shouldRenderInspector, setShouldRenderInspector] = useState(false);
@@ -147,9 +152,8 @@ const AppContainer = ({
         pointerEvents="box-none">
         {innerView}
 
-        {reactDevToolsAgent != null && (
-          <TraceUpdateOverlay reactDevToolsAgent={reactDevToolsAgent} />
-        )}
+        <DebuggingOverlay ref={debuggingOverlayRef} />
+
         {reactDevToolsAgent != null && (
           <ReactDevToolsOverlay
             inspectedViewRef={innerViewRef}
@@ -181,4 +185,8 @@ export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
 export type InspectedViewRef = React.RefObject<React.ElementRef<
   typeof View,
 > | null>;
+export type DebuggingOverlayRef = React.RefObject<React.ElementRef<
+  typeof DebuggingOverlay,
+> | null>;
+
 export default AppContainer;

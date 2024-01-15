@@ -3758,14 +3758,6 @@ declare module.exports: Touchable;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/TraceUpdateOverlay/TraceUpdateOverlay.js 1`] = `
-"type Props = {
-  reactDevToolsAgent: ReactDevToolsAgent,
-};
-declare export default function TraceUpdateOverlay(Props): React.Node;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Components/UnimplementedViews/UnimplementedNativeViewNativeComponent.js 1`] = `
 "type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -4757,6 +4749,19 @@ declare export function createNodeList<T>(
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
+"type DebuggingOverlayHandle = {
+  highlightTraceUpdates(updates: Overlay[]): void,
+};
+declare const DebuggingOverlayWithForwardedRef: React.AbstractComponent<
+  {},
+  DebuggingOverlayHandle,
+  React.Node,
+>;
+declare export default typeof DebuggingOverlayWithForwardedRef;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlayNativeComponent.js 1`] = `
 "type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -4780,8 +4785,10 @@ declare export default HostComponent<NativeProps>;
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlayRegistry.js 1`] = `
 "export type DebuggingOverlayRegistrySubscriberProtocol = {
   rootViewRef: AppContainerRootViewRef,
+  debuggingOverlayRef: DebuggingOverlayRef,
 };
 declare class DebuggingOverlayRegistry {
+  constructor(): void;
   subscribe(subscriber: DebuggingOverlayRegistrySubscriberProtocol): void;
   unsubscribe(subscriber: DebuggingOverlayRegistrySubscriberProtocol): void;
 }
@@ -4792,7 +4799,8 @@ declare export default typeof debuggingOverlayRegistryInstance;
 
 exports[`public API should not change unintentionally Libraries/Debugging/useSubscribeToDebuggingOverlayRegistry.js 1`] = `
 "declare const useSubscribeToDebuggingOverlayRegistry: (
-  rootViewRef: AppContainerRootViewRef
+  rootViewRef: AppContainerRootViewRef,
+  debuggingOverlayRef: DebuggingOverlayRef
 ) => void;
 declare export default typeof useSubscribeToDebuggingOverlayRegistry;
 "
@@ -7545,6 +7553,9 @@ export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
 > | null>;
 export type InspectedViewRef = React.RefObject<React.ElementRef<
   typeof View,
+> | null>;
+export type DebuggingOverlayRef = React.RefObject<React.ElementRef<
+  typeof DebuggingOverlay,
 > | null>;
 declare export default typeof AppContainer;
 "
