@@ -13,54 +13,42 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 import androidx.annotation.UiThread;
-import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.bridge.UiThreadUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DebuggingOverlay extends View {
 
-  private final Paint mOverlayPaint = new Paint();
-  private List<Overlay> mOverlays = new ArrayList<Overlay>();
+  private final Paint mTraceUpdatePaint = new Paint();
+  private HashMap<Integer, TraceUpdate> mTraceUpdatesToDisplayMap = new HashMap();
+  private HashMap<Integer, Runnable> mTraceUpdateIdToCleanupRunnableMap = new HashMap();
 
   private final Paint mHighlightedElementsPaint = new Paint();
   private List<RectF> mHighlightedElementsRectangles = new ArrayList<>();
 
-  public static class Overlay {
-
-    private final int mColor;
-    private final RectF mRect;
-
-    public Overlay(int color, RectF rect) {
-      mColor = color;
-      mRect = rect;
-    }
-
-    public int getColor() {
-      return mColor;
-    }
-
-    public RectF getPixelRect() {
-      return new RectF(
-          PixelUtil.toPixelFromDIP(mRect.left),
-          PixelUtil.toPixelFromDIP(mRect.top),
-          PixelUtil.toPixelFromDIP(mRect.right),
-          PixelUtil.toPixelFromDIP(mRect.bottom));
-    }
-  }
-
   public DebuggingOverlay(Context context) {
     super(context);
 
-    mOverlayPaint.setStyle(Paint.Style.STROKE);
-    mOverlayPaint.setStrokeWidth(6);
+    mTraceUpdatePaint.setStyle(Paint.Style.STROKE);
+    mTraceUpdatePaint.setStrokeWidth(6);
 
     mHighlightedElementsPaint.setStyle(Paint.Style.FILL);
     mHighlightedElementsPaint.setColor(0xCCC8E6FF);
   }
 
   @UiThread
-  public void setOverlays(List<Overlay> overlays) {
-    mOverlays = overlays;
+  public void setTraceUpdates(List<TraceUpdate> traceUpdates) {
+    for (TraceUpdate traceUpdate : traceUpdates) {
+      int traceUpdateId = traceUpdate.getId();
+      if (mTraceUpdateIdToCleanupRunnableMap.containsKey(traceUpdateId)) {
+        UiThreadUtil.removeOnUiThread(mTraceUpdateIdToCleanupRunnableMap.get(traceUpdateId));
+        mTraceUpdateIdToCleanupRunnableMap.remove(traceUpdateId);
+      }
+
+      mTraceUpdatesToDisplayMap.put(traceUpdateId, traceUpdate);
+    }
+
     invalidate();
   }
 
@@ -81,9 +69,23 @@ public class DebuggingOverlay extends View {
     super.onDraw(canvas);
 
     // Draw border outside of the given overlays to be aligned with web trace highlights
-    for (Overlay overlay : mOverlays) {
-      mOverlayPaint.setColor(overlay.getColor());
-      canvas.drawRect(overlay.getPixelRect(), mOverlayPaint);
+    for (TraceUpdate traceUpdate : mTraceUpdatesToDisplayMap.values()) {
+      mTraceUpdatePaint.setColor(traceUpdate.getColor());
+      canvas.drawRect(traceUpdate.getRectangle(), mTraceUpdatePaint);
+
+      int traceUpdateId = traceUpdate.getId();
+      Runnable block =
+          () -> {
+            mTraceUpdatesToDisplayMap.remove(traceUpdateId);
+            mTraceUpdateIdToCleanupRunnableMap.remove(traceUpdateId);
+
+            invalidate();
+          };
+
+      if (!mTraceUpdateIdToCleanupRunnableMap.containsKey(traceUpdateId)) {
+        mTraceUpdateIdToCleanupRunnableMap.put(traceUpdateId, block);
+        UiThreadUtil.runOnUiThread(block, 2000);
+      }
     }
 
     for (RectF elementRectangle : mHighlightedElementsRectangles) {

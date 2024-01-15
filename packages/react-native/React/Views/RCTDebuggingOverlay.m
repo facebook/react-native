@@ -11,55 +11,99 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-@implementation RCTDebuggingOverlay {
-  NSMutableArray<UIView *> *_highlightedElements;
-  NSMutableArray<UIView *> *_highlightedTraceUpdates;
+@implementation TraceUpdateTuple
+
+- (instancetype)initWithView:(UIView *)view cleanupBlock:(dispatch_block_t)cleanupBlock
+{
+  if (self = [super init]) {
+    _view = view;
+    _cleanupBlock = cleanupBlock;
+  }
+
+  return self;
 }
 
-- (void)draw:(NSString *)serializedNodes
-{
-  [self clearTraceUpdatesViews];
+@end
 
+@implementation RCTDebuggingOverlay {
+  NSMutableArray<UIView *> *_highlightedElements;
+  NSMutableDictionary<NSNumber *, TraceUpdateTuple *> *_idToTraceUpdateMap;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    _idToTraceUpdateMap = [NSMutableDictionary new];
+  }
+  return self;
+}
+
+- (void)highlightTraceUpdates:(NSString *)serializedUpdates
+{
   NSError *error = nil;
-  id deserializedNodes = RCTJSONParse(serializedNodes, &error);
+  id deserializedUpdates = RCTJSONParse(serializedUpdates, &error);
 
   if (error) {
-    RCTLogError(@"Failed to parse serialized nodes passed to RCTDebuggingOverlay");
+    RCTLogError(@"Failed to parse serialized updates passed to RCTDebuggingOverlay");
     return;
   }
 
-  if (![deserializedNodes isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Expected to receive nodes as an array, got %@", NSStringFromClass([deserializedNodes class]));
+  if (![deserializedUpdates isKindOfClass:[NSArray class]]) {
+    RCTLogError(@"Expected to receive updates as an array, got %@", NSStringFromClass([deserializedUpdates class]));
     return;
   }
 
-  _highlightedTraceUpdates = [NSMutableArray new];
-  for (NSDictionary *node in deserializedNodes) {
-    NSDictionary *nodeRectangle = node[@"rect"];
-    NSNumber *nodeColor = node[@"color"];
+  for (NSDictionary *update in deserializedUpdates) {
+    NSNumber *identifier = [RCTConvert NSNumber:update[@"id"]];
+    NSDictionary *nodeRectangle = update[@"rectangle"];
+    UIColor *nodeColor = [RCTConvert UIColor:update[@"color"]];
 
     CGRect rect = [RCTConvert CGRect:nodeRectangle];
+
+    TraceUpdateTuple *possiblyRegisteredTraceUpdateTuple = [_idToTraceUpdateMap objectForKey:identifier];
+    if (possiblyRegisteredTraceUpdateTuple != nil) {
+      dispatch_block_t cleanupBlock = [possiblyRegisteredTraceUpdateTuple cleanupBlock];
+      UIView *view = [possiblyRegisteredTraceUpdateTuple view];
+
+      dispatch_block_cancel(cleanupBlock);
+
+      view.frame = rect;
+      view.layer.borderColor = nodeColor.CGColor;
+
+      dispatch_block_t newCleanupBlock = dispatch_block_create(0, ^{
+        [self->_idToTraceUpdateMap removeObjectForKey:identifier];
+        [view removeFromSuperview];
+      });
+
+      [_idToTraceUpdateMap setObject:[[TraceUpdateTuple alloc] initWithView:view cleanupBlock:newCleanupBlock]
+                              forKey:identifier];
+
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), newCleanupBlock);
+
+      continue;
+    }
 
     UIView *box = [[UIView alloc] initWithFrame:rect];
     box.backgroundColor = [UIColor clearColor];
 
     box.layer.borderWidth = 2.0f;
-    box.layer.borderColor = [RCTConvert UIColor:nodeColor].CGColor;
+    box.layer.borderColor = nodeColor.CGColor;
 
+    dispatch_block_t unmountViewAndPerformCleanup = dispatch_block_create(0, ^{
+      [self->_idToTraceUpdateMap removeObjectForKey:identifier];
+      [box removeFromSuperview];
+    });
+
+    TraceUpdateTuple *traceUpdateTuple = [[TraceUpdateTuple alloc] initWithView:box
+                                                                   cleanupBlock:unmountViewAndPerformCleanup];
+
+    [_idToTraceUpdateMap setObject:traceUpdateTuple forKey:identifier];
     [self addSubview:box];
-    [_highlightedTraceUpdates addObject:box];
-  }
-}
 
-- (void)clearTraceUpdatesViews
-{
-  if (_highlightedTraceUpdates != nil) {
-    for (UIView *v in _highlightedTraceUpdates) {
-      [v removeFromSuperview];
-    }
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), unmountViewAndPerformCleanup);
   }
-
-  _highlightedTraceUpdates = nil;
 }
 
 - (void)highlightElements:(NSString *)serializedElements

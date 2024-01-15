@@ -17,7 +17,6 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.views.debuggingoverlay.DebuggingOverlay.Overlay;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 
 @ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
 public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay> {
+
   public static final String REACT_CLASS = "DebuggingOverlay";
 
   public DebuggingOverlayManager() {}
@@ -34,33 +34,43 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
   public void receiveCommand(
       DebuggingOverlay view, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
-      case "draw":
+      case "highlightTraceUpdates":
         if (args == null) {
           break;
         }
 
-        String overlaysStr = args.getString(0);
-        if (overlaysStr == null) {
+        String serializedTraceUpdates = args.getString(0);
+        if (serializedTraceUpdates == null) {
           return;
         }
 
         try {
-          JSONArray overlaysArr = new JSONArray(overlaysStr);
-          List<Overlay> overlays = new ArrayList<>();
-          for (int i = 0; i < overlaysArr.length(); i++) {
-            JSONObject overlay = overlaysArr.getJSONObject(i);
-            JSONObject rectObj = overlay.getJSONObject("rect");
-            float left = (float) rectObj.getDouble("x");
-            float top = (float) rectObj.getDouble("y");
-            float right = (float) (left + rectObj.getDouble("width"));
-            float bottom = (float) (top + rectObj.getDouble("height"));
-            RectF rect = new RectF(left, top, right, bottom);
-            overlays.add(new Overlay(overlay.getInt("color"), rect));
+          JSONArray traceUpdates = new JSONArray(serializedTraceUpdates);
+          List<TraceUpdate> deserializedTraceUpdates = new ArrayList<>();
+          for (int i = 0; i < traceUpdates.length(); i++) {
+            JSONObject traceUpdate = traceUpdates.getJSONObject(i);
+
+            int id = traceUpdate.getInt("id");
+            JSONObject serializedRectangle = traceUpdate.getJSONObject("rectangle");
+            int color = traceUpdate.getInt("color");
+
+            float left = (float) serializedRectangle.getDouble("x");
+            float top = (float) serializedRectangle.getDouble("y");
+            float right = (float) (left + serializedRectangle.getDouble("width"));
+            float bottom = (float) (top + serializedRectangle.getDouble("height"));
+            RectF rectangle =
+                new RectF(
+                    PixelUtil.toPixelFromDIP(left),
+                    PixelUtil.toPixelFromDIP(top),
+                    PixelUtil.toPixelFromDIP(right),
+                    PixelUtil.toPixelFromDIP(bottom));
+
+            deserializedTraceUpdates.add(new TraceUpdate(id, rectangle, color));
           }
 
-          view.setOverlays(overlays);
+          view.setTraceUpdates(deserializedTraceUpdates);
         } catch (JSONException e) {
-          FLog.e(REACT_CLASS, "Failed to parse overlays: ", e);
+          FLog.e(REACT_CLASS, "Failed to parse highlightTraceUpdates payload: ", e);
         }
         break;
 
