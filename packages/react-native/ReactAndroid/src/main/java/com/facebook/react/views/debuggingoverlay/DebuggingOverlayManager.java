@@ -9,19 +9,18 @@ package com.facebook.react.views.debuggingoverlay;
 
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 @ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
 public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay> {
@@ -35,80 +34,106 @@ public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay>
       DebuggingOverlay view, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "highlightTraceUpdates":
-        if (args == null) {
+        {
+          if (args == null) {
+            break;
+          }
+
+          ReadableArray providedTraceUpdates = args.getArray(0);
+          List<TraceUpdate> formattedTraceUpdates = new ArrayList<>();
+
+          boolean successfullyParsedPayload = true;
+          for (int i = 0; i < providedTraceUpdates.size(); i++) {
+            ReadableMap traceUpdate = providedTraceUpdates.getMap(i);
+            ReadableMap serializedRectangle = traceUpdate.getMap("rectangle");
+            if (serializedRectangle == null) {
+              ReactSoftExceptionLogger.logSoftException(
+                  REACT_CLASS,
+                  new ReactNoCrashSoftException(
+                      "Unexpected payload for highlighting trace updates: rectangle field is null"));
+
+              successfullyParsedPayload = false;
+              break;
+            }
+
+            int id = traceUpdate.getInt("id");
+            int color = traceUpdate.getInt("color");
+
+            try {
+              float left = (float) serializedRectangle.getDouble("x");
+              float top = (float) serializedRectangle.getDouble("y");
+              float right = (float) (left + serializedRectangle.getDouble("width"));
+              float bottom = (float) (top + serializedRectangle.getDouble("height"));
+
+              RectF rectangle =
+                  new RectF(
+                      PixelUtil.toPixelFromDIP(left),
+                      PixelUtil.toPixelFromDIP(top),
+                      PixelUtil.toPixelFromDIP(right),
+                      PixelUtil.toPixelFromDIP(bottom));
+
+              formattedTraceUpdates.add(new TraceUpdate(id, rectangle, color));
+            } catch (NoSuchKeyException | UnexpectedNativeTypeException e) {
+              ReactSoftExceptionLogger.logSoftException(
+                  REACT_CLASS,
+                  new ReactNoCrashSoftException(
+                      "Unexpected payload for highlighting trace updates: rectangle field should have x, y, width, height fields"));
+
+              successfullyParsedPayload = false;
+              break;
+            }
+          }
+
+          if (successfullyParsedPayload) {
+            view.setTraceUpdates(formattedTraceUpdates);
+          }
+
           break;
         }
 
-        String serializedTraceUpdates = args.getString(0);
-        if (serializedTraceUpdates == null) {
-          return;
-        }
-
-        try {
-          JSONArray traceUpdates = new JSONArray(serializedTraceUpdates);
-          List<TraceUpdate> deserializedTraceUpdates = new ArrayList<>();
-          for (int i = 0; i < traceUpdates.length(); i++) {
-            JSONObject traceUpdate = traceUpdates.getJSONObject(i);
-
-            int id = traceUpdate.getInt("id");
-            JSONObject serializedRectangle = traceUpdate.getJSONObject("rectangle");
-            int color = traceUpdate.getInt("color");
-
-            float left = (float) serializedRectangle.getDouble("x");
-            float top = (float) serializedRectangle.getDouble("y");
-            float right = (float) (left + serializedRectangle.getDouble("width"));
-            float bottom = (float) (top + serializedRectangle.getDouble("height"));
-            RectF rectangle =
-                new RectF(
-                    PixelUtil.toPixelFromDIP(left),
-                    PixelUtil.toPixelFromDIP(top),
-                    PixelUtil.toPixelFromDIP(right),
-                    PixelUtil.toPixelFromDIP(bottom));
-
-            deserializedTraceUpdates.add(new TraceUpdate(id, rectangle, color));
-          }
-
-          view.setTraceUpdates(deserializedTraceUpdates);
-        } catch (JSONException e) {
-          FLog.e(REACT_CLASS, "Failed to parse highlightTraceUpdates payload: ", e);
-        }
-        break;
-
       case "highlightElements":
-        if (args == null) {
-          return;
-        }
-
-        String serializedElements = args.getString(0);
-        if (serializedElements == null) {
-          return;
-        }
-
-        try {
-          JSONArray deserializedElements = new JSONArray(serializedElements);
-          List<RectF> elementsRectangles = new ArrayList<>();
-          for (int i = 0; i < deserializedElements.length(); i++) {
-            JSONObject element = deserializedElements.getJSONObject(i);
-
-            float left = (float) element.getDouble("x");
-            float top = (float) element.getDouble("y");
-            float right = (float) (left + element.getDouble("width"));
-            float bottom = (float) (top + element.getDouble("height"));
-            RectF rect =
-                new RectF(
-                    PixelUtil.toPixelFromDIP(left),
-                    PixelUtil.toPixelFromDIP(top),
-                    PixelUtil.toPixelFromDIP(right),
-                    PixelUtil.toPixelFromDIP(bottom));
-
-            elementsRectangles.add(rect);
+        {
+          if (args == null) {
+            return;
           }
 
-          view.setHighlightedElementsRectangles(elementsRectangles);
-        } catch (JSONException e) {
-          FLog.e(REACT_CLASS, "Failed to parse highlightElements payload: ", e);
+          ReadableArray providedElements = args.getArray(0);
+          List<RectF> elementsRectangles = new ArrayList<>();
+
+          boolean successfullyParsedPayload = true;
+          for (int i = 0; i < providedElements.size(); i++) {
+            ReadableMap element = providedElements.getMap(i);
+
+            try {
+              float left = (float) element.getDouble("x");
+              float top = (float) element.getDouble("y");
+              float right = (float) (left + element.getDouble("width"));
+              float bottom = (float) (top + element.getDouble("height"));
+              RectF rect =
+                  new RectF(
+                      PixelUtil.toPixelFromDIP(left),
+                      PixelUtil.toPixelFromDIP(top),
+                      PixelUtil.toPixelFromDIP(right),
+                      PixelUtil.toPixelFromDIP(bottom));
+
+              elementsRectangles.add(rect);
+            } catch (NoSuchKeyException | UnexpectedNativeTypeException e) {
+              ReactSoftExceptionLogger.logSoftException(
+                  REACT_CLASS,
+                  new ReactNoCrashSoftException(
+                      "Unexpected payload for highlighting elements: every element should have x, y, width, height fields"));
+
+              successfullyParsedPayload = false;
+              break;
+            }
+          }
+
+          if (successfullyParsedPayload) {
+            view.setHighlightedElementsRectangles(elementsRectangles);
+          }
+
+          break;
         }
-        break;
 
       case "clearElementsHighlights":
         view.clearElementsHighlights();

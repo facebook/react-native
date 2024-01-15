@@ -20,8 +20,8 @@
 
 @interface RCTDebuggingOverlay : RCTView
 
-- (void)highlightTraceUpdates:(NSString *)serializedUpdates;
-- (void)highlightElements:(NSString *)serializedElements;
+- (void)highlightTraceUpdates:(NSArray *)updates;
+- (void)highlightElements:(NSArray *)rectangles;
 - (void)clearElementsHighlights;
 
 @end

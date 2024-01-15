@@ -50,7 +50,7 @@ function DebuggingOverlay(
         if (nativeComponentRef.current != null) {
           Commands.highlightTraceUpdates(
             nativeComponentRef.current,
-            JSON.stringify(nonEmptyRectangles),
+            nonEmptyRectangles,
           );
         }
       },
@@ -60,10 +60,7 @@ function DebuggingOverlay(
         }
 
         if (nativeComponentRef.current != null) {
-          Commands.highlightElements(
-            nativeComponentRef.current,
-            JSON.stringify(elements),
-          );
+          Commands.highlightElements(nativeComponentRef.current, elements);
         }
       },
       clearElementsHighlight() {

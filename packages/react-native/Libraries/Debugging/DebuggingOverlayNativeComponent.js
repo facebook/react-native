@@ -37,14 +37,11 @@ export type ElementRectangle = {
 interface NativeCommands {
   +highlightTraceUpdates: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    // TODO(T144046177): Ideally we can pass array of Overlay, but currently
-    // Array type is not supported in RN codegen for building native commands.
-    updates: string,
+    updates: $ReadOnlyArray<TraceUpdate>,
   ) => void;
   +highlightElements: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    // TODO(T144046177): Codegen doesn't support array type for native commands yet.
-    elements: string,
+    elements: $ReadOnlyArray<ElementRectangle>,
   ) => void;
   +clearElementsHighlights: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,

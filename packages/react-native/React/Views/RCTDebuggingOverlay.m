@@ -39,22 +39,9 @@
   return self;
 }
 
-- (void)highlightTraceUpdates:(NSString *)serializedUpdates
+- (void)highlightTraceUpdates:(NSArray *)updates
 {
-  NSError *error = nil;
-  id deserializedUpdates = RCTJSONParse(serializedUpdates, &error);
-
-  if (error) {
-    RCTLogError(@"Failed to parse serialized updates passed to RCTDebuggingOverlay");
-    return;
-  }
-
-  if (![deserializedUpdates isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Expected to receive updates as an array, got %@", NSStringFromClass([deserializedUpdates class]));
-    return;
-  }
-
-  for (NSDictionary *update in deserializedUpdates) {
+  for (NSDictionary *update in updates) {
     NSNumber *identifier = [RCTConvert NSNumber:update[@"id"]];
     NSDictionary *nodeRectangle = update[@"rectangle"];
     UIColor *nodeColor = [RCTConvert UIColor:update[@"color"]];
@@ -106,27 +93,13 @@
   }
 }
 
-- (void)highlightElements:(NSString *)serializedElements
+- (void)highlightElements:(NSArray *)rectangles
 {
-  NSError *error = nil;
-  id deserializedRectangles = RCTJSONParse(serializedElements, &error);
-
-  if (error) {
-    RCTLogError(@"Failed to parse serialized elements passed to RCTDebuggingOverlay");
-    return;
-  }
-
-  if (![deserializedRectangles isKindOfClass:[NSArray class]]) {
-    RCTLogError(
-        @"Expected to receive rectangles as an array, got %@", NSStringFromClass([deserializedRectangles class]));
-    return;
-  }
-
   if (_highlightedElements == nil) {
     _highlightedElements = [NSMutableArray new];
   }
 
-  for (NSDictionary *rectangle in deserializedRectangles) {
+  for (NSDictionary *rectangle in rectangles) {
     UIView *view = [[UIView alloc] initWithFrame:[RCTConvert CGRect:rectangle]];
     view.backgroundColor = [UIColor colorWithRed:200 / 255.0 green:230 / 255.0 blue:255 / 255.0 alpha:0.8];
 
