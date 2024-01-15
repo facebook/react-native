@@ -88,7 +88,10 @@ try {
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
   describe('Build and publish packages');
-  exec('node ./scripts/build/build.js', {cwd: ROOT});
+  if (exec('node ./scripts/build/build.js', {cwd: ROOT}).code) {
+    exitCode = 1;
+    throw Error(exitCode);
+  }
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {
