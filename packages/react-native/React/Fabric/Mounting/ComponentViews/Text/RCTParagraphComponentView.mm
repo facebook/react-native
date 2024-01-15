@@ -236,25 +236,21 @@ using namespace facebook::react;
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-  if (@available(iOS 16.0, *)) {
+  if (@available(iOS 16.0, macCatalyst 16.0, *)) {
     CGPoint location = [gesture locationInView:self];
     UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
     if (_editMenuInteraction) {
       [_editMenuInteraction presentEditMenuWithConfiguration:config];
     }
-    return;
-  }
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  } else {
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
-  }
+    if (menuController.isMenuVisible) {
+      return;
+    }
 
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
+    [menuController showMenuFromView:self rect:self.bounds];
   }
-
-  [menuController showMenuFromView:self rect:self.bounds];
 }
 
 - (BOOL)canBecomeFirstResponder

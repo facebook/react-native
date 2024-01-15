@@ -246,19 +246,15 @@
     if (_editMenuInteraction) {
       [_editMenuInteraction presentEditMenuWithConfiguration:config];
     }
-    return;
-  }
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
+  } else {
+    UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    return;
-  }
+    if (menuController.isMenuVisible) {
+      return;
+    }
 
-  if (!self.isFirstResponder) {
-    [self becomeFirstResponder];
+    [menuController showMenuFromView:self rect:self.bounds];
   }
-
-  [menuController showMenuFromView:self rect:self.bounds];
 }
 
 - (BOOL)canBecomeFirstResponder
