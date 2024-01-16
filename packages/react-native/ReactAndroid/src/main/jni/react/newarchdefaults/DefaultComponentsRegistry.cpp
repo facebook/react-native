@@ -8,6 +8,7 @@
 #include "DefaultComponentsRegistry.h"
 
 #include <CoreComponentsRegistry.h>
+#include <fb/assert.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
@@ -23,6 +24,10 @@ DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory* delegate)
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
 DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
+
+  FBASSERTMSGF(
+      DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint,
+      "'registerComponentDescriptorsFromEntryPoint' was not initialized in 'JNI_OnLoad'");
 
   (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
       providerRegistry);
