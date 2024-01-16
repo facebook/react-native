@@ -77,7 +77,7 @@ function ModalPresentation() {
     setCurrentOrientation(event.nativeEvent.orientation);
 
   const onDismissInternal = () => {
-    if (props.interactiveDismissal) {
+    if (Boolean(props.interactiveDismissal)) {
       setProps(prev => ({...prev, visible: false}));
     }
 
