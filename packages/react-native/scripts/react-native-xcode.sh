@@ -14,6 +14,8 @@ DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
 if [[ ! "$SKIP_BUNDLING_METRO_IP" && "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
+(
+  set +e
   for num in 0 1 2 3 4 5 6 7 8; do
     IP=$(ipconfig getifaddr en${num} || echo "")
     if [ ! -z "$IP" ]; then
@@ -25,6 +27,7 @@ if [[ ! "$SKIP_BUNDLING_METRO_IP" && "$CONFIGURATION" = *Debug* && ! "$PLATFORM_
   fi
 
   echo "$IP" > "$DEST/ip.txt"
+)
 fi
 
 if [[ "$SKIP_BUNDLING" ]]; then
