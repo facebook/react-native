@@ -6488,6 +6488,7 @@ type NativeProps = $ReadOnly<{|
     \\"portrait\\",
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  interactiveDismissal?: WithDefault<boolean, false>,
   identifier?: WithDefault<Int32, 0>,
 |}>;
 declare export default HostComponent<NativeProps>;
