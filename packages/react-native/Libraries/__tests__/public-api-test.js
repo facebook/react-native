@@ -23,6 +23,8 @@ const JS_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
 const IGNORE_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
   '**/*.fb.js',
+  '**/*.macos.js',
+  '**/*.windows.js',
 ];
 
 // Exclude list for files that fail to parse under flow-api-translator. Please
