@@ -102,7 +102,7 @@ export interface FlexStyle {
   paddingStart?: DimensionValue | undefined;
   paddingTop?: DimensionValue | undefined;
   paddingVertical?: DimensionValue | undefined;
-  position?: 'absolute' | 'relative' | undefined;
+  position?: 'absolute' | 'relative' | 'static' | undefined;
   right?: DimensionValue | undefined;
   start?: DimensionValue | undefined;
   top?: DimensionValue | undefined;
