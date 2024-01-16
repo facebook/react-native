@@ -78,13 +78,13 @@ function ModalPresentation() {
 
   const onDismissInternal = () => {
     if (props.interactiveDismissal) {
-      setProps(props => ({ ...props, visible: false }));
+      setProps(props => ({...props, visible: false}));
     }
 
     if (props.onDismiss) {
       props.onDismiss();
     }
-  }
+  };
 
   const controls = (
     <>
@@ -168,8 +168,8 @@ function ModalPresentation() {
               }
             />
           </View>
-          {!['pageSheet', 'formSheet'].includes(presentationStyle)
-            || props.animationType !== 'slide' ? (
+          {!['pageSheet', 'formSheet'].includes(presentationStyle) ||
+          props.animationType !== 'slide' ? (
             <Text style={styles.warning}>
               Modal can only be dismissed interactively whilst using 'pageSheet'
               or 'formSheet' Presentation Style, and 'slide' Animation Type
