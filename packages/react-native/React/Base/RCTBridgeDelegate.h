@@ -18,7 +18,7 @@
  * When running from a locally bundled JS file, this should be a `file://` url
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  */
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
+- (NSURL *__nullable)sourceURLForBridge:(RCTBridge *)bridge;
 
 @optional
 
