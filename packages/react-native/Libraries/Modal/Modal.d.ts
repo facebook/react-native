@@ -46,7 +46,7 @@ export interface ModalBaseProps {
   /**
    * Allows the modal to be dismissed by an interactive gesture
    */
-  interactiveDismissal?: boolean;
+  interactiveDismissal?: boolean | undefined;
 }
 
 export interface ModalPropsIOS {

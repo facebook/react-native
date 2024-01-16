@@ -78,7 +78,7 @@ function ModalPresentation() {
 
   const onDismissInternal = () => {
     if (props.interactiveDismissal) {
-      setProps(props => ({...props, visible: false}));
+      setProps(prev => ({...prev, visible: false}));
     }
 
     if (props.onDismiss) {
