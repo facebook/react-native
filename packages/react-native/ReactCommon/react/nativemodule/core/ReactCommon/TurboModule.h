@@ -73,13 +73,22 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   const std::string name_;
   std::shared_ptr<CallInvoker> jsInvoker_;
 
+  using MethodInvoker = facebook::jsi::Value (*)(
+      facebook::jsi::Runtime&,
+      TurboModule&,
+      const facebook::jsi::Value*,
+      size_t);
+
+  using ModernMethodInvoker = std::function<facebook::jsi::Value(
+      facebook::jsi::Runtime& rt,
+      TurboModule& turboModule,
+      const facebook::jsi::Value* args,
+      size_t count)>;
+
   struct MethodMetadata {
     size_t argCount;
-    facebook::jsi::Value (*invoker)(
-        facebook::jsi::Runtime& rt,
-        TurboModule& turboModule,
-        const facebook::jsi::Value* args,
-        size_t count);
+    MethodInvoker invoker;
+    ModernMethodInvoker modernInvoker = nullptr;
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
 
@@ -121,7 +130,10 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
               jsi::Runtime& rt,
               [[maybe_unused]] const jsi::Value& thisVal,
               const jsi::Value* args,
-              size_t count) { return meta.invoker(rt, *this, args, count); });
+              size_t count) {
+            return meta.invoker ? meta.invoker(rt, *this, args, count)
+                                : meta.modernInvoker(rt, *this, args, count);
+          });
     }
   }
 
