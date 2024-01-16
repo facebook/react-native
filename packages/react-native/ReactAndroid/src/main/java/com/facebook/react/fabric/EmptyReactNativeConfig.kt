@@ -10,17 +10,20 @@ import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStripAny
 
 /**
- * An empty [ReactNativeConfig] that is backed by the C++ implementation where the defaults
- * are stored.
+ * An empty [ReactNativeConfig] that is backed by the C++ implementation where the defaults are
+ * stored.
  */
 @DoNotStripAny
 class EmptyReactNativeConfig : ReactNativeConfig {
-    private val mHybridData: HybridData = initHybrid()
+  private val mHybridData: HybridData = initHybrid()
 
-    private external fun initHybrid(): HybridData
+  private external fun initHybrid(): HybridData
 
-    external override fun getBool(param: String): Boolean
-    external override fun getInt64(param: String): Long
-    external override fun getString(param: String): String
-    external override fun getDouble(param: String): Double
+  external override fun getBool(param: String): Boolean
+
+  external override fun getInt64(param: String): Long
+
+  external override fun getString(param: String): String
+
+  external override fun getDouble(param: String): Double
 }
