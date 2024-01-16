@@ -462,7 +462,9 @@ void layoutAbsoluteDescendants(
     uint32_t currentDepth,
     uint32_t generationCount,
     float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock) {
+    float currentNodeCrossOffsetFromContainingBlock,
+    float containingNodeAvailableInnerWidth,
+    float containingNodeAvailableInnerHeight) {
   const FlexDirection mainAxis = resolveDirection(
       currentNode->getStyle().flexDirection(), currentNodeDirection);
   const FlexDirection crossAxis =
@@ -471,14 +473,23 @@ void layoutAbsoluteDescendants(
     if (child->getStyle().display() == Display::None) {
       continue;
     } else if (child->getStyle().positionType() == PositionType::Absolute) {
+      const bool absoluteErrata =
+          currentNode->hasErrata(Errata::AbsolutePercentAgainstInnerSize);
+      const float containingBlockWidth = absoluteErrata
+          ? containingNodeAvailableInnerWidth
+          : containingNode->getLayout().measuredDimension(Dimension::Width) -
+              containingNode->getBorderForAxis(FlexDirection::Row);
+      const float containingBlockHeight = absoluteErrata
+          ? containingNodeAvailableInnerHeight
+          : containingNode->getLayout().measuredDimension(Dimension::Height) -
+              containingNode->getBorderForAxis(FlexDirection::Column);
+
       layoutAbsoluteChild(
           containingNode,
           currentNode,
           child,
-          containingNode->getLayout().measuredDimension(Dimension::Width) -
-              containingNode->getBorderForAxis(FlexDirection::Row),
-          containingNode->getLayout().measuredDimension(Dimension::Height) -
-              containingNode->getBorderForAxis(FlexDirection::Column),
+          containingBlockWidth,
+          containingBlockHeight,
           widthSizingMode,
           currentNodeDirection,
           layoutMarkerData,
@@ -534,7 +545,9 @@ void layoutAbsoluteDescendants(
           currentDepth + 1,
           generationCount,
           childMainOffsetFromContainingBlock,
-          childCrossOffsetFromContainingBlock);
+          childCrossOffsetFromContainingBlock,
+          containingNodeAvailableInnerWidth,
+          containingNodeAvailableInnerHeight);
     }
   }
 }
