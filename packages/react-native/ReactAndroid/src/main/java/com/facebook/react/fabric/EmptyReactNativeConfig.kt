@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.fabric
 
 import com.facebook.jni.HybridData
@@ -26,4 +27,10 @@ class EmptyReactNativeConfig : ReactNativeConfig {
   external override fun getString(param: String): String
 
   external override fun getDouble(param: String): Double
+
+  companion object {
+    init {
+      FabricSoLoader.staticInit()
+    }
+  }
 }
