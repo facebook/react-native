@@ -43,6 +43,10 @@ export interface ModalBaseProps {
    * The `onShow` prop allows passing a function that will be called once the modal has been shown.
    */
   onShow?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
+  /**
+   * Allows the modal to be dismissed by an interactive gesture
+   */
+  interactiveDismissal?: boolean;
 }
 
 export interface ModalPropsIOS {

@@ -157,6 +157,11 @@ export type Props = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#onorientationchange
    */
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+
+  /**
+   * Allows the modal to be dismissed by an interactive gesture
+   */
+  interactiveDismissal?: boolean,
 |}>;
 
 function confirmProps(props: Props) {
@@ -265,6 +270,7 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}
+        interactiveDismissal={this.props.interactiveDismissal}
         testID={this.props.testID}>
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
