@@ -16,23 +16,6 @@ const {
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
-const path = require('path'); // [macOS]
-const fs = require('fs'); // [macOS]
-
-// [macOS] Function to get our version from package.json instead of the CircleCI build tag.
-function getPkgJsonVersion() {
-  const RN_PACKAGE_DIRECTORY = path.resolve(
-    __dirname,
-    '..',
-    'packages',
-    'react-native',
-  );
-  const pkgJsonPath = path.resolve(RN_PACKAGE_DIRECTORY, 'package.json');
-  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-  const pkgJsonVersion = pkgJson.version;
-  return pkgJsonVersion;
-}
-// macOS]
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
@@ -65,7 +48,7 @@ function getNpmInfo(buildType) {
   }
 
   const {version, major, minor, prerelease} = parseVersion(
-    getPkgJsonVersion(), // [macOS] We can't use the CircleCI build tag, so we use the version argument instead.
+    process.env.CIRCLE_TAG,
     buildType,
   );
 
