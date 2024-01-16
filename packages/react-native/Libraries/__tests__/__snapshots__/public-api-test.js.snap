@@ -9910,6 +9910,7 @@ type IOSPlatform = {
   |},
   get isPad(): boolean,
   get isTV(): boolean,
+  get isVision(): boolean,
   get isTesting(): boolean,
   get isDisableAnimations(): boolean,
   get isMacCatalyst(): boolean,
