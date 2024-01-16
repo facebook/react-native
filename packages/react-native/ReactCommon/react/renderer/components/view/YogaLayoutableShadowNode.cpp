@@ -991,7 +991,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -1009,7 +1009,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of
