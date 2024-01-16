@@ -11,9 +11,10 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticComponentDescriptor.h>
+#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-
 #include <utility>
 
 namespace facebook::react {
@@ -82,12 +83,11 @@ const ComponentDescriptor& ComponentDescriptorRegistry::at(
   }
 
   if (it == _registryByName.end()) {
-    if (_fallbackComponentDescriptor == nullptr) {
-      throw std::invalid_argument(
-          ("Unable to find componentDescriptor for " + unifiedComponentName)
-              .c_str());
-    }
-    return *_fallbackComponentDescriptor.get();
+    auto componentDescriptor = std::make_shared<
+        const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
+        parameters_, unifiedComponentName);
+    registerComponentDescriptor(componentDescriptor);
+    return *_registryByName.find(unifiedComponentName)->second;
   }
 
   return *it->second;
