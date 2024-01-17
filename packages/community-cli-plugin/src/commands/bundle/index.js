@@ -118,11 +118,12 @@ const bundleCommand: Command = {
       name: '--custom-resolver-options <string>',
       description: 'Custom resolver options, format: key=value,key2=value2.',
       parse: (val: string): Record<string, string> => {
-        return val.split(',').reduce((options, option) => {
-          const [key, value] = option.split('=');
-          options[key] = value;
-          return options;
-        }, {});
+        return Object.fromEntries(
+          val.split(',').map(option => {
+            const [key, value] = option.split('=');
+            return [key, value];
+          }),
+        );
       },
     },
   ],
