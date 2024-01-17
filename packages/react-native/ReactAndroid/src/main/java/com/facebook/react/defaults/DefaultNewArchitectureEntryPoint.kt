@@ -7,6 +7,7 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 
 /**
@@ -28,6 +29,11 @@ object DefaultNewArchitectureEntryPoint {
       fabricEnabled: Boolean = true,
       bridgelessEnabled: Boolean = false
   ) {
+    val (isValid, errorMessage) =
+        isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
+    if (!isValid) {
+      error(errorMessage)
+    }
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
@@ -76,4 +82,20 @@ object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   val bridgelessEnabled: Boolean
     get() = privateBridgelessEnabled
+
+  @VisibleForTesting
+  fun isConfigurationValid(
+      turboModulesEnabled: Boolean,
+      fabricEnabled: Boolean,
+      bridgelessEnabled: Boolean
+  ): Pair<Boolean, String> =
+      when {
+        fabricEnabled && !turboModulesEnabled ->
+            false to
+                "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
+        bridgelessEnabled && (!turboModulesEnabled || !fabricEnabled) ->
+            false to
+                "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
+        else -> true to ""
+      }
 }
