@@ -2554,11 +2554,6 @@
   resolved "https://registry.yarnpkg.com/@rnx-kit/rn-changelog-generator/-/rn-changelog-generator-0.4.0.tgz#637d87bcf8de6e87599930ed88d9375010277660"
   integrity sha512-Igq/5lA6/bYSAdxfk43nbMXIt4yKIspds2fsv5eqgeg4elLeWfzHSEM3tU0wPDnOk4m3qzVEyO9fbtu616Dyhw==
 
-"@seadub/danger-plugin-eslint@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@seadub/danger-plugin-eslint/-/danger-plugin-eslint-3.0.2.tgz#9a51d9f1a103a274264c30212234001de0b417c1"
-  integrity sha512-W+efX4mP04A8wMuLV0nV+iOj892Vrbyik+FyDZcGgpzkJFXX0UfDhOPZ0FonbSV0xM47DI5a8go88U/pBdGM2A==
-
 "@sideway/address@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@sideway/address/-/address-4.1.0.tgz#0b301ada10ac4e0e3fa525c90615e0b61a72b78d"
