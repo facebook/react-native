@@ -355,6 +355,15 @@ public class TextLayoutManager {
       int hyphenationFrequency,
       Layout.Alignment alignment) {
     Layout layout;
+    // StaticLayout returns wrong metrics for the last line if it's empty, add something to the
+    // last line so it's measured correctly
+    if (text.toString().endsWith("\n")) {
+      SpannableStringBuilder sb = new SpannableStringBuilder(text);
+      sb.append("I");
+
+      text = sb;
+    }
+
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
     float desiredWidth =
