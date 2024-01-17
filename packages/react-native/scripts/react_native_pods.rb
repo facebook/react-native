@@ -282,8 +282,10 @@ def react_native_post_install(
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
-  ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
+
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
   ReactNativePodsUtils.apply_ats_config(installer)
