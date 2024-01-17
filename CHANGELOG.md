@@ -1634,6 +1634,20 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.15
+
+### Changed
+
+- BUMP CLI to v9.3.5 ([cb170efdd3](https://github.com/facebook/react-native/commit/cb170efdd346776aa6941512e1c23eb11c3f0a3a) by [@hurali97](https://github.com/hurali97))
+- Bump react-devtools-core to 4.27.7 ([abb4a2bddd](https://github.com/facebook/react-native/commit/abb4a2bdddbc904b4b3ff185e41c2dddb5ba684b) by [@lunaleaps](https://github.com/lunaleaps))
+- Bump hermes-engine ([5b95254359](https://github.com/facebook/react-native/commit/5b95254359da9813ce8eba5571b9abf6a5fcb21c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Migrate boost download url away from JFrog ([e8e059a977](https://github.com/facebook/react-native/commit/e8e059a977ef2feec1b4b9dfd2866daede2b8ff8) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.70.14
 
 ### Changed
