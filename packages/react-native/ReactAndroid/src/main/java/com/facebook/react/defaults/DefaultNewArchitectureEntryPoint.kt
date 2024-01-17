@@ -49,20 +49,6 @@ object DefaultNewArchitectureEntryPoint {
     DefaultSoLoader.maybeLoadSoLibrary()
   }
 
-  @Deprecated(
-      message =
-          "Calling DefaultNewArchitectureEntryPoint.load() with different fabricEnabled and concurrentReactEnabled is deprecated. Please use a single flag for both Fabric and Concurrent React",
-      replaceWith = ReplaceWith("load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)"),
-      level = DeprecationLevel.WARNING)
-  fun load(
-      turboModulesEnabled: Boolean = true,
-      fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = false,
-      @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean = true,
-  ) {
-    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
-  }
-
   private var privateFabricEnabled: Boolean = false
   @JvmStatic
   val fabricEnabled: Boolean
