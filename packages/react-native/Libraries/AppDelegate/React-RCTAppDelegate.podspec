@@ -16,8 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
 use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
@@ -25,7 +26,7 @@ use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
 hermes_flag = (use_hermes ? " -DUSE_HERMES" : "")
-other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + hermes_flag
+other_cflags = "$(inherited)" + folly_compiler_flags + new_arch_enabled_flag + hermes_flag
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
@@ -68,7 +69,7 @@ Pod::Spec.new do |s|
   use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
   s.dependency "React-Core"
-  s.dependency "RCT-Folly"
+  s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-RCTNetwork"

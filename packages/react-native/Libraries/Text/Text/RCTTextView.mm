@@ -240,8 +240,7 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-#if !TARGET_OS_UIKITFORMAC
-  if (@available(iOS 16.0, *)) {
+  if (@available(iOS 16.0, macCatalyst 16.0, *)) {
     CGPoint location = [gesture locationInView:self];
     UIEditMenuConfiguration *config = [UIEditMenuConfiguration configurationWithIdentifier:nil sourcePoint:location];
     if (_editMenuInteraction) {
@@ -249,7 +248,6 @@
     }
     return;
   }
-  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {
@@ -260,9 +258,7 @@
     [self becomeFirstResponder];
   }
 
-  [menuController setTargetRect:self.bounds inView:self];
-  [menuController setMenuVisible:YES animated:YES];
-#endif
+  [menuController showMenuFromView:self rect:self.bounds];
 }
 
 - (BOOL)canBecomeFirstResponder
