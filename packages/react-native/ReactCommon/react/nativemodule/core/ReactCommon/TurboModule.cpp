@@ -6,8 +6,33 @@
  */
 
 #include "TurboModule.h"
+#include <react/debug/react_native_assert.h>
 
 namespace facebook::react {
+
+TurboModuleMethodValueKind getTurboModuleMethodValueKind(
+    jsi::Runtime& rt,
+    const jsi::Value* value) {
+  if (!value || value->isUndefined() || value->isNull()) {
+    return VoidKind;
+  } else if (value->isBool()) {
+    return BooleanKind;
+  } else if (value->isNumber()) {
+    return NumberKind;
+  } else if (value->isString()) {
+    return StringKind;
+  } else if (value->isObject()) {
+    auto object = value->asObject(rt);
+    if (object.isArray(rt)) {
+      return ArrayKind;
+    } else if (object.isFunction(rt)) {
+      return FunctionKind;
+    }
+    return ObjectKind;
+  }
+  react_native_assert(false && "Unsupported jsi::Value kind");
+  return VoidKind;
+}
 
 TurboModule::TurboModule(
     std::string name,
