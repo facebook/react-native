@@ -51,7 +51,10 @@ bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
     LOG(WARNING)
         << "InspectorFlags::getEnableCxxInspectorPackagerConnection was called before init";
   }
-  return enableCxxInspectorPackagerConnection_.value_or(false);
+  return enableCxxInspectorPackagerConnection_.value_or(false) ||
+      // If we are using the modern CDP registry, then we must also use the C++
+      // InspectorPackagerConnection implementation.
+      getEnableModernCDPRegistry();
 }
 
 } // namespace facebook::react::jsinspector_modern
