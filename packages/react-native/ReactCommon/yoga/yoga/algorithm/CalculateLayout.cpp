@@ -2048,20 +2048,13 @@ static void calculateLayoutImpl(
             child->getStyle().positionType() != PositionType::Absolute) {
           continue;
         }
-        const bool absolutePercentageAgainstPaddingEdge =
-            node->getConfig()->isExperimentalFeatureEnabled(
-                ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge);
 
         layoutAbsoluteChild(
             node,
             node,
             child,
-            absolutePercentageAgainstPaddingEdge
-                ? node->getLayout().measuredDimension(Dimension::Width)
-                : availableInnerWidth,
-            absolutePercentageAgainstPaddingEdge
-                ? node->getLayout().measuredDimension(Dimension::Height)
-                : availableInnerHeight,
+            availableInnerWidth,
+            availableInnerHeight,
             isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
             direction,
             layoutMarkerData,

@@ -178,21 +178,6 @@ static void positionAbsoluteChildLegacy(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))),
         flexStartEdge(axis));
-  } else if (
-      parent->getConfig()->isExperimentalFeatureEnabled(
-          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(axis, direction)) {
-    child->setLayoutPosition(
-        child->getFlexStartPosition(
-            axis,
-            direction,
-            containingNode->getLayout().measuredDimension(dimension(axis))) +
-            containingNode->getFlexStartBorder(axis, direction) +
-            child->getFlexStartMargin(
-                axis,
-                direction,
-                isAxisRow ? containingBlockWidth : containingBlockHeight),
-        flexStartEdge(axis));
   }
 }
 
