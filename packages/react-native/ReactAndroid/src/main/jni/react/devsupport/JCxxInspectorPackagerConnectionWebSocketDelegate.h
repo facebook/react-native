@@ -43,7 +43,7 @@ class JCxxInspectorPackagerConnectionWebSocketDelegate
 
  private:
   friend HybridBase;
-  std::weak_ptr<IWebSocketDelegate> cxxDelegate_;
+  const std::weak_ptr<IWebSocketDelegate> cxxDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern
