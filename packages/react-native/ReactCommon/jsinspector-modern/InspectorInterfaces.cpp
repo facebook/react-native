@@ -7,6 +7,8 @@
 
 #include "InspectorInterfaces.h"
 
+#include <cassert>
+#include <list>
 #include <mutex>
 #include <tuple>
 #include <unordered_map>
@@ -20,6 +22,7 @@ IDestructible::~IDestructible() {}
 ILocalConnection::~ILocalConnection() {}
 IRemoteConnection::~IRemoteConnection() {}
 IInspector::~IInspector() {}
+IPageStatusListener::~IPageStatusListener() {}
 
 namespace {
 
@@ -35,6 +38,9 @@ class InspectorImpl : public IInspector {
   std::unique_ptr<ILocalConnection> connect(
       int pageId,
       std::unique_ptr<IRemoteConnection> remote) override;
+
+  void registerPageStatusListener(
+      std::weak_ptr<IPageStatusListener> listener) override;
 
  private:
   class Page {
@@ -57,6 +63,7 @@ class InspectorImpl : public IInspector {
   mutable std::mutex mutex_;
   int nextPageId_{1};
   std::unordered_map<int, Page> pages_;
+  std::list<std::weak_ptr<IPageStatusListener>> listeners_;
 };
 
 InspectorImpl::Page::Page(
@@ -85,6 +92,7 @@ int InspectorImpl::addPage(
   std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
+  assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
   pages_.emplace(pageId, Page{pageId, title, vm, std::move(connectFunc)});
 
   return pageId;
@@ -93,7 +101,13 @@ int InspectorImpl::addPage(
 void InspectorImpl::removePage(int pageId) {
   std::scoped_lock lock(mutex_);
 
-  pages_.erase(pageId);
+  if (pages_.erase(pageId) != 0) {
+    for (auto listenerWeak : listeners_) {
+      if (auto listener = listenerWeak.lock()) {
+        listener->onPageRemoved(pageId);
+      }
+    }
+  }
 }
 
 std::vector<InspectorPageDescription> InspectorImpl::getPages() const {
@@ -124,6 +138,19 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
   return connectFunc ? connectFunc(std::move(remote)) : nullptr;
 }
 
+void InspectorImpl::registerPageStatusListener(
+    std::weak_ptr<IPageStatusListener> listener) {
+  std::scoped_lock lock(mutex_);
+  // Remove expired listeners
+  for (auto it = listeners_.begin(); it != listeners_.end();) {
+    if (it->expired()) {
+      it = listeners_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  listeners_.push_back(listener);
+}
 } // namespace
 
 IInspector& getInspectorInstance() {
