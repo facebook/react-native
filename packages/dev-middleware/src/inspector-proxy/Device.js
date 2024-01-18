@@ -68,8 +68,8 @@ export default class Device {
   // Stores socket connection between Inspector Proxy and device.
   #deviceSocket: WS;
 
-  // Stores last list of device's pages.
-  #pages: $ReadOnlyArray<Page>;
+  // Stores the most recent listing of device's pages, keyed by the `id` field.
+  #pages: $ReadOnlyMap<string, Page>;
 
   // Stores information about currently connected debugger (if any).
   #debuggerConnection: ?DebuggerInfo = null;
@@ -106,7 +106,7 @@ export default class Device {
     this.#id = id;
     this.#name = name;
     this.#app = app;
-    this.#pages = [];
+    this.#pages = new Map();
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
     this.#deviceEventReporter = eventReporter
@@ -166,9 +166,9 @@ export default class Device {
         vm: "don't use",
         app: this.#app,
       };
-      return this.#pages.concat(reactNativeReloadablePage);
+      return [...this.#pages.values(), reactNativeReloadablePage];
     } else {
-      return this.#pages;
+      return [...this.#pages.values()];
     }
   }
 
@@ -302,17 +302,33 @@ export default class Device {
   // locations).
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
-      this.#pages = message.payload;
+      this.#pages = new Map(message.payload.map(page => [page.id, page]));
+      if (message.payload.length !== this.#pages.size) {
+        const duplicateIds = new Set<string>();
+        const idsSeen = new Set<string>();
+        for (const page of message.payload) {
+          if (!idsSeen.has(page.id)) {
+            idsSeen.add(page.id);
+          } else {
+            duplicateIds.add(page.id);
+          }
+        }
+        debug(
+          `Received duplicate page IDs from device: ${[...duplicateIds].join(
+            ', ',
+          )}`,
+        );
+      }
 
       // Check if device have new React Native page.
       // There is usually no more than 2-3 pages per device so this operation
       // is not expensive.
       // TODO(hypuk): It is better for VM to send update event when new page is
       // created instead of manually checking this on every getPages result.
-      for (let i = 0; i < this.#pages.length; ++i) {
-        if (this.#pages[i].title.indexOf('React') >= 0) {
-          if (this.#pages[i].id !== this.#lastConnectedReactNativePage?.id) {
-            this.#newReactNativePage(this.#pages[i]);
+      for (const page of this.#pages.values()) {
+        if (page.title.indexOf('React') >= 0) {
+          if (page.id !== this.#lastConnectedReactNativePage?.id) {
+            this.#newReactNativePage(page);
             break;
           }
         }

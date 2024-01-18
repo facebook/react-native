@@ -220,6 +220,45 @@ xdescribe('inspector proxy HTTP API', () => {
       }
     });
 
+    test('removes pages with duplicate IDs', async () => {
+      const device1 = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      try {
+        device1.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+          {
+            app: 'bar-app-other',
+            id: 'page1',
+            title: 'bar-title-other',
+            vm: 'bar-vm-other',
+          },
+        ]);
+
+        jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+        const json = await fetchJson<JsonPagesListResponse>(
+          `${serverRef.serverBaseUrl}${endpoint}`,
+        );
+
+        expect(json).toEqual([
+          expect.objectContaining({
+            id: 'device1-page1',
+            title: 'bar-title-other',
+            vm: 'bar-vm-other',
+          }),
+        ]);
+      } finally {
+        device1.close();
+      }
+    });
+
     describe('HTTP vs HTTPS', () => {
       const secureServerRef = withServerForEachTest({
         logger: undefined,
