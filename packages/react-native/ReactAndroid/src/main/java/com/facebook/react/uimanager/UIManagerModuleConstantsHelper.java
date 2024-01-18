@@ -191,6 +191,11 @@ public class UIManagerModuleConstantsHelper {
         }
       }
     }
+    // When providing one event in Kotlin, it will create a SingletonMap by default
+    // which will throw on trying to add new element to it
+    if (events.getClass().getSimpleName().equals("SingletonMap")) {
+      events = new HashMap(events);
+    }
     for (String oldKey : keysToNormalize) {
       Object value = events.get(oldKey);
       String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
