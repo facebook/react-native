@@ -114,6 +114,18 @@ const bundleCommand: Command = {
       description: 'Path to the CLI configuration file',
       parse: (val: string): string => path.resolve(val),
     },
+    {
+      name: '--custom-resolver-options <string>',
+      description: 'Custom resolver options, format: key=value,key2=value2.',
+      parse: (val: string): Record<string, string> => {
+        return Object.fromEntries(
+          val.split(',').map(option => {
+            const [key, value] = option.split('=');
+            return [key, value];
+          }),
+        );
+      },
+    },
   ],
 };
 

@@ -42,6 +42,7 @@ export type BundleCommandArgs = {
   verbose: boolean,
   unstableTransformProfile: string,
   indexedRamBundle?: boolean,
+  customResolverOptions?: Record<string, string>,
 };
 
 async function buildBundle(
@@ -99,6 +100,7 @@ async function buildBundleWithConfig(
     minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
     unstable_transformProfile: args.unstableTransformProfile,
+    customResolverOptions: args.customResolverOptions,
   };
   const server = new Server(config);
 
