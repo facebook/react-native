@@ -31,13 +31,11 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  if (CoreFeatures::enableCleanParagraphYogaNode) {
-    if (!fragment.children && !fragment.props) {
-      // This ParagraphShadowNode was cloned but did not change
-      // in a way that affects its layout. Let's mark it clean
-      // to stop Yoga from traversing it.
-      cleanLayout();
-    }
+  if (!fragment.children && !fragment.props) {
+    // This ParagraphShadowNode was cloned but did not change
+    // in a way that affects its layout. Let's mark it clean
+    // to stop Yoga from traversing it.
+    cleanLayout();
   }
 }
 

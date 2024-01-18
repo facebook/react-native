@@ -580,8 +580,7 @@ void YogaLayoutableShadowNode::layoutTree(
   SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
-      (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft ||
-       !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+      layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
     SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
@@ -699,8 +698,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
       newLayoutMetrics.wasLeftAndRightSwapped =
           layoutContext.swapLeftAndRightInRTL &&
-          (newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft ||
-           !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+          newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft;
 
       // Child node's layout has changed. When a node is added to
       // `affectedNodes`, onLayout event is called on the component. Comparing
