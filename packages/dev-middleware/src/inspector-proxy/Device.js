@@ -34,7 +34,7 @@ const PAGES_POLLING_INTERVAL = 1000;
 // Android's stock emulator and other emulators such as genymotion use a standard localhost alias.
 const EMULATOR_LOCALHOST_ADDRESSES: Array<string> = ['10.0.2.2', '10.0.3.2'];
 
-// Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDevice method for
+// Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
 const FILE_PREFIX = 'file://';
 
@@ -77,7 +77,7 @@ export default class Device {
   // Last known Page ID of the React Native page.
   // This is used by debugger connections that don't have PageID specified
   // (and will interact with the latest React Native page).
-  #lastConnectedReactNativePage: ?Page = null;
+  #lastConnectedLegacyReactNativePage: ?Page = null;
 
   // Whether we are in the middle of a reload in the REACT_NATIVE_RELOADABLE_PAGE.
   #isReloading: boolean = false;
@@ -159,12 +159,13 @@ export default class Device {
   }
 
   getPagesList(): $ReadOnlyArray<Page> {
-    if (this.#lastConnectedReactNativePage) {
+    if (this.#lastConnectedLegacyReactNativePage) {
       const reactNativeReloadablePage = {
         id: REACT_NATIVE_RELOADABLE_PAGE_ID,
         title: 'React Native Experimental (Improved Chrome Reloads)',
         vm: "don't use",
         app: this.#app,
+        type: 'Legacy',
       };
       return [...this.#pages.values(), reactNativeReloadablePage];
     } else {
@@ -203,6 +204,11 @@ export default class Device {
       pageId,
       userAgent: metadata.userAgent,
     };
+
+    // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
+    // unknown pages.
+    const page: ?Page = this.#pages.get(pageId);
+
     this.#debuggerConnection = debuggerInfo;
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
@@ -222,11 +228,14 @@ export default class Device {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: metadata.userAgent,
       });
-      const processedReq = this.#interceptMessageFromDebugger(
-        debuggerRequest,
-        debuggerInfo,
-        socket,
-      );
+      let processedReq = debuggerRequest;
+      if (!page || page.type === 'Legacy') {
+        processedReq = this.#interceptMessageFromDebuggerLegacy(
+          debuggerRequest,
+          debuggerInfo,
+          socket,
+        );
+      }
 
       if (processedReq) {
         this.#sendMessageToDevice({
@@ -302,7 +311,15 @@ export default class Device {
   // locations).
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
-      this.#pages = new Map(message.payload.map(page => [page.id, page]));
+      this.#pages = new Map(
+        message.payload.map(({type, ...page}) => [
+          page.id,
+          {
+            ...page,
+            type: type ?? 'Legacy',
+          },
+        ]),
+      );
       if (message.payload.length !== this.#pages.size) {
         const duplicateIds = new Set<string>();
         const idsSeen = new Set<string>();
@@ -320,15 +337,15 @@ export default class Device {
         );
       }
 
-      // Check if device have new React Native page.
+      // Check if device has a new legacy React Native page.
       // There is usually no more than 2-3 pages per device so this operation
       // is not expensive.
       // TODO(hypuk): It is better for VM to send update event when new page is
       // created instead of manually checking this on every getPages result.
       for (const page of this.#pages.values()) {
-        if (page.title.indexOf('React') >= 0) {
-          if (page.id !== this.#lastConnectedReactNativePage?.id) {
-            this.#newReactNativePage(page);
+        if (page.type === 'Legacy' && page.title.indexOf('React') >= 0) {
+          if (page.id !== this.#lastConnectedLegacyReactNativePage?.id) {
+            this.#newLegacyReactNativePage(page);
             break;
           }
         }
@@ -337,15 +354,19 @@ export default class Device {
       // Device sends disconnect events only when page is reloaded or
       // if debugger socket was disconnected.
       const pageId = message.payload.pageId;
+      // TODO(moti): Handle null case explicitly, e.g. swallow disconnect events
+      // for unknown pages.
+      const page: ?Page = this.#pages.get(pageId);
       const debuggerSocket = this.#debuggerConnection
         ? this.#debuggerConnection.socket
         : null;
       if (debuggerSocket && debuggerSocket.readyState === WS.OPEN) {
         if (
           this.#debuggerConnection != null &&
-          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID
+          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID &&
+          (!page || page.type === 'Legacy')
         ) {
-          debug(`Page ${pageId} is reloading.`);
+          debug(`Legacy page ${pageId} is reloading.`);
           debuggerSocket.send(JSON.stringify({method: 'reload'}));
         }
       }
@@ -356,6 +377,7 @@ export default class Device {
 
       // FIXME: Is it possible that we received message for pageID that does not
       // correspond to current debugger connection?
+      // TODO(moti): yes, fix multi-debugger case
 
       const debuggerSocket = this.#debuggerConnection.socket;
       if (debuggerSocket == null || debuggerSocket.readyState !== WS.OPEN) {
@@ -364,23 +386,30 @@ export default class Device {
       }
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
+      const pageId = this.#debuggerConnection?.pageId ?? null;
+      // TODO(moti): Handle null case explicitly, or ideally associate a copy
+      // of the page metadata object with the connection so this can never be
+      // null.
+      const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
       if ('id' in parsedPayload) {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
-          pageId: this.#debuggerConnection?.pageId ?? null,
+          pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
         });
       }
 
-      if (this.#debuggerConnection) {
+      if (this.#debuggerConnection && (!page || page.type === 'Legacy')) {
         // Wrapping just to make flow happy :)
         // $FlowFixMe[unused-promise]
-        this.#processMessageFromDevice(
+        this.#processMessageFromDeviceLegacy(
           parsedPayload,
           this.#debuggerConnection,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
           debuggerSocket.send(messageToSend);
         });
+      } else {
+        debuggerSocket.send(message.payload.wrappedEvent);
       }
     }
   }
@@ -396,7 +425,7 @@ export default class Device {
   }
 
   // We received new React Native Page ID.
-  #newReactNativePage(page: Page) {
+  #newLegacyReactNativePage(page: Page) {
     debug(`React Native page updated to ${page.id}`);
     if (
       this.#debuggerConnection == null ||
@@ -405,11 +434,11 @@ export default class Device {
       // We can just remember new page ID without any further actions if no
       // debugger is currently attached or attached debugger is not
       // "Reloadable React Native" connection.
-      this.#lastConnectedReactNativePage = page;
+      this.#lastConnectedLegacyReactNativePage = page;
       return;
     }
-    const oldPageId = this.#lastConnectedReactNativePage?.id;
-    this.#lastConnectedReactNativePage = page;
+    const oldPageId = this.#lastConnectedLegacyReactNativePage?.id;
+    this.#lastConnectedLegacyReactNativePage = page;
     this.#isReloading = true;
 
     // We already had a debugger connected to React Native page and a
@@ -454,7 +483,7 @@ export default class Device {
   }
 
   // Allows to make changes in incoming message from device.
-  async #processMessageFromDevice(
+  async #processMessageFromDeviceLegacy(
     payload: {method: string, params: {sourceMapURL: string, url: string}},
     debuggerInfo: DebuggerInfo,
   ) {
@@ -555,7 +584,7 @@ export default class Device {
   // Allows to make changes in incoming messages from debugger. Returns a boolean
   // indicating whether the message has been handled locally (i.e. does not need
   // to be forwarded to the target).
-  #interceptMessageFromDebugger(
+  #interceptMessageFromDebuggerLegacy(
     req: DebuggerRequest,
     debuggerInfo: DebuggerInfo,
     socket: WS,
@@ -587,7 +616,7 @@ export default class Device {
           processedReq.params.url.startsWith(FILE_PREFIX) &&
           debuggerInfo.prependedFilePrefix
         ) {
-          // Remove fake URL prefix if we modified URL in #processMessageFromDevice.
+          // Remove fake URL prefix if we modified URL in #processMessageFromDeviceLegacy.
           // $FlowFixMe[incompatible-use]
           processedReq.params.url = processedReq.params.url.slice(
             FILE_PREFIX.length,
@@ -665,9 +694,9 @@ export default class Device {
   #mapToDevicePageId(pageId: string): string {
     if (
       pageId === REACT_NATIVE_RELOADABLE_PAGE_ID &&
-      this.#lastConnectedReactNativePage != null
+      this.#lastConnectedLegacyReactNativePage != null
     ) {
-      return this.#lastConnectedReactNativePage.id;
+      return this.#lastConnectedLegacyReactNativePage.id;
     } else {
       return pageId;
     }
