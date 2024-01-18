@@ -91,6 +91,15 @@ using namespace facebook::react;
   _backgroundColor = backgroundColor;
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+    [self invalidateLayer];
+  }
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -597,6 +606,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           borderMetrics.borderWidths.left == 0 ||
           colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
+  CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
     if (_borderLayer) {
@@ -612,7 +623,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
-    layer.backgroundColor = _backgroundColor.CGColor;
+    layer.backgroundColor = backgroundColor;
   } else {
     if (!_borderLayer) {
       _borderLayer = [CALayer new];
@@ -635,7 +646,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        _backgroundColor.CGColor,
+        backgroundColor,
         self.clipsToBounds);
 
     RCTReleaseRCTBorderColors(borderColors);
