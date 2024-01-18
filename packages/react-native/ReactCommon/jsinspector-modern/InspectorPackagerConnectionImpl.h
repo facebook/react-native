@@ -20,6 +20,7 @@ namespace facebook::react::jsinspector_modern {
  */
 class InspectorPackagerConnection::Impl
     : public IWebSocketDelegate,
+      public IPageStatusListener,
       // Used to generate `weak_ptr`s we can pass around.
       public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
  public:
@@ -71,6 +72,9 @@ class InspectorPackagerConnection::Impl
       override;
   virtual void didReceiveMessage(std::string_view message) override;
   virtual void didClose() override;
+
+  // IPageStatusListener methods
+  virtual void onPageRemoved(int pageId) override;
 
   std::string url_;
   std::string app_;

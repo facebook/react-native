@@ -33,8 +33,10 @@ InspectorPackagerConnection::Impl::create(
     std::string app,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate) {
   // No make_shared because the constructor is private
-  return std::shared_ptr<InspectorPackagerConnection::Impl>(
+  std::shared_ptr<InspectorPackagerConnection::Impl> impl(
       new InspectorPackagerConnection::Impl(url, app, std::move(delegate)));
+  getInspectorInstance().registerPageStatusListener(impl);
+  return impl;
 }
 
 InspectorPackagerConnection::Impl::Impl(
@@ -192,6 +194,13 @@ void InspectorPackagerConnection::Impl::didClose() {
   closeAllConnections();
   if (!closed_) {
     reconnect();
+  }
+}
+
+void InspectorPackagerConnection::Impl::onPageRemoved(int pageId) {
+  auto connection = removeConnectionForPage(std::to_string(pageId));
+  if (connection) {
+    connection->disconnect();
   }
 }
 

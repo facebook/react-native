@@ -53,7 +53,19 @@ class JSINSPECTOR_EXPORT ILocalConnection : public IDestructible {
  public:
   virtual ~ILocalConnection() = 0;
   virtual void sendMessage(std::string message) = 0;
+
+  /**
+   * Called by the inspector singleton to notify that the connection has been
+   * closed, either by the remote party or because the local page/VM is no
+   * longer registered with the inspector.
+   */
   virtual void disconnect() = 0;
+};
+
+class JSINSPECTOR_EXPORT IPageStatusListener : public IDestructible {
+ public:
+  virtual ~IPageStatusListener() = 0;
+  virtual void onPageRemoved(int pageId) = 0;
 };
 
 /// IInspector tracks debuggable JavaScript targets (pages).
@@ -82,6 +94,13 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   virtual std::unique_ptr<ILocalConnection> connect(
       int pageId,
       std::unique_ptr<IRemoteConnection> remote) = 0;
+
+  /**
+   * registerPageStatusListener registers a listener that will receive events
+   * when pages are removed.
+   */
+  virtual void registerPageStatusListener(
+      std::weak_ptr<IPageStatusListener> listener) = 0;
 };
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all

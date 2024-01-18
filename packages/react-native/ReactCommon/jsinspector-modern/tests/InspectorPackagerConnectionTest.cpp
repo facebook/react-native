@@ -43,15 +43,33 @@ class InspectorPackagerConnectionTest : public testing::Test {
                        std::weak_ptr<IWebSocketDelegate>>());
   }
 
-  ~InspectorPackagerConnectionTest() override {
-    // Clean up all pages currently registered with the inspector.
+  void TearDown() override {
+    // Forcibly clean up all pages currently registered with the inspector in
+    // order to isolate state between tests. NOTE: Using TearDown instead of a
+    // destructor so that we can use FAIL() etc.
     std::vector<int> pagesToRemove;
-    for (auto& page : getInspectorInstance().getPages()) {
-      pagesToRemove.push_back(page.id);
+    auto pages = getInspectorInstance().getPages();
+    int liveConnectionCount = 0;
+    for (size_t i = 0; i != localConnections_.objectsVended(); ++i) {
+      if (localConnections_[i]) {
+        liveConnectionCount++;
+        // localConnections_[i] is a strict mock and will complain when we
+        // removePage if the call is unexpected.
+        EXPECT_CALL(*localConnections_[i], disconnect());
+      }
     }
-    for (auto id : pagesToRemove) {
-      getInspectorInstance().removePage(id);
+    for (auto& page : pages) {
+      getInspectorInstance().removePage(page.id);
     }
+    if (!pages.empty() && liveConnectionCount) {
+      if (!::testing::Test::HasFailure()) {
+        FAIL()
+            << "Test case ended with " << liveConnectionCount
+            << " open connection(s) and " << pages.size()
+            << " registered page(s). You must manually call removePage for each page.";
+      }
+    }
+    ::testing::Test::TearDown();
   }
 
   MockInspectorPackagerConnectionDelegate* packagerConnectionDelegate() {
@@ -260,6 +278,9 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
                 "id": 1234,
                 "params": ["arg1", "arg2"]
               })")));
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
 }
 
 TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
@@ -287,11 +308,11 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
     // Connect to the i-th page.
     webSockets_[0]->getDelegate().didReceiveMessage(sformat(
         R"({{
-          "event": "connect",
-          "payload": {{
-            "pageId": {0}
-          }}
-        }})",
+        "event": "connect",
+        "payload": {{
+          "pageId": {0}
+        }}
+      }})",
         toJson(std::to_string(pageIds[i]))));
     ASSERT_TRUE(localConnections_[i]);
   }
@@ -329,14 +350,19 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
         .RetiresOnSaturation();
     webSockets_[0]->getDelegate().didReceiveMessage(sformat(
         R"({{
-            "event": "wrappedEvent",
-            "payload": {{
-              "pageId": {0},
-              "wrappedEvent": {1}
-            }}
-          }})",
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
         toJson(std::to_string(pageIds[i])),
         toJson(toJson(dynamic::object("method", method)))));
+  }
+
+  for (int i = 0; i < kNumPages; ++i) {
+    EXPECT_CALL(*localConnections_[i], disconnect()).RetiresOnSaturation();
+    getInspectorInstance().removePage(pageIds[i]);
   }
 }
 
@@ -376,6 +402,9 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToAllConnections) {
     "id": 1234,
     "params": ["arg1", "arg2"]
   })");
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
 }
 
 TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
@@ -887,4 +916,33 @@ TEST_F(
   EXPECT_FALSE(webSockets_[0]);
 }
 
+TEST_F(InspectorPackagerConnectionTest, TestDestroyConnectionOnPageRemoved) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  ASSERT_TRUE(webSockets_[0]);
+
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_TRUE(localConnections_[0]);
+
+  // Remove the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+  EXPECT_FALSE(localConnections_[0]);
+}
 } // namespace facebook::react::jsinspector_modern
