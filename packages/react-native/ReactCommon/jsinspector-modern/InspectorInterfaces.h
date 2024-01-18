@@ -31,11 +31,14 @@ class IDestructible {
   virtual ~IDestructible() = 0;
 };
 
-struct InspectorPage {
+struct InspectorPageDescription {
   const int id;
   const std::string title;
   const std::string vm;
 };
+
+// Alias for backwards compatibility.
+using InspectorPage = InspectorPageDescription;
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
 class JSINSPECTOR_EXPORT IRemoteConnection : public IDestructible {
@@ -72,7 +75,7 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   virtual void removePage(int pageId) = 0;
 
   /// getPages is called by the client to list all debuggable pages.
-  virtual std::vector<InspectorPage> getPages() const = 0;
+  virtual std::vector<InspectorPageDescription> getPages() const = 0;
 
   /// connect is called by the client to initiate a debugging session on the
   /// given page.
