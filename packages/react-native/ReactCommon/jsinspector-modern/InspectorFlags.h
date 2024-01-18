@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <optional>
-
 #include <react/config/ReactNativeConfig.h>
+
+#include <optional>
 
 namespace facebook::react::jsinspector_modern {
 

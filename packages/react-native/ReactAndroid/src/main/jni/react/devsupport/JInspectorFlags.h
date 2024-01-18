@@ -8,6 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <react/config/ReactNativeConfig.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -18,6 +19,10 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/devsupport/InspectorFlags;";
+
+  static void initFromConfig(
+      jni::alias_ref<jclass> /* unused */,
+      jni::alias_ref<jobject> reactNativeConfig);
 
   static bool getEnableModernCDPRegistry(jni::alias_ref<jclass>);
 

@@ -8,8 +8,16 @@
 #include "JInspectorFlags.h"
 
 #include <jsinspector-modern/InspectorFlags.h>
+#include <react/fabric/ReactNativeConfigHolder.h>
 
 namespace facebook::react::jsinspector_modern {
+
+void JInspectorFlags::initFromConfig(
+    jni::alias_ref<jclass> /* unused */,
+    jni::alias_ref<jobject> reactNativeConfig) {
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  inspectorFlags.initFromConfig(ReactNativeConfigHolder(reactNativeConfig));
+}
 
 bool JInspectorFlags::getEnableModernCDPRegistry(jni::alias_ref<jclass>) {
   auto& inspectorFlags = InspectorFlags::getInstance();
@@ -24,6 +32,7 @@ bool JInspectorFlags::getEnableCxxInspectorPackagerConnection(
 
 void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
+      makeNativeMethod("initFromConfig", JInspectorFlags::initFromConfig),
       makeNativeMethod(
           "getEnableModernCDPRegistry",
           JInspectorFlags::getEnableModernCDPRegistry),

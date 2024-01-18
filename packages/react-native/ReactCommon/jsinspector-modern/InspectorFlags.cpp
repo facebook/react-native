@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <glog/logging.h>
-#include <cassert>
-
 #include "InspectorFlags.h"
+
+#include <glog/logging.h>
+
+#include <cassert>
 
 namespace facebook::react::jsinspector_modern {
 

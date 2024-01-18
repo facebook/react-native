@@ -7,6 +7,7 @@
 
 package com.facebook.react.devsupport;
 
+import androidx.annotation.NonNull;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /** JNI wrapper for `jsinspector_modern::InspectorFlags`. */
@@ -15,6 +16,9 @@ public class InspectorFlags {
   static {
     DevSupportSoLoader.staticInit();
   }
+
+  @DoNotStrip
+  public static native void initFromConfig(@NonNull Object reactNativeConfig);
 
   @DoNotStrip
   public static native boolean getEnableModernCDPRegistry();

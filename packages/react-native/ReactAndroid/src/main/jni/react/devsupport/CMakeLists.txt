@@ -15,5 +15,6 @@ add_library(react_devsupportjni SHARED ${react_devsupportjni_SRC})
 target_include_directories(react_devsupportjni PUBLIC .)
 
 target_link_libraries(react_devsupportjni
+        fabricjni
         fbjni
         jsinspector)

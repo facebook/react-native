@@ -46,6 +46,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -174,6 +175,8 @@ public class ReactHostImpl implements ReactHost {
                 "handleMemoryPressure(" + level + ")",
                 reactInstance -> reactInstance.handleMemoryPressure(level));
     mAllowPackagerServerAccess = allowPackagerServerAccess;
+    InspectorFlags.initFromConfig(mReactHostDelegate.getReactNativeConfig());
+
     if (DEV) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
