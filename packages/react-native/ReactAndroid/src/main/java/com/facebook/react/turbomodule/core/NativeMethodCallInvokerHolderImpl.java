@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.internal.turbomodule.core;
+package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.internal.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
+import com.facebook.react.internal.turbomodule.core.NativeModuleSoLoader;
+import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 
 /**
  * NativeMethodCallInvokerHolder is created at a different time/place (i.e: in CatalystInstance)

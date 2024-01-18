@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.internal.turbomodule.core.interfaces
+package com.facebook.react.turbomodule.core.interfaces
 /**
  * This interface represents the opaque Java object that contains a pointer to and instance of
  * NativeMethodCallInvoker.
