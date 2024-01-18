@@ -3987,6 +3987,7 @@ public abstract interface class com/facebook/react/uimanager/IViewGroupManager :
 	public abstract fun addView (Landroid/view/View;Landroid/view/View;I)V
 	public abstract fun getChildAt (Landroid/view/View;I)Landroid/view/View;
 	public abstract fun getChildCount (Landroid/view/View;)I
+	public fun removeAllViews (Landroid/view/View;)V
 	public abstract fun removeViewAt (Landroid/view/View;I)V
 }
 
@@ -5061,7 +5062,6 @@ public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebo
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public static fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
 	public fun needsCustomLayoutForChildren ()Z
-	public fun removeAllViews (Landroid/view/ViewGroup;)V
 	public fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
 	public synthetic fun removeViewAt (Landroid/view/View;I)V
 	public fun removeViewAt (Landroid/view/ViewGroup;I)V
@@ -7519,7 +7519,7 @@ public abstract class com/facebook/react/views/view/ReactClippingViewManager : c
 	public synthetic fun getChildCount (Landroid/view/View;)I
 	public synthetic fun getChildCount (Landroid/view/ViewGroup;)I
 	public fun getChildCount (Lcom/facebook/react/views/view/ReactViewGroup;)I
-	public synthetic fun removeAllViews (Landroid/view/ViewGroup;)V
+	public synthetic fun removeAllViews (Landroid/view/View;)V
 	public fun removeAllViews (Lcom/facebook/react/views/view/ReactViewGroup;)V
 	public synthetic fun removeViewAt (Landroid/view/View;I)V
 	public synthetic fun removeViewAt (Landroid/view/ViewGroup;I)V
