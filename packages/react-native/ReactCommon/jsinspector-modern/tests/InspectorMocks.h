@@ -63,7 +63,7 @@ class MockLocalConnection : public ILocalConnection {
   MOCK_METHOD(void, disconnect, (), (override));
 
  private:
-  std::unique_ptr<IRemoteConnection> remoteConnection_;
+  const std::unique_ptr<IRemoteConnection> remoteConnection_;
 };
 
 class MockInspectorPackagerConnectionDelegate

@@ -76,9 +76,9 @@ class InspectorPackagerConnection::Impl
   // IPageStatusListener methods
   virtual void onPageRemoved(int pageId) override;
 
-  std::string url_;
-  std::string app_;
-  std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
+  const std::string url_;
+  const std::string app_;
+  const std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
 
   std::unordered_map<std::string, std::unique_ptr<ILocalConnection>>
       inspectorConnections_;
@@ -102,8 +102,9 @@ class InspectorPackagerConnection::RemoteConnectionImpl
   void onDisconnect() override;
 
  private:
-  std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection_;
-  std::string pageId_;
+  const std::weak_ptr<InspectorPackagerConnection::Impl>
+      owningPackagerConnection_;
+  const std::string pageId_;
 };
 
 } // namespace facebook::react::jsinspector_modern
