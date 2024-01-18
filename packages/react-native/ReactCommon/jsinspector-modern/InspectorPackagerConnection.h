@@ -50,7 +50,7 @@ class InspectorPackagerConnection {
   class Impl;
   class RemoteConnectionImpl;
 
-  std::shared_ptr<Impl> impl_;
+  const std::shared_ptr<Impl> impl_;
 };
 
 /**

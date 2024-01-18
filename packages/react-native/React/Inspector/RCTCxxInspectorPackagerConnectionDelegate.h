@@ -26,7 +26,7 @@ class RCTCxxInspectorPackagerConnectionDelegate
     virtual ~WebSocket() override;
 
    private:
-    RCTCxxInspectorWebSocketAdapter* _adapter;
+    RCTCxxInspectorWebSocketAdapter* const _adapter;
   };
 
  public:
