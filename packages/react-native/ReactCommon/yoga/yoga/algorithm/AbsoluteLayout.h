@@ -33,6 +33,8 @@ void layoutAbsoluteDescendants(
     uint32_t currentDepth,
     uint32_t generationCount,
     float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock);
+    float currentNodeCrossOffsetFromContainingBlock,
+    float containingNodeAvailableInnerWidth,
+    float containingNodeAvailableInnerHeight);
 
 } // namespace facebook::yoga
