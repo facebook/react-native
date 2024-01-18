@@ -193,6 +193,7 @@ xdescribe('inspector proxy HTTP API', () => {
             id: 'device1-page1',
             reactNative: {
               logicalDeviceId: 'device1',
+              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',
@@ -207,6 +208,7 @@ xdescribe('inspector proxy HTTP API', () => {
             id: 'device2-page1',
             reactNative: {
               logicalDeviceId: 'device2',
+              type: 'Legacy',
             },
             title: 'bar-title',
             type: 'node',

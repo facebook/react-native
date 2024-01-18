@@ -11,8 +11,8 @@
 
 import type {
   JSONSerializable,
-  Page,
   PageDescription,
+  PageFromDevice,
 } from '../inspector-proxy/types';
 import type {DebuggerMock} from './InspectorDebuggerUtils';
 import type {DeviceMock} from './InspectorDeviceUtils';
@@ -125,7 +125,7 @@ export async function createAndConnectTarget(
     ...
   }>,
   signal: AbortSignal,
-  page: Page,
+  page: PageFromDevice,
 ): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
   let device;
   let debugger_;

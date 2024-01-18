@@ -20,6 +20,7 @@ import type {
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import Device from './Device';
+import nullthrows from 'nullthrows';
 import url from 'url';
 import WS from 'ws';
 
@@ -151,6 +152,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       deviceName: device.getName(),
       reactNative: {
         logicalDeviceId: deviceId,
+        type: nullthrows(page.type),
       },
     };
   }
