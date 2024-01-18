@@ -519,8 +519,7 @@ float Node::relativePosition(
     FlexDirection axis,
     Direction direction,
     float axisSize) const {
-  if (style_.positionType() == PositionType::Static &&
-      !hasErrata(Errata::PositionStaticBehavesLikeRelative)) {
+  if (style_.positionType() == PositionType::Static) {
     return 0;
   }
   if (isInlineStartPositionDefined(axis, direction)) {

@@ -2026,41 +2026,22 @@ static void calculateLayoutImpl(
 
   if (performLayout) {
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-    if (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative)) {
-      // Let the containing block layout its absolute descendants. By definition
-      // the containing block will not be static unless we are at the root.
-      if (node->getStyle().positionType() != PositionType::Static ||
-          node->alwaysFormsContainingBlock() || depth == 1) {
-        layoutAbsoluteDescendants(
-            node,
-            node,
-            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-            direction,
-            layoutMarkerData,
-            depth,
-            generationCount,
-            0.0f,
-            0.0f);
-      }
-    } else {
-      for (auto child : node->getChildren()) {
-        if (child->getStyle().display() == Display::None ||
-            child->getStyle().positionType() != PositionType::Absolute) {
-          continue;
-        }
-
-        layoutAbsoluteChild(
-            node,
-            node,
-            child,
-            availableInnerWidth,
-            availableInnerHeight,
-            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-            direction,
-            layoutMarkerData,
-            depth,
-            generationCount);
-      }
+    // Let the containing block layout its absolute descendants. By definition
+    // the containing block will not be static unless we are at the root.
+    if (node->getStyle().positionType() != PositionType::Static ||
+        node->alwaysFormsContainingBlock() || depth == 1) {
+      layoutAbsoluteDescendants(
+          node,
+          node,
+          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+          direction,
+          layoutMarkerData,
+          depth,
+          generationCount,
+          0.0f,
+          0.0f,
+          availableInnerWidth,
+          availableInnerHeight);
     }
 
     // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
@@ -2074,8 +2055,7 @@ static void calculateLayoutImpl(
         // cannot guarantee that their positions are set when their parents are
         // done with layout.
         if (child->getStyle().display() == Display::None ||
-            (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative) &&
-             child->getStyle().positionType() == PositionType::Absolute)) {
+            child->getStyle().positionType() == PositionType::Absolute) {
           continue;
         }
         if (needsMainTrailingPos) {
