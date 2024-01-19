@@ -602,13 +602,13 @@ Style::Length Node::resolveFlexBasisPtr() const {
 }
 
 void Node::resolveDimension() {
-  const Style& style = getStyle();
   for (auto dim : {Dimension::Width, Dimension::Height}) {
-    if (style.maxDimension(dim).isDefined() &&
-        yoga::inexactEquals(style.maxDimension(dim), style.minDimension(dim))) {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style.maxDimension(dim);
+    if (style_.maxDimension(dim).isDefined() &&
+        yoga::inexactEquals(
+            style_.maxDimension(dim), style_.minDimension(dim))) {
+      resolvedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
     } else {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style.dimension(dim);
+      resolvedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
     }
   }
 }

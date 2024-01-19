@@ -35,11 +35,11 @@ inline FloatOptional boundAxisWithinMinAndMax(
   FloatOptional max;
 
   if (isColumn(axis)) {
-    min = node->getStyle().minDimension(Dimension::Height).resolve(axisSize);
-    max = node->getStyle().maxDimension(Dimension::Height).resolve(axisSize);
+    min = node->style().minDimension(Dimension::Height).resolve(axisSize);
+    max = node->style().maxDimension(Dimension::Height).resolve(axisSize);
   } else if (isRow(axis)) {
-    min = node->getStyle().minDimension(Dimension::Width).resolve(axisSize);
-    max = node->getStyle().maxDimension(Dimension::Width).resolve(axisSize);
+    min = node->style().minDimension(Dimension::Width).resolve(axisSize);
+    max = node->style().maxDimension(Dimension::Width).resolve(axisSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {

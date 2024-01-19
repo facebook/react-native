@@ -17,10 +17,10 @@ namespace facebook::yoga {
 inline Align resolveChildAlignment(
     const yoga::Node* node,
     const yoga::Node* child) {
-  const Align align = child->getStyle().alignSelf() == Align::Auto
-      ? node->getStyle().alignItems()
-      : child->getStyle().alignSelf();
-  if (align == Align::Baseline && isColumn(node->getStyle().flexDirection())) {
+  const Align align = child->style().alignSelf() == Align::Auto
+      ? node->style().alignItems()
+      : child->style().alignSelf();
+  if (align == Align::Baseline && isColumn(node->style().flexDirection())) {
     return Align::FlexStart;
   }
   return align;

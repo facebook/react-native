@@ -72,7 +72,7 @@ static void justifyAbsoluteChild(
     const Direction direction,
     const FlexDirection mainAxis,
     const float containingBlockWidth) {
-  const Justify parentJustifyContent = parent->getStyle().justifyContent();
+  const Justify parentJustifyContent = parent->style().justifyContent();
   switch (parentJustifyContent) {
     case Justify::FlexStart:
     case Justify::SpaceBetween:
@@ -99,7 +99,7 @@ static void alignAbsoluteChild(
     const FlexDirection crossAxis,
     const float containingBlockWidth) {
   Align itemAlign = resolveChildAlignment(parent, child);
-  const Wrap parentWrap = parent->getStyle().flexWrap();
+  const Wrap parentWrap = parent->style().flexWrap();
   if (parentWrap == Wrap::WrapReverse) {
     if (itemAlign == Align::FlexEnd) {
       itemAlign = Align::FlexStart;
@@ -143,12 +143,12 @@ static void positionAbsoluteChildLegacy(
     const float containingBlockHeight) {
   const bool isAxisRow = isRow(axis);
   const bool shouldCenter = isMainAxis
-      ? parent->getStyle().justifyContent() == Justify::Center
+      ? parent->style().justifyContent() == Justify::Center
       : resolveChildAlignment(parent, child) == Align::Center;
   const bool shouldFlexEnd = isMainAxis
-      ? parent->getStyle().justifyContent() == Justify::FlexEnd
+      ? parent->style().justifyContent() == Justify::FlexEnd
       : ((resolveChildAlignment(parent, child) == Align::FlexEnd) ^
-         (parent->getStyle().flexWrap() == Wrap::WrapReverse));
+         (parent->style().flexWrap() == Wrap::WrapReverse));
 
   if (child->isFlexEndPositionDefined(axis, direction) &&
       !child->isFlexStartPositionDefined(axis, direction)) {
@@ -294,7 +294,7 @@ void layoutAbsoluteChild(
     const uint32_t depth,
     const uint32_t generationCount) {
   const FlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
+      resolveDirection(node->style().flexDirection(), direction);
   const FlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
   const bool isMainAxisRow = isRow(mainAxis);
 
@@ -366,7 +366,7 @@ void layoutAbsoluteChild(
   // Exactly one dimension needs to be defined for us to be able to do aspect
   // ratio calculation. One dimension being the anchor and the other being
   // flexible.
-  const auto& childStyle = child->getStyle();
+  const auto& childStyle = child->style();
   if (yoga::isUndefined(childWidth) ^ yoga::isUndefined(childHeight)) {
     if (childStyle.aspectRatio().isDefined()) {
       if (yoga::isUndefined(childWidth)) {
@@ -467,13 +467,13 @@ void layoutAbsoluteDescendants(
     float containingNodeAvailableInnerWidth,
     float containingNodeAvailableInnerHeight) {
   const FlexDirection mainAxis = resolveDirection(
-      currentNode->getStyle().flexDirection(), currentNodeDirection);
+      currentNode->style().flexDirection(), currentNodeDirection);
   const FlexDirection crossAxis =
       resolveCrossDirection(mainAxis, currentNodeDirection);
   for (auto child : currentNode->getChildren()) {
-    if (child->getStyle().display() == Display::None) {
+    if (child->style().display() == Display::None) {
       continue;
-    } else if (child->getStyle().positionType() == PositionType::Absolute) {
+    } else if (child->style().positionType() == PositionType::Absolute) {
       const bool absoluteErrata =
           currentNode->hasErrata(Errata::AbsolutePercentAgainstInnerSize);
       const float containingBlockWidth = absoluteErrata
@@ -499,11 +499,11 @@ void layoutAbsoluteDescendants(
 
       const bool isMainAxisRow = isRow(mainAxis);
       const bool mainInsetsDefined = isMainAxisRow
-          ? child->getStyle().horizontalInsetsDefined()
-          : child->getStyle().verticalInsetsDefined();
+          ? child->style().horizontalInsetsDefined()
+          : child->style().verticalInsetsDefined();
       const bool crossInsetsDefined = isMainAxisRow
-          ? child->getStyle().verticalInsetsDefined()
-          : child->getStyle().horizontalInsetsDefined();
+          ? child->style().verticalInsetsDefined()
+          : child->style().horizontalInsetsDefined();
 
       const float childMainOffsetFromParent = mainInsetsDefined
           ? (child->getLayout().position(flexStartEdge(mainAxis)) -
@@ -526,7 +526,7 @@ void layoutAbsoluteDescendants(
         setChildTrailingPosition(currentNode, child, crossAxis);
       }
     } else if (
-        child->getStyle().positionType() == PositionType::Static &&
+        child->style().positionType() == PositionType::Static &&
         !child->alwaysFormsContainingBlock()) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
