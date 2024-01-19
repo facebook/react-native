@@ -305,6 +305,16 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
                 "params": ["arg1", "arg2"]
               })")));
 
+  // Send a 'disconnect' event from the mocked backend (local) to the frontend
+  // (remote) and observe it being sent via the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+  localConnections_[0]->getRemoteConnection().onDisconnect();
+
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
   getInspectorInstance().removePage(pageId);
 }
@@ -1149,10 +1159,11 @@ TEST_F(
                                            "method": "FakeDomain.anotherEventToBeDropped",
                                            "params": ["arg1", "arg2"]
                                          })");
+  retainedRemoteConnection0->onDisconnect();
 
-  // Send an event from the mocked backend (local) to the frontend (remote) over
+  // Send events from the mocked backend (local) to the frontend (remote) over
   // the new connection, then flush the callback queue.
-  // Only this event should be sent over the socket.
+  // Only these events should be sent over the socket.
   EXPECT_CALL(
       *webSockets_[0],
       send(JsonParsed(AllOf(
@@ -1170,7 +1181,15 @@ TEST_F(
                                                             "method": "FakeDomain.eventToBeDelivered",
                                                             "params": ["arg1", "arg2"]
                                                           })");
-  EXPECT_EQ(asyncExecutor_.run(), 3);
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onDisconnect();
+
+  EXPECT_EQ(asyncExecutor_.run(), 5);
 
   // Clean up.
   EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
