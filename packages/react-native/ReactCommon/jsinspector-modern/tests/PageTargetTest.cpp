@@ -102,4 +102,25 @@ TEST_F(PageTargetProtocolTest, MalformedJson) {
   toPage_->sendMessage("{");
 }
 
+TEST_F(PageTargetProtocolTest, InjectLogToIdentifyBackend) {
+  InSequence s;
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": null
+                                             })")))
+      .RetiresOnSaturation();
+
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Log.entryAdded"),
+          AtJsonPtr("/params/entry", Not(IsEmpty()))))))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Log.enable"
+                         })");
+}
+
 } // namespace facebook::react::jsinspector_modern
