@@ -9,6 +9,7 @@ package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.internal.turbomodule.core.NativeModuleSoLoader;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 
@@ -18,6 +19,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  * class so that we may pass it from CatalystInstance, through Java, to
  * TurboModuleManager::initHybrid.
  */
+@FrameworkAPI
 public class NativeMethodCallInvokerHolderImpl implements NativeMethodCallInvokerHolder {
 
   @DoNotStrip private final HybridData mHybridData;
