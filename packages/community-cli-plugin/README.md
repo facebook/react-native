@@ -30,6 +30,7 @@ npx react-native start [options]
 | `--sourceExts <list>` | Specify additional source extensions to bundle. |
 | `--max-workers <number>` | Set the maximum number of workers the worker-pool will spawn for transforming files. Defaults to the number of the cores available on your machine. |
 | `--transformer <string>` | Specify a custom transformer. |
+| `--custom-resolver-options` | Custom resolver options in the form `key=value,key2=value2` |
 | `--reset-cache` | Remove cached files. |
 | `--custom-log-reporter-path <string>` | Specify a module path exporting a replacement for `TerminalReporter`. |
 | `--https` | Enable HTTPS connections. |
