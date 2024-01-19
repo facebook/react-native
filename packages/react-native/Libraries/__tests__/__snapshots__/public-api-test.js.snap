@@ -9940,6 +9940,7 @@ type AndroidPlatform = {
     Manufacturer: string,
   |},
   get isTV(): boolean,
+  get isVision(): boolean,
   get isTesting(): boolean,
   get isDisableAnimations(): boolean,
   select: <T>(spec: PlatformSelectSpec<T>) => T,
