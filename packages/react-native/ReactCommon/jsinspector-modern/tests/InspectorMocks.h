@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/executors/ScheduledExecutor.h>
 #include <gmock/gmock.h>
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -69,9 +70,19 @@ class MockLocalConnection : public ILocalConnection {
 class MockInspectorPackagerConnectionDelegate
     : public InspectorPackagerConnectionDelegate {
  public:
-  MockInspectorPackagerConnectionDelegate() {
+  explicit MockInspectorPackagerConnectionDelegate(folly::Executor& executor)
+      : executor_(executor) {
     using namespace testing;
-    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault(InvokeArgument<0>());
+    ON_CALL(*this, scheduleCallback(_, _))
+        .WillByDefault(Invoke<>([this](auto callback, auto delay) {
+          if (auto scheduledExecutor =
+                  dynamic_cast<folly::ScheduledExecutor*>(&executor_)) {
+            scheduledExecutor->scheduleAt(
+                callback, scheduledExecutor->now() + delay);
+          } else {
+            executor_.add(callback);
+          }
+        }));
   }
 
   // InspectorPackagerConnectionDelegate methods
@@ -85,6 +96,9 @@ class MockInspectorPackagerConnectionDelegate
       scheduleCallback,
       (std::function<void(void)> callback, std::chrono::milliseconds delayMs),
       (override));
+
+ private:
+  folly::Executor& executor_;
 };
 
 } // namespace facebook::react::jsinspector_modern
