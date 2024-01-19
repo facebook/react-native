@@ -764,7 +764,7 @@ class ScrollView extends React.Component<Props, State> {
     this._keyboardMetrics = Keyboard.metrics();
     this._additionalScrollOffset = 0;
 
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       this._subscriptionKeyboardWillShow = Keyboard.addListener(
         'keyboardWillShow',
         this.scrollResponderKeyboardWillShow,

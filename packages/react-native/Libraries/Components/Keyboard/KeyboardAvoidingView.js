@@ -177,7 +177,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (Platform.OS === 'ios') {
-      if (Platform.isVisionOS) {
+      if (Platform.isVision) {
         warnOnce(
           'KeyboardAvoidingView-unavailable',
           'KeyboardAvoidingView is not available on visionOS platform. The system displays the keyboard in a separate window, leaving the app’s window unaffected by the keyboard’s appearance and disappearance',
@@ -214,7 +214,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       ...props
     } = this.props;
 
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       // KeyboardAvoidingView is not supported on VisionOS, so we return a simple View without the onLayout handler
       return (
         <View ref={this.viewRef} style={style} {...props}>

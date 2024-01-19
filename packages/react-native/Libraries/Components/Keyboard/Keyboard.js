@@ -115,7 +115,7 @@ class Keyboard {
     );
 
   constructor() {
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       return;
     }
 
@@ -156,7 +156,7 @@ class Keyboard {
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
     context?: mixed,
   ): EventSubscription {
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       warnOnce(
         'Keyboard-unavailable',
         'Keyboard API is not available on visionOS platform. The system displays the keyboard in a separate window, leaving the app’s window unaffected by the keyboard’s appearance and disappearance',
@@ -173,7 +173,7 @@ class Keyboard {
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void {
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       return;
     }
 

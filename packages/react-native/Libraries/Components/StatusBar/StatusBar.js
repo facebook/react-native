@@ -394,7 +394,7 @@ class StatusBar extends React.Component<Props> {
   _stackEntry = null;
 
   componentDidMount() {
-    if (Platform.isVisionOS) {
+    if (Platform.isVision) {
       warnOnce(
         'StatusBar-unavailable',
         'StatusBar is not available on visionOS platform.',

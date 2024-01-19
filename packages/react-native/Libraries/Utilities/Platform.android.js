@@ -65,9 +65,8 @@ const Platform: PlatformType = {
     return this.constants.isDisableAnimations ?? this.isTesting;
   },
   // $FlowFixMe[unsafe-getters-setters]
-  get isVisionOS(): boolean {
-    // $FlowFixMe[object-this-reference]
-    return this.constants.interfaceIdiom === 'vision';
+  get isVision(): boolean {
+    return false;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
