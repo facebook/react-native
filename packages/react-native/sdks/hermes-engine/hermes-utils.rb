@@ -5,6 +5,7 @@
 
 require 'net/http'
 require 'rexml/document'
+require 'open3' # [macOS]
 
 HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
 
@@ -232,6 +233,28 @@ end
 def resolve_url_redirects(url)
     return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
 end
+
+# [macOS react-native-macos does not publish macos specific hermes artifacts
+# so we attempt to find the latest patch version of the iOS artifacts and use that
+def findLastestVersionWithArtifact(version)
+    versionWithoutPatch = version.match(/^(\d+\.\d+)/)
+    xml_data, = Open3.capture3("curl -s https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/maven-metadata.xml")
+
+    metadata = REXML::Document.new(xml_data)
+    versions = metadata.elements.to_a('//metadata/versioning/versions/version')
+
+    # Extract version numbers and sort them
+    filtered_versions = versions.select { |version| version.text.match?(/^#{versionWithoutPatch}\.\d+$/) }
+    if filtered_versions.empty?
+        return
+    end
+
+    version_numbers = filtered_versions.map { |version| version.text }
+    sorted_versions = version_numbers.sort_by { |v| Gem::Version.new(v) }
+
+    return sorted_versions.last
+end
+# macOS]
 
 # This function checks that Hermes artifact exists.
 # As of now it should check it on the Maven repo.
