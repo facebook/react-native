@@ -960,4 +960,220 @@ TEST_F(InspectorPackagerConnectionTest, TestDestroyConnectionOnPageRemoved) {
   getInspectorInstance().removePage(pageId);
   EXPECT_FALSE(localConnections_[0]);
 }
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToRemoteAfterDestroyed) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventTriggered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+
+  packagerConnection_.reset();
+
+  // Flush the callback queue. This doesn't crash.
+  EXPECT_EQ(asyncExecutor_.run(), 1);
+}
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToStaleRemoteConnection) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDropped",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  // Disconnect from the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "disconnect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_FALSE(localConnections_[0]);
+
+  // Connect to the same page again.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_TRUE(localConnections_[1]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote) over
+  // the new connection, then flush the callback queue.
+  // Only this event should be sent over the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("wrappedEvent")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId))),
+          AtJsonPtr(
+              "/payload/wrappedEvent",
+              JsonEq(
+                  R"({
+                    "method": "FakeDomain.eventToBeDelivered",
+                    "params": ["arg1", "arg2"]
+                  })"))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDelivered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+  EXPECT_EQ(asyncExecutor_.run(), 2);
+
+  // Clean up.
+  EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToStaleRemoteConnectionWhenRetained) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDropped",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  // Forcibly retain the remote connection beyond localConnections_[0]'s
+  // lifetime.
+  auto retainedRemoteConnection0 =
+      localConnections_[0]->dangerouslyReleaseRemoteConnection();
+
+  // Disconnect from the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "disconnect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_FALSE(localConnections_[0]);
+
+  // Connect to the same page again.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_TRUE(localConnections_[1]);
+
+  // Remember localConnections_[0]'s remote connection? We can still use it
+  // without crashing, but it will not deliver any messages.
+  retainedRemoteConnection0->onMessage(R"({
+                                           "method": "FakeDomain.anotherEventToBeDropped",
+                                           "params": ["arg1", "arg2"]
+                                         })");
+
+  // Send an event from the mocked backend (local) to the frontend (remote) over
+  // the new connection, then flush the callback queue.
+  // Only this event should be sent over the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("wrappedEvent")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId))),
+          AtJsonPtr(
+              "/payload/wrappedEvent",
+              JsonEq(
+                  R"({
+                    "method": "FakeDomain.eventToBeDelivered",
+                    "params": ["arg1", "arg2"]
+                  })"))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDelivered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+  EXPECT_EQ(asyncExecutor_.run(), 3);
+
+  // Clean up.
+  EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
 } // namespace facebook::react::jsinspector_modern

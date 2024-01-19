@@ -41,6 +41,8 @@ struct InspectorPageDescription {
 using InspectorPage = InspectorPageDescription;
 
 /// IRemoteConnection allows the VM to send debugger messages to the client.
+/// IRemoteConnection's methods are safe to call from any thread *if*
+/// InspectorPackagerConnection.cpp is in use.
 class JSINSPECTOR_EXPORT IRemoteConnection : public IDestructible {
  public:
   virtual ~IRemoteConnection() = 0;
