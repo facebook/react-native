@@ -31,7 +31,8 @@ class InspectorImpl : public IInspector {
   int addPage(
       const std::string& title,
       const std::string& vm,
-      ConnectFunc connectFunc) override;
+      ConnectFunc connectFunc,
+      InspectorPageType type) override;
   void removePage(int pageId) override;
 
   std::vector<InspectorPageDescription> getPages() const override;
@@ -49,7 +50,8 @@ class InspectorImpl : public IInspector {
         int id,
         const std::string& title,
         const std::string& vm,
-        ConnectFunc connectFunc);
+        ConnectFunc connectFunc,
+        InspectorPageType type);
     operator InspectorPageDescription() const;
 
     ConnectFunc getConnectFunc() const;
@@ -59,6 +61,7 @@ class InspectorImpl : public IInspector {
     std::string title_;
     std::string vm_;
     ConnectFunc connectFunc_;
+    InspectorPageType type_;
   };
   mutable std::mutex mutex_;
   int nextPageId_{1};
@@ -70,14 +73,20 @@ InspectorImpl::Page::Page(
     int id,
     const std::string& title,
     const std::string& vm,
-    ConnectFunc connectFunc)
-    : id_(id), title_(title), vm_(vm), connectFunc_(std::move(connectFunc)) {}
+    ConnectFunc connectFunc,
+    InspectorPageType type)
+    : id_(id),
+      title_(title),
+      vm_(vm),
+      connectFunc_(std::move(connectFunc)),
+      type_(type) {}
 
 InspectorImpl::Page::operator InspectorPageDescription() const {
   return InspectorPageDescription{
       .id = id_,
       .title = title_,
       .vm = vm_,
+      .type = type_,
   };
 }
 
@@ -88,12 +97,13 @@ InspectorImpl::ConnectFunc InspectorImpl::Page::getConnectFunc() const {
 int InspectorImpl::addPage(
     const std::string& title,
     const std::string& vm,
-    ConnectFunc connectFunc) {
+    ConnectFunc connectFunc,
+    InspectorPageType type) {
   std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
   assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
-  pages_.emplace(pageId, Page{pageId, title, vm, std::move(connectFunc)});
+  pages_.emplace(pageId, Page{pageId, title, vm, std::move(connectFunc), type});
 
   return pageId;
 }
