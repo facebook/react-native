@@ -62,7 +62,8 @@ export default function openDebuggerMiddleware({
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.type === 'Modern',
       );
 
       let target;

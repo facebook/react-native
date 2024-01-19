@@ -31,13 +31,33 @@ class IDestructible {
   virtual ~IDestructible() = 0;
 };
 
-struct InspectorPage {
+enum class InspectorPageType {
+  Legacy,
+  Modern,
+};
+
+inline const char* pageTypeToString(InspectorPageType type) {
+  switch (type) {
+    case InspectorPageType::Legacy:
+      return "Legacy";
+    case InspectorPageType::Modern:
+      return "Modern";
+  }
+}
+
+struct InspectorPageDescription {
   const int id;
   const std::string title;
   const std::string vm;
+  const InspectorPageType type;
 };
 
+// Alias for backwards compatibility.
+using InspectorPage = InspectorPageDescription;
+
 /// IRemoteConnection allows the VM to send debugger messages to the client.
+/// IRemoteConnection's methods are safe to call from any thread *if*
+/// InspectorPackagerConnection.cpp is in use.
 class JSINSPECTOR_EXPORT IRemoteConnection : public IDestructible {
  public:
   virtual ~IRemoteConnection() = 0;
@@ -50,7 +70,19 @@ class JSINSPECTOR_EXPORT ILocalConnection : public IDestructible {
  public:
   virtual ~ILocalConnection() = 0;
   virtual void sendMessage(std::string message) = 0;
+
+  /**
+   * Called by the inspector singleton to notify that the connection has been
+   * closed, either by the remote party or because the local page/VM is no
+   * longer registered with the inspector.
+   */
   virtual void disconnect() = 0;
+};
+
+class JSINSPECTOR_EXPORT IPageStatusListener : public IDestructible {
+ public:
+  virtual ~IPageStatusListener() = 0;
+  virtual void onPageRemoved(int pageId) = 0;
 };
 
 /// IInspector tracks debuggable JavaScript targets (pages).
@@ -65,20 +97,28 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   virtual int addPage(
       const std::string& title,
       const std::string& vm,
-      ConnectFunc connectFunc) = 0;
+      ConnectFunc connectFunc,
+      InspectorPageType type = InspectorPageType::Legacy) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
   /// debuggable pages.
   virtual void removePage(int pageId) = 0;
 
   /// getPages is called by the client to list all debuggable pages.
-  virtual std::vector<InspectorPage> getPages() const = 0;
+  virtual std::vector<InspectorPageDescription> getPages() const = 0;
 
   /// connect is called by the client to initiate a debugging session on the
   /// given page.
   virtual std::unique_ptr<ILocalConnection> connect(
       int pageId,
       std::unique_ptr<IRemoteConnection> remote) = 0;
+
+  /**
+   * registerPageStatusListener registers a listener that will receive events
+   * when pages are removed.
+   */
+  virtual void registerPageStatusListener(
+      std::weak_ptr<IPageStatusListener> listener) = 0;
 };
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all

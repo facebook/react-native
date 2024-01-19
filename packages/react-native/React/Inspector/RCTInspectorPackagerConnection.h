@@ -10,13 +10,16 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
-@interface RCTInspectorPackagerConnection : NSObject
+@protocol RCTInspectorPackagerConnectionProtocol <NSObject>
 - (instancetype)initWithURL:(NSURL *)url;
 
 - (bool)isConnected;
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;
+@end
+
+@interface RCTInspectorPackagerConnection : NSObject <RCTInspectorPackagerConnectionProtocol>
 @end
 
 @interface RCTInspectorRemoteConnection : NSObject

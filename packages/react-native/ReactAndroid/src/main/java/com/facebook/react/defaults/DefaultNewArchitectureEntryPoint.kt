@@ -7,6 +7,7 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 
 /**
@@ -28,6 +29,11 @@ object DefaultNewArchitectureEntryPoint {
       fabricEnabled: Boolean = true,
       bridgelessEnabled: Boolean = false
   ) {
+    val (isValid, errorMessage) =
+        isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
+    if (!isValid) {
+      error(errorMessage)
+    }
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
@@ -41,20 +47,6 @@ object DefaultNewArchitectureEntryPoint {
     this.privateBridgelessEnabled = bridgelessEnabled
 
     DefaultSoLoader.maybeLoadSoLibrary()
-  }
-
-  @Deprecated(
-      message =
-          "Calling DefaultNewArchitectureEntryPoint.load() with different fabricEnabled and concurrentReactEnabled is deprecated. Please use a single flag for both Fabric and Concurrent React",
-      replaceWith = ReplaceWith("load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)"),
-      level = DeprecationLevel.WARNING)
-  fun load(
-      turboModulesEnabled: Boolean = true,
-      fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = false,
-      @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean = true,
-  ) {
-    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
   }
 
   private var privateFabricEnabled: Boolean = false
@@ -76,4 +68,20 @@ object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   val bridgelessEnabled: Boolean
     get() = privateBridgelessEnabled
+
+  @VisibleForTesting
+  fun isConfigurationValid(
+      turboModulesEnabled: Boolean,
+      fabricEnabled: Boolean,
+      bridgelessEnabled: Boolean
+  ): Pair<Boolean, String> =
+      when {
+        fabricEnabled && !turboModulesEnabled ->
+            false to
+                "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
+        bridgelessEnabled && (!turboModulesEnabled || !fabricEnabled) ->
+            false to
+                "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
+        else -> true to ""
+      }
 }

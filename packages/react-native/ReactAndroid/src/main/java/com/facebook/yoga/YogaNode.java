@@ -226,4 +226,6 @@ public abstract class YogaNode implements YogaProps {
   public abstract YogaNode cloneWithoutChildren();
 
   public abstract YogaNode cloneWithChildren();
+
+  public abstract void setAlwaysFormsContainingBlock(boolean alwaysFormsContainingBlock);
 }

@@ -48,7 +48,9 @@ class YG_EXPORT Node : public ::YGNode {
     return context_;
   }
 
-  void print();
+  bool alwaysFormsContainingBlock() const {
+    return alwaysFormsContainingBlock_;
+  }
 
   bool getHasNewLayout() const {
     return hasNewLayout_;
@@ -242,8 +244,8 @@ class YG_EXPORT Node : public ::YGNode {
     context_ = context;
   }
 
-  void setPrintFunc(YGPrintFunc printFunc) {
-    printFunc_ = printFunc;
+  void setAlwaysFormsContainingBlock(bool alwaysFormsContainingBlock) {
+    alwaysFormsContainingBlock_ = alwaysFormsContainingBlock;
   }
 
   void setHasNewLayout(bool hasNewLayout) {
@@ -342,18 +344,14 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction,
       const float axisSize) const;
 
-  Edge getInlineStartEdgeUsingErrata(
+  Edge getInlineStartEdge(FlexDirection flexDirection, Direction direction)
+      const;
+  Edge getInlineEndEdge(FlexDirection flexDirection, Direction direction) const;
+  Edge getFlexStartRelativeEdge(
       FlexDirection flexDirection,
       Direction direction) const;
-  Edge getInlineEndEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexStartRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexEndRelativeEdgeUsingErrata(
-      FlexDirection flexDirection,
-      Direction direction) const;
+  Edge getFlexEndRelativeEdge(FlexDirection flexDirection, Direction direction)
+      const;
 
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
@@ -369,11 +367,11 @@ class YG_EXPORT Node : public ::YGNode {
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
   bool isDirty_ : 1 = false;
+  bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
-  YGMeasureFunc measureFunc_ = {nullptr};
-  YGBaselineFunc baselineFunc_ = {nullptr};
-  YGPrintFunc printFunc_ = {nullptr};
+  YGMeasureFunc measureFunc_ = nullptr;
+  YGBaselineFunc baselineFunc_ = nullptr;
   YGDirtiedFunc dirtiedFunc_ = nullptr;
   Style style_ = {};
   LayoutResults layout_ = {};

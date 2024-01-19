@@ -114,4 +114,5 @@ public class YogaNative {
   static native void jni_YGNodePrintJNI(long nativePointer);
   static native void jni_YGNodeSetStyleInputsJNI(long nativePointer, float[] styleInputsArray, int size);
   static native long jni_YGNodeCloneJNI(long nativePointer);
+  static native void jni_YGNodeSetAlwaysFormsContainingBlockJNI(long nativePointer, boolean alwaysFormContainingBlock);
 }

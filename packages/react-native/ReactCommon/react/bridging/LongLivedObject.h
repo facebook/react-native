@@ -28,7 +28,7 @@ namespace facebook::react {
  */
 class LongLivedObject {
  public:
-  void allowRelease();
+  virtual void allowRelease();
 
  protected:
   LongLivedObject() = default;
@@ -42,6 +42,7 @@ class LongLivedObjectCollection {
  public:
   static LongLivedObjectCollection& get();
 
+  LongLivedObjectCollection() = default;
   LongLivedObjectCollection(const LongLivedObjectCollection&) = delete;
   void operator=(const LongLivedObjectCollection&) = delete;
 
@@ -51,8 +52,6 @@ class LongLivedObjectCollection {
   size_t size() const;
 
  private:
-  LongLivedObjectCollection() = default;
-
   std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
   mutable std::mutex collectionMutex_;
 };

@@ -6,6 +6,7 @@
 require "test/unit"
 require "json"
 require_relative "../codegen_utils.rb"
+require_relative "../helpers.rb"
 require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/DirMock.rb"
 require_relative "./test_utils/PodMock.rb"
@@ -363,7 +364,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             :react_native_path => "../node_modules/react-native"}
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
-            :folly_version=>"2023.08.07.00",
+            :folly_version=>Helpers::Constants.folly_config()[:version],
             :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
@@ -390,11 +391,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(true)
         codegen_dir = "build/generated/ios"
-        ios_folder = '.'
         rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -406,11 +406,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
-        ios_folder = '.'
         rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -423,8 +422,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
-        ios_folder = '.'
-        codegen_path = "#{@base_path}/./#{codegen_dir}"
+        codegen_path = "#{@base_path}/#{codegen_dir}"
         globs = [
             "/MyModuleSpecs/MyModule.h",
             "#{codegen_path}/MyModuleSpecs/MyModule.mm",
@@ -437,7 +435,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         DirMock.mocked_existing_globs(globs, "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(DirMock.exist_invocation_params, [codegen_path, codegen_path])
@@ -459,10 +457,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/./#{codegen_dir}"
-        ios_folder = '.'
 
         # Act
-        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: DirMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns, [])
@@ -472,12 +469,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/./#{codegen_dir}"
-        ios_folder = '.'
         DirMock.mocked_existing_dirs(codegen_path)
         DirMock.mocked_existing_globs([], "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: DirMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns, [])
@@ -487,13 +483,12 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/./#{codegen_dir}"
-        ios_folder = '.'
         DirMock.mocked_existing_dirs(codegen_path)
         DirMock.mocked_existing_globs(["#{codegen_path}/MyModuleSpecs/MyModule.mm",], "#{codegen_path}/*")
 
         # Act
         assert_raises() {
-            CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+            CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: DirMock)
         }
 
         # Assert

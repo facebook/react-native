@@ -280,10 +280,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableClonelessStateProgression = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:position_relative_default")) {
-    CoreFeatures::positionRelativeDefault = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {

@@ -5,6 +5,7 @@
 
 require "test/unit"
 require_relative "../codegen.rb"
+require_relative "../helpers.rb"
 require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/FileMock.rb"
@@ -59,7 +60,7 @@ class CodegenTests < Test::Unit::TestCase
             :codegen_output_dir=>"build/generated/ios",
             :config_file_dir=>"",
             :fabric_enabled=>false,
-            :folly_version=>"2023.08.07.00",
+            :folly_version=>Helpers::Constants.folly_config()[:version],
             :react_native_path=>"../node_modules/react-native"
         }])
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params, [])

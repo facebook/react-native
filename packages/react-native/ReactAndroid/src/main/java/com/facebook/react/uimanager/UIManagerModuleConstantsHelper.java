@@ -24,7 +24,7 @@ import java.util.Set;
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
  * registered view managers.
  */
-/* package */ class UIManagerModuleConstantsHelper {
+public class UIManagerModuleConstantsHelper {
   private static final String TAG = "UIManagerModuleConstantsHelper";
   private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
   private static final String DIRECT_EVENTS_KEY = "directEventTypes";
@@ -43,7 +43,7 @@ import java.util.Set;
     return constants;
   }
 
-  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+  public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
         BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
         DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());

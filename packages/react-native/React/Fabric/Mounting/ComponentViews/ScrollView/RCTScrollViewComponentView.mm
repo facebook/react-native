@@ -471,7 +471,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
 {
+  if (!_eventEmitter) {
+    return;
+  }
+
   _isUserTriggeredScrolling = NO;
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollToTop([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 

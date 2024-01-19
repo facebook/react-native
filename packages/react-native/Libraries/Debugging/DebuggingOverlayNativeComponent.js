@@ -20,22 +20,40 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
-export type Overlay = {
-  rect: {left: number, top: number, width: number, height: number},
+
+export type TraceUpdate = {
+  id: number,
+  rectangle: ElementRectangle,
   color: ?ProcessedColorValue,
 };
 
+export type ElementRectangle = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+};
+
 interface NativeCommands {
-  +draw: (
+  +highlightTraceUpdates: (
     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    // TODO(T144046177): Ideally we can pass array of Overlay, but currently
-    // Array type is not supported in RN codegen for building native commands.
-    overlays: string,
+    updates: $ReadOnlyArray<TraceUpdate>,
+  ) => void;
+  +highlightElements: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+    elements: $ReadOnlyArray<ElementRectangle>,
+  ) => void;
+  +clearElementsHighlights: (
+    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
   ) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['draw'],
+  supportedCommands: [
+    'highlightTraceUpdates',
+    'highlightElements',
+    'clearElementsHighlights',
+  ],
 });
 
 export default (codegenNativeComponent<NativeProps>(

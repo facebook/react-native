@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
+
 package com.facebook.react.animated
 
 import android.annotation.SuppressLint

@@ -514,7 +514,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode implement
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0.f)
   public void setLetterSpacing(float letterSpacing) {
     mTextAttributes.setLetterSpacing(letterSpacing);
     markUpdated();

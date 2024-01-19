@@ -17,7 +17,6 @@
 #include "CxxModuleWrapperBase.h"
 #include "JCallback.h"
 #include "JInspector.h"
-#include "JInspectorFlags.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
@@ -85,7 +84,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     WritableNativeMap::registerNatives();
     JReactMarker::registerNatives();
     JInspector::registerNatives();
-    JInspectorFlags::registerNatives();
   });
 }
 

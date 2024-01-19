@@ -254,15 +254,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       return null;
     }
 
+    return getConstantsForViewManager(targetView, mCustomDirectEvents);
+  }
+
+  public static @Nullable WritableMap getConstantsForViewManager(
+      ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
-        .arg("ViewManager", targetView.getName())
+        .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
     try {
       Map<String, Object> viewManagerConstants =
           UIManagerModuleConstantsHelper.createConstantsForViewManager(
-              targetView, null, null, null, mCustomDirectEvents);
+              viewManager, null, null, null, customDirectEvents);
       if (viewManagerConstants != null) {
         return Arguments.makeNativeMap(viewManagerConstants);
       }
@@ -484,32 +489,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
     mUIImplementation.setChildren(viewTag, childrenTags);
-  }
-
-  /**
-   * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
-   * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
-   * JS to formulate it itself.
-   *
-   * @deprecated This method will not be available in Fabric UIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void replaceExistingNonRootView(int oldTag, int newTag) {
-    mUIImplementation.replaceExistingNonRootView(oldTag, newTag);
-  }
-
-  /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt.
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   * @deprecated This method will not be available in Fabric UIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
   }
 
   /**

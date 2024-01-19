@@ -11,7 +11,10 @@ add_compile_options(
         -std=c++20)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(jsinspector STATIC ${jsinspector_SRC})
+# jsinspector contains singletons that hold app-global state (InspectorFlags, InspectorImpl).
+# Placing it in a shared library makes the singletons safe to use from arbitrary shared libraries
+# (even ones that don't depend on one another).
+add_library(jsinspector SHARED ${jsinspector_SRC})
 
 target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
 

@@ -920,13 +920,9 @@ static void justifyMainAxis(
   const auto& style = node->getStyle();
 
   const float leadingPaddingAndBorderMain =
-      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? node->getInlineStartPaddingAndBorder(mainAxis, direction, ownerWidth)
-      : node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
+      node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
   const float trailingPaddingAndBorderMain =
-      node->hasErrata(Errata::StartingEndingEdgeFromFlexDirection)
-      ? node->getInlineEndPaddingAndBorder(mainAxis, direction, ownerWidth)
-      : node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
+      node->getFlexEndPaddingAndBorder(mainAxis, direction, ownerWidth);
 
   const float gap = node->getGapForAxis(mainAxis);
   // If we are using "at most" rules in the main axis, make sure that
@@ -2030,48 +2026,22 @@ static void calculateLayoutImpl(
 
   if (performLayout) {
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
-    if (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative)) {
-      // Let the containing block layout its absolute descendants. By definition
-      // the containing block will not be static unless we are at the root.
-      if (node->getStyle().positionType() != PositionType::Static ||
-          depth == 1) {
-        layoutAbsoluteDescendants(
-            node,
-            node,
-            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-            direction,
-            layoutMarkerData,
-            depth,
-            generationCount,
-            0.0f,
-            0.0f);
-      }
-    } else {
-      for (auto child : node->getChildren()) {
-        if (child->getStyle().display() == Display::None ||
-            child->getStyle().positionType() != PositionType::Absolute) {
-          continue;
-        }
-        const bool absolutePercentageAgainstPaddingEdge =
-            node->getConfig()->isExperimentalFeatureEnabled(
-                ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge);
-
-        layoutAbsoluteChild(
-            node,
-            node,
-            child,
-            absolutePercentageAgainstPaddingEdge
-                ? node->getLayout().measuredDimension(Dimension::Width)
-                : availableInnerWidth,
-            absolutePercentageAgainstPaddingEdge
-                ? node->getLayout().measuredDimension(Dimension::Height)
-                : availableInnerHeight,
-            isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
-            direction,
-            layoutMarkerData,
-            depth,
-            generationCount);
-      }
+    // Let the containing block layout its absolute descendants. By definition
+    // the containing block will not be static unless we are at the root.
+    if (node->getStyle().positionType() != PositionType::Static ||
+        node->alwaysFormsContainingBlock() || depth == 1) {
+      layoutAbsoluteDescendants(
+          node,
+          node,
+          isMainAxisRow ? sizingModeMainDim : sizingModeCrossDim,
+          direction,
+          layoutMarkerData,
+          depth,
+          generationCount,
+          0.0f,
+          0.0f,
+          availableInnerWidth,
+          availableInnerHeight);
     }
 
     // STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
@@ -2085,8 +2055,7 @@ static void calculateLayoutImpl(
         // cannot guarantee that their positions are set when their parents are
         // done with layout.
         if (child->getStyle().display() == Display::None ||
-            (!node->hasErrata(Errata::PositionStaticBehavesLikeRelative) &&
-             child->getStyle().positionType() == PositionType::Absolute)) {
+            child->getStyle().positionType() == PositionType::Absolute) {
           continue;
         }
         if (needsMainTrailingPos) {
@@ -2099,35 +2068,6 @@ static void calculateLayoutImpl(
       }
     }
   }
-}
-
-bool gPrintChanges = false;
-bool gPrintSkips = false;
-
-static const char* spacer =
-    "                                                            ";
-
-static const char* spacerWithLength(const unsigned long level) {
-  const size_t spacerLen = strlen(spacer);
-  if (level > spacerLen) {
-    return &spacer[0];
-  } else {
-    return &spacer[spacerLen - level];
-  }
-}
-
-static const char* sizingModeName(
-    const SizingMode mode,
-    const bool performLayout) {
-  switch (mode) {
-    case SizingMode::MaxContent:
-      return performLayout ? "LAY_UNDEFINED" : "UNDEFINED";
-    case SizingMode::StretchFit:
-      return performLayout ? "LAY_EXACTLY" : "EXACTLY";
-    case SizingMode::FitContent:
-      return performLayout ? "LAY_AT_MOST" : "AT_MOST";
-  }
-  return "";
 }
 
 //
@@ -2256,48 +2196,7 @@ bool calculateLayoutInternal(
 
     (performLayout ? layoutMarkerData.cachedLayouts
                    : layoutMarkerData.cachedMeasures) += 1;
-
-    if (gPrintChanges && gPrintSkips) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.{[skipped] ",
-          spacerWithLength(depth),
-          depth);
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          availableWidth,
-          availableHeight,
-          cachedResults->computedWidth,
-          cachedResults->computedHeight,
-          LayoutPassReasonToString(reason));
-    }
   } else {
-    if (gPrintChanges) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.{%s",
-          spacerWithLength(depth),
-          depth,
-          needToVisitNode ? "*" : "");
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, aw: %f ah: %f %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          availableWidth,
-          availableHeight,
-          LayoutPassReasonToString(reason));
-    }
-
     calculateLayoutImpl(
         node,
         availableWidth,
@@ -2313,26 +2212,6 @@ bool calculateLayoutInternal(
         generationCount,
         reason);
 
-    if (gPrintChanges) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.}%s",
-          spacerWithLength(depth),
-          depth,
-          needToVisitNode ? "*" : "");
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, d: (%f, %f) %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          layout->measuredDimension(Dimension::Width),
-          layout->measuredDimension(Dimension::Height),
-          LayoutPassReasonToString(reason));
-    }
-
     layout->lastOwnerDirection = ownerDirection;
 
     if (cachedResults == nullptr) {
@@ -2342,9 +2221,6 @@ bool calculateLayoutInternal(
 
       if (layout->nextCachedMeasurementsIndex ==
           LayoutResults::MaxCachedMeasurements) {
-        if (gPrintChanges) {
-          yoga::log(node, LogLevel::Verbose, "Out of cache entries!\n");
-        }
         layout->nextCachedMeasurementsIndex = 0;
       }
 

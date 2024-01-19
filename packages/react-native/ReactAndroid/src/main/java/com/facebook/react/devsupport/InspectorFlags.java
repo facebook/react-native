@@ -5,19 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.devsupport;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 
-/** fbjni interface for reading `jsinspector_modern::InspectorFlags`. */
+/** JNI wrapper for `jsinspector_modern::InspectorFlags`. */
 @DoNotStrip
 public class InspectorFlags {
   static {
-    ReactBridge.staticInit();
+    DevSupportSoLoader.staticInit();
   }
 
   @DoNotStrip
   public static native boolean getEnableModernCDPRegistry();
+
+  @DoNotStrip
+  public static native boolean getEnableCxxInspectorPackagerConnection();
 
   private InspectorFlags() {}
 }

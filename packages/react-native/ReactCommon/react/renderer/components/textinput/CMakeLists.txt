@@ -12,7 +12,6 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS platform/android/react/renderer/components/androidtextinput/*.cpp)

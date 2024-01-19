@@ -46,7 +46,7 @@ using namespace facebook::react;
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
                                bridge:(nullable RCTBridge *)bridge
                           bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
-                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
+                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData
 {
   if (self = [super init]) {
     _componentData = componentData;
@@ -89,7 +89,7 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (UIView *)createPaperViewWithTag:(NSInteger)tag;
+- (UIView *)createPaperViewWithTag:(NSInteger)tag
 {
   UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];

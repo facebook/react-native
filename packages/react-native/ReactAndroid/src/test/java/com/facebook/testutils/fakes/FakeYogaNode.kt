@@ -106,6 +106,8 @@ class FakeYogaNode : YogaNode() {
 
   override fun setBaselineFunction(baselineFunction: YogaBaselineFunction?) {}
 
+  override fun setAlwaysFormsContainingBlock(alwaysFormsContainingBlock: Boolean) {}
+
   override fun getWidth(): YogaValue = YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED)
 
   override fun getMinWidth(): YogaValue = YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED)

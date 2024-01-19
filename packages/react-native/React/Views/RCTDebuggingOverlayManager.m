@@ -22,13 +22,39 @@ RCT_EXPORT_MODULE(DebuggingOverlay)
   return [RCTDebuggingOverlay new];
 }
 
-RCT_EXPORT_METHOD(draw : (nonnull NSNumber *)viewTag nodes : (NSString *)serializedNodes)
+RCT_EXPORT_METHOD(highlightTraceUpdates : (nonnull NSNumber *)viewTag nodes : (NSArray *)updates)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
 
     if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
-      [(RCTDebuggingOverlay *)view draw:serializedNodes];
+      [(RCTDebuggingOverlay *)view highlightTraceUpdates:updates];
+    } else {
+      RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(highlightElements : (nonnull NSNumber *)viewTag elements : (NSArray *)elements)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+
+    if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
+      [(RCTDebuggingOverlay *)view highlightElements:elements];
+    } else {
+      RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(clearElementsHighlights : (nonnull NSNumber *)viewTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+
+    if ([view isKindOfClass:[RCTDebuggingOverlay class]]) {
+      [(RCTDebuggingOverlay *)view clearElementsHighlights];
     } else {
       RCTLogError(@"Expected view to be RCTDebuggingOverlay, got %@", NSStringFromClass([view class]));
     }

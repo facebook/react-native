@@ -1,5 +1,52 @@
 # Changelog
 
+## v0.72.10
+
+### Added
+
+- Unhandled promise rejection - attach non-standard Error object stack info if possible ([655b12dbfa](https://github.com/facebook/react-native/commit/655b12dbfaa2c48f9fd38bbe8311e6f935045b30) by [@ospfranco](https://github.com/ospfranco))
+
+### Fixed
+
+- Revert the regression of iOS min version and updates Podfile.lock for Releases ([1f70f58aa4](https://github.com/facebook/react-native/commit/1f70f58aa4225d017ebad4f66641cbd0d1db114f) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix flags ([565281105e](https://github.com/facebook/react-native/commit/565281105e4a0c4d51d2134114bdadb33f03d61a) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.72.9
+
+### Fixed
+
+- Fix boost link ([d62d714ada](https://github.com/facebook/react-native/commit/d62d714adab891028004063136a7e906478618c4) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix New Arch build failing with -std=c++20 ([b7c1a40db4](https://github.com/facebook/react-native/commit/b7c1a40db4d5a6d992b926307842fe671ae80436) by [@tido64](https://github.com/tido64))
+- Fix ruby tests ([7c7baad7bd](https://github.com/facebook/react-native/commit/7c7baad7bd62cf59b46a426eeb31aefc1e85bca7) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock and try to fix Hermes update ([34da08755d](https://github.com/facebook/react-native/commit/34da08755d88a726e0a68d7a2ef544fe4af0dc6e) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.73.2
+
+### Added
+
+- Unhandled promise rejection - attach non-standard Error object stack info if possible ([655b12dbfa](https://github.com/facebook/react-native/commit/655b12dbfaa2c48f9fd38bbe8311e6f935045b30) by [@ospfranco](https://github.com/ospfranco))
+
+### Changed
+
+- Bump Metro to ^v0.80.3 ([16dff523b0](https://github.com/facebook/react-native/commit/16dff523b0a16d7fa9b651062c386885c2f48a6b) by [@huntie](https://github.com/huntie))
+- Automatically reconnect to an existing debugger session on relaunching the app ([0806ad7854](https://github.com/facebook/react-native/commit/0806ad785458009887ff4c67b995ec992a010702) by [@motiz88](https://github.com/motiz88))
+
+#### iOS specific
+
+- Update ios pod post_install logic for detecting if hermes is enabled ([d6163d7f43](https://github.com/facebook/react-native/commit/d6163d7f43a753f24148450033491dfc9c5d0c36) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+
+### Fixed
+
+- Fix comment about adding packages in android template ([ac9b87cd57](https://github.com/facebook/react-native/commit/ac9b87cd57029a0f0876aaec8d259d9befba9838) by [@janicduplessis](https://github.com/janicduplessis))
+- Fix boost download url ([7e721f09ad](https://github.com/facebook/react-native/commit/7e721f09ad3dafed9f490f433b2ac613786c27b2) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- Fix horizontal scrollview scrollTo coordinate space in RTL on oldarch ([e809e0aca7](https://github.com/facebook/react-native/commit/e809e0aca713ad12f91778b09f5297f1da866b26) by [@NickGerleman](https://github.com/NickGerleman))
+- [enhance IP address retrieval for iOS devices in Metro bundler setup](https://github.com/facebook/react-native/pull/41839/commits/6a351db158dadf944933173aa0150435c742001f) ([9f28616650](https://github.com/facebook/react-native/commit/9f28616650a61ca298c2fc710b588445b8ceb94c) by [@Morritz](https://github.com/Morritz))
+
+
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
 ## v0.73.1
@@ -899,6 +946,25 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.15
+
+### Fixed
+
+#### Android specific
+- Fix Android crash when apply PlatformColor to borders ([265af222aa](https://github.com/facebook/react-native/commit/265af222aa8acb3b514e22a7db191d66755f553b) by [@axinvd](https://github.com/axinvd))
+- Fixed crash occurring in certain native views when keyboard events are fired. ([9497203957](https://github.com/facebook/react-native/commit/94972039571e1f3b387e0f63227a6ad13740eaf3) by [@kot331107](https://github.com/kot331107))
+
+#### iOS specific
+
+- Migrate away from JFrog to download boost ([ab19fd6aef](https://github.com/facebook/react-native/commit/ab19fd6aef43a739f78cf62155fec59d95f577d3) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix overriding `EXCLUDED_ARCHS` when installing Hermes on RN v0.71 ([16a605b6a3](https://github.com/facebook/react-native/commit/16a605b6a3c320f93b6cda9198d738672086e851) by [@ken0nek](https://github.com/ken0nek))
+
+### Changed
+
+- Update node installation on debian (0.71) ([bdc0ef3466](https://github.com/facebook/react-native/commit/bdc0ef34664b7f1a2b8598ad6092a2ec6cf089ce) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump cli to 10.2.6 ([0bc2dd03c1](https://github.com/facebook/react-native/commit/0bc2dd03c1ccb4ab6ecf55add249f222c5757f06) by [@hurali97](https://github.com/hurali97))
+- Fix version of react-native-codegen ([c74602fe47](https://github.com/facebook/react-native/commit/c74602fe47ca12a151eb173203fb6fce7f3cc964) by [@lunaleaps](https://github.com/lunaleaps))
+
 ## v0.71.14
 
 ### Fixed
@@ -1587,6 +1653,20 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 ### Security
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.70.15
+
+### Changed
+
+- BUMP CLI to v9.3.5 ([cb170efdd3](https://github.com/facebook/react-native/commit/cb170efdd346776aa6941512e1c23eb11c3f0a3a) by [@hurali97](https://github.com/hurali97))
+- Bump react-devtools-core to 4.27.7 ([abb4a2bddd](https://github.com/facebook/react-native/commit/abb4a2bdddbc904b4b3ff185e41c2dddb5ba684b) by [@lunaleaps](https://github.com/lunaleaps))
+- Bump hermes-engine ([5b95254359](https://github.com/facebook/react-native/commit/5b95254359da9813ce8eba5571b9abf6a5fcb21c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Migrate boost download url away from JFrog ([e8e059a977](https://github.com/facebook/react-native/commit/e8e059a977ef2feec1b4b9dfd2866daede2b8ff8) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.70.14
 

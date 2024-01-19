@@ -324,8 +324,10 @@ YGNodeType YGNodeGetNodeType(YGNodeConstRef node) {
   return unscopedEnum(resolveRef(node)->getNodeType());
 }
 
-void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
-  resolveRef(node)->setPrintFunc(printFunc);
+void YGNodeSetAlwaysFormsContainingBlock(
+    YGNodeRef node,
+    bool alwaysFormsContainingBlock) {
+  resolveRef(node)->setAlwaysFormsContainingBlock(alwaysFormsContainingBlock);
 }
 
 #ifdef DEBUG

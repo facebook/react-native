@@ -69,10 +69,9 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: get_folly_config()[:version], hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
-        new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
         folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
         boost_compiler_flags = '-Wno-documentation'
@@ -277,7 +276,7 @@ class CodegenUtils
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
-      folly_version: '2023.08.07.00',
+      folly_version: get_folly_config()[:version],
       codegen_utils: CodegenUtils.new(),
       file_manager: File
       )
@@ -336,25 +335,25 @@ class CodegenUtils
       return @@CLEANUP_DONE
     end
 
-    def self.clean_up_build_folder(rn_path, app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.clean_up_build_folder(rn_path, codegen_dir, dir_manager: Dir, file_manager: File)
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
-      codegen_path = file_manager.join(app_path, ios_folder, codegen_dir)
+      ios_folder = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+      codegen_path = file_manager.join(ios_folder, codegen_dir)
       return if !dir_manager.exist?(codegen_path)
 
       FileUtils.rm_rf(dir_manager.glob("#{codegen_path}/*"))
       base_provider_path = file_manager.join(rn_path, 'React', 'Fabric', 'RCTThirdPartyFabricComponentsProvider')
       FileUtils.rm_rf("#{base_provider_path}.h")
       FileUtils.rm_rf("#{base_provider_path}.mm")
-      CodegenUtils.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: dir_manager, file_manager: file_manager)
+      CodegenUtils.assert_codegen_folder_is_empty(codegen_path, dir_manager: dir_manager)
     end
 
     # Need to split this function from the previous one to be able to test it properly.
-    def self.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.assert_codegen_folder_is_empty(codegen_path, dir_manager: Dir)
       # double check that the files have actually been deleted.
       # Emit an error message if not.
-      codegen_path = file_manager.join(app_path, ios_folder, codegen_dir)
       if dir_manager.exist?(codegen_path) && dir_manager.glob("#{codegen_path}/*").length() != 0
         Pod::UI.warn "Unable to remove the content of #{codegen_path} folder. Please run rm -rf #{codegen_path} and try again."
         abort

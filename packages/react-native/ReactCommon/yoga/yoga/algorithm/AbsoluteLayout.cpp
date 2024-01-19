@@ -178,21 +178,6 @@ static void positionAbsoluteChildLegacy(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))),
         flexStartEdge(axis));
-  } else if (
-      parent->getConfig()->isExperimentalFeatureEnabled(
-          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(axis, direction)) {
-    child->setLayoutPosition(
-        child->getFlexStartPosition(
-            axis,
-            direction,
-            containingNode->getLayout().measuredDimension(dimension(axis))) +
-            containingNode->getFlexStartBorder(axis, direction) +
-            child->getFlexStartMargin(
-                axis,
-                direction,
-                isAxisRow ? containingBlockWidth : containingBlockHeight),
-        flexStartEdge(axis));
   }
 }
 
@@ -276,24 +261,25 @@ static void positionAbsoluteChild(
     const bool isMainAxis,
     const float containingBlockWidth,
     const float containingBlockHeight) {
-  child->hasErrata(Errata::AbsolutePositioning) ? positionAbsoluteChildLegacy(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight)
-                                                : positionAbsoluteChildImpl(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight);
+  child->hasErrata(Errata::AbsolutePositioningIncorrect)
+      ? positionAbsoluteChildLegacy(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight)
+      : positionAbsoluteChildImpl(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight);
 }
 
 void layoutAbsoluteChild(
@@ -477,7 +463,9 @@ void layoutAbsoluteDescendants(
     uint32_t currentDepth,
     uint32_t generationCount,
     float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock) {
+    float currentNodeCrossOffsetFromContainingBlock,
+    float containingNodeAvailableInnerWidth,
+    float containingNodeAvailableInnerHeight) {
   const FlexDirection mainAxis = resolveDirection(
       currentNode->getStyle().flexDirection(), currentNodeDirection);
   const FlexDirection crossAxis =
@@ -486,14 +474,23 @@ void layoutAbsoluteDescendants(
     if (child->getStyle().display() == Display::None) {
       continue;
     } else if (child->getStyle().positionType() == PositionType::Absolute) {
+      const bool absoluteErrata =
+          currentNode->hasErrata(Errata::AbsolutePercentAgainstInnerSize);
+      const float containingBlockWidth = absoluteErrata
+          ? containingNodeAvailableInnerWidth
+          : containingNode->getLayout().measuredDimension(Dimension::Width) -
+              containingNode->getBorderForAxis(FlexDirection::Row);
+      const float containingBlockHeight = absoluteErrata
+          ? containingNodeAvailableInnerHeight
+          : containingNode->getLayout().measuredDimension(Dimension::Height) -
+              containingNode->getBorderForAxis(FlexDirection::Column);
+
       layoutAbsoluteChild(
           containingNode,
           currentNode,
           child,
-          containingNode->getLayout().measuredDimension(Dimension::Width) -
-              containingNode->getBorderForAxis(FlexDirection::Row),
-          containingNode->getLayout().measuredDimension(Dimension::Height) -
-              containingNode->getBorderForAxis(FlexDirection::Column),
+          containingBlockWidth,
+          containingBlockHeight,
           widthSizingMode,
           currentNodeDirection,
           layoutMarkerData,
@@ -528,7 +525,9 @@ void layoutAbsoluteDescendants(
       if (needsTrailingPosition(crossAxis)) {
         setChildTrailingPosition(currentNode, child, crossAxis);
       }
-    } else if (child->getStyle().positionType() == PositionType::Static) {
+    } else if (
+        child->getStyle().positionType() == PositionType::Static &&
+        !child->alwaysFormsContainingBlock()) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
       const float childMainOffsetFromContainingBlock =
@@ -547,7 +546,9 @@ void layoutAbsoluteDescendants(
           currentDepth + 1,
           generationCount,
           childMainOffsetFromContainingBlock,
-          childCrossOffsetFromContainingBlock);
+          childCrossOffsetFromContainingBlock,
+          containingNodeAvailableInnerWidth,
+          containingNodeAvailableInnerHeight);
     }
   }
 }

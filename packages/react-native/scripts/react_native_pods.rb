@@ -20,7 +20,6 @@ require_relative './cocoapods/helpers.rb'
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
 
@@ -67,7 +66,6 @@ end
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
-# - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
 def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
@@ -75,8 +73,7 @@ def use_react_native! (
   production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   app_path: '..',
-  config_file_dir: '',
-  ios_folder: 'ios'
+  config_file_dir: ''
 )
 
   # Set the app_path as env variable so the podspecs can access it.
@@ -87,16 +84,15 @@ def use_react_native! (
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(path, app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(path, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['USE_NEW_ARCH'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
+  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
-  ENV['RCT_NEW_ARCH_ENABLED'] = "1"
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
@@ -158,6 +154,7 @@ def use_react_native! (
   pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
+  folly_config = get_folly_config()
   run_codegen!(
     app_path,
     config_file_dir,
@@ -168,7 +165,7 @@ def use_react_native! (
     :hermes_enabled => hermes_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
-    :folly_version => $FOLLY_VERSION
+    :folly_version => folly_config[:version]
   )
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
@@ -238,7 +235,8 @@ end
 # - spec: The spec that has to be configured with the New Architecture code
 # - new_arch_enabled: Whether the module should install dependencies for the new architecture
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
-  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
+  folly_config = get_folly_config()
+  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
 end
 
 # It returns the default flags.
@@ -247,6 +245,15 @@ def get_default_flags()
   warn 'get_default_flags is deprecated. Please remove the keys from the `use_react_native!` function'
   warn 'if you are using the default already and pass the value you need in case you don\'t want the default'
   return ReactNativePodsUtils.get_default_flags()
+end
+
+# This method returns an hash with the folly version and the folli compiler flags
+# that can be used to configure libraries.
+# In this way, we can update those values in react native, and all the libraries will benefit
+# from it.
+# @return an hash with the `:version` and `:compiler_flags` fields.
+def get_folly_config()
+  return Helpers::Constants.folly_config
 end
 
 # Function that executes after React Native has been installed to configure some flags and build settings.

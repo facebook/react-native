@@ -383,6 +383,11 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
 
   yogaNode_.setStyle(styleResult);
+  if (getTraits().check(ShadowNodeTraits::ViewKind)) {
+    auto& viewProps = static_cast<const ViewProps&>(*props_);
+    YGNodeSetAlwaysFormsContainingBlock(
+        &yogaNode_, viewProps.transform != Transform::Identity());
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
@@ -497,8 +502,7 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
       case LayoutConformance::Classic:
         return YGErrataAll;
       case LayoutConformance::Strict:
-        // This is temporary until the default position type is relative
-        return YGErrataPositionStaticBehavesLikeRelative;
+        return YGErrataNone;
       case LayoutConformance::Undefined:
         return defaultErrata;
     }
@@ -576,8 +580,7 @@ void YogaLayoutableShadowNode::layoutTree(
   SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
-      (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft ||
-       !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+      layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
     SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
@@ -695,8 +698,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
       newLayoutMetrics.wasLeftAndRightSwapped =
           layoutContext.swapLeftAndRightInRTL &&
-          (newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft ||
-           !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+          newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft;
 
       // Child node's layout has changed. When a node is added to
       // `affectedNodes`, onLayout event is called on the component. Comparing
@@ -975,7 +977,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -993,7 +995,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of

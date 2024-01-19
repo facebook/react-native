@@ -31,9 +31,9 @@ type RequestMetadata = $ReadOnly<{
 }>;
 
 class DeviceEventReporter {
-  _eventReporter: EventReporter;
+  #eventReporter: EventReporter;
 
-  _pendingCommands: TTLCache<number, PendingCommand> = new TTLCache({
+  #pendingCommands: TTLCache<number, PendingCommand> = new TTLCache({
     ttl: 10000,
     dispose: (
       command: PendingCommand,
@@ -44,15 +44,15 @@ class DeviceEventReporter {
         // TODO: Report clobbering ('set') using a dedicated error code
         return;
       }
-      this._logExpiredCommand(command);
+      this.#logExpiredCommand(command);
     },
   });
 
-  _metadata: DeviceMetadata;
+  #metadata: DeviceMetadata;
 
   constructor(eventReporter: EventReporter, metadata: DeviceMetadata) {
-    this._eventReporter = eventReporter;
-    this._metadata = metadata;
+    this.#eventReporter = eventReporter;
+    this.#metadata = metadata;
   }
 
   logRequest(
@@ -60,7 +60,7 @@ class DeviceEventReporter {
     origin: 'debugger' | 'proxy',
     metadata: RequestMetadata,
   ): void {
-    this._pendingCommands.set(req.id, {
+    this.#pendingCommands.set(req.id, {
       method: req.method,
       requestOrigin: origin,
       requestTime: Date.now(),
@@ -80,9 +80,9 @@ class DeviceEventReporter {
       frontendUserAgent: string | null,
     }>,
   ): void {
-    const pendingCommand = this._pendingCommands.get(res.id);
+    const pendingCommand = this.#pendingCommands.get(res.id);
     if (!pendingCommand) {
-      this._eventReporter.logEvent({
+      this.#eventReporter.logEvent({
         type: 'debugger_command',
         protocol: 'CDP',
         requestOrigin: null,
@@ -91,22 +91,22 @@ class DeviceEventReporter {
         errorCode: 'UNMATCHED_REQUEST_ID',
         responseOrigin: 'proxy',
         timeSinceStart: null,
-        appId: this._metadata.appId,
-        deviceId: this._metadata.deviceId,
-        deviceName: this._metadata.deviceName,
+        appId: this.#metadata.appId,
+        deviceId: this.#metadata.deviceId,
+        deviceName: this.#metadata.deviceName,
         pageId: metadata.pageId,
         frontendUserAgent: metadata.frontendUserAgent,
       });
       return;
     }
     const timeSinceStart = Date.now() - pendingCommand.requestTime;
-    this._pendingCommands.delete(res.id);
+    this.#pendingCommands.delete(res.id);
     if (res.error) {
       let {message} = res.error;
       if ('data' in res.error) {
         message += ` (${String(res.error.data)})`;
       }
-      this._eventReporter.logEvent({
+      this.#eventReporter.logEvent({
         type: 'debugger_command',
         requestOrigin: pendingCommand.requestOrigin,
         method: pendingCommand.method,
@@ -116,15 +116,15 @@ class DeviceEventReporter {
         errorDetails: message,
         responseOrigin: origin,
         timeSinceStart,
-        appId: this._metadata.appId,
-        deviceId: this._metadata.deviceId,
-        deviceName: this._metadata.deviceName,
+        appId: this.#metadata.appId,
+        deviceId: this.#metadata.deviceId,
+        deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       });
       return;
     }
-    this._eventReporter.logEvent({
+    this.#eventReporter.logEvent({
       type: 'debugger_command',
       protocol: 'CDP',
       requestOrigin: pendingCommand.requestOrigin,
@@ -132,9 +132,9 @@ class DeviceEventReporter {
       status: 'success',
       responseOrigin: origin,
       timeSinceStart,
-      appId: this._metadata.appId,
-      deviceId: this._metadata.deviceId,
-      deviceName: this._metadata.deviceName,
+      appId: this.#metadata.appId,
+      deviceId: this.#metadata.deviceId,
+      deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
     });
@@ -147,19 +147,19 @@ class DeviceEventReporter {
       frontendUserAgent: string | null,
     }>,
   ) {
-    this._eventReporter.logEvent({
+    this.#eventReporter.logEvent({
       type: 'connect_debugger_frontend',
       status: 'success',
-      appId: this._metadata.appId,
-      deviceName: this._metadata.deviceName,
-      deviceId: this._metadata.deviceId,
+      appId: this.#metadata.appId,
+      deviceName: this.#metadata.deviceName,
+      deviceId: this.#metadata.deviceId,
       pageId: metadata.pageId,
       frontendUserAgent: metadata.frontendUserAgent,
     });
   }
 
   logDisconnection(disconnectedEntity: 'device' | 'debugger') {
-    const eventReporter = this._eventReporter;
+    const eventReporter = this.#eventReporter;
     if (!eventReporter) {
       return;
     }
@@ -167,8 +167,8 @@ class DeviceEventReporter {
       disconnectedEntity === 'device'
         ? 'DEVICE_DISCONNECTED'
         : 'DEBUGGER_DISCONNECTED';
-    for (const pendingCommand of this._pendingCommands.values()) {
-      this._eventReporter.logEvent({
+    for (const pendingCommand of this.#pendingCommands.values()) {
+      this.#eventReporter.logEvent({
         type: 'debugger_command',
         protocol: 'CDP',
         requestOrigin: pendingCommand.requestOrigin,
@@ -177,18 +177,18 @@ class DeviceEventReporter {
         errorCode,
         responseOrigin: 'proxy',
         timeSinceStart: Date.now() - pendingCommand.requestTime,
-        appId: this._metadata.appId,
-        deviceId: this._metadata.deviceId,
-        deviceName: this._metadata.deviceName,
+        appId: this.#metadata.appId,
+        deviceId: this.#metadata.deviceId,
+        deviceName: this.#metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       });
     }
-    this._pendingCommands.clear();
+    this.#pendingCommands.clear();
   }
 
-  _logExpiredCommand(pendingCommand: PendingCommand): void {
-    this._eventReporter.logEvent({
+  #logExpiredCommand(pendingCommand: PendingCommand): void {
+    this.#eventReporter.logEvent({
       type: 'debugger_command',
       protocol: 'CDP',
       requestOrigin: pendingCommand.requestOrigin,
@@ -197,9 +197,9 @@ class DeviceEventReporter {
       errorCode: 'TIMED_OUT',
       responseOrigin: 'proxy',
       timeSinceStart: Date.now() - pendingCommand.requestTime,
-      appId: this._metadata.appId,
-      deviceId: this._metadata.deviceId,
-      deviceName: this._metadata.deviceName,
+      appId: this.#metadata.appId,
+      deviceId: this.#metadata.deviceId,
+      deviceName: this.#metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
     });

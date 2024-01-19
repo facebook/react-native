@@ -62,7 +62,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
 
  protected:
-  void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
+  void setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName);
 
   /**
    * Why is this virtual?
@@ -126,8 +126,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
 
   bool isMethodSync(TurboModuleMethodValueKind returnType);
-  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
-  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
+  BOOL hasMethodArgConversionSelector(NSString *methodName, size_t argIndex);
+  SEL getMethodArgConversionSelector(NSString *methodName, size_t argIndex);
   NSInvocation *createMethodInvocation(
       jsi::Runtime &runtime,
       bool isSync,

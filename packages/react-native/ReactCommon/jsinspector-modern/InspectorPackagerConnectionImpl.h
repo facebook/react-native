@@ -20,9 +20,12 @@ namespace facebook::react::jsinspector_modern {
  */
 class InspectorPackagerConnection::Impl
     : public IWebSocketDelegate,
+      public IPageStatusListener,
       // Used to generate `weak_ptr`s we can pass around.
       public std::enable_shared_from_this<InspectorPackagerConnection::Impl> {
  public:
+  using SessionId = uint32_t;
+
   /**
    * Implements InspectorPackagerConnection's constructor.
    */
@@ -38,12 +41,24 @@ class InspectorPackagerConnection::Impl
   void sendEventToAllConnections(std::string event);
   std::unique_ptr<ILocalConnection> removeConnectionForPage(std::string pageId);
 
-  // Exposed for RemoteConnectionImpl's use
-  void sendEvent(std::string event, folly::dynamic payload);
-  // Exposed for RemoteConnectionImpl's use
-  void sendWrappedEvent(std::string pageId, std::string message);
+  /**
+   * Send a message to the packager as soon as possible. This method is safe
+   * to call from any thread. The connection may be closed before the message
+   * is sent, in which case the message will be dropped. The message is also
+   * dropped if the session is no longer valid.
+   */
+  void scheduleSendToPackager(
+      folly::dynamic message,
+      SessionId sourceSessionId,
+      std::string sourcePageId);
 
  private:
+  struct Session {
+    std::unique_ptr<ILocalConnection> localConnection;
+    SessionId sessionId;
+  };
+  class RemoteConnection;
+
   Impl(
       std::string url,
       std::string app,
@@ -72,31 +87,41 @@ class InspectorPackagerConnection::Impl
   virtual void didReceiveMessage(std::string_view message) override;
   virtual void didClose() override;
 
-  std::string url_;
-  std::string app_;
-  std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
+  // IPageStatusListener methods
+  virtual void onPageRemoved(int pageId) override;
 
-  std::unordered_map<std::string, std::unique_ptr<ILocalConnection>>
-      inspectorConnections_;
+  const std::string url_;
+  const std::string app_;
+  const std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
+
+  std::unordered_map<std::string, Session> inspectorSessions_;
   std::unique_ptr<IWebSocket> webSocket_;
   bool closed_{false};
   bool suppressConnectionErrors_{false};
+
+  // Whether a reconnection is currently pending.
+  bool reconnectPending_{false};
+
+  SessionId nextSessionId_{1};
 };
 
-class InspectorPackagerConnection::RemoteConnectionImpl
+class InspectorPackagerConnection::Impl::RemoteConnection
     : public IRemoteConnection {
  public:
-  RemoteConnectionImpl(
+  RemoteConnection(
       std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection,
-      std::string pageId);
+      std::string pageId,
+      SessionId sessionId);
 
   // IRemoteConnection methods
   void onMessage(std::string message) override;
   void onDisconnect() override;
 
  private:
-  std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection_;
-  std::string pageId_;
+  const std::weak_ptr<InspectorPackagerConnection::Impl>
+      owningPackagerConnection_;
+  const std::string pageId_;
+  const SessionId sessionId_;
 };
 
 } // namespace facebook::react::jsinspector_modern

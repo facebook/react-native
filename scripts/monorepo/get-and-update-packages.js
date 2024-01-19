@@ -135,7 +135,7 @@ function publishPackages(
     const version = packageMetadata.packageJson.version;
 
     const result = publishPackage(packageAbsolutePath, {
-      tag: tag,
+      tags: [tag],
       otp: process.env.NPM_CONFIG_OTP,
     });
 
