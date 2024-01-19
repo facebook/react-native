@@ -420,6 +420,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   constructor(props: Props<ItemT>) {
     super(props);
+    this.props = props;
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
       this._virtualizedListPairs =
