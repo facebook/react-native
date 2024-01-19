@@ -14,6 +14,7 @@
 
 #include <yoga/Yoga.h>
 
+#include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
@@ -23,6 +24,7 @@
 #include <yoga/enums/Gutter.h>
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/Overflow.h>
+#include <yoga/enums/PhysicalEdge.h>
 #include <yoga/enums/PositionType.h>
 #include <yoga/enums/Unit.h>
 #include <yoga/enums/Wrap.h>
@@ -201,36 +203,241 @@ class YG_EXPORT Style {
     aspectRatio_ = value;
   }
 
-  Style::Length resolveColumnGap() const {
-    if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
-      return (Style::Length)gap_[yoga::to_underlying(Gutter::Column)];
-    } else {
-      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
-    }
-  }
-
-  Style::Length resolveRowGap() const {
-    if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
-      return (Style::Length)gap_[yoga::to_underlying(Gutter::Row)];
-    } else {
-      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
-    }
-  }
-
   bool horizontalInsetsDefined() const {
-    return position_[YGEdge::YGEdgeLeft].isDefined() ||
-        position_[YGEdge::YGEdgeRight].isDefined() ||
-        position_[YGEdge::YGEdgeAll].isDefined() ||
-        position_[YGEdge::YGEdgeHorizontal].isDefined() ||
-        position_[YGEdge::YGEdgeStart].isDefined() ||
-        position_[YGEdge::YGEdgeEnd].isDefined();
+    return position_[yoga::to_underlying(Edge::Left)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Right)].isDefined() ||
+        position_[yoga::to_underlying(Edge::All)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Horizontal)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Start)].isDefined() ||
+        position_[yoga::to_underlying(Edge::End)].isDefined();
   }
 
   bool verticalInsetsDefined() const {
-    return position_[YGEdge::YGEdgeTop].isDefined() ||
-        position_[YGEdge::YGEdgeBottom].isDefined() ||
-        position_[YGEdge::YGEdgeAll].isDefined() ||
-        position_[YGEdge::YGEdgeVertical].isDefined();
+    return position_[yoga::to_underlying(Edge::Top)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Bottom)].isDefined() ||
+        position_[yoga::to_underlying(Edge::All)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Vertical)].isDefined();
+  }
+
+  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(flexStartEdge(axis), direction).isDefined();
+  }
+
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .isDefined();
+  }
+
+  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const {
+    return computePosition(flexEndEdge(axis), direction).isDefined();
+  }
+
+  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineEndEdge(axis, direction), direction)
+        .isDefined();
+  }
+
+  float computeFlexStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(flexStartEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(flexEndEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(inlineEndEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(flexStartEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(inlineStartEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(flexEndEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(inlineEndEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexStartBorder(FlexDirection axis, Direction direction) const {
+    return computeBorder(flexStartEdge(axis), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineStartBorder(FlexDirection axis, Direction direction)
+      const {
+    return computeBorder(inlineStartEdge(axis, direction), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexEndBorder(FlexDirection axis, Direction direction) const {
+    return computeBorder(flexEndEdge(axis), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineEndBorder(FlexDirection axis, Direction direction) const {
+    return computeBorder(inlineEndEdge(axis, direction), direction)
+        .resolve(0.0f)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(flexStartEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(inlineStartEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(flexEndEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(inlineEndEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeInlineStartPadding(axis, direction, widthSize) +
+        computeInlineStartBorder(axis, direction);
+  }
+
+  float computeFlexStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeFlexStartPadding(axis, direction, widthSize) +
+        computeFlexStartBorder(axis, direction);
+  }
+
+  float computeInlineEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeInlineEndPadding(axis, direction, widthSize) +
+        computeInlineEndBorder(axis, direction);
+  }
+
+  float computeFlexEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeFlexEndPadding(axis, direction, widthSize) +
+        computeFlexEndBorder(axis, direction);
+  }
+
+  float computeBorderForAxis(FlexDirection axis) const {
+    return computeInlineStartBorder(axis, Direction::LTR) +
+        computeInlineEndBorder(axis, Direction::LTR);
+  }
+
+  float computeMarginForAxis(FlexDirection axis, float widthSize) const {
+    // The total margin for a given axis does not depend on the direction
+    // so hardcoding LTR here to avoid piping direction to this function
+    return computeInlineStartMargin(axis, Direction::LTR, widthSize) +
+        computeInlineEndMargin(axis, Direction::LTR, widthSize);
+  }
+
+  float computeGapForAxis(FlexDirection axis) const {
+    auto gap = isRow(axis) ? computeColumnGap() : computeRowGap();
+    // TODO: Validate percentage gap, and expose ability to set percentage to
+    // public API
+    return maxOrDefined(gap.resolve(0.0f /*ownerSize*/).unwrap(), 0.0f);
+  }
+
+  bool flexStartMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(flexStartEdge(axis), direction).isAuto();
+  }
+
+  bool flexEndMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(flexEndEdge(axis), direction).isAuto();
   }
 
   bool operator==(const Style& other) const {
@@ -264,6 +471,138 @@ class YG_EXPORT Style {
   using Dimensions = std::array<CompactValue, ordinalCount<Dimension>()>;
   using Edges = std::array<CompactValue, ordinalCount<Edge>()>;
   using Gutters = std::array<CompactValue, ordinalCount<Gutter>()>;
+
+  Style::Length computeColumnGap() const {
+    if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::Column)];
+    } else {
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
+    }
+  }
+
+  Style::Length computeRowGap() const {
+    if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::Row)];
+    } else {
+      return (Style::Length)gap_[yoga::to_underlying(Gutter::All)];
+    }
+  }
+
+  Style::Length computeLeftEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Start)];
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::End)];
+    } else if (edges[yoga::to_underlying(Edge::Left)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Left)];
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Horizontal)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length computeTopEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Top)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Top)];
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Vertical)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length computeRightEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::End)];
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Start)];
+    } else if (edges[yoga::to_underlying(Edge::Right)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Right)];
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Horizontal)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length computeBottomEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Bottom)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Bottom)];
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return (Style::Length)edges[yoga::to_underlying(Edge::Vertical)];
+    } else {
+      return (Style::Length)edges[yoga::to_underlying(Edge::All)];
+    }
+  }
+
+  Style::Length computePosition(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(position_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(position_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(position_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(position_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computeMargin(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(margin_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(margin_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(margin_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(margin_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computePadding(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(padding_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(padding_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(padding_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(padding_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computeBorder(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(border_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(border_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(border_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(border_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
 
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;
   FlexDirection flexDirection_

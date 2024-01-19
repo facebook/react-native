@@ -106,9 +106,9 @@ void nodeToString(
     appendFormattedString(
         str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
-        str, "top: %g; ", node->getLayout().position(Edge::Top));
+        str, "top: %g; ", node->getLayout().position(PhysicalEdge::Top));
     appendFormattedString(
-        str, "left: %g;", node->getLayout().position(Edge::Left));
+        str, "left: %g;", node->getLayout().position(PhysicalEdge::Left));
     appendFormattedString(str, "\" ");
   }
 

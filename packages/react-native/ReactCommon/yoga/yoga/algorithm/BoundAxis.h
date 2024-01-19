@@ -22,8 +22,10 @@ inline float paddingAndBorderForAxis(
     const float widthSize) {
   // The total padding/border for a given axis does not depend on the direction
   // so hardcoding LTR here to avoid piping direction to this function
-  return node->getInlineStartPaddingAndBorder(axis, Direction::LTR, widthSize) +
-      node->getInlineEndPaddingAndBorder(axis, Direction::LTR, widthSize);
+  return node->style().computeInlineStartPaddingAndBorder(
+             axis, Direction::LTR, widthSize) +
+      node->style().computeInlineEndPaddingAndBorder(
+          axis, Direction::LTR, widthSize);
 }
 
 inline FloatOptional boundAxisWithinMinAndMax(
