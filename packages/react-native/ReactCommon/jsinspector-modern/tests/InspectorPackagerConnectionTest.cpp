@@ -1196,4 +1196,144 @@ TEST_F(
   EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
   getInspectorInstance().removePage(pageId);
 }
+
+TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  enum {
+    Accept,
+    RejectSilently,
+    RejectWithDisconnect
+  } mockNextConnectionBehavior;
+
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      [&mockNextConnectionBehavior,
+       this](auto remoteConnection) -> std::unique_ptr<ILocalConnection> {
+        switch (mockNextConnectionBehavior) {
+          case Accept:
+            return localConnections_.make_unique(std::move(remoteConnection));
+          case RejectSilently:
+            return nullptr;
+          case RejectWithDisconnect:
+            remoteConnection->onDisconnect();
+            return nullptr;
+        }
+      });
+
+  packagerConnection_->connect();
+
+  ASSERT_TRUE(webSockets_[0]);
+
+  // Reject the connection by returning nullptr.
+  mockNextConnectionBehavior = RejectSilently;
+
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 1,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  // Reject the connection by explicitly calling onDisconnect(), then returning
+  // nullptr.
+  mockNextConnectionBehavior = RejectWithDisconnect;
+
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 2,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  // Accept a connection after previously rejecting connections to the same
+  // page.
+  mockNextConnectionBehavior = Accept;
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_CALL(
+      *localConnections_[0],
+      sendMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", Eq("FakeDomain.fakeMethod")),
+          AtJsonPtr("/id", Eq(3)),
+          AtJsonPtr("/params", ElementsAre("arg1", "arg2"))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 3,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
+
 } // namespace facebook::react::jsinspector_modern

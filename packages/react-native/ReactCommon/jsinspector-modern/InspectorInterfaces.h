@@ -93,7 +93,15 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
 
   virtual ~IInspector() = 0;
 
-  /// addPage is called by the VM to add a page to the list of debuggable pages.
+  /**
+   * Add a page to the list of inspectable pages.
+   * Callers are responsible for calling removePage when the page is no longer
+   * expecting connections.
+   * \param connectFunc a function that will be called to establish a
+   * connection. \c connectFunc may return nullptr to reject the connection
+   * (e.g. if the page is in the process of shutting down).
+   * \returns the ID assigned to the new page.
+   */
   virtual int addPage(
       const std::string& title,
       const std::string& vm,
@@ -107,8 +115,12 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   /// getPages is called by the client to list all debuggable pages.
   virtual std::vector<InspectorPageDescription> getPages() const = 0;
 
-  /// connect is called by the client to initiate a debugging session on the
-  /// given page.
+  /**
+   * Called by InspectorPackagerConnection to initiate a debugging session with
+   * the given page.
+   * \returns an ILocalConnection that can be used to send messages to the
+   * page, or nullptr if the connection has been rejected.
+   */
   virtual std::unique_ptr<ILocalConnection> connect(
       int pageId,
       std::unique_ptr<IRemoteConnection> remote) = 0;
