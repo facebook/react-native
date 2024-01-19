@@ -216,7 +216,8 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
                   AtJsonPtr("/app", Eq("my-app")),
                   AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
                   AtJsonPtr("/vm", Eq("mock-vm")),
-                  AtJsonPtr("/id", Eq(std::to_string(pageId))))}))))))
+                  AtJsonPtr("/id", Eq(std::to_string(pageId))),
+                  AtJsonPtr("/type", Eq("Legacy")))}))))))
       .RetiresOnSaturation();
   webSockets_[0]->getDelegate().didReceiveMessage(R"({
       "event": "getPages"

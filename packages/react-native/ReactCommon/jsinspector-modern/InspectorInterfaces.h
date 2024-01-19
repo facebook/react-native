@@ -31,10 +31,25 @@ class IDestructible {
   virtual ~IDestructible() = 0;
 };
 
+enum class InspectorPageType {
+  Legacy,
+  Modern,
+};
+
+inline const char* pageTypeToString(InspectorPageType type) {
+  switch (type) {
+    case InspectorPageType::Legacy:
+      return "Legacy";
+    case InspectorPageType::Modern:
+      return "Modern";
+  }
+}
+
 struct InspectorPageDescription {
   const int id;
   const std::string title;
   const std::string vm;
+  const InspectorPageType type;
 };
 
 // Alias for backwards compatibility.
@@ -82,7 +97,8 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   virtual int addPage(
       const std::string& title,
       const std::string& vm,
-      ConnectFunc connectFunc) = 0;
+      ConnectFunc connectFunc,
+      InspectorPageType type = InspectorPageType::Legacy) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
   /// debuggable pages.
