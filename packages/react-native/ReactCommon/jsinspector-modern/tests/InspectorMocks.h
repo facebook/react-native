@@ -59,12 +59,16 @@ class MockLocalConnection : public ILocalConnection {
     return *remoteConnection_;
   }
 
+  std::unique_ptr<IRemoteConnection> dangerouslyReleaseRemoteConnection() {
+    return std::move(remoteConnection_);
+  }
+
   // ILocalConnection methods
   MOCK_METHOD(void, sendMessage, (std::string message), (override));
   MOCK_METHOD(void, disconnect, (), (override));
 
  private:
-  const std::unique_ptr<IRemoteConnection> remoteConnection_;
+  std::unique_ptr<IRemoteConnection> remoteConnection_;
 };
 
 class MockInspectorPackagerConnectionDelegate
