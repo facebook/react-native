@@ -31,7 +31,9 @@ namespace {
 class PageTargetProtocolTest : public Test {
  public:
   PageTargetProtocolTest() {
-    toPage_ = page_.connect(remoteConnections_.make_unique());
+    toPage_ = page_.connect(
+        remoteConnections_.make_unique(),
+        {.integrationName = "PageTargetProtocolTest"});
 
     // In protocol tests, we'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
@@ -102,7 +104,7 @@ TEST_F(PageTargetProtocolTest, MalformedJson) {
   toPage_->sendMessage("{");
 }
 
-TEST_F(PageTargetProtocolTest, InjectLogToIdentifyBackend) {
+TEST_F(PageTargetProtocolTest, InjectLogsToIdentifyBackend) {
   InSequence s;
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
@@ -116,6 +118,7 @@ TEST_F(PageTargetProtocolTest, InjectLogToIdentifyBackend) {
       onMessage(JsonParsed(AllOf(
           AtJsonPtr("/method", "Log.entryAdded"),
           AtJsonPtr("/params/entry", Not(IsEmpty()))))))
+      .Times(2)
       .RetiresOnSaturation();
   toPage_->sendMessage(R"({
                            "id": 1,

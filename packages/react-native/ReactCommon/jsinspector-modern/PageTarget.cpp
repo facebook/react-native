@@ -25,7 +25,9 @@ namespace {
  */
 class PageTargetSession {
  public:
-  explicit PageTargetSession(std::unique_ptr<IRemoteConnection> remote)
+  explicit PageTargetSession(
+      std::unique_ptr<IRemoteConnection> remote,
+      PageTarget::SessionMetadata sessionMetadata)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -33,7 +35,7 @@ class PageTargetSession {
                 remote->onMessage(std::string(message));
               }
             }),
-        pageAgent_(frontendChannel_) {}
+        pageAgent_(frontendChannel_, std::move(sessionMetadata)) {}
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
    * Agent.
@@ -77,9 +79,10 @@ class PageTargetSession {
 } // namespace
 
 std::unique_ptr<ILocalConnection> PageTarget::connect(
-    std::unique_ptr<IRemoteConnection> connectionToFrontend) {
-  return std::make_unique<CallbackLocalConnection>(
-      PageTargetSession(std::move(connectionToFrontend)));
+    std::unique_ptr<IRemoteConnection> connectionToFrontend,
+    SessionMetadata sessionMetadata) {
+  return std::make_unique<CallbackLocalConnection>(PageTargetSession(
+      std::move(connectionToFrontend), std::move(sessionMetadata)));
 }
 
 } // namespace facebook::react::jsinspector_modern
