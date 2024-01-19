@@ -49,6 +49,15 @@ class MockWebSocket : public IWebSocket {
   MOCK_METHOD(void, send, (std::string_view message), (override));
 };
 
+class MockRemoteConnection : public IRemoteConnection {
+ public:
+  MockRemoteConnection() = default;
+
+  // IRemoteConnection methods
+  MOCK_METHOD(void, onMessage, (std::string message), (override));
+  MOCK_METHOD(void, onDisconnect, (), (override));
+};
+
 class MockLocalConnection : public ILocalConnection {
  public:
   explicit MockLocalConnection(

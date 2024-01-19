@@ -129,4 +129,11 @@ extern IInspector& getInspectorInstance();
 /// should only be used in tests.
 extern std::unique_ptr<IInspector> makeTestInspectorInstance();
 
+/**
+ * A callback that can be used to send debugger messages (method responses and
+ * events) to the frontend. The message must be a JSON-encoded string.
+ * The callback may be called from any thread.
+ */
+using FrontendChannel = std::function<void(std::string_view messageJson)>;
+
 } // namespace facebook::react::jsinspector_modern
