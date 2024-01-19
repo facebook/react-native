@@ -31,6 +31,7 @@ Node::Node(Node&& node) {
   hasNewLayout_ = node.hasNewLayout_;
   isReferenceBaseline_ = node.isReferenceBaseline_;
   isDirty_ = node.isDirty_;
+  alwaysFormsContainingBlock_ = node.alwaysFormsContainingBlock_;
   nodeType_ = node.nodeType_;
   context_ = node.context_;
   measureFunc_ = node.measureFunc_;
