@@ -8722,7 +8722,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   borderRightWidth?: number,
   borderStartWidth?: number,
   borderTopWidth?: number,
-  position?: \\"absolute\\" | \\"relative\\",
+  position?: \\"absolute\\" | \\"relative\\" | \\"static\\",
   flexDirection?: \\"row\\" | \\"row-reverse\\" | \\"column\\" | \\"column-reverse\\",
   flexWrap?: \\"wrap\\" | \\"nowrap\\" | \\"wrap-reverse\\",
   justifyContent?:
