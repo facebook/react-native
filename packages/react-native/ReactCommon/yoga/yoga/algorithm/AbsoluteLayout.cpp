@@ -261,24 +261,25 @@ static void positionAbsoluteChild(
     const bool isMainAxis,
     const float containingBlockWidth,
     const float containingBlockHeight) {
-  child->hasErrata(Errata::AbsolutePositioning) ? positionAbsoluteChildLegacy(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight)
-                                                : positionAbsoluteChildImpl(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight);
+  child->hasErrata(Errata::AbsolutePositioningIncorrect)
+      ? positionAbsoluteChildLegacy(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight)
+      : positionAbsoluteChildImpl(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight);
 }
 
 void layoutAbsoluteChild(
