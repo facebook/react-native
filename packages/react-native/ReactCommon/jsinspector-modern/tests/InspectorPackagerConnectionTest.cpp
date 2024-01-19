@@ -7,6 +7,8 @@
 
 #include <folly/Format.h>
 #include <folly/dynamic.h>
+#include <folly/executors/ManualExecutor.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -22,6 +24,7 @@
 #include "UniquePtrFactory.h"
 
 using namespace ::testing;
+using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;
 using folly::dynamic, folly::parseJson, folly::toJson, folly::format,
     folly::sformat;
@@ -30,13 +33,14 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-class InspectorPackagerConnectionTest : public testing::Test {
+template <typename Executor>
+class InspectorPackagerConnectionTestBase : public testing::Test {
  protected:
-  InspectorPackagerConnectionTest()
+  InspectorPackagerConnectionTestBase()
       : packagerConnection_(InspectorPackagerConnection{
             "ws://mock-host:12345",
             "my-app",
-            packagerConnectionDelegates_.make_unique()}) {
+            packagerConnectionDelegates_.make_unique(asyncExecutor_)}) {
     ON_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
         .WillByDefault(webSockets_.lazily_make_unique<
                        const std::string&,
@@ -78,6 +82,8 @@ class InspectorPackagerConnectionTest : public testing::Test {
     return packagerConnectionDelegates_[0];
   }
 
+  Executor asyncExecutor_;
+
   UniquePtrFactory<MockInspectorPackagerConnectionDelegate>
       packagerConnectionDelegates_;
   /**
@@ -101,6 +107,26 @@ class InspectorPackagerConnectionTest : public testing::Test {
    */
   UniquePtrFactory<StrictMock<MockLocalConnection>> localConnections_;
   std::optional<InspectorPackagerConnection> packagerConnection_;
+};
+
+using InspectorPackagerConnectionTest =
+    InspectorPackagerConnectionTestBase<folly::QueuedImmediateExecutor>;
+
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+class InspectorPackagerConnectionTestAsync
+    : public InspectorPackagerConnectionTestBase<folly::ManualExecutor> {
+ public:
+  virtual void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = asyncExecutor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on asyncExecutor_ at the end of the test. Use advance() or run() as needed.";
+    InspectorPackagerConnectionTestBase<folly::ManualExecutor>::TearDown();
+  }
 };
 
 } // namespace
@@ -498,7 +524,9 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenSocketFailure) {
   EXPECT_FALSE(localConnections_[0]);
 }
 
-TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestExplicitCloseAfterSocketFailure) {
   // Configure gmock to expect calls in a specific order.
   InSequence mockCallsMustBeInSequence;
 
@@ -523,18 +551,6 @@ TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
   // Notify that the socket was closed (implicitly, as the result of an error).
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
 
-  // For convenience, the mock scheduleCallback usually calls the callback
-  // immediately. However, here we want the async behaviour so we can ensure
-  // only one reconnection gets scheduled.
-  std::function<void()> scheduledCallback;
-  EXPECT_CALL(*packagerConnectionDelegate(), scheduleCallback(_, _))
-      .WillOnce(
-          [&](std::function<void(void)> callback, std::chrono::milliseconds) {
-            EXPECT_FALSE(scheduledCallback);
-            scheduledCallback = callback;
-          })
-      .RetiresOnSaturation();
-
   {
     // The WebSocket instance gets destroyed during didFailWithError, so extract
     // the delegate in order to call didClose.
@@ -544,15 +560,14 @@ TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
     webSocketDelegate->didClose();
   }
 
-  ASSERT_FALSE(localConnections_[0]);
+  EXPECT_FALSE(localConnections_[0]);
   // We're still disconnected since we haven't called the reconnect callback.
-  ASSERT_FALSE(packagerConnection_->isConnected());
+  EXPECT_FALSE(packagerConnection_->isConnected());
 
   // Flush the callback queue.
-  EXPECT_TRUE(scheduledCallback);
-  scheduledCallback();
+  asyncExecutor_.advance(2000ms);
 
-  ASSERT_TRUE(packagerConnection_->isConnected());
+  EXPECT_TRUE(packagerConnection_->isConnected());
 }
 
 TEST_F(
