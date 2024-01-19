@@ -18,8 +18,8 @@ namespace facebook::yoga {
 enum class Errata : uint32_t {
   None = YGErrataNone,
   StretchFlexBasis = YGErrataStretchFlexBasis,
-  PositionStaticBehavesLikeRelative = YGErrataPositionStaticBehavesLikeRelative,
   AbsolutePositioning = YGErrataAbsolutePositioning,
+  AbsolutePercentAgainstInnerSize = YGErrataAbsolutePercentAgainstInnerSize,
   All = YGErrataAll,
   Classic = YGErrataClassic,
 };

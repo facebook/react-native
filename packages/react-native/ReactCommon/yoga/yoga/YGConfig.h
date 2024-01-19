@@ -81,7 +81,7 @@ YG_EXPORT float YGConfigGetPointScaleFactor(YGConfigConstRef config);
  *
  * By deafult Yoga will prioritize W3C conformance. `Errata` may be set to ask
  * Yoga to produce specific incorrect behaviors. E.g. `YGConfigSetErrata(config,
- * YGErrataPositionStaticBehavesLikeRelative)`.
+ * YGErrataStretchFlexBasis)`.
  *
  * YGErrata is a bitmask, and multiple errata may be set at once. Predfined
  * constants exist for convenience:
