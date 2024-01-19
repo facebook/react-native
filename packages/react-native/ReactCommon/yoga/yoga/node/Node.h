@@ -94,11 +94,11 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   // For Performance reasons passing as reference.
-  Style& getStyle() {
+  Style& style() {
     return style_;
   }
 
-  const Style& getStyle() const {
+  const Style& style() const {
     return style_;
   }
 

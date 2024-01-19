@@ -32,15 +32,15 @@ FlexLine calculateFlexLine(
 
   float sizeConsumedIncludingMinConstraint = 0;
   const FlexDirection mainAxis = resolveDirection(
-      node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
+      node->style().flexDirection(), node->resolveDirection(ownerDirection));
+  const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
   const float gap = node->getGapForAxis(mainAxis);
 
   // Add items to the current line until it's full or we run out of items.
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     auto child = node->getChild(endOfLineIndex);
-    if (child->getStyle().display() == Display::None ||
-        child->getStyle().positionType() == PositionType::Absolute) {
+    if (child->style().display() == Display::None ||
+        child->style().positionType() == PositionType::Absolute) {
       if (firstElementInLineIndex == endOfLineIndex) {
         // We haven't found the first contributing element in the line yet.
         firstElementInLineIndex++;

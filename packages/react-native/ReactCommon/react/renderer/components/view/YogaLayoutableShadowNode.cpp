@@ -360,7 +360,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
             yogaLayoutableChildren_.at(yogaChildIndex)->yogaNode_;
 
         isClean = isClean && !newYogaChildNode.isDirty() &&
-            (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
+            (newYogaChildNode.style() == oldYogaChildNode.style());
       }
     }
   }
@@ -378,7 +378,7 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
-  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.getStyle())) {
+  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.style())) {
     yogaNode_.setDirty(true);
   }
 
@@ -532,7 +532,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
 void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
   style.setDimension(yoga::Dimension::Width, yoga::value::points(size.width));
   style.setDimension(yoga::Dimension::Height, yoga::value::points(size.height));
   yogaNode_.setStyle(style);
@@ -542,7 +542,7 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
 
   auto leftPadding = yoga::value::points(padding.left);
   auto topPadding = yoga::value::points(padding.top);
@@ -566,7 +566,7 @@ void YogaLayoutableShadowNode::setPositionType(
     YGPositionType positionType) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
   style.setPositionType(yoga::scopedEnum(positionType));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
@@ -617,7 +617,7 @@ void YogaLayoutableShadowNode::layoutTree(
   // `ownerHeight` to allow proper calculation of relative (e.g. specified in
   // percents) style values.
 
-  auto& yogaStyle = yogaNode_.getStyle();
+  auto& yogaStyle = yogaNode_.style();
 
   auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
@@ -717,7 +717,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
   }
 
-  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
+  if (yogaNode_.style().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the
@@ -869,7 +869,7 @@ void YogaLayoutableShadowNode::swapStyleLeftAndRight() {
 
 void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
     const YogaLayoutableShadowNode& shadowNode) {
-  auto yogaStyle = shadowNode.yogaNode_.getStyle();
+  auto yogaStyle = shadowNode.yogaNode_.style();
 
   // Swap Yoga node values, position, padding and margin.
 

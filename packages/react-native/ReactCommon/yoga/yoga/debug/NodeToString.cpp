@@ -114,24 +114,24 @@ void nodeToString(
 
   if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendFormattedString(str, "style=\"");
-    const auto& style = node->getStyle();
-    if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
+    const auto& style = node->style();
+    if (style.flexDirection() != yoga::Style{}.flexDirection()) {
       appendFormattedString(
           str, "flex-direction: %s; ", toString(style.flexDirection()));
     }
-    if (style.justifyContent() != yoga::Node{}.getStyle().justifyContent()) {
+    if (style.justifyContent() != yoga::Style{}.justifyContent()) {
       appendFormattedString(
           str, "justify-content: %s; ", toString(style.justifyContent()));
     }
-    if (style.alignItems() != yoga::Node{}.getStyle().alignItems()) {
+    if (style.alignItems() != yoga::Style{}.alignItems()) {
       appendFormattedString(
           str, "align-items: %s; ", toString(style.alignItems()));
     }
-    if (style.alignContent() != yoga::Node{}.getStyle().alignContent()) {
+    if (style.alignContent() != yoga::Style{}.alignContent()) {
       appendFormattedString(
           str, "align-content: %s; ", toString(style.alignContent()));
     }
-    if (style.alignSelf() != yoga::Node{}.getStyle().alignSelf()) {
+    if (style.alignSelf() != yoga::Style{}.alignSelf()) {
       appendFormattedString(
           str, "align-self: %s; ", toString(style.alignSelf()));
     }
@@ -140,15 +140,15 @@ void nodeToString(
     appendNumberIfNotAuto(str, "flex-basis", style.flexBasis());
     appendFloatOptionalIfDefined(str, "flex", style.flex());
 
-    if (style.flexWrap() != yoga::Node{}.getStyle().flexWrap()) {
+    if (style.flexWrap() != yoga::Style{}.flexWrap()) {
       appendFormattedString(str, "flex-wrap: %s; ", toString(style.flexWrap()));
     }
 
-    if (style.overflow() != yoga::Node{}.getStyle().overflow()) {
+    if (style.overflow() != yoga::Style{}.overflow()) {
       appendFormattedString(str, "overflow: %s; ", toString(style.overflow()));
     }
 
-    if (style.display() != yoga::Node{}.getStyle().display()) {
+    if (style.display() != yoga::Style{}.display()) {
       appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
     appendEdges<&Style::margin>(str, "margin", style);
@@ -173,7 +173,7 @@ void nodeToString(
     appendNumberIfNotAuto(
         str, "min-height", style.minDimension(Dimension::Height));
 
-    if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
+    if (style.positionType() != yoga::Style{}.positionType()) {
       appendFormattedString(
           str, "position: %s; ", toString(style.positionType()));
     }

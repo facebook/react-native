@@ -44,7 +44,7 @@ static void constrainMaxSizeForMode(
     /*in_out*/ SizingMode* mode,
     /*in_out*/ float* size) {
   const FloatOptional maxSize =
-      node->getStyle().maxDimension(dimension(axis)).resolve(ownerAxisSize) +
+      node->style().maxDimension(dimension(axis)).resolve(ownerAxisSize) +
       FloatOptional(node->getMarginForAxis(axis, ownerWidth));
   switch (*mode) {
     case SizingMode::StretchFit:
@@ -76,7 +76,7 @@ static void computeFlexBasisForChild(
     const uint32_t depth,
     const uint32_t generationCount) {
   const FlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
+      resolveDirection(node->style().flexDirection(), direction);
   const bool isMainAxisRow = isRow(mainAxis);
   const float mainAxisSize = isMainAxisRow ? width : height;
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
@@ -147,23 +147,23 @@ static void computeFlexBasisForChild(
 
     // The W3C spec doesn't say anything about the 'overflow' property, but all
     // major browsers appear to implement the following logic.
-    if ((!isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
-        node->getStyle().overflow() != Overflow::Scroll) {
+    if ((!isMainAxisRow && node->style().overflow() == Overflow::Scroll) ||
+        node->style().overflow() != Overflow::Scroll) {
       if (yoga::isUndefined(childWidth) && yoga::isDefined(width)) {
         childWidth = width;
         childWidthSizingMode = SizingMode::FitContent;
       }
     }
 
-    if ((isMainAxisRow && node->getStyle().overflow() == Overflow::Scroll) ||
-        node->getStyle().overflow() != Overflow::Scroll) {
+    if ((isMainAxisRow && node->style().overflow() == Overflow::Scroll) ||
+        node->style().overflow() != Overflow::Scroll) {
       if (yoga::isUndefined(childHeight) && yoga::isDefined(height)) {
         childHeight = height;
         childHeightSizingMode = SizingMode::FitContent;
       }
     }
 
-    const auto& childStyle = child->getStyle();
+    const auto& childStyle = child->style();
     if (childStyle.aspectRatio().isDefined()) {
       if (!isMainAxisRow && childWidthSizingMode == SizingMode::StretchFit) {
         childHeight = marginColumn +
@@ -457,13 +457,13 @@ static float calculateAvailableInnerDimension(
     // We want to make sure our available height does not violate min and max
     // constraints
     const FloatOptional minDimensionOptional =
-        node->getStyle().minDimension(dimension).resolve(ownerDim);
+        node->style().minDimension(dimension).resolve(ownerDim);
     const float minInnerDim = minDimensionOptional.isUndefined()
         ? 0.0f
         : minDimensionOptional.unwrap() - paddingAndBorder;
 
     const FloatOptional maxDimensionOptional =
-        node->getStyle().maxDimension(dimension).resolve(ownerDim);
+        node->style().maxDimension(dimension).resolve(ownerDim);
 
     const float maxInnerDim = maxDimensionOptional.isUndefined()
         ? FLT_MAX
@@ -514,7 +514,7 @@ static float computeFlexBasisForChildren(
 
   for (auto child : children) {
     child->resolveDimension();
-    if (child->getStyle().display() == Display::None) {
+    if (child->style().display() == Display::None) {
       zeroOutLayoutRecursively(child);
       child->setHasNewLayout(true);
       child->setDirty(false);
@@ -531,7 +531,7 @@ static float computeFlexBasisForChildren(
           childDirection, mainDim, crossDim, availableInnerWidth);
     }
 
-    if (child->getStyle().positionType() == PositionType::Absolute) {
+    if (child->style().positionType() == PositionType::Absolute) {
       continue;
     }
     if (child == singleFlexChild) {
@@ -586,7 +586,7 @@ static float distributeFreeSpaceSecondPass(
   float flexGrowFactor = 0;
   float deltaFreeSpace = 0;
   const bool isMainAxisRow = isRow(mainAxis);
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
+  const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
 
   for (auto currentLineChild : flexLine.itemsInFlow) {
     childFlexBasis = boundAxisWithinMinAndMax(
@@ -652,7 +652,7 @@ static float distributeFreeSpaceSecondPass(
     SizingMode childCrossSizingMode;
     SizingMode childMainSizingMode = SizingMode::StretchFit;
 
-    const auto& childStyle = currentLineChild->getStyle();
+    const auto& childStyle = currentLineChild->style();
     if (childStyle.aspectRatio().isDefined()) {
       childCrossSize = isMainAxisRow
           ? (childMainSize - marginMain) / childStyle.aspectRatio().unwrap()
@@ -917,7 +917,7 @@ static void justifyMainAxis(
     const float availableInnerCrossDim,
     const float availableInnerWidth,
     const bool performLayout) {
-  const auto& style = node->getStyle();
+  const auto& style = node->style();
 
   const float leadingPaddingAndBorderMain =
       node->getFlexStartPaddingAndBorder(mainAxis, direction, ownerWidth);
@@ -956,7 +956,7 @@ static void justifyMainAxis(
   int numberOfAutoMarginsOnCurrentLine = 0;
   for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
     auto child = node->getChild(i);
-    if (child->getStyle().positionType() != PositionType::Absolute) {
+    if (child->style().positionType() != PositionType::Absolute) {
       if (child->getFlexStartMarginValue(mainAxis).unit() == Unit::Auto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
@@ -971,7 +971,7 @@ static void justifyMainAxis(
   // each two elements.
   float leadingMainDim = 0;
   float betweenMainDim = gap;
-  const Justify justifyContent = node->getStyle().justifyContent();
+  const Justify justifyContent = node->style().justifyContent();
 
   if (numberOfAutoMarginsOnCurrentLine == 0) {
     switch (justifyContent) {
@@ -1013,7 +1013,7 @@ static void justifyMainAxis(
   bool isNodeBaselineLayout = isBaselineLayout(node);
   for (size_t i = startOfLineIndex; i < flexLine.endOfLineIndex; i++) {
     const auto child = node->getChild(i);
-    const Style& childStyle = child->getStyle();
+    const Style& childStyle = child->style();
     const LayoutResults& childLayout = child->getLayout();
     if (childStyle.display() == Display::None) {
       continue;
@@ -1301,10 +1301,10 @@ static void calculateLayoutImpl(
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
+      resolveDirection(node->style().flexDirection(), direction);
   const FlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
   const bool isMainAxisRow = isRow(mainAxis);
-  const bool isNodeFlexWrap = node->getStyle().flexWrap() != Wrap::NoWrap;
+  const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
 
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
   const float crossAxisownerSize = isMainAxisRow ? ownerHeight : ownerWidth;
@@ -1419,7 +1419,7 @@ static void calculateLayoutImpl(
     // If we don't measure with exact main dimension we want to ensure we don't
     // violate min and max
     if (sizingModeMainDim != SizingMode::StretchFit) {
-      const auto& style = node->getStyle();
+      const auto& style = node->style();
       const float minInnerWidth =
           style.minDimension(Dimension::Width).resolve(ownerWidth).unwrap() -
           paddingAndBorderAxisRow;
@@ -1560,10 +1560,10 @@ static void calculateLayoutImpl(
     if (performLayout) {
       for (size_t i = startOfLineIndex; i < endOfLineIndex; i++) {
         const auto child = node->getChild(i);
-        if (child->getStyle().display() == Display::None) {
+        if (child->style().display() == Display::None) {
           continue;
         }
-        if (child->getStyle().positionType() == PositionType::Absolute) {
+        if (child->style().positionType() == PositionType::Absolute) {
           // If the child is absolutely positioned and has a
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
@@ -1609,7 +1609,7 @@ static void calculateLayoutImpl(
                     dimension(crossAxis), availableInnerCrossDim)) {
               float childMainSize =
                   child->getLayout().measuredDimension(dimension(mainAxis));
-              const auto& childStyle = child->getStyle();
+              const auto& childStyle = child->style();
               float childCrossSize = childStyle.aspectRatio().isDefined()
                   ? child->getMarginForAxis(crossAxis, availableInnerWidth) +
                       (isMainAxisRow
@@ -1642,7 +1642,7 @@ static void calculateLayoutImpl(
               const float childHeight =
                   !isMainAxisRow ? childMainSize : childCrossSize;
 
-              auto alignContent = node->getStyle().alignContent();
+              auto alignContent = node->style().alignContent();
               auto crossAxisDoesNotGrow =
                   alignContent != Align::Stretch && isNodeFlexWrap;
               const SizingMode childWidthSizingMode =
@@ -1729,7 +1729,7 @@ static void calculateLayoutImpl(
         paddingAndBorderAxisCross;
 
     const float remainingAlignContentDim = innerCrossDim - totalLineCrossDim;
-    switch (node->getStyle().alignContent()) {
+    switch (node->style().alignContent()) {
       case Align::FlexEnd:
         currentLead += remainingAlignContentDim;
         break;
@@ -1784,10 +1784,10 @@ static void calculateLayoutImpl(
       float maxDescentForCurrentLine = 0;
       for (ii = startIndex; ii < childCount; ii++) {
         const auto child = node->getChild(ii);
-        if (child->getStyle().display() == Display::None) {
+        if (child->style().display() == Display::None) {
           continue;
         }
-        if (child->getStyle().positionType() != PositionType::Absolute) {
+        if (child->style().positionType() != PositionType::Absolute) {
           if (child->getLineIndex() != i) {
             break;
           }
@@ -1821,10 +1821,10 @@ static void calculateLayoutImpl(
       if (performLayout) {
         for (ii = startIndex; ii < endIndex; ii++) {
           const auto child = node->getChild(ii);
-          if (child->getStyle().display() == Display::None) {
+          if (child->style().display() == Display::None) {
             continue;
           }
-          if (child->getStyle().positionType() != PositionType::Absolute) {
+          if (child->style().positionType() != PositionType::Absolute) {
             switch (resolveChildAlignment(node, child)) {
               case Align::FlexStart: {
                 child->setLayoutPosition(
@@ -1951,7 +1951,7 @@ static void calculateLayoutImpl(
   // If the user didn't specify a width or height for the node, set the
   // dimensions based on the children.
   if (sizingModeMainDim == SizingMode::MaxContent ||
-      (node->getStyle().overflow() != Overflow::Scroll &&
+      (node->style().overflow() != Overflow::Scroll &&
        sizingModeMainDim == SizingMode::FitContent)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
@@ -1962,7 +1962,7 @@ static void calculateLayoutImpl(
 
   } else if (
       sizingModeMainDim == SizingMode::FitContent &&
-      node->getStyle().overflow() == Overflow::Scroll) {
+      node->style().overflow() == Overflow::Scroll) {
     node->setLayoutMeasuredDimension(
         yoga::maxOrDefined(
             yoga::minOrDefined(
@@ -1978,7 +1978,7 @@ static void calculateLayoutImpl(
   }
 
   if (sizingModeCrossDim == SizingMode::MaxContent ||
-      (node->getStyle().overflow() != Overflow::Scroll &&
+      (node->style().overflow() != Overflow::Scroll &&
        sizingModeCrossDim == SizingMode::FitContent)) {
     // Clamp the size to the min/max size, if specified, and make sure it
     // doesn't go below the padding and border amount.
@@ -1993,7 +1993,7 @@ static void calculateLayoutImpl(
 
   } else if (
       sizingModeCrossDim == SizingMode::FitContent &&
-      node->getStyle().overflow() == Overflow::Scroll) {
+      node->style().overflow() == Overflow::Scroll) {
     node->setLayoutMeasuredDimension(
         yoga::maxOrDefined(
             yoga::minOrDefined(
@@ -2011,10 +2011,10 @@ static void calculateLayoutImpl(
 
   // As we only wrapped in normal direction yet, we need to reverse the
   // positions on wrap-reverse.
-  if (performLayout && node->getStyle().flexWrap() == Wrap::WrapReverse) {
+  if (performLayout && node->style().flexWrap() == Wrap::WrapReverse) {
     for (size_t i = 0; i < childCount; i++) {
       const auto child = node->getChild(i);
-      if (child->getStyle().positionType() != PositionType::Absolute) {
+      if (child->style().positionType() != PositionType::Absolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimension(dimension(crossAxis)) -
                 child->getLayout().position(flexStartEdge(crossAxis)) -
@@ -2028,7 +2028,7 @@ static void calculateLayoutImpl(
     // STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN
     // Let the containing block layout its absolute descendants. By definition
     // the containing block will not be static unless we are at the root.
-    if (node->getStyle().positionType() != PositionType::Static ||
+    if (node->style().positionType() != PositionType::Static ||
         node->alwaysFormsContainingBlock() || depth == 1) {
       layoutAbsoluteDescendants(
           node,
@@ -2054,8 +2054,8 @@ static void calculateLayoutImpl(
         // Absolute children will be handled by their containing block since we
         // cannot guarantee that their positions are set when their parents are
         // done with layout.
-        if (child->getStyle().display() == Display::None ||
-            child->getStyle().positionType() == PositionType::Absolute) {
+        if (child->style().display() == Display::None ||
+            child->style().positionType() == PositionType::Absolute) {
           continue;
         }
         if (needsMainTrailingPos) {
@@ -2289,7 +2289,7 @@ void calculateLayout(
   node->resolveDimension();
   float width = YGUndefined;
   SizingMode widthSizingMode = SizingMode::MaxContent;
-  const auto& style = node->getStyle();
+  const auto& style = node->style();
   if (node->hasDefiniteLength(Dimension::Width, ownerWidth)) {
     width =
         (node->getResolvedDimension(dimension(FlexDirection::Row))
