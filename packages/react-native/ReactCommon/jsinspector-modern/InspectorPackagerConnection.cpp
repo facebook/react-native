@@ -23,10 +23,6 @@ static constexpr const std::chrono::duration RECONNECT_DELAY =
     std::chrono::milliseconds{2000};
 static constexpr const char* INVALID = "<invalid>";
 
-static folly::dynamic makePageIdPayload(std::string_view pageId) {
-  return folly::dynamic::object("id", pageId);
-}
-
 // InspectorPackagerConnection::Impl method definitions
 
 std::shared_ptr<InspectorPackagerConnection::Impl>
@@ -319,7 +315,7 @@ void InspectorPackagerConnection::Impl::RemoteConnection::onDisconnect() {
   if (owningPackagerConnectionStrong) {
     owningPackagerConnectionStrong->scheduleSendToPackager(
         folly::dynamic::object("event", "disconnect")(
-            "payload", makePageIdPayload(pageId_)),
+            "payload", folly::dynamic::object("pageId", pageId_)),
         sessionId_,
         pageId_);
   }
