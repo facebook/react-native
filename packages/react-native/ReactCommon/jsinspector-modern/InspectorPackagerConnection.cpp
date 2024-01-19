@@ -101,6 +101,16 @@ void InspectorPackagerConnection::Impl::handleConnect(
   auto& inspector = getInspectorInstance();
   auto inspectorConnection =
       inspector.connect(pageIdInt, std::move(remoteConnection));
+  if (!inspectorConnection) {
+    LOG(INFO) << "Connection to page " << pageId << " rejected";
+
+    // RemoteConnection::onDisconnect(), if the connection even calls it,  will
+    // be a no op (because the session is not added to `inspectorSessions_`), so
+    // let's always notify the remote client of the disconnection ourselves.
+    sendToPackager(folly::dynamic::object("event", "disconnect")(
+        "payload", folly::dynamic::object("pageId", pageId)));
+    return;
+  }
   inspectorSessions_.emplace(
       pageId,
       Session{
