@@ -9,6 +9,9 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 
+#include <optional>
+#include <string>
+
 namespace facebook::react::jsinspector_modern {
 
 /**
@@ -18,6 +21,10 @@ namespace facebook::react::jsinspector_modern {
  */
 class PageTarget {
  public:
+  struct SessionMetadata {
+    std::optional<std::string> integrationName;
+  };
+
   /**
    * Creates a new Session connected to this PageTarget, wrapped in an
    * interface which is compatible with \c IInspector::addPage.
@@ -26,7 +33,8 @@ class PageTarget {
    * destructor execute.
    */
   std::unique_ptr<ILocalConnection> connect(
-      std::unique_ptr<IRemoteConnection> connectionToFrontend);
+      std::unique_ptr<IRemoteConnection> connectionToFrontend,
+      SessionMetadata sessionMetadata = {});
 };
 
 } // namespace facebook::react::jsinspector_modern

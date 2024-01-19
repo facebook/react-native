@@ -7,9 +7,13 @@
 
 #pragma once
 
+#include "PageTarget.h"
+
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/Parsing.h>
+
 #include <functional>
+#include <string_view>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -25,7 +29,9 @@ class PageAgent {
    * \param frontendChannel A channel used to send responses and events to the
    * frontend.
    */
-  explicit PageAgent(FrontendChannel frontendChannel);
+  PageAgent(
+      FrontendChannel frontendChannel,
+      PageTarget::SessionMetadata sessionMetadata);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -35,7 +41,19 @@ class PageAgent {
   void handleRequest(const cdp::PreparsedRequest& req);
 
  private:
+  /**
+   * Send a simple Log.entryAdded notification with the given
+   * \param text. You must ensure that the frontend has enabled Log
+   * notifications (using Log.enable) prior to calling this function. In Chrome
+   * DevTools, the message will appear in the Console tab along with regular
+   * console messages. The difference between Log.entryAdded and
+   * Runtime.consoleAPICalled is that the latter requires an execution context
+   * ID, which does not exist at the Page level.
+   */
+  void sendInfoLogEntry(std::string_view text);
+
   FrontendChannel frontendChannel_;
+  const PageTarget::SessionMetadata sessionMetadata_;
 };
 
 } // namespace facebook::react::jsinspector_modern
