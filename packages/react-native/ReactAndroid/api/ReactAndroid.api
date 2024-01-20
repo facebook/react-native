@@ -5776,6 +5776,7 @@ public abstract interface class com/facebook/react/viewmanagers/ModalHostViewMan
 	public abstract fun setAnimated (Landroid/view/View;Z)V
 	public abstract fun setAnimationType (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setHardwareAccelerated (Landroid/view/View;Z)V
+	public abstract fun setIdentifier (Landroid/view/View;I)V
 	public abstract fun setPresentationStyle (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setStatusBarTranslucent (Landroid/view/View;Z)V
 	public abstract fun setSupportedOrientations (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -6118,6 +6119,8 @@ public class com/facebook/react/views/modal/ReactModalHostManager : com/facebook
 	public fun setAnimationType (Lcom/facebook/react/views/modal/ReactModalHostView;Ljava/lang/String;)V
 	public synthetic fun setHardwareAccelerated (Landroid/view/View;Z)V
 	public fun setHardwareAccelerated (Lcom/facebook/react/views/modal/ReactModalHostView;Z)V
+	public synthetic fun setIdentifier (Landroid/view/View;I)V
+	public fun setIdentifier (Lcom/facebook/react/views/modal/ReactModalHostView;I)V
 	public synthetic fun setPresentationStyle (Landroid/view/View;Ljava/lang/String;)V
 	public fun setPresentationStyle (Lcom/facebook/react/views/modal/ReactModalHostView;Ljava/lang/String;)V
 	public synthetic fun setStatusBarTranslucent (Landroid/view/View;Z)V
@@ -6158,14 +6161,11 @@ public class com/facebook/react/views/modal/ReactModalHostView : android/view/Vi
 	public fun removeViewAt (I)V
 	protected fun setAnimationType (Ljava/lang/String;)V
 	protected fun setHardwareAccelerated (Z)V
-	protected fun setOnDismissListener (Landroid/content/DialogInterface$OnDismissListener;)V
 	protected fun setOnRequestCloseListener (Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;)V
 	protected fun setOnShowListener (Landroid/content/DialogInterface$OnShowListener;)V
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	protected fun setStatusBarTranslucent (Z)V
 	protected fun setTransparent (Z)V
-	protected fun setVisible (Z)V
-	protected fun showOrDismiss ()V
 	protected fun showOrUpdate ()V
 	public fun updateState (II)V
 }

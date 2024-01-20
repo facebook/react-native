@@ -10,6 +10,7 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
+#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -90,8 +91,8 @@ RCT_EXPORT_MODULE()
                     animated:(BOOL)animated
 {
   dispatch_block_t completionBlock = ^{
-    if (modalHostView.onDismiss) {
-      modalHostView.onDismiss(nil);
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
   };
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -123,10 +124,13 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarTranslucent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hardwareAccelerated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(identifier, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+
+// Fabric only
+RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 
 @end

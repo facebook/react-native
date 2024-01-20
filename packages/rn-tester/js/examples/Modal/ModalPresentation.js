@@ -199,8 +199,8 @@ function ModalPresentation() {
           <RNTOption
             key="onDismiss"
             style={styles.option}
-            label="onDismiss"
-            disabled={false}
+            label="onDismiss ⚫️"
+            disabled={Platform.OS !== 'ios'}
             onPress={() =>
               setProps(prev => ({
                 ...prev,

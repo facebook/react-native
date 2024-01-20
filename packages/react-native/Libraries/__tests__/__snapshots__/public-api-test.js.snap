@@ -6449,6 +6449,15 @@ exports[`public API should not change unintentionally Libraries/Modal/ModalInjec
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Modal/NativeModalManager.js 1`] = `
+"export interface Spec extends TurboModule {
+  +addListener: (eventName: string) => void;
+  +removeListeners: (count: number) => void;
+}
+declare export default ?Spec;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Modal/RCTModalHostViewNativeComponent.js 1`] = `
 "type OrientationChangeEvent = $ReadOnly<{|
   orientation: \\"portrait\\" | \\"landscape\\",
@@ -6479,6 +6488,7 @@ type NativeProps = $ReadOnly<{|
     \\"portrait\\",
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  identifier?: WithDefault<Int32, 0>,
 |}>;
 declare export default HostComponent<NativeProps>;
 "
