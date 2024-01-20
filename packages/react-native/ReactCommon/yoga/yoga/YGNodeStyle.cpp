@@ -34,15 +34,13 @@ void updateStyle(YGNodeRef node, IdxT idx, ValueT value) {
 
 } // namespace
 
-void YGNodeCopyStyle(
-    const YGNodeRef dstNodeRef,
-    const YGNodeConstRef srcNodeRef) {
-  auto dstNode = resolveRef(dstNodeRef);
-  auto srcNode = resolveRef(srcNodeRef);
+void YGNodeCopyStyle(YGNodeRef dstNode, YGNodeConstRef srcNode) {
+  auto dst = resolveRef(dstNode);
+  auto src = resolveRef(srcNode);
 
-  if (!(dstNode->style() == srcNode->style())) {
-    dstNode->setStyle(srcNode->style());
-    dstNode->markDirtyAndPropagate();
+  if (dst->style() != src->style()) {
+    dst->setStyle(src->style());
+    dst->markDirtyAndPropagate();
   }
 }
 
