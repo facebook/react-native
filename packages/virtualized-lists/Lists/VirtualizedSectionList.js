@@ -593,14 +593,14 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
       {...separatorProps}
     />
   );
-  return leadingSeparator || separator ? (
+  const renderSeparator = leadingSeparator || separator;
+  const separatorToUse = inverted ? leadingSeparator : separator;
+  return (
     <View>
-      {inverted === false ? leadingSeparator : separator}
+      {renderSeparator && separatorToUse}
       {element}
-      {inverted === false ? separator : leadingSeparator}
+      {renderSeparator && separatorToUse}
     </View>
-  ) : (
-    element
   );
 }
 
