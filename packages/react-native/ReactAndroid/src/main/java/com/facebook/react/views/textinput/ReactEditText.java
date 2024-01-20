@@ -46,6 +46,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
@@ -96,8 +97,6 @@ public class ReactEditText extends AppCompatEditText {
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
 
-  private static final int UNSET = -1;
-
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
@@ -114,8 +113,8 @@ public class ReactEditText extends AppCompatEditText {
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = UNSET;
-  private int mFontStyle = UNSET;
+  private int mFontWeight = ReactConstants.UNSET;
+  private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
   private @Nullable String mPlaceholder = null;
@@ -379,7 +378,7 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
-    if (start != UNSET && end != UNSET) {
+    if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
       end = clampToTextLength(end);
@@ -588,8 +587,8 @@ public class ReactEditText extends AppCompatEditText {
 
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
-    if (mFontStyle != UNSET
-        || mFontWeight != UNSET
+    if (mFontStyle != ReactConstants.UNSET
+        || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
         || getFontFeatureSettings() != null) {
       setPaintFlags(getPaintFlags() | Paint.SUBPIXEL_TEXT_FLAG);
@@ -819,8 +818,8 @@ public class ReactEditText extends AppCompatEditText {
           new CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length(), spanFlags);
     }
 
-    if (mFontStyle != UNSET
-        || mFontWeight != UNSET
+    if (mFontStyle != ReactConstants.UNSET
+        || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
         || getFontFeatureSettings() != null) {
       workingText.setSpan(

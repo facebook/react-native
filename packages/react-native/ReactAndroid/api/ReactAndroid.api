@@ -1686,6 +1686,7 @@ public final class com/facebook/react/common/MapBuilder$Builder {
 
 public class com/facebook/react/common/ReactConstants {
 	public static final field TAG Ljava/lang/String;
+	public static final field UNSET I
 	public fun <init> ()V
 }
 
@@ -1764,7 +1765,6 @@ public class com/facebook/react/common/assets/ReactFontManager {
 public class com/facebook/react/common/assets/ReactFontManager$TypefaceStyle {
 	public static final field BOLD I
 	public static final field NORMAL I
-	public static final field UNSET I
 	public fun <init> (I)V
 	public fun <init> (II)V
 	public fun <init> (IZ)V
@@ -1906,6 +1906,7 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableMountHooks Z
 	public static field enableOnDemandReactChoreographer Z
 	public static field enableRemoveDeleteTreeInstruction Z
+	public static field enableSpannableBuildingUnification Z
 	public static field enableTextSpannableCache Z
 	public static field enableViewRecycling Z
 	public static field excludeYogaFromRawProps Z
@@ -6785,7 +6786,7 @@ public class com/facebook/react/views/text/ReactBackgroundColorSpan : android/te
 	public fun <init> (I)V
 }
 
-public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
+public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode, com/facebook/react/views/text/BasicTextAttributeProvider {
 	public static final field DEFAULT_TEXT_SHADOW_COLOR I
 	public static final field PROP_SHADOW_COLOR Ljava/lang/String;
 	public static final field PROP_SHADOW_OFFSET Ljava/lang/String;
@@ -6793,7 +6794,6 @@ public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : co
 	public static final field PROP_SHADOW_OFFSET_WIDTH Ljava/lang/String;
 	public static final field PROP_SHADOW_RADIUS Ljava/lang/String;
 	public static final field PROP_TEXT_TRANSFORM Ljava/lang/String;
-	public static final field UNSET I
 	protected field mAccessibilityRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	protected field mAdjustsFontSizeToFit Z
 	protected field mBackgroundColor I
@@ -6824,6 +6824,22 @@ public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : co
 	protected field mTextShadowRadius F
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public fun getAccessibilityRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public fun getBackgroundColor ()I
+	public fun getColor ()I
+	public fun getFontFamily ()Ljava/lang/String;
+	public fun getFontFeatureSettings ()Ljava/lang/String;
+	public fun getFontStyle ()I
+	public fun getFontWeight ()I
+	public fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	public fun getTextShadowColor ()I
+	public fun getTextShadowOffsetDx ()F
+	public fun getTextShadowOffsetDy ()F
+	public fun getTextShadowRadius ()F
+	public fun isBackgroundColorSet ()Z
+	public fun isColorSet ()Z
+	public fun isLineThroughTextDecorationSet ()Z
+	public fun isUnderlineTextDecorationSet ()Z
 	public fun setAccessibilityRole (Ljava/lang/String;)V
 	public fun setAdjustFontSizeToFit (Z)V
 	public fun setAllowFontScaling (Z)V
@@ -7084,12 +7100,19 @@ public class com/facebook/react/views/text/ReactVirtualTextViewManager$$PropsSet
 	public fun setProperty (Lcom/facebook/react/views/text/ReactVirtualTextViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
+public class com/facebook/react/views/text/SetSpanOperation {
+	protected field end I
+	protected field start I
+	protected field what Lcom/facebook/react/views/text/ReactSpan;
+	public fun execute (Landroid/text/SpannableStringBuilder;I)V
+}
+
 public class com/facebook/react/views/text/ShadowStyleSpan : android/text/style/CharacterStyle, com/facebook/react/views/text/ReactSpan {
 	public fun <init> (FFFI)V
 	public fun updateDrawState (Landroid/text/TextPaint;)V
 }
 
-public class com/facebook/react/views/text/TextAttributeProps {
+public class com/facebook/react/views/text/TextAttributeProps : com/facebook/react/views/text/EffectiveTextAttributeProvider {
 	public static final field TA_KEY_ACCESSIBILITY_ROLE S
 	public static final field TA_KEY_ALIGNMENT S
 	public static final field TA_KEY_ALLOW_FONT_SCALING S
@@ -7117,7 +7140,6 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY S
 	public static final field TA_KEY_TEXT_SHADOW_RADIUS S
 	public static final field TA_KEY_TEXT_TRANSFORM S
-	public static final field UNSET I
 	protected field mAccessibilityRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	protected field mAllowFontScaling Z
 	protected field mBackgroundColor I
@@ -7149,13 +7171,32 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	protected field mTextTransform Lcom/facebook/react/views/text/TextTransform;
 	public static fun fromMapBuffer (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Lcom/facebook/react/views/text/TextAttributeProps;
 	public static fun fromReadableMap (Lcom/facebook/react/uimanager/ReactStylesDiffMap;)Lcom/facebook/react/views/text/TextAttributeProps;
+	public fun getAccessibilityRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public fun getBackgroundColor ()I
+	public fun getColor ()I
+	public fun getEffectiveFontSize ()I
+	public fun getEffectiveLetterSpacing ()F
 	public fun getEffectiveLineHeight ()F
+	public fun getFontFamily ()Ljava/lang/String;
+	public fun getFontFeatureSettings ()Ljava/lang/String;
+	public fun getFontStyle ()I
+	public fun getFontWeight ()I
 	public static fun getHyphenationFrequency (Ljava/lang/String;)I
 	public static fun getJustificationMode (Lcom/facebook/react/uimanager/ReactStylesDiffMap;I)I
 	public static fun getLayoutDirection (Ljava/lang/String;)I
 	public fun getLetterSpacing ()F
+	public fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static fun getTextAlignment (Lcom/facebook/react/uimanager/ReactStylesDiffMap;ZI)I
 	public static fun getTextBreakStrategy (Ljava/lang/String;)I
+	public fun getTextShadowColor ()I
+	public fun getTextShadowOffsetDx ()F
+	public fun getTextShadowOffsetDy ()F
+	public fun getTextShadowRadius ()F
+	public fun getTextTransform ()Lcom/facebook/react/views/text/TextTransform;
+	public fun isBackgroundColorSet ()Z
+	public fun isColorSet ()Z
+	public fun isLineThroughTextDecorationSet ()Z
+	public fun isUnderlineTextDecorationSet ()Z
 }
 
 public class com/facebook/react/views/text/TextAttributes {
