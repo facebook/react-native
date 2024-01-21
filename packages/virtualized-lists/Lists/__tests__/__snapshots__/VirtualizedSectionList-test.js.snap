@@ -82,18 +82,23 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
           onLayout={[Function]}
           style={null}
         >
+        </View>
           <item
             title="outer0:inner0"
           />
+        </View>
         </View>
         <View
           onFocusCapture={[Function]}
           onLayout={[Function]}
           style={null}
         >
+        <View>
+        <View>
           <item
             title="outer0:inner1"
           />
+        </View>
         </View>
         <View
           onFocusCapture={[Function]}
@@ -107,6 +112,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <RCTScrollView
         data={
           Array [
@@ -163,9 +169,11 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
               ]
             }
           >
+          <View>
             <item
               title="outer1:inner0"
             />
+          </View>
           </View>
           <View
             onFocusCapture={[Function]}
@@ -179,9 +187,11 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
               ]
             }
           >
+          <View>
             <item
               title="outer1:inner1"
             />
+          </View>
           </View>
           <View
             onFocusCapture={[Function]}
@@ -197,6 +207,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
           />
         </View>
       </RCTScrollView>
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -332,9 +343,11 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         title="i2"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -470,9 +483,11 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         title="i2"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -609,9 +624,11 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         title="i2"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -748,9 +765,11 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         title="i2"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -975,9 +994,11 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
+    <View>
       <item
         value="4"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -1112,9 +1133,11 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         value="hello"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -1170,27 +1193,33 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         value="i1"
       />
     </View>
-    <View
-      onFocusCapture={[Function]}
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i2"
-      />
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
+    <View>
+      <item
+        value="i2"
+      />
+    </View>
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+    <View>
       <item
         value="i3"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
