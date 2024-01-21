@@ -46,18 +46,22 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         v="i1"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
+    <View>
       <item
         v="i2"
       />
+    </View>
     </View>
     <View
       onFocusCapture={[Function]}
