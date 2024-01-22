@@ -15,7 +15,7 @@ add_library(hermes_executor
 target_compile_options(
         hermes_executor
         PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
+        -DHERMES_ENABLE_DEBUGGER=1
         -std=c++20
         -fexceptions
 )

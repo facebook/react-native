@@ -57,7 +57,8 @@ function configure_apple_framework {
   if [[ $BUILD_TYPE == "Debug" ]]; then
     enable_debugger="true"
   else
-    enable_debugger="false"
+    # Expo Go requires debugging on release build
+    enable_debugger="true"
   fi
   if [[ $BUILD_TYPE == "Debug" ]]; then
     # JS developers aren't VM developers.

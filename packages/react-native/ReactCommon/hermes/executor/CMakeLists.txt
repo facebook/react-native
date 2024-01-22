@@ -33,5 +33,6 @@ else()
                 hermes_executor_common
                 PRIVATE
                 -DNDEBUG
+                -DHERMES_ENABLE_DEBUGGER=1
         )
 endif()

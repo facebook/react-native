@@ -10,7 +10,8 @@ release_version="$1"; shift
 hermesc_path="$1"; shift
 jsi_path="$1"; shift
 
-enable_debugger="false"
+# Expo Go requires debugging on release build
+enable_debugger="true"
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   enable_debugger="true"
 fi

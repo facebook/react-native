@@ -15,7 +15,7 @@ add_library(bridgeless
 target_compile_options(
         bridgeless
         PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
+        -DHERMES_ENABLE_DEBUGGER=1
         -std=c++20
         -fexceptions
 )

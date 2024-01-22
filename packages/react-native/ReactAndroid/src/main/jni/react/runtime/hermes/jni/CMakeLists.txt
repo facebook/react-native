@@ -15,7 +15,7 @@ add_library(hermesinstancejni
 target_compile_options(
         hermesinstancejni
         PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
+        -DHERMES_ENABLE_DEBUGGER=1
         -std=c++20
         -fexceptions
 )

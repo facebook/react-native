@@ -26,6 +26,14 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
                 PRIVATE
                 -DHERMES_ENABLE_DEBUGGER=1
         )
+else()
+        # Expo Go requires debugging on release builds
+        target_compile_options(
+                hermes_inspector_modern
+                PRIVATE
+                # Expo Go requires debugging on release builds
+                -DHERMES_ENABLE_DEBUGGER=1
+        )
 endif()
 
 target_include_directories(hermes_inspector_modern PUBLIC ${REACT_COMMON_DIR})
