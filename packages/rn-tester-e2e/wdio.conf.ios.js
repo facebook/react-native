@@ -25,7 +25,7 @@ exports.config = {
       'appium:automationName': 'XCUITest',
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
       'appium:newCommandTimeout': 120,
-      'appium:fullReset': false
+      'appium:fullReset': false,
     },
   ],
   logLevel: 'debug',
@@ -39,7 +39,7 @@ exports.config = {
       'appium',
       {
         port: 4723,
-        logPath: './reports'
+        logPath: './reports',
       },
     ],
   ],
@@ -48,7 +48,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 50000
+    timeout: 50000,
   },
 
   beforeSession: async function (config, capabilities, specs) {
@@ -67,5 +67,5 @@ exports.config = {
       const filePath = './reports/errorShots/' + fileName + '.png';
       await browser.saveScreenshot(filePath);
     }
-  }
+  },
 };

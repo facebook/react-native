@@ -25,7 +25,7 @@ exports.config = {
       'appium:app': path.join(process.cwd(), '/apps/rn-tester.apk'),
       'appium:automationName': 'UiAutomator2',
       'appium:newCommandTimeout': 120,
-      'appium:fullReset': false
+      'appium:fullReset': false,
     },
   ],
   logLevel: 'debug',
@@ -51,7 +51,7 @@ exports.config = {
   mochaOpts: {
     bail: true,
     ui: 'bdd',
-    timeout: 70000
+    timeout: 70000,
   },
 
   beforeSession: async function (config, capabilities, specs) {

@@ -8,7 +8,11 @@
  * @format
  */
 
-import {UtilsSingleton as Utils, iOSLabel, androidWidget} from '../helpers/utils';
+import {
+  UtilsSingleton as Utils,
+  iOSLabel,
+  androidWidget,
+} from '../helpers/utils';
 
 // root level screen in RNTester: Components
 
@@ -65,7 +69,7 @@ type ComponentsScreenType = {
   clickPressableComponent: () => Promise<void>,
   clickRefreshControlComponent: () => Promise<void>,
   clickScrollViewSimpleExampleComponent: () => Promise<void>,
-  setValueToSearch: () => Promise<void>
+  setValueToSearch: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -242,8 +246,8 @@ export const ComponentsScreen: ComponentsScreenType = {
   },
   setValueToSearch: async function (
     this: ComponentsScreenType,
-    searchInput: string
+    searchInput: string,
   ): Promise<void> {
-    await Utils.setElementText(this.searchInputLabelElement, searchInput)
-  }
+    await Utils.setElementText(this.searchInputLabelElement, searchInput);
+  },
 };

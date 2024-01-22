@@ -44,5 +44,4 @@ describe('Testing Keyboard Avoiding View with different behaviors Functionality'
       await KeyboardAvoidingViewComponentScreen.getRegisterAlertText(),
     ).toContain(registerText);
   });
-  
 });
