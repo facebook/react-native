@@ -112,12 +112,6 @@ public class ReactFeatureFlags {
    */
   public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
 
-  /**
-   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
-   * SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutation = false;
-
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
