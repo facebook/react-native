@@ -230,28 +230,47 @@ RCT_EXPORT_MODULE()
                                                     userInfo:@{@"error" : error}];
 }
 
++ (void)didReceiveNotification:(UNNotification *)notification
+{
+  BOOL const isRemoteNotification = [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+  if (isRemoteNotification) {
+    NSDictionary *userInfo = @{@"notification" : notification.request.content.userInfo};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                        object:self
+                                                      userInfo:userInfo];
+  } else {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                        object:self
+                                                      userInfo:RCTFormatUNNotification(notification)];
+  }
+}
+
++ (void)didReceiveRemoteNotification:(NSDictionary *)notification
+              fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
+{
+  NSDictionary *userInfo = completionHandler
+      ? @{@"notification" : notification, @"completionHandler" : completionHandler}
+      : @{@"notification" : notification};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                      object:self
+                                                    userInfo:userInfo];
+}
+
+// Deprecated
++ (void)didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                      object:self
+                                                    userInfo:RCTFormatLocalNotification(notification)];
+}
+
+// Deprecated
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
 {
   NSDictionary *userInfo = @{@"notification" : notification};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
                                                     userInfo:userInfo];
-}
-
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification
-              fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
-{
-  NSDictionary *userInfo = @{@"notification" : notification, @"completionHandler" : completionHandler};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:userInfo];
-}
-
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
-                                                      object:self
-                                                    userInfo:RCTFormatLocalNotification(notification)];
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
