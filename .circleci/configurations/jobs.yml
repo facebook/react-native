@@ -182,7 +182,7 @@ jobs:
   test_e2e_android:
     executor:
       name: android/android-machine
-      tag: 2023.07.1
+      tag: default
     steps:
       - checkout_code_with_cache
       - run_yarn

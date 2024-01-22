@@ -24,7 +24,7 @@
     "@wdio/mocha-framework": "8.10.4",
     "@wdio/spec-reporter": "8.8.7",
     "appium": "2.0.0",
-    "appium-uiautomator2-driver": "^2.29.0",
+    "appium-uiautomator2-driver": "2.29.0",
     "appium-xcuitest-driver": "5.6.0",
     "eslint": "^8.23.1",
     "ts-node": "^10.9.1",
