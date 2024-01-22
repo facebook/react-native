@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTDefines.h>
+
+#if RCT_DEV || RCT_REMOTE_PROFILE
+
 #import "RCTCxxInspectorWebSocketAdapter.h"
 
 #import <jsinspector-modern/InspectorPackagerConnection.h>
@@ -39,3 +43,5 @@ class RCTCxxInspectorPackagerConnectionDelegate
       std::chrono::milliseconds delayMs) override;
 };
 } // namespace facebook::react::jsinspector_modern
+
+#endif
