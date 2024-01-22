@@ -12,6 +12,7 @@ import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {UIManager, requireNativeComponent} from 'react-native';
 
@@ -44,7 +45,7 @@ export function callNativeMethodToChangeBackgroundColor(
     return;
   }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    nullthrows(ReactNative.findNodeHandle(viewRef)),
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.changeBackgroundColor.toString(),
@@ -61,7 +62,7 @@ export function callNativeMethodToAddOverlays(
     return;
   }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    nullthrows(ReactNative.findNodeHandle(viewRef)),
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.addOverlays.toString(),
@@ -77,7 +78,7 @@ export function callNativeMethodToRemoveOverlays(
     return;
   }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    nullthrows(ReactNative.findNodeHandle(viewRef)),
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.removeOverlays.toString(),
