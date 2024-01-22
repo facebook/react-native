@@ -87,7 +87,9 @@ describe('npm-utils', () => {
 
       expect(() => {
         getPackageVersionStrByTag('my-package', 'next');
-      }).toThrow('Failed to get next version from npm\nSome error message');
+      }).toThrow(
+        "Failed to run 'npm view my-package@next version'\nSome error message",
+      );
     });
   });
 
