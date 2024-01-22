@@ -10,17 +10,17 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
+import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 
-import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
-import DOMRect from '../Geometry/DOMRect';
-import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
+import {getFabricUIManager} from '../../../../../Libraries//ReactNative/FabricUIManager';
+import DOMRect from '../geometry/DOMRect';
+import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
 import ReadOnlyNode, {
   getChildNodes,
   getInstanceHandle,
   getShadowNode,
 } from './ReadOnlyNode';
-import {getElementSibling} from './Utilities/Traversal';
+import {getElementSibling} from './utilities/Traversal';
 import nullthrows from 'nullthrows';
 
 export default class ReadOnlyElement extends ReadOnlyNode {

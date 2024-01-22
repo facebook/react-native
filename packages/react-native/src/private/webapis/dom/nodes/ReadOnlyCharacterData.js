@@ -12,9 +12,9 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
+import {getFabricUIManager} from '../../../../../Libraries//ReactNative/FabricUIManager';
 import ReadOnlyNode, {getShadowNode} from './ReadOnlyNode';
-import {getElementSibling} from './Utilities/Traversal';
+import {getElementSibling} from './utilities/Traversal';
 import nullthrows from 'nullthrows';
 
 export default class ReadOnlyCharacterData extends ReadOnlyNode {
