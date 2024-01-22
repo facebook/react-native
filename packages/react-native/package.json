@@ -79,6 +79,7 @@
     "sdks/hermes-engine",
     "sdks/hermesc",
     "settings.gradle.kts",
+    "src",
     "template.config.js",
     "template",
     "!template/node_modules",
