@@ -140,14 +140,14 @@
         "type": "modules",
         "ios": {},
         "android": {},
-        "jsSrcsDir": "Libraries"
+        "jsSrcsDir": "src"
       },
       {
         "name": "rncore",
         "type": "components",
         "ios": {},
         "android": {},
-        "jsSrcsDir": "Libraries"
+        "jsSrcsDir": "src"
       }
     ]
   }
