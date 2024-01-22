@@ -35,7 +35,6 @@ Node::Node(Node&& node) {
   context_ = node.context_;
   measureFunc_ = node.measureFunc_;
   baselineFunc_ = node.baselineFunc_;
-  printFunc_ = node.printFunc_;
   dirtiedFunc_ = node.dirtiedFunc_;
   style_ = node.style_;
   layout_ = node.layout_;
@@ -46,12 +45,6 @@ Node::Node(Node&& node) {
   resolvedDimensions_ = node.resolvedDimensions_;
   for (auto c : children_) {
     c->setOwner(this);
-  }
-}
-
-void Node::print() {
-  if (printFunc_ != nullptr) {
-    printFunc_(this);
   }
 }
 

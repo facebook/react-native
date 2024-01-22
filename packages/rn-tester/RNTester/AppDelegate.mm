@@ -13,9 +13,7 @@
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
-#endif
 
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
@@ -84,8 +82,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return nullptr;
 }
 
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
-
 // Required for the remoteNotificationsRegistered event.
 - (void)application:(__unused UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -112,8 +108,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
-
-#endif
 
 #pragma mark - New Arch Enabled settings
 

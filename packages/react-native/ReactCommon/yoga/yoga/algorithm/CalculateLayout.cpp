@@ -2097,35 +2097,6 @@ static void calculateLayoutImpl(
   }
 }
 
-bool gPrintChanges = false;
-bool gPrintSkips = false;
-
-static const char* spacer =
-    "                                                            ";
-
-static const char* spacerWithLength(const unsigned long level) {
-  const size_t spacerLen = strlen(spacer);
-  if (level > spacerLen) {
-    return &spacer[0];
-  } else {
-    return &spacer[spacerLen - level];
-  }
-}
-
-static const char* sizingModeName(
-    const SizingMode mode,
-    const bool performLayout) {
-  switch (mode) {
-    case SizingMode::MaxContent:
-      return performLayout ? "LAY_UNDEFINED" : "UNDEFINED";
-    case SizingMode::StretchFit:
-      return performLayout ? "LAY_EXACTLY" : "EXACTLY";
-    case SizingMode::FitContent:
-      return performLayout ? "LAY_AT_MOST" : "AT_MOST";
-  }
-  return "";
-}
-
 //
 // This is a wrapper around the calculateLayoutImpl function. It determines
 // whether the layout request is redundant and can be skipped.
@@ -2252,48 +2223,7 @@ bool calculateLayoutInternal(
 
     (performLayout ? layoutMarkerData.cachedLayouts
                    : layoutMarkerData.cachedMeasures) += 1;
-
-    if (gPrintChanges && gPrintSkips) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.{[skipped] ",
-          spacerWithLength(depth),
-          depth);
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          availableWidth,
-          availableHeight,
-          cachedResults->computedWidth,
-          cachedResults->computedHeight,
-          LayoutPassReasonToString(reason));
-    }
   } else {
-    if (gPrintChanges) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.{%s",
-          spacerWithLength(depth),
-          depth,
-          needToVisitNode ? "*" : "");
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, aw: %f ah: %f %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          availableWidth,
-          availableHeight,
-          LayoutPassReasonToString(reason));
-    }
-
     calculateLayoutImpl(
         node,
         availableWidth,
@@ -2309,26 +2239,6 @@ bool calculateLayoutInternal(
         generationCount,
         reason);
 
-    if (gPrintChanges) {
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "%s%d.}%s",
-          spacerWithLength(depth),
-          depth,
-          needToVisitNode ? "*" : "");
-      node->print();
-      yoga::log(
-          node,
-          LogLevel::Verbose,
-          "wm: %s, hm: %s, d: (%f, %f) %s\n",
-          sizingModeName(widthSizingMode, performLayout),
-          sizingModeName(heightSizingMode, performLayout),
-          layout->measuredDimension(Dimension::Width),
-          layout->measuredDimension(Dimension::Height),
-          LayoutPassReasonToString(reason));
-    }
-
     layout->lastOwnerDirection = ownerDirection;
 
     if (cachedResults == nullptr) {
@@ -2338,9 +2248,6 @@ bool calculateLayoutInternal(
 
       if (layout->nextCachedMeasurementsIndex ==
           LayoutResults::MaxCachedMeasurements) {
-        if (gPrintChanges) {
-          yoga::log(node, LogLevel::Verbose, "Out of cache entries!\n");
-        }
         layout->nextCachedMeasurementsIndex = 0;
       }
 
