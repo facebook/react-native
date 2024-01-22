@@ -103,6 +103,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   ModalHostViewShadowNode::ConcreteState::Shared _state;
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
+  BOOL _interactiveDismissal;
   BOOL _isPresented;
   UIView *_modalContentsSnapshot;
 }
@@ -113,6 +114,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _props = ModalHostViewShadowNode::defaultSharedProps();
     _shouldAnimatePresentation = YES;
 
+    _interactiveDismissal = NO;
     _isPresented = NO;
   }
 
@@ -148,6 +150,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    _viewController.modalInPresentation = !self->_interactiveDismissal;
     _isPresented = YES;
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -240,6 +243,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   _viewController = nil;
   _isPresented = NO;
   _shouldPresent = NO;
+  _interactiveDismissal = NO;
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -256,6 +260,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
+  _interactiveDismissal = newProps.interactiveDismissal;
   _shouldPresent = newProps.visible;
   [self ensurePresentedOnlyIfNeeded];
 
