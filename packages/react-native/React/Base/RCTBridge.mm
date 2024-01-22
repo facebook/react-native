@@ -279,8 +279,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR
-  // Disable debugger to resume the JsVM & avoid thread locks while reloading
-  [RCTInspectorDevServerHelper disableDebugger];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    // Disable debugger to resume the JsVM & avoid thread locks while reloading
+    [RCTInspectorDevServerHelper disableDebugger];
+  }
 #endif
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:nil];
