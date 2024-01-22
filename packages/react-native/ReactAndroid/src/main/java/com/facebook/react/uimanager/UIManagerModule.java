@@ -247,9 +247,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
-    ViewManager targetView =
-        viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
+  public @Nullable WritableMap getConstantsForViewManager(String viewManagerName) {
+    ViewManager targetView = mUIImplementation.resolveViewManager(viewManagerName);
     if (targetView == null) {
       return null;
     }
