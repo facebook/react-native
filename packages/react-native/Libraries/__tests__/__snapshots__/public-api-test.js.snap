@@ -6449,6 +6449,15 @@ exports[`public API should not change unintentionally Libraries/Modal/ModalInjec
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Modal/NativeModalManager.js 1`] = `
+"export interface Spec extends TurboModule {
+  +addListener: (eventName: string) => void;
+  +removeListeners: (count: number) => void;
+}
+declare export default ?Spec;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Modal/RCTModalHostViewNativeComponent.js 1`] = `
 "type OrientationChangeEvent = $ReadOnly<{|
   orientation: \\"portrait\\" | \\"landscape\\",
@@ -6480,6 +6489,7 @@ type NativeProps = $ReadOnly<{|
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
   interactiveDismissal?: WithDefault<boolean, false>,
+  identifier?: WithDefault<Int32, 0>,
 |}>;
 declare export default HostComponent<NativeProps>;
 "
@@ -8723,7 +8733,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   borderRightWidth?: number,
   borderStartWidth?: number,
   borderTopWidth?: number,
-  position?: \\"absolute\\" | \\"relative\\",
+  position?: \\"absolute\\" | \\"relative\\" | \\"static\\",
   flexDirection?: \\"row\\" | \\"row-reverse\\" | \\"column\\" | \\"column-reverse\\",
   flexWrap?: \\"wrap\\" | \\"nowrap\\" | \\"wrap-reverse\\",
   justifyContent?:
@@ -9941,6 +9951,7 @@ type AndroidPlatform = {
     Manufacturer: string,
   |},
   get isTV(): boolean,
+  get isVision(): boolean,
   get isTesting(): boolean,
   get isDisableAnimations(): boolean,
   select: <T>(spec: PlatformSelectSpec<T>) => T,

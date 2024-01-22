@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -31,12 +29,15 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -99,7 +100,19 @@ public class TextLayoutManager {
     sTagToSpannableCache.remove(reactTag);
   }
 
-  private static void buildSpannableFromFragment(
+  private static void buildSpannableFromFragments(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
+    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+    } else {
+      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+    }
+  }
+
+  private static void buildSpannableFromFragmentsDuplicated(
       Context context,
       ReadableArray fragments,
       SpannableStringBuilder sb,
@@ -152,8 +165,8 @@ public class TextLayoutManager {
         }
         ops.add(
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
-        if (textAttributes.mFontStyle != UNSET
-            || textAttributes.mFontWeight != UNSET
+        if (textAttributes.mFontStyle != ReactConstants.UNSET
+            || textAttributes.mFontWeight != ReactConstants.UNSET
             || textAttributes.mFontFamily != null) {
           ops.add(
               new SetSpanOperation(
@@ -197,6 +210,17 @@ public class TextLayoutManager {
     }
   }
 
+  private static void buildSpannableFromFragmentsUnified(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
+
+    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
+
+    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
+  }
+
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
   public static Spannable getOrCreateSpannableForText(
       Context context,
@@ -219,7 +243,7 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
+    buildSpannableFromFragments(context, attributedString.getArray("fragments"), sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
@@ -368,10 +392,10 @@ public class TextLayoutManager {
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
             ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
-            : UNSET;
+            : ReactConstants.UNSET;
 
     int calculatedLineCount =
-        maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
+        maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
             ? layout.getLineCount()
             : Math.min(maximumNumberOfLines, layout.getLineCount());
 

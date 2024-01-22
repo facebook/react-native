@@ -230,6 +230,78 @@ class ZIndexExample extends React.Component<
   };
 }
 
+function PositionStaticZIndexExample(): React.Node {
+  return (
+    <View
+      testID="view-test-zindex-with-static"
+      style={{backgroundColor: 'yellow', flexDirection: 'row'}}>
+      <View
+        style={{
+          backgroundColor: 'red',
+          width: 100,
+          height: 100,
+          position: 'relative',
+          left: 10,
+        }}>
+        <View
+          style={{
+            backgroundColor: 'purple',
+            width: 50,
+            height: 50,
+            top: 30,
+            left: 65,
+            position: 'relative',
+          }}
+        />
+      </View>
+      <View
+        style={{
+          backgroundColor: 'blue',
+          width: 100,
+          height: 100,
+          zIndex: 100,
+          position: 'static',
+        }}>
+        <View
+          style={{
+            backgroundColor: 'orange',
+            width: 50,
+            height: 50,
+            top: 10,
+            position: 'relative',
+          }}
+        />
+        <View
+          style={{
+            backgroundColor: 'brown',
+            width: 50,
+            height: 50,
+            position: 'static',
+          }}>
+          <View
+            style={{
+              backgroundColor: 'black',
+              width: 25,
+              height: 25,
+              top: -10,
+              position: 'relative',
+            }}
+          />
+        </View>
+      </View>
+      <View
+        style={{
+          backgroundColor: 'green',
+          width: 100,
+          height: 100,
+          position: 'relative',
+          left: -20,
+        }}
+      />
+    </View>
+  );
+}
+
 class DisplayNoneStyle extends React.Component<
   $ReadOnly<{||}>,
   {|
@@ -662,6 +734,11 @@ export default ({
       render(): React.Node {
         return <ZIndexExample />;
       },
+    },
+    {
+      title: 'ZIndex With Static',
+      name: 'zindex-with-static',
+      render: PositionStaticZIndexExample,
     },
     {
       title: '`display: none` style',

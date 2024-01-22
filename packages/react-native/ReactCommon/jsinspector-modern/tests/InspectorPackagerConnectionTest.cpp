@@ -7,6 +7,8 @@
 
 #include <folly/Format.h>
 #include <folly/dynamic.h>
+#include <folly/executors/ManualExecutor.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -22,6 +24,7 @@
 #include "UniquePtrFactory.h"
 
 using namespace ::testing;
+using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;
 using folly::dynamic, folly::parseJson, folly::toJson, folly::format,
     folly::sformat;
@@ -30,28 +33,47 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-class InspectorPackagerConnectionTest : public testing::Test {
+template <typename Executor>
+class InspectorPackagerConnectionTestBase : public testing::Test {
  protected:
-  InspectorPackagerConnectionTest()
+  InspectorPackagerConnectionTestBase()
       : packagerConnection_(InspectorPackagerConnection{
             "ws://mock-host:12345",
             "my-app",
-            packagerConnectionDelegates_.make_unique()}) {
+            packagerConnectionDelegates_.make_unique(asyncExecutor_)}) {
     ON_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
         .WillByDefault(webSockets_.lazily_make_unique<
                        const std::string&,
                        std::weak_ptr<IWebSocketDelegate>>());
   }
 
-  ~InspectorPackagerConnectionTest() override {
-    // Clean up all pages currently registered with the inspector.
+  void TearDown() override {
+    // Forcibly clean up all pages currently registered with the inspector in
+    // order to isolate state between tests. NOTE: Using TearDown instead of a
+    // destructor so that we can use FAIL() etc.
     std::vector<int> pagesToRemove;
-    for (auto& page : getInspectorInstance().getPages()) {
-      pagesToRemove.push_back(page.id);
+    auto pages = getInspectorInstance().getPages();
+    int liveConnectionCount = 0;
+    for (size_t i = 0; i != localConnections_.objectsVended(); ++i) {
+      if (localConnections_[i]) {
+        liveConnectionCount++;
+        // localConnections_[i] is a strict mock and will complain when we
+        // removePage if the call is unexpected.
+        EXPECT_CALL(*localConnections_[i], disconnect());
+      }
     }
-    for (auto id : pagesToRemove) {
-      getInspectorInstance().removePage(id);
+    for (auto& page : pages) {
+      getInspectorInstance().removePage(page.id);
     }
+    if (!pages.empty() && liveConnectionCount) {
+      if (!::testing::Test::HasFailure()) {
+        FAIL()
+            << "Test case ended with " << liveConnectionCount
+            << " open connection(s) and " << pages.size()
+            << " registered page(s). You must manually call removePage for each page.";
+      }
+    }
+    ::testing::Test::TearDown();
   }
 
   MockInspectorPackagerConnectionDelegate* packagerConnectionDelegate() {
@@ -59,6 +81,8 @@ class InspectorPackagerConnectionTest : public testing::Test {
     EXPECT_EQ(packagerConnectionDelegates_.objectsVended(), 1);
     return packagerConnectionDelegates_[0];
   }
+
+  Executor asyncExecutor_;
 
   UniquePtrFactory<MockInspectorPackagerConnectionDelegate>
       packagerConnectionDelegates_;
@@ -83,6 +107,26 @@ class InspectorPackagerConnectionTest : public testing::Test {
    */
   UniquePtrFactory<StrictMock<MockLocalConnection>> localConnections_;
   std::optional<InspectorPackagerConnection> packagerConnection_;
+};
+
+using InspectorPackagerConnectionTest =
+    InspectorPackagerConnectionTestBase<folly::QueuedImmediateExecutor>;
+
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+class InspectorPackagerConnectionTestAsync
+    : public InspectorPackagerConnectionTestBase<folly::ManualExecutor> {
+ public:
+  virtual void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = asyncExecutor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on asyncExecutor_ at the end of the test. Use advance() or run() as needed.";
+    InspectorPackagerConnectionTestBase<folly::ManualExecutor>::TearDown();
+  }
 };
 
 } // namespace
@@ -172,7 +216,8 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
                   AtJsonPtr("/app", Eq("my-app")),
                   AtJsonPtr("/title", Eq("mock-title [C++ connection]")),
                   AtJsonPtr("/vm", Eq("mock-vm")),
-                  AtJsonPtr("/id", Eq(std::to_string(pageId))))}))))))
+                  AtJsonPtr("/id", Eq(std::to_string(pageId))),
+                  AtJsonPtr("/type", Eq("Legacy")))}))))))
       .RetiresOnSaturation();
   webSockets_[0]->getDelegate().didReceiveMessage(R"({
       "event": "getPages"
@@ -260,6 +305,19 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
                 "id": 1234,
                 "params": ["arg1", "arg2"]
               })")));
+
+  // Send a 'disconnect' event from the mocked backend (local) to the frontend
+  // (remote) and observe it being sent via the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+  localConnections_[0]->getRemoteConnection().onDisconnect();
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
 }
 
 TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
@@ -287,11 +345,11 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
     // Connect to the i-th page.
     webSockets_[0]->getDelegate().didReceiveMessage(sformat(
         R"({{
-          "event": "connect",
-          "payload": {{
-            "pageId": {0}
-          }}
-        }})",
+        "event": "connect",
+        "payload": {{
+          "pageId": {0}
+        }}
+      }})",
         toJson(std::to_string(pageIds[i]))));
     ASSERT_TRUE(localConnections_[i]);
   }
@@ -329,14 +387,19 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
         .RetiresOnSaturation();
     webSockets_[0]->getDelegate().didReceiveMessage(sformat(
         R"({{
-            "event": "wrappedEvent",
-            "payload": {{
-              "pageId": {0},
-              "wrappedEvent": {1}
-            }}
-          }})",
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
         toJson(std::to_string(pageIds[i])),
         toJson(toJson(dynamic::object("method", method)))));
+  }
+
+  for (int i = 0; i < kNumPages; ++i) {
+    EXPECT_CALL(*localConnections_[i], disconnect()).RetiresOnSaturation();
+    getInspectorInstance().removePage(pageIds[i]);
   }
 }
 
@@ -376,6 +439,9 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToAllConnections) {
     "id": 1234,
     "params": ["arg1", "arg2"]
   })");
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
 }
 
 TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
@@ -469,7 +535,9 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenSocketFailure) {
   EXPECT_FALSE(localConnections_[0]);
 }
 
-TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestExplicitCloseAfterSocketFailure) {
   // Configure gmock to expect calls in a specific order.
   InSequence mockCallsMustBeInSequence;
 
@@ -494,18 +562,6 @@ TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
   // Notify that the socket was closed (implicitly, as the result of an error).
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
 
-  // For convenience, the mock scheduleCallback usually calls the callback
-  // immediately. However, here we want the async behaviour so we can ensure
-  // only one reconnection gets scheduled.
-  std::function<void()> scheduledCallback;
-  EXPECT_CALL(*packagerConnectionDelegate(), scheduleCallback(_, _))
-      .WillOnce(
-          [&](std::function<void(void)> callback, std::chrono::milliseconds) {
-            EXPECT_FALSE(scheduledCallback);
-            scheduledCallback = callback;
-          })
-      .RetiresOnSaturation();
-
   {
     // The WebSocket instance gets destroyed during didFailWithError, so extract
     // the delegate in order to call didClose.
@@ -515,15 +571,14 @@ TEST_F(InspectorPackagerConnectionTest, TestExplicitCloseAfterSocketFailure) {
     webSocketDelegate->didClose();
   }
 
-  ASSERT_FALSE(localConnections_[0]);
+  EXPECT_FALSE(localConnections_[0]);
   // We're still disconnected since we haven't called the reconnect callback.
-  ASSERT_FALSE(packagerConnection_->isConnected());
+  EXPECT_FALSE(packagerConnection_->isConnected());
 
   // Flush the callback queue.
-  EXPECT_TRUE(scheduledCallback);
-  scheduledCallback();
+  asyncExecutor_.advance(2000ms);
 
-  ASSERT_TRUE(packagerConnection_->isConnected());
+  EXPECT_TRUE(packagerConnection_->isConnected());
 }
 
 TEST_F(
@@ -885,6 +940,400 @@ TEST_F(
   retainedWebSocketDelegate.reset();
   EXPECT_FALSE(localConnections_[0]);
   EXPECT_FALSE(webSockets_[0]);
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestDestroyConnectionOnPageRemoved) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  ASSERT_TRUE(webSockets_[0]);
+
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_TRUE(localConnections_[0]);
+
+  // Remove the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+  EXPECT_FALSE(localConnections_[0]);
+}
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToRemoteAfterDestroyed) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventTriggered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+
+  packagerConnection_.reset();
+
+  // Flush the callback queue. This doesn't crash.
+  EXPECT_EQ(asyncExecutor_.run(), 1);
+}
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToStaleRemoteConnection) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDropped",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  // Disconnect from the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "disconnect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_FALSE(localConnections_[0]);
+
+  // Connect to the same page again.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_TRUE(localConnections_[1]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote) over
+  // the new connection, then flush the callback queue.
+  // Only this event should be sent over the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("wrappedEvent")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId))),
+          AtJsonPtr(
+              "/payload/wrappedEvent",
+              JsonEq(
+                  R"({
+                    "method": "FakeDomain.eventToBeDelivered",
+                    "params": ["arg1", "arg2"]
+                  })"))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDelivered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+  EXPECT_EQ(asyncExecutor_.run(), 2);
+
+  // Clean up.
+  EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
+
+TEST_F(
+    InspectorPackagerConnectionTestAsync,
+    TestAttemptSendToStaleRemoteConnectionWhenRetained) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event from the mocked backend (local) to the frontend (remote)
+  // but don't flush the callback queue yet.
+  localConnections_[0]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDropped",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+
+  // Forcibly retain the remote connection beyond localConnections_[0]'s
+  // lifetime.
+  auto retainedRemoteConnection0 =
+      localConnections_[0]->dangerouslyReleaseRemoteConnection();
+
+  // Disconnect from the page.
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "disconnect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  EXPECT_FALSE(localConnections_[0]);
+
+  // Connect to the same page again.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_TRUE(localConnections_[1]);
+
+  // Remember localConnections_[0]'s remote connection? We can still use it
+  // without crashing, but it will not deliver any messages.
+  retainedRemoteConnection0->onMessage(R"({
+                                           "method": "FakeDomain.anotherEventToBeDropped",
+                                           "params": ["arg1", "arg2"]
+                                         })");
+  retainedRemoteConnection0->onDisconnect();
+
+  // Send events from the mocked backend (local) to the frontend (remote) over
+  // the new connection, then flush the callback queue.
+  // Only these events should be sent over the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("wrappedEvent")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId))),
+          AtJsonPtr(
+              "/payload/wrappedEvent",
+              JsonEq(
+                  R"({
+                    "method": "FakeDomain.eventToBeDelivered",
+                    "params": ["arg1", "arg2"]
+                  })"))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onMessage(R"({
+                                                            "method": "FakeDomain.eventToBeDelivered",
+                                                            "params": ["arg1", "arg2"]
+                                                          })");
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+  localConnections_[1]->getRemoteConnection().onDisconnect();
+
+  EXPECT_EQ(asyncExecutor_.run(), 5);
+
+  // Clean up.
+  EXPECT_CALL(*localConnections_[1], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
+
+TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  enum {
+    Accept,
+    RejectSilently,
+    RejectWithDisconnect
+  } mockNextConnectionBehavior;
+
+  auto pageId = getInspectorInstance().addPage(
+      "mock-title",
+      "mock-vm",
+      [&mockNextConnectionBehavior,
+       this](auto remoteConnection) -> std::unique_ptr<ILocalConnection> {
+        switch (mockNextConnectionBehavior) {
+          case Accept:
+            return localConnections_.make_unique(std::move(remoteConnection));
+          case RejectSilently:
+            return nullptr;
+          case RejectWithDisconnect:
+            remoteConnection->onDisconnect();
+            return nullptr;
+        }
+      });
+
+  packagerConnection_->connect();
+
+  ASSERT_TRUE(webSockets_[0]);
+
+  // Reject the connection by returning nullptr.
+  mockNextConnectionBehavior = RejectSilently;
+
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 1,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  // Reject the connection by explicitly calling onDisconnect(), then returning
+  // nullptr.
+  mockNextConnectionBehavior = RejectWithDisconnect;
+
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("disconnect")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 2,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  // Accept a connection after previously rejecting connections to the same
+  // page.
+  mockNextConnectionBehavior = Accept;
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+
+  EXPECT_CALL(
+      *localConnections_[0],
+      sendMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", Eq("FakeDomain.fakeMethod")),
+          AtJsonPtr("/id", Eq(3)),
+          AtJsonPtr("/params", ElementsAre("arg1", "arg2"))))))
+      .RetiresOnSaturation();
+
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "wrappedEvent",
+          "payload": {{
+            "pageId": {0},
+            "wrappedEvent": {1}
+          }}
+        }})",
+      toJson(std::to_string(pageId)),
+      toJson(R"({
+                "method": "FakeDomain.fakeMethod",
+                "id": 3,
+                "params": ["arg1", "arg2"]
+              })")));
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
 }
 
 } // namespace facebook::react::jsinspector_modern

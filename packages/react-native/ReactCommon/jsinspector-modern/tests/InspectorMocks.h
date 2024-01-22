@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/executors/ScheduledExecutor.h>
 #include <gmock/gmock.h>
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -48,6 +49,15 @@ class MockWebSocket : public IWebSocket {
   MOCK_METHOD(void, send, (std::string_view message), (override));
 };
 
+class MockRemoteConnection : public IRemoteConnection {
+ public:
+  MockRemoteConnection() = default;
+
+  // IRemoteConnection methods
+  MOCK_METHOD(void, onMessage, (std::string message), (override));
+  MOCK_METHOD(void, onDisconnect, (), (override));
+};
+
 class MockLocalConnection : public ILocalConnection {
  public:
   explicit MockLocalConnection(
@@ -56,6 +66,10 @@ class MockLocalConnection : public ILocalConnection {
 
   IRemoteConnection& getRemoteConnection() {
     return *remoteConnection_;
+  }
+
+  std::unique_ptr<IRemoteConnection> dangerouslyReleaseRemoteConnection() {
+    return std::move(remoteConnection_);
   }
 
   // ILocalConnection methods
@@ -69,9 +83,19 @@ class MockLocalConnection : public ILocalConnection {
 class MockInspectorPackagerConnectionDelegate
     : public InspectorPackagerConnectionDelegate {
  public:
-  MockInspectorPackagerConnectionDelegate() {
+  explicit MockInspectorPackagerConnectionDelegate(folly::Executor& executor)
+      : executor_(executor) {
     using namespace testing;
-    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault(InvokeArgument<0>());
+    ON_CALL(*this, scheduleCallback(_, _))
+        .WillByDefault(Invoke<>([this](auto callback, auto delay) {
+          if (auto scheduledExecutor =
+                  dynamic_cast<folly::ScheduledExecutor*>(&executor_)) {
+            scheduledExecutor->scheduleAt(
+                callback, scheduledExecutor->now() + delay);
+          } else {
+            executor_.add(callback);
+          }
+        }));
   }
 
   // InspectorPackagerConnectionDelegate methods
@@ -85,6 +109,9 @@ class MockInspectorPackagerConnectionDelegate
       scheduleCallback,
       (std::function<void(void)> callback, std::chrono::milliseconds delayMs),
       (override));
+
+ private:
+  folly::Executor& executor_;
 };
 
 } // namespace facebook::react::jsinspector_modern

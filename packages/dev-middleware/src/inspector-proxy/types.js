@@ -12,12 +12,16 @@
 // Page information received from the device. New page is created for
 // each new instance of VM and can appear when user reloads React Native
 // application.
-export type Page = $ReadOnly<{
+
+export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
   vm: string,
   app: string,
+  type?: 'Legacy' | 'Modern',
 }>;
+
+export type Page = Required<PageFromDevice>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
 export type WrappedEvent = $ReadOnly<{
@@ -48,7 +52,7 @@ export type GetPagesRequest = {event: 'getPages'};
 // Response to GetPagesRequest containing a list of page infos.
 export type GetPagesResponse = {
   event: 'getPages',
-  payload: $ReadOnlyArray<Page>,
+  payload: $ReadOnlyArray<PageFromDevice>,
 };
 
 // Union type for all possible messages sent from device to Inspector Proxy.
@@ -78,10 +82,11 @@ export type PageDescription = $ReadOnly<{
   // Metadata specific to React Native
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
+    type: $NonMaybeType<Page['type']>,
   }>,
 }>;
 
-export type JsonPagesListResponse = $ReadOnlyArray<PageDescription>;
+export type JsonPagesListResponse = Array<PageDescription>;
 
 // Response to /json/version HTTP request from the debugger specifying browser type and
 // Chrome protocol version.

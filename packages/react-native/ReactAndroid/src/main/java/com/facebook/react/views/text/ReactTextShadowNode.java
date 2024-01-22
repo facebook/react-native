@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -80,7 +81,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             int minimumFontSize =
                 (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
             while (currentFontSize > minimumFontSize
-                && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
+                && (mNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > mNumberOfLines
                     || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
               // TODO: We could probably use a smarter algorithm here. This will require 0(n)
               // measurements
@@ -122,7 +123,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           }
 
           final int lineCount =
-              mNumberOfLines == UNSET
+              mNumberOfLines == ReactConstants.UNSET
                   ? layout.getLineCount()
                   : Math.min(mNumberOfLines, layout.getLineCount());
 
@@ -327,7 +328,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
               mPreparedSpannableText,
-              UNSET,
+              ReactConstants.UNSET,
               mContainsImages,
               getPadding(Spacing.START),
               getPadding(Spacing.TOP),
