@@ -95,6 +95,8 @@ Pod::Spec.new do |s|
     end
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
+
+    ss.dependency "React-jsinspector", version
   end
 
   s.subspec "DevSupport" do |ss|

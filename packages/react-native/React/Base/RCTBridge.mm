@@ -14,6 +14,10 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
+#import <jsinspector-modern/InspectorFlags.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
+#import <jsinspector-modern/ReactCdp.h>
+#import <optional>
 #import "RCTDevLoadingViewProtocol.h"
 #import "RCTJSThread.h"
 #import "RCTLog.h"
@@ -189,6 +193,9 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
 
 @implementation RCTBridge {
   NSURL *_delegateBundleURL;
+
+  std::unique_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
+  std::optional<int> _inspectorPageId;
 }
 
 + (void)initialize
@@ -252,6 +259,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
    * RCTAssertMainQueue();
    */
   [self invalidate];
+  if (_inspectorPageId.has_value()) {
+    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
+    _inspectorPageId.reset();
+    _inspectorTarget.reset();
+  }
 }
 
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
@@ -376,6 +388,29 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [_performanceLogger markStartForTag:RCTPLInitReactRuntime];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
+
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+    _inspectorTarget = std::make_unique<facebook::react::jsinspector_modern::PageTarget>();
+    __weak RCTBridge *weakSelf = self;
+    _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
+        "React Native Bridge (Experimental)",
+        /* vm */ "",
+        [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
+            -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
+          RCTBridge *strongSelf = weakSelf;
+          if (!strongSelf) {
+            // This can happen if we're about to be dealloc'd. Reject the connection.
+            return nullptr;
+          }
+          return strongSelf->_inspectorTarget->connect(
+              std::move(remote),
+              {
+                  .integrationName = "iOS Bridge (RCTBridge)",
+              });
+        },
+        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+  }
 
   Class bridgeClass = self.bridgeClass;
 
