@@ -1027,18 +1027,17 @@ static void justifyMainAxis(
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
-        child->style().isInlineStartPositionDefined(mainAxis, direction)) {
+        child->style().isFlexStartPositionDefined(mainAxis, direction)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
         // defined, we override the position to whatever the user said (and
         // margin/border).
         child->setLayoutPosition(
-            child->style().computeInlineStartPosition(
+            child->style().computeFlexStartPosition(
                 mainAxis, direction, availableInnerMainDim) +
-                node->style().computeInlineStartBorder(mainAxis, direction) +
-                child->style().computeInlineStartMargin(
+                node->style().computeFlexStartBorder(mainAxis, direction) +
+                child->style().computeFlexStartMargin(
                     mainAxis, direction, availableInnerWidth),
-            // FIXME T175195745: Mismatched edge
             flexStartEdge(mainAxis));
       }
     } else {
@@ -1086,7 +1085,7 @@ static void justifyMainAxis(
             // If the child is baseline aligned then the cross dimension is
             // calculated by adding maxAscent and maxDescent from the baseline.
             const float ascent = calculateBaseline(child) +
-                child->style().computeInlineStartMargin(
+                child->style().computeFlexStartMargin(
                     FlexDirection::Column, direction, availableInnerWidth);
             const float descent =
                 child->getLayout().measuredDimension(Dimension::Height) +
@@ -1333,7 +1332,7 @@ static void calculateLayoutImpl(
   const float paddingAndBorderAxisCross =
       paddingAndBorderForAxis(node, crossAxis, ownerWidth);
   const float leadingPaddingAndBorderCross =
-      node->style().computeInlineStartPaddingAndBorder(
+      node->style().computeFlexStartPaddingAndBorder(
           crossAxis, direction, ownerWidth);
 
   SizingMode sizingModeMainDim =
@@ -1589,16 +1588,14 @@ static void calculateLayoutImpl(
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
           const bool isChildLeadingPosDefined =
-              child->style().isInlineStartPositionDefined(crossAxis, direction);
+              child->style().isFlexStartPositionDefined(crossAxis, direction);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
-                child->style().computeInlineStartPosition(
+                child->style().computeFlexStartPosition(
                     crossAxis, direction, availableInnerCrossDim) +
-                    node->style().computeInlineStartBorder(
-                        crossAxis, direction) +
-                    child->style().computeInlineStartMargin(
+                    node->style().computeFlexStartBorder(crossAxis, direction) +
+                    child->style().computeFlexStartMargin(
                         crossAxis, direction, availableInnerWidth),
-                // FIXME T175195745: Mismatched edge
                 flexStartEdge(crossAxis));
           }
           // If leading position is not defined or calculations result in Nan,
@@ -1607,10 +1604,9 @@ static void calculateLayoutImpl(
               yoga::isUndefined(
                   child->getLayout().position(flexStartEdge(crossAxis)))) {
             child->setLayoutPosition(
-                node->style().computeInlineStartBorder(crossAxis, direction) +
-                    child->style().computeInlineStartMargin(
+                node->style().computeFlexStartBorder(crossAxis, direction) +
+                    child->style().computeFlexStartMargin(
                         crossAxis, direction, availableInnerWidth),
-                // FIXME T175195745: Mismatched edge
                 flexStartEdge(crossAxis));
           }
         } else {
@@ -1823,7 +1819,7 @@ static void calculateLayoutImpl(
           }
           if (resolveChildAlignment(node, child) == Align::Baseline) {
             const float ascent = calculateBaseline(child) +
-                child->style().computeInlineStartMargin(
+                child->style().computeFlexStartMargin(
                     FlexDirection::Column, direction, availableInnerWidth);
             const float descent =
                 child->getLayout().measuredDimension(Dimension::Height) +
@@ -1853,20 +1849,18 @@ static void calculateLayoutImpl(
               case Align::FlexStart: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->style().computeInlineStartMargin(
+                        child->style().computeFlexStartPosition(
                             crossAxis, direction, availableInnerWidth),
-                    // FIXME T175195745: Mismatched edge
                     flexStartEdge(crossAxis));
                 break;
               }
               case Align::FlexEnd: {
                 child->setLayoutPosition(
                     currentLead + lineHeight -
-                        child->style().computeInlineEndMargin(
+                        child->style().computeFlexEndMargin(
                             crossAxis, direction, availableInnerWidth) -
                         child->getLayout().measuredDimension(
                             dimension(crossAxis)),
-                    // FIXME T175195745: Mismatched edge
                     flexStartEdge(crossAxis));
                 break;
               }
@@ -1882,9 +1876,8 @@ static void calculateLayoutImpl(
               case Align::Stretch: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->style().computeInlineStartMargin(
+                        child->style().computeFlexStartMargin(
                             crossAxis, direction, availableInnerWidth),
-                    // FIXME T175195745: Mismatched edge
                     flexStartEdge(crossAxis));
 
                 // Remeasure child with the line height as it as been only
@@ -1935,7 +1928,7 @@ static void calculateLayoutImpl(
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine -
                         calculateBaseline(child) +
-                        child->style().computeInlineStartPosition(
+                        child->style().computeFlexStartPosition(
                             FlexDirection::Column,
                             direction,
                             availableInnerCrossDim),
