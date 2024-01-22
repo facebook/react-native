@@ -62,4 +62,5 @@ Pod::Spec.new do |s|
     s.dependency "React-jsc"
   end
 
+  s.dependency "React-jsinspector"
 end
