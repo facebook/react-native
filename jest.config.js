@@ -56,7 +56,10 @@ module.exports = {
     'denodeify',
   ],
   testEnvironment: 'node',
-  collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
+  collectCoverageFrom: [
+    'packages/react-native/Libraries/**/*.js',
+    'packages/react-native/src/**/*.js',
+  ],
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',
