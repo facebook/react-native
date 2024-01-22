@@ -21,7 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import ReactNativeElement from 'react-native/Libraries/DOM/Nodes/ReactNativeElement';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 export const name = 'Visual Completion Example';
 export const title = name;
