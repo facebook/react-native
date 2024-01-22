@@ -71,6 +71,8 @@ Pod::Spec.new do |s|
 
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"" }
+      sss.dependency "React-debug", version
     end
   end
 end

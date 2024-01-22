@@ -43,14 +43,6 @@ export interface ModalBaseProps {
    * The `onShow` prop allows passing a function that will be called once the modal has been shown.
    */
   onShow?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
-  /**
-   * Allows the modal to be dismissed by an interactive gesture
-   */
-  interactiveDismissal?: boolean | undefined;
-  /**
-   * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
-   */
-  onDismiss?: (() => void) | undefined;
 }
 
 export interface ModalPropsIOS {
@@ -79,12 +71,22 @@ export interface ModalPropsIOS {
     | undefined;
 
   /**
+   * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
+   */
+  onDismiss?: (() => void) | undefined;
+
+  /**
    * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
    * The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.
    */
   onOrientationChange?:
     | ((event: NativeSyntheticEvent<any>) => void)
     | undefined;
+
+  /**
+   * Allows the modal to be dismissed by an interactive gesture
+   */
+  interactiveDismissal?: boolean | undefined;
 }
 
 export interface ModalPropsAndroid {

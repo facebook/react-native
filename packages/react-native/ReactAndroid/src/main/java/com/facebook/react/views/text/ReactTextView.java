@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -376,10 +374,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
     // operation
     // TODO T56559197: remove this condition when we migrate 100% to Fabric
-    if (paddingLeft != UNSET
-        && paddingTop != UNSET
-        && paddingRight != UNSET
-        && paddingBottom != UNSET) {
+    if (paddingLeft != ReactConstants.UNSET
+        && paddingTop != ReactConstants.UNSET
+        && paddingRight != ReactConstants.UNSET
+        && paddingBottom != ReactConstants.UNSET) {
 
       setPadding(
           (int) Math.floor(paddingLeft),

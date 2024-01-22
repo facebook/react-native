@@ -130,12 +130,6 @@ public class ReactFeatureFlags {
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
 
-  /** Only swap left and right on Android in RTL scripts. */
-  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
-
-  /** Clean yoga node when <Text /> does not change. */
-  public static boolean enableCleanParagraphYogaNode = false;
-
   /** Default state updates and events to async batched priority. */
   public static boolean enableDefaultAsyncBatchedPriority = false;
 
@@ -179,4 +173,7 @@ public class ReactFeatureFlags {
    *  when there is work to do.
    */
   public static boolean enableOnDemandReactChoreographer = false;
+
+  /** Enables the new unified {@link android.text.Spannable} building logic. */
+  public static boolean enableSpannableBuildingUnification = false;
 }

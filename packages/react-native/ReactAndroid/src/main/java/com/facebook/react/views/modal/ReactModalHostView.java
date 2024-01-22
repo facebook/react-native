@@ -81,13 +81,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private boolean mStatusBarTranslucent;
   private String mAnimationType;
   private boolean mHardwareAccelerated;
-  private boolean mVisible;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
   private boolean mPropertyRequiresNewDialog;
   private @Nullable DialogInterface.OnShowListener mOnShowListener;
-  private @Nullable DialogInterface.OnDismissListener mOnDismissListener;
   private @Nullable OnRequestCloseListener mOnRequestCloseListener;
 
   public ReactModalHostView(ThemedReactContext context) {
@@ -194,10 +192,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mOnShowListener = listener;
   }
 
-  protected void setOnDismissListener(DialogInterface.OnDismissListener listener) {
-    mOnDismissListener = listener;
-  }
-
   protected void setTransparent(boolean transparent) {
     mTransparent = transparent;
   }
@@ -215,10 +209,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   protected void setHardwareAccelerated(boolean hardwareAccelerated) {
     mHardwareAccelerated = hardwareAccelerated;
     mPropertyRequiresNewDialog = true;
-  }
-
-  protected void setVisible(boolean visible) {
-    mVisible = visible;
   }
 
   void setEventDispatcher(EventDispatcher eventDispatcher) {
@@ -304,7 +294,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
-    mDialog.setOnDismissListener(mOnDismissListener);
     mDialog.setOnKeyListener(
         new DialogInterface.OnKeyListener() {
           @Override
@@ -342,14 +331,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       mDialog.show();
       updateSystemAppearance();
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-    }
-  }
-
-  protected void showOrDismiss() {
-    if (mVisible) {
-      showOrUpdate();
-    } else {
-      dismiss();
     }
   }
 

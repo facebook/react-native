@@ -61,6 +61,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 
 - (void)webSocket:(__unused SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didFailWithError([error code], [error description].UTF8String);
   }
@@ -68,6 +69,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 
 - (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessageWithString:(NSString *)message
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didReceiveMessage([message UTF8String]);
   }
@@ -78,6 +80,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
               reason:(__unused NSString *)reason
             wasClean:(__unused BOOL)wasClean
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didClose();
   }

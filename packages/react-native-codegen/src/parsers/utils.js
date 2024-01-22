@@ -85,6 +85,12 @@ function verifyPlatforms(
       return;
     }
 
+    if (name.endsWith('Windows')) {
+      excludedPlatforms.add('iOS');
+      excludedPlatforms.add('android');
+      return;
+    }
+
     if (name.endsWith('Cxx')) {
       cxxOnly = true;
       excludedPlatforms.add('iOS');

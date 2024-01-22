@@ -23,15 +23,15 @@ import type {
 import WebSocket from 'ws';
 
 export class DeviceAgent {
-  _ws: ?WebSocket;
-  _readyPromise: Promise<void>;
+  #ws: ?WebSocket;
+  #readyPromise: Promise<void>;
 
   constructor(url: string, signal?: AbortSignal) {
     const ws = new WebSocket(url, {
       // The mock server uses a self-signed certificate.
       rejectUnauthorized: false,
     });
-    this._ws = ws;
+    this.#ws = ws;
     ws.on('message', data => {
       this.__handle(JSON.parse(data.toString()));
     });
@@ -40,7 +40,7 @@ export class DeviceAgent {
         this.close();
       });
     }
-    this._readyPromise = new Promise<void>((resolve, reject) => {
+    this.#readyPromise = new Promise<void>((resolve, reject) => {
       ws.once('open', () => {
         resolve();
       });
@@ -53,24 +53,24 @@ export class DeviceAgent {
   __handle(message: MessageToDevice): void {}
 
   send(message: MessageFromDevice) {
-    if (!this._ws) {
+    if (!this.#ws) {
       return;
     }
-    this._ws.send(JSON.stringify(message));
+    this.#ws.send(JSON.stringify(message));
   }
 
   ready(): Promise<void> {
-    return this._readyPromise;
+    return this.#readyPromise;
   }
 
   close() {
-    if (!this._ws) {
+    if (!this.#ws) {
       return;
     }
     try {
-      this._ws.terminate();
+      this.#ws.terminate();
     } catch {}
-    this._ws = null;
+    this.#ws = null;
   }
 
   sendWrappedEvent(pageId: string, event: JSONSerializable) {
@@ -110,7 +110,7 @@ export class DeviceMock extends DeviceAgent {
         break;
       case 'getPages':
         const result = this.getPages(message);
-        this._sendPayloadIfNonNull('getPages', result);
+        this.#sendPayloadIfNonNull('getPages', result);
         break;
       case 'wrappedEvent':
         this.wrappedEvent(message);
@@ -125,7 +125,7 @@ export class DeviceMock extends DeviceAgent {
     }
   }
 
-  _sendPayloadIfNonNull<Event: MessageFromDevice['event']>(
+  #sendPayloadIfNonNull<Event: MessageFromDevice['event']>(
     event: Event,
     maybePayload:
       | MessageFromDevice['payload']

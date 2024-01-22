@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.internal.turbomodule.core.interfaces
+package com.facebook.react.turbomodule.core.interfaces
 /**
  * JS CallInvoker is created by CatalystInstance.cpp, but used by TurboModuleManager.cpp. Both C++
  * classes are instantiated at different times/places. Therefore, to pass the JS CallInvoker

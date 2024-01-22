@@ -56,16 +56,15 @@ YG_ENUM_DECL(
     YGErrata,
     YGErrataNone = 0,
     YGErrataStretchFlexBasis = 1,
-    YGErrataPositionStaticBehavesLikeRelative = 2,
-    YGErrataAbsolutePositioning = 4,
+    YGErrataAbsolutePositioningIncorrect = 2,
+    YGErrataAbsolutePercentAgainstInnerSize = 4,
     YGErrataAll = 2147483647,
     YGErrataClassic = 2147483646)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
 
 YG_ENUM_DECL(
     YGExperimentalFeature,
-    YGExperimentalFeatureWebFlexBasis,
-    YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
+    YGExperimentalFeatureWebFlexBasis)
 
 YG_ENUM_DECL(
     YGFlexDirection,

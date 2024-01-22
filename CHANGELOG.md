@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.72.10
+
+### Added
+
+- Unhandled promise rejection - attach non-standard Error object stack info if possible ([655b12dbfa](https://github.com/facebook/react-native/commit/655b12dbfaa2c48f9fd38bbe8311e6f935045b30) by [@ospfranco](https://github.com/ospfranco))
+
+### Fixed
+
+- Revert the regression of iOS min version and updates Podfile.lock for Releases ([1f70f58aa4](https://github.com/facebook/react-native/commit/1f70f58aa4225d017ebad4f66641cbd0d1db114f) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix flags ([565281105e](https://github.com/facebook/react-native/commit/565281105e4a0c4d51d2134114bdadb33f03d61a) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.72.9
+
+### Fixed
+
+- Fix boost link ([d62d714ada](https://github.com/facebook/react-native/commit/d62d714adab891028004063136a7e906478618c4) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix New Arch build failing with -std=c++20 ([b7c1a40db4](https://github.com/facebook/react-native/commit/b7c1a40db4d5a6d992b926307842fe671ae80436) by [@tido64](https://github.com/tido64))
+- Fix ruby tests ([7c7baad7bd](https://github.com/facebook/react-native/commit/7c7baad7bd62cf59b46a426eeb31aefc1e85bca7) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock and try to fix Hermes update ([34da08755d](https://github.com/facebook/react-native/commit/34da08755d88a726e0a68d7a2ef544fe4af0dc6e) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.2
 
 ### Added
@@ -1633,6 +1653,20 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 ### Security
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.70.15
+
+### Changed
+
+- BUMP CLI to v9.3.5 ([cb170efdd3](https://github.com/facebook/react-native/commit/cb170efdd346776aa6941512e1c23eb11c3f0a3a) by [@hurali97](https://github.com/hurali97))
+- Bump react-devtools-core to 4.27.7 ([abb4a2bddd](https://github.com/facebook/react-native/commit/abb4a2bdddbc904b4b3ff185e41c2dddb5ba684b) by [@lunaleaps](https://github.com/lunaleaps))
+- Bump hermes-engine ([5b95254359](https://github.com/facebook/react-native/commit/5b95254359da9813ce8eba5571b9abf6a5fcb21c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Migrate boost download url away from JFrog ([e8e059a977](https://github.com/facebook/react-native/commit/e8e059a977ef2feec1b4b9dfd2866daede2b8ff8) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.70.14
 

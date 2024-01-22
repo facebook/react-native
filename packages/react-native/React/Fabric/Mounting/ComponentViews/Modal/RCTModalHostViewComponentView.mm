@@ -8,6 +8,7 @@
 #import "RCTModalHostViewComponentView.h"
 
 #import <React/RCTBridge+Private.h>
+#import <React/RCTModalManager.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>

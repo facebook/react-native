@@ -29,6 +29,7 @@
     "connect": "^3.6.5",
     "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
+    "nullthrows": "^1.1.1",
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
     "serve-static": "^1.13.1",

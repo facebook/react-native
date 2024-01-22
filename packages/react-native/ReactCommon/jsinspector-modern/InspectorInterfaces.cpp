@@ -7,6 +7,8 @@
 
 #include "InspectorInterfaces.h"
 
+#include <cassert>
+#include <list>
 #include <mutex>
 #include <tuple>
 #include <unordered_map>
@@ -20,6 +22,7 @@ IDestructible::~IDestructible() {}
 ILocalConnection::~ILocalConnection() {}
 IRemoteConnection::~IRemoteConnection() {}
 IInspector::~IInspector() {}
+IPageStatusListener::~IPageStatusListener() {}
 
 namespace {
 
@@ -28,30 +31,79 @@ class InspectorImpl : public IInspector {
   int addPage(
       const std::string& title,
       const std::string& vm,
-      ConnectFunc connectFunc) override;
+      ConnectFunc connectFunc,
+      InspectorPageType type) override;
   void removePage(int pageId) override;
 
-  std::vector<InspectorPage> getPages() const override;
+  std::vector<InspectorPageDescription> getPages() const override;
   std::unique_ptr<ILocalConnection> connect(
       int pageId,
       std::unique_ptr<IRemoteConnection> remote) override;
 
+  void registerPageStatusListener(
+      std::weak_ptr<IPageStatusListener> listener) override;
+
  private:
+  class Page {
+   public:
+    Page(
+        int id,
+        const std::string& title,
+        const std::string& vm,
+        ConnectFunc connectFunc,
+        InspectorPageType type);
+    operator InspectorPageDescription() const;
+
+    ConnectFunc getConnectFunc() const;
+
+   private:
+    int id_;
+    std::string title_;
+    std::string vm_;
+    ConnectFunc connectFunc_;
+    InspectorPageType type_;
+  };
   mutable std::mutex mutex_;
   int nextPageId_{1};
-  std::unordered_map<int, std::tuple<std::string, std::string>> titles_;
-  std::unordered_map<int, ConnectFunc> connectFuncs_;
+  std::unordered_map<int, Page> pages_;
+  std::list<std::weak_ptr<IPageStatusListener>> listeners_;
 };
+
+InspectorImpl::Page::Page(
+    int id,
+    const std::string& title,
+    const std::string& vm,
+    ConnectFunc connectFunc,
+    InspectorPageType type)
+    : id_(id),
+      title_(title),
+      vm_(vm),
+      connectFunc_(std::move(connectFunc)),
+      type_(type) {}
+
+InspectorImpl::Page::operator InspectorPageDescription() const {
+  return InspectorPageDescription{
+      .id = id_,
+      .title = title_,
+      .vm = vm_,
+      .type = type_,
+  };
+}
+
+InspectorImpl::ConnectFunc InspectorImpl::Page::getConnectFunc() const {
+  return connectFunc_;
+}
 
 int InspectorImpl::addPage(
     const std::string& title,
     const std::string& vm,
-    ConnectFunc connectFunc) {
+    ConnectFunc connectFunc,
+    InspectorPageType type) {
   std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
-  titles_[pageId] = std::make_tuple(title, vm);
-  connectFuncs_[pageId] = std::move(connectFunc);
+  assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
+  pages_.emplace(pageId, Page{pageId, title, vm, std::move(connectFunc), type});
 
   return pageId;
 }
@@ -59,17 +111,21 @@ int InspectorImpl::addPage(
 void InspectorImpl::removePage(int pageId) {
   std::scoped_lock lock(mutex_);
 
-  titles_.erase(pageId);
-  connectFuncs_.erase(pageId);
+  if (pages_.erase(pageId) != 0) {
+    for (auto listenerWeak : listeners_) {
+      if (auto listener = listenerWeak.lock()) {
+        listener->onPageRemoved(pageId);
+      }
+    }
+  }
 }
 
-std::vector<InspectorPage> InspectorImpl::getPages() const {
+std::vector<InspectorPageDescription> InspectorImpl::getPages() const {
   std::scoped_lock lock(mutex_);
 
-  std::vector<InspectorPage> inspectorPages;
-  for (auto& it : titles_) {
-    inspectorPages.push_back(InspectorPage{
-        it.first, std::get<0>(it.second), std::get<1>(it.second)});
+  std::vector<InspectorPageDescription> inspectorPages;
+  for (auto& it : pages_) {
+    inspectorPages.push_back(InspectorPageDescription(it.second));
   }
 
   return inspectorPages;
@@ -83,15 +139,28 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
   {
     std::scoped_lock lock(mutex_);
 
-    auto it = connectFuncs_.find(pageId);
-    if (it != connectFuncs_.end()) {
-      connectFunc = it->second;
+    auto it = pages_.find(pageId);
+    if (it != pages_.end()) {
+      connectFunc = it->second.getConnectFunc();
     }
   }
 
   return connectFunc ? connectFunc(std::move(remote)) : nullptr;
 }
 
+void InspectorImpl::registerPageStatusListener(
+    std::weak_ptr<IPageStatusListener> listener) {
+  std::scoped_lock lock(mutex_);
+  // Remove expired listeners
+  for (auto it = listeners_.begin(); it != listeners_.end();) {
+    if (it->expired()) {
+      it = listeners_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  listeners_.push_back(listener);
+}
 } // namespace
 
 IInspector& getInspectorInstance() {

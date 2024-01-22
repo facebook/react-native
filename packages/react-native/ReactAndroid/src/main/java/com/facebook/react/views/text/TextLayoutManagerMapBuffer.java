@@ -8,7 +8,6 @@
 package com.facebook.react.views.text;
 
 import static com.facebook.react.config.ReactFeatureFlags.enableTextSpannableCache;
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -29,12 +28,15 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
+import com.facebook.react.views.text.fragments.MapBufferTextFragmentList;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -123,7 +125,16 @@ public class TextLayoutManagerMapBuffer {
         == LayoutDirection.RTL;
   }
 
-  private static void buildSpannableFromFragment(
+  private static void buildSpannableFromFragments(
+      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+    } else {
+      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+    }
+  }
+
+  private static void buildSpannableFromFragmentsDuplicated(
       Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
 
     for (int i = 0, length = fragments.getCount(); i < length; i++) {
@@ -172,8 +183,8 @@ public class TextLayoutManagerMapBuffer {
         }
         ops.add(
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
-        if (textAttributes.mFontStyle != UNSET
-            || textAttributes.mFontWeight != UNSET
+        if (textAttributes.mFontStyle != ReactConstants.UNSET
+            || textAttributes.mFontWeight != ReactConstants.UNSET
             || textAttributes.mFontFamily != null) {
           ops.add(
               new SetSpanOperation(
@@ -215,6 +226,14 @@ public class TextLayoutManagerMapBuffer {
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
       }
     }
+  }
+
+  private static void buildSpannableFromFragmentsUnified(
+      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+
+    final MapBufferTextFragmentList textFragmentList = new MapBufferTextFragmentList(fragments);
+
+    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
@@ -260,7 +279,7 @@ public class TextLayoutManagerMapBuffer {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragment(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops);
+    buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
@@ -390,10 +409,10 @@ public class TextLayoutManagerMapBuffer {
     int maximumNumberOfLines =
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
-            : UNSET;
+            : ReactConstants.UNSET;
 
     int calculatedLineCount =
-        maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
+        maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
             ? layout.getLineCount()
             : Math.min(maximumNumberOfLines, layout.getLineCount());
 
