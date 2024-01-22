@@ -16,6 +16,10 @@
 
 namespace facebook::react {
 
+static bool hasPrefix(const std::string& str, const std::string& prefix) {
+  return str.compare(0, prefix.length(), prefix) == 0;
+}
+
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
  * Capitalizes the first letter of the event type and adds "top" prefix if
@@ -23,11 +27,14 @@ namespace facebook::react {
  */
 static std::string normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
-  if (prefixedType.find("top", 0) != 0) {
-    prefixedType.insert(0, "top");
-    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
+  if (facebook::react::hasPrefix(prefixedType, "top")) {
+    return prefixedType;
   }
-  return prefixedType;
+  if (facebook::react::hasPrefix(prefixedType, "on")) {
+    return "top" + prefixedType.substr(2);
+  }
+  prefixedType[0] = static_cast<char>(toupper(prefixedType[0]));
+  return "top" + prefixedType;
 }
 
 std::mutex& EventEmitter::DispatchMutex() {
