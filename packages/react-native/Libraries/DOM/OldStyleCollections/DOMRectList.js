@@ -10,7 +10,7 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type DOMRectReadOnly from '../geometry/DOMRectReadOnly';
+import type DOMRectReadOnly from '../Geometry/DOMRectReadOnly';
 import type {ArrayLike} from './ArrayLikeUtils';
 
 import {createValueIterator} from './ArrayLikeUtils';

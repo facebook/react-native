@@ -18,13 +18,13 @@ import type {
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
   ViewConfig,
-} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+} from '../../Renderer/shims/ReactNativeTypes';
 import type {ElementRef} from 'react';
 
-import {getFabricUIManager} from '../../../../../Libraries//ReactNative/FabricUIManager';
-import {create as createAttributePayload} from '../../../../../Libraries//ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
-import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
-import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
+import TextInputState from '../../Components/TextInput/TextInputState';
+import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
+import {create as createAttributePayload} from '../../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
+import warnForStyleProps from '../../ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
 import ReadOnlyNode from './ReadOnlyNode';
 import {
