@@ -14,6 +14,7 @@ import type {ConfigT} from 'metro-config';
 import type {RequestOptions} from 'metro/src/shared/types.flow';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
+import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
 import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
@@ -42,7 +43,7 @@ export type BundleCommandArgs = {
   verbose: boolean,
   unstableTransformProfile: string,
   indexedRamBundle?: boolean,
-  customResolverOptions?: Record<string, string>,
+  resolverOption?: Array<string>,
 };
 
 async function buildBundle(
@@ -65,6 +66,10 @@ async function buildBundleWithConfig(
   config: ConfigT,
   bundleImpl: typeof metroBundle | typeof metroRamBundle = metroBundle,
 ): Promise<void> {
+  const customResolverOptions = parseKeyValueParamArray(
+    args.resolverOption ?? [],
+  );
+
   if (config.resolver.platforms.indexOf(args.platform) === -1) {
     logger.error(
       `Invalid platform ${
@@ -100,7 +105,7 @@ async function buildBundleWithConfig(
     minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
     unstable_transformProfile: args.unstableTransformProfile,
-    customResolverOptions: args.customResolverOptions,
+    customResolverOptions,
   };
   const server = new Server(config);
 

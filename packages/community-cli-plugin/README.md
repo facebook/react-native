@@ -59,6 +59,7 @@ npx react-native bundle --entry-file <path> [options]
 | `--minify [boolean]` | Allows overriding whether bundle is minified. Defaults to `false` if `--dev` is set. Disabling minification can be useful for speeding up production builds for testing purposes. |
 | `--bundle-output <string>` | Specify the path to store the resulting bundle. |
 | `--bundle-encoding <string>` | Specify the encoding for writing the bundle (<https://nodejs.org/api/buffer.html#buffer_buffer>). |
+| `--resolver-option <string...>` | Custom resolver options of the form key=value. URL-encoded. May be specified multiple times. |
 | `--sourcemap-output <string>` | Specify the path to store the source map file for the resulting bundle. |
 | `--sourcemap-sources-root <string>` | Set the root path for source map entries. |
 | `--sourcemap-use-absolute-path` | Report `SourceMapURL` using its full path. |

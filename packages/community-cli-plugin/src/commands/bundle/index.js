@@ -115,16 +115,11 @@ const bundleCommand: Command = {
       parse: (val: string): string => path.resolve(val),
     },
     {
-      name: '--custom-resolver-options <string>',
-      description: 'Custom resolver options, format: key=value,key2=value2.',
-      parse: (val: string): Record<string, string> => {
-        return Object.fromEntries(
-          val.split(',').map(option => {
-            const [key, value] = option.split('=');
-            return [key, value];
-          }),
-        );
-      },
+      name: '--resolver-option <string...>',
+      description:
+        'Custom resolver options of the form key=value. URL-encoded. May be specified multiple times.',
+      parse: (val: string, previous: Array<string> = []): Array<string> =>
+        previous.concat([val]),
     },
   ],
 };
