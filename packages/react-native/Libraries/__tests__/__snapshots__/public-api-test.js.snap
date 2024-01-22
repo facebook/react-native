@@ -7857,7 +7857,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Nati
     addAtIndices: Array<number>,
     removeAtIndices: Array<number>
   ) => void;
-  +getConstantsForViewManager?: (viewManagerName: string) => Object;
+  +getConstantsForViewManager?: (viewManagerName: string) => ?Object;
   +getDefaultEventTypes?: () => Array<string>;
   +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
   +sendAccessibilityEvent?: (reactTag: number, eventType: number) => void;
