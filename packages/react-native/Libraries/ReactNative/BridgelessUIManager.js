@@ -245,6 +245,11 @@ const UIManagerJSPlatformAPIs = Platform.select({
     },
   },
   ios: {
+    /**
+     * TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
+     *
+     * Leave this unimplemented until we implement lazy loading of legacy modules and view managers in the new architecture.
+     */
     lazilyLoadView: (name: string): Object => {
       raiseSoftError('lazilyLoadView');
       return {};
