@@ -9,8 +9,18 @@
 
 #include <gtest/gtest.h>
 #include <cmath>
+#include <limits>
 
 using namespace facebook::react;
+
+static inline void checkMatrix(
+    const Transform& m,
+    const Transform& exp,
+    float epsilon = std::numeric_limits<float>::min()) {
+  for (int i = 0; i < 16; i++) {
+    EXPECT_NEAR(m.matrix[i], exp.matrix[i], epsilon);
+  }
+}
 
 TEST(TransformTest, transformingSize) {
   auto size = facebook::react::Size{100, 200};
@@ -89,4 +99,52 @@ TEST(TransformTest, scalingAndTranslatingRect) {
   EXPECT_EQ(transformedRect.origin.y, 301);
   EXPECT_EQ(transformedRect.size.width, 150);
   EXPECT_EQ(transformedRect.size.height, 200);
+}
+
+// Inverse Transform Tests (adapted from WPT:
+// css/geometry/DOMMatrix-invert-invertible)
+TEST(TransformTest, inverseIdentity) {
+  auto m = Transform::Identity();
+  auto m1 = Transform::Inverse(m);
+  checkMatrix(m, m1);
+}
+
+TEST(TransformTest, inverseTranslate) {
+  auto m = Transform::Translate(10, -20.5, 0);
+  auto m1 = Transform::Inverse(m);
+  checkMatrix(m1, Transform::Translate(-10, 20.5, 0));
+  checkMatrix(m * m1, Transform::Identity());
+}
+
+TEST(TransformTest, inverse3DTranslate) {
+  auto m = Transform::Translate(10, -20.5, 30.5);
+  auto m1 = Transform::Inverse(m);
+  checkMatrix(m1, Transform::Translate(-10, 20.5, -30.5));
+  checkMatrix(m * m1, Transform::Identity());
+}
+
+TEST(TransformTest, inverseScale) {
+  auto m = Transform::Scale(4, -0.5, 1);
+  auto m1 = Transform::Inverse(m);
+  checkMatrix(m1, Transform::Scale(0.25, -2.0, 1));
+  checkMatrix(m * m1, Transform::Identity());
+}
+
+TEST(TransformTest, inverse3DScale) {
+  auto m = Transform::Scale(4, -0.5, 2);
+  auto m1 = Transform::Inverse(m);
+  checkMatrix(m1, Transform::Scale(0.25, -2.0, 0.5));
+  checkMatrix(m * m1, Transform::Identity());
+}
+
+TEST(TransformTest, inverseComplex) {
+  auto m = Transform::RotateX(20) * Transform::Translate(10, -20.5, 30.5) *
+      Transform::RotateY(10) * Transform::Scale(10, -0.5, 2.5) *
+      Transform::RotateZ(-30);
+  auto expected = Transform::RotateZ(30) * Transform::Scale(0.1, -2.0, 0.4) *
+      Transform::RotateY(-10) * Transform::Translate(-10, 20.5, -30.5) *
+      Transform::RotateX(-20);
+  auto m1 = Transform::Inverse(m);
+  auto epsilon = 1e-6f;
+  checkMatrix(m1, expected, epsilon);
 }

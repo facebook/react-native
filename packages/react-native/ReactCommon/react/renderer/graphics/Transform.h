@@ -156,6 +156,8 @@ struct Transform {
   static bool isVerticalInversion(const Transform& transform);
   static bool isHorizontalInversion(const Transform& transform);
 
+  static Transform Inverse(const Transform& transform);
+
   /*
    * Equality operators.
    */
