@@ -1911,7 +1911,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableViewRecycling Z
 	public static field excludeYogaFromRawProps Z
 	public static field fixStoppedSurfaceTagSetLeak Z
-	public static field reduceDeleteCreateMutationLayoutAnimation Z
 	public static field rejectTurboModulePromiseOnNativeError Z
 	public static field traceTurboModulePromiseRejections Z
 	public static field unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix Z
