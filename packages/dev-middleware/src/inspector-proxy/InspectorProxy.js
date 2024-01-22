@@ -167,7 +167,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.writeHead(200, {
       'Content-Type': 'application/json; charset=UTF-8',
       'Cache-Control': 'no-cache',
-      'Content-Length': data.length.toString(),
       Connection: 'close',
     });
     response.end(data);
