@@ -83,7 +83,7 @@ function getViewManagerConfig(viewManagerName: string): any {
 const UIManagerJS: UIManagerJSInterface = {
   ...NativeUIManager,
   createView(
-    reactTag: ?number,
+    reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: Object,
