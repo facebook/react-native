@@ -8,6 +8,15 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeSoundManager';
-import NativeSoundManager from '../../../src/private/specs/modules/NativeSoundManager';
-export default NativeSoundManager;
+import type {TurboModule} from '../../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+
+/**
+ * Native Module used for playing sounds in native platform.
+ */
+export interface Spec extends TurboModule {
+  +playTouchSound: () => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('SoundManager'): ?Spec);

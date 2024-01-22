@@ -8,6 +8,21 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeI18nManager';
-import NativeI18nManager from '../../src/private/specs/modules/NativeI18nManager';
-export default NativeI18nManager;
+import type {TurboModule} from '../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+
+export type I18nManagerConstants = {|
+  doLeftAndRightSwapInRTL: boolean,
+  isRTL: boolean,
+  localeIdentifier?: ?string,
+|};
+
+export interface Spec extends TurboModule {
+  +getConstants: () => I18nManagerConstants;
+  allowRTL: (allowRTL: boolean) => void;
+  forceRTL: (forceRTL: boolean) => void;
+  swapLeftAndRightInRTL: (flipStyles: boolean) => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('I18nManager'): ?Spec);

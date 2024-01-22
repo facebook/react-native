@@ -8,6 +8,12 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeDeviceEventManager';
-import NativeDeviceEventManager from '../../../src/private/specs/modules/NativeDeviceEventManager';
-export default NativeDeviceEventManager;
+import type {TurboModule} from '../../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +invokeDefaultBackPressHandler: () => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('DeviceEventManager'): ?Spec);

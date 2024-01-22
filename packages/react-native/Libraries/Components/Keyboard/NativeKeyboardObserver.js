@@ -8,6 +8,13 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeKeyboardObserver';
-import NativeKeyboardObserver from '../../../src/private/specs/modules/NativeKeyboardObserver';
-export default NativeKeyboardObserver;
+import type {TurboModule} from '../../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +addListener: (eventName: string) => void;
+  +removeListeners: (count: number) => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('KeyboardObserver'): ?Spec);
