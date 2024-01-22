@@ -60,10 +60,7 @@ module.exports = {
       },
     },
     {
-      files: [
-        'packages/react-native/Libraries/**/*.js',
-        'packages/react-native/src/**/*.js',
-      ],
+      files: ['packages/react-native/Libraries/**/*.js'],
       rules: {
         '@react-native/platform-colors': 2,
         '@react-native/specs/react-native-modules': 2,

@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
-import type ReadOnlyElement from '../../src/private/webapis/dom/nodes/ReadOnlyElement';
+import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
+import type ReadOnlyElement from '../DOM/Nodes/ReadOnlyElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
@@ -230,7 +230,7 @@ class DebuggingOverlayRegistry {
 
       // Lazy import to avoid dependency cycle.
       const ReactNativeElementClass =
-        require('../../src/private/webapis/dom/nodes/ReactNativeElement').default;
+        require('../DOM/Nodes/ReactNativeElement').default;
       if (publicInstance instanceof ReactNativeElementClass) {
         modernNodesUpdates.push({
           id: instanceReactTag,
@@ -371,7 +371,7 @@ class DebuggingOverlayRegistry {
 
     // Lazy import to avoid dependency cycle.
     const ReactNativeElementClass =
-      require('../../src/private/webapis/dom/nodes/ReactNativeElement').default;
+      require('../DOM/Nodes/ReactNativeElement').default;
 
     const reactNativeElements: Array<ReactNativeElement> = [];
     const legacyPublicInstances: Array<NativeMethods> = [];

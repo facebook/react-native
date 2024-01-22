@@ -8,6 +8,14 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeClipboard';
-import NativeClipboard from '../../../src/private/specs/modules/NativeClipboard';
-export default NativeClipboard;
+import type {TurboModule} from '../../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getConstants: () => {||};
+  +getString: () => Promise<string>;
+  +setString: (content: string) => void;
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>('Clipboard'): Spec);

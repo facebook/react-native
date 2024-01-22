@@ -13,8 +13,8 @@
  * instances and get some data from them (like their instance handle / fiber).
  */
 
-import type ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import type ReadOnlyText from '../../../src/private/webapis/dom/nodes/ReadOnlyText';
+import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
+import type ReadOnlyText from '../../DOM/Nodes/ReadOnlyText';
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
 import type {
   InternalInstanceHandle,
@@ -44,7 +44,7 @@ export function createPublicInstance(
     // the right module to avoid eagerly loading both.
     if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
       PublicInstanceClass =
-        require('../../../src/private/webapis/dom/nodes/ReactNativeElement').default;
+        require('../../DOM/Nodes/ReactNativeElement').default;
     } else {
       PublicInstanceClass = require('./ReactFabricHostComponent').default;
     }
@@ -57,8 +57,7 @@ export function createPublicTextInstance(
   internalInstanceHandle: InternalInstanceHandle,
 ): ReadOnlyText {
   if (ReadOnlyTextClass == null) {
-    ReadOnlyTextClass =
-      require('../../../src/private/webapis/dom/nodes/ReadOnlyText').default;
+    ReadOnlyTextClass = require('../../DOM/Nodes/ReadOnlyText').default;
   }
 
   return new ReadOnlyTextClass(internalInstanceHandle);

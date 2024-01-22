@@ -8,6 +8,17 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeDevToolsSettingsManager';
-import NativeDevToolsSettingsManager from '../../src/private/specs/modules/NativeDevToolsSettingsManager';
-export default NativeDevToolsSettingsManager;
+import type {TurboModule} from '../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +setConsolePatchSettings: (newConsolePatchSettings: string) => void;
+  +getConsolePatchSettings: () => ?string;
+  +setProfilingSettings?: (newProfilingSettings: string) => void;
+  +getProfilingSettings?: () => ?string;
+}
+
+export default (TurboModuleRegistry.get<Spec>(
+  'DevToolsSettingsManager',
+): ?Spec);

@@ -8,6 +8,12 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeJSCSamplingProfiler';
-import NativeJSCSamplingProfiler from '../../src/private/specs/modules/NativeJSCSamplingProfiler';
-export default NativeJSCSamplingProfiler;
+import type {TurboModule} from '../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +operationComplete: (token: number, result: ?string, error: ?string) => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('JSCSamplingProfiler'): ?Spec);

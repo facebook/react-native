@@ -17,6 +17,10 @@
 #import <React/RCTMockDef.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+#import <jsinspector-modern/InspectorFlags.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
+#import <jsinspector-modern/ReactCdp.h>
+#import <optional>
 
 RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 #define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
@@ -47,6 +51,9 @@ using namespace facebook::react;
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+
+  std::unique_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::optional<int> _inspectorPageId;
 }
 
 + (void)initialize
@@ -141,6 +148,28 @@ using namespace facebook::react;
 
 - (void)start
 {
+  auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>();
+    __weak RCTHost *weakSelf = self;
+    _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
+        "React Native Bridgeless (Experimental)",
+        /* vm */ "",
+        [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
+            -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
+          RCTHost *strongSelf = weakSelf;
+          if (!strongSelf) {
+            // This can happen if we're about to be dealloc'd. Reject the connection.
+            return nullptr;
+          }
+          return strongSelf->_inspectorTarget->connect(
+              std::move(remote),
+              {
+                  .integrationName = "iOS Bridgeless (RCTHost)",
+              });
+        },
+        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+  }
   if (_instance) {
     RCTLogWarn(
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
@@ -228,6 +257,11 @@ using namespace facebook::react;
 
 - (void)dealloc
 {
+  if (_inspectorPageId.has_value()) {
+    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
+    _inspectorPageId.reset();
+    _inspectorTarget.reset();
+  }
   [_instance invalidate];
 }
 

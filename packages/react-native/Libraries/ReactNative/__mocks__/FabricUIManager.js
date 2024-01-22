@@ -394,8 +394,7 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
 
   compareDocumentPosition: jest.fn((node: Node, otherNode: Node): number => {
     /* eslint-disable no-bitwise */
-    const ReadOnlyNode =
-      require('../../../src/private/webapis/dom/nodes/ReadOnlyNode').default;
+    const ReadOnlyNode = require('../../DOM/Nodes/ReadOnlyNode').default;
 
     // Quick check for node vs. itself
     if (fromNode(node).reactTag === fromNode(otherNode).reactTag) {

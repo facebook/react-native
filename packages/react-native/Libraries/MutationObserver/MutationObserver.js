@@ -13,7 +13,7 @@
 import type {MutationObserverId} from './MutationObserverManager';
 import type MutationRecord from './MutationRecord';
 
-import ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
+import ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
 import * as MutationObserverManager from './MutationObserverManager';
 
 export type MutationObserverCallback = (

@@ -754,7 +754,7 @@ react {
   // TODO: The library name is chosen for parity with Fabric components & iOS
   // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
   libraryName = "rncore"
-  jsRootDir = file("../src")
+  jsRootDir = file("../Libraries")
 }
 
 // For build from source, we need to override the privateReact extension.

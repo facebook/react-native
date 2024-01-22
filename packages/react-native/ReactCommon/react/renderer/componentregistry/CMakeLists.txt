@@ -23,8 +23,10 @@ target_link_libraries(react_render_componentregistry
         folly_runtime
         glog_init
         jsi
+        react_config
         react_debug
         react_render_core
         react_render_debug
         react_utils
+        rrc_legacyviewmanagerinterop
 )

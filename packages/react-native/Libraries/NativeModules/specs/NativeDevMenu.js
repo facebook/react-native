@@ -8,6 +8,16 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeDevMenu';
-import NativeDevMenu from '../../../src/private/specs/modules/NativeDevMenu';
-export default NativeDevMenu;
+import type {TurboModule} from '../../TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +show: () => void;
+  +reload: () => void;
+  +debugRemotely: (enableDebug: boolean) => void;
+  +setProfilingEnabled: (enabled: boolean) => void;
+  +setHotLoadingEnabled: (enabled: boolean) => void;
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>('DevMenu'): Spec);
