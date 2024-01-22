@@ -31,7 +31,5 @@
     "gradlew.bat",
     "src/main",
     "README.md"
-  ],
-  "dependencies": {},
-  "devDependencies": {}
+  ]
 }
