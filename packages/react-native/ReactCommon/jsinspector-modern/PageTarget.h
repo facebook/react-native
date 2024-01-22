@@ -12,6 +12,18 @@
 #include <optional>
 #include <string>
 
+#ifndef JSINSPECTOR_EXPORT
+#ifdef _MSC_VER
+#ifdef CREATE_SHARED_LIBRARY
+#define JSINSPECTOR_EXPORT __declspec(dllexport)
+#else
+#define JSINSPECTOR_EXPORT
+#endif // CREATE_SHARED_LIBRARY
+#else // _MSC_VER
+#define JSINSPECTOR_EXPORT __attribute__((visibility("default")))
+#endif // _MSC_VER
+#endif // !defined(JSINSPECTOR_EXPORT)
+
 namespace facebook::react::jsinspector_modern {
 
 /**
@@ -19,7 +31,7 @@ namespace facebook::react::jsinspector_modern {
  * "Host" in React Native's architecture - the entity that manages the
  * lifecycle of a React Instance.
  */
-class PageTarget {
+class JSINSPECTOR_EXPORT PageTarget {
  public:
   struct SessionMetadata {
     std::optional<std::string> integrationName;

@@ -35,4 +35,5 @@ target_link_libraries(
         jsi
         jsireact
         react_utils
+        jsinspector
 )
