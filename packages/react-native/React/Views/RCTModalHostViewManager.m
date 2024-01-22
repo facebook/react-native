@@ -131,7 +131,4 @@ RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
 
-// Fabric only
-RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
-
 @end
