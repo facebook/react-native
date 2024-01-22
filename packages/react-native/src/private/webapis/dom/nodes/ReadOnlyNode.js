@@ -13,12 +13,12 @@
 import type {
   InternalInstanceHandle,
   Node as ShadowNode,
-} from '../../Renderer/shims/ReactNativeTypes';
-import type NodeList from '../OldStyleCollections/NodeList';
+} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type NodeList from '../oldstylecollections/NodeList';
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
-import {createNodeList} from '../OldStyleCollections/NodeList';
+import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
+import {createNodeList} from '../oldstylecollections/NodeList';
 import nullthrows from 'nullthrows';
 
 // We initialize this lazily to avoid a require cycle
@@ -310,7 +310,7 @@ function setInstanceHandle(
 export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
   // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
   // With a static import we can't use these classes for Paper-only variants.
-  const ReactFabric = require('../../Renderer/shims/ReactFabric');
+  const ReactFabric = require('../../../../../Libraries/Renderer/shims/ReactFabric');
   return ReactFabric.getNodeFromInternalInstanceHandle(getInstanceHandle(node));
 }
 
@@ -357,7 +357,7 @@ export function getPublicInstanceFromInternalInstanceHandle(
 ): ?ReadOnlyNode {
   // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
   // With a static import we can't use these classes for Paper-only variants.
-  const ReactFabric = require('../../Renderer/shims/ReactFabric');
+  const ReactFabric = require('../../../../../Libraries/Renderer/shims/ReactFabric');
   const mixedPublicInstance =
     ReactFabric.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
   // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.

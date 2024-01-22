@@ -8,8 +8,8 @@
  * @format
  */
 
-import DOMRect from '../DOM/Geometry/DOMRect';
-import DOMRectReadOnly from '../DOM/Geometry/DOMRectReadOnly';
+import DOMRect from '../webapis/dom/geometry/DOMRect';
+import DOMRectReadOnly from '../webapis/dom/geometry/DOMRectReadOnly';
 
 // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
 global.DOMRect = DOMRect;
