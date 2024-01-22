@@ -231,6 +231,7 @@ static Class getFallbackClassFromName(const char *name)
     }
 
     if (RCTTurboModuleInteropEnabled()) {
+      // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
 
       if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
