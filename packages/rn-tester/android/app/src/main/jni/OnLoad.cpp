@@ -13,7 +13,6 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
-#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerInteropComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
@@ -24,9 +23,6 @@ void registerComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
   registry->add(concreteComponentDescriptorProvider<
                 RNTMyNativeViewComponentDescriptor>());
-  registry->add(concreteComponentDescriptorProvider<
-                UnstableLegacyViewManagerInteropComponentDescriptor<
-                    RNTMyNativeViewName>>());
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
