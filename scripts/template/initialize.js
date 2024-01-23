@@ -67,7 +67,7 @@ async function install() {
         }
 
         execSync(
-          'npm publish --registry http://localhost:4873 --access public',
+          `npm publish --registry ${NPM_REGISTRY_SERVER} --access public`,
           {
             cwd: packageAbsolutePath,
             stdio: [process.stdin, process.stdout, process.stderr],
@@ -99,6 +99,11 @@ async function install() {
 
     execSync(
       `yarn config set npmRegistryServer "${NPM_REGISTRY_SERVER}"`,
+      options,
+    );
+
+    execSync(
+      'yarn config set unsafeHttpWhitelist --json \'["localhost"]\'',
       options,
     );
 
