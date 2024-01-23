@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTInspectorPackagerConnection.h>
+#import "RCTCxxInspectorWebSocketAdapter.h"
 
-#import <React/RCTDefines.h>
+#if RCT_DEV || RCT_REMOTE_PROFILE
+
 #import <React/RCTInspector.h>
+#import <React/RCTInspectorPackagerConnection.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
 #import <jsinspector-modern/InspectorPackagerConnection.h>
 #import <memory>
-#import "RCTCxxInspectorWebSocketAdapter.h"
 
 using namespace facebook::react::jsinspector_modern;
 
@@ -87,3 +88,5 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 }
 
 @end
+
+#endif
