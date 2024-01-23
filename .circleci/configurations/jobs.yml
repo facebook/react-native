@@ -349,6 +349,7 @@ jobs:
         enum: ["Hermes", "JSC"]
     environment:
       - PROJECT_NAME: "AndroidTemplateProject"
+      - YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -431,6 +432,7 @@ jobs:
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
+      - YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - checkout_code_with_cache
       - run_yarn
