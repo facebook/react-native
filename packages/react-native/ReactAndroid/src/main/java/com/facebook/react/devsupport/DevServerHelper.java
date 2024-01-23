@@ -312,7 +312,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         "http://%s/inspector/device?name=%s&app=%s&device=%s",
-        mPackagerConnectionSettings.getInspectorServerHost(),
+        mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
         Uri.encode(getInspectorDeviceId()));
@@ -491,7 +491,7 @@ public class DevServerHelper {
         String.format(
             Locale.US,
             "http://%s/open-debugger?appId=%s&device=%s",
-            mPackagerConnectionSettings.getInspectorServerHost(),
+            mPackagerConnectionSettings.getDebugServerHost(),
             Uri.encode(mPackageName),
             Uri.encode(getInspectorDeviceId()));
     Request request =

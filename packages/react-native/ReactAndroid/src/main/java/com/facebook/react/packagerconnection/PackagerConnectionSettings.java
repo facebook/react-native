@@ -57,10 +57,6 @@ public class PackagerConnectionSettings {
     mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
   }
 
-  public String getInspectorServerHost() {
-    return AndroidInfoHelpers.getInspectorProxyHost(mAppContext);
-  }
-
   public @Nullable String getPackageName() {
     return mPackageName;
   }
