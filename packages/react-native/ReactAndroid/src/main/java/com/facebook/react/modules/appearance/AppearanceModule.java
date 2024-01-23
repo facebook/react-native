@@ -84,12 +84,20 @@ public class AppearanceModule extends NativeAppearanceSpec {
 
   @Override
   public void setColorScheme(String style) {
+    int nightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
     if (style.equals("dark")) {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+      nightMode = AppCompatDelegate.MODE_NIGHT_YES;
     } else if (style.equals("light")) {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+      nightMode = AppCompatDelegate.MODE_NIGHT_NO;
     } else if (style.equals("unspecified")) {
-      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+      nightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+    }
+
+    Activity activity = getCurrentActivity();
+    if (activity instanceof AppCompatActivity) {
+      ((AppCompatActivity) activity).getDelegate().setLocalNightMode(nightMode);
+    } else {
+      AppCompatDelegate.setDefaultNightMode(nightMode);
     }
   }
 
