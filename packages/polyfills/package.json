@@ -9,7 +9,13 @@
     "directory": "packages/polyfills"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/polyfills#readme",
-  "keywords": ["polyfill", "polyfills", "js", "js-polyfills", "react-native"],
+  "keywords": [
+    "polyfill",
+    "polyfills",
+    "js",
+    "js-polyfills",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"

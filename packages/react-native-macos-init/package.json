@@ -5,7 +5,6 @@
   "main": "index.js",
   "repository": "https://github.com/microsoft/react-native-macos",
   "license": "MIT",
-  "private": false,
   "scripts": {
     "change": "beachball change",
     "check": "beachball check",
@@ -16,9 +15,7 @@
     "lint:fix": "just-scripts lint:fix",
     "prepublishOnly": "npm run build"
   },
-  "bin": {
-    "react-native-macos-init": "./bin.js"
-  },
+  "bin": "./bin.js",
   "dependencies": {
     "chalk": "^3",
     "find-up": "^4.1.0",

@@ -9,7 +9,14 @@
     "directory": "packages/babel-plugin-codegen"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/babel-plugin-codegen#readme",
-  "keywords": ["babel", "plugin", "codegen", "react-native", "native-modules", "view-manager"],
+  "keywords": [
+    "babel",
+    "plugin",
+    "codegen",
+    "react-native",
+    "native-modules",
+    "view-manager"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"
@@ -23,7 +30,6 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "license": "MIT",
   "beachball": {
     "shouldPublish": false
   }

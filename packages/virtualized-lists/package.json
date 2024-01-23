@@ -14,7 +14,12 @@
     "beachball:publish": "beachball publish"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
-  "keywords": ["lists", "virtualized-lists", "section-lists", "react-native"],
+  "keywords": [
+    "lists",
+    "virtualized-lists",
+    "section-lists",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"
