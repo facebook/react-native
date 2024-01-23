@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include "PageTarget.h"
-
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/PageTarget.h>
 #include <jsinspector-modern/Parsing.h>
 
 #include <functional>
