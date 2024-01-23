@@ -20,6 +20,7 @@ const utils = require('./codegen-utils');
 const generateSpecsCLIExecutor = require('./generate-specs-cli-executor');
 const {execSync} = require('child_process');
 const fs = require('fs');
+const glob = require('glob');
 const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
@@ -142,6 +143,63 @@ function extractLibrariesFromJSON(configFile, dependencyPath) {
     printDeprecationWarningIfNeeded(configFile.name);
     return extractLibrariesFromConfigurationArray(configFile, dependencyPath);
   }
+}
+
+const APPLE_PLATFORMS = ['ios', 'macos', 'tvos', 'visionos'];
+
+// Cocoapods specific platform keys
+function getCocoaPodsPlatformKey(platformName) {
+  if (platformName === 'macos') {
+    return 'osx';
+  }
+  return platformName;
+}
+
+function extractSupportedApplePlatforms(dependency, dependencyPath) {
+  console.log('[Codegen] Searching for podspec in the project dependencies.');
+  const podspecs = glob.sync('*.podspec', {cwd: dependencyPath});
+
+  if (podspecs.length === 0) {
+    return;
+  }
+
+  // Take the first podspec found
+  const podspec = fs.readFileSync(
+    path.join(dependencyPath, podspecs[0]),
+    'utf8',
+  );
+
+  /**
+   * Podspec can have platforms defined in two ways:
+   * 1. `spec.platforms = { :ios => "11.0", :tvos => "11.0" }`
+   * 2. `s.ios.deployment_target = "11.0"`
+   *    `s.tvos.deployment_target = "11.0"`
+   */
+  const supportedPlatforms = podspec
+    .split('\n')
+    .filter(
+      line => line.includes('platform') || line.includes('deployment_target'),
+    )
+    .join('');
+
+  // Generate a map of supported platforms { [platform]: true/false }
+  const supportedPlatformsMap = APPLE_PLATFORMS.reduce(
+    (acc, platform) => ({
+      ...acc,
+      [platform]: supportedPlatforms.includes(
+        getCocoaPodsPlatformKey(platform),
+      ),
+    }),
+    {},
+  );
+
+  console.log(
+    `[Codegen] Supported Apple platforms: ${Object.keys(supportedPlatformsMap)
+      .filter(key => supportedPlatformsMap[key])
+      .join(', ')} for ${dependency}`,
+  );
+
+  return supportedPlatformsMap;
 }
 
 function findExternalLibraries(pkgJson) {
@@ -276,9 +334,16 @@ function generateSchemaInfo(library, platform) {
     library.config.jsSrcsDir,
   );
   console.log(`[Codegen] Processing ${library.config.name}`);
+
+  const supportedApplePlatforms = extractSupportedApplePlatforms(
+    library.config.name,
+    library.libraryPath,
+  );
+
   // Generate one schema for the entire library...
   return {
     library: library,
+    supportedApplePlatforms,
     schema: utils
       .getCombineJSToSchema()
       .combineSchemasInFileList(
@@ -356,7 +421,7 @@ function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
   );
 }
 
-function createComponentProvider(schemas) {
+function createComponentProvider(schemas, supportedApplePlatforms) {
   console.log('[Codegen] Creating component provider.');
   const outputDir = path.join(
     REACT_NATIVE_PACKAGE_ROOT_FOLDER,
@@ -368,6 +433,7 @@ function createComponentProvider(schemas) {
     {
       schemas: schemas,
       outputDirectory: outputDir,
+      supportedApplePlatforms,
     },
     {
       generators: ['providerIOS'],
@@ -487,10 +553,15 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
       if (
         rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform)
       ) {
-        const schemas = schemaInfos
-          .filter(dependencyNeedsThirdPartyComponentProvider)
-          .map(schemaInfo => schemaInfo.schema);
-        createComponentProvider(schemas);
+        const filteredSchemas = schemaInfos.filter(
+          dependencyNeedsThirdPartyComponentProvider,
+        );
+        const schemas = filteredSchemas.map(schemaInfo => schemaInfo.schema);
+        const supportedApplePlatforms = filteredSchemas.map(
+          schemaInfo => schemaInfo.supportedApplePlatforms,
+        );
+
+        createComponentProvider(schemas, supportedApplePlatforms);
       }
       cleanupEmptyFilesAndFolders(outputPath);
     }
@@ -508,4 +579,5 @@ module.exports = {
   // exported for testing purposes only:
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
   _cleanupEmptyFilesAndFolders: cleanupEmptyFilesAndFolders,
+  _extractSupportedApplePlatforms: extractSupportedApplePlatforms,
 };
