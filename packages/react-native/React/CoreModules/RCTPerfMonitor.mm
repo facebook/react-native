@@ -311,7 +311,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = RCTSharedApplication().delegate.window;
+  UIWindow *window = RCTKeyWindow();
   [window addSubview:self.container];
 
   _uiDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(threadUpdate:)];

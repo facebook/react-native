@@ -78,29 +78,54 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 {
   RCTSetNewArchEnabled([self newArchEnabled]);
   BOOL enableTM = self.turboModuleEnabled;
-  BOOL fabricEnabled = self.fabricEnabled;
-  BOOL enableBridgeless = self.bridgelessEnabled;
-
-  NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
   RCTAppSetupPrepareApp(application, enableTM, *_reactNativeConfig);
+    
+#if TARGET_OS_VISION
+  /// Bail out of UIWindow initializaiton to support multi-window scenarios in SwiftUI lifecycle.
+  return YES;
+#else
+  UIView* rootView = [self viewWithModuleName:self.moduleName initialProperties:[self prepareInitialProps] launchOptions:launchOptions];
+    
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  
+  UIViewController *rootViewController = [self createRootViewController];
+  [self setRootView:rootView toRootViewController:rootViewController];
+  self.window.rootViewController = rootViewController;
+  self.window.windowScene.delegate = self;
+  [self.window makeKeyAndVisible];
 
-  UIView *rootView;
-  if (enableBridgeless) {
-    // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-    RCTSetUseNativeViewConfigsInBridgelessMode(fabricEnabled);
+  return YES;
+#endif
+}
 
-    // Enable TurboModule interop by default in Bridgeless mode
-    RCTEnableTurboModuleInterop(YES);
-    RCTEnableTurboModuleInteropBridgeProxy(YES);
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  // Noop
+}
 
-    [self createReactHost];
-    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
+- (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary*)initialProperties launchOptions:(NSDictionary*)launchOptions {
+    BOOL fabricEnabled = self.fabricEnabled;
+    BOOL enableBridgeless = self.bridgelessEnabled;
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+    NSDictionary *initProps = updateInitialProps(initialProperties, fabricEnabled);
+    
+    UIView *rootView;
+    if (enableBridgeless) {
+      // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
+      RCTSetUseNativeViewConfigsInBridgelessMode(self.fabricEnabled);
+
+      // Enable TurboModule interop by default in Bridgeless mode
+      RCTEnableTurboModuleInterop(YES);
+      RCTEnableTurboModuleInteropBridgeProxy(YES);
+
+      [self createReactHost];
+      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+      RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
+
+      RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
+          initWithSurface:surface
+          sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
     rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -113,30 +138,15 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                                                                    contextContainer:_contextContainer];
       self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+          [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+        }
+      }
+      rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
     }
-    rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
-  }
 
-  [self customizeRootView:(RCTRootView *)rootView];
-#if TARGET_OS_VISION
-  self.window = [[UIWindow alloc] initWithFrame:RCTForegroundWindow().bounds];
-#else
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-#endif
-  
-  UIViewController *rootViewController = [self createRootViewController];
-  [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
-
-  return YES;
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  // Noop
+    [self customizeRootView:(RCTRootView *)rootView];
+    
+    return rootView;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -297,6 +307,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (void)createReactHost
 {
+  if (_reactHost != nil) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
                                      hostDelegate:nil

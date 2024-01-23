@@ -160,6 +160,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// Return the bundle URL for the main bundle.
 - (NSURL *__nullable)bundleURL;
 
+/// Don't use this method, it's going to be removed soon.
+- (UIView *)viewWithModuleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+                 launchOptions:(NSDictionary *)launchOptions;
+
 @end
 
 NS_ASSUME_NONNULL_END

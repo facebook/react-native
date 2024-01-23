@@ -56,8 +56,8 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     // Return the default if the app doesn't allow different color schemes.
     return RCTAppearanceColorSchemeLight;
   }
-
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  // Fallback to dark mode on visionOS
+  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeDark;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>

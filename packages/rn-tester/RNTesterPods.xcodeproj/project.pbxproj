@@ -15,11 +15,8 @@
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		763DC37D2B0F824400D2C0C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 763DC37C2B0F824400D2C0C5 /* Assets.xcassets */; };
 		763DC3802B0F824400D2C0C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 763DC37F2B0F824400D2C0C5 /* Preview Assets.xcassets */; };
-		763DC3862B0F839A00D2C0C5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
-		763DC3872B0F839A00D2C0C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		763DC3882B0F839A00D2C0C5 /* SwiftTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */; };
-		763DC38A2B0F83B500D2C0C5 /* FlexibleSizeExampleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.mm */; };
-		763DC38B2B0F83B500D2C0C5 /* UpdatePropertiesExampleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.mm */; };
+		76E4BB282B34909800B02A15 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E4BB272B34909800B02A15 /* App.swift */; };
+		76E4BB2C2B34932200B02A15 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E4BB2B2B34932200B02A15 /* AppDelegate.swift */; };
 		8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */; };
 		832F45BB2A8A6E1F0097B4E6 /* SwiftTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */; };
 		CD10C7A5290BD4EB0033E1ED /* RCTEventEmitterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10C7A4290BD4EB0033E1ED /* RCTEventEmitterTests.m */; };
@@ -108,6 +105,8 @@
 		763DC37C2B0F824400D2C0C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		763DC37F2B0F824400D2C0C5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		763DC3812B0F824400D2C0C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		76E4BB272B34909800B02A15 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		76E4BB2B2B34932200B02A15 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7CDA7A212644C6BB8C0D00D8 /* Pods-RNTesterIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNTester/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftTest.swift; path = RNTester/SwiftTest.swift; sourceTree = "<group>"; };
@@ -299,6 +298,8 @@
 		763DC3732B0F824200D2C0C5 /* RNTester-visionOS */ = {
 			isa = PBXGroup;
 			children = (
+				76E4BB2B2B34932200B02A15 /* AppDelegate.swift */,
+				76E4BB272B34909800B02A15 /* App.swift */,
 				763DC37C2B0F824400D2C0C5 /* Assets.xcassets */,
 				763DC3812B0F824400D2C0C5 /* Info.plist */,
 				763DC37E2B0F824400D2C0C5 /* Preview Content */,
@@ -885,11 +886,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				763DC38B2B0F83B500D2C0C5 /* UpdatePropertiesExampleView.mm in Sources */,
-				763DC38A2B0F83B500D2C0C5 /* FlexibleSizeExampleView.mm in Sources */,
-				763DC3882B0F839A00D2C0C5 /* SwiftTest.swift in Sources */,
-				763DC3862B0F839A00D2C0C5 /* AppDelegate.mm in Sources */,
-				763DC3872B0F839A00D2C0C5 /* main.m in Sources */,
+				76E4BB2C2B34932200B02A15 /* AppDelegate.swift in Sources */,
+				76E4BB282B34909800B02A15 /* App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
