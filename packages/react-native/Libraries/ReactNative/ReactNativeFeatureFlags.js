@@ -58,7 +58,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   animatedShouldUseSingleOp: () => false,
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
-  shouldUseSetNativePropsInFabric: () => false,
+  shouldUseSetNativePropsInFabric: () => true,
 };
 
 module.exports = ReactNativeFeatureFlags;
