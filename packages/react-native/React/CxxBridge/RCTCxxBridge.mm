@@ -732,6 +732,9 @@ struct RCTInstanceCallback : public InstanceCallback {
       } else if ([moduleClass new] == nil) {
         // The new module returned nil from init, so use the old module
         continue;
+      } else if (moduleData.moduleClass == moduleClass) {
+        // Same class is already registered with the same name, so skip register again
+        continue;
       } else if ([moduleData.moduleClass new] != nil) {
         // Both modules were non-nil, so it's unclear which should take precedence
         RCTLogWarn(
