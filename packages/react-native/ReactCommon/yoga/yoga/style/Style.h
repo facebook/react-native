@@ -312,28 +312,32 @@ class YG_EXPORT Style {
   }
 
   float computeFlexStartBorder(FlexDirection axis, Direction direction) const {
-    return computeBorder(flexStartEdge(axis), direction)
-        .resolve(0.0f)
-        .unwrapOrDefault(0.0f);
+    return maxOrDefined(
+        computeBorder(flexStartEdge(axis), direction).resolve(0.0f).unwrap(),
+        0.0f);
   }
 
   float computeInlineStartBorder(FlexDirection axis, Direction direction)
       const {
-    return computeBorder(inlineStartEdge(axis, direction), direction)
-        .resolve(0.0f)
-        .unwrapOrDefault(0.0f);
+    return maxOrDefined(
+        computeBorder(inlineStartEdge(axis, direction), direction)
+            .resolve(0.0f)
+            .unwrap(),
+        0.0f);
   }
 
   float computeFlexEndBorder(FlexDirection axis, Direction direction) const {
-    return computeBorder(flexEndEdge(axis), direction)
-        .resolve(0.0f)
-        .unwrapOrDefault(0.0f);
+    return maxOrDefined(
+        computeBorder(flexEndEdge(axis), direction).resolve(0.0f).unwrap(),
+        0.0f);
   }
 
   float computeInlineEndBorder(FlexDirection axis, Direction direction) const {
-    return computeBorder(inlineEndEdge(axis, direction), direction)
-        .resolve(0.0f)
-        .unwrapOrDefault(0.0f);
+    return maxOrDefined(
+        computeBorder(inlineEndEdge(axis, direction), direction)
+            .resolve(0.0f)
+            .unwrap(),
+        0.0f);
   }
 
   float computeFlexStartPadding(
