@@ -41,15 +41,19 @@ class PageTargetProtocolTest : public Test {
   }
 
  protected:
-  std::unique_ptr<ILocalConnection> toPage_;
+  MockPageTargetDelegate pageTargetDelegate_;
 
   MockRemoteConnection& fromPage() {
     return *remoteConnections_[0];
   }
 
  private:
-  PageTarget page_;
+  PageTarget page_{pageTargetDelegate_};
   UniquePtrFactory<StrictMock<MockRemoteConnection>> remoteConnections_;
+
+ protected:
+  // NOTE: Needs to be destroyed before page_.
+  std::unique_ptr<ILocalConnection> toPage_;
 };
 
 } // namespace
@@ -123,6 +127,45 @@ TEST_F(PageTargetProtocolTest, InjectLogsToIdentifyBackend) {
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Log.enable"
+                         })");
+}
+
+TEST_F(PageTargetProtocolTest, PageReloadMethod) {
+  InSequence s;
+
+  EXPECT_CALL(
+      pageTargetDelegate_,
+      onReload(Eq(PageTargetDelegate::PageReloadRequest{
+          .ignoreCache = std::nullopt,
+          .scriptToEvaluateOnLoad = std::nullopt})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Page.reload"
+                         })");
+
+  EXPECT_CALL(
+      pageTargetDelegate_,
+      onReload(Eq(PageTargetDelegate::PageReloadRequest{
+          .ignoreCache = true, .scriptToEvaluateOnLoad = "alert('hello');"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 2,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "Page.reload",
+                           "params": {
+                             "ignoreCache": true,
+                             "scriptToEvaluateOnLoad": "alert('hello');"
+                           }
                          })");
 }
 

@@ -12,6 +12,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
@@ -26,6 +27,20 @@ RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 #define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
 
 using namespace facebook::react;
+
+class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+ public:
+  RCTHostPageTargetDelegate(RCTHost *host) : host_(host) {}
+
+  void onReload(const PageReloadRequest &request) override
+  {
+    RCTAssertMainQueue();
+    [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
+  }
+
+ private:
+  __weak RCTHost *host_;
+};
 
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
 @end
@@ -52,6 +67,7 @@ using namespace facebook::react;
 
   RCTModuleRegistry *_moduleRegistry;
 
+  std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
   std::unique_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
@@ -140,6 +156,8 @@ using namespace facebook::react;
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTRegisterReloadCommandListener(self);
     });
+
+    _inspectorPageDelegate = std::make_unique<RCTHostPageTargetDelegate>(self);
   }
   return self;
 }
@@ -150,7 +168,7 @@ using namespace facebook::react;
 {
   auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>();
+    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
     __weak RCTHost *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridgeless (Experimental)",

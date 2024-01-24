@@ -188,12 +188,27 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
+class RCTBridgePageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+ public:
+  RCTBridgePageTargetDelegate(RCTBridge *bridge) : bridge_(bridge) {}
+
+  void onReload(const PageReloadRequest &request) override
+  {
+    RCTAssertMainQueue();
+    [bridge_ reload];
+  }
+
+ private:
+  __weak RCTBridge *bridge_;
+};
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
 @implementation RCTBridge {
   NSURL *_delegateBundleURL;
 
+  std::unique_ptr<RCTBridgePageTargetDelegate> _inspectorPageDelegate;
   std::unique_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
@@ -244,6 +259,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _bundleURL = bundleURL;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
+    _inspectorPageDelegate = std::make_unique<RCTBridgePageTargetDelegate>(self);
 
     [self setUp];
   }
@@ -394,7 +410,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<facebook::react::jsinspector_modern::PageTarget>();
+    _inspectorTarget = std::make_unique<facebook::react::jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridge (Experimental)",

@@ -17,20 +17,27 @@
 
 namespace facebook::react::jsinspector_modern {
 
+class PageTarget;
+
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
  * given page.
  * The constructor, destructor and all public methods must be called on the
- * same thread.
+ * same thread, which is also the thread where the associated PageTarget is
+ * constructed and managed.
  */
 class PageAgent {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
    * frontend.
+   * \param targetController An interface to the PageTarget that this agent is
+   * attached to. The caller is responsible for ensuring that the
+   * PageTargetDelegate and underlying PageTarget both outlive the agent.
    */
   PageAgent(
       FrontendChannel frontendChannel,
+      PageTargetController& targetController,
       PageTarget::SessionMetadata sessionMetadata);
 
   /**
@@ -53,6 +60,7 @@ class PageAgent {
   void sendInfoLogEntry(std::string_view text);
 
   FrontendChannel frontendChannel_;
+  PageTargetController& targetController_;
   const PageTarget::SessionMetadata sessionMetadata_;
 };
 

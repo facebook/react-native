@@ -17,8 +17,6 @@
 
 namespace facebook::react::jsinspector_modern {
 
-namespace {
-
 /**
  * A Session connected to a PageTarget, passing CDP messages to and from a
  * PageAgent which it owns.
@@ -27,6 +25,7 @@ class PageTargetSession {
  public:
   explicit PageTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
+      PageTargetController& targetController,
       PageTarget::SessionMetadata sessionMetadata)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
@@ -35,7 +34,11 @@ class PageTargetSession {
                 remote->onMessage(std::string(message));
               }
             }),
-        pageAgent_(frontendChannel_, std::move(sessionMetadata)) {}
+        pageAgent_(
+            frontendChannel_,
+            targetController,
+            std::move(sessionMetadata)) {}
+
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
    * Agent.
@@ -76,13 +79,40 @@ class PageTargetSession {
   PageAgent pageAgent_;
 };
 
-} // namespace
+PageTarget::PageTarget(PageTargetDelegate& delegate) : delegate_(delegate) {}
 
 std::unique_ptr<ILocalConnection> PageTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend,
     SessionMetadata sessionMetadata) {
-  return std::make_unique<CallbackLocalConnection>(PageTargetSession(
-      std::move(connectionToFrontend), std::move(sessionMetadata)));
+  auto session = std::make_shared<PageTargetSession>(
+      std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
+  sessions_.push_back(std::weak_ptr(session));
+  return std::make_unique<CallbackLocalConnection>(
+      [session](std::string message) { (*session)(message); });
+}
+
+void PageTarget::removeExpiredSessions() {
+  // Remove all expired sessions.
+  forEachSession([](auto&) {});
+}
+
+PageTarget::~PageTarget() {
+  removeExpiredSessions();
+
+  // Sessions are owned by InspectorPackagerConnection, not by PageTarget, but
+  // they hold a PageTarget& that we must guarantee is valid.
+  assert(
+      sessions_.empty() &&
+      "PageTargetSession objects must be destroyed before their PageTarget. Did you call getInspectorInstance().removePage()?");
+}
+
+PageTargetDelegate::~PageTargetDelegate() {}
+
+PageTargetController::PageTargetController(PageTarget& target)
+    : target_(target) {}
+
+PageTargetDelegate& PageTargetController::getDelegate() {
+  return target_.getDelegate();
 }
 
 } // namespace facebook::react::jsinspector_modern
