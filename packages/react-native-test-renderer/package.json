@@ -1,0 +1,22 @@
+{
+    "name": "@react-native/test-renderer",
+    "version": "0.0.0",
+    "description": "A Test rendering library for React Native",
+    "license": "MIT",
+    "devDependencies": {
+      "@babel/core": "^7.23.7",
+      "@babel/plugin-transform-flow-strip-types": "^7.23.3",
+      "@babel/plugin-transform-react-jsx": "^7.23.4",
+      "@babel/preset-env": "^7.23.8",
+      "@types/jest": "^29.5.11",
+      "eslint": "^8.56.0",
+      "jest": "^29.7.0"
+    },
+    "dependencies": {},
+    "exports": {
+      ".": "./index.js",
+      "./jest-environment": "./dist/jest-environment/index.js",
+      "./jest-setup": "./dist/jest-setup/index.js"
+    },
+    "peerDependencies": { "jest": "^29.7.0" }
+  }
