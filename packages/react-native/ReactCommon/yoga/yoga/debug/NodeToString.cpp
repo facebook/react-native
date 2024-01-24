@@ -33,7 +33,7 @@ static void appendNumberIfNotUndefined(
     const Style::Length& number) {
   if (number.unit() != Unit::Undefined) {
     if (number.unit() == Unit::Auto) {
-      j["style"][key]["unit"] = "auto";
+      j["style"][key] = "auto";
     } else {
       std::string unit = number.unit() == Unit::Point ? "px" : "%%";
       j["style"][key]["value"] = number.value().unwrap();
@@ -106,7 +106,7 @@ nodeToStringImpl(json& j, const yoga::Node* node, PrintOptions options) {
       j["style"]["display"] = toString(style.display());
     }
     if (style.positionType() != yoga::Style{}.positionType()) {
-      j["style"]["position"] = toString(style.positionType());
+      j["style"]["position-type"] = toString(style.positionType());
     }
 
     appendFloatOptionalIfDefined(j, "flex-grow", style.flexGrow());
