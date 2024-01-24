@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -14,7 +15,11 @@ const {
 } = require('../packages/react-native/scripts/hermes/hermes-utils');
 const {echo, env, exec, exit, popd, pushd, test} = require('shelljs');
 
-function generateAndroidArtifacts(releaseVersion) {
+/*::
+type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+*/
+
+function generateAndroidArtifacts(releaseVersion /*: string */) {
   // -------- Generating Android Artifacts
   echo('Generating Android artifacts inside /tmp/maven-local');
   if (exec('./gradlew publishAllToMavenTempLocal').code) {
@@ -52,10 +57,15 @@ function generateAndroidArtifacts(releaseVersion) {
   });
 }
 
-function publishAndroidArtifactsToMaven(releaseVersion, buildType) {
+function publishAndroidArtifactsToMaven(
+  releaseVersion /*: string */,
+  buildType /*: BuildType */,
+) {
   // -------- Publish every artifact to Maven Central
   // The GPG key is base64 encoded on CircleCI and then decoded here
+  // $FlowFixMe[prop-missing]
   let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
+  // $FlowFixMe[prop-missing]
   env.ORG_GRADLE_PROJECT_SIGNING_KEY = buff.toString('ascii');
 
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
@@ -76,7 +86,9 @@ function publishAndroidArtifactsToMaven(releaseVersion, buildType) {
     const isSnapshot = buildType === 'nightly' || buildType === 'prealpha';
     // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
     if (
-      exec('./gradlew publishAllToSonatype -PisSnapshot=' + isSnapshot).code
+      exec(
+        './gradlew publishAllToSonatype -PisSnapshot=' + isSnapshot.toString(),
+      ).code
     ) {
       echo('Failed to publish artifacts to Sonatype (Maven Central)');
       exit(1);
@@ -87,11 +99,11 @@ function publishAndroidArtifactsToMaven(releaseVersion, buildType) {
 }
 
 function generateiOSArtifacts(
-  jsiFolder,
-  hermesCoreSourceFolder,
-  buildType,
-  targetFolder,
-) {
+  jsiFolder /*: string */,
+  hermesCoreSourceFolder /*: string */,
+  buildType /*: 'Debug' | string */,
+  targetFolder /*: string */,
+) /*: string */ {
   pushd(`${hermesCoreSourceFolder}`);
 
   //Generating iOS Artifacts
@@ -115,7 +127,7 @@ function generateiOSArtifacts(
   return tarballOutputPath;
 }
 
-function failIfTagExists(version, buildType) {
+function failIfTagExists(version /*: string */, buildType /*: BuildType */) {
   // When dry-run in stable branch, the tag already exists.
   // We are bypassing the tag-existence check when in a dry-run to have the CI pass
   if (buildType === 'dry-run') {
@@ -130,7 +142,7 @@ function failIfTagExists(version, buildType) {
   }
 }
 
-function checkIfTagExists(version) {
+function checkIfTagExists(version /*: string */) {
   const {code, stdout} = exec('git tag -l', {silent: true});
   if (code !== 0) {
     throw new Error('Failed to retrieve the list of tags');
