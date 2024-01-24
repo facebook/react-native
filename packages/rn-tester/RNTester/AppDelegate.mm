@@ -34,11 +34,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [super applicationDidEnterBackground:application];
-}
-
 - (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = [NSMutableDictionary new];
@@ -52,6 +47,11 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+  return [self bundleURL];
+}
+
+- (NSURL *)bundleURL
 {
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
@@ -125,9 +125,5 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 #endif
 
-- (NSURL *)bundleURL
-{
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
-}
 
 @end
