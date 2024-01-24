@@ -19,8 +19,7 @@ namespace facebook::yoga {
 void nodeToString(
     std::string& str,
     const yoga::Node* node,
-    PrintOptions options,
-    uint32_t level);
+    PrintOptions options);
 
 void print(const yoga::Node* node, PrintOptions options);
 
