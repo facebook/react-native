@@ -8,6 +8,7 @@
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <jsinspector-modern/PageAgent.h>
+#include <jsinspector-modern/PageTarget.h>
 
 #include <chrono>
 
@@ -29,8 +30,10 @@ static constexpr auto kModernCDPBackendNotice =
 
 PageAgent::PageAgent(
     FrontendChannel frontendChannel,
+    PageTargetController& targetController,
     PageTarget::SessionMetadata sessionMetadata)
     : frontendChannel_(frontendChannel),
+      targetController_(targetController),
       sessionMetadata_(std::move(sessionMetadata)) {}
 
 void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -49,6 +52,24 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     return;
   }
+
+  if (req.method == "Page.reload") {
+    targetController_.getDelegate().onReload({
+        .ignoreCache = req.params.isObject() && req.params.count("ignoreCache")
+            ? std::optional(req.params.at("ignoreCache").asBool())
+            : std::nullopt,
+        .scriptToEvaluateOnLoad =
+            req.params.isObject() && req.params.count("scriptToEvaluateOnLoad")
+            ? std::optional(req.params.at("scriptToEvaluateOnLoad").asString())
+            : std::nullopt,
+    });
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
+    return;
+  }
+
   folly::dynamic res = folly::dynamic::object("id", req.id)(
       "error",
       folly::dynamic::object("code", -32601)(

@@ -12,6 +12,7 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #include <chrono>
 #include <functional>
@@ -112,6 +113,12 @@ class MockInspectorPackagerConnectionDelegate
 
  private:
   folly::Executor& executor_;
+};
+
+class MockPageTargetDelegate : public PageTargetDelegate {
+ public:
+  // PageTargetDelegate methods
+  MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
 } // namespace facebook::react::jsinspector_modern
