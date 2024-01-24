@@ -185,7 +185,6 @@ async function getLatestMatchingReactNativeMacOSVersion(
   } catch (err) {
     printError(`No version of ${printPkg(MACOSPKG, versionSemVer)} found!`);
     process.exit(EXITCODE_NO_MATCHING_RNMACOS);
-    return '';
   }
 }
 
@@ -290,7 +289,7 @@ You can either downgrade your version of ${chalk.yellow(RNPKG)} to ${chalk.cyan(
       );
 
       const pkgmgr = isProjectUsingYarn(process.cwd())
-        ? `yarn add${verbose ? '' : ' -s'}`
+        ? `yarn add${verbose ? '' : ' --silent'}`
         : `npm install --save${verbose ? '' : ' --silent'}`;
       const execOptions = verbose ? {stdio: 'inherit' as 'inherit'} : {};
       execSync(`${pkgmgr} "${MACOSPKG}@${version}"`, execOptions);
