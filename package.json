@@ -98,6 +98,7 @@
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
     "mock-fs": "^5.1.4",
+    "node-fetch": "^2.2.0",
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.18.2",
