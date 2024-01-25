@@ -52,6 +52,7 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-Codegen")
   add_dependency(s, "React-NativeModulesApple")
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
