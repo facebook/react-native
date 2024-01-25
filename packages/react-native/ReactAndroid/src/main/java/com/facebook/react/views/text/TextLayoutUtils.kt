@@ -14,6 +14,7 @@ import android.view.View
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.views.text.fragments.TextFragment
 import com.facebook.react.views.text.fragments.TextFragmentList
 
 /** Utility methods for building [Spannable]s */
@@ -27,26 +28,53 @@ internal object TextLayoutUtils {
       sb: SpannableStringBuilder,
       ops: MutableList<SetSpanOperation>,
   ) {
-
     for (i in 0 until textFragmentList.count) {
       val fragment = textFragmentList.getFragment(i)
-      val start = sb.length
 
-      // ReactRawText
-      val textAttributes = fragment.textAttributeProps
+      addApplicableFragmentSpans(
+          context = context,
+          fragment = fragment,
+          sb = sb,
+          ops = ops,
+      )
+    }
+  }
 
-      addText(sb, fragment.string, textAttributes)
+  private fun addApplicableFragmentSpans(
+      context: Context,
+      fragment: TextFragment,
+      sb: SpannableStringBuilder,
+      ops: MutableList<SetSpanOperation>,
+  ) {
+    val start = sb.length
 
-      val end = sb.length
-      val reactTag = if (fragment.hasReactTag()) fragment.reactTag else View.NO_ID
-      if (fragment.hasIsAttachment() && fragment.isAttachment) {
-        val width = PixelUtil.toPixelFromSP(fragment.width)
-        val height = PixelUtil.toPixelFromSP(fragment.height)
+    // ReactRawText
+    val textAttributes = fragment.textAttributeProps
 
-        addInlineViewPlaceholderSpan(ops, sb, reactTag, width, height)
-      } else if (end >= start) {
-        addApplicableTextAttributeSpans(ops, textAttributes, reactTag, context, start, end)
-      }
+    addText(sb, fragment.string, textAttributes)
+
+    val end = sb.length
+    val reactTag = if (fragment.hasReactTag()) fragment.reactTag else View.NO_ID
+    if (fragment.hasIsAttachment() && fragment.isAttachment) {
+      val width = PixelUtil.toPixelFromSP(fragment.width)
+      val height = PixelUtil.toPixelFromSP(fragment.height)
+
+      addInlineViewPlaceholderSpan(
+          ops = ops,
+          sb = sb,
+          reactTag = reactTag,
+          width = width,
+          height = height,
+      )
+    } else if (end >= start) {
+      addApplicableTextAttributeSpans(
+          ops = ops,
+          textAttributeProvider = textAttributes,
+          reactTag = reactTag,
+          context = context,
+          start = start,
+          end = end,
+      )
     }
   }
 
@@ -83,27 +111,84 @@ internal object TextLayoutUtils {
       start: Int,
       end: Int
   ) {
-    addColorSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addColorSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addBackgroundColorSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addBackgroundColorSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addLinkSpanIfApplicable(ops, textAttributeProvider, reactTag, start, end)
+    addLinkSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        reactTag,
+        start = start,
+        end = end,
+    )
 
-    addLetterSpacingSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addLetterSpacingSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addFontSizeSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addFontSizeSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addCustomStyleSpanIfApplicable(ops, textAttributeProvider, context, start, end)
+    addCustomStyleSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        context,
+        start = start,
+        end = end,
+    )
 
-    addUnderlineSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addUnderlineSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addStrikethroughSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addStrikethroughSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addShadowStyleSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addShadowStyleSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addLineHeightSpanIfApplicable(ops, textAttributeProvider, start, end)
+    addLineHeightSpanIfApplicable(
+        ops = ops,
+        textAttributeProvider = textAttributeProvider,
+        start = start,
+        end = end,
+    )
 
-    addReactTagSpan(ops, start, end, reactTag)
+    addReactTagSpan(
+        ops = ops,
+        start = start,
+        end = end,
+        reactTag = reactTag,
+    )
   }
 
   @JvmStatic
