@@ -508,11 +508,43 @@ public class MatrixMathHelper {
   }
 
   public static void applySkewX(double[] m, double radians) {
-    m[4] = Math.tan(radians);
+    double[] helperMatrix = new double[16];
+    resetIdentityMatrix(helperMatrix);
+    double skew = radians;
+    double rotationY = MatrixMathHelper.degreesToRadians(45);
+    double rotationX = Math.atan(1 / Math.sin(rotationY) * Math.tan(skew));
+    double scaleX = 1 / Math.cos(rotationY);
+    double scaleY = 1 / Math.cos(rotationX);
+
+    applyRotateY(m, rotationY);
+    applyRotateX(helperMatrix, rotationX);
+    multiplyInto(m, m, helperMatrix);
+
+    resetIdentityMatrix(helperMatrix);
+    applyScaleX(helperMatrix, scaleX);
+    applyScaleY(helperMatrix, scaleY);
+    applyPerspective(helperMatrix, 100000);
+    multiplyInto(m, m, helperMatrix);
   }
 
   public static void applySkewY(double[] m, double radians) {
-    m[1] = Math.tan(radians);
+    double[] helperMatrix = new double[16];
+    resetIdentityMatrix(helperMatrix);
+    double skew = radians;
+    double rotationX = MatrixMathHelper.degreesToRadians(45);
+    double rotationY = Math.atan(1 / Math.sin(rotationX) * Math.tan(skew));
+    double scaleX = 1 / Math.cos(rotationY);
+    double scaleY = 1 / Math.cos(rotationX);
+
+    applyRotateX(m, rotationX);
+    applyRotateY(helperMatrix, rotationY);
+    multiplyInto(m, m, helperMatrix);
+
+    resetIdentityMatrix(helperMatrix);
+    applyScaleX(helperMatrix, scaleX);
+    applyScaleY(helperMatrix, scaleY);
+    applyPerspective(helperMatrix, 100000);
+    multiplyInto(m, m, helperMatrix);
   }
 
   public static void applyRotateX(double[] m, double radians) {
