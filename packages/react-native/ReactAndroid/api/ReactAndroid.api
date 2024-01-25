@@ -5587,13 +5587,8 @@ public final class com/facebook/react/uimanager/events/TouchEventType : java/lan
 }
 
 public class com/facebook/react/uimanager/events/TouchesHelper {
-	public static final field CHANGED_TOUCHES_KEY Ljava/lang/String;
 	public static final field TARGET_KEY Ljava/lang/String;
-	public static final field TARGET_SURFACE_KEY Ljava/lang/String;
-	public static final field TOUCHES_KEY Ljava/lang/String;
 	public fun <init> ()V
-	public static fun sendTouchEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
-	public static fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
 public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {

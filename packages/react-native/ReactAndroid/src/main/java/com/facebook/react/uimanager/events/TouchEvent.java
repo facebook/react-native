@@ -189,6 +189,9 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (verifyMotionEvent()) {
+      // TouchesHelper.sendTouchEvent can be inlined here post Fabric rollout
+      // For now, we go via the event emitter, which will decide whether the legacy or modern
+      // event path is required
       rctEventEmitter.receiveTouches(this);
     }
   }
