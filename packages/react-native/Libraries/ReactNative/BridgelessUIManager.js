@@ -41,7 +41,7 @@ const getUIManagerConstantsCached = (function () {
   };
 })();
 
-const getConstantsForViewManager: ?(viewManagerName: string) => Object =
+const getConstantsForViewManager: ?(viewManagerName: string) => ?Object =
   global.RN$LegacyInterop_UIManager_getConstantsForViewManager;
 
 const getDefaultEventTypes: ?() => Object =
@@ -157,7 +157,7 @@ const UIManagerJSUnusedAPIs = {
 
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
-    getConstantsForViewManager: (viewManagerName: string): Object => {
+    getConstantsForViewManager: (viewManagerName: string): ?Object => {
       if (getConstantsForViewManager) {
         return getConstantsForViewManager(viewManagerName);
       }
