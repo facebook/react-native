@@ -3452,7 +3452,6 @@ public class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static fun getAdbReverseTcpCommand (Landroid/content/Context;)Ljava/lang/String;
 	public static fun getAdbReverseTcpCommand (Ljava/lang/Integer;)Ljava/lang/String;
 	public static fun getFriendlyDeviceName ()Ljava/lang/String;
-	public static fun getInspectorProxyHost (Landroid/content/Context;)Ljava/lang/String;
 	public static fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
 	public static fun getServerHost (Ljava/lang/Integer;)Ljava/lang/String;
 }
@@ -3528,7 +3527,6 @@ public abstract class com/facebook/react/packagerconnection/NotificationOnlyHand
 public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public fun <init> (Landroid/content/Context;)V
 	public fun getDebugServerHost ()Ljava/lang/String;
-	public fun getInspectorServerHost ()Ljava/lang/String;
 	public fun getPackageName ()Ljava/lang/String;
 	public fun setDebugServerHost (Ljava/lang/String;)V
 }

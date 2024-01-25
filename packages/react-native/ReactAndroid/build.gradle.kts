@@ -429,11 +429,6 @@ fun reactNativeDevServerPort(): String {
   return value?.toString() ?: "8081"
 }
 
-fun reactNativeInspectorProxyPort(): String {
-  val value = project.properties["reactNativeInspectorProxyPort"]
-  return value?.toString() ?: reactNativeDevServerPort()
-}
-
 fun reactNativeArchitectures(): List<String> {
   val value = project.properties["reactNativeArchitectures"]
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
@@ -498,7 +493,6 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
-    resValue("integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort())
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
