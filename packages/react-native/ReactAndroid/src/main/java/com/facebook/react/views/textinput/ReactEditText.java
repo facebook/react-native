@@ -271,6 +271,12 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   @Override
+  public void setLineHeight(int lineHeight) {
+    mTextAttributes.setLineHeight(lineHeight);
+    super.setLineHeight(lineHeight);
+  }
+
+  @Override
   protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
     super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
 

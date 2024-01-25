@@ -7381,6 +7381,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun setFontWeight (Ljava/lang/String;)V
 	public fun setInputType (I)V
 	public fun setLetterSpacingPt (F)V
+	public fun setLineHeight (I)V
 	public fun setMaxFontSizeMultiplier (F)V
 	public fun setOnKeyPress (Z)V
 	public fun setPlaceholder (Ljava/lang/String;)V
@@ -7468,6 +7469,7 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun setInlineImagePadding (Lcom/facebook/react/views/textinput/ReactEditText;I)V
 	public fun setKeyboardType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public fun setLetterSpacing (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public fun setLineHeight (Lcom/facebook/react/views/textinput/ReactEditText;I)V
 	public fun setMaxFontSizeMultiplier (Lcom/facebook/react/views/textinput/ReactEditText;F)V
 	public fun setMaxLength (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
 	public fun setMultiline (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
