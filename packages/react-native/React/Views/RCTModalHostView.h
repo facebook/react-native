@@ -16,7 +16,7 @@
 
 @protocol RCTModalHostViewInteractor;
 
-@interface RCTModalHostView : UIView <RCTInvalidating, UIAdaptivePresentationControllerDelegate>
+@interface RCTModalHostView : UIView <RCTInvalidating, UIAdaptivePresentationControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
