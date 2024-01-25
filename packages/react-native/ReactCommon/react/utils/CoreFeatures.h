@@ -30,10 +30,6 @@ class CoreFeatures {
   // On iOS, we also cache NSTextStorage.
   static bool cacheLastTextMeasurement;
 
-  // Fabric was not cancelling image downloads when <ImageView /> was removed
-  // from view hierarchy. This feature flag enables this feature.
-  static bool cancelImageDownloadsOnRecycle;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
