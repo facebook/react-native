@@ -93,7 +93,6 @@ public class SurfaceMountingManager {
   private @Nullable RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
-  private Set<Integer> mTagSetForStoppedSurfaceLegacy;
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
@@ -170,9 +169,6 @@ public class SurfaceMountingManager {
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
     if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.containsKey(tag)) {
-      return true;
-    }
-    if (mTagSetForStoppedSurfaceLegacy != null && mTagSetForStoppedSurfaceLegacy.contains(tag)) {
       return true;
     }
     if (mTagToViewState == null) {
@@ -295,22 +291,14 @@ public class SurfaceMountingManager {
 
     Runnable runnable =
         () -> {
-          if (ReactFeatureFlags.fixStoppedSurfaceTagSetLeak) {
-            mTagSetForStoppedSurface = new SparseArrayCompat<>();
-            for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
-              // Using this as a placeholder value in the map. We're using SparseArrayCompat
-              // since it can efficiently represent the list of pending tags
-              mTagSetForStoppedSurface.put(entry.getKey(), this);
+          mTagSetForStoppedSurface = new SparseArrayCompat<>();
+          for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
+            // Using this as a placeholder value in the map. We're using SparseArrayCompat
+            // since it can efficiently represent the list of pending tags
+            mTagSetForStoppedSurface.put(entry.getKey(), this);
 
-              // We must call `onDropViewInstance` on all remaining Views
-              onViewStateDeleted(entry.getValue());
-            }
-          } else {
-            for (ViewState viewState : mTagToViewState.values()) {
-              // We must call `onDropViewInstance` on all remaining Views
-              onViewStateDeleted(viewState);
-            }
-            mTagSetForStoppedSurfaceLegacy = mTagToViewState.keySet();
+            // We must call `onDropViewInstance` on all remaining Views
+            onViewStateDeleted(entry.getValue());
           }
 
           // Evict all views from cache and memory
