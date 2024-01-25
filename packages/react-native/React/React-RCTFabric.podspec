@@ -20,6 +20,7 @@ folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_C
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2022.05.16.00'
 boost_compiler_flags = '-Wno-documentation'
+new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
@@ -52,13 +53,13 @@ Pod::Spec.new do |s|
   s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}"
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + new_arch_flags
   s.header_dir             = header_dir
   s.module_name            = module_name
   s.framework              = ["JavaScriptCore", "MobileCoreServices"]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
-    "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
+    "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags + new_arch_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
