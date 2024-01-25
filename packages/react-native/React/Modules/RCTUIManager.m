@@ -181,12 +181,13 @@ RCT_EXPORT_MODULE()
   }
 
   // This dispatch_async avoids a deadlock while configuring native modules
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+    id a11yManager = [self->_bridge moduleForName:@"AccessibilityManager"
+                                             lazilyLoadIfNecessary:YES];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
-                                               object:[self->_bridge moduleForName:@"AccessibilityManager"
-                                                             lazilyLoadIfNecessary:YES]];
+                                               object:a11yManager];
   });
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
