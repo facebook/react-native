@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 #include <exception>
 
 #include <glog/logging.h>
@@ -164,3 +166,5 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
       root2->getChildren().at(0)->getProps());
   ASSERT_STREQ(child_props2->testId.c_str(), "cond_false");
 }
+
+#endif
