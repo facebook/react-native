@@ -12,7 +12,6 @@ namespace facebook::react {
 bool CoreFeatures::enablePropIteratorSetter = false;
 bool CoreFeatures::blockPaintForUseLayoutEffect = false;
 bool CoreFeatures::cacheLastTextMeasurement = false;
-bool CoreFeatures::cancelImageDownloadsOnRecycle = false;
 bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
 bool CoreFeatures::enableMountHooks = false;
 bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
