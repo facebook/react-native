@@ -945,58 +945,6 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
-    # ============================== #
-    # Test - Apply ATS configuration #
-    # ============================== #
-
-    def test_applyATSConfig_plistNil
-        # Arrange
-        user_project_mock = prepare_user_project_mock_with_plists()
-        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
-
-        # # Assert
-        assert_equal(user_project_mock.files.length, 2)
-        user_project_mock.files.each do |file|
-            path = File.join(user_project_mock.path.parent, file.name)
-            plist = Xcodeproj::Plist.read_from_path(path)
-            assert_equal(plist['NSAppTransportSecurity'], {
-                'NSAllowsArbitraryLoads' => false,
-                'NSAllowsLocalNetworking' => true,
-            });
-        end
-    end
-
-    def test_applyATSConfig_plistNonNil
-        # Arrange
-        user_project_mock = prepare_user_project_mock_with_plists()
-        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-        Xcodeproj::Plist.write_to_path({}, "/test/Info.plist")
-        Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
-
-        # # Act
-        ReactNativePodsUtils.apply_ats_config(installer)
-
-        # # Assert
-        assert_equal(user_project_mock.files.length, 2)
-        user_project_mock.files.each do |file|
-            path = File.join(user_project_mock.path.parent, file.name)
-            plist = Xcodeproj::Plist.read_from_path(path)
-            assert_equal(plist['NSAppTransportSecurity'], {
-                'NSAllowsArbitraryLoads' => false,
-                'NSAllowsLocalNetworking' => true,
-            });
-        end
-    end
-
     # =============================================== #
     # Test - Create Header Search Path For Frameworks #
     # =============================================== #

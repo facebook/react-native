@@ -306,8 +306,8 @@ def react_native_post_install(
   ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
+  ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
-  ReactNativePodsUtils.apply_ats_config(installer)
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
