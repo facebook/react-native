@@ -593,17 +593,12 @@ android {
       ":packages:react-native:ReactAndroid:hermes-engine:preBuild")
 
   sourceSets.getByName("main") {
-    res.srcDirs(
+    res.setSrcDirs(
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
-    java.srcDirs(
-        listOf(
-            "src/main/java",
-            "src/main/libraries/soloader/java",
-            "src/main/jni/first-party/fb/jni/java"))
     java.exclude("com/facebook/annotationprocessors")
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
