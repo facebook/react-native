@@ -216,18 +216,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   __weak __typeof(self) weakSelf = self;
   auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
 
-  auto useModernRuntimeScheduler = false;
-  if ([_delegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
-    useModernRuntimeScheduler = [(id)_delegate useModernRuntimeScheduler:self];
-  }
-
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
       _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc,
-      useModernRuntimeScheduler);
+      jsErrorHandlingFunc);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();

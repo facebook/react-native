@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c201b2b577ab4aa4bf6071d6b99b43c9>>
+ * @generated SignedSource<<52367278b4d0fdf7f436bd8c511d4ffe>>
  */
 
 /**
@@ -32,6 +32,21 @@ object ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   fun commonTestFlag() = accessor.commonTestFlag()
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   */
+  fun useModernRuntimeScheduler() = accessor.useModernRuntimeScheduler()
+
+  /**
+   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   */
+  fun enableMicrotasks() = accessor.enableMicrotasks()
+
+  /**
+   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
+   */
+  fun batchRenderingUpdatesInEventLoop() = accessor.batchRenderingUpdatesInEventLoop()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

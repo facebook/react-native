@@ -36,8 +36,7 @@ JReactInstance::JReactInstance(
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-    bool isProfiling,
-    bool useModernRuntimeScheduler) noexcept {
+    bool isProfiling) noexcept {
   // TODO(janzer): Lazily create runtime
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
@@ -65,8 +64,7 @@ JReactInstance::JReactInstance(
       jsRuntimeFactory->cthis()->createJSRuntime(sharedJSMessageQueueThread),
       sharedJSMessageQueueThread,
       timerManager,
-      std::move(jsErrorHandlingFunc),
-      useModernRuntimeScheduler);
+      std::move(jsErrorHandlingFunc));
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
@@ -117,8 +115,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
-    bool isProfiling,
-    bool useModernRuntimeScheduler) {
+    bool isProfiling) {
   return makeCxxInstance(
       jsRuntimeFactory,
       jsMessageQueueThread,
@@ -127,8 +124,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       jsTimerExecutor,
       jReactExceptionManager,
       jBindingsInstaller,
-      isProfiling,
-      useModernRuntimeScheduler);
+      isProfiling);
 }
 
 void JReactInstance::loadJSBundleFromAssets(

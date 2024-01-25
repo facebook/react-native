@@ -33,8 +33,7 @@ class ReactInstance final {
       std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
-      bool useModernRuntimeScheduler = false);
+      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
