@@ -10,7 +10,6 @@ package com.facebook.react.uimanager.events;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -158,20 +157,10 @@ public abstract class Event<T extends Event> {
    */
   @Deprecated
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    WritableMap eventData = getEventData();
-    if (eventData == null) {
-      throw new IllegalViewOperationException(
-          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `dispatchModern`. Event: "
-              + getEventName());
-    }
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), getEventData());
   }
 
-  /**
-   * Can be overridden by classes to make migrating to RCTModernEventEmitter support easier. If this
-   * class returns null, the RCTEventEmitter interface will be used instead of
-   * RCTModernEventEmitter. In the future, returning null here will be an error.
-   */
+  /** Can be overridden by classes when no custom logic for dispatching is needed. */
   @Nullable
   protected WritableMap getEventData() {
     return null;
@@ -193,23 +182,19 @@ public abstract class Event<T extends Event> {
    *
    * @see #dispatch
    */
-  @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
-      WritableMap eventData = getEventData();
-      if (eventData != null) {
-        rctEventEmitter.receiveEvent(
-            getSurfaceId(),
-            getViewTag(),
-            getEventName(),
-            canCoalesce(),
-            getCoalescingKey(),
-            eventData,
-            getEventCategory());
-        return;
-      }
+      rctEventEmitter.receiveEvent(
+          getSurfaceId(),
+          getViewTag(),
+          getEventName(),
+          canCoalesce(),
+          getCoalescingKey(),
+          getEventData(),
+          getEventCategory());
+    } else {
+      dispatch(rctEventEmitter);
     }
-    dispatch(rctEventEmitter);
   }
 
   public interface EventAnimationDriverMatchSpec {
