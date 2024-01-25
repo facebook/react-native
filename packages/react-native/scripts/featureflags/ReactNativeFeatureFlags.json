@@ -3,6 +3,18 @@
     "commonTestFlag": {
       "description": "Common flag for testing. Do NOT modify.",
       "defaultValue": false
+    },
+    "useModernRuntimeScheduler": {
+      "description": "When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.",
+      "defaultValue": false
+    },
+    "enableMicrotasks": {
+      "description": "Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).",
+      "defaultValue": false
+    },
+    "batchRenderingUpdatesInEventLoop": {
+      "description": "When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.",
+      "defaultValue": false
     }
   },
   "jsOnly": {

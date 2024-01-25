@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a019bd967a22f93cd9e2e0ddb5201e3>>
+ * @generated SignedSource<<c8ca074517ac6941d16847c0f30076e8>>
  */
 
 /**
@@ -26,6 +26,30 @@ bool ReactNativeFeatureFlagsProviderHolder::commonTestFlag() {
       facebook::jni::findClassStatic(
           "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider")
           ->getMethod<jboolean()>("commonTestFlag");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::useModernRuntimeScheduler() {
+  static const auto method =
+      facebook::jni::findClassStatic(
+          "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider")
+          ->getMethod<jboolean()>("useModernRuntimeScheduler");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::enableMicrotasks() {
+  static const auto method =
+      facebook::jni::findClassStatic(
+          "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider")
+          ->getMethod<jboolean()>("enableMicrotasks");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::batchRenderingUpdatesInEventLoop() {
+  static const auto method =
+      facebook::jni::findClassStatic(
+          "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider")
+          ->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
   return method(javaProvider_);
 }
 

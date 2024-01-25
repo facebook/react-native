@@ -131,12 +131,6 @@ public class ReactFeatureFlags {
   public static boolean excludeYogaFromRawProps = false;
 
   /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
-   * priorities from any thread.
-   */
-  public static boolean useModernRuntimeScheduler = false;
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
    * of Promise rejection and tracing the cause.
    */
