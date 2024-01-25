@@ -258,6 +258,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                    delegate:self
                   jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
 
+#if RCT_DEV
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [_turboModuleManager moduleForName:"RCTDevMenu"];
+#endif // end RCT_DEV
+
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
