@@ -17,19 +17,19 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.fragments.TextFragment
 import com.facebook.react.views.text.fragments.TextFragmentList
-import com.facebook.react.views.text.span.CustomLetterSpacingSpan
-import com.facebook.react.views.text.span.CustomLineHeightSpan
-import com.facebook.react.views.text.span.CustomStyleSpan
-import com.facebook.react.views.text.span.ReactAbsoluteSizeSpan
-import com.facebook.react.views.text.span.ReactBackgroundColorSpan
-import com.facebook.react.views.text.span.ReactClickableSpan
-import com.facebook.react.views.text.span.ReactForegroundColorSpan
-import com.facebook.react.views.text.span.ReactStrikethroughSpan
-import com.facebook.react.views.text.span.ReactTagSpan
-import com.facebook.react.views.text.span.ReactUnderlineSpan
-import com.facebook.react.views.text.span.SetSpanOperation
-import com.facebook.react.views.text.span.ShadowStyleSpan
-import com.facebook.react.views.text.span.TextInlineViewPlaceholderSpan
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
+import com.facebook.react.views.text.internal.span.CustomStyleSpan
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactClickableSpan
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
+import com.facebook.react.views.text.internal.span.ReactTagSpan
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan
+import com.facebook.react.views.text.internal.span.SetSpanOperation
+import com.facebook.react.views.text.internal.span.ShadowStyleSpan
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan
 
 /** Utility methods for building [Spannable]s */
 internal object TextLayoutUtils {

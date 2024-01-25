@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text.span;
+package com.facebook.react.views.text.internal.span;
 
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;

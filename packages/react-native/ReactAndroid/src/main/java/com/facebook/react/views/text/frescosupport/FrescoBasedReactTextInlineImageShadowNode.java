@@ -22,7 +22,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
-import com.facebook.react.views.text.span.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
