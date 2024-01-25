@@ -9,9 +9,16 @@
  * @flow strict
  */
 
-exports.version = {
+const version: $ReadOnly<{
+  major: number,
+  minor: number,
+  patch: number,
+  prerelease: string | null,
+}> = {
   major: ${major},
   minor: ${minor},
   patch: ${patch},
   prerelease: ${prerelease},
 };
+
+module.exports = {version};
