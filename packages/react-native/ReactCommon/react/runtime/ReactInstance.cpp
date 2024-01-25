@@ -30,12 +30,17 @@ ReactInstance::ReactInstance(
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
     JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
-    bool useModernRuntimeScheduler)
+    bool useModernRuntimeScheduler,
+    jsinspector_modern::PageTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(jsErrorHandlingFunc),
-      hasFatalJsError_(std::make_shared<bool>(false)) {
+      hasFatalJsError_(std::make_shared<bool>(false)),
+      parentInspectorTarget_(parentInspectorTarget) {
+  if (parentInspectorTarget_) {
+    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+  }
   auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
@@ -94,6 +99,14 @@ ReactInstance::ReactInstance(
 
   bufferedRuntimeExecutor_ =
       std::make_shared<BufferedRuntimeExecutor>(pipedRuntimeExecutor);
+}
+
+void ReactInstance::unregisterFromInspector() {
+  if (inspectorTarget_) {
+    assert(parentInspectorTarget_);
+    parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
+    inspectorTarget_ = nullptr;
+  }
 }
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {

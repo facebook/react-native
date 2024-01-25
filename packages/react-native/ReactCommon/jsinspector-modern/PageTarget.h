@@ -8,6 +8,7 @@
 #pragma once
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceTarget.h>
 
 #include <list>
 #include <optional>
@@ -83,6 +84,8 @@ class PageTargetController {
 
   PageTargetDelegate& getDelegate();
 
+  bool hasInstance() const;
+
  private:
   PageTarget& target_;
 };
@@ -107,7 +110,7 @@ class JSINSPECTOR_EXPORT PageTarget {
   explicit PageTarget(PageTargetDelegate& delegate);
 
   PageTarget(const PageTarget&) = delete;
-  PageTarget(PageTarget&&) = default;
+  PageTarget(PageTarget&&) = delete;
   PageTarget& operator=(const PageTarget&) = delete;
   PageTarget& operator=(PageTarget&&) = delete;
   ~PageTarget();
@@ -123,11 +126,31 @@ class JSINSPECTOR_EXPORT PageTarget {
       std::unique_ptr<IRemoteConnection> connectionToFrontend,
       SessionMetadata sessionMetadata = {});
 
+  /**
+   * Registers an instance with this PageTarget.
+   * \param delegate The InstanceTargetDelegate that will receive events from
+   * this InstanceTarget. The caller is responsible for ensuring that the
+   * InstanceTargetDelegate outlives this object.
+   * \return An InstanceTarget reference representing the newly created
+   * instance. This reference is only valid until unregisterInstance is called
+   * (or the PageTarget is destroyed). \pre There isn't currently an instance
+   * registered with this PageTarget.
+   */
+  InstanceTarget& registerInstance(InstanceTargetDelegate& delegate);
+
+  /**
+   * Unregisters an instance from this PageTarget.
+   * \param instance The InstanceTarget reference previously returned by
+   * registerInstance.
+   */
+  void unregisterInstance(InstanceTarget& instance);
+
  private:
   std::list<std::weak_ptr<PageTargetSession>> sessions_;
 
   PageTargetDelegate& delegate_;
   PageTargetController controller_{*this};
+  std::optional<InstanceTarget> currentInstance_{std::nullopt};
 
   /**
    * Call the given function for every active session, and clean up any
@@ -149,6 +172,10 @@ class JSINSPECTOR_EXPORT PageTarget {
 
   inline PageTargetDelegate& getDelegate() {
     return delegate_;
+  }
+
+  inline bool hasInstance() const {
+    return currentInstance_.has_value();
   }
 
   // Necessary to allow PageAgent to access PageTarget's internals in a

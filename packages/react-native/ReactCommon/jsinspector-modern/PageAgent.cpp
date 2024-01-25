@@ -7,6 +7,7 @@
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/PageAgent.h>
 #include <jsinspector-modern/PageTarget.h>
 
@@ -70,6 +71,38 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return;
   }
 
+  if (req.method == "Runtime.enable") {
+    runtimeEnabled_ = true;
+
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
+
+    if (instanceAgent_) {
+      folly::dynamic params = folly::dynamic::object(
+          "context",
+          folly::dynamic::object("id", instanceAgent_->getExecutionContextId())(
+              "origin", "")("name", "React Native"));
+      folly::dynamic contextCreated = folly::dynamic::object(
+          "method", "Runtime.executionContextCreated")("params", params);
+      frontendChannel_(folly::toJson(contextCreated));
+    }
+    return;
+  }
+  if (req.method == "Runtime.disable") {
+    runtimeEnabled_ = false;
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
+    return;
+  }
+
+  if (instanceAgent_ && instanceAgent_->handleRequest(req)) {
+    return;
+  }
+
   folly::dynamic res = folly::dynamic::object("id", req.id)(
       "error",
       folly::dynamic::object("code", -32601)(
@@ -90,6 +123,38 @@ void PageAgent::sendInfoLogEntry(std::string_view text) {
                       system_clock::now().time_since_epoch())
                       .count())("source", "other")(
                   "level", "info")("text", text)))));
+}
+
+void PageAgent::setCurrentInstanceAgent(
+    std::unique_ptr<InstanceAgent> instanceAgent) {
+  auto previousInstanceAgent = std::move(instanceAgent_);
+  instanceAgent_ = std::move(instanceAgent);
+  if (!runtimeEnabled_) {
+    return;
+  }
+  if (previousInstanceAgent != nullptr) {
+    auto executionContextId = previousInstanceAgent->getExecutionContextId();
+    folly::dynamic contextDestroyed =
+        folly::dynamic::object("method", "Runtime.executionContextDestroyed")(
+            "params",
+            folly::dynamic::object("executionContextId", executionContextId));
+    frontendChannel_(folly::toJson(contextDestroyed));
+
+    // Because we can only have a single instance, we can report all contexts
+    // as cleared.
+    folly::dynamic contextsCleared =
+        folly::dynamic::object("method", "Runtime.executionContextsCleared");
+    frontendChannel_(folly::toJson(contextsCleared));
+  }
+  if (instanceAgent_) {
+    folly::dynamic params = folly::dynamic::object(
+        "context",
+        folly::dynamic::object("id", instanceAgent_->getExecutionContextId())(
+            "origin", "")("name", "React Native"));
+    folly::dynamic contextCreated = folly::dynamic::object(
+        "method", "Runtime.executionContextCreated")("params", params);
+    frontendChannel_(folly::toJson(contextCreated));
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

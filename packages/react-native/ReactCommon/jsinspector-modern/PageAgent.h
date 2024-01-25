@@ -10,6 +10,7 @@
 #include "PageTarget.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/Parsing.h>
 
 #include <functional>
@@ -18,6 +19,8 @@
 namespace facebook::react::jsinspector_modern {
 
 class PageTarget;
+class InstanceAgent;
+class InstanceTarget;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
@@ -47,6 +50,14 @@ class PageAgent {
    */
   void handleRequest(const cdp::PreparsedRequest& req);
 
+  /**
+   * Replace the current InstanceAgent with the given one and notify the
+   * frontend about the new instance.
+   * \param agent The new InstanceAgent. May be null to signify that there is
+   * currently no active instance.
+   */
+  void setCurrentInstanceAgent(std::unique_ptr<InstanceAgent> agent);
+
  private:
   /**
    * Send a simple Log.entryAdded notification with the given
@@ -62,6 +73,8 @@ class PageAgent {
   FrontendChannel frontendChannel_;
   PageTargetController& targetController_;
   const PageTarget::SessionMetadata sessionMetadata_;
+  std::unique_ptr<InstanceAgent> instanceAgent_;
+  bool runtimeEnabled_{false};
 };
 
 } // namespace facebook::react::jsinspector_modern

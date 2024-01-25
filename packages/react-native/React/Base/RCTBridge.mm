@@ -519,4 +519,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
+- (facebook::react::jsinspector_modern::PageTarget *)inspectorTarget
+{
+  return _inspectorTarget.get();
+}
 @end

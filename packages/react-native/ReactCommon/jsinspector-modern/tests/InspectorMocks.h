@@ -121,4 +121,6 @@ class MockPageTargetDelegate : public PageTargetDelegate {
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
+class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
+
 } // namespace facebook::react::jsinspector_modern

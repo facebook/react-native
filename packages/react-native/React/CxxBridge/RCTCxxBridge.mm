@@ -38,6 +38,7 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
+#import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
@@ -689,7 +690,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::make_unique<RCTInstanceCallback>(self),
       executorFactory,
       _jsMessageThread,
-      [self _buildModuleRegistryUnlocked]);
+      [self _buildModuleRegistryUnlocked],
+      _parentBridge.inspectorTarget);
   _moduleRegistryCreated = YES;
 }
 
@@ -1178,6 +1180,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
   RCTAssertMainQueue();
   RCTLogInfo(@"Invalidating %@ (parent: %@, executor: %@)", self, _parentBridge, [self executorClass]);
+
+  if (self->_reactInstance) {
+    // Do this synchronously on the main thread to fulfil unregisterFromInspector's
+    // requirements.
+    self->_reactInstance->unregisterFromInspector();
+  }
 
   _loading = NO;
   _valid = NO;
