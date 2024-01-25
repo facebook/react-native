@@ -556,43 +556,6 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
-    def self.get_plist_paths_from(user_project)
-        info_plists = user_project
-          .files
-          .select { |p|
-            p.name&.end_with?('Info.plist')
-          }
-        return info_plists
-      end
-
-    def self.update_ats_in_plist(plistPaths, parent)
-        plistPaths.each do |plistPath|
-            fullPlistPath = File.join(parent, plistPath.path)
-            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
-            ats_configs = {
-                "NSAllowsArbitraryLoads" => false,
-                "NSAllowsLocalNetworking" => true,
-            }
-            if plist.nil?
-                plist = {
-                    "NSAppTransportSecurity" => ats_configs
-                }
-            else
-                plist["NSAppTransportSecurity"] ||= {}
-                plist["NSAppTransportSecurity"] = plist["NSAppTransportSecurity"].merge(ats_configs)
-            end
-            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
-        end
-    end
-
-    def self.apply_ats_config(installer)
-        user_project = installer.aggregate_targets
-                    .map{ |t| t.user_project }
-                    .first
-        plistPaths = self.get_plist_paths_from(user_project)
-        self.update_ats_in_plist(plistPaths, user_project.path.parent)
-    end
-
     def self.react_native_pods
         return [
             "DoubleConversion",
