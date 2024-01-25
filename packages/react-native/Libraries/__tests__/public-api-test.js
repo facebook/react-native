@@ -42,8 +42,6 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   'Libraries/Components/UnimplementedViews/UnimplementedView.js',
-  'Libraries/Core/ReactNativeVersion.js',
-  'Libraries/Core/ReactNativeVersionCheck.js',
   'Libraries/Image/ImageBackground.js',
   'Libraries/Inspector/ElementProperties.js',
   'Libraries/Inspector/BorderBox.js',

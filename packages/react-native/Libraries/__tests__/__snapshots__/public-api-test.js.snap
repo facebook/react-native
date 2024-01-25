@@ -3851,6 +3851,23 @@ declare export default typeof ReactFiberErrorDialog;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Core/ReactNativeVersion.js 1`] = `
+"declare const version: $ReadOnly<{
+  major: number,
+  minor: number,
+  patch: number,
+  prerelease: string | null,
+}>;
+declare module.exports: { version: version };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Core/ReactNativeVersionCheck.js 1`] = `
+"declare const checkVersions: () => void;
+declare module.exports: { checkVersions: checkVersions };
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Core/SegmentFetcher/NativeSegmentFetcher.js 1`] = `
 "export * from \\"../../../src/private/specs/modules/NativeSegmentFetcher\\";
 declare export default typeof NativeSegmentFetcher;
