@@ -8,18 +8,19 @@
  * @format
  */
 
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+import type { ViewStyleProp } from '../../StyleSheet/StyleSheet';
+import typeof TouchableWithoutFeedback;
+from './TouchableWithoutFeedback';
 
+import * as React from 'react';
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
-import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
+import { PressabilityDebugView } from '../../Pressability/PressabilityDebug';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
-import * as React from 'react';
 
 type TVProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
@@ -133,7 +134,34 @@ class TouchableOpacity extends React.Component<Props, State> {
   state: State = {
     anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     pressability: new Pressability(this._createPressabilityConfig()),
+    clicks: 0
   };
+
+
+  constructor(props) {
+    this._event = React.createRef<GestureResponderEvent>(null);
+    this.timeout = React.createRef<NodeJS.Timeout>(null);
+    this._multiPressClicks = props.multiPressClicks ?? 3;
+  }
+
+ _onPressRequest(event: GestureResponderEvent): void {
+  if (onMultiPress) {
+    this.state.clicks = this.state.clicks + 1;
+    this._event.current = event;
+  } else {
+    if (onPress) {
+      requestAnimationFrame(() => {
+        onPress(event);
+      });
+    }
+  }
+  }
+
+  _clear(): void{
+    this.state.clicks = 0;
+    _event.current = null;
+    timeout.current = null;
+  }
 
   _createPressabilityConfig(): PressabilityConfig {
     return {
@@ -146,6 +174,7 @@ class TouchableOpacity extends React.Component<Props, State> {
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
+      multiPressClicks: this.props.multiPressClicks,
       minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
       onBlur: event => {
@@ -164,6 +193,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
+      onMultiPress: this.props.onMultiPress,
       onLongPress: this.props.onLongPress,
       onPress: this.props.onPress,
       onPressIn: event => {
@@ -290,7 +320,8 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.focusable !== false && this.props.onPress !== undefined
         }
         ref={this.props.hostRef}
-        {...eventHandlersWithoutBlurAndFocus}>
+        {...eventHandlersWithoutBlurAndFocus}
+        onPress={this._onPressRequest}>         
         {this.props.children}
         {__DEV__ ? (
           <PressabilityDebugView color="cyan" hitSlop={this.props.hitSlop} />
@@ -312,6 +343,21 @@ class TouchableOpacity extends React.Component<Props, State> {
     ) {
       this._opacityInactive(250);
     }
+
+
+    if (this.state.clicks > 0) {
+      if (this.state.clicks === this._multiPressClicks) {
+        if (this._event.current && this.props.onMultiPress) onMultiPress(this._event.current);
+        this.clear();
+      } else {
+        if (!timeout.current) {
+          this.timeout.current = setTimeout(() => {
+            this.clear();
+          }, 650);
+        }
+      }
+    }
+
   }
 
   componentDidMount(): void {
@@ -320,6 +366,7 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentWillUnmount(): void {
     this.state.pressability.reset();
+    this._clear();
   }
 }
 
