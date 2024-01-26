@@ -326,6 +326,12 @@ jsi::Value UIManagerBinding::get(
               arguments[3].getObject(runtime).getFunction(runtime);
           auto targetNode =
               uiManager->findNodeAtPoint(node, Point{locationX, locationY});
+
+          if (!targetNode) {
+            onSuccessFunction.call(runtime, jsi::Value::null());
+            return jsi::Value::undefined();
+          }
+
           auto& eventTarget = targetNode->getEventEmitter()->eventTarget_;
 
           EventEmitter::DispatchMutex().lock();
