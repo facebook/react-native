@@ -30,7 +30,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -50,7 +49,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
-import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -833,10 +831,7 @@ public class SurfaceMountingManager {
 
     if (isLayoutable) {
       viewManager =
-          props instanceof ReadableMapBuffer
-              ? ReactMapBufferViewManager.INSTANCE
-              : new ReactViewManagerWrapper.DefaultViewManager(
-                  mViewManagerRegistry.get(componentName));
+          new ReactViewManagerWrapper.DefaultViewManager(mViewManagerRegistry.get(componentName));
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
