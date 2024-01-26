@@ -170,6 +170,9 @@ final class ReactInstance {
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+    // TODO(T166383606): Remove this parameter when we remove the legacy runtime scheduler or we
+    // have access to ReactNativeConfig before we initialize it.
+    boolean useModernRuntimeScheduler = ReactFeatureFlags.useModernRuntimeScheduler;
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -179,7 +182,8 @@ final class ReactInstance {
             jsTimerExecutor,
             reactExceptionManager,
             bindingsInstaller,
-            isProfiling);
+            isProfiling,
+            useModernRuntimeScheduler);
 
     // Set up TurboModules
     Systrace.beginSection(
@@ -453,7 +457,8 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling);
+      boolean isProfiling,
+      boolean useModernRuntimeScheduler);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();

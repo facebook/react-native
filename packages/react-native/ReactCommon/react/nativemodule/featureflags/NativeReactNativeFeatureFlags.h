@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<200fe2cf84a044164c60f6dd3c5569dd>>
+ * @generated SignedSource<<18a3543b75c44e00bdf73ca2f12d230c>>
  */
 
 /**
@@ -31,12 +31,6 @@ class NativeReactNativeFeatureFlags
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
-
-  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
-
-  bool enableMicrotasks(jsi::Runtime& runtime);
-
-  bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

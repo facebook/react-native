@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42a6943246197e110c58027b285bdde5>>
+ * @generated SignedSource<<babb2b7b32c88b1767ac53ae97dddf10>>
  */
 
 /**
@@ -21,7 +21,4 @@ package com.facebook.react.internal.featureflags
 
 interface ReactNativeFeatureFlagsProvider {
   fun commonTestFlag(): Boolean
-  fun useModernRuntimeScheduler(): Boolean
-  fun enableMicrotasks(): Boolean
-  fun batchRenderingUpdatesInEventLoop(): Boolean
 }

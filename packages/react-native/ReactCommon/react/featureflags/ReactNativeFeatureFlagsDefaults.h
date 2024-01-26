@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b354cb54b822e2dfa3e093d39fb4da4e>>
+ * @generated SignedSource<<76033e9fb87174da88e0ee922df28701>>
  */
 
 /**
@@ -28,18 +28,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
-    return false;
-  }
-
-  bool useModernRuntimeScheduler() override {
-    return false;
-  }
-
-  bool enableMicrotasks() override {
-    return false;
-  }
-
-  bool batchRenderingUpdatesInEventLoop() override {
     return false;
   }
 };

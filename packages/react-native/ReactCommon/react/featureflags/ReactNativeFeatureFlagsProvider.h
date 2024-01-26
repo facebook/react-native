@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6bf1fc0d7b32a36041c2371fe191792b>>
+ * @generated SignedSource<<20dfc971dddc23a6d0cc55938b0d65b7>>
  */
 
 /**
@@ -26,9 +26,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual ~ReactNativeFeatureFlagsProvider() = default;
 
   virtual bool commonTestFlag() = 0;
-  virtual bool useModernRuntimeScheduler() = 0;
-  virtual bool enableMicrotasks() = 0;
-  virtual bool batchRenderingUpdatesInEventLoop() = 0;
 };
 
 } // namespace facebook::react

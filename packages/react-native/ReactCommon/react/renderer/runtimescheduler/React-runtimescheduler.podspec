@@ -56,7 +56,6 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact"
   s.dependency "React-rendererdebug"
   s.dependency "React-utils"
-  s.dependency "React-featureflags"
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi"

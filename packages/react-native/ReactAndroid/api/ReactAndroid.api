@@ -1917,6 +1917,7 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field unstable_useFabricInterop Z
 	public static field unstable_useTurboModuleInterop Z
 	public static field unstable_useTurboModuleInteropForAllTurboModules Z
+	public static field useModernRuntimeScheduler Z
 	public static field useNativeViewConfigsInBridgelessMode Z
 	public static field useTurboModules Z
 	public fun <init> ()V

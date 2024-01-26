@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4e4ce58c1ce1a95355bba0dfe099e26e>>
+ * @generated SignedSource<<b554016876afbf53c25670806a5ff581>>
  * @flow strict-local
  */
 
@@ -34,9 +34,6 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
-  useModernRuntimeScheduler: Getter<boolean>,
-  enableMicrotasks: Getter<boolean>,
-  batchRenderingUpdatesInEventLoop: Getter<boolean>,
 }
 
 /**
@@ -48,18 +45,6 @@ export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnl
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
-/**
- * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
- */
-export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
-/**
- * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
- */
-export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
-/**
- * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
- */
-export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
 
 /**
  * Overrides the feature flags with the provided methods.

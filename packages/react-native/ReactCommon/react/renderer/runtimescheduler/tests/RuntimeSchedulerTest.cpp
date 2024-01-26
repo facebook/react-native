@@ -8,9 +8,8 @@
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/utils/CoreFeatures.h>
 #include <memory>
 #include <semaphore>
 
@@ -22,41 +21,19 @@ namespace facebook::react {
 
 using namespace std::chrono_literals;
 
-static bool forcedBatchRenderingUpdatesInEventLoop = false;
-
-class RuntimeSchedulerTestFeatureFlags
-    : public ReactNativeFeatureFlagsDefaults {
- public:
-  RuntimeSchedulerTestFeatureFlags(bool useModernRuntimeScheduler)
-      : useModernRuntimeScheduler_(useModernRuntimeScheduler) {}
-
-  bool useModernRuntimeScheduler() override {
-    return useModernRuntimeScheduler_;
-  }
-
-  bool enableMicrotasks() override {
-    return useModernRuntimeScheduler_;
-  }
-
-  bool batchRenderingUpdatesInEventLoop() override {
-    return forcedBatchRenderingUpdatesInEventLoop;
-  }
-
- private:
-  bool useModernRuntimeScheduler_;
-};
-
 class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
     hostFunctionCallCount_ = 0;
 
-    ReactNativeFeatureFlags::override(
-        std::make_unique<RuntimeSchedulerTestFeatureFlags>(GetParam()));
+    auto useModernRuntimeScheduler = GetParam();
+
+    CoreFeatures::enableMicrotasks = useModernRuntimeScheduler;
 
     // Configuration that enables microtasks
     ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
-        ::hermes::vm::RuntimeConfig::Builder().withMicrotaskQueue(GetParam());
+        ::hermes::vm::RuntimeConfig::Builder().withMicrotaskQueue(
+            useModernRuntimeScheduler);
 
     runtime_ =
         facebook::hermes::makeHermesRuntime(runtimeConfigBuilder.build());
@@ -77,12 +54,8 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
       return stubClock_->getNow();
     };
 
-    runtimeScheduler_ =
-        std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
-  }
-
-  void TearDown() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
+    runtimeScheduler_ = std::make_unique<RuntimeScheduler>(
+        runtimeExecutor, useModernRuntimeScheduler, stubNow);
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -152,7 +125,7 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
 }
 
 TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
-  forcedBatchRenderingUpdatesInEventLoop = false;
+  CoreFeatures::blockPaintForUseLayoutEffect = false;
 
   bool didRunRenderingUpdate = false;
 
@@ -170,7 +143,7 @@ TEST_P(
     return;
   }
 
-  forcedBatchRenderingUpdatesInEventLoop = true;
+  CoreFeatures::blockPaintForUseLayoutEffect = true;
 
   uint nextOperationPosition = 1;
 

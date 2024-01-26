@@ -42,7 +42,7 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
   __weak RCTHost *host_;
 };
 
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
 @end
 
 @implementation RCTHost {
@@ -297,6 +297,17 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+#pragma mark - RCTInstanceDelegateInternal
+
+- (BOOL)useModernRuntimeScheduler:(RCTHost *)host
+{
+  if ([_hostDelegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
+    return [(id)_hostDelegate useModernRuntimeScheduler:self];
+  }
+
+  return NO;
 }
 
 #pragma mark - RCTContextContainerHandling

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5df50987338c0541436b11cd5433013c>>
+ * @generated SignedSource<<7f8b2ae5c0b18aceeaac0ee60e53bdbb>>
  */
 
 /**
@@ -43,57 +43,6 @@ bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
   }
 
   return commonTestFlag_.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
-  if (!useModernRuntimeScheduler_.has_value()) {
-    // Mark the flag as accessed.
-    static const char* flagName = "useModernRuntimeScheduler";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
-
-    useModernRuntimeScheduler_.emplace(currentProvider_->useModernRuntimeScheduler());
-  }
-
-  return useModernRuntimeScheduler_.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
-  if (!enableMicrotasks_.has_value()) {
-    // Mark the flag as accessed.
-    static const char* flagName = "enableMicrotasks";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
-
-    enableMicrotasks_.emplace(currentProvider_->enableMicrotasks());
-  }
-
-  return enableMicrotasks_.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
-  if (!batchRenderingUpdatesInEventLoop_.has_value()) {
-    // Mark the flag as accessed.
-    static const char* flagName = "batchRenderingUpdatesInEventLoop";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
-
-    batchRenderingUpdatesInEventLoop_.emplace(currentProvider_->batchRenderingUpdatesInEventLoop());
-  }
-
-  return batchRenderingUpdatesInEventLoop_.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(
