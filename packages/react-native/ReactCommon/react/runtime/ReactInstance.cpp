@@ -15,8 +15,8 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <jsireact/JSIExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <cxxreact/ReactMarker.h>
 #include <iostream>
@@ -29,8 +29,7 @@ ReactInstance::ReactInstance(
     std::unique_ptr<JSRuntime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
-    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
-    bool useModernRuntimeScheduler)
+    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
@@ -70,7 +69,7 @@ ReactInstance::ReactInstance(
 
                 // If we have first-class support for microtasks,
                 // they would've been called as part of the previous callback.
-                if (!CoreFeatures::enableMicrotasks) {
+                if (!ReactNativeFeatureFlags::enableMicrotasks()) {
                   if (auto strongTimerManager = weakTimerManager.lock()) {
                     strongTimerManager->callReactNativeMicrotasks(jsiRuntime);
                   }
@@ -83,8 +82,8 @@ ReactInstance::ReactInstance(
     }
   };
 
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
-      std::move(runtimeExecutor), useModernRuntimeScheduler);
+  runtimeScheduler_ =
+      std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
 
   auto pipedRuntimeExecutor =
       [runtimeScheduler = runtimeScheduler_.get()](

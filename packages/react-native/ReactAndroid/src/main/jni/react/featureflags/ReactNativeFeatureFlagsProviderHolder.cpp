@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6481de9ccf29dce1f9759c72cbaeb13d>>
+ * @generated SignedSource<<91f988022fbff7eba632f2ba46056025>>
  */
 
 /**
@@ -30,6 +30,24 @@ static jni::alias_ref<jni::JClass> getJClass() {
 bool ReactNativeFeatureFlagsProviderHolder::commonTestFlag() {
   static const auto method =
       getJClass()->getMethod<jboolean()>("commonTestFlag");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::useModernRuntimeScheduler() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::enableMicrotasks() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("enableMicrotasks");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::batchRenderingUpdatesInEventLoop() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
   return method(javaProvider_);
 }
 
