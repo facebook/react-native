@@ -46,18 +46,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @end
 
-/**
- * This is a private protocol used to configure internal behavior of the runtime.
- * DO NOT USE THIS OUTSIDE OF THE REACT NATIVE CODEBASE.
- */
-@protocol RCTInstanceDelegateInternal <NSObject>
-
-// TODO(T166383606): Remove this method when we remove the legacy runtime scheduler or we have access to
-// ReactNativeConfig before we initialize it.
-- (BOOL)useModernRuntimeScheduler:(RCTInstance *)instance;
-
-@end
-
 typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 
 /**

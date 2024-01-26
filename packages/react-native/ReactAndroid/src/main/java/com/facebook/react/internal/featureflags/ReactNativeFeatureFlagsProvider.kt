@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8fae1537ff23fbd7dacd81cc2521cd3c>>
+ * @generated SignedSource<<c5c87368aae4df966b4b7971aadb79f2>>
  */
 
 /**
@@ -24,4 +24,10 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip fun commonTestFlag(): Boolean
+
+  @DoNotStrip fun useModernRuntimeScheduler(): Boolean
+
+  @DoNotStrip fun enableMicrotasks(): Boolean
+
+  @DoNotStrip fun batchRenderingUpdatesInEventLoop(): Boolean
 }

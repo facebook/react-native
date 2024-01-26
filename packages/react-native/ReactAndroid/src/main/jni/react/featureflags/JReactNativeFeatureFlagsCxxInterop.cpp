@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad6d2d1c24334995ba197c7cc0a74dc9>>
+ * @generated SignedSource<<bd4482119f1c4963aa4ad1e354f9107d>>
  */
 
 /**
@@ -28,6 +28,21 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useModernRuntimeScheduler();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMicrotasks();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -48,6 +63,15 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
+      makeNativeMethod(
+        "useModernRuntimeScheduler",
+        JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
+      makeNativeMethod(
+        "enableMicrotasks",
+        JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
+      makeNativeMethod(
+        "batchRenderingUpdatesInEventLoop",
+        JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
   });
 }
 

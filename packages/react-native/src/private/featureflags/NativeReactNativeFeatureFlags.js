@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec82a5158f766de0467ab9a38e4ffb15>>
+ * @generated SignedSource<<564159837241d197ebc3084ff9e72b7c>>
  * @flow strict-local
  */
 
@@ -24,6 +24,9 @@ import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModule
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
+  +useModernRuntimeScheduler?: () => boolean;
+  +enableMicrotasks?: () => boolean;
+  +batchRenderingUpdatesInEventLoop?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(
