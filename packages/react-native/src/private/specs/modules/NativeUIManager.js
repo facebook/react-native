@@ -97,7 +97,7 @@ export interface Spec extends TurboModule {
   ) => void;
 
   // Android only
-  +getConstantsForViewManager?: (viewManagerName: string) => Object;
+  +getConstantsForViewManager?: (viewManagerName: string) => ?Object;
   +getDefaultEventTypes?: () => Array<string>;
   +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
   +sendAccessibilityEvent?: (reactTag: ?number, eventType: number) => void;
