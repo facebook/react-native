@@ -6564,6 +6564,12 @@ export interface Spec {
     commandName: string,
     args: Array<mixed>
   ) => void;
+  +findNodeAtPoint: (
+    node: Node,
+    locationX: number,
+    locationY: number,
+    callback: (instanceHandle: ?InternalInstanceHandle) => void
+  ) => void;
   +getParentNode: (node: Node) => ?InternalInstanceHandle;
   +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>;
   +isConnected: (node: Node) => boolean;

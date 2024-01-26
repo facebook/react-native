@@ -292,6 +292,15 @@ const FabricUIManagerMock: IFabricUIManagerMock = {
 
   findShadowNodeByTag_DEPRECATED: jest.fn((reactTag: number): ?Node => {}),
 
+  findNodeAtPoint: jest.fn(
+    (
+      node: Node,
+      locationX: number,
+      locationY: number,
+      callback: (instanceHandle: ?InternalInstanceHandle) => void,
+    ): void => {},
+  ),
+
   getBoundingClientRect: jest.fn(
     (
       node: Node,

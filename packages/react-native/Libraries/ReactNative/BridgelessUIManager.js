@@ -336,7 +336,54 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       height: number,
     ) => void,
   ): void => {
-    raiseSoftError('findSubviewIn');
+    if (reactTag == null) {
+      console.error(
+        `findSubviewIn() noop: Cannot be called with ${String(
+          reactTag,
+        )} reactTag`,
+      );
+      return;
+    }
+
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+
+    if (!shadowNode) {
+      console.error(
+        `findSubviewIn() noop: Cannot find view with reactTag ${reactTag}`,
+      );
+      return;
+    }
+
+    FabricUIManager.findNodeAtPoint(
+      shadowNode,
+      point[0],
+      point[1],
+      function (internalInstanceHandle) {
+        if (internalInstanceHandle == null) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let instanceHandle: Object = internalInstanceHandle;
+        let node = instanceHandle.stateNode.node;
+
+        if (!node) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let nativeViewTag = (instanceHandle.stateNode.canonical
+          .nativeTag: number);
+
+        FabricUIManager.measure(
+          node,
+          function (x, y, width, height, pageX, pageY) {
+            callback(nativeViewTag, pageX, pageY, width, height);
+          },
+        );
+      },
+    );
   },
   viewIsDescendantOf: (
     reactTag: ?number,
