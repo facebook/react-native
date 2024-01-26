@@ -135,6 +135,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 
   // Fallback 3: Try to use Paper Interop.
+  // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
         RCTNotAllowedInBridgeless,

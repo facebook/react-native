@@ -130,6 +130,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   }
 
   // Step 3: check if the module has been registered
+  // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   NSArray<Class> *registeredModules = RCTGetModuleClasses();
   NSMutableDictionary<NSString *, Class> *supportedLegacyViewComponents =
       [RCTLegacyViewManagerInteropComponentView _supportedLegacyViewComponents];
