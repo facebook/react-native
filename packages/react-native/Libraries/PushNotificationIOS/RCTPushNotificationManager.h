@@ -11,6 +11,8 @@ extern NSString *const RCTRemoteNotificationReceived;
 
 @interface RCTPushNotificationManager : RCTEventEmitter
 
+@property (nonatomic, nullable, readwrite) UNNotification *initialNotification;
+
 typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;

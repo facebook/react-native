@@ -168,6 +168,11 @@ static NSString *RCTFormatNotificationDateFromNSDate(NSDate *date)
   return [formatter stringFromDate:date];
 }
 
+static BOOL IsNotificationRemote(UNNotification *notification)
+{
+  return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+}
+
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
@@ -232,7 +237,7 @@ RCT_EXPORT_MODULE()
 
 + (void)didReceiveNotification:(UNNotification *)notification
 {
-  BOOL const isRemoteNotification = [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+  BOOL const isRemoteNotification = IsNotificationRemote(notification);
   if (isRemoteNotification) {
     NSDictionary *userInfo = @{@"notification" : notification.request.content.userInfo};
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
@@ -524,20 +529,44 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
-  NSMutableDictionary<NSString *, id> *initialNotification =
+  // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
+  // Set this property in the implementation of
+  // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
+  if (self.initialNotification) {
+    NSDictionary<NSString *, id> *notificationDict =
+        RCTFormatUNNotificationContent(self.initialNotification.request.content);
+    if (IsNotificationRemote(self.initialNotification)) {
+      NSMutableDictionary<NSString *, id> *notificationDictCopy = [notificationDict mutableCopy];
+      notificationDictCopy[@"remote"] = @YES;
+      resolve(notificationDictCopy);
+    } else {
+      resolve(notificationDict);
+    }
+    return;
+  }
+
+  NSMutableDictionary<NSString *, id> *initialRemoteNotification =
       [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
+
+  // The user actioned a remote notification to launch the app. This is a fallback that is deprecated
+  // in the new architecture.
+  if (initialRemoteNotification) {
+    initialRemoteNotification[@"remote"] = @YES;
+    resolve(initialRemoteNotification);
+    return;
+  }
 
   UILocalNotification *initialLocalNotification =
       self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
 
-  if (initialNotification) {
-    initialNotification[@"remote"] = @YES;
-    resolve(initialNotification);
-  } else if (initialLocalNotification) {
+  // The user actioned a local notification to launch the app. Notification is represented by UILocalNotification. This
+  // is deprecated.
+  if (initialLocalNotification) {
     resolve(RCTFormatLocalNotification(initialLocalNotification));
-  } else {
-    resolve((id)kCFNull);
+    return;
   }
+
+  resolve((id)kCFNull);
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
