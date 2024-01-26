@@ -129,7 +129,6 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
-  s.dependency "React-featureflags"
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"

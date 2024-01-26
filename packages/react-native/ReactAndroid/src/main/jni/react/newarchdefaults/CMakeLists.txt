@@ -17,7 +17,6 @@ target_include_directories(react_newarchdefaults PUBLIC .)
 target_link_libraries(react_newarchdefaults
         fbjni
         fabricjni
-        featureflagsjni
         react_nativemodule_core
         react_codegen_rncore
         react_cxxreactpackage

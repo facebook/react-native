@@ -26,7 +26,6 @@ target_link_libraries(
         mapbufferjni
         react_codegen_rncore
         react_debug
-        react_featureflags
         react_render_animations
         react_render_attributedstring
         react_render_componentregistry

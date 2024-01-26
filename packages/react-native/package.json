@@ -89,9 +89,7 @@
     "types"
   ],
   "scripts": {
-    "prepack": "cp ../../README.md .",
-    "featureflags-check": "node ./scripts/featureflags/update.js --verify-unchanged",
-    "featureflags-update": "node ./scripts/featureflags/update.js"
+    "prepack": "cp ../../README.md ."
   },
   "peerDependencies": {
     "react": "18.2.0"
