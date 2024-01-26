@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.internal.span;
 
 import android.content.res.AssetManager;
 import android.graphics.Paint;
@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.assets.ReactFontManager;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {

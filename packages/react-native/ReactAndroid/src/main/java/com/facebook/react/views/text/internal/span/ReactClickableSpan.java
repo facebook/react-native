@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.internal.span;
 
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.text.ReactTextView;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ViewGroupClickEvent;
 
 /**
@@ -36,11 +38,11 @@ import com.facebook.react.views.view.ViewGroupClickEvent;
  * accessible (TalkBack announces that the text has links available, and the links are exposed in
  * the context menu).
  */
-class ReactClickableSpan extends ClickableSpan implements ReactSpan {
+public class ReactClickableSpan extends ClickableSpan implements ReactSpan {
 
   private final int mReactTag;
 
-  ReactClickableSpan(int reactTag) {
+  public ReactClickableSpan(int reactTag) {
     mReactTag = reactTag;
   }
 

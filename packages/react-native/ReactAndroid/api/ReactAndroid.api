@@ -6733,29 +6733,6 @@ public class com/facebook/react/views/switchview/ReactSwitchManager$ReactSwitchS
 	public fun setProperty (Lcom/facebook/react/views/switchview/ReactSwitchManager$ReactSwitchShadowNode;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/text/CustomLetterSpacingSpan : android/text/style/MetricAffectingSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (F)V
-	public fun getSpacing ()F
-	public fun updateDrawState (Landroid/text/TextPaint;)V
-	public fun updateMeasureState (Landroid/text/TextPaint;)V
-}
-
-public class com/facebook/react/views/text/CustomLineHeightSpan : android/text/style/LineHeightSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (F)V
-	public fun chooseHeight (Ljava/lang/CharSequence;IIIILandroid/graphics/Paint$FontMetricsInt;)V
-	public fun getLineHeight ()I
-}
-
-public class com/facebook/react/views/text/CustomStyleSpan : android/text/style/MetricAffectingSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (IILjava/lang/String;Ljava/lang/String;Landroid/content/res/AssetManager;)V
-	public fun getFontFamily ()Ljava/lang/String;
-	public fun getFontFeatureSettings ()Ljava/lang/String;
-	public fun getStyle ()I
-	public fun getWeight ()I
-	public fun updateDrawState (Landroid/text/TextPaint;)V
-	public fun updateMeasureState (Landroid/text/TextPaint;)V
-}
-
 public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 	public static fun getDefaultTextColor (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 	public static fun getDefaultTextColorHighlight (Landroid/content/Context;)I
@@ -6765,14 +6742,6 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 public class com/facebook/react/views/text/FontMetricsUtil {
 	public fun <init> ()V
 	public static fun getFontMetrics (Ljava/lang/CharSequence;Landroid/text/Layout;Landroid/text/TextPaint;Landroid/content/Context;)Lcom/facebook/react/bridge/WritableArray;
-}
-
-public class com/facebook/react/views/text/ReactAbsoluteSizeSpan : android/text/style/AbsoluteSizeSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (I)V
-}
-
-public class com/facebook/react/views/text/ReactBackgroundColorSpan : android/text/style/BackgroundColorSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (I)V
 }
 
 public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode, com/facebook/react/views/text/BasicTextAttributeProvider {
@@ -6866,10 +6835,6 @@ public class com/facebook/react/views/text/ReactFontManager {
 	public fun setTypeface (Ljava/lang/String;ILandroid/graphics/Typeface;)V
 }
 
-public class com/facebook/react/views/text/ReactForegroundColorSpan : android/text/style/ForegroundColorSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (I)V
-}
-
 public class com/facebook/react/views/text/ReactRawTextManager : com/facebook/react/uimanager/ViewManager {
 	public fun <init> ()V
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
@@ -6903,18 +6868,6 @@ public class com/facebook/react/views/text/ReactRawTextShadowNode$$PropsSetter :
 	public fun setProperty (Lcom/facebook/react/views/text/ReactRawTextShadowNode;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/views/text/ReactSpan {
-}
-
-public class com/facebook/react/views/text/ReactStrikethroughSpan : android/text/style/StrikethroughSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> ()V
-}
-
-public class com/facebook/react/views/text/ReactTagSpan : com/facebook/react/views/text/ReactSpan {
-	public fun <init> (I)V
-	public fun getReactTag ()I
-}
-
 public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager : com/facebook/react/uimanager/BaseViewManager {
 	public fun <init> ()V
 	public fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
@@ -6935,11 +6888,6 @@ public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager :
 	public fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
 	public fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-}
-
-public abstract class com/facebook/react/views/text/ReactTextInlineImageShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
-	public fun <init> ()V
-	public abstract fun buildInlineImageSpan ()Lcom/facebook/react/views/text/TextInlineImageSpan;
 }
 
 public class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
@@ -7056,10 +7004,6 @@ public class com/facebook/react/views/text/ReactTypefaceUtils {
 	public static fun parseFontWeight (Ljava/lang/String;)I
 }
 
-public class com/facebook/react/views/text/ReactUnderlineSpan : android/text/style/UnderlineSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> ()V
-}
-
 public class com/facebook/react/views/text/ReactVirtualTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
 	public fun <init> ()V
 	public fun isVirtual ()Z
@@ -7087,18 +7031,6 @@ public class com/facebook/react/views/text/ReactVirtualTextViewManager$$PropsSet
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/text/ReactVirtualTextViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
-public class com/facebook/react/views/text/SetSpanOperation {
-	protected field end I
-	protected field start I
-	protected field what Lcom/facebook/react/views/text/ReactSpan;
-	public fun execute (Landroid/text/SpannableStringBuilder;I)V
-}
-
-public class com/facebook/react/views/text/ShadowStyleSpan : android/text/style/CharacterStyle, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (FFFI)V
-	public fun updateDrawState (Landroid/text/TextPaint;)V
 }
 
 public class com/facebook/react/views/text/TextAttributeProps : com/facebook/react/views/text/EffectiveTextAttributeProvider {
@@ -7211,28 +7143,6 @@ public class com/facebook/react/views/text/TextAttributes {
 	public fun setMaxFontSizeMultiplier (F)V
 	public fun setTextTransform (Lcom/facebook/react/views/text/TextTransform;)V
 	public fun toString ()Ljava/lang/String;
-}
-
-public abstract class com/facebook/react/views/text/TextInlineImageSpan : android/text/style/ReplacementSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> ()V
-	public abstract fun getDrawable ()Landroid/graphics/drawable/Drawable;
-	public abstract fun getHeight ()I
-	public abstract fun getWidth ()I
-	public abstract fun onAttachedToWindow ()V
-	public abstract fun onDetachedFromWindow ()V
-	public abstract fun onFinishTemporaryDetach ()V
-	public abstract fun onStartTemporaryDetach ()V
-	public static fun possiblyUpdateInlineImageSpans (Landroid/text/Spannable;Landroid/widget/TextView;)V
-	public abstract fun setTextView (Landroid/widget/TextView;)V
-}
-
-public class com/facebook/react/views/text/TextInlineViewPlaceholderSpan : android/text/style/ReplacementSpan, com/facebook/react/views/text/ReactSpan {
-	public fun <init> (III)V
-	public fun draw (Landroid/graphics/Canvas;Ljava/lang/CharSequence;IIFIIILandroid/graphics/Paint;)V
-	public fun getHeight ()I
-	public fun getReactTag ()I
-	public fun getSize (Landroid/graphics/Paint;Ljava/lang/CharSequence;IILandroid/graphics/Paint$FontMetricsInt;)I
-	public fun getWidth ()I
 }
 
 public class com/facebook/react/views/text/TextLayoutManager {

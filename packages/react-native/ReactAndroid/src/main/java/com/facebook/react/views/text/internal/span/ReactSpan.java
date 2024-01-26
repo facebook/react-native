@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.internal.span;
 
 /*
  * Enables us to distinguish between spans that were added by React Native and spans that were

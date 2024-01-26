@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.internal;
 
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaNode;
 
 /** Base class for {@link YogaNode}s that represent inline images. */
