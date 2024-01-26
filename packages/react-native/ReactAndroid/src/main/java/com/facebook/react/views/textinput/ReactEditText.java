@@ -273,7 +273,9 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public void setLineHeight(int lineHeight) {
     mTextAttributes.setLineHeight(lineHeight);
-    super.setLineHeight(lineHeight);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      super.setLineHeight(lineHeight);
+    }
   }
 
   @Override
