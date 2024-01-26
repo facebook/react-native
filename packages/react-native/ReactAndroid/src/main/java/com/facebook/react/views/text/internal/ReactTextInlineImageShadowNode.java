@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text.internal;
 
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
