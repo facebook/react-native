@@ -44,7 +44,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
-  NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *mutableProps = initialProps != NULL ? [initialProps mutableCopy] : [NSMutableDictionary new];
   // Hardcoding the Concurrent Root as it it not recommended to
   // have the concurrentRoot turned off when Fabric is enabled.
   mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
@@ -53,25 +53,18 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @implementation RCTRootViewFactoryConfiguration
 
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL {
-  
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL 
+                   newArchEnabled:(BOOL)newArchEnabled
+               turboModuleEnabled:(BOOL)turboModuleEnabled
+                bridgelessEnabled:(BOOL)bridgelessEnabled
+{
   if (self = [super init]) {
-    self.bundleURL = bundleURL;
-    // Set default properties
-    self.fabricEnabled = [self newArchEnabled];
-    self.turboModuleEnabled = [self newArchEnabled];
-    self.bridgelessEnabled = false;
+    _bundleURL = bundleURL;
+    _fabricEnabled = newArchEnabled;
+    _turboModuleEnabled = turboModuleEnabled;
+    _bridgelessEnabled = bridgelessEnabled;
   }
   return self;
-}
-
-- (BOOL)newArchEnabled
-{
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
 }
 
 @end
@@ -274,11 +267,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 - (NSURL *)bundleURL {
-  if (self->_configuration.bundleURL == nil) {
-    [NSException raise:@"RCTRootViewFactoryConfiguration bundleURL is nil"
-                format:@"Configuration must set a valid bundleURL"];
-  }
-  
   return self->_configuration.bundleURL;
 }
 

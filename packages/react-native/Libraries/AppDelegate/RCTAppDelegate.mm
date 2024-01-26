@@ -47,17 +47,16 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTSetNewArchEnabled([self newArchEnabled]);
-  BOOL enableTM = self.turboModuleEnabled;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  RCTAppSetupPrepareApp(application, enableTM);
+  RCTAppSetupPrepareApp(application, self.turboModuleEnabled);
 #pragma clang diagnostic pop
   
-  RCTRootViewFactoryConfiguration *configuration = [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL];
-  configuration.fabricEnabled = self.fabricEnabled;
-  configuration.turboModuleEnabled = self.turboModuleEnabled;
-  configuration.bridgelessEnabled = self.bridgelessEnabled;
+  RCTRootViewFactoryConfiguration *configuration = [[RCTRootViewFactoryConfiguration alloc] initWithBundleURL:self.bundleURL 
+                                                                                                 newArchEnabled:self.fabricEnabled
+                                                                                             turboModuleEnabled:self.turboModuleEnabled
+                                                                                              bridgelessEnabled:self.bridgelessEnabled];
   
   __weak __typeof(self) weakSelf = self;
   configuration.createRootViewWithBridge = ^UIView* (RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
@@ -192,6 +191,21 @@
 
 }
 
+- (RCTBridge *)bridge {
+  return self.rootViewFactory.bridge;
+}
+
+- (RCTSurfacePresenterBridgeAdapter *)bridgeAdapter {
+  return self.rootViewFactory.bridgeAdapter;
+}
+
+- (void)setBridge:(RCTBridge *)bridge {
+  self.rootViewFactory.bridge = bridge;
+}
+
+- (void)setBridgeAdapter:(RCTSurfacePresenterBridgeAdapter *)bridgeAdapter {
+  self.rootViewFactory.bridgeAdapter = bridgeAdapter;
+}
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 

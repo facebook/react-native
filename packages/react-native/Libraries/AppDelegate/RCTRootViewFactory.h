@@ -27,13 +27,13 @@ typedef RCTBridge*_Nonnull (^RCTCreateBridgeWithDelegateBlock) (id<RCTBridgeDele
 @interface RCTRootViewFactoryConfiguration : NSObject
 
 /// This property controls whether the App will use the Fabric renderer of the New Architecture or not.
-@property(nonatomic, assign) BOOL fabricEnabled;
+@property(nonatomic, assign, readonly) BOOL fabricEnabled;
 
 /// This property controls whether React Native's new initialization layer is enabled.
-@property(nonatomic, assign) BOOL bridgelessEnabled;
+@property(nonatomic, assign, readonly) BOOL bridgelessEnabled;
 
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off
-@property(nonatomic, assign) BOOL turboModuleEnabled;
+@property(nonatomic, assign, readonly) BOOL turboModuleEnabled;
 
 /// Return the bundle URL for the main bundle.
 @property(nonatomic) NSURL *bundleURL;
@@ -47,7 +47,10 @@ typedef RCTBridge*_Nonnull (^RCTCreateBridgeWithDelegateBlock) (id<RCTBridgeDele
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  *
  */
-- (instancetype) initWithBundleURL:(NSURL *)bundleURL;
+- (instancetype) initWithBundleURL:(NSURL *)bundleURL
+                    newArchEnabled:(BOOL)newArchEnabled
+                turboModuleEnabled:(BOOL)turboModuleEnabled
+                 bridgelessEnabled:(BOOL)bridgelessEnabled;
 
 /**
  * Block that allows to override logic of creating root view instance.

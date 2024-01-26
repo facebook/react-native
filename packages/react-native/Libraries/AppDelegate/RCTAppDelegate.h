@@ -58,9 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
+@property (nonatomic, strong, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) NSString *moduleName;
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
-@property (nonatomic, strong) RCTRootViewFactory* rootViewFactory;
+@property (nonatomic, strong, nonnull) RCTRootViewFactory* rootViewFactory;
+
+@property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+
 
 /**
  * It creates a `RCTBridge` using a delegate and some launch options.
