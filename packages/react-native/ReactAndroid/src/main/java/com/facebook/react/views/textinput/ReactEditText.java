@@ -83,6 +83,7 @@ import java.util.Objects;
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
 public class ReactEditText extends AppCompatEditText {
+
   private final InputMethodManager mInputMethodManager;
   private final String TAG = ReactEditText.class.getSimpleName();
   public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -273,9 +274,7 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public void setLineHeight(int lineHeight) {
     mTextAttributes.setLineHeight(lineHeight);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      super.setLineHeight(lineHeight);
-    }
+    // We don't call super.setLineHeight() because LineHeight is fully managed by ReactNative
   }
 
   @Override
@@ -1232,6 +1231,7 @@ public class ReactEditText extends AppCompatEditText {
    * changed by the user, and not explicitly set by JS.
    */
   private class TextWatcherDelegator implements TextWatcher {
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
       if (!mIsSettingTextFromJS && mListeners != null) {
