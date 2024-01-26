@@ -18,7 +18,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2023.08.07.00'
-socket_rocket_version = '0.7.0' # [macOS]
+socket_rocket_version = '0.7.0' # [macOS] [visionOS]
 boost_compiler_flags = '-Wno-documentation'
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'

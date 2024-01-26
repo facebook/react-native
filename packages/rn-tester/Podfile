@@ -86,23 +86,32 @@ target 'RNTesterIntegrationTests' do
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
+# [macOS
 target 'RNTester-macOS' do
-  platform :osx, '10.15'
+  platform :macos, min_macos_version_supported # [macOS]
   pods('RNTester-macOS')
 end
 
 target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.15'
+  platform :macos, min_macos_version_supported # [macOS]
   pods('RNTester-macOSUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
   pod 'OCMock', '~> 3.9.1'
 end
 
 target 'RNTester-macOSIntegrationTests' do
-  platform :osx, '10.15'
+  platform :macos, min_macos_version_supported # [macOS]
   pods('RNTester-macOSIntegrationTests')
   pod 'React-RCTTest', :path => "./RCTTest"
 end
+# macOS]
+
+# [visionOS
+target('RNTester-visionOS') do
+  platform :visionos, min_visionos_version_supported # [visionOS]
+  pods('RNTester-visionOS')
+end
+# visionOS]
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
