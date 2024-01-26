@@ -24,7 +24,7 @@ class UnobservedErrorNotifier {
   @Override
   protected void finalize() throws Throwable {
     try {
-      Task faultedTask = this.task;
+      Task faultedTask = task;
       if (faultedTask != null) {
         Task.UnobservedExceptionHandler ueh = Task.getUnobservedExceptionHandler();
         if (ueh != null) {

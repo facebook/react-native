@@ -44,8 +44,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     private MutableYogaValue() {}
 
     private MutableYogaValue(MutableYogaValue mutableYogaValue) {
-      this.value = mutableYogaValue.value;
-      this.unit = mutableYogaValue.unit;
+      value = mutableYogaValue.value;
+      unit = mutableYogaValue.unit;
     }
 
     void setFromDynamic(Dynamic dynamic) {

@@ -25,7 +25,7 @@ public class JavascriptException extends RuntimeException
   }
 
   public @Nullable String getExtraDataAsJson() {
-    return this.extraDataAsJson;
+    return extraDataAsJson;
   }
 
   public JavascriptException setExtraDataAsJson(@Nullable String extraDataAsJson) {

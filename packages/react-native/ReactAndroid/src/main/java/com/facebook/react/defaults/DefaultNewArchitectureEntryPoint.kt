@@ -41,10 +41,10 @@ object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.useNativeViewConfigsInBridgelessMode = fabricEnabled && bridgelessEnabled
     ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
 
-    this.privateFabricEnabled = fabricEnabled
-    this.privateTurboModulesEnabled = turboModulesEnabled
-    this.privateConcurrentReactEnabled = fabricEnabled
-    this.privateBridgelessEnabled = bridgelessEnabled
+    privateFabricEnabled = fabricEnabled
+    privateTurboModulesEnabled = turboModulesEnabled
+    privateConcurrentReactEnabled = fabricEnabled
+    privateBridgelessEnabled = bridgelessEnabled
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }

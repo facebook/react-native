@@ -38,13 +38,13 @@ class ReadableMapBuffer : MapBuffer {
 
   @DoNotStrip
   private constructor(hybridData: HybridData) {
-    this.mHybridData = hybridData
-    this.buffer = importByteBuffer()
+    mHybridData = hybridData
+    buffer = importByteBuffer()
     readHeader()
   }
 
   private constructor(buffer: ByteBuffer) {
-    this.mHybridData = null
+    mHybridData = null
     this.buffer = buffer
     readHeader()
   }

@@ -18,7 +18,7 @@ public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
   private final int mHeight;
 
   public CustomLineHeightSpan(float height) {
-    this.mHeight = (int) Math.ceil(height);
+    mHeight = (int) Math.ceil(height);
   }
 
   public int getLineHeight() {
