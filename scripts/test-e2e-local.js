@@ -102,7 +102,9 @@ async function testRNTesterIOS(
   launchPackagerInSeparateWindow(pwd().toString());
 
   // launch the app on iOS simulator
-  exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
+  exec(
+    'npx react-native@latest run-ios --scheme RNTester --simulator "iPhone 14"',
+  );
 }
 
 /**
