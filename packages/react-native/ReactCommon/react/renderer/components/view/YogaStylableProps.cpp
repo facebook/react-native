@@ -532,6 +532,8 @@ YogaStylableProps::YogaStylableProps(
       "aspectRatio",
       sourceProps.yogaStyle.aspectRatio(),
       yogaStyle.aspectRatio()));
+
+  convertRawPropAliases(context, sourceProps, rawProps);
 };
 
 void YogaStylableProps::setProp(
