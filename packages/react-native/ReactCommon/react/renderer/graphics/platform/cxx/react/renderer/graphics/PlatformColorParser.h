@@ -7,14 +7,17 @@
 
 #pragma once
 
-#include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/core/RawProps.h>
+#include <react/debug/react_native_expect.h>
+#include <react/renderer/core/RawValue.h>
 #include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/fromRawValueShared.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
 inline SharedColor parsePlatformColor(
-    const PropsParserContext& context,
+    const ContextContainer& contextContainer,
+    int32_t surfaceId,
     const RawValue& value) {
   float alpha = 0;
   float red = 0;
@@ -22,6 +25,15 @@ inline SharedColor parsePlatformColor(
   float blue = 0;
 
   return {colorFromComponents({red, green, blue, alpha})};
+}
+
+inline void fromRawValue(
+    const ContextContainer& contextContainer,
+    int32_t surfaceId,
+    const RawValue& value,
+    SharedColor& result) {
+  fromRawValueShared(
+      contextContainer, surfaceId, value, result, parsePlatformColor);
 }
 
 } // namespace facebook::react

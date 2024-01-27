@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 #include <string>
 
@@ -198,6 +199,11 @@ facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(std
   }
 
   return {0, 0, 0, 0};
+}
+
+UIColor *RCTPlatformColorFromColor(const facebook::react::Color &color)
+{
+  return (UIColor *)facebook::react::unwrapManagedObject(color.getUIColor());
 }
 
 NS_ASSUME_NONNULL_END
