@@ -24,8 +24,6 @@ static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificat
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
-#if !TARGET_OS_UIKITFORMAC
-
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
@@ -97,16 +95,10 @@ RCT_ENUM_CONVERTER(
 
 @end
 #endif // [macOS]
-#else
-@interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
-@end
-#endif // TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
 
-#if !TARGET_OS_UIKITFORMAC
-
-#if !TARGET_OS_OSX // [macOS]
+#if TARGET_OS_IOS // [macOS] [visionOS]
 /** DEPRECATED. UILocalNotification was deprecated in iOS 10. Please don't add new callsites. */
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -126,7 +118,8 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   formattedLocalNotification[@"remote"] = @NO;
   return formattedLocalNotification;
 }
-#else // [macOS
+#endif // [macOS] [visionOS]
+#if TARGET_OS_OSX // [macOS
 static NSDictionary *RCTFormatUserNotification(NSUserNotification *notification)
 {
   NSMutableDictionary *formattedUserNotification = [NSMutableDictionary dictionary];
@@ -198,8 +191,6 @@ static NSString *RCTFormatNotificationDateFromNSDate(NSDate *date)
   return [formatter stringFromDate:date];
 }
 
-#endif // TARGET_OS_UIKITFORMAC
-
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
@@ -207,7 +198,6 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#if !TARGET_OS_UIKITFORMAC
 - (void)startObserving
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -282,14 +272,15 @@ RCT_EXPORT_MODULE()
 }
 #endif // [macOS]
 
-#if !TARGET_OS_OSX // [macOS]
+#if TARGET_OS_IOS // [macOS] [visionOS]
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
                                                       object:self
                                                     userInfo:RCTFormatLocalNotification(notification)];
 }
-#else // [macOS 
+#endif // [macOS] [visionOS]
+#if TARGET_OS_OSX // [macOS
 + (void)didReceiveUserNotification:(NSUserNotification *)notification
 {
   NSString *notificationName = notification.isRemote ? RCTRemoteNotificationReceived : kLocalNotificationReceived;
@@ -568,7 +559,7 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
-#if !TARGET_OS_OSX // [macOS]
+#if TARGET_OS_IOS // [macOS] [visionOS]
   NSMutableDictionary<NSString *, id> *initialNotification =
       [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
 
@@ -583,7 +574,8 @@ RCT_EXPORT_METHOD(getInitialNotification
   } else {
     resolve((id)kCFNull);
   }
-#else // [macOS
+#endif // [macOS] [visionOS]
+#if TARGET_OS_OSX // [macOS
   NSUserNotification *initialNotification = self.bridge.launchOptions[NSApplicationLaunchUserNotificationKey];
   if (initialNotification) {
     resolve(RCTFormatUserNotification(initialNotification));
@@ -637,100 +629,6 @@ RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
     callback(@[ @(settings.authorizationStatus) ]);
   }];
 }
-
-#else // TARGET_OS_UIKITFORMAC
-
-RCT_EXPORT_METHOD(onFinishRemoteNotification : (NSString *)notificationId fetchResult : (NSString *)fetchResult)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(setApplicationIconBadgeNumber : (double)number)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getApplicationIconBadgeNumber : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(requestPermissions
-                  : (JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(abandonPermissions)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(checkPermissions : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(presentLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(scheduleLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelAllLocalNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)userInfo)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getInitialNotification
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (__unused RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeDeliveredNotifications : (NSArray<NSString *> *)identifiers)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getDeliveredNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[];
-}
-
-#endif // TARGET_OS_UIKITFORMAC
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params

@@ -352,7 +352,11 @@ CGSize RCTScreenSize(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTUnsafeExecuteOnMainQueueSync(^{
+#if TARGET_OS_IOS // [visionOS]
       size = [UIScreen mainScreen].bounds.size;
+#else // [visionOS
+      size = RCTKeyWindow().bounds.size;
+#endif // visionOS]
     });
   });
 
@@ -619,6 +623,14 @@ RCTUIWindow *__nullable RCTKeyWindow(void) // [macOS]
   return [NSApp keyWindow];
 #endif // macOS]
 }
+
+#if TARGET_OS_VISION // [visionOS
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void) {
+	NSSet *connectedScenes = RCTSharedApplication().connectedScenes;
+	UIWindowScene *windowScene = [connectedScenes anyObject];
+	return windowScene.statusBarManager;
+}
+#endif // visionOS]
 
 #if !TARGET_OS_OSX // [macOS]
 UIViewController *__nullable RCTPresentedViewController(void)

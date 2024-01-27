@@ -54,7 +54,10 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
-	s.ios.frameworks         = "MobileCoreServices" # [macOS] Restrict to iOS
+  # [macOS MobileCoreServices Not available on macOS
+  s.ios.frameworks         = "MobileCoreServices" 
+  s.visionos.frameworks    = "MobileCoreServices"
+  # macOS]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version

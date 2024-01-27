@@ -30,7 +30,10 @@ Pod::Spec.new do |s|
   s.ios.exclude_files      = "**/macOS/*" # [macOS]
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
-  s.ios.framework          = ["MobileCoreServices"] # [macOS] Restrict to iOS
+  # [macOS MobileCoreServices Not available on macOS
+  s.ios.frameworks         = "MobileCoreServices" 
+  s.visionos.frameworks    = "MobileCoreServices"
+  # macOS]
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
 
   s.dependency "Yoga"

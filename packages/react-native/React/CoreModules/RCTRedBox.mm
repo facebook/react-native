@@ -953,9 +953,15 @@ RCT_EXPORT_MODULE()
 
     if (!self->_window) {
 #if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_VISION // [macOS]
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds
                                     customButtonTitles:self->_customButtonTitles
                                   customButtonHandlers:self->_customButtonHandlers];
+#else // [visionOS
+	  self->_window = [[RCTRedBoxWindow alloc] initWithFrame:CGRectMake(0, 0, 1280, 720)
+									customButtonTitles:self->_customButtonTitles
+								  customButtonHandlers:self->_customButtonHandlers];
+#endif // visionOS]
 #else // [macOS
       self->_window = [RCTRedBoxWindow new];
 #endif // macOS]
