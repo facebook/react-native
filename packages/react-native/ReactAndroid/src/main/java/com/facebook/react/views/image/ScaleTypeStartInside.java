@@ -28,7 +28,7 @@ class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
     float dx = parentRect.left;
     float dy = parentRect.top;
     outTransform.setScale(scale, scale);
-    outTransform.postTranslate((int) (dx + 0.5f), (int) (dy + 0.5f));
+    outTransform.postTranslate((dx + 0.5f), (dy + 0.5f));
   }
 
   @Override

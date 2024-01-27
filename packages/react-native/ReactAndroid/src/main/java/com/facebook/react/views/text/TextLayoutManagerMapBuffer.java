@@ -126,7 +126,7 @@ public class TextLayoutManagerMapBuffer {
       return false;
     }
 
-    MapBuffer fragment = fragments.getMapBuffer((short) 0);
+    MapBuffer fragment = fragments.getMapBuffer(0);
     MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
 
     if (!textAttributes.contains(TextAttributeProps.TA_KEY_LAYOUT_DIRECTION)) {

@@ -359,8 +359,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
     Spanned text =
         Assertions.assertNotNull(
-            this.mPreparedSpannableText,
-            "Spannable element has not been prepared in onBeforeLayout");
+            mPreparedSpannableText, "Spannable element has not been prepared in onBeforeLayout");
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList<ReactShadowNode> shadowNodes = new ArrayList<>(placeholders.length);

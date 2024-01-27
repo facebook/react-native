@@ -47,10 +47,10 @@ public class OnScrollDispatchHelper {
   }
 
   public float getXFlingVelocity() {
-    return this.mXFlingVelocity;
+    return mXFlingVelocity;
   }
 
   public float getYFlingVelocity() {
-    return this.mYFlingVelocity;
+    return mYFlingVelocity;
   }
 }

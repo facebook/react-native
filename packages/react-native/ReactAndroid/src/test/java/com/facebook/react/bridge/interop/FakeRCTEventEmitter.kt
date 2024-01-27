@@ -15,11 +15,11 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 
 class FakeRCTEventEmitter : RCTEventEmitter {
 
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) {}
+  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) = Unit
 
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
       changedIndices: WritableArray
-  ) {}
+  ) = Unit
 }

@@ -41,14 +41,14 @@ private constructor(
         mutableListOf()
 
     fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
-      this.cxxReactPackageProviders.add({ _ -> provider() })
+      cxxReactPackageProviders.add({ _ -> provider() })
       return this
     }
 
     fun addCxxReactPackage(
         provider: (context: ReactApplicationContext) -> CxxReactPackage
     ): Builder {
-      this.cxxReactPackageProviders.add(provider)
+      cxxReactPackageProviders.add(provider)
       return this
     }
 

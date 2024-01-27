@@ -51,8 +51,8 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final int mCounter;
 
     public FabricCommitPointData(long timeStamp, int counter) {
-      this.mTimeStamp = timeStamp;
-      this.mCounter = counter;
+      mTimeStamp = timeStamp;
+      mCounter = counter;
     }
 
     public long getTimeStamp() {
@@ -69,7 +69,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final Map<ReactMarkerConstants, FabricCommitPointData> mPoints = new HashMap<>();
 
     private FabricCommitPoint(int commitNumber) {
-      this.mCommitNumber = commitNumber;
+      mCommitNumber = commitNumber;
     }
 
     private void addPoint(ReactMarkerConstants key, FabricCommitPointData data) {

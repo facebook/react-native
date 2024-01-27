@@ -104,12 +104,12 @@ public class FileIoHandler implements Runnable {
                 if (!(params instanceof Number)) {
                   throw new Exception("params must be a file handle");
                 }
-                TtlFileInputStream stream = mOpenFiles.get((int) params);
+                TtlFileInputStream stream = mOpenFiles.get(params);
                 if (stream == null) {
                   throw new Exception("invalid file handle, it might have timed out");
                 }
 
-                mOpenFiles.remove((int) params);
+                mOpenFiles.remove(params);
                 stream.close();
                 responder.respond("");
               } catch (Exception e) {
