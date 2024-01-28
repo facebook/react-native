@@ -36,4 +36,8 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
       (float)((color >> 24) & 0xff) / ratio};
 }
 
+inline bool hasPlatformColor(Color color) {
+  return false;
+}
+
 } // namespace facebook::react

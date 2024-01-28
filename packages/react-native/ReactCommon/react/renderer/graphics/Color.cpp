@@ -14,7 +14,13 @@ bool isColorMeaningful(const SharedColor& color) noexcept {
     return false;
   }
 
-  return colorComponentsFromColor(color).alpha > 0;
+  // On some host platforms, semantic colors can only be resolved from the UI
+  // thread. Since this method is called by ViewShadowNode to determine whether
+  // a color should disable view flattening from a background thread, we need
+  // an alternative option to simply check if the color instance represents a
+  // semantic color. The host platform implementation of this method only needs
+  // to return true if it requries UI thread bound semantic color resolution.
+  return hasPlatformColor(*color) || colorComponentsFromColor(color).alpha > 0;
 }
 
 SharedColor colorFromComponents(ColorComponents components) {
