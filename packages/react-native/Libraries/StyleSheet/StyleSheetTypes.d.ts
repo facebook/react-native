@@ -326,6 +326,25 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     | '700'
     | '800'
     | '900'
+    | 100
+    | 200
+    | 300
+    | 400
+    | 500
+    | 600
+    | 700
+    | 800
+    | 900
+    | 'ultralight'
+    | 'thin'
+    | 'light'
+    | 'medium'
+    | 'regular'
+    | 'semibold'
+    | 'condensedBold'
+    | 'condensed'
+    | 'heavy'
+    | 'black'
     | undefined;
   letterSpacing?: number | undefined;
   lineHeight?: number | undefined;
