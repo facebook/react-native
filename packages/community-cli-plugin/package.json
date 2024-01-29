@@ -6,7 +6,7 @@
     "react-native",
     "tools"
   ],
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/buid-scripts#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/community-cli-plugin#readme",
   "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
