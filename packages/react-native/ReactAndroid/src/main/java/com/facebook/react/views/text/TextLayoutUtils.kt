@@ -15,8 +15,8 @@ import android.view.View
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
-import com.facebook.react.views.text.fragments.TextFragment
-import com.facebook.react.views.text.fragments.TextFragmentList
+import com.facebook.react.views.text.attributedstring.AttributedString
+import com.facebook.react.views.text.attributedstring.AttributedStringFragment
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -36,14 +36,14 @@ internal object TextLayoutUtils {
   private const val INLINE_VIEW_PLACEHOLDER = "0"
 
   @JvmStatic
-  fun buildSpannableFromTextFragmentList(
+  fun buildSpannableFromAttributedString(
       context: Context,
-      textFragmentList: TextFragmentList,
+      attributedString: AttributedString,
       sb: SpannableStringBuilder,
       ops: MutableList<SetSpanOperation>,
   ) {
-    for (i in 0 until textFragmentList.count) {
-      val fragment = textFragmentList.getFragment(i)
+    for (i in 0 until attributedString.fragmentCount) {
+      val fragment = attributedString.getFragment(i)
 
       addApplicableFragmentSpans(
           context = context,
@@ -54,9 +54,10 @@ internal object TextLayoutUtils {
     }
   }
 
+  @JvmStatic
   private fun addApplicableFragmentSpans(
       context: Context,
-      fragment: TextFragment,
+      fragment: AttributedStringFragment,
       sb: SpannableStringBuilder,
       ops: MutableList<SetSpanOperation>,
   ) {

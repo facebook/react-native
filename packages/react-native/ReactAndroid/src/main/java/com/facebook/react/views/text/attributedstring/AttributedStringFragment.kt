@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text.fragments
+package com.facebook.react.views.text.attributedstring
 
 import com.facebook.react.views.text.TextAttributeProps
 
-/** Interface for a text fragment */
-internal interface TextFragment {
+/** Interface for an attributed string fragment */
+internal interface AttributedStringFragment {
   val textAttributeProps: TextAttributeProps
 
   val string: String?

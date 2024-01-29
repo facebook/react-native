@@ -34,9 +34,9 @@ import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.views.text.attributedstring.MapBufferAttributedString;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
-import com.facebook.react.views.text.fragments.MapBufferTextFragmentList;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -138,12 +138,12 @@ public class TextLayoutManagerMapBuffer {
         == LayoutDirection.RTL;
   }
 
-  private static void buildSpannableFromFragments(
-      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+  private static void buildSpannableFromAttributedString(
+      Context context, MapBuffer attributedString, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
     if (ReactFeatureFlags.enableSpannableBuildingUnification) {
-      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+      buildSpannableFromFragmentsDuplicated(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops);
     } else {
-      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+      buildSpannableFromAttributedStringUnified(context, attributedString, sb, ops);
     }
   }
 
@@ -241,12 +241,12 @@ public class TextLayoutManagerMapBuffer {
     }
   }
 
-  private static void buildSpannableFromFragmentsUnified(
-      Context context, MapBuffer fragments, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
+  private static void buildSpannableFromAttributedStringUnified(
+    Context context, MapBuffer attributedString, SpannableStringBuilder sb, List<SetSpanOperation> ops) {
 
-    final MapBufferTextFragmentList textFragmentList = new MapBufferTextFragmentList(fragments);
+    final MapBufferAttributedString mapBufferAttributedString = new MapBufferAttributedString(attributedString);
 
-    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
+    TextLayoutUtils.buildSpannableFromAttributedString(context, mapBufferAttributedString, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
@@ -292,7 +292,7 @@ public class TextLayoutManagerMapBuffer {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops);
+    buildSpannableFromAttributedString(context, attributedString, sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.

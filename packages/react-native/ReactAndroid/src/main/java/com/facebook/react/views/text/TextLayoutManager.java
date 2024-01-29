@@ -37,7 +37,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.views.text.fragments.BridgeTextFragmentList;
+import com.facebook.react.views.text.attributedstring.BridgeAttributedString;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
@@ -113,15 +113,15 @@ public class TextLayoutManager {
     sTagToSpannableCache.remove(reactTag);
   }
 
-  private static void buildSpannableFromFragments(
+  private static void buildSpannableFromAttributedString(
       Context context,
-      ReadableArray fragments,
+      ReadableMap attributedString,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
     if (ReactFeatureFlags.enableSpannableBuildingUnification) {
-      buildSpannableFromFragmentsUnified(context, fragments, sb, ops);
+      buildSpannableFromAttributedStringUnified(context, attributedString, sb, ops);
     } else {
-      buildSpannableFromFragmentsDuplicated(context, fragments, sb, ops);
+      buildSpannableFromFragmentsDuplicated(context, attributedString.getArray("fragments"), sb, ops);
     }
   }
 
@@ -223,15 +223,15 @@ public class TextLayoutManager {
     }
   }
 
-  private static void buildSpannableFromFragmentsUnified(
+  private static void buildSpannableFromAttributedStringUnified(
       Context context,
-      ReadableArray fragments,
+      ReadableMap attributedString,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
 
-    final BridgeTextFragmentList textFragmentList = new BridgeTextFragmentList(fragments);
+    final BridgeAttributedString bridgeAttributedString = new BridgeAttributedString(attributedString);
 
-    TextLayoutUtils.buildSpannableFromTextFragmentList(context, textFragmentList, sb, ops);
+    TextLayoutUtils.buildSpannableFromAttributedString(context, bridgeAttributedString, sb, ops);
   }
 
   // public because both ReactTextViewManager and ReactTextInputManager need to use this
@@ -256,7 +256,7 @@ public class TextLayoutManager {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannableFromFragments(context, attributedString.getArray("fragments"), sb, ops);
+    buildSpannableFromAttributedString(context, attributedString, sb, ops);
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.

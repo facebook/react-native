@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text.fragments
+package com.facebook.react.views.text.attributedstring
 
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.views.text.TextAttributeProps
 
-/** A [TextFragment] implementation backed by a a [ReadableMap] */
-internal class BridgeTextFragment(private val fragment: ReadableMap) : TextFragment {
+/** Am [AttributedStringFragment] implementation backed by a a [ReadableMap] */
+internal class BridgeAttributedStringFragment(private val fragment: ReadableMap) : AttributedStringFragment {
   override val textAttributeProps: TextAttributeProps
     get() =
         TextAttributeProps.fromReadableMap(ReactStylesDiffMap(fragment.getMap("textAttributes")))
