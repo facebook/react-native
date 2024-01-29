@@ -555,7 +555,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
     end
 
-    def self.get_plist_paths_from(user_project)
+    def self.get_plist_files_from(user_project)
         info_plists = user_project
           .files
           .select { |p|
@@ -564,10 +564,9 @@ class ReactNativePodsUtils
         return info_plists
       end
 
-    def self.update_ats_in_plist(plistPaths, parent)
-        plistPaths.each do |plistPath|
-            fullPlistPath = File.join(parent, plistPath.path)
-            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
+    def self.update_ats_in_plist(plist_files)
+        plist_files.each do |plist_file|
+            plist = Xcodeproj::Plist.read_from_path(plist_file.real_path)
             ats_configs = {
                 "NSAllowsArbitraryLoads" => false,
                 "NSAllowsLocalNetworking" => true,
@@ -580,7 +579,7 @@ class ReactNativePodsUtils
                 plist["NSAppTransportSecurity"] ||= {}
                 plist["NSAppTransportSecurity"] = plist["NSAppTransportSecurity"].merge(ats_configs)
             end
-            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
+            Xcodeproj::Plist.write_to_path(plist, plist_file.real_path)
         end
     end
 
@@ -588,8 +587,8 @@ class ReactNativePodsUtils
         user_project = installer.aggregate_targets
                     .map{ |t| t.user_project }
                     .first
-        plistPaths = self.get_plist_paths_from(user_project)
-        self.update_ats_in_plist(plistPaths, user_project.path.parent)
+        plist_files = self.get_plist_files_from(user_project)
+        self.update_ats_in_plist(plist_files)
     end
 
     def self.react_native_pods

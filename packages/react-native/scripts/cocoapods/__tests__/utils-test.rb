@@ -1094,10 +1094,10 @@ def prepare_empty_user_project_mock
     ])
 end
 
-def prepare_user_project_mock_with_plists
+def prepare_user_project_mock_with_plists()
     return UserProjectMock.new(:files => [
-        PBXFileRefMock.new("Info.plist"),
-        PBXFileRefMock.new("Extension-Info.plist"),
+        PBXFileRefMock.new("Info.plist", "/test/Info.plist"),
+        PBXFileRefMock.new("Extension-Info.plist", "/test/Extension-Info.plist"),
     ])
 end
 
