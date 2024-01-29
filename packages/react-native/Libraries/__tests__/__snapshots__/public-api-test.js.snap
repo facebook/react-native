@@ -5982,48 +5982,6 @@ declare export default typeof NativeJSCSamplingProfiler;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Performance/QuickPerformanceLogger.js 1`] = `
-"export type AnnotationsMap = Partial<{
-  string: ?{ [string]: string, ... },
-  int: ?{ [string]: number, ... },
-  double: ?{ [string]: number, ... },
-  bool: ?{ [string]: boolean, ... },
-  string_array: ?{ [string]: $ReadOnlyArray<string>, ... },
-  int_array: ?{ [string]: $ReadOnlyArray<number>, ... },
-  double_array: ?{ [string]: $ReadOnlyArray<number>, ... },
-  bool_array: ?{ [string]: $ReadOnlyArray<boolean>, ... },
-}>;
-declare const QuickPerformanceLogger: {
-  markerStart(markerId: number, instanceKey: number, timestamp: number): void,
-  markerEnd(
-    markerId: number,
-    actionId: number,
-    instanceKey: number,
-    timestamp: number
-  ): void,
-  markerTag(markerId: number, tag: string, instanceKey: number): void,
-  markerAnnotate(
-    markerId: number,
-    annotations: AnnotationsMap,
-    instanceKey: number
-  ): void,
-  markerCancel(markerId: number, instanceKey?: number): void,
-  markerPoint(
-    markerId: number,
-    name: string,
-    instanceKey: number,
-    timestamp: number,
-    data: ?string
-  ): void,
-  markerDrop(markerId: number, instanceKey?: number): void,
-  isMarkerOn(markerId: number, instanceKey?: number): boolean,
-  markEvent(markerId: number, type: string, annotations: ?AnnotationsMap): void,
-  currentTimestamp(): number,
-};
-declare module.exports: QuickPerformanceLogger;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Performance/SamplingProfiler.js 1`] = `
 "declare const SamplingProfiler: { poke: (token: number) => void };
 declare module.exports: SamplingProfiler;
