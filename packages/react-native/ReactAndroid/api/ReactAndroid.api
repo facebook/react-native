@@ -7035,27 +7035,20 @@ public class com/facebook/react/views/text/ReactVirtualTextViewManager$$PropsSet
 
 public class com/facebook/react/views/text/TextAttributeProps : com/facebook/react/views/text/EffectiveTextAttributeProvider {
 	public static final field TA_KEY_ACCESSIBILITY_ROLE S
-	public static final field TA_KEY_ALIGNMENT S
 	public static final field TA_KEY_ALLOW_FONT_SCALING S
 	public static final field TA_KEY_BACKGROUND_COLOR S
-	public static final field TA_KEY_BEST_WRITING_DIRECTION S
 	public static final field TA_KEY_FONT_FAMILY S
 	public static final field TA_KEY_FONT_SIZE S
-	public static final field TA_KEY_FONT_SIZE_MULTIPLIER S
 	public static final field TA_KEY_FONT_STYLE S
 	public static final field TA_KEY_FONT_VARIANT S
 	public static final field TA_KEY_FONT_WEIGHT S
 	public static final field TA_KEY_FOREGROUND_COLOR S
-	public static final field TA_KEY_IS_HIGHLIGHTED S
 	public static final field TA_KEY_LAYOUT_DIRECTION S
 	public static final field TA_KEY_LETTER_SPACING S
 	public static final field TA_KEY_LINE_BREAK_STRATEGY S
 	public static final field TA_KEY_LINE_HEIGHT S
-	public static final field TA_KEY_OPACITY S
 	public static final field TA_KEY_ROLE S
-	public static final field TA_KEY_TEXT_DECORATION_COLOR S
 	public static final field TA_KEY_TEXT_DECORATION_LINE S
-	public static final field TA_KEY_TEXT_DECORATION_STYLE S
 	public static final field TA_KEY_TEXT_SHADOW_COLOR S
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DX S
 	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY S

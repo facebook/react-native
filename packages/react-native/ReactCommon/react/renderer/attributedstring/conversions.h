@@ -813,17 +813,11 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
     _textAttributes(
         "backgroundColor", toAndroidRepr(textAttributes.backgroundColor));
   }
-  if (!std::isnan(textAttributes.opacity)) {
-    _textAttributes("opacity", textAttributes.opacity);
-  }
   if (!textAttributes.fontFamily.empty()) {
     _textAttributes("fontFamily", textAttributes.fontFamily);
   }
   if (!std::isnan(textAttributes.fontSize)) {
     _textAttributes("fontSize", textAttributes.fontSize);
-  }
-  if (!std::isnan(textAttributes.fontSizeMultiplier)) {
-    _textAttributes("fontSizeMultiplier", textAttributes.fontSizeMultiplier);
   }
   if (textAttributes.fontWeight.has_value()) {
     _textAttributes("fontWeight", toString(*textAttributes.fontWeight));
@@ -846,30 +840,14 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
   if (!std::isnan(textAttributes.lineHeight)) {
     _textAttributes("lineHeight", textAttributes.lineHeight);
   }
-  if (textAttributes.alignment.has_value()) {
-    _textAttributes("alignment", toString(*textAttributes.alignment));
-  }
-  if (textAttributes.baseWritingDirection.has_value()) {
-    _textAttributes(
-        "baseWritingDirection", toString(*textAttributes.baseWritingDirection));
-  }
   if (textAttributes.lineBreakStrategy.has_value()) {
     _textAttributes(
         "lineBreakStrategyIOS", toString(*textAttributes.lineBreakStrategy));
   }
   // Decoration
-  if (textAttributes.textDecorationColor) {
-    _textAttributes(
-        "textDecorationColor",
-        toAndroidRepr(textAttributes.textDecorationColor));
-  }
   if (textAttributes.textDecorationLineType.has_value()) {
     _textAttributes(
         "textDecorationLine", toString(*textAttributes.textDecorationLineType));
-  }
-  if (textAttributes.textDecorationStyle.has_value()) {
-    _textAttributes(
-        "textDecorationStyle", toString(*textAttributes.textDecorationStyle));
   }
   // Shadow
   // textShadowOffset = textAttributes.textShadowOffset.has_value() ?
@@ -882,9 +860,6 @@ inline folly::dynamic toDynamic(const TextAttributes& textAttributes) {
         "textShadowColor", toAndroidRepr(textAttributes.textShadowColor));
   }
   // Special
-  if (textAttributes.isHighlighted.has_value()) {
-    _textAttributes("isHighlighted", *textAttributes.isHighlighted);
-  }
   if (textAttributes.layoutDirection.has_value()) {
     _textAttributes(
         "layoutDirection", toString(*textAttributes.layoutDirection));
@@ -950,26 +925,19 @@ constexpr static MapBuffer::Key FR_KEY_TEXT_ATTRIBUTES = 5;
 // constants for Text Attributes serialization
 constexpr static MapBuffer::Key TA_KEY_FOREGROUND_COLOR = 0;
 constexpr static MapBuffer::Key TA_KEY_BACKGROUND_COLOR = 1;
-constexpr static MapBuffer::Key TA_KEY_OPACITY = 2;
 constexpr static MapBuffer::Key TA_KEY_FONT_FAMILY = 3;
 constexpr static MapBuffer::Key TA_KEY_FONT_SIZE = 4;
-constexpr static MapBuffer::Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
 constexpr static MapBuffer::Key TA_KEY_FONT_WEIGHT = 6;
 constexpr static MapBuffer::Key TA_KEY_FONT_STYLE = 7;
 constexpr static MapBuffer::Key TA_KEY_FONT_VARIANT = 8;
 constexpr static MapBuffer::Key TA_KEY_ALLOW_FONT_SCALING = 9;
 constexpr static MapBuffer::Key TA_KEY_LETTER_SPACING = 10;
 constexpr static MapBuffer::Key TA_KEY_LINE_HEIGHT = 11;
-constexpr static MapBuffer::Key TA_KEY_ALIGNMENT = 12;
-constexpr static MapBuffer::Key TA_KEY_BEST_WRITING_DIRECTION = 13;
-constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_COLOR = 14;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
-constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DX = 20;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DY = 21;
-constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 22;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 23;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
@@ -1036,18 +1004,11 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
     builder.putInt(
         TA_KEY_BACKGROUND_COLOR, toAndroidRepr(textAttributes.backgroundColor));
   }
-  if (!std::isnan(textAttributes.opacity)) {
-    builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
-  }
   if (!textAttributes.fontFamily.empty()) {
     builder.putString(TA_KEY_FONT_FAMILY, textAttributes.fontFamily);
   }
   if (!std::isnan(textAttributes.fontSize)) {
     builder.putDouble(TA_KEY_FONT_SIZE, textAttributes.fontSize);
-  }
-  if (!std::isnan(textAttributes.fontSizeMultiplier)) {
-    builder.putDouble(
-        TA_KEY_FONT_SIZE_MULTIPLIER, textAttributes.fontSizeMultiplier);
   }
   if (textAttributes.fontWeight.has_value()) {
     builder.putString(TA_KEY_FONT_WEIGHT, toString(*textAttributes.fontWeight));
@@ -1069,14 +1030,6 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   if (!std::isnan(textAttributes.lineHeight)) {
     builder.putDouble(TA_KEY_LINE_HEIGHT, textAttributes.lineHeight);
   }
-  if (textAttributes.alignment.has_value()) {
-    builder.putString(TA_KEY_ALIGNMENT, toString(*textAttributes.alignment));
-  }
-  if (textAttributes.baseWritingDirection.has_value()) {
-    builder.putString(
-        TA_KEY_BEST_WRITING_DIRECTION,
-        toString(*textAttributes.baseWritingDirection));
-  }
   if (textAttributes.lineBreakStrategy.has_value()) {
     builder.putString(
         TA_KEY_LINE_BREAK_STRATEGY,
@@ -1088,20 +1041,10 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   }
 
   // Decoration
-  if (textAttributes.textDecorationColor) {
-    builder.putInt(
-        TA_KEY_TEXT_DECORATION_COLOR,
-        toAndroidRepr(textAttributes.textDecorationColor));
-  }
   if (textAttributes.textDecorationLineType.has_value()) {
     builder.putString(
         TA_KEY_TEXT_DECORATION_LINE,
         toString(*textAttributes.textDecorationLineType));
-  }
-  if (textAttributes.textDecorationStyle.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_DECORATION_STYLE,
-        toString(*textAttributes.textDecorationStyle));
   }
 
   // Shadow
@@ -1121,9 +1064,6 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
         TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
   }
   // Special
-  if (textAttributes.isHighlighted.has_value()) {
-    builder.putBool(TA_KEY_IS_HIGHLIGHTED, *textAttributes.isHighlighted);
-  }
   if (textAttributes.layoutDirection.has_value()) {
     builder.putString(
         TA_KEY_LAYOUT_DIRECTION, toString(*textAttributes.layoutDirection));

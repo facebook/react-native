@@ -36,26 +36,19 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   // constants for Text Attributes serialization
   public static final short TA_KEY_FOREGROUND_COLOR = 0;
   public static final short TA_KEY_BACKGROUND_COLOR = 1;
-  public static final short TA_KEY_OPACITY = 2;
   public static final short TA_KEY_FONT_FAMILY = 3;
   public static final short TA_KEY_FONT_SIZE = 4;
-  public static final short TA_KEY_FONT_SIZE_MULTIPLIER = 5;
   public static final short TA_KEY_FONT_WEIGHT = 6;
   public static final short TA_KEY_FONT_STYLE = 7;
   public static final short TA_KEY_FONT_VARIANT = 8;
   public static final short TA_KEY_ALLOW_FONT_SCALING = 9;
   public static final short TA_KEY_LETTER_SPACING = 10;
   public static final short TA_KEY_LINE_HEIGHT = 11;
-  public static final short TA_KEY_ALIGNMENT = 12;
-  public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
-  public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
-  public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
   public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_TEXT_SHADOW_OFFSET_DX = 20;
   public static final short TA_KEY_TEXT_SHADOW_OFFSET_DY = 21;
-  public static final short TA_KEY_IS_HIGHLIGHTED = 22;
   public static final short TA_KEY_LAYOUT_DIRECTION = 23;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
@@ -144,7 +137,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
   public static TextAttributeProps fromMapBuffer(MapBuffer props) {
     TextAttributeProps result = new TextAttributeProps();
 
-    // TODO T83483191: Review constants that are not being set!
     Iterator<MapBuffer.Entry> iterator = props.iterator();
     while (iterator.hasNext()) {
       MapBuffer.Entry entry = iterator.next();
@@ -155,15 +147,11 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
         case TA_KEY_BACKGROUND_COLOR:
           result.setBackgroundColor(entry.getIntValue());
           break;
-        case TA_KEY_OPACITY:
-          break;
         case TA_KEY_FONT_FAMILY:
           result.setFontFamily(entry.getStringValue());
           break;
         case TA_KEY_FONT_SIZE:
           result.setFontSize((float) entry.getDoubleValue());
-          break;
-        case TA_KEY_FONT_SIZE_MULTIPLIER:
           break;
         case TA_KEY_FONT_WEIGHT:
           result.setFontWeight(entry.getStringValue());
@@ -183,16 +171,8 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
         case TA_KEY_LINE_HEIGHT:
           result.setLineHeight((float) entry.getDoubleValue());
           break;
-        case TA_KEY_ALIGNMENT:
-          break;
-        case TA_KEY_BEST_WRITING_DIRECTION:
-          break;
-        case TA_KEY_TEXT_DECORATION_COLOR:
-          break;
         case TA_KEY_TEXT_DECORATION_LINE:
           result.setTextDecorationLine(entry.getStringValue());
-          break;
-        case TA_KEY_TEXT_DECORATION_STYLE:
           break;
         case TA_KEY_TEXT_SHADOW_RADIUS:
           result.setTextShadowRadius((float) entry.getDoubleValue());
@@ -205,8 +185,6 @@ public class TextAttributeProps implements EffectiveTextAttributeProvider {
           break;
         case TA_KEY_TEXT_SHADOW_OFFSET_DY:
           result.setTextShadowOffsetDy((float) entry.getDoubleValue());
-          break;
-        case TA_KEY_IS_HIGHLIGHTED:
           break;
         case TA_KEY_LAYOUT_DIRECTION:
           result.setLayoutDirection(entry.getStringValue());
