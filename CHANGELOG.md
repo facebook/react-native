@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.73.3
+
+### Added
+
+#### iOS specific
+
+- Handle TSAsExpression when looking for the codegen declaration ([02957718d7](https://github.com/facebook/react-native/commit/02957718d7ca1af815493d145697c1e848b16c17) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+### Changed
+
+- Bump CLI to 12.3.2 ([bcb229e8f8](https://github.com/facebook/react-native/commit/bcb229e8f8b70b59d3cb603d7bb912784ad25a02) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+#### Android specific
+
+- Call super.onRequestPermissionsResult in ReactActivity's onRequestPermissionsResult() ([96ed1190c6](https://github.com/facebook/react-native/commit/96ed1190c624869af96e464b009e0c0234076893) by [@LimAlbert](https://github.com/LimAlbert))
+
+#### iOS specific
+
+- Remove ATS config patch from react_native_post_install ([41c601e478](https://github.com/facebook/react-native/commit/41c601e4786b544fdd1fca138b0e0c61dbb8eba2) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### Fixed
+
+- Declare missing dependency `chalk` ([9155e2d182](https://github.com/facebook/react-native/commit/9155e2d1828e04d6144de80bb543d50936500377) by [@tido64](https://github.com/tido64))
+- TouchableBounce, TouchableHighlight and TouchableNativeFeedback dropping touches with React 18. ([e4708d661b](https://github.com/facebook/react-native/commit/e4708d661bf3d01ec857635f04a4aabf9d954a5e) by [@sammy-SC](https://github.com/sammy-SC))
+- TouchableWithoutFeedback and TouchableOpacity dropping touches with React 18. ([54166342f0](https://github.com/facebook/react-native/commit/54166342f01fc74236ba6146a4c0f604189017e4) by [@sammy-SC](https://github.com/sammy-SC))
+
+#### iOS specific
+
+- Restrict Cocoapods versions < 1.15. ([3869ae4d80](https://github.com/facebook/react-native/commit/3869ae4d80d1da8c4e3fe7449f2926c5e1575beb) by [@blakef](https://github.com/blakef))
+- Make `RCTDeviceInfo` listen to invalidate events and unregister observers while invalidating the bridge ([d46d80d2ef](https://github.com/facebook/react-native/commit/d46d80d2ef6cdc05c5a1b2429ed1df93410ae36f) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix support for SOURCEMAP_FILE path containing spaces ([63e893d23d](https://github.com/facebook/react-native/commit/63e893d23d84c9bf65bad64fc359b9686eb19b4d) by [@paulschreiber](https://github.com/paulschreiber))
+- Fix release build error due to a casing issue in hermes tarball path after download prebuilt tarball ([2e2f8a6689](https://github.com/facebook/react-native/commit/2e2f8a668907552070a2a53a47137b1449b66bbd) by [@wfern](https://github.com/wfern))
+- Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.72.10
 
 ### Added
@@ -35,7 +70,6 @@
 
 - Update ios pod post_install logic for detecting if hermes is enabled ([d6163d7f43](https://github.com/facebook/react-native/commit/d6163d7f43a753f24148450033491dfc9c5d0c36) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
-
 ### Fixed
 
 - Fix comment about adding packages in android template ([ac9b87cd57](https://github.com/facebook/react-native/commit/ac9b87cd57029a0f0876aaec8d259d9befba9838) by [@janicduplessis](https://github.com/janicduplessis))
@@ -45,7 +79,6 @@
 
 - Fix horizontal scrollview scrollTo coordinate space in RTL on oldarch ([e809e0aca7](https://github.com/facebook/react-native/commit/e809e0aca713ad12f91778b09f5297f1da866b26) by [@NickGerleman](https://github.com/NickGerleman))
 - [enhance IP address retrieval for iOS devices in Metro bundler setup](https://github.com/facebook/react-native/pull/41839/commits/6a351db158dadf944933173aa0150435c742001f) ([9f28616650](https://github.com/facebook/react-native/commit/9f28616650a61ca298c2fc710b588445b8ceb94c) by [@Morritz](https://github.com/Morritz))
-
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
@@ -63,7 +96,6 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Fix last spacer constrain logic in VirtualizedList ([3ed4bf9046](https://github.com/facebook/react-native/commit/3ed4bf9046ae125d244283c3556892345bfd77e1) by [@janicduplessis](https://github.com/janicduplessis))
 
-
 #### Android specific
 
 - Fix type for unrecognisable field mBinding ([31d8a93bf3](https://github.com/facebook/react-native/commit/31d8a93bf3199432bcd2b577738fbf49e84c207d) by [@piaskowyk](https://github.com/piaskowyk))
@@ -71,7 +103,6 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 #### iOS specific
 
 - Fix NSAppTransportSecurity being overwritten during pod install ([a0b76d90b7](https://github.com/facebook/react-native/commit/a0b76d90b73ec0d3d9e0174004bfb96a5b6f3a3e) by [@robertying](https://github.com/robertying))
-
 
 ## v0.73.0
 
