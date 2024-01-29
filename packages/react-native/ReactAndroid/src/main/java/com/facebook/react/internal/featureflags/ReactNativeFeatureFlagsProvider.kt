@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5c87368aae4df966b4b7971aadb79f2>>
+ * @generated SignedSource<<d5db40f4f25503513c4128892fd12e3f>>
  */
 
 /**
@@ -30,4 +30,6 @@ interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip fun enableMicrotasks(): Boolean
 
   @DoNotStrip fun batchRenderingUpdatesInEventLoop(): Boolean
+
+  @DoNotStrip fun enableSpannableBuildingUnification(): Boolean
 }

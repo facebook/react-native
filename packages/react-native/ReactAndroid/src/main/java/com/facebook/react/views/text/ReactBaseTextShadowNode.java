@@ -21,7 +21,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -93,7 +93,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
       boolean supportsInlineViews,
       @Nullable Map<Integer, ReactShadowNode> inlineViews,
       int start) {
-    if (ReactFeatureFlags.enableSpannableBuildingUnification) {
+    if (ReactNativeFeatureFlags.enableSpannableBuildingUnification()) {
       buildSpannedFromShadowNodeUnified(
           textShadowNode, sb, ops, parentTextAttributes, supportsInlineViews, inlineViews, start);
     } else {

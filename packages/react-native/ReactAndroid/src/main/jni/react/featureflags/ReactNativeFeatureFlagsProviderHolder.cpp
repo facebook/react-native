@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91f988022fbff7eba632f2ba46056025>>
+ * @generated SignedSource<<5f99c47d357e45524b359e6517d1f2eb>>
  */
 
 /**
@@ -48,6 +48,12 @@ bool ReactNativeFeatureFlagsProviderHolder::enableMicrotasks() {
 bool ReactNativeFeatureFlagsProviderHolder::batchRenderingUpdatesInEventLoop() {
   static const auto method =
       getJClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::enableSpannableBuildingUnification() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
   return method(javaProvider_);
 }
 
