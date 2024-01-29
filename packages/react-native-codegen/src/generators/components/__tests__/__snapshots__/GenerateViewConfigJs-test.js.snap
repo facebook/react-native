@@ -468,7 +468,7 @@ export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTInterfaceOnlyComponent',
 
   bubblingEventTypes: {
-    paperChange: {
+    topPaperChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
         bubbled: 'onChange',
@@ -477,7 +477,7 @@ export const __INTERNAL_VIEW_CONFIG = {
   },
 
   directEventTypes: {
-    paperDirectChange: {
+    topPaperDirectChange: {
       registrationName: 'onDirectChange',
     },
   },

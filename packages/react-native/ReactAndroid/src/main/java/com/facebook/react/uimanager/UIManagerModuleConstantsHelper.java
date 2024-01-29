@@ -206,7 +206,15 @@ import java.util.Set;
     }
     for (String oldKey : keysToNormalize) {
       Object value = events.get(oldKey);
-      String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      String baseKey = "";
+      if (oldKey.startsWith("on")) {
+        // Drop "on" prefix.
+        baseKey = oldKey.substring(2);
+      } else {
+        // Capitalize first letter.
+        baseKey = oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      }
+      String newKey = "top" + baseKey;
       events.put(newKey, value);
     }
   }
