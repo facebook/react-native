@@ -30,7 +30,10 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  if (!fragment.children && !fragment.props) {
+  auto& sourceParagraphShadowNode =
+      traitCast<ParagraphShadowNode const&>(sourceShadowNode);
+  if (!fragment.children && !fragment.props &&
+      sourceParagraphShadowNode.getIsLayoutClean()) {
     // This ParagraphShadowNode was cloned but did not change
     // in a way that affects its layout. Let's mark it clean
     // to stop Yoga from traversing it.
