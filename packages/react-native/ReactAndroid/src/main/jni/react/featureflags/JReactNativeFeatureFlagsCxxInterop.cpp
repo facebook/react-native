@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd4482119f1c4963aa4ad1e354f9107d>>
+ * @generated SignedSource<<c3f4d38c7536ac061a31f4120d74962a>>
  */
 
 /**
@@ -43,6 +43,16 @@ bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCXXInspectorPackagerConnection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableCXXInspectorPackagerConnection();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -72,6 +82,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
+      makeNativeMethod(
+        "inspectorEnableCXXInspectorPackagerConnection",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableCXXInspectorPackagerConnection),
+      makeNativeMethod(
+        "inspectorEnableModernCDPRegistry",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
   });
 }
 

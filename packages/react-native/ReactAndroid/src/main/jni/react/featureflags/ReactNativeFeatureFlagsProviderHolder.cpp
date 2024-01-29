@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91f988022fbff7eba632f2ba46056025>>
+ * @generated SignedSource<<e0169d9369bd97de137aceed244736ba>>
  */
 
 /**
@@ -48,6 +48,18 @@ bool ReactNativeFeatureFlagsProviderHolder::enableMicrotasks() {
 bool ReactNativeFeatureFlagsProviderHolder::batchRenderingUpdatesInEventLoop() {
   static const auto method =
       getJClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::inspectorEnableCXXInspectorPackagerConnection() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("inspectorEnableCXXInspectorPackagerConnection");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::inspectorEnableModernCDPRegistry() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("inspectorEnableModernCDPRegistry");
   return method(javaProvider_);
 }
 

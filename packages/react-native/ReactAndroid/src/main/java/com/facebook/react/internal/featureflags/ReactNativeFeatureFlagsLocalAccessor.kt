@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6254686d99a8bfd0531ed629655cf673>>
+ * @generated SignedSource<<396ff5e588c70a75231cd28ef7372509>>
  */
 
 /**
@@ -28,6 +28,8 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var inspectorEnableCXXInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -65,6 +67,26 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableCXXInspectorPackagerConnection(): Boolean {
+    var cached = inspectorEnableCXXInspectorPackagerConnectionCache
+    if (cached == null) {
+      cached = currentProvider.inspectorEnableCXXInspectorPackagerConnection()
+      accessedFeatureFlags.add("inspectorEnableCXXInspectorPackagerConnection")
+      inspectorEnableCXXInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableModernCDPRegistry(): Boolean {
+    var cached = inspectorEnableModernCDPRegistryCache
+    if (cached == null) {
+      cached = currentProvider.inspectorEnableModernCDPRegistry()
+      accessedFeatureFlags.add("inspectorEnableModernCDPRegistry")
+      inspectorEnableModernCDPRegistryCache = cached
     }
     return cached
   }

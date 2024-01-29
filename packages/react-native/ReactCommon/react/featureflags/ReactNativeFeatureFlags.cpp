@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb9bb346a84321197849de2dd8bf7dc3>>
+ * @generated SignedSource<<ae3f44dfb0e5672a8e47ce6ef32ba81e>>
  */
 
 /**
@@ -35,6 +35,14 @@ bool ReactNativeFeatureFlags::enableMicrotasks() {
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::inspectorEnableCXXInspectorPackagerConnection() {
+  return getAccessor().inspectorEnableCXXInspectorPackagerConnection();
+}
+
+bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
+  return getAccessor().inspectorEnableModernCDPRegistry();
 }
 
 void ReactNativeFeatureFlags::override(

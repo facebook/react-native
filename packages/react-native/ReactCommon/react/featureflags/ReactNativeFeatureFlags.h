@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<be203871f94ca134f75b803b7d79a5ab>>
+ * @generated SignedSource<<a265fa2a1d703ca35b280bd56b76fffc>>
  */
 
 /**
@@ -51,6 +51,16 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   */
+  static bool inspectorEnableCXXInspectorPackagerConnection();
+
+  /**
+   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   */
+  static bool inspectorEnableModernCDPRegistry();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

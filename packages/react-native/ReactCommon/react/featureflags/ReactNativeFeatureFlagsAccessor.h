@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11335a9c0d793a3a5a0dfdb01cd43efd>>
+ * @generated SignedSource<<fc7f2d01aea3bc0332120d444cbb13ab>>
  */
 
 /**
@@ -34,6 +34,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool useModernRuntimeScheduler();
   bool enableMicrotasks();
   bool batchRenderingUpdatesInEventLoop();
+  bool inspectorEnableCXXInspectorPackagerConnection();
+  bool inspectorEnableModernCDPRegistry();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -45,6 +47,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::optional<bool> useModernRuntimeScheduler_;
   std::optional<bool> enableMicrotasks_;
   std::optional<bool> batchRenderingUpdatesInEventLoop_;
+  std::optional<bool> inspectorEnableCXXInspectorPackagerConnection_;
+  std::optional<bool> inspectorEnableModernCDPRegistry_;
 };
 
 } // namespace facebook::react

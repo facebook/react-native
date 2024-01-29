@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5df50987338c0541436b11cd5433013c>>
+ * @generated SignedSource<<8701d8d90755e965553f71ccb179083d>>
  */
 
 /**
@@ -94,6 +94,40 @@ bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
   }
 
   return batchRenderingUpdatesInEventLoop_.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::inspectorEnableCXXInspectorPackagerConnection() {
+  if (!inspectorEnableCXXInspectorPackagerConnection_.has_value()) {
+    // Mark the flag as accessed.
+    static const char* flagName = "inspectorEnableCXXInspectorPackagerConnection";
+    if (std::find(
+            accessedFeatureFlags_.begin(),
+            accessedFeatureFlags_.end(),
+            flagName) == accessedFeatureFlags_.end()) {
+      accessedFeatureFlags_.push_back(flagName);
+    }
+
+    inspectorEnableCXXInspectorPackagerConnection_.emplace(currentProvider_->inspectorEnableCXXInspectorPackagerConnection());
+  }
+
+  return inspectorEnableCXXInspectorPackagerConnection_.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
+  if (!inspectorEnableModernCDPRegistry_.has_value()) {
+    // Mark the flag as accessed.
+    static const char* flagName = "inspectorEnableModernCDPRegistry";
+    if (std::find(
+            accessedFeatureFlags_.begin(),
+            accessedFeatureFlags_.end(),
+            flagName) == accessedFeatureFlags_.end()) {
+      accessedFeatureFlags_.push_back(flagName);
+    }
+
+    inspectorEnableModernCDPRegistry_.emplace(currentProvider_->inspectorEnableModernCDPRegistry());
+  }
+
+  return inspectorEnableModernCDPRegistry_.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(
