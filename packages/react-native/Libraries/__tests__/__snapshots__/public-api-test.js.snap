@@ -1488,6 +1488,8 @@ declare export default typeof NativeFileReaderModule;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] = `"UNTYPED MODULE (unsupported-syntax suppression)"`;
+
 exports[`public API should not change unintentionally Libraries/BugReporting/BugReporting.js 1`] = `
 "type ExtraData = { [key: string]: string, ... };
 type SourceCallback = () => string;
