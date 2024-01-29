@@ -1,6 +1,6 @@
 <h1 align="center">
   <a href="https://reactnative.dev/">
-    React Native Vision OS
+    React Native visionOS
   </a>
 </h1>
 
@@ -9,7 +9,7 @@
   Build spatial apps with React.
 </p>
 
-React Native Vision OS allows you to write visionOS with full support for platform SDK. This is a full fork of the main repository with changes needed to support visionOS.
+React Native visionOS allows you to write visionOS with full support for platform SDK. This is a full fork of the main repository with changes needed to support visionOS.
 
 > [!CAUTION]
 > This project is still at an early stage of development and is not ready for production use.
@@ -45,9 +45,9 @@ It's important not to cover the translucent background with a solid color, as it
 ## API Reference
 
 ### App entry point
-React native visionOS uses SwiftUI lifecycle. The app entry point is now `App.swift` file (by default it is `main.m`). This change allows us to use full capabilities of the visionOS SDK. 
+React Native visionOS uses SwiftUI lifecycle. The app entry point is now `App.swift` file (by default it is `main.m`). This change allows us to use full capabilities of the visionOS SDK. 
 
-Here is a example from the template: 
+Here is an example from the template: 
 ```swift
 // App.swift
 @main
