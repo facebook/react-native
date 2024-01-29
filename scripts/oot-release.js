@@ -9,11 +9,13 @@
 const forEachPackage = require('./monorepo/for-each-package');
 const {applyPackageVersions, publishPackage} = require('./npm-utils');
 const updateTemplatePackage = require('./update-template-package');
+const {failIfTagExists} = require('./release-utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const {cat, echo, exit} = require('shelljs');
 const yargs = require('yargs');
+const newGithubReleaseUrl = require('./new-github-release-url');
 
 const REPO_ROOT = path.resolve(__dirname, '../');
 
@@ -130,6 +132,15 @@ function releaseOOT(
     return;
   }
 
+  const gitTag = `v${newVersion}`;
+  failIfTagExists(tag, 'release');
+
+  // Create git tag
+  execSync(`git tag -a ${gitTag} -m "Release ${newVersion}"`, {
+    cwd: REPO_ROOT,
+    stdio: [process.stdin, process.stdout, process.stderr],
+  });
+
   const results = visionOSPackages
     .map(npmPackage => {
       return path.join(__dirname, '..', allPackages[npmPackage]);
@@ -153,6 +164,19 @@ function releaseOOT(
         ', ',
       )} to npm with version: ${newVersion}`,
     );
+
+    const releaseURL = newGithubReleaseUrl({
+      tag: gitTag,
+      title: `Release ${newVersion}`,
+      repo: 'react-native-visionos',
+      user: 'callstack',
+    });
+
+    echo('\n\n');
+    echo('-------------------------------------------\n');
+    echo(`Create a new release here: ${releaseURL}\n`);
+    echo('-------------------------------------------');
+
     return exit(0);
   }
 }
