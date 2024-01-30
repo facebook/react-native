@@ -3929,6 +3929,17 @@ exports[`public API should not change unintentionally Libraries/Core/checkNative
 
 exports[`public API should not change unintentionally Libraries/Core/polyfillPromise.js 1`] = `""`;
 
+exports[`public API should not change unintentionally Libraries/Core/registerCallableModule.js 1`] = `
+"type Module = { ... };
+type RegisterCallableModule = (
+  name: string,
+  moduleOrFactory: Module | ((void) => Module)
+) => void;
+declare const registerCallableModule: RegisterCallableModule;
+declare export default typeof registerCallableModule;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Core/setUpAlert.js 1`] = `""`;
 
 exports[`public API should not change unintentionally Libraries/Core/setUpBatchedBridge.js 1`] = `""`;
@@ -9164,6 +9175,7 @@ declare export default class EventEmitter<TEventToArgsMap: { ... }>
 exports[`public API should not change unintentionally index.js 1`] = `
 "export type HostComponent<T> = _HostComponentInternal<T>;
 declare module.exports: {
+  get registerCallableModule(): RegisterCallableModule,
   get AccessibilityInfo(): AccessibilityInfo,
   get ActivityIndicator(): ActivityIndicator,
   get Button(): Button,
