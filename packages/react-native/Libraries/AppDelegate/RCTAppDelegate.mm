@@ -251,7 +251,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)bridgelessEnabled
 {
-  return NO;
+  return [self newArchEnabled];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
