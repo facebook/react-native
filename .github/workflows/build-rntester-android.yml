@@ -1,0 +1,35 @@
+name: 'Build RN Tester Android'
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+
+jobs:
+  build_rn_tester_android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Set up JDK 18
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "18"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Build APK
+        run: |
+          # Ensure we let gradle install whichever NDK version it needs
+          export ANDROID_NDK=""
+          yarn
+          ./gradlew :packages:rn-tester:android:app:assembleHermesRelease -PreactNativeArchitectures=armeabi-v7a -PnewArchEnabled=${{ inputs.arch == 'NewArch' && 'true' || 'false' }}
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "${{ inputs.arch }}"
+          path: packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-armeabi-v7a-release.apk

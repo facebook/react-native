@@ -1,0 +1,27 @@
+name: Flashlight Measure
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+    secrets:
+      FLASHLIGHT_API_KEY:
+        required: true
+
+jobs:
+  flashlight_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{inputs.arch}}
+      - name: Send to Flashlight
+        env:
+          FLASHLIGHT_API_KEY: ${{ secrets.FLASHLIGHT_API_KEY }}
+        run: |
+          yarn
+          export FLASHLIGHT_API_KEY=$FLASHLIGHT_API_KEY
+          ARCH=${{inputs.arch}} ./.github/workflow-scripts/flashlight-daily-perf-check.sh

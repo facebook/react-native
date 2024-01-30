@@ -1,0 +1,28 @@
+name: Daily Flashlight performance measures
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # Runs at 1 AM (UTC) every day
+
+jobs:
+  build_rntester_release_old_arch:
+    uses: ./.github/workflows/build-rntester-android.yml
+    with:
+      arch: 'OldArch'
+  flashlight_old_arch:
+    needs: build_rntester_release_old_arch
+    uses: ./.github/workflows/flashlight-test.yml
+    with:
+      arch: 'OldArch'
+    secrets: inherit
+  build_rntester_release_new_arch:
+    uses: ./.github/workflows/build-rntester-android.yml
+    with:
+      arch: 'NewArch'
+  flashlight_new_arch:
+    needs: build_rntester_release_new_arch
+    uses: ./.github/workflows/flashlight-test.yml
+    with:
+      arch: 'NewArch'
+    secrets: inherit

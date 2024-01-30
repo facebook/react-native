@@ -1,0 +1,8 @@
+# This is a Maestro short e2e test used for Flashlight performance testing
+# Since Flashlight cloud doesn't support Appium tests yet, we use Maestro instead
+appId: com.facebook.react.uiapp
+---
+- openLink: rntester://example/perftesting/flatlistexample
+# Makes sure to fail the test if the app is crashing
+# We don't do this in the perf measures, to ensure Maestro doesn't impact performance measures
+- assertVisible: "CHARMANDER"
