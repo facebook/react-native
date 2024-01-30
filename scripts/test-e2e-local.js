@@ -17,6 +17,7 @@
  * and to make it more accessible for other devs to play around with.
  */
 
+const updateTemplatePackage = require('./releases/update-template-package');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
@@ -24,7 +25,6 @@ const {
   prepareArtifacts,
   setupCircleCIArtifacts,
 } = require('./testing-utils');
-const updateTemplatePackage = require('./update-template-package');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
 const yargs = require('yargs');

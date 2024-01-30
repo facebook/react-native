@@ -6,11 +6,10 @@
  *
  * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
-'use strict';
-
-const {applyPackageVersions} = require('./npm-utils');
+const {applyPackageVersions} = require('../npm-utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -21,12 +20,12 @@ const path = require('path');
  * `dependencyMap` is a dict of package name to its version
  * ex. {"react-native": "0.23.0", "other-dep": "nightly"}
  */
-function updateTemplatePackage(dependencyMap /*: {[string]: string} */) {
+function updateTemplatePackage(dependencyMap /*: Record<string, string> */) {
   const jsonPath = path.join(
     __dirname,
-    '../packages/react-native/template/package.json',
+    '../../packages/react-native/template/package.json',
   );
-  // $FlowIgnore[unsupported-syntax]
+  // $FlowFixMe[unsupported-syntax]
   const templatePackageJson = require(jsonPath);
 
   const updatedPackageJson = applyPackageVersions(

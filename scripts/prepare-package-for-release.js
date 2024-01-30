@@ -10,7 +10,7 @@
 'use strict';
 
 const {failIfTagExists} = require('./release-utils');
-const {isReleaseBranch, parseVersion} = require('./version-utils');
+const {isReleaseBranch, parseVersion} = require('./releases/version-utils');
 /**
  * This script prepares a release package to be pushed to npm
  * It is triggered to run on CircleCI
@@ -74,7 +74,7 @@ if (version == null) {
 
 if (
   exec(
-    `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
+    `node scripts/releases/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
   ).code
 ) {
   echo(`Failed to set React Native version to ${version}`);

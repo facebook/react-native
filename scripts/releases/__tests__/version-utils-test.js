@@ -391,31 +391,15 @@ describe('version-utils', () => {
   });
 
   describe('Validate version', () => {
-    it('Throw error if the buildType is unknown', () => {
-      function testInvalidFunction() {
-        validateBuildType('wrong_build');
-      }
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        `"Unsupported build type: wrong_build"`,
-      );
+    test('should return false if the buildType is unknown', () => {
+      expect(validateBuildType('wrong_build')).toBe(false);
     });
-    it('Does not throw if the buildType is release', () => {
-      function testValidCall() {
-        validateBuildType('release');
-      }
-      expect(testValidCall).not.toThrowError();
-    });
-    it('Does not throw if the buildType is nightly', () => {
-      function testValidCall() {
-        validateBuildType('nightly');
-      }
-      expect(testValidCall).not.toThrowError();
-    });
-    it('Does not throw if the buildType is dry-run', () => {
-      function testValidCall() {
-        validateBuildType('dry-run');
-      }
-      expect(testValidCall).not.toThrowError();
-    });
+
+    test.each(['release', 'nightly', 'dry-run'])(
+      'should return true if the buildType is %s',
+      buildType => {
+        expect(validateBuildType(buildType)).toBe(true);
+      },
+    );
   });
 });

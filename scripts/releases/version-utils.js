@@ -11,13 +11,13 @@
 const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
-type Version = {
+export type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+export type Version = {
     version: string,
     major: string,
     minor: string,
     patch: string,
-    prerelease: string
+    prerelease: ?string,
 }
 */
 /**
@@ -38,7 +38,9 @@ function parseVersion(
   versionStr /*: string */,
   buildType /*: BuildType */,
 ) /*: Version */ {
-  validateBuildType(buildType);
+  if (!validateBuildType(buildType)) {
+    throw new Error(`Unsupported build type: ${buildType}`);
+  }
 
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
@@ -56,16 +58,18 @@ function parseVersion(
   return versionObject;
 }
 
-function validateBuildType(buildType /*: BuildType */) {
+function validateBuildType(
+  buildType /*: string */,
+) /*: buildType is BuildType */ {
   const validBuildTypes = new Set([
     'release',
     'dry-run',
     'nightly',
     'prealpha',
   ]);
-  if (!validBuildTypes.has(buildType)) {
-    throw new Error(`Unsupported build type: ${buildType}`);
-  }
+
+  // $FlowFixMe[incompatible-return]
+  return validBuildTypes.has(buildType);
 }
 
 function extractMatchIfValid(versionStr /*: string */) {
@@ -138,10 +142,9 @@ function isStablePrerelease(version /*: Version */) /*: boolean */ {
     version.major === '0' &&
     version.minor !== '0' &&
     version.patch.match(/^\d+$/) &&
-    version.prerelease != null &&
-    (version.prerelease.startsWith('rc.') ||
-      version.prerelease.startsWith('rc-') ||
-      version.prerelease.match(/^(\d{8})-(\d{4})$/))
+    (version.prerelease?.startsWith('rc.') ||
+      version.prerelease?.startsWith('rc-') ||
+      version.prerelease?.match(/^(\d{8})-(\d{4})$/))
   );
 }
 
