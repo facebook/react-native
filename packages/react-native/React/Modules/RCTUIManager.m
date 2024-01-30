@@ -179,15 +179,20 @@ RCT_EXPORT_MODULE()
       _componentDataByName[componentData.name] = componentData;
     }
   }
-
+  // Preload the a11yManager as the RCTUIManager needs it to listen for notification
+  // By eagerly preloading it in the setBridge method, we make sure that the manager is
+  // properly initialized in the Main Thread and that we do not incur in any race condition
+  // or concurrency problem.
+  id<RCTBridgeModule> a11yManager = [self->_bridge moduleForName:@"AccessibilityManager"
+                                           lazilyLoadIfNecessary:YES];
+  __weak NSObject * a11yManagerWeakObject = a11yManager;
   // This dispatch_async avoids a deadlock while configuring native modules
-  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-    id a11yManager = [self->_bridge moduleForName:@"AccessibilityManager"
-                                             lazilyLoadIfNecessary:YES];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    __strong NSObject * a11yManagerStrongObject = a11yManagerWeakObject;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
-                                               object:a11yManager];
+                                               object:a11yManagerStrongObject];
   });
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
