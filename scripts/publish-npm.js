@@ -16,7 +16,7 @@ const {
   publishAndroidArtifactsToMaven,
 } = require('./release-utils');
 const removeNewArchFlags = require('./releases/remove-new-arch-flags');
-const setReactNativeVersion = require('./releases/set-rn-version');
+const {setReactNativeVersion} = require('./releases/set-rn-version');
 const path = require('path');
 const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
