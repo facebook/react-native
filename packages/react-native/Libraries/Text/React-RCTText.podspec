@@ -28,6 +28,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "**/*.{h,m,mm}"
   s.ios.exclude_files      = "**/macOS/*" # [macOS]
+  s.visionos.exclude_files = "**/macOS/*" # [visionOS]
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
   # [macOS MobileCoreServices Not available on macOS
