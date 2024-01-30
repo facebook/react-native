@@ -44,7 +44,8 @@ Pod::Spec.new do |s|
   s.source_files           = source_files
   s.exclude_files          = "tests",
                              "platform/android",
-                             "platform/cxx"
+                             "platform/cxx",
+                             "platform/windows",
   s.header_dir             = "react/renderer/graphics"
 
   if ENV['USE_FRAMEWORKS']
