@@ -96,7 +96,7 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 {
   if ((self = [super init])) {
 #if !TARGET_OS_OSX // [macOS]
-    UITraitCollection *traitCollection = RCTSharedApplication().delegate.window.traitCollection;
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
 #else // [macOS
 	NSAppearance *appearance = RCTSharedApplication().appearance;
