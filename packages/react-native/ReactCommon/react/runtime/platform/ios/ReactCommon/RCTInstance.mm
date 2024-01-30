@@ -31,6 +31,7 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
+#import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <react/runtime/BridgelessJSCallInvoker.h>
 #import <react/utils/ContextContainer.h>
@@ -81,6 +82,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+
+  jsinspector_modern::PageTarget *_parentInspectorTarget;
 }
 
 #pragma mark - Public
@@ -91,6 +94,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+           parentInspectorTarget:(jsinspector_modern::PageTarget *)parentInspectorTarget
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -106,6 +110,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
+    _parentInspectorTarget = parentInspectorTarget;
     {
       __weak __typeof(self) weakSelf = self;
       [_bridgeModuleDecorator.callableJSModules
@@ -138,7 +143,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   std::lock_guard<std::mutex> lock(_invalidationMutex);
   _valid = false;
-
+  if (self->_reactInstance) {
+    self->_reactInstance->unregisterFromInspector();
+  }
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
     /**
@@ -221,7 +228,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc);
+      jsErrorHandlingFunc,
+      _parentInspectorTarget);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();

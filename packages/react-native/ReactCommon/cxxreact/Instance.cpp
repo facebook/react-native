@@ -38,30 +38,46 @@ Instance::~Instance() {
   }
 }
 
+void Instance::unregisterFromInspector() {
+  if (inspectorTarget_) {
+    assert(parentInspectorTarget_);
+    parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
+    parentInspectorTarget_ = nullptr;
+    inspectorTarget_ = nullptr;
+  }
+}
+
 void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<ModuleRegistry> moduleRegistry) {
+    std::shared_ptr<ModuleRegistry> moduleRegistry,
+    jsinspector_modern::PageTarget* parentInspectorTarget) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-  jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
-    nativeToJsBridge_ = std::make_shared<NativeToJsBridge>(
-        jsef.get(), moduleRegistry_, jsQueue, callback_);
+  parentInspectorTarget_ = parentInspectorTarget;
+  jsQueue->runOnQueueSync(
+      [this, &jsef, jsQueue, parentInspectorTarget]() mutable {
+        nativeToJsBridge_ = std::make_shared<NativeToJsBridge>(
+            jsef.get(), moduleRegistry_, jsQueue, callback_);
 
-    nativeToJsBridge_->initializeRuntime();
+        nativeToJsBridge_->initializeRuntime();
 
-    /**
-     * After NativeToJsBridge is created, the jsi::Runtime should exist.
-     * Also, the JS message queue thread exists. So, it's safe to
-     * schedule all queued up js Calls.
-     */
-    jsCallInvoker_->setNativeToJsBridgeAndFlushCalls(nativeToJsBridge_);
+        if (parentInspectorTarget) {
+          inspectorTarget_ = &parentInspectorTarget->registerInstance(*this);
+        }
 
-    std::scoped_lock lock(m_syncMutex);
-    m_syncReady = true;
-    m_syncCV.notify_all();
-  });
+        /**
+         * After NativeToJsBridge is created, the jsi::Runtime should exist.
+         * Also, the JS message queue thread exists. So, it's safe to
+         * schedule all queued up js Calls.
+         */
+        jsCallInvoker_->setNativeToJsBridgeAndFlushCalls(nativeToJsBridge_);
+
+        std::scoped_lock lock(m_syncMutex);
+        m_syncReady = true;
+        m_syncCV.notify_all();
+      });
 
   CHECK(nativeToJsBridge_);
 }

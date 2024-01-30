@@ -14,6 +14,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/NativeToJsBridge.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -38,14 +39,15 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() {}
 };
 
-class RN_EXPORT Instance {
+class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
  public:
   ~Instance();
   void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      std::shared_ptr<ModuleRegistry> moduleRegistry);
+      std::shared_ptr<ModuleRegistry> moduleRegistry,
+      jsinspector_modern::PageTarget* inspectorTarget = nullptr);
 
   void initializeRuntime();
 
@@ -132,6 +134,12 @@ class RN_EXPORT Instance {
    */
   RuntimeExecutor getRuntimeExecutor();
 
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main (non-JS) thread.
+   */
+  void unregisterFromInspector();
+
  private:
   void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
   void loadBundle(
@@ -169,6 +177,9 @@ class RN_EXPORT Instance {
 
   std::shared_ptr<JSCallInvoker> jsCallInvoker_ =
       std::make_shared<JSCallInvoker>();
+
+  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

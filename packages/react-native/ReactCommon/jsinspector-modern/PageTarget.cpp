@@ -6,7 +6,9 @@
  */
 
 #include "PageTarget.h"
+#include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
+#include "InstanceTarget.h"
 #include "PageAgent.h"
 #include "Parsing.h"
 
@@ -72,6 +74,21 @@ class PageTargetSession {
     }
   }
 
+  /**
+   * Replace the current instance agent inside pageAgent_ with a new one
+   * connected to the new InstanceTarget.
+   * \param instance The new instance target. May be nullptr to indicate there's
+   * no current instance.
+   */
+  void setCurrentInstance(InstanceTarget* instance) {
+    if (instance) {
+      pageAgent_.setCurrentInstanceAgent(
+          instance->createAgent(frontendChannel_));
+    } else {
+      pageAgent_.setCurrentInstanceAgent(nullptr);
+    }
+  }
+
  private:
   // Owned by this instance, but shared (weakly) with the frontend channel
   std::shared_ptr<RAIIRemoteConnection> remote_;
@@ -86,6 +103,7 @@ std::unique_ptr<ILocalConnection> PageTarget::connect(
     SessionMetadata sessionMetadata) {
   auto session = std::make_shared<PageTargetSession>(
       std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
+  session->setCurrentInstance(currentInstance_ ? &*currentInstance_ : nullptr);
   sessions_.push_back(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
       [session](std::string message) { (*session)(message); });
@@ -108,11 +126,34 @@ PageTarget::~PageTarget() {
 
 PageTargetDelegate::~PageTargetDelegate() {}
 
+InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
+  assert(!currentInstance_ && "Only one instance allowed");
+  currentInstance_.emplace(delegate);
+  forEachSession(
+      [currentInstance = &*currentInstance_](PageTargetSession& session) {
+        session.setCurrentInstance(currentInstance);
+      });
+  return *currentInstance_;
+}
+
+void PageTarget::unregisterInstance(InstanceTarget& instance) {
+  assert(
+      currentInstance_.has_value() && &currentInstance_.value() == &instance &&
+      "Invalid unregistration");
+  forEachSession(
+      [](PageTargetSession& session) { session.setCurrentInstance(nullptr); });
+  currentInstance_.reset();
+}
+
 PageTargetController::PageTargetController(PageTarget& target)
     : target_(target) {}
 
 PageTargetDelegate& PageTargetController::getDelegate() {
   return target_.getDelegate();
+}
+
+bool PageTargetController::hasInstance() const {
+  return target_.hasInstance();
 }
 
 } // namespace facebook::react::jsinspector_modern

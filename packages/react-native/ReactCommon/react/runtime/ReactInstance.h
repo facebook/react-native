@@ -11,6 +11,7 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
+#include <jsinspector-modern/ReactCdp.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/runtime/BufferedRuntimeExecutor.h>
@@ -25,7 +26,7 @@ struct CallableModule {
   jsi::Function factory;
 };
 
-class ReactInstance final {
+class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
  public:
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
 
@@ -33,7 +34,8 @@ class ReactInstance final {
       std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc);
+      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
+      jsinspector_modern::PageTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -63,6 +65,12 @@ class ReactInstance final {
 
   void handleMemoryPressureJs(int pressureLevel);
 
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main (non-JS) thread.
+   */
+  void unregisterFromInspector();
+
  private:
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
@@ -74,6 +82,9 @@ class ReactInstance final {
 
   // Whether there are errors caught during bundle loading
   std::shared_ptr<bool> hasFatalJsError_;
+
+  jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

@@ -95,8 +95,6 @@ Pod::Spec.new do |s|
     end
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
-
-    ss.dependency "React-jsinspector", version
   end
 
   s.subspec "DevSupport" do |ss|
@@ -105,7 +103,6 @@ Pod::Spec.new do |s|
 
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
-    ss.dependency "React-jsinspector", version
     ss.private_header_files = "React/Inspector/RCTCxx*.h"
   end
 
@@ -135,6 +132,7 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "glog"
 
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "RCTDeprecation")
 
   if use_hermes
