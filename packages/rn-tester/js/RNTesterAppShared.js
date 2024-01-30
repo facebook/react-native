@@ -15,6 +15,7 @@ import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
+import {resolveUrl} from './utils/deeplinking/resolveUrl';
 import RNTesterList from './utils/RNTesterList';
 import {
   RNTesterNavigationActionsType,
@@ -122,62 +123,17 @@ const RNTesterApp = ({
   // Setup Linking event subscription
   const handleOpenUrlRequest = React.useCallback(
     ({url}: {url: string, ...}) => {
-      // Supported URL pattern(s):
-      // *  rntester://example/<moduleKey>
-      // *  rntester://example/<moduleKey>/<exampleKey>
-      const match =
-        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
-          url,
-        );
-      if (!match) {
-        console.warn(
-          `handleOpenUrlRequest: Received unsupported URL: '${url}'`,
-        );
+      const resolvedConfig = resolveUrl(url);
+
+      if (resolvedConfig == null) {
         return;
       }
 
-      const rawModuleKey = match[1];
-      const exampleKey = match[2];
-
-      // For tooling compatibility, allow all these variants for each module key:
-      const validModuleKeys = [
-        rawModuleKey,
-        `${rawModuleKey}Index`,
-        `${rawModuleKey}Example`,
-      ].filter(k => RNTesterList.Modules[k] != null);
-      if (validModuleKeys.length !== 1) {
-        if (validModuleKeys.length === 0) {
-          console.error(
-            `handleOpenUrlRequest: Unable to find requested module with key: '${rawModuleKey}'`,
-          );
-        } else {
-          console.error(
-            `handleOpenUrlRequest: Found multiple matching module with key: '${rawModuleKey}', unable to resolve`,
-          );
-        }
-        return;
-      }
-
-      const resolvedModuleKey = validModuleKeys[0];
-      const exampleModule = RNTesterList.Modules[resolvedModuleKey];
-
-      if (exampleKey != null) {
-        const validExampleKeys = exampleModule.examples.filter(
-          e => e.name === exampleKey,
-        );
-        if (validExampleKeys.length !== 1) {
-          if (validExampleKeys.length === 0) {
-            console.error(
-              `handleOpenUrlRequest: Unable to find requested example with key: '${exampleKey}' within module: '${resolvedModuleKey}'`,
-            );
-          } else {
-            console.error(
-              `handleOpenUrlRequest: Found multiple matching example with key: '${exampleKey}' within module: '${resolvedModuleKey}', unable to resolve`,
-            );
-          }
-          return;
-        }
-      }
+      const {
+        moduleKey: resolvedModuleKey,
+        exampleModule,
+        exampleKey,
+      } = resolvedConfig;
 
       console.log(
         `handleOpenUrlRequest: Opening module: '${resolvedModuleKey}', example: '${
