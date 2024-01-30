@@ -231,10 +231,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeMarkDirtyJNI(mNativePointer);
   }
 
-  public void dirtyAllDescendants() {
-    YogaNative.jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(mNativePointer);
-  }
-
   public boolean isDirty() {
     return YogaNative.jni_YGNodeIsDirtyJNI(mNativePointer);
   }
@@ -506,6 +502,11 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
     YogaNative.jni_YGNodeSetHasMeasureFuncJNI(mNativePointer, measureFunction != null);
+  }
+
+  @Override
+  public void setAlwaysFormsContainingBlock(boolean alwaysFormsContainingBlock) {
+    YogaNative.jni_YGNodeSetAlwaysFormsContainingBlockJNI(mNativePointer, alwaysFormsContainingBlock);
   }
 
   // Implementation Note: Why this method needs to stay final

@@ -704,7 +704,7 @@ public class ReactPropertyProcessor extends ProcessorBase {
 
     public ReactPropertyException(String message, PropertyInfo propertyInfo) {
       super(message);
-      this.element = propertyInfo.element;
+      element = propertyInfo.element;
     }
 
     public ReactPropertyException(String message, Element element) {

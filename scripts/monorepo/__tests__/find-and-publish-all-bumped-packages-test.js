@@ -7,16 +7,22 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
-
 const {PUBLISH_PACKAGES_TAG} = require('../constants');
+const {
+  findAndPublishAllBumpedPackages,
+  getTagsFromCommitMessage,
+} = require('../find-and-publish-all-bumped-packages');
 const forEachPackage = require('../for-each-package');
-const findAndPublishAllBumpedPackages = require('../find-and-publish-all-bumped-packages');
+const {spawnSync} = require('child_process');
 
 jest.mock('child_process', () => ({spawnSync: jest.fn()}));
 jest.mock('../for-each-package', () => jest.fn());
 
 describe('findAndPublishAllBumpedPackages', () => {
+  beforeEach(() => {
+    // Silence logs.
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
   it('throws an error if updated version is not 0.x.y', () => {
     const mockedPackageNewVersion = '1.0.0';
 
@@ -37,5 +43,16 @@ describe('findAndPublishAllBumpedPackages', () => {
     expect(() => findAndPublishAllBumpedPackages()).toThrow(
       `Package version expected to be 0.x.y, but received ${mockedPackageNewVersion}`,
     );
+  });
+});
+
+describe('getTagsFromCommitMessage', () => {
+  it('should parse tags out', () => {
+    const commitMsg = `This may be any commit message before it like tag a \n\n${PUBLISH_PACKAGES_TAG}&tagA&tagB&tagA\n`;
+    expect(getTagsFromCommitMessage(commitMsg)).toEqual([
+      'tagA',
+      'tagB',
+      'tagA',
+    ]);
   });
 });

@@ -9,13 +9,12 @@
 
 'use strict';
 
-const yargs = require('yargs');
-const {execSync} = require('child_process');
-const path = require('path');
-
+const {retry} = require('../circleci/retry');
 const forEachPackage = require('../monorepo/for-each-package');
 const setupVerdaccio = require('../setup-verdaccio');
-const {retry} = require('../circleci/retry');
+const {execSync} = require('child_process');
+const path = require('path');
+const yargs = require('yargs');
 
 const {argv} = yargs
   .option('r', {
@@ -44,6 +43,7 @@ const {reactNativeRootPath, templateName, templateConfigPath, directory} = argv;
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/.circleci/verdaccio.yml`;
+const NPM_REGISTRY_SERVER = 'http://localhost:4873';
 
 async function install() {
   const VERDACCIO_PID = setupVerdaccio(
@@ -67,7 +67,7 @@ async function install() {
         }
 
         execSync(
-          'npm publish --registry http://localhost:4873 --access public',
+          `npm publish --registry ${NPM_REGISTRY_SERVER} --access public`,
           {
             cwd: packageAbsolutePath,
             stdio: [process.stdin, process.stdout, process.stderr],
@@ -83,7 +83,7 @@ async function install() {
     process.stdout.write('Published every package \u2705\n');
 
     execSync(
-      `node cli.js init ${templateName} --directory ${directory} --template ${templateConfigPath} --verbose --skip-install`,
+      `node cli.js init ${templateName} --directory ${directory} --template ${templateConfigPath} --verbose --skip-install --yarn-config-options npmRegistryServer="${NPM_REGISTRY_SERVER}"`,
       {
         cwd: `${reactNativeRootPath}/packages/react-native`,
         stdio: [process.stdin, process.stdout, process.stderr],
@@ -96,6 +96,17 @@ async function install() {
       cwd: directory,
       stdio: [process.stdin, process.stdout, process.stderr],
     };
+
+    execSync(
+      `yarn config set npmRegistryServer "${NPM_REGISTRY_SERVER}"`,
+      options,
+    );
+
+    execSync(
+      'yarn config set unsafeHttpWhitelist --json \'["localhost"]\'',
+      options,
+    );
+
     const success = await retry('yarn', options, 3, 500, ['install']);
 
     if (!success) {

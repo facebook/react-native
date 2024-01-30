@@ -8,16 +8,19 @@
 package com.facebook.react;
 
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
+import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,22 +45,38 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       mShouldEnableLegacyModuleInterop
           && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
 
-  protected ReactPackageTurboModuleManagerDelegate() {
-    super();
-  }
+  private final boolean mEnableTurboModuleSyncVoidMethods =
+      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
+
+  // Lazy Props
+  private List<ReactPackage> mPackages;
+  private ReactApplicationContext mReactContext;
 
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
+    initialize(reactApplicationContext, packages);
+  }
+
+  protected ReactPackageTurboModuleManagerDelegate(
+      ReactApplicationContext reactApplicationContext,
+      List<ReactPackage> packages,
+      HybridData hybridData) {
+    super(hybridData);
+    initialize(reactApplicationContext, packages);
+  }
+
+  private void initialize(
+      ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
-      if (reactPackage instanceof TurboReactPackage) {
-        final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
+      if (reactPackage instanceof BaseReactPackage) {
+        final BaseReactPackage baseReactPackage = (BaseReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
-            moduleName -> turboPkg.getModule(moduleName, applicationContext);
+            moduleName -> baseReactPackage.getModule(moduleName, applicationContext);
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
-            moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
+            moduleProvider, baseReactPackage.getReactModuleInfoProvider().getReactModuleInfos());
         continue;
       }
 
@@ -79,11 +98,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
             moduleProvider, lazyPkg.getReactModuleInfoProvider().getReactModuleInfos());
-        continue;
-      }
-
-      if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
-        // TODO(T145105887): Output error that ReactPackage was used
         continue;
       }
 
@@ -140,6 +154,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return mShouldRouteTurboModulesThroughLegacyModuleInterop;
   }
 
+  public boolean unstable_enableSyncVoidMethods() {
+    return mEnableTurboModuleSyncVoidMethods;
+  }
+
   @Nullable
   @Override
   public TurboModule getModule(String moduleName) {
@@ -159,11 +177,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /*
-         TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         provide the module.
-        */
+        // TODO T170570617: remove this catch statement and let exception bubble up
+        FLog.e(
+            ReactConstants.TAG,
+            ex,
+            "Caught exception while constructing module '%s'. This was previously ignored but will not be caught in the future.",
+            moduleName);
       }
     }
 
@@ -219,13 +238,13 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
             resolvedModule = module;
           }
         }
-
       } catch (IllegalArgumentException ex) {
-        /*
-         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         * provide the module.
-         */
+        // TODO T170570617: remove this catch statement and let exception bubble up
+        FLog.e(
+            ReactConstants.TAG,
+            ex,
+            "Caught exception while constructing module '%s'. This was previously ignored but will not be caught in the future.",
+            moduleName);
       }
     }
 

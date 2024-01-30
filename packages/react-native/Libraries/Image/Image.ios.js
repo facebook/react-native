@@ -4,19 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {ImageStyle, ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
-import type {ImageIOS} from './Image.flow';
-import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {AbstractImageIOS, ImageIOS} from './ImageTypes.flow';
 
+import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import ImageInjection from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -27,8 +30,8 @@ import * as React from 'react';
 function getSize(
   uri: string,
   success: (width: number, height: number) => void,
-  failure?: (error: any) => void,
-) {
+  failure?: (error: mixed) => void,
+): void {
   NativeImageLoaderIOS.getSize(uri)
     .then(([width, height]) => success(width, height))
     .catch(
@@ -43,9 +46,9 @@ function getSizeWithHeaders(
   uri: string,
   headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
-  failure?: (error: any) => void,
-): any {
-  return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
+  failure?: (error: mixed) => void,
+): void {
+  NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
     .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
@@ -61,40 +64,29 @@ function prefetchWithMetadata(
   url: string,
   queryRootName: string,
   rootTag?: ?RootTag,
-): any {
+): Promise<boolean> {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
     // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
       // NOTE: RootTag type
-      // $FlowFixMe[incompatible-call] RootTag: number is incompatible with RootTag
-      rootTag ? rootTag : 0,
+      rootTag != null ? rootTag : createRootTag(0),
     );
   } else {
     return NativeImageLoaderIOS.prefetchImage(url);
   }
 }
 
-function prefetch(url: string): any {
+function prefetch(url: string): Promise<boolean> {
   return NativeImageLoaderIOS.prefetchImage(url);
 }
 
 async function queryCache(
   urls: Array<string>,
 ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
-  return await NativeImageLoaderIOS.queryCache(urls);
+  return NativeImageLoaderIOS.queryCache(urls);
 }
-
-export type ImageComponentStatics = $ReadOnly<{|
-  getSize: typeof getSize,
-  getSizeWithHeaders: typeof getSizeWithHeaders,
-  prefetch: typeof prefetch,
-  prefetchWithMetadata: typeof prefetchWithMetadata,
-  abortPrefetch?: number => void,
-  queryCache: typeof queryCache,
-  resolveAssetSource: typeof resolveAssetSource,
-|}>;
 
 /**
  * A React component for displaying different types of images,
@@ -103,9 +95,7 @@ export type ImageComponentStatics = $ReadOnly<{|
  *
  * See https://reactnative.dev/docs/image
  */
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const BaseImage = (props: ImagePropsType, forwardedRef) => {
+let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
   const source = getImageSourcesFromImageProps(props) || {
     uri: undefined,
     width: undefined,
@@ -113,16 +103,23 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
 
   let sources;
-  let style: ImageStyleProp;
+  let style: ImageStyle;
+
   if (Array.isArray(source)) {
-    // $FlowFixMe[underconstrained-implicit-instantiation]
-    style = flattenStyle([styles.base, props.style]) || {};
+    style =
+      flattenStyle<ImageStyleProp>([styles.base, props.style]) ||
+      ({}: ImageStyle);
     sources = source;
   } else {
-    // $FlowFixMe[incompatible-type]
-    const {width = props.width, height = props.height, uri} = source;
-    // $FlowFixMe[underconstrained-implicit-instantiation]
-    style = flattenStyle([{width, height}, styles.base, props.style]) || {};
+    const {uri} = source;
+    const width = source.width ?? props.width;
+    const height = source.height ?? props.height;
+    style =
+      flattenStyle<ImageStyleProp>([
+        {width, height},
+        styles.base,
+        props.style,
+      ]) || ({}: ImageStyle);
     sources = [source];
 
     if (uri === '') {
@@ -131,16 +128,12 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   }
 
   const objectFit =
-    // $FlowFixMe[prop-missing]
-    style && style.objectFit
-      ? // $FlowFixMe[incompatible-call]
-        convertObjectFitToResizeMode(style.objectFit)
+    style.objectFit != null
+      ? convertObjectFitToResizeMode(style.objectFit)
       : null;
   const resizeMode =
-    // $FlowFixMe[prop-missing]
-    objectFit || props.resizeMode || (style && style.resizeMode) || 'cover';
-  // $FlowFixMe[prop-missing]
-  const tintColor = props.tintColor || style.tintColor;
+    objectFit || props.resizeMode || style.resizeMode || 'cover';
+  const tintColor = props.tintColor ?? style.tintColor;
 
   if (props.children != null) {
     throw new Error(
@@ -168,6 +161,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
+
   return (
     <ImageAnalyticsTagContext.Consumer>
       {analyticTag => {
@@ -177,9 +172,8 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
-            ref={forwardedRef}
+            ref={actualRef}
             style={style}
-            // $FlowFixMe[incompatible-type]
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
@@ -189,17 +183,15 @@ const BaseImage = (props: ImagePropsType, forwardedRef) => {
       }}
     </ImageAnalyticsTagContext.Consumer>
   );
-};
+});
 
-const ImageForwardRef = React.forwardRef<
-  ImagePropsType,
-  React.ElementRef<typeof ImageViewNativeComponent>,
->(BaseImage);
-
-let Image = ImageForwardRef;
-if (ImageInjection.unstable_createImageComponent != null) {
-  Image = ImageInjection.unstable_createImageComponent(Image);
+const imageComponentDecorator = unstable_getImageComponentDecorator();
+if (imageComponentDecorator != null) {
+  BaseImage = imageComponentDecorator(BaseImage);
 }
+
+// $FlowExpectedError[incompatible-type] Eventually we need to move these functions from statics of the component to exports in the module.
+const Image: ImageIOS = BaseImage;
 
 Image.displayName = 'Image';
 
@@ -208,9 +200,7 @@ Image.displayName = 'Image';
  *
  * See https://reactnative.dev/docs/image#getsize
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.getSize = getSize;
 
 /**
@@ -219,9 +209,7 @@ Image.getSize = getSize;
  *
  * See https://reactnative.dev/docs/image#getsizewithheaders
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.getSizeWithHeaders = getSizeWithHeaders;
 
 /**
@@ -230,9 +218,7 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  *
  * See https://reactnative.dev/docs/image#prefetch
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.prefetch = prefetch;
 
 /**
@@ -241,9 +227,7 @@ Image.prefetch = prefetch;
  *
  * See https://reactnative.dev/docs/image#prefetch
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
@@ -251,9 +235,7 @@ Image.prefetchWithMetadata = prefetchWithMetadata;
  *
  *  See https://reactnative.dev/docs/image#querycache
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.queryCache = queryCache;
 
 /**
@@ -261,16 +243,8 @@ Image.queryCache = queryCache;
  *
  * See https://reactnative.dev/docs/image#resolveassetsource
  */
-/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
- * suppresses an error found when Flow v0.89 was deployed. To see the error,
- * delete this comment and run Flow. */
+// $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {
@@ -278,4 +252,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): ImageIOS);
+module.exports = Image;

@@ -13,8 +13,7 @@
 import type {DangerouslyImpreciseStyleProp} from './StyleSheet';
 import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-// $FlowFixMe[unsupported-variance-annotation]
-function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
+function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]
 ): ?____FlattenStyleProp_Internal<TStyleProp> {
@@ -23,6 +22,7 @@ function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
   }
 
   if (!Array.isArray(style)) {
+    // $FlowFixMe[incompatible-return]
     return style;
   }
 

@@ -31,6 +31,7 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/rn-tester/e2e',
   ],
@@ -55,7 +56,10 @@ module.exports = {
     'denodeify',
   ],
   testEnvironment: 'node',
-  collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
+  collectCoverageFrom: [
+    'packages/react-native/Libraries/**/*.js',
+    'packages/react-native/src/**/*.js',
+  ],
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',

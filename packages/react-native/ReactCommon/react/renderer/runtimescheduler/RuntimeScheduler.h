@@ -10,18 +10,43 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
-#include <atomic>
-#include <memory>
-#include <queue>
 
 namespace facebook::react {
 
-class RuntimeScheduler final {
+using RuntimeSchedulerRenderingUpdate = std::function<void()>;
+
+// This is a temporary abstract class for RuntimeScheduler forks to implement
+// (and use them interchangeably).
+class RuntimeSchedulerBase {
  public:
-  RuntimeScheduler(
+  virtual ~RuntimeSchedulerBase() = default;
+  virtual void scheduleWork(RawCallback&& callback) noexcept = 0;
+  virtual void executeNowOnTheSameThread(RawCallback&& callback) = 0;
+  virtual std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function&& callback) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      RawCallback&& callback) noexcept = 0;
+  virtual void cancelTask(Task& task) noexcept = 0;
+  virtual bool getShouldYield() const noexcept = 0;
+  virtual bool getIsSynchronous() const noexcept = 0;
+  virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
+  virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
+  virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
+  virtual void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
+};
+
+// This is a proxy for RuntimeScheduler implementation, which will be selected
+// at runtime based on a feature flag.
+class RuntimeScheduler final : RuntimeSchedulerBase {
+ public:
+  explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
+
   /*
    * Not copyable.
    */
@@ -34,7 +59,7 @@ class RuntimeScheduler final {
   RuntimeScheduler(RuntimeScheduler&&) = delete;
   RuntimeScheduler& operator=(RuntimeScheduler&&) = delete;
 
-  void scheduleWork(RawCallback callback) const;
+  void scheduleWork(RawCallback&& callback) noexcept override;
 
   /*
    * Grants access to the runtime synchronously on the caller's thread.
@@ -43,7 +68,7 @@ class RuntimeScheduler final {
    * by dispatching a synchronous event via event emitter in your native
    * component.
    */
-  void executeNowOnTheSameThread(RawCallback callback);
+  void executeNowOnTheSameThread(RawCallback&& callback) override;
 
   /*
    * Adds a JavaScript callback to priority queue with given priority.
@@ -53,11 +78,11 @@ class RuntimeScheduler final {
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      jsi::Function callback);
+      jsi::Function&& callback) noexcept override;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
-      RawCallback callback);
+      RawCallback&& callback) noexcept override;
 
   /*
    * Cancelled task will never be executed.
@@ -65,7 +90,7 @@ class RuntimeScheduler final {
    * Operates on JSI object.
    * Thread synchronization must be enforced externally.
    */
-  void cancelTask(Task& task) noexcept;
+  void cancelTask(Task& task) noexcept override;
 
   /*
    * Return value indicates if host platform has a pending access to the
@@ -73,7 +98,7 @@ class RuntimeScheduler final {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept;
+  bool getShouldYield() const noexcept override;
 
   /*
    * Return value informs if the current task is executed inside synchronous
@@ -81,14 +106,14 @@ class RuntimeScheduler final {
    *
    * Can be called from any thread.
    */
-  bool getIsSynchronous() const noexcept;
+  bool getIsSynchronous() const noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
    *
    * Thread synchronization must be enforced externally.
    */
-  SchedulerPriority getCurrentPriorityLevel() const noexcept;
+  SchedulerPriority getCurrentPriorityLevel() const noexcept override;
 
   /*
    * Returns current monotonic time. This time is not related to wall clock
@@ -96,7 +121,7 @@ class RuntimeScheduler final {
    *
    * Thread synchronization must be enforced externally.
    */
-  RuntimeSchedulerTimePoint now() const noexcept;
+  RuntimeSchedulerTimePoint now() const noexcept override;
 
   /*
    * Expired task is a task that should have been already executed. Designed to
@@ -106,54 +131,15 @@ class RuntimeScheduler final {
    *
    * Thread synchronization must be enforced externally.
    */
-  void callExpiredTasks(jsi::Runtime& runtime);
+  void callExpiredTasks(jsi::Runtime& runtime) override;
+
+  void scheduleRenderingUpdate(
+      RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
  private:
-  mutable std::priority_queue<
-      std::shared_ptr<Task>,
-      std::vector<std::shared_ptr<Task>>,
-      TaskPriorityComparer>
-      taskQueue_;
-
-  const RuntimeExecutor runtimeExecutor_;
-  mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
-
-  /*
-   * Counter indicating how many access to the runtime have been requested.
-   */
-  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
-
-  mutable std::atomic_bool isSynchronous_{false};
-
-  void startWorkLoop(jsi::Runtime& runtime) const;
-
-  /*
-   * Schedules a work loop unless it has been already scheduled
-   * This is to avoid unnecessary calls to `runtimeExecutor`.
-   */
-  void scheduleWorkLoopIfNecessary() const;
-
-  void executeTask(
-      jsi::Runtime& runtime,
-      std::shared_ptr<Task> task,
-      bool didUserCallbackTimeout) const;
-
-  /*
-   * Returns a time point representing the current point in time. May be called
-   * from multiple threads.
-   */
-  std::function<RuntimeSchedulerTimePoint()> now_;
-
-  /*
-   * Flag indicating if callback on JavaScript queue has been
-   * scheduled.
-   */
-  mutable std::atomic_bool isWorkLoopScheduled_{false};
-
-  /*
-   * This flag is set while performing work, to prevent re-entrancy.
-   */
-  mutable std::atomic_bool isPerformingWork_{false};
+  // Actual implementation, stored as a unique pointer to simplify memory
+  // management.
+  std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
 };
 
 } // namespace facebook::react

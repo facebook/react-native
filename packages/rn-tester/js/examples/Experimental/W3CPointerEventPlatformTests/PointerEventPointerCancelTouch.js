@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
@@ -15,7 +15,7 @@ import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {check_PointerEvent} from './PointerEventSupport';
 import * as React from 'react';
 import {useCallback, useRef} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
 // adapted from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_pointercancel_touch.html
 function PointerEventPointerCancelTouchTestCase(

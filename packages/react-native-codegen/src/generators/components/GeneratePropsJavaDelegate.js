@@ -10,19 +10,19 @@
 
 'use strict';
 import type {CommandParamTypeAnnotation} from '../../CodegenSchema';
-
 import type {
-  NamedShape,
   CommandTypeAnnotation,
   ComponentShape,
+  NamedShape,
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+
 const {
-  getImports,
-  toSafeJavaString,
-  getInterfaceJavaClassName,
   getDelegateJavaClassName,
+  getImports,
+  getInterfaceJavaClassName,
+  toSafeJavaString,
 } = require('./JavaHelpers');
 
 // File path -> contents
@@ -202,6 +202,8 @@ function getCommandArgJavaType(
       return `args.getInt(${index})`;
     case 'StringTypeAnnotation':
       return `args.getString(${index})`;
+    case 'ArrayTypeAnnotation':
+      return `args.getArray(${index})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(`Receieved invalid type: ${typeAnnotation.type}`);
@@ -295,6 +297,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

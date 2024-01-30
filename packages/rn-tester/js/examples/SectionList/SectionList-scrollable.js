@@ -10,14 +10,10 @@
 
 'use strict';
 import type {Item} from '../../components/ListExampleShared';
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const {
-  HeaderComponent,
   FooterComponent,
+  HeaderComponent,
   ItemComponent,
   PlainInput,
   SeparatorComponent,
@@ -27,15 +23,18 @@ const {
   renderSmallSwitchOption,
   renderStackedItem,
 } = require('../../components/ListExampleShared');
+const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 const {
   Alert,
   Animated,
   Button,
+  SectionList,
   StyleSheet,
   Text,
   View,
-  SectionList,
 } = require('react-native');
+const infoLog = require('react-native/Libraries/Utilities/infoLog');
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -156,6 +155,16 @@ const onScrollToIndexFailed = (info: {
    * }
    */
 };
+
+// $FlowFixMe[missing-local-annot]
+const ItemSeparatorComponent = info => (
+  <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
+);
+
+// $FlowFixMe[missing-local-annot]
+const SectionSeparatorComponent = info => (
+  <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
+);
 
 export function SectionList_scrollable(Props: {
   ...
@@ -281,14 +290,8 @@ export function SectionList_scrollable(Props: {
         ref={ref}
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
-        // $FlowFixMe[missing-local-annot]
-        SectionSeparatorComponent={info => (
-          <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
-        )}
-        // $FlowFixMe[missing-local-annot]
-        ItemSeparatorComponent={info => (
-          <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
-        )}
+        SectionSeparatorComponent={SectionSeparatorComponent}
+        ItemSeparatorComponent={ItemSeparatorComponent}
         accessibilityRole="list"
         debug={debug}
         inverted={inverted}

@@ -91,7 +91,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
         moduleId, methodId, std::move(args));
   }
 
-  void recordTurboModuleAsyncMethodCall() {
+  void recordTurboModuleAsyncMethodCall() noexcept {
     m_batchHadNativeModuleOrTurboModuleCalls = true;
   }
 
@@ -288,7 +288,7 @@ void NativeToJsBridge::destroy() {
 }
 
 void NativeToJsBridge::runOnExecutorQueue(
-    std::function<void(JSExecutor*)> task) {
+    std::function<void(JSExecutor*)>&& task) noexcept {
   if (*m_destroyed) {
     return;
   }
@@ -326,7 +326,7 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
     void invokeAsync(
         const std::string& methodName,
-        std::function<void()>&& func) override {
+        std::function<void()>&& func) noexcept override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }

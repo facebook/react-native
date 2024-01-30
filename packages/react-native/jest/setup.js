@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/js-polyfills/Object.es8');
 jest.requireActual('@react-native/js-polyfills/error-guard');
 
 Object.defineProperties(global, {
@@ -26,6 +25,12 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value: id => clearTimeout(id),
+    writable: true,
+  },
+  nativeFabricUIManager: {
+    configurable: true,
+    enumerable: true,
+    value: {},
     writable: true,
   },
   performance: {
@@ -88,8 +93,6 @@ jest
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
-    removeSubviewsFromContainerWithID: jest.fn(),
-    replaceExistingNonRootView: jest.fn(),
     setChildren: jest.fn(),
     updateView: jest.fn(),
     AndroidDrawerLayout: {

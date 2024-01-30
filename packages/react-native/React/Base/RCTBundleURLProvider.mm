@@ -249,23 +249,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
-{
-  return [self jsBundleURLForBundleRoot:bundleRoot
-                           packagerHost:packagerHost
-                         packagerScheme:nil
-                              enableDev:enableDev
-                     enableMinification:enableMinification
-                        inlineSourceMap:NO
-                            modulesOnly:NO
-                              runModule:YES];
-}
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
                     inlineSourceMap:(BOOL)inlineSourceMap
-
 {
   return [self jsBundleURLForBundleRoot:bundleRoot
                            packagerHost:packagerHost
@@ -275,24 +259,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                         inlineSourceMap:inlineSourceMap
                             modulesOnly:NO
                               runModule:YES];
-}
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                     packagerScheme:(NSString *)scheme
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule
-{
-  return [self jsBundleURLForBundleRoot:bundleRoot
-                           packagerHost:packagerHost
-                         packagerScheme:nil
-                              enableDev:enableDev
-                     enableMinification:enableMinification
-                        inlineSourceMap:NO
-                            modulesOnly:modulesOnly
-                              runModule:runModule];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot

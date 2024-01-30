@@ -287,12 +287,6 @@ const Text: React.AbstractComponent<
 Text.displayName = 'Text';
 
 /**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Text.propTypes = require('deprecated-react-native-prop-types').TextPropTypes;
-
-/**
  * Returns false until the first time `newValue` is true, after which this will
  * always return true. This is necessary to lazily initialize `Pressability` so
  * we do not eagerly create one for every pressable `Text` component.

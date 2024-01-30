@@ -9,8 +9,8 @@
 
 'use strict';
 
-const yargs = require('yargs');
 const executor = require('./codegen/generate-specs-cli-executor');
+const yargs = require('yargs');
 
 const argv = yargs
   .option('p', {

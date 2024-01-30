@@ -11,11 +11,10 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.NativeModule
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSEngineInstance
+import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.hermes.HermesInstance
 
@@ -29,7 +28,7 @@ import com.facebook.react.runtime.hermes.HermesInstance
  * @param jsBundleLoader Bundle loader to use when setting up JS environment. <p>Example:
  *   [JSBundleLoader.createFileLoader(application, bundleFile)]
  * @param reactPackages list of reactPackages to expose Native Modules and View Components to JS
- * @param jsEngineInstance Object that holds a native reference to the javascript engine
+ * @param jsRuntimeFactory Object that holds a native reference to the JS Runtime factory
  * @param bindingsInstaller Object that holds a native C++ references that allow host applications
  *   to install C++ objects into jsi::Runtime during the initialization of React Native
  * @param reactNativeConfig ReactNative Configuration that allows to customize the behavior of
@@ -43,14 +42,14 @@ class DefaultReactHostDelegate(
     override val jsMainModulePath: String,
     override val jsBundleLoader: JSBundleLoader,
     override val reactPackages: List<ReactPackage> = emptyList(),
-    override val jsEngineInstance: JSEngineInstance = HermesInstance(),
+    override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
     private val exceptionHandler: (Exception) -> Unit = {},
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 
-  override fun getReactNativeConfig(moduleProvider: (String) -> NativeModule?) = reactNativeConfig
+  override fun getReactNativeConfig() = reactNativeConfig
 
   override fun handleInstanceException(error: Exception) = exceptionHandler(error)
 }

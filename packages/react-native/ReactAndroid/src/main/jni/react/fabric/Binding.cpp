@@ -219,21 +219,6 @@ void Binding::startSurfaceWithConstraints(
   mountingManager->onSurfaceStart(surfaceId);
 }
 
-void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
-  SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "Binding::renderTemplateToSurface: scheduler disappeared";
-    return;
-  }
-
-  auto env = jni::Environment::current();
-  const char* nativeString = env->GetStringUTFChars(uiTemplate, JNI_FALSE);
-  scheduler->renderTemplateToSurface(surfaceId, nativeString);
-  env->ReleaseStringUTFChars(uiTemplate, nativeString);
-}
-
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
 
@@ -429,11 +414,6 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
-  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
-      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
-  CoreFeatures::enableCleanParagraphYogaNode =
-      getFeatureFlagValue("enableCleanParagraphYogaNode");
   CoreFeatures::enableDefaultAsyncBatchedPriority =
       getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
   CoreFeatures::enableClonelessStateProgression =
@@ -581,8 +561,6 @@ void Binding::registerNatives() {
           "getInspectorDataForInstance", Binding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-      makeNativeMethod(
-          "renderTemplateToSurface", Binding::renderTemplateToSurface),
       makeNativeMethod("stopSurface", Binding::stopSurface),
       makeNativeMethod("setConstraints", Binding::setConstraints),
       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),

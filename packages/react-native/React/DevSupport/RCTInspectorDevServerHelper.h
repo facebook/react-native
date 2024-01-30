@@ -15,7 +15,7 @@
 
 @interface RCTInspectorDevServerHelper : NSObject
 
-+ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL;
++ (id<RCTInspectorPackagerConnectionProtocol>)connectWithBundleURL:(NSURL *)bundleURL;
 + (void)disableDebugger;
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage;
 @end

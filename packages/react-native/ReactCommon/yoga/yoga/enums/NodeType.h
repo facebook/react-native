@@ -21,20 +21,15 @@ enum class NodeType : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<NodeType>() {
+constexpr int32_t ordinalCount<NodeType>() {
   return 2;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<NodeType>() {
-  return 1;
-} 
-
-constexpr inline NodeType scopedEnum(YGNodeType unscoped) {
+constexpr NodeType scopedEnum(YGNodeType unscoped) {
   return static_cast<NodeType>(unscoped);
 }
 
-constexpr inline YGNodeType unscopedEnum(NodeType scoped) {
+constexpr YGNodeType unscopedEnum(NodeType scoped) {
   return static_cast<YGNodeType>(scoped);
 }
 

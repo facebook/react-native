@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef WITH_INSPECTOR
-
 #include <jsinspector-modern/InspectorInterfaces.h>
 
 #include <fbjni/fbjni.h>
@@ -77,5 +75,3 @@ class JInspector : public jni::HybridClass<JInspector> {
 };
 
 } // namespace facebook::react
-
-#endif

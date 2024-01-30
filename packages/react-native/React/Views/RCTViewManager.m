@@ -213,7 +213,7 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 {
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale =
-      view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
+      view.layer.shouldRasterize ? view.traitCollection.displayScale : defaultView.layer.rasterizationScale;
 }
 
 RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)

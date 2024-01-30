@@ -11,8 +11,8 @@
 
 import type {Command} from '@react-native-community/cli-types';
 
-import path from 'path';
 import buildBundle from './buildBundle';
+import path from 'path';
 
 export type {BundleCommandArgs} from './buildBundle';
 
@@ -113,6 +113,13 @@ const bundleCommand: Command = {
       name: '--config <string>',
       description: 'Path to the CLI configuration file',
       parse: (val: string): string => path.resolve(val),
+    },
+    {
+      name: '--resolver-option <string...>',
+      description:
+        'Custom resolver options of the form key=value. URL-encoded. May be specified multiple times.',
+      parse: (val: string, previous: Array<string> = []): Array<string> =>
+        previous.concat([val]),
     },
   ],
 };

@@ -7,19 +7,19 @@
 
 #pragma once
 
+#include <yoga/algorithm/SizingMode.h>
 #include <yoga/config/Config.h>
-#include <yoga/enums/MeasureMode.h>
 
 namespace facebook::yoga {
 
 bool canUseCachedMeasurement(
-    MeasureMode widthMode,
+    SizingMode widthMode,
     float availableWidth,
-    MeasureMode heightMode,
+    SizingMode heightMode,
     float availableHeight,
-    MeasureMode lastWidthMode,
+    SizingMode lastWidthMode,
     float lastAvailableWidth,
-    MeasureMode lastHeightMode,
+    SizingMode lastHeightMode,
     float lastAvailableHeight,
     float lastComputedWidth,
     float lastComputedHeight,

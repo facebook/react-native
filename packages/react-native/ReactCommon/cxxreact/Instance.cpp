@@ -263,7 +263,8 @@ void Instance::JSCallInvoker::invokeSync(std::function<void()>&& work) {
       "Synchronous native -> JS calls are currently not supported.");
 }
 
-void Instance::JSCallInvoker::invokeAsync(std::function<void()>&& work) {
+void Instance::JSCallInvoker::invokeAsync(
+    std::function<void()>&& work) noexcept {
   std::scoped_lock guard(m_mutex);
 
   /**
@@ -288,7 +289,8 @@ void Instance::JSCallInvoker::invokeAsync(std::function<void()>&& work) {
   scheduleAsync(std::move(work));
 }
 
-void Instance::JSCallInvoker::scheduleAsync(std::function<void()>&& work) {
+void Instance::JSCallInvoker::scheduleAsync(
+    std::function<void()>&& work) noexcept {
   if (auto strongNativeToJsBridge = m_nativeToJsBridge.lock()) {
     strongNativeToJsBridge->runOnExecutorQueue(
         [work = std::move(work)](JSExecutor* executor) {

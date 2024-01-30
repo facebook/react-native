@@ -8,9 +8,10 @@
  * @format
  */
 
-const wdio = require('webdriverio');
 import capabilities from './e2e-config.js';
-import {beforeEach, afterEach, jest} from '@jest/globals';
+import {afterEach, beforeEach, jest} from '@jest/globals';
+
+const wdio = require('webdriverio');
 jest.retryTimes(3);
 
 let driver: any;

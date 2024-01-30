@@ -15,14 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
 
-public interface UIManager extends JSIModule, PerformanceCounter {
+public interface UIManager extends PerformanceCounter {
 
   /** Registers a new root view. @Deprecated call startSurface instead */
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  <T extends View> int addRootView(
-      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+  <T extends View> int addRootView(final T rootView, WritableMap initialProps);
 
   /** Registers a new root view with width and height. */
   @AnyThread
@@ -152,4 +151,10 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @Deprecated
   @Nullable
   String resolveCustomDirectEventName(@Nullable String eventName);
+
+  /** This method is called after {@link ReactApplicationContext} has been created. */
+  void initialize();
+
+  /** Called before React Native instance is destroyed. */
+  void invalidate();
 }

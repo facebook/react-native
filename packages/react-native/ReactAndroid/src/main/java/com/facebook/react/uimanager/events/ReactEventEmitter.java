@@ -19,16 +19,15 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 
-public class ReactEventEmitter implements RCTModernEventEmitter {
+class ReactEventEmitter implements RCTModernEventEmitter {
 
   private static final String TAG = "ReactEventEmitter";
 
-  @Nullable
-  private RCTModernEventEmitter mFabricEventEmitter =
-      null; /* Corresponds to a Fabric EventEmitter */
+  /** Corresponds to {@link com.facebook.react.fabric.events.FabricEventEmitter} */
+  @Nullable private RCTModernEventEmitter mFabricEventEmitter = null;
 
-  @Nullable
-  private RCTEventEmitter mRCTEventEmitter = null; /* Corresponds to a Non-Fabric EventEmitter */
+  /** Corresponds to (Paper) EventEmitter, which is a JS interface */
+  @Nullable private RCTEventEmitter mDefaultEventEmitter = null;
 
   private final ReactApplicationContext mReactContext;
 
@@ -43,12 +42,12 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
 
   public void register(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
     assert uiManagerType == UIManagerType.DEFAULT;
-    mRCTEventEmitter = eventEmitter;
+    mDefaultEventEmitter = eventEmitter;
   }
 
   public void unregister(@UIManagerType int uiManagerType) {
     if (uiManagerType == UIManagerType.DEFAULT) {
-      mRCTEventEmitter = null;
+      mDefaultEventEmitter = null;
     } else {
       mFabricEventEmitter = null;
     }
@@ -78,7 +77,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
     int reactTag = touches.getMap(0).getInt(TARGET_KEY);
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(reactTag);
     if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
-      mRCTEventEmitter.receiveTouches(eventName, touches, changedIndices);
+      mDefaultEventEmitter.receiveTouches(eventName, touches, changedIndices);
     }
   }
 
@@ -88,9 +87,9 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
     @UIManagerType
     int uiManagerType = ViewUtil.getUIManagerType(event.getViewTag(), event.getSurfaceId());
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
-      mFabricEventEmitter.receiveTouches(event);
+      TouchesHelper.sendTouchEvent(mFabricEventEmitter, event);
     } else if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
-      TouchesHelper.sendTouchesLegacy(mRCTEventEmitter, event);
+      TouchesHelper.sendTouchesLegacy(mDefaultEventEmitter, event);
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -111,9 +110,9 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
    */
   @Nullable
   private RCTEventEmitter getDefaultEventEmitter() {
-    if (mRCTEventEmitter == null) {
+    if (mDefaultEventEmitter == null) {
       if (mReactContext.hasActiveReactInstance()) {
-        mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+        mDefaultEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
       } else {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
@@ -121,7 +120,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
                 "Cannot get RCTEventEmitter from Context, no active Catalyst instance!"));
       }
     }
-    return mRCTEventEmitter;
+    return mDefaultEventEmitter;
   }
 
   @Override
@@ -144,7 +143,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
           event,
           category);
     } else if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
-      mRCTEventEmitter.receiveEvent(targetReactTag, eventName, event);
+      mDefaultEventEmitter.receiveEvent(targetReactTag, eventName, event);
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,

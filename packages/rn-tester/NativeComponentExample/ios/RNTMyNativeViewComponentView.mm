@@ -6,6 +6,7 @@
  */
 
 #import "RNTMyNativeViewComponentView.h"
+#import "UIView+ColorOverlays.h"
 
 #import <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 #import <react/renderer/components/AppSpecs/EventEmitters.h>
@@ -49,19 +50,6 @@ using namespace facebook::react;
   }
 
   return self;
-}
-
-- (UIColor *)UIColorFromHexString:(const std::string)hexString
-{
-  unsigned rgbValue = 0;
-  NSString *colorString = [NSString stringWithCString:hexString.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSScanner *scanner = [NSScanner scannerWithString:colorString];
-  [scanner setScanLocation:1]; // bypass '#' character
-  [scanner scanHexInt:&rgbValue];
-  return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                         green:((rgbValue & 0xFF00) >> 8) / 255.0
-                          blue:(rgbValue & 0xFF) / 255.0
-                         alpha:1.0];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -123,9 +111,19 @@ using namespace facebook::react;
 
 - (void)callNativeMethodToChangeBackgroundColor:(NSString *)colorString
 {
-  UIColor *color = [self UIColorFromHexString:std::string([colorString UTF8String])];
-  _view.backgroundColor = color;
+  [_view setBackgroundColorWithColorString:colorString];
 }
+
+- (void)callNativeMethodToAddOverlays:(const NSArray *)overlayColors
+{
+  [_view addColorOverlays:overlayColors];
+}
+
+- (void)callNativeMethodToRemoveOverlays
+{
+  [_view removeOverlays];
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RNTMyNativeViewCls(void)

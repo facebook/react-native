@@ -8,53 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export type RawPerformanceEntryType = number;
-
-export type RawPerformanceEntry = {|
-  name: string,
-  entryType: RawPerformanceEntryType,
-  startTime: number,
-  duration: number,
-  // For "event" entries only:
-  processingStart?: number,
-  processingEnd?: number,
-  interactionId?: number,
-|};
-
-export type GetPendingEntriesResult = {|
-  entries: $ReadOnlyArray<RawPerformanceEntry>,
-  droppedEntriesCount: number,
-|};
-
-export interface Spec extends TurboModule {
-  +startReporting: (entryType: RawPerformanceEntryType) => void;
-  +stopReporting: (entryType: RawPerformanceEntryType) => void;
-  +setIsBuffered: (
-    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
-    isBuffered: boolean,
-  ) => void;
-  +popPendingEntries: () => GetPendingEntriesResult;
-  +setOnPerformanceEntryCallback: (callback?: () => void) => void;
-  +logRawEntry: (entry: RawPerformanceEntry) => void;
-  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
-  +setDurationThreshold: (
-    entryType: RawPerformanceEntryType,
-    durationThreshold: number,
-  ) => void;
-  +clearEntries: (
-    entryType: RawPerformanceEntryType,
-    entryName?: string,
-  ) => void;
-  +getEntries: (
-    entryType?: RawPerformanceEntryType,
-    entryName?: string,
-  ) => $ReadOnlyArray<RawPerformanceEntry>;
-}
-
-export default (TurboModuleRegistry.get<Spec>(
-  'NativePerformanceObserverCxx',
-): ?Spec);
+export * from '../../src/private/specs/modules/NativePerformanceObserver';
+import NativePerformanceObserver from '../../src/private/specs/modules/NativePerformanceObserver';
+export default NativePerformanceObserver;

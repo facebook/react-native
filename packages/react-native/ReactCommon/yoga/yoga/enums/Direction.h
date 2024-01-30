@@ -22,20 +22,15 @@ enum class Direction : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Direction>() {
+constexpr int32_t ordinalCount<Direction>() {
   return 3;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Direction>() {
-  return 2;
-} 
-
-constexpr inline Direction scopedEnum(YGDirection unscoped) {
+constexpr Direction scopedEnum(YGDirection unscoped) {
   return static_cast<Direction>(unscoped);
 }
 
-constexpr inline YGDirection unscopedEnum(Direction scoped) {
+constexpr YGDirection unscopedEnum(Direction scoped) {
   return static_cast<YGDirection>(scoped);
 }
 

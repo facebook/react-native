@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -110,8 +109,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   // such as between the mBackgroundColorRenderPath and its border.
   // The smallest amount (found to be 0.8f) is used to extend
   // the paths, overlapping them and closing the visible gap.
-  private final float mGapBetweenPaths =
-      ReactFeatureFlags.enableCloseVisibleGapBetweenPaths ? 0.8f : 0.0f;
+  private final float mGapBetweenPaths = 0.8f;
 
   private @Nullable float[] mBorderCornerRadii;
   private final Context mContext;

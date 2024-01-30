@@ -30,6 +30,7 @@ export type LogData = $ReadOnly<{|
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  stack?: string,
 |}>;
 
 export type Observer = (
@@ -198,7 +199,7 @@ export function addLog(log: LogData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const stack = parseErrorStack(errorForStackTrace?.stack);
+      const stack = parseErrorStack(log.stack ?? errorForStackTrace?.stack);
 
       appendNewLog(
         new LogBoxLog({

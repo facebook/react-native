@@ -10,11 +10,10 @@ package com.facebook.react.uimanager;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UIManager;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides
@@ -110,10 +109,10 @@ public class ThemedReactContext extends ReactContext {
   }
 
   @Override
-  public JSIModule getJSIModule(JSIModuleType moduleType) {
+  public UIManager getFabricUIManager() {
     if (isBridgeless()) {
-      return mReactApplicationContext.getJSIModule(moduleType);
+      return mReactApplicationContext.getFabricUIManager();
     }
-    return super.getJSIModule(moduleType);
+    return super.getFabricUIManager();
   }
 }

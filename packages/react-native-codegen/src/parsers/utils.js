@@ -11,7 +11,6 @@
 'use strict';
 
 const {ParserError} = require('./errors');
-
 const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
@@ -82,6 +81,12 @@ function verifyPlatforms(
     }
 
     if (name.endsWith('IOS')) {
+      excludedPlatforms.add('android');
+      return;
+    }
+
+    if (name.endsWith('Windows')) {
+      excludedPlatforms.add('iOS');
       excludedPlatforms.add('android');
       return;
     }

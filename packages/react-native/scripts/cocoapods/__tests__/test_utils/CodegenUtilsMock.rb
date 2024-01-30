@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative '../../helpers.rb'
+
 class CodegenUtilsMock
     @js_spec_list
     @codegen_config
@@ -58,7 +60,6 @@ class CodegenUtilsMock
     )
         @get_react_codegen_script_phases_params.push({
             app_path: app_path,
-            fabric_enabled: fabric_enabled,
             config_file_dir: config_file_dir,
             react_native_path: react_native_path,
             config_key: config_key
@@ -66,11 +67,10 @@ class CodegenUtilsMock
         return @react_codegen_script_phases
     end
 
-    def get_react_codegen_spec(package_json_file, folly_version: '2023.08.07.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil)
+    def get_react_codegen_spec(package_json_file, folly_version: Helpers.Constants.folly_config()[:version], hermes_enabled: true, script_phases: nil)
         @get_react_codegen_spec_params.push({
             package_json_file: package_json_file,
             folly_version: folly_version,
-            fabric_enabled: fabric_enabled,
             script_phases: script_phases
         })
         return @react_codegen_spec
@@ -92,7 +92,7 @@ class CodegenUtilsMock
         config_file_dir: '',
         codegen_output_dir: 'build/generated/ios',
         config_key: 'codegenConfig',
-        folly_version: "2023.08.07.00",
+        folly_version: Helpers::Constants.folly_config()[:version],
         codegen_utils: CodegenUtilsMock.new()
     )
         @use_react_native_codegen_discovery_params.push({

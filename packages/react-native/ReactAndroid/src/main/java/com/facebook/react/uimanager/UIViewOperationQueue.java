@@ -25,6 +25,7 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -342,6 +343,12 @@ public class UIViewOperationQueue {
     }
   }
 
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   */
+  @Deprecated
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
@@ -361,6 +368,12 @@ public class UIViewOperationQueue {
     }
   }
 
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+   */
+  @Deprecated
   private final class DismissPopupMenuOperation implements UIOperation {
     @Override
     public void execute() {
@@ -702,11 +715,23 @@ public class UIViewOperationQueue {
     mOperations.add(new UpdateViewExtraData(reactTag, extraData));
   }
 
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   */
+  @Deprecated
   public void enqueueShowPopupMenu(
       int reactTag, ReadableArray items, Callback error, Callback success) {
     mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
   }
 
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+   */
+  @Deprecated
   public void enqueueDismissPopupMenu() {
     mOperations.add(new DismissPopupMenuOperation());
   }
@@ -962,8 +987,10 @@ public class UIViewOperationQueue {
 
   /* package */ void resumeFrameCallback() {
     mIsDispatchUIFrameCallbackEnqueued = true;
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    if (!ReactFeatureFlags.enableFabricRendererExclusively) {
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    }
   }
 
   /* package */ void pauseFrameCallback() {

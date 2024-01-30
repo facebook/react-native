@@ -11,7 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import com.facebook.drawee.drawable.ScalingUtils;
 
-public class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
+class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
   public static final ScalingUtils.ScaleType INSTANCE = new ScaleTypeStartInside();
 
   @Override
@@ -28,7 +28,7 @@ public class ScaleTypeStartInside extends ScalingUtils.AbstractScaleType {
     float dx = parentRect.left;
     float dy = parentRect.top;
     outTransform.setScale(scale, scale);
-    outTransform.postTranslate((int) (dx + 0.5f), (int) (dy + 0.5f));
+    outTransform.postTranslate(Math.round(dx), Math.round(dy));
   }
 
   @Override

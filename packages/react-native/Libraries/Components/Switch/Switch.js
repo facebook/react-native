@@ -155,7 +155,6 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   > | null>(null);
 
-  // $FlowFixMe[incompatible-call]
   const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
 
   const [native, setNative] = React.useState({value: (null: ?boolean)});

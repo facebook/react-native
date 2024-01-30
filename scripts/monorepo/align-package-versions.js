@@ -7,10 +7,9 @@
  * @format
  */
 
-const {writeFileSync, readFileSync} = require('fs');
-const path = require('path');
-
 const forEachPackage = require('./for-each-package');
+const {readFileSync, writeFileSync} = require('fs');
+const path = require('path');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const TEMPLATE_LOCATION = path.join(

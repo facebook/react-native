@@ -11,11 +11,11 @@
 
 'use strict';
 
-import type {ScrollEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ItemDataType} from './itemData';
+import type {ScrollEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
-import {StyleSheet, View, Text, FlatList, ScrollView} from 'react-native';
+import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 function Item(props: {data: ItemDataType}): React.Node {
   const {data} = props;

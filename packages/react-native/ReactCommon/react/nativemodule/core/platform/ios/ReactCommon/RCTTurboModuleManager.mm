@@ -112,7 +112,7 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
  public:
   ModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
-  void invokeAsync(const std::string &methodName, std::function<void()> &&work) override
+  void invokeAsync(const std::string &methodName, std::function<void()> &&work) noexcept override
   {
     if (methodQueue_ == RCTJSThread) {
       work();
@@ -206,6 +206,9 @@ static Class getFallbackClassFromName(const char *name)
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+
+  BOOL _enableSharedModuleQueue;
+  dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -221,8 +224,14 @@ static Class getFallbackClassFromName(const char *name)
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
+    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
+
+    if (_enableSharedModuleQueue) {
+      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    }
 
     if (RCTTurboModuleInteropEnabled()) {
+      // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
 
       if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
@@ -685,8 +694,12 @@ static Class getFallbackClassFromName(const char *name)
    * following if condition's block.
    */
   if (!methodQueue) {
-    NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-    methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    if (_enableSharedModuleQueue) {
+      methodQueue = _sharedModuleQueue;
+    } else {
+      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
+      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    }
 
     if (moduleHasMethodQueueGetter) {
       /**
@@ -867,19 +880,7 @@ static Class getFallbackClassFromName(const char *name)
    */
   const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
-  BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
-  if (requiresMainQueueSetup) {
-    RCTLogWarn(
-        @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-         "`requiresMainQueueSetup`. In a future release React Native will default to initializing all NativeModules "
-         "on a background thread unless explicitly opted-out of.",
-        moduleClass,
-        hasConstantsToExport ? "constantsToExport"
-            : hasCustomInit  ? "init"
-                             : "");
-  }
-
-  return requiresMainQueueSetup;
+  return hasConstantsToExport || hasCustomInit;
 }
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime

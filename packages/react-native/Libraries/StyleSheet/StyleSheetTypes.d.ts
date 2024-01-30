@@ -40,6 +40,7 @@ export interface FlexStyle {
     | 'stretch'
     | 'space-between'
     | 'space-around'
+    | 'space-evenly'
     | undefined;
   alignItems?: FlexAlignType | undefined;
   alignSelf?: 'auto' | FlexAlignType | undefined;
@@ -101,7 +102,7 @@ export interface FlexStyle {
   paddingStart?: DimensionValue | undefined;
   paddingTop?: DimensionValue | undefined;
   paddingVertical?: DimensionValue | undefined;
-  position?: 'absolute' | 'relative' | undefined;
+  position?: 'absolute' | 'relative' | 'static' | undefined;
   right?: DimensionValue | undefined;
   start?: DimensionValue | undefined;
   top?: DimensionValue | undefined;
@@ -121,7 +122,7 @@ export interface ShadowStyleIOS {
   shadowRadius?: number | undefined;
 }
 
-interface PerpectiveTransform {
+interface PerspectiveTransform {
   perspective: AnimatableNumericValue;
 }
 
@@ -154,11 +155,11 @@ interface ScaleYTransform {
 }
 
 interface TranslateXTransform {
-  translateX: AnimatableNumericValue;
+  translateX: AnimatableNumericValue | `${number}%`;
 }
 
 interface TranslateYTransform {
-  translateY: AnimatableNumericValue;
+  translateY: AnimatableNumericValue | `${number}%`;
 }
 
 interface SkewXTransform {
@@ -180,7 +181,7 @@ type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
 export interface TransformsStyle {
   transform?:
     | MaximumOneOf<
-        PerpectiveTransform &
+        PerspectiveTransform &
           RotateTransform &
           RotateXTransform &
           RotateYTransform &
@@ -325,6 +326,25 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     | '700'
     | '800'
     | '900'
+    | 100
+    | 200
+    | 300
+    | 400
+    | 500
+    | 600
+    | 700
+    | 800
+    | 900
+    | 'ultralight'
+    | 'thin'
+    | 'light'
+    | 'medium'
+    | 'regular'
+    | 'semibold'
+    | 'condensedBold'
+    | 'condensed'
+    | 'heavy'
+    | 'black'
     | undefined;
   letterSpacing?: number | undefined;
   lineHeight?: number | undefined;

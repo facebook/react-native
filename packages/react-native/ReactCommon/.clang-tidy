@@ -1,0 +1,7 @@
+---
+InheritParentConfig: true
+CheckOptions:
+  # clang 15 does not support reverse_view
+  - key:    modernize-loop-convert.UseCxx20ReverseRanges
+    value:  false
+...

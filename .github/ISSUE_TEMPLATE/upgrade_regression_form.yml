@@ -1,0 +1,133 @@
+name: ⬆️ Upgrade - Build Regression
+description: If you are upgrading to a new React Native version (stable or pre-release) and encounter a build regression.
+labels: ["Needs: Triage :mag:", "Type: Upgrade Issue"]
+
+body:
+  - type: markdown
+    attributes:
+      value: "## Upgrade Issues"
+  - type: markdown
+    attributes:
+      value: |
+        Please use this form to file an issue if you have upgraded or are upgrading to [latest stable release](https://github.com/facebook/react-native/releases/latest) and have experienced a regression (something that used to work in previous version).
+
+        If you're **NOT** upgrading the React Native version, please use this [other bug type](https://github.com/facebook/react-native/issues/new?template=bug_report.yml).
+
+        Before you continue:
+        * If you're using **Expo** and having problems updating it, [report it here](https://github.com/expo/expo/issues).
+        * If you're found a problem with our **documentation**, [report it here](https://github.com/facebook/react-native-website/issues/).
+        * If you're having an issue with **Metro** (the bundler), [report it here](https://github.com/facebook/metro/issues/).
+        * If you're using an external library, report the issue to the **library first**.
+        * Please [search for similar issues](https://github.com/facebook/react-native/issues) in our issue tracker.
+
+        Make sure that your issue:
+        * Have a **valid reproducer** with an [empty project from template](https://github.com/react-native-community/reproducer-react-native).
+        * Is upgrading to the [**latest stable**](https://github.com/facebook/react-native/releases/) of React Native.
+
+        Due to the extreme number of bugs we receive, we will be looking **ONLY** into issues with a reproducer, and on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) of React Native.
+  - type: input
+    id: old-version
+    attributes:
+      label: Old Version
+      description: The version of react-native that you're upgrading from.
+      placeholder: "0.72.0"
+    validations:
+      required: true
+  - type: input
+    id: new-version
+    attributes:
+      label: New Version
+      description: The version of react-native that you're upgrading to. Bear in mind that only issues that are upgrading to the [latest stable](https://github.com/facebook/react-native/releases/) will be looked into.
+      placeholder: "0.73.0"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The list of steps and commands to reproduce the issue.
+      placeholder: |
+        1. Install the application with `yarn android`
+        2. Click on the button on the Home
+        3. Notice the crash
+    validations:
+      required: true
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Affected Platforms
+      description: Please select which platform you're developing to, and which OS you're using for building.
+      multiple: true
+      options:
+        - Runtime - Android
+        - Runtime - iOS
+        - Runtime - Web
+        - Runtime - Desktop
+        - Build - MacOS
+        - Build - Windows
+        - Build - Linux
+        - Other (please specify)
+    validations:
+      required: true
+  - type: textarea
+    id: react-native-info
+    attributes:
+      label: Output of `npx react-native info`
+      description: Run `npx react-native info` in your terminal, copy and paste the results here.
+      placeholder: |
+        Paste the output of `npx react-native info` here. The output looks like:
+        ...
+        System:
+          OS: macOS 14.1.1
+          CPU: (10) arm64 Apple M1 Max
+          Memory: 417.81 MB / 64.00 GB
+          Shell:
+            version: "5.9"
+            path: /bin/zsh
+        Binaries:
+          Node: ...
+            version: 18.14.0
+        ...
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: stacktrace
+    attributes:
+      label: Stacktrace or Logs
+      description: Please provide a stacktrace or a log of your crash or failure
+      render: text
+      placeholder: |
+        Paste your stacktraces and logs here. They might look like:
+
+        java.lang.UnsatisfiedLinkError: couldn't find DSO to load: libfabricjni.so caused by: com.facebook.react.fabric.StateWrapperImpl result: 0
+            at com.facebook.soloader.SoLoader.g(Unknown Source:341)
+            at com.facebook.soloader.SoLoader.t(Unknown Source:124)
+            at com.facebook.soloader.SoLoader.s(Unknown Source:2)
+            at com.facebook.soloader.SoLoader.q(Unknown Source:42)
+            at com.facebook.soloader.SoLoader.p(Unknown Source:1)
+            ...
+    validations:
+      required: true
+  - type: input
+    id: reproducer
+    attributes:
+      label: Reproducer
+      description: A link to a Expo Snack or a public repository that reproduces this bug, using [this template](https://github.com/react-native-community/reproducer-react-native). Reproducers are **mandatory**.
+      placeholder: "https://github.com/<myuser>/<myreproducer>"
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots and Videos
+      description: |
+        Please provide screenshot or a video of your bug if relevant.
+        Issues with videos and screenshots are more likely to **get prioritized**.

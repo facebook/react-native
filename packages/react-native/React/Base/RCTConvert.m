@@ -1172,7 +1172,8 @@ RCT_ENUM_CONVERTER(
       @"stretch" : @(YGAlignStretch),
       @"baseline" : @(YGAlignBaseline),
       @"space-between" : @(YGAlignSpaceBetween),
-      @"space-around" : @(YGAlignSpaceAround)
+      @"space-around" : @(YGAlignSpaceAround),
+      @"space-evenly" : @(YGAlignSpaceEvenly)
     }),
     YGAlignFlexStart,
     intValue)
@@ -1189,11 +1190,7 @@ RCT_ENUM_CONVERTER(
 
 RCT_ENUM_CONVERTER(
     YGPositionType,
-    (@{
-      @"static" : @(YGPositionTypeStatic),
-      @"absolute" : @(YGPositionTypeAbsolute),
-      @"relative" : @(YGPositionTypeRelative)
-    }),
+    (@{@"absolute" : @(YGPositionTypeAbsolute), @"relative" : @(YGPositionTypeRelative)}),
     YGPositionTypeRelative,
     intValue)
 

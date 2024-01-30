@@ -10,8 +10,8 @@
 
 'use strict';
 
-const {composeSourceMaps} = require('metro-source-map');
 const fs = require('fs');
+const {composeSourceMaps} = require('metro-source-map');
 
 const argv = process.argv.slice(2);
 let outputPath;
@@ -61,6 +61,6 @@ if (!argv.length) {
   if (outputPath) {
     fs.writeFileSync(outputPath, composedMapJSON, 'utf8');
   } else {
-    process.stdout.write();
+    process.stdout.write(composedMapJSON);
   }
 }

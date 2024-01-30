@@ -29,7 +29,7 @@
 namespace facebook::react {
 
 JReactInstance::JReactInstance(
-    jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+    jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeMessageQueueThread,
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
@@ -61,7 +61,7 @@ JReactInstance::JReactInstance(
   jBindingsInstaller_ = jni::make_global(jBindingsInstaller);
 
   instance_ = std::make_unique<ReactInstance>(
-      jsEngineInstance->cthis()->createJSRuntime(sharedJSMessageQueueThread),
+      jsRuntimeFactory->cthis()->createJSRuntime(sharedJSMessageQueueThread),
       sharedJSMessageQueueThread,
       timerManager,
       std::move(jsErrorHandlingFunc));
@@ -108,7 +108,7 @@ JReactInstance::JReactInstance(
 
 jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<jhybridobject> /* unused */,
-    jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+    jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeMessageQueueThread,
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
@@ -117,7 +117,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling) {
   return makeCxxInstance(
-      jsEngineInstance,
+      jsRuntimeFactory,
       jsMessageQueueThread,
       nativeMessageQueueThread,
       javaTimerManager,

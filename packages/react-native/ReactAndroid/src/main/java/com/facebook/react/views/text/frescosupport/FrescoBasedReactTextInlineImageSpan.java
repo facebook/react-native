@@ -27,7 +27,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.views.image.ImageResizeMode;
-import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 
 /**
  * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes its size
@@ -40,7 +40,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
  * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
  * or draws, we need to update this as well.
  */
-public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
+class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
   private @Nullable Drawable mDrawable;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;

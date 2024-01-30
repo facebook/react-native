@@ -11,7 +11,6 @@
 'use strict';
 
 import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
-
 import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
@@ -218,6 +217,20 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
   }
 }
 
+class UnsupportedObjectDirectRecursivePropertyParserError extends ParserError {
+  constructor(
+    propertyName: string,
+    propertyValueAST: $FlowFixMe,
+    nativeModuleName: string,
+  ) {
+    super(
+      nativeModuleName,
+      propertyValueAST,
+      `Object property '${propertyName}' is direct recursive and must be nullable.`,
+    );
+  }
+}
+
 /**
  * Function parsing errors
  */
@@ -406,6 +419,7 @@ module.exports = {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
+  UnsupportedObjectDirectRecursivePropertyParserError,
   UnusedModuleInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,

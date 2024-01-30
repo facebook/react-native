@@ -19,18 +19,17 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
-const {cd, cp, echo, exec, exit, mv} = require('shelljs');
-const {execFileSync, spawn} = require('child_process');
-const argv = require('yargs').argv;
-const path = require('path');
-
 const forEachPackage = require('./monorepo/for-each-package');
 const setupVerdaccio = require('./setup-verdaccio');
+const tryExecNTimes = require('./try-n-times');
+const {execFileSync, spawn} = require('child_process');
+const path = require('path');
+const {cd, cp, echo, exec, exit, mv} = require('shelljs');
+const argv = require('yargs').argv;
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
 const REACT_NATIVE_PACKAGE_DIR = path.join(ROOT, 'packages/react-native');
-const tryExecNTimes = require('./try-n-times');
 
 const REACT_NATIVE_TEMP_DIR = exec(
   'mktemp -d /tmp/react-native-XXXXXXXX',
@@ -54,7 +53,7 @@ try {
     describe('Compile Android binaries');
     if (
       exec(
-        './gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
+        './gradlew publishAllToMavenTempLocal -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
       ).code
     ) {
       echo('Failed to compile Android binaries');
@@ -66,7 +65,7 @@ try {
   describe('Create react-native package');
   if (
     exec(
-      'node ./scripts/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
+      'node ./scripts/releases/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
     ).code
   ) {
     echo('Failed to set version and update package.json ready for release');
@@ -89,7 +88,10 @@ try {
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
   describe('Build and publish packages');
-  exec('node ./scripts/build/build.js', {cwd: ROOT});
+  if (exec('node ./scripts/build/build.js', {cwd: ROOT}).code) {
+    exitCode = 1;
+    throw Error(exitCode);
+  }
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {

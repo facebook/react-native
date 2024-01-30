@@ -30,8 +30,12 @@ target_link_libraries(
         bridgeless
         jserrorhandler
         fabricjni
+        featureflagsjni
         turbomodulejsijni
         fb
         jsi
         jsireact
+        react_utils
+        jsinspector
+        react_featureflags
 )

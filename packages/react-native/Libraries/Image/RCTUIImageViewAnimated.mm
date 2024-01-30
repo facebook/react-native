@@ -186,15 +186,10 @@ static NSUInteger RCTDeviceFreeMemory(void)
 
 - (void)displayDidRefresh:(CADisplayLink *)displayLink
 {
-#if TARGET_OS_UIKITFORMAC
-  // TODO: `displayLink.frameInterval` is not available on UIKitForMac
-  NSTimeInterval durationToNextRefresh = displayLink.duration;
-#else
   // displaylink.duration -- time interval between frames, assuming maximumFramesPerSecond
   // displayLink.preferredFramesPerSecond (>= iOS 10) -- Set to 30 for displayDidRefresh to be called at 30 fps
   // durationToNextRefresh -- Time interval to the next time displayDidRefresh is called
   NSTimeInterval durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
-#endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
   NSUInteger nextFrameIndex = (currentFrameIndex + 1) % totalFrameCount;

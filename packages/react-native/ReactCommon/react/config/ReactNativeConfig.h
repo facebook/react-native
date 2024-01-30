@@ -17,8 +17,8 @@ namespace facebook::react {
  */
 class ReactNativeConfig {
  public:
-  ReactNativeConfig();
-  virtual ~ReactNativeConfig();
+  ReactNativeConfig() = default;
+  virtual ~ReactNativeConfig() = default;
 
   virtual bool getBool(const std::string& param) const = 0;
   virtual std::string getString(const std::string& param) const = 0;
@@ -27,11 +27,11 @@ class ReactNativeConfig {
 };
 
 /**
- * Empty configuration that will provide hardcoded values.
+ * Empty configuration that will provide hardcoded default values.
  */
 class EmptyReactNativeConfig : public ReactNativeConfig {
  public:
-  EmptyReactNativeConfig();
+  EmptyReactNativeConfig() = default;
 
   bool getBool(const std::string& param) const override;
   std::string getString(const std::string& param) const override;

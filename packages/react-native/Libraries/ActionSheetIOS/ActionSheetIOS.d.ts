@@ -74,6 +74,12 @@ export interface ActionSheetIOSStatic {
     failureCallback: (error: Error) => void,
     successCallback: (success: boolean, method: string) => void,
   ) => void;
+
+  /**
+   * Dismisses the most upper iOS action sheet presented, if no action sheet is
+   * present a warning is displayed.
+   */
+  dismissActionSheet: () => void;
 }
 
 export const ActionSheetIOS: ActionSheetIOSStatic;

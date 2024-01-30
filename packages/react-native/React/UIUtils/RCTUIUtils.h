@@ -23,10 +23,6 @@ typedef struct {
 } RCTDimensions;
 extern __attribute__((visibility("default"))) RCTDimensions RCTGetDimensions(CGFloat fontScale);
 
-// Get font size multiplier for font base size (Large) by content size category
-extern __attribute__((visibility("default"))) CGFloat RCTGetMultiplierForContentSizeCategory(
-    UIContentSizeCategory category) __deprecated;
-
 #ifdef __cplusplus
 }
 #endif

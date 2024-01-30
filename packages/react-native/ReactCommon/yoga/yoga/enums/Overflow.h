@@ -22,20 +22,15 @@ enum class Overflow : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Overflow>() {
+constexpr int32_t ordinalCount<Overflow>() {
   return 3;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Overflow>() {
-  return 2;
-} 
-
-constexpr inline Overflow scopedEnum(YGOverflow unscoped) {
+constexpr Overflow scopedEnum(YGOverflow unscoped) {
   return static_cast<Overflow>(unscoped);
 }
 
-constexpr inline YGOverflow unscopedEnum(Overflow scoped) {
+constexpr YGOverflow unscopedEnum(Overflow scoped) {
   return static_cast<YGOverflow>(scoped);
 }
 

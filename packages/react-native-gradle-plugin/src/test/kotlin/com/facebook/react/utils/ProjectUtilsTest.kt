@@ -76,7 +76,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun isNewArchEnabled_withRNVersion1_returnTrue() {
+  fun isNewArchEnabled_withRNVersionPrealpha_returnTrue() {
     val project = createProject()
     val extension = TestReactExtension(project)
     File(tempFolder.root, "package.json").apply {
@@ -84,7 +84,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-202310916"
       }
       """
               .trimIndent())
@@ -263,7 +263,7 @@ class ProjectUtilsTest {
   @Test
   fun needsCodegenFromPackageJson_withCodegenConfigInModel_returnsTrue() {
     val project = createProject()
-    val model = ModelPackageJson("1000.0.0", ModelCodegenConfig(null, null, null, null))
+    val model = ModelPackageJson("1000.0.0", ModelCodegenConfig(null, null, null, null, false))
 
     assertTrue(project.needsCodegenFromPackageJson(model))
   }
@@ -322,7 +322,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToFalseAndOnMajor_returnTrue() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToFalseAndOnPrealpha_returnTrue() {
     val project = createProject()
     project.extensions.extraProperties.set("newArchEnabled", "false")
     val extension = TestReactExtension(project)
@@ -331,7 +331,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -341,7 +341,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToFalseAndOnMajor_returnTrue() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToFalseAndOnPrealpha_returnTrue() {
     val project = createProject()
     project.extensions.extraProperties.set("react.newArchEnabled", "false")
     val extension = TestReactExtension(project)
@@ -350,7 +350,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -360,7 +360,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToFalseAndOnMajor_returnTrue() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToFalseAndOnPrealpha_returnTrue() {
     val project = createProject()
     project.extensions.extraProperties.set("newArchEnabled", "false")
     project.extensions.extraProperties.set("react.newArchEnabled", "false")
@@ -370,7 +370,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -380,7 +380,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("newArchEnabled", "true")
     val extension = TestReactExtension(project)
@@ -389,7 +389,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -399,7 +399,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("react.newArchEnabled", "true")
     val extension = TestReactExtension(project)
@@ -408,7 +408,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -418,7 +418,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("newArchEnabled", "true")
     project.extensions.extraProperties.set("react.newArchEnabled", "true")
@@ -428,7 +428,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -438,7 +438,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndOnPrealpha_returnFalse() {
     val project = createProject()
     val extension = TestReactExtension(project)
     File(tempFolder.root, "package.json").apply {
@@ -446,7 +446,7 @@ class ProjectUtilsTest {
           // language=json
           """
       {
-        "version": "1.2.3"
+        "version": "0.0.0-prealpha-2023100915"
       }
       """
               .trimIndent())
@@ -456,7 +456,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndNotOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNewArchIsSetToTrueAndNotOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("newxArchEnabled", "true")
     val extension = TestReactExtension(project)
@@ -475,7 +475,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndNotOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenScopedNewArchIsSetToTrueAndNotOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("react.newxArchEnabled", "true")
     val extension = TestReactExtension(project)
@@ -494,7 +494,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndNotOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenBothAreSetToTrueAndNotOnPrealpha_returnFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("newArchEnabled", "true")
     project.extensions.extraProperties.set("react.newxArchEnabled", "true")
@@ -514,7 +514,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndNotOnMajor_returnFalse() {
+  fun shouldWarnIfNewArchFlagIsSetInPrealpha_whenNoneAreSetAndNotOnPrealpha_returnFalse() {
     val project = createProject()
     val extension = TestReactExtension(project)
     File(tempFolder.root, "package.json").apply {

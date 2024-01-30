@@ -4,28 +4,31 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
-const {exec, cp} = require('shelljs');
-const fs = require('fs');
-const os = require('os');
-const {spawn} = require('node:child_process');
-const path = require('path');
-
-const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
-
-const {
-  generateAndroidArtifacts,
-  generateiOSArtifacts,
-} = require('./release-utils');
-
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
 } = require('../packages/react-native/scripts/hermes/hermes-utils.js');
+const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
+const {
+  generateAndroidArtifacts,
+  generateiOSArtifacts,
+} = require('./release-utils');
+const fs = require('fs');
+// $FlowIgnore[cannot-resolve-module]
+const {spawn} = require('node:child_process');
+const os = require('os');
+const path = require('path');
+const {cp, exec} = require('shelljs');
+
+/*::
+type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+*/
 
 /*
  * Android related utils - leverages android tooling
@@ -35,24 +38,29 @@ const {
 // here's the reference folder:
 // https://github.com/react-native-community/cli/blob/main/packages/cli-platform-android/src/commands/runAndroid
 
-const emulatorCommand = process.env.ANDROID_HOME
-  ? `${process.env.ANDROID_HOME}/emulator/emulator`
-  : 'emulator';
+const emulatorCommand =
+  process.env.ANDROID_HOME != null
+    ? `${process.env.ANDROID_HOME}/emulator/emulator`
+    : 'emulator';
 
 const getEmulators = () => {
   const emulatorsOutput = exec(`${emulatorCommand} -list-avds`).stdout;
   return emulatorsOutput.split(os.EOL).filter(name => name !== '');
 };
 
-const launchEmulator = emulatorName => {
+const launchEmulator = (emulatorName /*: string */) => {
   // we need both options 'cause reasons:
   // from docs: "When using the detached option to start a long-running process, the process will not stay running in the background after the parent exits unless it is provided with a stdio configuration that is not connected to the parent. If the parent's stdio is inherited, the child will remain attached to the controlling terminal."
   // here: https://nodejs.org/api/child_process.html#optionsdetached
 
-  const child_process = spawn(emulatorCommand, [`@${emulatorName}`], {
-    detached: true,
-    stdio: 'ignore',
-  });
+  const child_process /*: child_process$ChildProcess */ = spawn(
+    emulatorCommand,
+    [`@${emulatorName}`],
+    {
+      detached: true,
+      stdio: 'ignore',
+    },
+  );
 
   child_process.unref();
 };
@@ -110,8 +118,8 @@ function maybeLaunchAndroidEmulator() {
 // inspired by CLI again https://github.com/react-native-community/cli/blob/main/packages/cli-tools/src/isPackagerRunning.ts
 
 function isPackagerRunning(
-  packagerPort = process.env.RCT_METRO_PORT || '8081',
-) {
+  packagerPort /*: string */ = process.env.RCT_METRO_PORT ?? '8081',
+) /*: 'running' | 'unrecognized' | 'not_running' */ {
   try {
     const status = exec(`curl http://localhost:${packagerPort}/status`, {
       silent: true,
@@ -124,7 +132,7 @@ function isPackagerRunning(
 }
 
 // this is a very limited implementation of how this should work
-function launchPackagerInSeparateWindow(folderPath) {
+function launchPackagerInSeparateWindow(folderPath /*: string */) {
   const command = `tell application "Terminal" to do script "cd ${folderPath} && yarn start"`;
   exec(`osascript -e '${command}' >/dev/null <<EOF`);
 }
@@ -149,8 +157,11 @@ function checkPackagerRunning() {
  * - @circleciToken a valid CircleCI Token.
  * - @branchName the branch of the name we want to use to fetch the artifacts.
  */
-async function setupCircleCIArtifacts(circleciToken, branchName) {
-  if (!circleciToken) {
+async function setupCircleCIArtifacts(
+  circleciToken /*: ?string */,
+  branchName /*: string */,
+) /*: Promise<?typeof circleCIArtifactsUtils> */ {
+  if (circleciToken == null) {
     return null;
   }
 
@@ -164,34 +175,39 @@ async function setupCircleCIArtifacts(circleciToken, branchName) {
 }
 
 async function downloadArtifactsFromCircleCI(
-  circleCIArtifacts,
-  mavenLocalPath,
-  localNodeTGZPath,
+  circleCIArtifacts /*: typeof circleCIArtifactsUtils */,
+  mavenLocalPath /*: string */,
+  localNodeTGZPath /*: string */,
 ) {
   const mavenLocalURL = await circleCIArtifacts.artifactURLForMavenLocal();
   const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
+  const reactNativeURL = await circleCIArtifacts.artifactURLForReactNative();
 
   const hermesPath = path.join(
     circleCIArtifacts.baseTmpPath(),
     'hermes-ios-debug.tar.gz',
   );
 
-  console.info('[Download] Maven Local Artifacts');
-  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalPath);
+  console.info(`[Download] Maven Local Artifacts from ${mavenLocalURL}`);
+  const mavenLocalZipPath = `${mavenLocalPath}.zip`;
+  circleCIArtifacts.downloadArtifact(mavenLocalURL, mavenLocalZipPath);
+  exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
   console.info('[Download] Hermes');
   circleCIArtifacts.downloadArtifact(hermesURL, hermesPath);
+  console.info(`[Download] React Native from  ${reactNativeURL}`);
+  circleCIArtifacts.downloadArtifact(reactNativeURL, localNodeTGZPath);
 
   return hermesPath;
 }
 
 function buildArtifactsLocally(
-  releaseVersion,
-  buildType,
-  reactNativePackagePath,
+  releaseVersion /*: string */,
+  buildType /*: BuildType */,
+  reactNativePackagePath /*: string */,
 ) {
   // this is needed to generate the Android artifacts correctly
   const exitCode = exec(
-    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+    `node scripts/releases/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
   ).code;
 
   if (exitCode !== 0) {
@@ -262,13 +278,13 @@ function buildArtifactsLocally(
  * - @hermesPath the path to hermes for iOS
  */
 async function prepareArtifacts(
-  circleCIArtifacts,
-  mavenLocalPath,
-  localNodeTGZPath,
-  releaseVersion,
-  buildType,
-  reactNativePackagePath,
-) {
+  circleCIArtifacts /*: ?typeof circleCIArtifactsUtils */,
+  mavenLocalPath /*: string */,
+  localNodeTGZPath /*: string */,
+  releaseVersion /*: string */,
+  buildType /*: BuildType */,
+  reactNativePackagePath /*: string */,
+) /*: Promise<string> */ {
   return circleCIArtifacts != null
     ? await downloadArtifactsFromCircleCI(
         circleCIArtifacts,

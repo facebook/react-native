@@ -32,9 +32,8 @@ header_search_paths = [
 ]
 
 if ENV["USE_FRAMEWORKS"]
-  header_search_paths = header_search_paths.concat([
-    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-  ])
+  create_header_search_path_for_frameworks("ReactCommon", :additional_framework_paths => ["react/nativemodule/core"], :include_base_folder => false)
+    .each { |search_path| header_search_paths << "\"#{search_path}\"" }
 end
 
 Pod::Spec.new do |s|
@@ -50,13 +49,4 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
-
-
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_sources_path,
-    :js_srcs_dir => "#{react_native_sources_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-    :output_dir => "#{react_native_dependency_path}/ReactCommon"
-  })
 end

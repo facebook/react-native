@@ -46,7 +46,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
   }
 
   public void setColor(@Nullable Integer color) {
-    this.mColor = color;
+    mColor = color;
   }
 
   public void setIndeterminate(boolean indeterminate) {

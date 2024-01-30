@@ -15,7 +15,7 @@ BridgelessNativeMethodCallInvoker::BridgelessNativeMethodCallInvoker(
 
 void BridgelessNativeMethodCallInvoker::invokeAsync(
     const std::string& methodName,
-    std::function<void()>&& func) {
+    std::function<void()>&& func) noexcept {
   messageQueueThread_->runOnQueue(std::move(func));
 }
 

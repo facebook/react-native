@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     facebook::react::CompositeTurboModuleManagerDelegate::registerNatives();
 
     facebook::jni::registerNatives(
-        "com/facebook/react/turbomodule/core/TurboModulePerfLogger",
+        "com/facebook/react/internal/turbomodule/core/TurboModulePerfLogger",
         {makeNativeMethod("jniEnableCppLogging", jniEnableCppLogging)});
   });
 }

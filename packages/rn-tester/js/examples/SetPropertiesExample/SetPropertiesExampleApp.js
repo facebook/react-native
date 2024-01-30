@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-
 const {Text, View} = require('react-native');
 
 class SetPropertiesExampleApp extends React.Component<$FlowFixMeProps> {

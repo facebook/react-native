@@ -23,11 +23,17 @@ class DefaultComponentsRegistry
 @DoNotStrip
 private constructor(componentFactory: ComponentFactory) {
 
-  @DoNotStrip private val hybridData: HybridData = initHybrid(componentFactory)
+  @DoNotStrip
+  @Suppress("NoHungarianNotation")
+  private val mHybridData: HybridData = initHybrid(componentFactory)
 
   @DoNotStrip private external fun initHybrid(componentFactory: ComponentFactory): HybridData
 
   companion object {
+    init {
+      DefaultSoLoader.maybeLoadSoLibrary()
+    }
+
     @JvmStatic
     @DoNotStrip
     fun register(componentFactory: ComponentFactory) = DefaultComponentsRegistry(componentFactory)

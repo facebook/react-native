@@ -69,7 +69,7 @@ struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
   bool busy{false};
-  bool expanded{false};
+  std::optional<bool> expanded{std::nullopt};
   enum { Unchecked, Checked, Mixed, None } checked{None};
 };
 
@@ -248,19 +248,3 @@ enum class Role {
 };
 
 } // namespace facebook::react
-
-namespace std {
-template <>
-struct hash<facebook::react::AccessibilityRole> {
-  size_t operator()(const facebook::react::AccessibilityRole& v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::Role> {
-  size_t operator()(const facebook::react::Role& v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-} // namespace std

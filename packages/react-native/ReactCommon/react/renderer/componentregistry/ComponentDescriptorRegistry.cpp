@@ -9,11 +9,13 @@
 
 #include "componentNameByReactViewName.h"
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticComponentDescriptor.h>
+#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-
 #include <utility>
 
 namespace facebook::react {
@@ -82,12 +84,23 @@ const ComponentDescriptor& ComponentDescriptorRegistry::at(
   }
 
   if (it == _registryByName.end()) {
-    if (_fallbackComponentDescriptor == nullptr) {
+    auto reactNativeConfig_ =
+        contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
+            "ReactNativeConfig");
+    if (reactNativeConfig_->getBool(
+            "react_fabric:enabled_automatic_interop_android")) {
+      auto componentDescriptor = std::make_shared<
+          const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
+          parameters_, unifiedComponentName);
+      registerComponentDescriptor(componentDescriptor);
+      return *_registryByName.find(unifiedComponentName)->second;
+    } else if (_fallbackComponentDescriptor == nullptr) {
       throw std::invalid_argument(
           ("Unable to find componentDescriptor for " + unifiedComponentName)
               .c_str());
+    } else {
+      return *_fallbackComponentDescriptor.get();
     }
-    return *_fallbackComponentDescriptor.get();
   }
 
   return *it->second;
@@ -119,33 +132,6 @@ bool ComponentDescriptorRegistry::hasComponentDescriptorAt(
 
   auto iterator = _registryByHandle.find(componentHandle);
   return iterator != _registryByHandle.end();
-}
-
-ShadowNode::Shared ComponentDescriptorRegistry::createNode(
-    Tag tag,
-    const std::string& viewName,
-    SurfaceId surfaceId,
-    const folly::dynamic& propsDynamic,
-    const InstanceHandle::Shared& instanceHandle) const {
-  auto unifiedComponentName = componentNameByReactViewName(viewName);
-  const auto& componentDescriptor = this->at(unifiedComponentName);
-
-  const auto fragment =
-      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
-  auto family = componentDescriptor.createFamily(fragment);
-  const auto props = componentDescriptor.cloneProps(
-      PropsParserContext{surfaceId, *contextContainer_.get()},
-      nullptr,
-      RawProps(propsDynamic));
-  const auto state = componentDescriptor.createInitialState(props, family);
-
-  return componentDescriptor.createShadowNode(
-      {
-          /* .props = */ props,
-          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .state = */ state,
-      },
-      family);
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(

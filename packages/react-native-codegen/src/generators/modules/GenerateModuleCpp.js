@@ -11,19 +11,19 @@
 'use strict';
 
 import type {
-  SchemaType,
-  Nullable,
   NamedShape,
-  NativeModulePropertyShape,
+  NativeModuleEnumMap,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
+  NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
-  NativeModuleEnumMap,
+  Nullable,
+  SchemaType,
 } from '../../CodegenSchema';
-
 import type {AliasResolver} from './Utils';
-const {createAliasResolver, getModules} = require('./Utils');
+
 const {unwrapNullable} = require('../../parsers/parsers-commons');
+const {createAliasResolver, getModules} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -101,14 +101,12 @@ const FileTemplate = ({
 
 #include "${libraryName}JSI.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ${modules}
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 `;
 };
 
@@ -236,6 +234,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

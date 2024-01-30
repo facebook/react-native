@@ -34,7 +34,11 @@ class ReactNativeConfig;
 class Scheduler;
 class SurfaceHandlerBinding;
 
-class Binding : public jni::HybridClass<Binding>,
+struct JBinding : public jni::JavaClass<JBinding> {
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/fabric/Binding;";
+};
+
+class Binding : public jni::HybridClass<Binding, JBinding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
@@ -87,8 +91,6 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
-
-  void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
   void stopSurface(jint surfaceId);
 

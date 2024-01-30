@@ -8,7 +8,6 @@
 #pragma once
 
 #include <yoga/algorithm/FlexDirection.h>
-#include <yoga/algorithm/ResolveValue.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/node/Node.h>
@@ -21,8 +20,12 @@ inline float paddingAndBorderForAxis(
     const yoga::Node* const node,
     const FlexDirection axis,
     const float widthSize) {
-  return node->getLeadingPaddingAndBorder(axis, widthSize) +
-      node->getTrailingPaddingAndBorder(axis, widthSize);
+  // The total padding/border for a given axis does not depend on the direction
+  // so hardcoding LTR here to avoid piping direction to this function
+  return node->style().computeInlineStartPaddingAndBorder(
+             axis, Direction::LTR, widthSize) +
+      node->style().computeInlineEndPaddingAndBorder(
+          axis, Direction::LTR, widthSize);
 }
 
 inline FloatOptional boundAxisWithinMinAndMax(
@@ -34,15 +37,11 @@ inline FloatOptional boundAxisWithinMinAndMax(
   FloatOptional max;
 
   if (isColumn(axis)) {
-    min = yoga::resolveValue(
-        node->getStyle().minDimension(Dimension::Height), axisSize);
-    max = yoga::resolveValue(
-        node->getStyle().maxDimension(Dimension::Height), axisSize);
+    min = node->style().minDimension(Dimension::Height).resolve(axisSize);
+    max = node->style().maxDimension(Dimension::Height).resolve(axisSize);
   } else if (isRow(axis)) {
-    min = yoga::resolveValue(
-        node->getStyle().minDimension(Dimension::Width), axisSize);
-    max = yoga::resolveValue(
-        node->getStyle().maxDimension(Dimension::Width), axisSize);
+    min = node->style().minDimension(Dimension::Width).resolve(axisSize);
+    max = node->style().maxDimension(Dimension::Width).resolve(axisSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {

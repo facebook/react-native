@@ -16,7 +16,7 @@
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/CoreFeatures.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
 #include "ParagraphState.h"
 
@@ -30,13 +30,14 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  if (CoreFeatures::enableCleanParagraphYogaNode) {
-    if (!fragment.children && !fragment.props) {
-      // This ParagraphShadowNode was cloned but did not change
-      // in a way that affects its layout. Let's mark it clean
-      // to stop Yoga from traversing it.
-      cleanLayout();
-    }
+  auto& sourceParagraphShadowNode =
+      traitCast<ParagraphShadowNode const&>(sourceShadowNode);
+  if (!fragment.children && !fragment.props &&
+      sourceParagraphShadowNode.getIsLayoutClean()) {
+    // This ParagraphShadowNode was cloned but did not change
+    // in a way that affects its layout. Let's mark it clean
+    // to stop Yoga from traversing it.
+    cleanLayout();
   }
 }
 
@@ -152,9 +153,15 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   return getStateData()
       .paragraphLayoutManager
-      .measure(attributedString, content.paragraphAttributes, layoutConstraints)
+      .measure(
+          attributedString,
+          content.paragraphAttributes,
+          textLayoutContext,
+          layoutConstraints)
       .size;
 }
 
@@ -171,8 +178,13 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
+  TextLayoutContext textLayoutContext{};
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   auto measurement = getStateData().paragraphLayoutManager.measure(
-      content.attributedString, content.paragraphAttributes, layoutConstraints);
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutContext,
+      layoutConstraints);
 
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = getStateData().paragraphLayoutManager.measureLines(

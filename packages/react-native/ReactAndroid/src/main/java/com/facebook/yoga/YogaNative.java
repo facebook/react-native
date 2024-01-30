@@ -31,7 +31,7 @@ public class YogaNative {
   // YGNode related
   static native long jni_YGNodeNewJNI();
   static native long jni_YGNodeNewWithConfigJNI(long configPointer);
-  static native void jni_YGNodeDeallocateJNI(long nativePointer);
+  static native void jni_YGNodeFinalizeJNI(long nativePointer);
   static native void jni_YGNodeResetJNI(long nativePointer);
   static native void jni_YGNodeInsertChildJNI(long nativePointer, long childPointer, int index);
   static native void jni_YGNodeSwapChildJNI(long nativePointer, long childPointer, int index);
@@ -41,7 +41,6 @@ public class YogaNative {
   static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
   static native void jni_YGNodeCalculateLayoutJNI(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
-  static native void jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(long nativePointer);
   static native boolean jni_YGNodeIsDirtyJNI(long nativePointer);
   static native void jni_YGNodeCopyStyleJNI(long dstNativePointer, long srcNativePointer);
   static native int jni_YGNodeStyleGetDirectionJNI(long nativePointer);
@@ -115,4 +114,5 @@ public class YogaNative {
   static native void jni_YGNodePrintJNI(long nativePointer);
   static native void jni_YGNodeSetStyleInputsJNI(long nativePointer, float[] styleInputsArray, int size);
   static native long jni_YGNodeCloneJNI(long nativePointer);
+  static native void jni_YGNodeSetAlwaysFormsContainingBlockJNI(long nativePointer, boolean alwaysFormContainingBlock);
 }

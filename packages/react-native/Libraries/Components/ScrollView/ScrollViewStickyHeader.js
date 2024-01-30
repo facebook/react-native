@@ -67,8 +67,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
   }, []);
   const ref: (React.ElementRef<typeof Animated.View> | null) => void =
     // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
-    // $FlowFixMe[incompatible-call]
-    useMergeRefs<Instance | null>(callbackRef, forwardedRef);
+    useMergeRefs<Instance>(callbackRef, forwardedRef);
 
   const offset = useMemo(
     () =>

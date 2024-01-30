@@ -102,6 +102,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_debug.so",
               "**/libreact_nativemodule_core.so",
               "**/libreact_newarchdefaults.so",
+              "**/libreact_cxxreactpackage.so",
               "**/libreact_render_componentregistry.so",
               "**/libreact_render_core.so",
               "**/libreact_render_debug.so",

@@ -9,12 +9,10 @@
 
 #include <optional>
 
-#include <folly/Likely.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/graphicsConversions.h>
-#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 
@@ -117,13 +115,13 @@ T convertRawProp(
     const char* namePrefix = nullptr,
     const char* nameSuffix = nullptr) {
   const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);
-  if (LIKELY(rawValue == nullptr)) {
+  if (rawValue == nullptr) [[likely]] {
     return sourceValue;
   }
 
   // Special case: `null` always means "the prop was removed, use default
   // value".
-  if (UNLIKELY(!rawValue->hasValue())) {
+  if (!rawValue->hasValue()) [[unlikely]] {
     return defaultValue;
   }
 

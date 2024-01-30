@@ -54,10 +54,6 @@ class Scheduler final : public UIManagerDelegate {
   InspectorData getInspectorDataForInstance(
       const EventEmitter& eventEmitter) const noexcept;
 
-  void renderTemplateToSurface(
-      SurfaceId surfaceId,
-      const std::string& uiTemplate);
-
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
