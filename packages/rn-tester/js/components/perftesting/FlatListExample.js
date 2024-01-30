@@ -147,7 +147,13 @@ export const FlatListExample = () => {
       <FlatList
         numColumns={COLUMN_COUNT}
         keyExtractor={item => item.name}
-        data={pokedex}
+        /**
+         * Slicing here to make sure we always render the same amount of items
+         * It seems that on certain iterations FlatList would render one more page and have a worse Flashlight score
+         *
+         * By default windowSize is 21, so at start, we render 11 screens, which should amount to 448 items
+         */
+        data={pokedex.slice(0, 448)}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
