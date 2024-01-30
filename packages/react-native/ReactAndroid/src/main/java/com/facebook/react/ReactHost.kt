@@ -64,6 +64,9 @@ public interface ReactHost {
   /** To be called when the host activity is resumed. */
   public fun onHostResume(activity: Activity?)
 
+  /** To be called when the host activity is about to go into the background as the result of user choice. */
+  fun onUserLeaveHint(activity: Activity?)
+
   /** To be called when the host activity is paused. */
   public fun onHostPause(activity: Activity?)
 
