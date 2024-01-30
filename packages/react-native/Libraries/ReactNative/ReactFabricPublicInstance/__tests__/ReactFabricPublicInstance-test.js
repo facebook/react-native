@@ -129,8 +129,12 @@ async function mockRenderKeys(
       jest.spyOn(TextInputState, 'blurTextInput');
       jest.spyOn(TextInputState, 'focusTextInput');
 
-      require('../../../ReactNative/ReactNativeFeatureFlags').enableAccessToHostTreeInFabric =
-        () => flags.enableAccessToHostTreeInFabric;
+      require('../../../../src/private/featureflags/ReactNativeFeatureFlags').override(
+        {
+          enableAccessToHostTreeInFabric: () =>
+            flags.enableAccessToHostTreeInFabric,
+        },
+      );
     });
 
     describe('blur', () => {

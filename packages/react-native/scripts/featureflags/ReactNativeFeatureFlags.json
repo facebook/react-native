@@ -25,6 +25,30 @@
     "jsOnlyTestFlag": {
       "description": "JS-only flag for testing. Do NOT modify.",
       "defaultValue": false
+    },
+    "isLayoutAnimationEnabled": {
+      "description": "Function used to enable / disabled Layout Animations in React Native.",
+      "defaultValue": true
+    },
+    "animatedShouldDebounceQueueFlush": {
+      "description": "Enables an experimental flush-queue debouncing in Animated.js.",
+      "defaultValue": false
+    },
+    "animatedShouldUseSingleOp": {
+      "description": "Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.",
+      "defaultValue": false
+    },
+    "enableAccessToHostTreeInFabric": {
+      "description": "Enables access to the host tree in Fabric using DOM-compatible APIs.",
+      "defaultValue": false
+    },
+    "shouldUseAnimatedObjectForTransform": {
+      "description": "Enables use of AnimatedObject for animating transform values.",
+      "defaultValue": false
+    },
+    "shouldUseSetNativePropsInFabric": {
+      "description": "Enables use of setNativeProps in JS driven animations.",
+      "defaultValue": true
     }
   }
 }
