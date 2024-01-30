@@ -15,6 +15,7 @@ import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
+import {overrideAppWithPerfExample} from './utils/deeplinking/overrideAppWithPerfExample';
 import {resolveUrl} from './utils/deeplinking/resolveUrl';
 import RNTesterList from './utils/RNTesterList';
 import {
@@ -215,7 +216,7 @@ const RNTesterApp = ({
   );
 };
 
-export default RNTesterApp;
+export default overrideAppWithPerfExample(RNTesterApp);
 
 const styles = StyleSheet.create({
   container: {
