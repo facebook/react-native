@@ -198,7 +198,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -265,7 +266,8 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
@@ -275,12 +277,12 @@ class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::Pa
 
 - (void)dealloc
 {
+  [_instance invalidate];
   if (_inspectorPageId.has_value()) {
     facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
     _inspectorPageId.reset();
     _inspectorTarget.reset();
   }
-  [_instance invalidate];
 }
 
 #pragma mark - RCTInstanceDelegate

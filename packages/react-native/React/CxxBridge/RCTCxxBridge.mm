@@ -38,6 +38,7 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
+#import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
@@ -430,11 +431,19 @@ struct RCTInstanceCallback : public InstanceCallback {
     }));
   }
 
+  // Grab the inspector target from the parent bridge here, on the main queue, to avoid inadvertently
+  // moving ownership of the parent bridge to the JS thread, which would violate expectations around
+  // the timing and thread affinity of RCTBridge's destruction. This could technically be a dangling
+  // pointer into a member of RCTBridge! But we only use it while _reactInstance exists, meaning we
+  // haven't been invalidated, and therefore RCTBridge hasn't been deallocated yet.
+  RCTAssertMainQueue();
+  facebook::react::jsinspector_modern::PageTarget *parentInspectorTarget = _parentBridge.inspectorTarget;
+
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
   dispatch_group_enter(prepareBridge);
   [self ensureOnJavaScriptThread:^{
-    [weakSelf _initializeBridge:executorFactory];
+    [weakSelf _initializeBridge:executorFactory parentInspectorTarget:parentInspectorTarget];
     dispatch_group_leave(prepareBridge);
   }];
 
@@ -649,6 +658,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridge:(std::shared_ptr<JSExecutorFactory>)executorFactory
+    parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
 {
   if (!self.valid) {
     return;
@@ -668,7 +678,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
 #endif
 
-    [self _initializeBridgeLocked:executorFactory];
+    [self _initializeBridgeLocked:executorFactory parentInspectorTarget:parentInspectorTarget];
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -681,6 +691,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)_initializeBridgeLocked:(std::shared_ptr<JSExecutorFactory>)executorFactory
+          parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget
 {
   std::lock_guard<std::mutex> guard(_moduleRegistryLock);
 
@@ -689,7 +700,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::make_unique<RCTInstanceCallback>(self),
       executorFactory,
       _jsMessageThread,
-      [self _buildModuleRegistryUnlocked]);
+      [self _buildModuleRegistryUnlocked],
+      parentInspectorTarget);
   _moduleRegistryCreated = YES;
 }
 
@@ -1178,6 +1190,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
   RCTAssertMainQueue();
   RCTLogInfo(@"Invalidating %@ (parent: %@, executor: %@)", self, _parentBridge, [self executorClass]);
+
+  if (self->_reactInstance) {
+    // Do this synchronously on the main thread to fulfil unregisterFromInspector's
+    // requirements.
+    self->_reactInstance->unregisterFromInspector();
+  }
 
   _loading = NO;
   _valid = NO;

@@ -7,4 +7,5 @@
 
 #pragma once
 
+#include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/PageTarget.h>
