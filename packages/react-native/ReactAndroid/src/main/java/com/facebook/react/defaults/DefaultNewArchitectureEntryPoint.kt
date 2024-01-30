@@ -25,6 +25,7 @@ import com.facebook.react.config.ReactFeatureFlags
 object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   @JvmOverloads
+  @Suppress("DEPRECATION")
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,

@@ -49,6 +49,7 @@ class RNTesterApplication : Application(), ReactApplication {
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
+                @Suppress("DEPRECATION")
                 if (!ReactFeatureFlags.useTurboModules) {
                   return null
                 }
@@ -66,6 +67,7 @@ class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
+                    @Suppress("DEPRECATION")
                     if (ReactFeatureFlags.useTurboModules) {
                       mapOf(
                           SampleTurboModule.NAME to
@@ -77,6 +79,7 @@ class RNTesterApplication : Application(), ReactApplication {
                                   false, // isCxxModule
                                   true // isTurboModule
                                   ),
+
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
@@ -86,6 +89,7 @@ class RNTesterApplication : Application(), ReactApplication {
                                   false, // isCxxModule
                                   false // isTurboModule
                                   ))
+
                     } else {
                       emptyMap()
                     }
