@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91f988022fbff7eba632f2ba46056025>>
+ * @generated SignedSource<<1518ec0b2ffc06d00cbe1fe189e3db83>>
  */
 
 /**
@@ -48,6 +48,12 @@ bool ReactNativeFeatureFlagsProviderHolder::enableMicrotasks() {
 bool ReactNativeFeatureFlagsProviderHolder::batchRenderingUpdatesInEventLoop() {
   static const auto method =
       getJClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::enableCustomDrawOrderFabric() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
   return method(javaProvider_);
 }
 

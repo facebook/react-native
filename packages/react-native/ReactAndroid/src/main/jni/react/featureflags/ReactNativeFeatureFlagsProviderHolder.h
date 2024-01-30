@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3550f7ee28a53a4024a48301ee38ce7e>>
+ * @generated SignedSource<<0b52512b8366b21e0b20bac6abbaf9ad>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsProviderHolder
   bool useModernRuntimeScheduler() override;
   bool enableMicrotasks() override;
   bool batchRenderingUpdatesInEventLoop() override;
+  bool enableCustomDrawOrderFabric() override;
 
  private:
   jni::global_ref<jobject> javaProvider_;

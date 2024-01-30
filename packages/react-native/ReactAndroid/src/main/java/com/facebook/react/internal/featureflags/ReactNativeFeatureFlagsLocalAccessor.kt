@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6254686d99a8bfd0531ed629655cf673>>
+ * @generated SignedSource<<871e0db7dedd2d49b739c89f7430c547>>
  */
 
 /**
@@ -28,6 +28,7 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var enableCustomDrawOrderFabricCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -65,6 +66,16 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCustomDrawOrderFabric(): Boolean {
+    var cached = enableCustomDrawOrderFabricCache
+    if (cached == null) {
+      cached = currentProvider.enableCustomDrawOrderFabric()
+      accessedFeatureFlags.add("enableCustomDrawOrderFabric")
+      enableCustomDrawOrderFabricCache = cached
     }
     return cached
   }

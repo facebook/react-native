@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd4482119f1c4963aa4ad1e354f9107d>>
+ * @generated SignedSource<<e91eb11fffc75daa5c61b41cb2437748>>
  */
 
 /**
@@ -43,6 +43,11 @@ bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -72,6 +77,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
+      makeNativeMethod(
+        "enableCustomDrawOrderFabric",
+        JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
   });
 }
 

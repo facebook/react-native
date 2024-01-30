@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<be203871f94ca134f75b803b7d79a5ab>>
+ * @generated SignedSource<<7c8a87fe61d3e10d4aef3ad35e31312c>>
  */
 
 /**
@@ -51,6 +51,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   */
+  static bool enableCustomDrawOrderFabric();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

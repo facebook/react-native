@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52367278b4d0fdf7f436bd8c511d4ffe>>
+ * @generated SignedSource<<40d47e44c6f694855787d06b03049272>>
  */
 
 /**
@@ -31,22 +31,32 @@ object ReactNativeFeatureFlags {
   /**
    * Common flag for testing. Do NOT modify.
    */
+  @JvmStatic
   fun commonTestFlag() = accessor.commonTestFlag()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
+  @JvmStatic
   fun useModernRuntimeScheduler() = accessor.useModernRuntimeScheduler()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
+  @JvmStatic
   fun enableMicrotasks() = accessor.enableMicrotasks()
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
+  @JvmStatic
   fun batchRenderingUpdatesInEventLoop() = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   */
+  @JvmStatic
+  fun enableCustomDrawOrderFabric() = accessor.enableCustomDrawOrderFabric()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

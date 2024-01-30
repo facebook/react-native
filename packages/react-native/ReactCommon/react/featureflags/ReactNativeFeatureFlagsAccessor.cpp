@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5df50987338c0541436b11cd5433013c>>
+ * @generated SignedSource<<29ae55180ce90835dc6b591c2b780595>>
  */
 
 /**
@@ -94,6 +94,23 @@ bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
   }
 
   return batchRenderingUpdatesInEventLoop_.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
+  if (!enableCustomDrawOrderFabric_.has_value()) {
+    // Mark the flag as accessed.
+    static const char* flagName = "enableCustomDrawOrderFabric";
+    if (std::find(
+            accessedFeatureFlags_.begin(),
+            accessedFeatureFlags_.end(),
+            flagName) == accessedFeatureFlags_.end()) {
+      accessedFeatureFlags_.push_back(flagName);
+    }
+
+    enableCustomDrawOrderFabric_.emplace(currentProvider_->enableCustomDrawOrderFabric());
+  }
+
+  return enableCustomDrawOrderFabric_.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(

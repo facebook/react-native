@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb9bb346a84321197849de2dd8bf7dc3>>
+ * @generated SignedSource<<18fb46f5d1e3ed6ea8ea30ae83c8fc6c>>
  */
 
 /**
@@ -35,6 +35,10 @@ bool ReactNativeFeatureFlags::enableMicrotasks() {
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
+  return getAccessor().enableCustomDrawOrderFabric();
 }
 
 void ReactNativeFeatureFlags::override(

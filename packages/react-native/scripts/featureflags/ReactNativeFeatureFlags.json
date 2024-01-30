@@ -15,6 +15,10 @@
     "batchRenderingUpdatesInEventLoop": {
       "description": "When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.",
       "defaultValue": false
+    },
+    "enableCustomDrawOrderFabric": {
+      "description": "When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).",
+      "defaultValue": false
     }
   },
   "jsOnly": {
