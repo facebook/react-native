@@ -107,6 +107,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
+    rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {
     if (!self.bridge) {
       self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
