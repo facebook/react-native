@@ -27,6 +27,7 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+import typeof PopupMenuAndroid from './Libraries/Components/PopupMenuAndroid/PopupMenuAndroid';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
@@ -131,6 +132,10 @@ module.exports = {
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
+  },
+  get PopupMenuAndroid(): PopupMenuAndroid {
+    return require('./Libraries/Components/PopupMenuAndroid/PopupMenuAndroid')
       .default;
   },
   get Modal(): Modal {
