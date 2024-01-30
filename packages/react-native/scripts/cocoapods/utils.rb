@@ -292,7 +292,8 @@ class ReactNativePodsUtils
                 end
                 target_installation_result.native_target.build_configurations.each do |config|
                     config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported
-                    config.build_settings["MACOSX_DEPLOYMENT_TARGET"] = Helpers::Constants.min_ios_version_supported # [macOS]
+                    config.build_settings["MACOSX_DEPLOYMENT_TARGET"] = Helpers::Constants.min_macos_version_supported # [macOS]
+                    config.build_settings["XROS_DEPLOYMENT_TARGET"] = Helpers::Constants.min_visionos_version_supported # [visionOS]
                 end
             end
     end

@@ -32,9 +32,9 @@ void RCTCopyBackedTextInput(
   toTextInput.placeholder = fromTextInput.placeholder;
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.textContainerInset = fromTextInput.textContainerInset;
-#if !TARGET_OS_OSX // [macOS]
+#if TARGET_OS_IOS // [macOS] [visionOS]
   toTextInput.inputAccessoryView = fromTextInput.inputAccessoryView;
-#endif // [macOS]
+#endif // [macOS] [visionOS]
   toTextInput.textInputDelegate = fromTextInput.textInputDelegate;
   toTextInput.placeholderColor = fromTextInput.placeholderColor;
   toTextInput.defaultTextAttributes = fromTextInput.defaultTextAttributes;

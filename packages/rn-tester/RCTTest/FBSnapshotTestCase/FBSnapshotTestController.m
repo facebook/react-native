@@ -238,14 +238,15 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   if (0 < identifier.length) {
     fileName = [fileName stringByAppendingFormat:@"_%@", identifier];
   }
-  CGFloat scale; // [macOS
-#if !TARGET_OS_OSX
-  scale = [[UIScreen mainScreen] scale];
-#else
-  scale = [[NSScreen mainScreen] backingScaleFactor];
-#endif
-  if (scale > 1.0) { // macOS]
+#if !TARGET_OS_OSX // [macOS]
+  UITraitCollection *currentTraitCollection = [UITraitCollection currentTraitCollection];
+  if (currentTraitCollection.displayScale > 1.0) {
+    fileName = [fileName stringByAppendingFormat:@"@%.fx", currentTraitCollection.displayScale];
+#else // [macOS
+  CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+  if (scale > 1.0) {
     fileName = [fileName stringByAppendingFormat:@"@%.fx", scale];
+#endif // macOS]
   }
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;

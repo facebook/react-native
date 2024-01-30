@@ -305,14 +305,14 @@ static CGFloat screenScale;
 void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 }
 
 CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
-    screenScale = [UIScreen mainScreen].scale;
+    screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
 
   return screenScale;
@@ -352,7 +352,11 @@ CGSize RCTScreenSize(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTUnsafeExecuteOnMainQueueSync(^{
+#if TARGET_OS_IOS // [visionOS]
       size = [UIScreen mainScreen].bounds.size;
+#else // [visionOS
+      size = RCTKeyWindow().bounds.size;
+#endif // visionOS]
     });
   });
 
@@ -600,17 +604,33 @@ RCTUIWindow *__nullable RCTKeyWindow(void) // [macOS]
     return nil;
   }
 
-  // TODO: replace with a more robust solution
-  for (UIWindow *window in RCTSharedApplication().windows) {
-    if (window.keyWindow) {
-      return window;
+  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+    if (scene.activationState != UISceneActivationStateForegroundActive ||
+        ![scene isKindOfClass:[UIWindowScene class]]) {
+      continue;
+    }
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+
+    for (UIWindow *window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
     }
   }
+
   return nil;
 #else // [macOS
   return [NSApp keyWindow];
 #endif // macOS]
 }
+
+#if TARGET_OS_VISION // [visionOS
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void) {
+	NSSet *connectedScenes = RCTSharedApplication().connectedScenes;
+	UIWindowScene *windowScene = [connectedScenes anyObject];
+	return windowScene.statusBarManager;
+}
+#endif // visionOS]
 
 #if !TARGET_OS_OSX // [macOS]
 UIViewController *__nullable RCTPresentedViewController(void)
@@ -634,12 +654,10 @@ BOOL RCTForceTouchAvailable(void)
   static BOOL forceSupported;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    forceSupported =
-        [UITraitCollection class] && [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+    forceSupported = [UITraitCollection currentTraitCollection].forceTouchCapability == UIForceTouchCapabilityAvailable;
   });
 
-  return forceSupported &&
-      (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+  return forceSupported;
 }
 #endif // [macOS]
 

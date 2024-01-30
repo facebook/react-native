@@ -43,10 +43,12 @@
   [_touchHandler attachToView:self.view];
 }
 
+#if TARGET_OS_IOS // [visionOS]
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return [RCTSharedApplication() statusBarStyle];
 }
+#endif // [visionOS]
 
 - (void)viewDidDisappear:(BOOL)animated
 {
@@ -54,16 +56,22 @@
   _lastViewBounds = CGRectZero;
 }
 
+#if TARGET_OS_IOS // [visionOS]
 - (BOOL)prefersStatusBarHidden
 {
   return [RCTSharedApplication() isStatusBarHidden];
 }
+#endif // [visionOS]
 
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+#if !TARGET_OS_VISION // [visionOS]
   UIInterfaceOrientationMask appSupportedOrientationsMask =
       [RCTSharedApplication() supportedInterfaceOrientationsForWindow:[RCTSharedApplication() keyWindow]];
+#else // [visionOS
+  UIInterfaceOrientationMask appSupportedOrientationsMask = UIInterfaceOrientationMaskLandscape;
+#endif // visonOS]
   if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."

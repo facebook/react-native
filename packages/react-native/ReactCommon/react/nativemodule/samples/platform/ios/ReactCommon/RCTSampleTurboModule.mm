@@ -46,8 +46,12 @@ RCT_EXPORT_MODULE()
   __block NSDictionary *constants;
   RCTUnsafeExecuteOnMainQueueSync(^{
 #if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_VISION // [visionOS]
     UIScreen *mainScreen = UIScreen.mainScreen;
     CGSize screenSize = mainScreen.bounds.size;
+#else // [visionOS
+	CGSize screenSize = CGSizeZero;
+#endif // visionOS]
 #else // [macOS
     NSScreen *mainScreen = NSScreen.mainScreen;
     CGSize screenSize = mainScreen.frame.size;

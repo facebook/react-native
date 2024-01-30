@@ -99,6 +99,11 @@ RCT_EXTERN RCTUIApplication *__nullable RCTSharedApplication(void); // [macOS]
 // or view controller
 RCT_EXTERN RCTUIWindow *__nullable RCTKeyWindow(void); // [macOS]
 
+#if TARGET_OS_VISION // [visionOS
+// Returns UIStatusBarManager to get it's configuration info.
+RCT_EXTERN UIStatusBarManager *__nullable RCTUIStatusBarManager(void);
+#endif // visionOS]
+
 #if !TARGET_OS_OSX // [macOS]
 // Returns the presented view controller, useful if you need
 // e.g. to present a modal view controller or alert over it

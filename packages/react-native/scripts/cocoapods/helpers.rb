@@ -45,5 +45,10 @@ module Helpers
             return '10.15'
         end
         # macOS]
+        # [visionOS
+        def self.min_visionos_version_supported
+            return '1.0'
+        end
+        # visionOS]
     end
 end

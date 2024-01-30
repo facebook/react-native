@@ -158,3 +158,11 @@ package-lock.json
 
 # CircleCI
 .circleci/generated_config.yml
+
+#[macOS
+#Yarn 
+.yarn/*
+!.yarn/patches/
+!.yarn/plugins/
+!.yarn/releases/
+# macOS]

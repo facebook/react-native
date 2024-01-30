@@ -29,8 +29,14 @@ def min_macos_version_supported
 end
 # macOS]
 
+# [visionOS
+def self.min_visionos_version_supported
+    return '1.0'
+end
+# visionOS]
+
 def min_supported_versions
-  return  { :ios => min_ios_version_supported, :osx => min_macos_version_supported } # [macOS]
+  return  { :ios => min_ios_version_supported, :osx => min_macos_version_supported, :visionos => min_visionos_version_supported } # [macOS] # [visionOS]
 end
 
 class CodegenUtilsTests < Test::Unit::TestCase

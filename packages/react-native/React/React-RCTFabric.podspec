@@ -66,8 +66,11 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.module_name            = "RCTFabric"
-  s.ios.framework          = ["JavaScriptCore", "MobileCoreServices"] # [macOS] Restrict MobileCoreServices to iOS
-  s.osx.framework          = ["JavaScriptCore"] # [macOS] Restrict MobileCoreServices to iOS
+  # [macOS MobileCoreServices not available on macOS
+  s.ios.framework          = ["JavaScriptCore", "MobileCoreServices"] 
+  s.visionos.framework     = ["JavaScriptCore", "MobileCoreServices"] 
+  s.osx.framework          = ["JavaScriptCore"]
+  # macOS]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,

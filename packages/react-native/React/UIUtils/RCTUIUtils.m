@@ -12,25 +12,41 @@
 RCTDimensions RCTGetDimensions(CGFloat fontScale)
 {
 #if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_VISION // [visionOS]
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
+#else
+  CGSize screenSize = CGSizeZero;
+#endif
+#else // [macOS
+  NSScreen *mainScreen = NSScreen.mainScreen;
+  CGSize screenSize = mainScreen.frame.size;
+#endif // macOS]
 
-  UIView *mainWindow;
-  mainWindow = RCTKeyWindow();
+#if !TARGET_OS_OSX // [macOS]
+  UIView *mainWindow = RCTKeyWindow();
   // We fallback to screen size if a key window is not found.
   CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 #else // [macOS
-  RCTUIWindow *window = RCTKeyWindow();
-  NSSize windowSize = window ? [window frame].size : CGSizeMake(0, 0);
-  NSSize screenSize = window ? [[window screen] frame].size : CGSizeMake(0, 0);
+  NSWindow *window = RCTKeyWindow();
+  NSSize windowSize = window ? [window frame].size : CGSizeZero;
+  screenSize = window ? [[window screen] frame].size : screenSize;
   CGFloat scale = window ? [[window screen] backingScaleFactor] : 1.0; // Default scale to 1.0 if window is nil
-#endif // macOS
+#endif // macOS]
+  
   RCTDimensions result;
 #if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_VISION // [visionOS]
   typeof(result.screen) dimsScreen = {
       .width = screenSize.width, .height = screenSize.height, .scale = mainScreen.scale, .fontScale = fontScale};
   typeof(result.window) dimsWindow = {
       .width = windowSize.width, .height = windowSize.height, .scale = mainScreen.scale, .fontScale = fontScale};
+#else // [visionOS hardcode the scale to a dummy value of 2
+  typeof(result.screen) dimsScreen = {
+	  .width = screenSize.width, .height = screenSize.height, .scale = 2, .fontScale = fontScale};
+  typeof(result.window) dimsWindow = {
+	  .width = windowSize.width, .height = windowSize.height, .scale = 2, .fontScale = fontScale};
+#endif // visionOS]
 #else // [macOS
   typeof(result.screen) dimsScreen = {
       .width = screenSize.width, 

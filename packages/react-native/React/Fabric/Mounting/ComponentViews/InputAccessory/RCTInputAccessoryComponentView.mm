@@ -68,7 +68,9 @@ static RCTUIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWith
     if (self.nativeId) {
 #if !TARGET_OS_OSX // [macOS]
       _textInput = RCTFindTextInputWithNativeId(self.window, self.nativeId);
+#if !TARGET_OS_VISION // [visionOS]
       _textInput.inputAccessoryView = _contentView;
+#endif // [visionOS]
 #else // [macOS
       _textInput = RCTFindTextInputWithNativeId(self.window.contentView, self.nativeId);
 #endif // macOS]
@@ -87,10 +89,12 @@ static RCTUIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWith
   return true;
 }
 
+#if !TARGET_OS_VISION // [visionOS]
 - (RCTUIView *)inputAccessoryView // [macOS]
 {
   return _contentView;
 }
+#endif // [visionOS]
 
 #pragma mark - RCTComponentViewProtocol
 

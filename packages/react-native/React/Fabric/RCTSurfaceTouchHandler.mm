@@ -58,8 +58,12 @@ static void UpdateActiveTouchWithUITouch(
 #if !TARGET_OS_OSX // [macOS]
   CGPoint offsetPoint = [uiTouch locationInView:activeTouch.componentView];
   CGPoint pagePoint = [uiTouch locationInView:rootComponentView];
+#if !TARGET_OS_VISION // [visionOS]
   CGPoint screenPoint = [rootComponentView convertPoint:pagePoint
                                       toCoordinateSpace:rootComponentView.window.screen.coordinateSpace];
+#else // [visionOS
+  CGPoint screenPoint = CGPointZero;
+#endif // visionOS]
   pagePoint = CGPointMake(pagePoint.x + rootViewOriginOffset.x, pagePoint.y + rootViewOriginOffset.y);
 #else // [macOS
   CGPoint offsetPoint = [activeTouch.componentView convertPoint:uiTouch.locationInWindow fromView:nil];

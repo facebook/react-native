@@ -9,7 +9,11 @@
     "directory": "packages/typescript-config"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/typescript-config#readme",
-  "keywords": ["typescript", "tsconfig", "react-native"],
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "main": "tsconfig.json"
 }

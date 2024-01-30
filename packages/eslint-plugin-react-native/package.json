@@ -9,7 +9,12 @@
     "directory": "packages/eslint-plugin-react-native"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-react-native#readme",
-  "keywords": ["eslint", "rules", "eslint-config", "react-native"],
+  "keywords": [
+    "eslint",
+    "rules",
+    "eslint-config",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"

@@ -11,7 +11,9 @@
 #if !TARGET_OS_OSX // [macOS]
 @interface RCTConvert (UIScrollView)
 
+#if TARGET_OS_IOS // [visionOS]
 + (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
+#endif // [visionOS]
 
 @end
 #endif // [macOS]

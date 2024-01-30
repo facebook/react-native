@@ -20,8 +20,8 @@ steps:
       displayName: Set next package version
       inputs:
         script: |
+          echo "##vso[task.setvariable variable=RNM_PACKAGE_VERSION]$(node .ado/get-next-semver-version.js)"
           echo "Next package version: $RNM_PACKAGE_VERSION"
-          echo "##vso[task.setvariable variable=RNM_PACKAGE_VERSION]$(node .ado/get-next-semver-version.js)
 
     # Note, This won't do the actual `git tag` and `git push` as we're doing a dry run.
     # We do that as a separate step in `.ado/publish.yml`.

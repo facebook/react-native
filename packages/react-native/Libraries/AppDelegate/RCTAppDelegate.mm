@@ -133,7 +133,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
 #if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_VISION // [visionOS]
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+#else
+  self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 1280, 720)];
+#endif // [visionOS]
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
   self.window.rootViewController = rootViewController;
@@ -142,7 +146,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   return YES;
 #else // [macOS
-  NSRect frame = NSMakeRect(0,0,1024,768);
+  NSRect frame = NSMakeRect(0,0,1280,720);
   self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
 											styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
 											  backing:NSBackingStoreBuffered

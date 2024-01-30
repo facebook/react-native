@@ -47,15 +47,17 @@ def min_macos_version_supported
 end
 # macOS]
 
-def min_supported_versions
-return  { :ios => min_ios_version_supported, :osx => min_macos_version_supported } # [macOS]
+# [visionOS
+def min_visionos_version_supported
+  return Helpers::Constants.min_visionos_version_supported
 end
+# visionOS]
 
 # This function returns the min supported OS versions supported by React Native
 # By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
 def min_supported_versions
-  return  { :ios => min_ios_version_supported, :osx => '10.15'} # [macOS]
+  return  { :ios => min_ios_version_supported, :osx => min_macos_version_supported, :visionos => min_visionos_version_supported } # [macOS] [visionOS]
 end
 
 # This function prepares the project for React Native, before processing
@@ -167,6 +169,7 @@ def use_react_native! (
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
+  pod 'SocketRocket', :podspec => "#{prefix}/third-party-podspecs/SocketRocket.podspec", :modular_headers => true # [visionOS]
 
   run_codegen!(
     app_path,

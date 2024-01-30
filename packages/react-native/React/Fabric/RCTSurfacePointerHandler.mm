@@ -291,9 +291,11 @@ static PointerEvent CreatePointerEventFromActivePointer(
 
   if (eventType == RCTPointerEventTypeCancel) {
     event.clientPoint = RCTPointFromCGPoint(CGPointZero);
+#if !TARGET_OS_VISION // [visionOS]
     event.screenPoint =
         RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
                                           toCoordinateSpace:rootComponentView.window.screen.coordinateSpace]);
+#endif // [visionOS]
     event.offsetPoint = RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
                                                                      toView:activePointer.componentView]);
   } else {
@@ -386,8 +388,10 @@ static void UpdateActivePointerWithUITouch(
 
 #if !TARGET_OS_OSX // [macOS]
   activePointer.clientPoint = [uiTouch locationInView:rootComponentView];
+#if !TARGET_OS_VISION // [visionOS]
   activePointer.screenPoint = [rootComponentView convertPoint:activePointer.clientPoint
                                             toCoordinateSpace:rootComponentView.window.screen.coordinateSpace];
+#endif // [visionOS]
   activePointer.offsetPoint = [uiTouch locationInView:activePointer.componentView];
 #else // [macOS
   activePointer.offsetPoint = [activePointer.componentView convertPoint:uiTouch.locationInWindow fromView:nil];
@@ -910,9 +914,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   UIView *listenerView = recognizer.view;
   CGPoint clientLocation = [recognizer locationInView:listenerView];
+#if !TARGET_OS_VISION // [visionOS]
   CGPoint screenLocation = [listenerView convertPoint:clientLocation
                                     toCoordinateSpace:listenerView.window.screen.coordinateSpace];
-
+#else // [visionOS
+  CGPoint screenLocation = CGPointZero;
+#endif // visionOS]
   UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
   targetView = FindClosestFabricManagedTouchableView(targetView);
 
