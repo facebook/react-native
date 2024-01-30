@@ -154,7 +154,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp

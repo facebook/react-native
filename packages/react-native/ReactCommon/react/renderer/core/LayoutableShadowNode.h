@@ -40,7 +40,6 @@ class LayoutableShadowNode : public ShadowNode {
       const ShadowNodeFragment& fragment);
 
   static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
 
   struct LayoutInspectingPolicy {
     bool includeTransform{true};

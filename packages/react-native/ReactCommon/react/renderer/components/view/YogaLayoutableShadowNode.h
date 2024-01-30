@@ -27,7 +27,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using ListOfShared = std::vector<Shared>;
 
   static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
 
 #pragma mark - Constructors
 

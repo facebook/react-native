@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <memory>
+#include <type_traits>
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -22,6 +23,8 @@
 #include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
+
+class YogaLayoutableShadowNode;
 
 /*
  * Default template-based implementation of ComponentDescriptor.
@@ -105,9 +108,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    if (CoreFeatures::excludeYogaFromRawProps) {
-      if (ShadowNodeT::IdentifierTrait() ==
-          ShadowNodeTraits::Trait::YogaLayoutableKind) {
+    if constexpr (std::is_base_of_v<YogaLayoutableShadowNode, ShadowNodeT>) {
+      if (CoreFeatures::excludeYogaFromRawProps) {
         rawProps.filterYogaStylePropsInDynamicConversion();
       }
     }
