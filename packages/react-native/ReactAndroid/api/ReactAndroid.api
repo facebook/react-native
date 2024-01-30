@@ -1906,7 +1906,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableMountHooks Z
 	public static field enableOnDemandReactChoreographer Z
 	public static field enableRemoveDeleteTreeInstruction Z
-	public static field enableSpannableBuildingUnification Z
 	public static field enableTextSpannableCache Z
 	public static field enableViewRecycling Z
 	public static field excludeYogaFromRawProps Z

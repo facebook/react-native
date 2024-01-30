@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5df50987338c0541436b11cd5433013c>>
+ * @generated SignedSource<<15858c6ab96e90350aa5f29eb108b051>>
  */
 
 /**
@@ -94,6 +94,23 @@ bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
   }
 
   return batchRenderingUpdatesInEventLoop_.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
+  if (!enableSpannableBuildingUnification_.has_value()) {
+    // Mark the flag as accessed.
+    static const char* flagName = "enableSpannableBuildingUnification";
+    if (std::find(
+            accessedFeatureFlags_.begin(),
+            accessedFeatureFlags_.end(),
+            flagName) == accessedFeatureFlags_.end()) {
+      accessedFeatureFlags_.push_back(flagName);
+    }
+
+    enableSpannableBuildingUnification_.emplace(currentProvider_->enableSpannableBuildingUnification());
+  }
+
+  return enableSpannableBuildingUnification_.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(

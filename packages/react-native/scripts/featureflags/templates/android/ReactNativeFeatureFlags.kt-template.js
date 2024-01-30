@@ -41,6 +41,7 @@ ${Object.entries(config.common)
       `  /**
    * ${flagConfig.description}
    */
+  @JvmStatic
   fun ${flagName}() = accessor.${flagName}()`,
   )
   .join('\n\n')}

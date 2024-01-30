@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb9bb346a84321197849de2dd8bf7dc3>>
+ * @generated SignedSource<<809c23db6d36e18d448554900e462aa0>>
  */
 
 /**
@@ -35,6 +35,10 @@ bool ReactNativeFeatureFlags::enableMicrotasks() {
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
+  return getAccessor().enableSpannableBuildingUnification();
 }
 
 void ReactNativeFeatureFlags::override(

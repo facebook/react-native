@@ -152,7 +152,4 @@ public class ReactFeatureFlags {
    *  when there is work to do.
    */
   public static boolean enableOnDemandReactChoreographer = false;
-
-  /** Enables the new unified {@link android.text.Spannable} building logic. */
-  public static boolean enableSpannableBuildingUnification = false;
 }

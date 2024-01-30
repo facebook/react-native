@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<01b940f6716765f9359c42180db497c0>>
+ * @generated SignedSource<<de38e5abc0430aedc0fe94f0c73fee3d>>
  */
 
 /**
@@ -53,6 +53,11 @@ bool NativeReactNativeFeatureFlags::enableMicrotasks(
 bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
+}
+
+bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
 }
 
 } // namespace facebook::react
