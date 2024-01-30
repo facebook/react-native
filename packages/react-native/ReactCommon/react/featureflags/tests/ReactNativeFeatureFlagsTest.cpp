@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsTest : public testing::Test {
   void SetUp() override {
     overrideAccessCount = 0;
   }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
+  }
 };
 
 TEST_F(ReactNativeFeatureFlagsTest, providesDefaults) {
