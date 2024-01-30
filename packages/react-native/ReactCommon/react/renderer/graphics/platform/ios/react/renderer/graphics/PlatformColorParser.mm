@@ -10,6 +10,7 @@
 #import <react/renderer/core/RawValue.h>
 #import <react/renderer/graphics/HostPlatformColor.h>
 #import <react/renderer/graphics/RCTPlatformColorUtils.h>
+#import <react/utils/ManagedObjectWrapper.h>
 #import <string>
 #import <unordered_map>
 
@@ -55,7 +56,7 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
     auto items = (std::unordered_map<std::string, RawValue>)value;
     if (items.find("semantic") != items.end() && items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return {colorFromComponents(RCTPlatformColorComponentsFromSemanticItems(semanticItems))};
+      return {wrapManagedObject(RCTPlatformColorFromSemanticItems(semanticItems))};
     } else if (
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {
