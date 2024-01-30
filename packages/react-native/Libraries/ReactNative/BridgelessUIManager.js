@@ -122,7 +122,7 @@ const UIManagerJSOverridenAPIs = {
  * In OSS, the New Architecture will just use the Fabric renderer, which uses
  * different APIs.
  */
-const UIManagerJSUnusedAPIs = {
+const UIManagerJSUnusedInNewArchAPIs = {
   createView: (
     reactTag: ?number,
     viewName: string,
@@ -154,6 +154,34 @@ const UIManagerJSUnusedAPIs = {
     raiseSoftError('clearJSResponder');
   },
 };
+
+/**
+ * Leave unimplemented: These APIs are deprecated in UIManager. We will eventually remove
+ * them from React Native.
+ */
+const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
+  android: {
+    // TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+    showPopupMenu: (
+      reactTag: ?number,
+      items: Array<string>,
+      error: (error: Object) => void,
+      success: (event: string, selected?: number) => void,
+    ): void => {
+      raiseSoftError(
+        'showPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+    // TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+    dismissPopupMenu: (): void => {
+      raiseSoftError(
+        'dismissPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+  },
+});
 
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
@@ -232,17 +260,6 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
       FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
     },
-    showPopupMenu: (
-      reactTag: ?number,
-      items: Array<string>,
-      error: (error: Object) => void,
-      success: (event: string, selected?: number) => void,
-    ): void => {
-      raiseSoftError('showPopupMenu');
-    },
-    dismissPopupMenu: (): void => {
-      raiseSoftError('dismissPopupMenu');
-    },
   },
   ios: {
     /**
@@ -293,8 +310,9 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSDeprecatedPlatformAPIs,
   ...UIManagerJSPlatformAPIs,
-  ...UIManagerJSUnusedAPIs,
+  ...UIManagerJSUnusedInNewArchAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       const constants = getUIManagerConstantsCached();
