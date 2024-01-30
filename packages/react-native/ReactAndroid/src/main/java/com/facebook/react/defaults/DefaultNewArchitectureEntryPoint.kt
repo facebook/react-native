@@ -19,7 +19,8 @@ import com.facebook.react.config.ReactFeatureFlags
  * By default it loads a library called `appmodules`. `appmodules` is a convention used to refer to
  * the application dynamic library. If changed here should be updated also inside the template.
  *
- * By default it also enables both TurboModules, Fabric and Concurrent React (aka React 18)
+ * By default it also enables both TurboModules, Fabric and Concurrent React (aka React 18), and
+ * Bridgeless
  */
 object DefaultNewArchitectureEntryPoint {
   @JvmStatic
@@ -27,7 +28,7 @@ object DefaultNewArchitectureEntryPoint {
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = false
+      bridgelessEnabled: Boolean = true
   ) {
     val (isValid, errorMessage) =
         isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
