@@ -17,6 +17,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Deprecated(since = "Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.")
 @DoNotStripAny
 public class ReactFeatureFlags {
   /**
