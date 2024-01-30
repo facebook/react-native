@@ -155,11 +155,11 @@ interface ScaleYTransform {
 }
 
 interface TranslateXTransform {
-  translateX: AnimatableNumericValue;
+  translateX: AnimatableNumericValue | `${number}%`;
 }
 
 interface TranslateYTransform {
-  translateY: AnimatableNumericValue;
+  translateY: AnimatableNumericValue | `${number}%`;
 }
 
 interface SkewXTransform {
