@@ -13,5 +13,6 @@
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(
     std::vector<std::string>& semanticItems);
-
+UIColor* RCTPlatformColorFromSemanticItems(
+    std::vector<std::string>& semanticItems);
 UIColor* RCTPlatformColorFromColor(const facebook::react::Color& color);
