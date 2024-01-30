@@ -8,7 +8,6 @@
 #import "PlatformColorParser.h"
 
 #import <react/renderer/core/RawValue.h>
-#import <react/renderer/core/graphicsConversions.h>
 #import <react/renderer/graphics/HostPlatformColor.h>
 #import <react/renderer/graphics/RCTPlatformColorUtils.h>
 #import <string>
