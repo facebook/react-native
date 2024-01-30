@@ -36,7 +36,9 @@ jest
     generateAndroidArtifacts: jest.fn(),
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
-  .mock('./../releases/set-rn-version', () => setReactNativeVersionMock)
+  .mock('./../releases/set-rn-version', () => ({
+    setReactNativeVersion: setReactNativeVersionMock,
+  }))
   .mock('../monorepo/get-and-update-packages')
   .mock('../releases/remove-new-arch-flags', () => removeNewArchFlags);
 
