@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbc0fd8f6eb3577e80254d855b2cd026>>
+ * @generated SignedSource<<d68bc5fec0897ad698014c938e4ab21e>>
  * @flow strict-local
  */
 
@@ -27,6 +27,12 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = {
   jsOnlyTestFlag: Getter<boolean>,
+  isLayoutAnimationEnabled: Getter<boolean>,
+  animatedShouldDebounceQueueFlush: Getter<boolean>,
+  animatedShouldUseSingleOp: Getter<boolean>,
+  enableAccessToHostTreeInFabric: Getter<boolean>,
+  shouldUseAnimatedObjectForTransform: Getter<boolean>,
+  shouldUseSetNativePropsInFabric: Getter<boolean>,
 };
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
@@ -44,6 +50,36 @@ export type ReactNativeFeatureFlags = {
  * JS-only flag for testing. Do NOT modify.
  */
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
+
+/**
+ * Function used to enable / disabled Layout Animations in React Native.
+ */
+export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * Enables an experimental flush-queue debouncing in Animated.js.
+ */
+export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
+
+/**
+ * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
+ */
+export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
+
+/**
+ * Enables access to the host tree in Fabric using DOM-compatible APIs.
+ */
+export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
+
+/**
+ * Enables use of AnimatedObject for animating transform values.
+ */
+export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
+
+/**
+ * Enables use of setNativeProps in JS driven animations.
+ */
+export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
 
 /**
  * Common flag for testing. Do NOT modify.

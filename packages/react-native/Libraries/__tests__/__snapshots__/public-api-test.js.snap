@@ -6724,14 +6724,8 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactNativeFeatureFlags.js 1`] = `
 "export type FeatureFlags = {|
-  isLayoutAnimationEnabled: () => boolean,
   shouldEmitW3CPointerEvents: () => boolean,
   shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
-  animatedShouldDebounceQueueFlush: () => boolean,
-  animatedShouldUseSingleOp: () => boolean,
-  enableAccessToHostTreeInFabric: () => boolean,
-  shouldUseAnimatedObjectForTransform: () => boolean,
-  shouldUseSetNativePropsInFabric: () => boolean,
 |};
 declare const ReactNativeFeatureFlags: FeatureFlags;
 declare module.exports: ReactNativeFeatureFlags;
