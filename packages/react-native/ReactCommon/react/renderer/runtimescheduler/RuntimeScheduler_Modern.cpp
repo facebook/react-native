@@ -9,8 +9,8 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/utils/CoreFeatures.h>
 #include <utility>
 #include "ErrorUtils.h"
 
@@ -173,7 +173,7 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
   // If we have first-class support for microtasks, this a no-op.
-  if (CoreFeatures::enableMicrotasks) {
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
     return;
   }
 
@@ -185,7 +185,7 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
-  if (CoreFeatures::blockPaintForUseLayoutEffect) {
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
     pendingRenderingUpdates_.push(renderingUpdate);
   } else {
     if (renderingUpdate != nullptr) {
@@ -296,12 +296,12 @@ void RuntimeScheduler_Modern::executeTask(
 
   executeMacrotask(runtime, task, didUserCallbackTimeout);
 
-  if (CoreFeatures::enableMicrotasks) {
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
     // "Perform a microtask checkpoint" step.
     executeMicrotasks(runtime);
   }
 
-  if (CoreFeatures::blockPaintForUseLayoutEffect) {
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
     // "Update the rendering" step.
     updateRendering();
   }

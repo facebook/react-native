@@ -145,7 +145,10 @@ static void sendEventToAllConnections(NSString *event)
 
 + (void)disableDebugger
 {
-  sendEventToAllConnections(kDebuggerMsgDisable);
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    sendEventToAllConnections(kDebuggerMsgDisable);
+  }
 }
 
 + (id<RCTInspectorPackagerConnectionProtocol>)connectWithBundleURL:(NSURL *)bundleURL

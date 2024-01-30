@@ -89,14 +89,6 @@ public abstract class ViewGroupManager<T extends ViewGroup>
     }
   }
 
-  public void removeAllViews(T parent) {
-    UiThreadUtil.assertOnUiThread();
-
-    for (int i = getChildCount(parent) - 1; i >= 0; i--) {
-      removeViewAt(parent, i);
-    }
-  }
-
   /**
    * Returns whether this View type needs to handle laying out its own children instead of deferring
    * to the standard css-layout algorithm. Returns true for the layout to *not* be automatically

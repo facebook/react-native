@@ -260,10 +260,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
-    CoreFeatures::cancelImageDownloadsOnRecycle = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }

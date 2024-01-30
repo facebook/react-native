@@ -138,12 +138,12 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType =
-      yogaNode.getStyle().display() == yoga::Display::None ? DisplayType::None
-                                                           : DisplayType::Flex;
+  layoutMetrics.displayType = yogaNode.style().display() == yoga::Display::None
+      ? DisplayType::None
+      : DisplayType::Flex;
 
   layoutMetrics.positionType =
-      positionTypeFromYogaPositionType(yogaNode.getStyle().positionType());
+      positionTypeFromYogaPositionType(yogaNode.style().positionType());
 
   layoutMetrics.layoutDirection =
       YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL

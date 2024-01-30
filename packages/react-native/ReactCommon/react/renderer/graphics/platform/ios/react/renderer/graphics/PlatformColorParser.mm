@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 namespace facebook::react {
 
 inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
-    const facebook::react::PropsParserContext &context,
+    const ContextContainer &contextContainer,
+    int32_t surfaceId,
     std::unordered_map<std::string, facebook::react::RawValue> &dynamicItems)
 {
   SharedColor lightSharedColor{};
@@ -29,16 +30,16 @@ inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
   SharedColor highContrastLightSharedColor{};
   SharedColor highContrastDarkSharedColor{};
   if (dynamicItems.count("light")) {
-    fromRawValue(context, dynamicItems.at("light"), lightSharedColor);
+    fromRawValue(contextContainer, surfaceId, dynamicItems.at("light"), lightSharedColor);
   }
   if (dynamicItems.count("dark")) {
-    fromRawValue(context, dynamicItems.at("dark"), darkSharedColor);
+    fromRawValue(contextContainer, surfaceId, dynamicItems.at("dark"), darkSharedColor);
   }
   if (dynamicItems.count("highContrastLight")) {
-    fromRawValue(context, dynamicItems.at("highContrastLight"), highContrastLightSharedColor);
+    fromRawValue(contextContainer, surfaceId, dynamicItems.at("highContrastLight"), highContrastLightSharedColor);
   }
   if (dynamicItems.count("highContrastDark")) {
-    fromRawValue(context, dynamicItems.at("highContrastDark"), highContrastDarkSharedColor);
+    fromRawValue(contextContainer, surfaceId, dynamicItems.at("highContrastDark"), highContrastDarkSharedColor);
   }
 
   Color color = Color(DynamicColor{
@@ -49,7 +50,7 @@ inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
   return SharedColor(color);
 }
 
-SharedColor parsePlatformColor(const PropsParserContext &context, const RawValue &value)
+SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t surfaceId, const RawValue &value)
 {
   if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
     auto items = (std::unordered_map<std::string, RawValue>)value;
@@ -60,7 +61,7 @@ SharedColor parsePlatformColor(const PropsParserContext &context, const RawValue
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {
       auto dynamicItems = (std::unordered_map<std::string, RawValue>)items.at("dynamic");
-      return RCTPlatformColorComponentsFromDynamicItems(context, dynamicItems);
+      return RCTPlatformColorComponentsFromDynamicItems(contextContainer, surfaceId, dynamicItems);
     }
   }
 

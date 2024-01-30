@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -20,11 +21,12 @@ const path = require('path');
  * `dependencyMap` is a dict of package name to its version
  * ex. {"react-native": "0.23.0", "other-dep": "nightly"}
  */
-function updateTemplatePackage(dependencyMap) {
+function updateTemplatePackage(dependencyMap /*: {[string]: string} */) {
   const jsonPath = path.join(
     __dirname,
     '../packages/react-native/template/package.json',
   );
+  // $FlowIgnore[unsupported-syntax]
   const templatePackageJson = require(jsonPath);
 
   const updatedPackageJson = applyPackageVersions(

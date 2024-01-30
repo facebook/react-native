@@ -39,10 +39,10 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void dispatchEvent(Event event) {
-    event.dispatchModern(mReactEventEmitter);
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
     }
+    event.dispatchModern(mReactEventEmitter);
 
     event.dispose();
     maybePostFrameCallbackFromNonUI();

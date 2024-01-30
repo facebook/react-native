@@ -114,6 +114,7 @@ public abstract class ReactActivity extends AppCompatActivity
   @Override
   public void onRequestPermissionsResult(
       int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 

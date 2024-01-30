@@ -12,18 +12,37 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+#import <jsinspector-modern/InspectorFlags.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
+#import <jsinspector-modern/ReactCdp.h>
+#import <optional>
 
 RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 #define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
 
 using namespace facebook::react;
 
-@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate, RCTInstanceDelegateInternal>
+class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+ public:
+  RCTHostPageTargetDelegate(RCTHost *host) : host_(host) {}
+
+  void onReload(const PageReloadRequest &request) override
+  {
+    RCTAssertMainQueue();
+    [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
+  }
+
+ private:
+  __weak RCTHost *host_;
+};
+
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
 @implementation RCTHost {
@@ -47,6 +66,10 @@ using namespace facebook::react;
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+
+  std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
+  std::unique_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::optional<int> _inspectorPageId;
 }
 
 + (void)initialize
@@ -133,6 +156,8 @@ using namespace facebook::react;
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTRegisterReloadCommandListener(self);
     });
+
+    _inspectorPageDelegate = std::make_unique<RCTHostPageTargetDelegate>(self);
   }
   return self;
 }
@@ -141,6 +166,28 @@ using namespace facebook::react;
 
 - (void)start
 {
+  auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+    _inspectorTarget = std::make_unique<jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
+    __weak RCTHost *weakSelf = self;
+    _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
+        "React Native Bridgeless (Experimental)",
+        /* vm */ "",
+        [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
+            -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
+          RCTHost *strongSelf = weakSelf;
+          if (!strongSelf) {
+            // This can happen if we're about to be dealloc'd. Reject the connection.
+            return nullptr;
+          }
+          return strongSelf->_inspectorTarget->connect(
+              std::move(remote),
+              {
+                  .integrationName = "iOS Bridgeless (RCTHost)",
+              });
+        },
+        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+  }
   if (_instance) {
     RCTLogWarn(
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
@@ -228,6 +275,11 @@ using namespace facebook::react;
 
 - (void)dealloc
 {
+  if (_inspectorPageId.has_value()) {
+    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
+    _inspectorPageId.reset();
+    _inspectorTarget.reset();
+  }
   [_instance invalidate];
 }
 
@@ -245,17 +297,6 @@ using namespace facebook::react;
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
-}
-
-#pragma mark - RCTInstanceDelegateInternal
-
-- (BOOL)useModernRuntimeScheduler:(RCTHost *)host
-{
-  if ([_hostDelegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
-    return [(id)_hostDelegate useModernRuntimeScheduler:self];
-  }
-
-  return NO;
 }
 
 #pragma mark - RCTContextContainerHandling

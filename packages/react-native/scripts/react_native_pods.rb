@@ -124,6 +124,7 @@ def use_react_native! (
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
@@ -285,8 +286,7 @@ def react_native_post_install(
   ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  ReactNativePodsUtils.apply_xcode_15_patch(installer)
-  ReactNativePodsUtils.apply_ats_config(installer)
+  ReactNativePodsUtils.apply_xcode_15_patch(installer) 
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)

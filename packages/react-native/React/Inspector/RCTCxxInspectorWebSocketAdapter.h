@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTDefines.h>
+
+#if RCT_DEV || RCT_REMOTE_PROFILE
+
 #import <jsinspector-modern/InspectorPackagerConnection.h>
 #import <memory>
 #import <string>
@@ -15,3 +19,5 @@
 - (void)send:(std::string_view)message;
 - (void)close;
 @end
+
+#endif

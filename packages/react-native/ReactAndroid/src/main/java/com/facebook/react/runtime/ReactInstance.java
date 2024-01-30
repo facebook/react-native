@@ -44,13 +44,13 @@ import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
-import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;
-import com.facebook.react.internal.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.uimanager.ComponentNameResolver;
 import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -170,9 +170,6 @@ final class ReactInstance {
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
-    // TODO(T166383606): Remove this parameter when we remove the legacy runtime scheduler or we
-    // have access to ReactNativeConfig before we initialize it.
-    boolean useModernRuntimeScheduler = ReactFeatureFlags.useModernRuntimeScheduler;
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -182,8 +179,7 @@ final class ReactInstance {
             jsTimerExecutor,
             reactExceptionManager,
             bindingsInstaller,
-            isProfiling,
-            useModernRuntimeScheduler);
+            isProfiling);
 
     // Set up TurboModules
     Systrace.beginSection(
@@ -457,8 +453,7 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling,
-      boolean useModernRuntimeScheduler);
+      boolean isProfiling);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();

@@ -33,6 +33,13 @@ function describe(message) {
 try {
   echo('Executing JavaScript tests');
 
+  describe('Test: feature flags codegen');
+  if (exec(`${YARN_BINARY} run featureflags-check`).code) {
+    echo('Failed to run featureflags check.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: eslint');
   if (exec(`${YARN_BINARY} run lint`).code) {
     echo('Failed to run eslint.');

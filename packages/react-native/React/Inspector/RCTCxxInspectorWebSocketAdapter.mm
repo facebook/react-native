@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTInspectorPackagerConnection.h>
+#import "RCTCxxInspectorWebSocketAdapter.h"
 
-#import <React/RCTDefines.h>
+#if RCT_DEV || RCT_REMOTE_PROFILE
+
 #import <React/RCTInspector.h>
+#import <React/RCTInspectorPackagerConnection.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <SocketRocket/SRWebSocket.h>
 #import <jsinspector-modern/InspectorPackagerConnection.h>
 #import <memory>
-#import "RCTCxxInspectorWebSocketAdapter.h"
 
 using namespace facebook::react::jsinspector_modern;
 
@@ -61,6 +62,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 
 - (void)webSocket:(__unused SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didFailWithError([error code], [error description].UTF8String);
   }
@@ -68,6 +70,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 
 - (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessageWithString:(NSString *)message
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didReceiveMessage([message UTF8String]);
   }
@@ -78,9 +81,12 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
               reason:(__unused NSString *)reason
             wasClean:(__unused BOOL)wasClean
 {
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
   if (auto delegate = _delegate.lock()) {
     delegate->didClose();
   }
 }
 
 @end
+
+#endif

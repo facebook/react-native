@@ -95,6 +95,8 @@ Pod::Spec.new do |s|
     end
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
+
+    ss.dependency "React-jsinspector", version
   end
 
   s.subspec "DevSupport" do |ss|
@@ -127,6 +129,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
+  s.dependency "React-featureflags"
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"

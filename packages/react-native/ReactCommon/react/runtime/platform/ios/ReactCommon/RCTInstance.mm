@@ -216,18 +216,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   __weak __typeof(self) weakSelf = self;
   auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
 
-  auto useModernRuntimeScheduler = false;
-  if ([_delegate respondsToSelector:@selector(useModernRuntimeScheduler:)]) {
-    useModernRuntimeScheduler = [(id)_delegate useModernRuntimeScheduler:self];
-  }
-
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
       _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc,
-      useModernRuntimeScheduler);
+      jsErrorHandlingFunc);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
@@ -257,6 +251,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       bridgeModuleDecorator:_bridgeModuleDecorator
                    delegate:self
                   jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+
+#if RCT_DEV
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [_turboModuleManager moduleForName:"RCTDevMenu"];
+#endif // end RCT_DEV
 
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];

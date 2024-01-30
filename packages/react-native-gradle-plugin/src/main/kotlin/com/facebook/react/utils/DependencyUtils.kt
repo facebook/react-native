@@ -119,7 +119,7 @@ internal object DependencyUtils {
   fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    val versionStringFromFile = reactAndroidProperties[INTERNAL_VERSION_NAME] as? String ?: ""
+    val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
         if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {

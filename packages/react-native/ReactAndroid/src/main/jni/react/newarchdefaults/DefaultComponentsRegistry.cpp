@@ -9,6 +9,7 @@
 
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 
@@ -23,6 +24,10 @@ DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory* delegate)
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
 DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
+
+  react_native_assert(
+      DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint &&
+      "'registerComponentDescriptorsFromEntryPoint' was not initialized in 'JNI_OnLoad'");
 
   (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
       providerRegistry);

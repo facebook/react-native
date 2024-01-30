@@ -106,35 +106,14 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /**
-   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
-   * state in Fabric SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
-
-  /**
-   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
-   * SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutation = false;
-
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
-
-  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
-  public static boolean fixStoppedSurfaceTagSetLeak = true;
 
   /** Disable the background executor for layout in Fabric */
   public static boolean enableBackgroundExecutor = false;
 
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** Only swap left and right on Android in RTL scripts. */
-  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
-
-  /** Clean yoga node when <Text /> does not change. */
-  public static boolean enableCleanParagraphYogaNode = false;
 
   /** Default state updates and events to async batched priority. */
   public static boolean enableDefaultAsyncBatchedPriority = false;
@@ -147,12 +126,6 @@ public class ReactFeatureFlags {
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
-   * priorities from any thread.
-   */
-  public static boolean useModernRuntimeScheduler = false;
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case

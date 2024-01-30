@@ -20,6 +20,7 @@
 #include <yoga/enums/Errata.h>
 #include <yoga/enums/MeasureMode.h>
 #include <yoga/enums/NodeType.h>
+#include <yoga/enums/PhysicalEdge.h>
 #include <yoga/node/LayoutResults.h>
 #include <yoga/style/Style.h>
 
@@ -51,8 +52,6 @@ class YG_EXPORT Node : public ::YGNode {
   bool alwaysFormsContainingBlock() const {
     return alwaysFormsContainingBlock_;
   }
-
-  void print();
 
   bool getHasNewLayout() const {
     return hasNewLayout_;
@@ -96,11 +95,11 @@ class YG_EXPORT Node : public ::YGNode {
   }
 
   // For Performance reasons passing as reference.
-  Style& getStyle() {
+  Style& style() {
     return style_;
   }
 
-  const Style& getStyle() const {
+  const Style& style() const {
     return style_;
   }
 
@@ -157,89 +156,6 @@ class YG_EXPORT Node : public ::YGNode {
     return resolvedDimensions_[static_cast<size_t>(dimension)];
   }
 
-  // Methods related to positions, margin, padding and border
-  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const;
-  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
-      const;
-  float getFlexStartPosition(
-      FlexDirection axis,
-      Direction direction,
-      float axisSize) const;
-  float getInlineStartPosition(
-      FlexDirection axis,
-      Direction direction,
-      float axisSize) const;
-  float getFlexEndPosition(
-      FlexDirection axis,
-      Direction direction,
-      float axisSize) const;
-  float getInlineEndPosition(
-      FlexDirection axis,
-      Direction direction,
-      float axisSize) const;
-  float getFlexStartMargin(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineStartMargin(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getFlexEndMargin(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineEndMargin(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getFlexStartBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getInlineStartBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getFlexEndBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getInlineEndBorder(FlexDirection flexDirection, Direction direction)
-      const;
-  float getFlexStartPadding(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineStartPadding(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getFlexEndPadding(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineEndPadding(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getFlexStartPaddingAndBorder(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineStartPaddingAndBorder(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getFlexEndPaddingAndBorder(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getInlineEndPaddingAndBorder(
-      FlexDirection axis,
-      Direction direction,
-      float widthSize) const;
-  float getBorderForAxis(FlexDirection axis) const;
-  float getMarginForAxis(FlexDirection axis, float widthSize) const;
-  float getGapForAxis(FlexDirection axis) const;
   // Setters
 
   void setContext(void* context) {
@@ -248,10 +164,6 @@ class YG_EXPORT Node : public ::YGNode {
 
   void setAlwaysFormsContainingBlock(bool alwaysFormsContainingBlock) {
     alwaysFormsContainingBlock_ = alwaysFormsContainingBlock;
-  }
-
-  void setPrintFunc(YGPrintFunc printFunc) {
-    printFunc_ = printFunc;
   }
 
   void setHasNewLayout(bool hasNewLayout) {
@@ -309,10 +221,10 @@ class YG_EXPORT Node : public ::YGNode {
   void setLayoutHadOverflow(bool hadOverflow);
   void setLayoutDimension(float LengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
-  void setLayoutMargin(float margin, Edge edge);
-  void setLayoutBorder(float border, Edge edge);
-  void setLayoutPadding(float padding, Edge edge);
-  void setLayoutPosition(float position, Edge edge);
+  void setLayoutMargin(float margin, PhysicalEdge edge);
+  void setLayoutBorder(float border, PhysicalEdge edge);
+  void setLayoutPadding(float padding, PhysicalEdge edge);
+  void setLayoutPosition(float position, PhysicalEdge edge);
   void setPosition(
       const Direction direction,
       const float mainSize,
@@ -320,8 +232,6 @@ class YG_EXPORT Node : public ::YGNode {
       const float ownerWidth);
 
   // Other methods
-  Style::Length getFlexStartMarginValue(FlexDirection axis) const;
-  Style::Length marginTrailingValue(FlexDirection axis) const;
   Style::Length resolveFlexBasisPtr() const;
   void resolveDimension();
   Direction resolveDirection(const Direction ownerDirection);
@@ -350,25 +260,10 @@ class YG_EXPORT Node : public ::YGNode {
       Direction direction,
       const float axisSize) const;
 
-  Edge getInlineStartEdge(FlexDirection flexDirection, Direction direction)
-      const;
-  Edge getInlineEndEdge(FlexDirection flexDirection, Direction direction) const;
-  Edge getFlexStartRelativeEdge(
-      FlexDirection flexDirection,
-      Direction direction) const;
-  Edge getFlexEndRelativeEdge(FlexDirection flexDirection, Direction direction)
-      const;
-
   void useWebDefaults() {
     style_.setFlexDirection(FlexDirection::Row);
     style_.setAlignContent(Align::Stretch);
   }
-
-  template <auto Field>
-  Style::Length computeEdgeValueForColumn(Edge edge) const;
-
-  template <auto Field>
-  Style::Length computeEdgeValueForRow(Edge rowEdge, Edge edge) const;
 
   bool hasNewLayout_ : 1 = true;
   bool isReferenceBaseline_ : 1 = false;
@@ -376,17 +271,16 @@ class YG_EXPORT Node : public ::YGNode {
   bool alwaysFormsContainingBlock_ : 1 = false;
   NodeType nodeType_ : bitCount<NodeType>() = NodeType::Default;
   void* context_ = nullptr;
-  YGMeasureFunc measureFunc_ = {nullptr};
-  YGBaselineFunc baselineFunc_ = {nullptr};
-  YGPrintFunc printFunc_ = {nullptr};
+  YGMeasureFunc measureFunc_ = nullptr;
+  YGBaselineFunc baselineFunc_ = nullptr;
   YGDirtiedFunc dirtiedFunc_ = nullptr;
-  Style style_ = {};
-  LayoutResults layout_ = {};
+  Style style_;
+  LayoutResults layout_;
   size_t lineIndex_ = 0;
   Node* owner_ = nullptr;
-  std::vector<Node*> children_ = {};
+  std::vector<Node*> children_;
   const Config* config_;
-  std::array<Style::Length, 2> resolvedDimensions_ = {
+  std::array<Style::Length, 2> resolvedDimensions_{
       {value::undefined(), value::undefined()}};
 };
 

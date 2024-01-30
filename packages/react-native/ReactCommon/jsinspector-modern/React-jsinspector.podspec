@@ -39,4 +39,5 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-nativeconfig"
+  s.dependency "DoubleConversion"
 end

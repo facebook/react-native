@@ -41,7 +41,7 @@ const getUIManagerConstantsCached = (function () {
   };
 })();
 
-const getConstantsForViewManager: ?(viewManagerName: string) => Object =
+const getConstantsForViewManager: ?(viewManagerName: string) => ?Object =
   global.RN$LegacyInterop_UIManager_getConstantsForViewManager;
 
 const getDefaultEventTypes: ?() => Object =
@@ -122,7 +122,7 @@ const UIManagerJSOverridenAPIs = {
  * In OSS, the New Architecture will just use the Fabric renderer, which uses
  * different APIs.
  */
-const UIManagerJSUnusedAPIs = {
+const UIManagerJSUnusedInNewArchAPIs = {
   createView: (
     reactTag: ?number,
     viewName: string,
@@ -155,9 +155,37 @@ const UIManagerJSUnusedAPIs = {
   },
 };
 
+/**
+ * Leave unimplemented: These APIs are deprecated in UIManager. We will eventually remove
+ * them from React Native.
+ */
+const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
+  android: {
+    // TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+    showPopupMenu: (
+      reactTag: ?number,
+      items: Array<string>,
+      error: (error: Object) => void,
+      success: (event: string, selected?: number) => void,
+    ): void => {
+      raiseSoftError(
+        'showPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+    // TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+    dismissPopupMenu: (): void => {
+      raiseSoftError(
+        'dismissPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+  },
+});
+
 const UIManagerJSPlatformAPIs = Platform.select({
   android: {
-    getConstantsForViewManager: (viewManagerName: string): Object => {
+    getConstantsForViewManager: (viewManagerName: string): ?Object => {
       if (getConstantsForViewManager) {
         return getConstantsForViewManager(viewManagerName);
       }
@@ -232,19 +260,13 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
       FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
     },
-    showPopupMenu: (
-      reactTag: ?number,
-      items: Array<string>,
-      error: (error: Object) => void,
-      success: (event: string, selected?: number) => void,
-    ): void => {
-      raiseSoftError('showPopupMenu');
-    },
-    dismissPopupMenu: (): void => {
-      raiseSoftError('dismissPopupMenu');
-    },
   },
   ios: {
+    /**
+     * TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
+     *
+     * Leave this unimplemented until we implement lazy loading of legacy modules and view managers in the new architecture.
+     */
     lazilyLoadView: (name: string): Object => {
       raiseSoftError('lazilyLoadView');
       return {};
@@ -288,8 +310,9 @@ const UIManagerJSPlatformAPIs = Platform.select({
 
 const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
   ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSDeprecatedPlatformAPIs,
   ...UIManagerJSPlatformAPIs,
-  ...UIManagerJSUnusedAPIs,
+  ...UIManagerJSUnusedInNewArchAPIs,
   getViewManagerConfig: (viewManagerName: string): mixed => {
     if (getUIManagerConstants) {
       const constants = getUIManagerConstantsCached();
@@ -331,7 +354,54 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       height: number,
     ) => void,
   ): void => {
-    raiseSoftError('findSubviewIn');
+    if (reactTag == null) {
+      console.error(
+        `findSubviewIn() noop: Cannot be called with ${String(
+          reactTag,
+        )} reactTag`,
+      );
+      return;
+    }
+
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+
+    if (!shadowNode) {
+      console.error(
+        `findSubviewIn() noop: Cannot find view with reactTag ${reactTag}`,
+      );
+      return;
+    }
+
+    FabricUIManager.findNodeAtPoint(
+      shadowNode,
+      point[0],
+      point[1],
+      function (internalInstanceHandle) {
+        if (internalInstanceHandle == null) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let instanceHandle: Object = internalInstanceHandle;
+        let node = instanceHandle.stateNode.node;
+
+        if (!node) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let nativeViewTag = (instanceHandle.stateNode.canonical
+          .nativeTag: number);
+
+        FabricUIManager.measure(
+          node,
+          function (x, y, width, height, pageX, pageY) {
+            callback(nativeViewTag, pageX, pageY, width, height);
+          },
+        );
+      },
+    );
   },
   viewIsDescendantOf: (
     reactTag: ?number,

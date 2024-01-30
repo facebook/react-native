@@ -1135,7 +1135,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
               this.context == null &&
               this.props.scrollEnabled !== false
             ) {
-              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
               console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
                   'orientation because it can break windowing and other functionality - use another ' +

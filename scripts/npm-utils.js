@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -17,6 +18,27 @@ const {
 const {parseVersion} = require('./version-utils');
 const {exec} = require('shelljs');
 
+/*::
+import type { ExecOptsSync, ShellString } from 'shelljs';
+
+type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type NpmInfo = {
+  version: string,
+  tag: ?string,
+}
+type PackageJSON = {
+  name: string,
+  version: string,
+  dependencies: {[string]: string},
+  devDependencies: {[string]: string},
+  ...
+}
+type NpmPackageOptions = {
+  tags: ?Array<string>,
+  otp: ?string,
+}
+*/
+
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
   const versionStr = getPackageVersionStrByTag('react-native', 'next');
@@ -24,7 +46,7 @@ function getMainVersion() {
   return `${major}.${parseInt(minor, 10) + 1}.0`;
 }
 
-function getNpmInfo(buildType) {
+function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   const currentCommit = getCurrentCommit();
   const shortCommit = currentCommit.slice(0, 9);
 
@@ -65,35 +87,53 @@ function getNpmInfo(buildType) {
     };
   }
 
-  const {version, major, minor, prerelease} = parseVersion(
-    process.env.CIRCLE_TAG,
-    buildType,
-  );
+  if (buildType === 'release') {
+    if (process.env.CIRCLE_TAG == null) {
+      throw new Error(
+        'CIRCLE_TAG is not set for release. This should only be run in CircleCI. See https://circleci.com/docs/variables/ for how CIRCLE_TAG is set.',
+      );
+    }
 
-  // See if releaser indicated that this version should be tagged "latest"
-  // Set in `trigger-react-native-release`
-  const isLatest = exitIfNotOnGit(
-    () => isTaggedLatest(currentCommit),
-    'Not in git. We do not want to publish anything',
-  );
+    const {version, major, minor, prerelease} = parseVersion(
+      process.env.CIRCLE_TAG,
+      buildType,
+    );
 
-  const releaseBranchTag = `${major}.${minor}-stable`;
+    // See if releaser indicated that this version should be tagged "latest"
+    // Set in `trigger-react-native-release`
+    const isLatest = exitIfNotOnGit(
+      () => isTaggedLatest(currentCommit),
+      'Not in git. We do not want to publish anything',
+    );
 
-  // npm will automatically tag the version as `latest` if no tag is set when we publish
-  // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
-  const tag =
-    prerelease != null ? 'next' : isLatest ? 'latest' : releaseBranchTag;
+    const releaseBranchTag = `${major}.${minor}-stable`;
 
-  return {
-    version,
-    tag,
-  };
+    // npm will automatically tag the version as `latest` if no tag is set when we publish
+    // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
+    const tag =
+      prerelease != null
+        ? 'next'
+        : isLatest === true
+        ? 'latest'
+        : releaseBranchTag;
+
+    return {
+      version,
+      tag,
+    };
+  }
+
+  throw new Error(`Unsupported build type: ${buildType}`);
 }
 
-function publishPackage(packagePath, packageOptions, execOptions) {
+function publishPackage(
+  packagePath /*: string */,
+  packageOptions /*: NpmPackageOptions */,
+  execOptions /*: ?ExecOptsSync */,
+) /*: ShellString */ {
   const {otp, tags} = packageOptions;
-  const tagsFlag = tags ? tags.map(t => ` --tag ${t}`).join('') : '';
-  const otpFlag = otp ? ` --otp ${otp}` : '';
+  const tagsFlag = tags != null ? tags.map(t => ` --tag ${t}`).join('') : '';
+  const otpFlag = otp != null ? ` --otp ${otp}` : '';
   const options = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
@@ -101,13 +141,17 @@ function publishPackage(packagePath, packageOptions, execOptions) {
   return exec(`npm publish${tagsFlag}${otpFlag}`, options);
 }
 
-function diffPackages(packageSpecA, packageSpecB, options) {
+function diffPackages(
+  packageSpecA /*: string */,
+  packageSpecB /*: string */,
+  options /*:  ExecOptsSync */,
+) /*: string */ {
   const result = exec(
     `npm diff --diff=${packageSpecA} --diff=${packageSpecB} --diff-name-only`,
     options,
   );
 
-  if (result.code) {
+  if (result.code !== 0) {
     throw new Error(
       `Failed to diff ${packageSpecA} and ${packageSpecB}\n${result.stderr}`,
     );
@@ -116,7 +160,7 @@ function diffPackages(packageSpecA, packageSpecB, options) {
   return result.stdout;
 }
 
-function pack(packagePath) {
+function pack(packagePath /*: string */) {
   const result = exec('npm pack', {
     cwd: packagePath,
   });
@@ -132,7 +176,10 @@ function pack(packagePath) {
  *
  * This replaces both dependencies and devDependencies in package.json
  */
-function applyPackageVersions(originalPackageJson, packageVersions) {
+function applyPackageVersions(
+  originalPackageJson /*: PackageJSON */,
+  packageVersions /*: {[string]: string} */,
+) /*: PackageJSON */ {
   const packageJson = {...originalPackageJson};
 
   for (const name of Object.keys(packageVersions)) {
@@ -159,14 +206,18 @@ function applyPackageVersions(originalPackageJson, packageVersions) {
  *
  * This will fetch version of `packageName` with npm tag specified
  */
-function getPackageVersionStrByTag(packageName, tag) {
-  const npmString = tag
-    ? `npm view ${packageName}@${tag} version`
-    : `npm view ${packageName} version`;
+function getPackageVersionStrByTag(
+  packageName /*: string */,
+  tag /*: ?string */,
+) /*: string */ {
+  const npmString =
+    tag != null
+      ? `npm view ${packageName}@${tag} version`
+      : `npm view ${packageName} version`;
   const result = exec(npmString, {silent: true});
 
   if (result.code) {
-    throw new Error(`Failed to get ${tag} version from npm\n${result.stderr}`);
+    throw new Error(`Failed to run '${npmString}'\n${result.stderr}`);
   }
   return result.stdout.trim();
 }
@@ -177,7 +228,10 @@ function getPackageVersionStrByTag(packageName, tag) {
  *
  * Return an array of versions of the specified spec range or throw an error
  */
-function getVersionsBySpec(packageName, spec) {
+function getVersionsBySpec(
+  packageName /*: string */,
+  spec /*: string */,
+) /*: Array<string> */ {
   const npmString = `npm view ${packageName}@'${spec}' version --json`;
   const result = exec(npmString, {silent: true});
 

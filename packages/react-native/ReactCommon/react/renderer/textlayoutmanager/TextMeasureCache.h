@@ -141,7 +141,7 @@ inline bool areAttributedStringFragmentsEquivalentLayoutWise(
         rhs.parentShadowView.layoutMetrics));
 }
 
-inline size_t textAttributesHashLayoutWise(
+inline size_t attributedStringFragmentHashLayoutWise(
     const AttributedString::Fragment& fragment) {
   // Here we are not taking `isAttachment` and `layoutMetrics` into account
   // because they are logically interdependent and this can break an invariant
@@ -171,12 +171,13 @@ inline bool areAttributedStringsEquivalentLayoutWise(
   return true;
 }
 
-inline size_t textAttributedStringHashLayoutWise(
+inline size_t attributedStringHashLayoutWise(
     const AttributedString& attributedString) {
   auto seed = size_t{0};
 
   for (const auto& fragment : attributedString.getFragments()) {
-    facebook::react::hash_combine(seed, textAttributesHashLayoutWise(fragment));
+    facebook::react::hash_combine(
+        seed, attributedStringFragmentHashLayoutWise(fragment));
   }
 
   return seed;
@@ -206,7 +207,7 @@ template <>
 struct hash<facebook::react::TextMeasureCacheKey> {
   size_t operator()(const facebook::react::TextMeasureCacheKey& key) const {
     return facebook::react::hash_combine(
-        textAttributedStringHashLayoutWise(key.attributedString),
+        attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.layoutConstraints.maximumSize.width);
   }

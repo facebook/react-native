@@ -24,8 +24,6 @@ static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificat
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
-#if !TARGET_OS_UIKITFORMAC
-
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
@@ -95,14 +93,8 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 @end
-#else
-@interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
-@end
-#endif // TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
-
-#if !TARGET_OS_UIKITFORMAC
 
 /** DEPRECATED. UILocalNotification was deprecated in iOS 10. Please don't add new callsites. */
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
@@ -176,7 +168,10 @@ static NSString *RCTFormatNotificationDateFromNSDate(NSDate *date)
   return [formatter stringFromDate:date];
 }
 
-#endif // TARGET_OS_UIKITFORMAC
+static BOOL IsNotificationRemote(UNNotification *notification)
+{
+  return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+}
 
 RCT_EXPORT_MODULE()
 
@@ -185,7 +180,6 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#if !TARGET_OS_UIKITFORMAC
 - (void)startObserving
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -241,28 +235,47 @@ RCT_EXPORT_MODULE()
                                                     userInfo:@{@"error" : error}];
 }
 
++ (void)didReceiveNotification:(UNNotification *)notification
+{
+  BOOL const isRemoteNotification = IsNotificationRemote(notification);
+  if (isRemoteNotification) {
+    NSDictionary *userInfo = @{@"notification" : notification.request.content.userInfo};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                        object:self
+                                                      userInfo:userInfo];
+  } else {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                        object:self
+                                                      userInfo:RCTFormatUNNotification(notification)];
+  }
+}
+
++ (void)didReceiveRemoteNotification:(NSDictionary *)notification
+              fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
+{
+  NSDictionary *userInfo = completionHandler
+      ? @{@"notification" : notification, @"completionHandler" : completionHandler}
+      : @{@"notification" : notification};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                      object:self
+                                                    userInfo:userInfo];
+}
+
+// Deprecated
++ (void)didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                      object:self
+                                                    userInfo:RCTFormatLocalNotification(notification)];
+}
+
+// Deprecated
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
 {
   NSDictionary *userInfo = @{@"notification" : notification};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
                                                     userInfo:userInfo];
-}
-
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification
-              fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
-{
-  NSDictionary *userInfo = @{@"notification" : notification, @"completionHandler" : completionHandler};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:userInfo];
-}
-
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
-                                                      object:self
-                                                    userInfo:RCTFormatLocalNotification(notification)];
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
@@ -516,20 +529,44 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
-  NSMutableDictionary<NSString *, id> *initialNotification =
+  // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
+  // Set this property in the implementation of
+  // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
+  if (self.initialNotification) {
+    NSDictionary<NSString *, id> *notificationDict =
+        RCTFormatUNNotificationContent(self.initialNotification.request.content);
+    if (IsNotificationRemote(self.initialNotification)) {
+      NSMutableDictionary<NSString *, id> *notificationDictCopy = [notificationDict mutableCopy];
+      notificationDictCopy[@"remote"] = @YES;
+      resolve(notificationDictCopy);
+    } else {
+      resolve(notificationDict);
+    }
+    return;
+  }
+
+  NSMutableDictionary<NSString *, id> *initialRemoteNotification =
       [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
+
+  // The user actioned a remote notification to launch the app. This is a fallback that is deprecated
+  // in the new architecture.
+  if (initialRemoteNotification) {
+    initialRemoteNotification[@"remote"] = @YES;
+    resolve(initialRemoteNotification);
+    return;
+  }
 
   UILocalNotification *initialLocalNotification =
       self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
 
-  if (initialNotification) {
-    initialNotification[@"remote"] = @YES;
-    resolve(initialNotification);
-  } else if (initialLocalNotification) {
+  // The user actioned a local notification to launch the app. Notification is represented by UILocalNotification. This
+  // is deprecated.
+  if (initialLocalNotification) {
     resolve(RCTFormatLocalNotification(initialLocalNotification));
-  } else {
-    resolve((id)kCFNull);
+    return;
   }
+
+  resolve((id)kCFNull);
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
@@ -576,100 +613,6 @@ RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
     callback(@[ @(settings.authorizationStatus) ]);
   }];
 }
-
-#else // TARGET_OS_UIKITFORMAC
-
-RCT_EXPORT_METHOD(onFinishRemoteNotification : (NSString *)notificationId fetchResult : (NSString *)fetchResult)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(setApplicationIconBadgeNumber : (double)number)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getApplicationIconBadgeNumber : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(requestPermissions
-                  : (JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(abandonPermissions)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(checkPermissions : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(presentLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(scheduleLocalNotification : (JS::NativePushNotificationManagerIOS::Notification &)notification)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelAllLocalNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(cancelLocalNotifications : (NSDictionary<NSString *, id> *)userInfo)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getInitialNotification
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (__unused RCTPromiseRejectBlock)reject)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(removeDeliveredNotifications : (NSArray<NSString *> *)identifiers)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getDeliveredNotifications : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-RCT_EXPORT_METHOD(getAuthorizationStatus : (RCTResponseSenderBlock)callback)
-{
-  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
-}
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[];
-}
-
-#endif // TARGET_OS_UIKITFORMAC
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params

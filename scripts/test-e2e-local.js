@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -27,6 +28,10 @@ const updateTemplatePackage = require('./update-template-package');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
 const yargs = require('yargs');
+
+/* ::
+type Unwrap<T> = T extends Promise<infer U> ? U : T;
+*/
 
 const argv = yargs
   .option('t', {
@@ -59,17 +64,20 @@ const argv = yargs
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
-async function testRNTesterIOS(circleCIArtifacts, onReleaseBranch) {
+async function testRNTesterIOS(
+  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  onReleaseBranch /*: boolean */,
+) {
   console.info(
     `We're going to test the ${
-      argv.hermes ? 'Hermes' : 'JSC'
+      argv.hermes === true ? 'Hermes' : 'JSC'
     } version of RNTester iOS with the new Architecture enabled`,
   );
 
   // remember that for this to be successful
   // you should have run bundle install once
   // in your local setup
-  if (argv.hermes && circleCIArtifacts != null) {
+  if (argv.hermes === true && circleCIArtifacts != null) {
     const hermesURL = await circleCIArtifacts.artifactURLHermesDebug();
     const hermesPath = path.join(
       circleCIArtifacts.baseTmpPath(),
@@ -84,14 +92,14 @@ async function testRNTesterIOS(circleCIArtifacts, onReleaseBranch) {
   } else {
     exec(
       `USE_HERMES=${
-        argv.hermes ? 1 : 0
-      } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+        argv.hermes === true ? 1 : 0
+      } CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
   }
 
   // if everything succeeded so far, we can launch Metro and the app
   // start the Metro server in a separate window
-  launchPackagerInSeparateWindow(pwd());
+  launchPackagerInSeparateWindow(pwd().toString());
 
   // launch the app on iOS simulator
   exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
@@ -103,17 +111,19 @@ async function testRNTesterIOS(circleCIArtifacts, onReleaseBranch) {
  * Parameters:
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
-async function testRNTesterAndroid(circleCIArtifacts) {
+async function testRNTesterAndroid(
+  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+) {
   maybeLaunchAndroidEmulator();
 
   console.info(
     `We're going to test the ${
-      argv.hermes ? 'Hermes' : 'JSC'
+      argv.hermes === true ? 'Hermes' : 'JSC'
     } version of RNTester Android with the new Architecture enabled`,
   );
 
   // Start the Metro server so it will be ready if the app can be built and installed successfully.
-  launchPackagerInSeparateWindow(pwd());
+  launchPackagerInSeparateWindow(pwd().toString());
 
   // Wait for the Android Emulator to be properly loaded and bootstrapped
   exec(
@@ -127,9 +137,10 @@ async function testRNTesterAndroid(circleCIArtifacts) {
     );
 
     const emulatorArch = exec('adb shell getprop ro.product.cpu.abi').trim();
-    const rntesterAPKURL = argv.hermes
-      ? await circleCIArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
-      : await circleCIArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
+    const rntesterAPKURL =
+      argv.hermes === true
+        ? await circleCIArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
+        : await circleCIArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
 
     console.info('Start Downloading APK');
     circleCIArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
@@ -138,7 +149,7 @@ async function testRNTesterAndroid(circleCIArtifacts) {
   } else {
     exec(
       `../../gradlew :packages:rn-tester:android:app:${
-        argv.hermes ? 'installHermesDebug' : 'installJscDebug'
+        argv.hermes === true ? 'installHermesDebug' : 'installJscDebug'
       } --quiet`,
     );
   }
@@ -161,7 +172,10 @@ async function testRNTesterAndroid(circleCIArtifacts) {
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
-async function testRNTester(circleCIArtifacts, onReleaseBranch) {
+async function testRNTester(
+  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  onReleaseBranch /*: boolean */,
+) {
   // FIXME: make sure that the commands retains colors
   // (--ansi) doesn't always work
   // see also https://github.com/shelljs/shelljs/issues/86
@@ -177,7 +191,9 @@ async function testRNTester(circleCIArtifacts, onReleaseBranch) {
 
 // === RNTestProject === //
 
-async function testRNTestProject(circleCIArtifacts) {
+async function testRNTestProject(
+  circleCIArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+) {
   console.info("We're going to test a fresh new RN project");
 
   // create the local npm package to feed the CLI
@@ -195,7 +211,7 @@ async function testRNTestProject(circleCIArtifacts) {
   const buildType = 'dry-run';
 
   // Prepare some variables for later use
-  const repoRoot = pwd();
+  const repoRoot = pwd().toString();
   const reactNativePackagePath = `${repoRoot}/packages/react-native`;
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
 
@@ -239,7 +255,7 @@ async function testRNTestProject(circleCIArtifacts) {
   );
 
   // Update gradle properties to set Hermes as false
-  if (!argv.hermes) {
+  if (argv.hermes == null) {
     sed(
       '-i',
       'hermesEnabled=true',
@@ -254,7 +270,7 @@ async function testRNTestProject(circleCIArtifacts) {
     exec('bundle install');
     exec(
       `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        argv.hermes ? 1 : 0
+        argv.hermes === true ? 1 : 0
       } bundle exec pod install --ansi`,
     );
 
@@ -286,7 +302,8 @@ async function main() {
   const onReleaseBranch = branchName.endsWith('-stable');
 
   let circleCIArtifacts = await setupCircleCIArtifacts(
-    argv.circleciToken,
+    // $FlowIgnoreError[prop-missing]
+    argv.circleCIToken,
     branchName,
   );
 
@@ -297,4 +314,5 @@ async function main() {
   }
 }
 
+// $FlowIgnoreError[unused-promise]
 main();

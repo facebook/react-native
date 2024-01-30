@@ -30,7 +30,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -50,7 +49,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
-import com.facebook.react.views.view.ReactMapBufferViewManager;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -90,10 +88,9 @@ public class SurfaceMountingManager {
   private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
 
   @ThreadConfined(UI)
-  private RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
+  private @Nullable RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
 
   // This is null *until* StopSurface is called.
-  private Set<Integer> mTagSetForStoppedSurfaceLegacy;
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
@@ -170,9 +167,6 @@ public class SurfaceMountingManager {
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
     if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.containsKey(tag)) {
-      return true;
-    }
-    if (mTagSetForStoppedSurfaceLegacy != null && mTagSetForStoppedSurfaceLegacy.contains(tag)) {
       return true;
     }
     if (mTagToViewState == null) {
@@ -295,22 +289,14 @@ public class SurfaceMountingManager {
 
     Runnable runnable =
         () -> {
-          if (ReactFeatureFlags.fixStoppedSurfaceTagSetLeak) {
-            mTagSetForStoppedSurface = new SparseArrayCompat<>();
-            for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
-              // Using this as a placeholder value in the map. We're using SparseArrayCompat
-              // since it can efficiently represent the list of pending tags
-              mTagSetForStoppedSurface.put(entry.getKey(), this);
+          mTagSetForStoppedSurface = new SparseArrayCompat<>();
+          for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
+            // Using this as a placeholder value in the map. We're using SparseArrayCompat
+            // since it can efficiently represent the list of pending tags
+            mTagSetForStoppedSurface.put(entry.getKey(), this);
 
-              // We must call `onDropViewInstance` on all remaining Views
-              onViewStateDeleted(entry.getValue());
-            }
-          } else {
-            for (ViewState viewState : mTagToViewState.values()) {
-              // We must call `onDropViewInstance` on all remaining Views
-              onViewStateDeleted(viewState);
-            }
-            mTagSetForStoppedSurfaceLegacy = mTagToViewState.keySet();
+            // We must call `onDropViewInstance` on all remaining Views
+            onViewStateDeleted(entry.getValue());
           }
 
           // Evict all views from cache and memory
@@ -773,17 +759,9 @@ public class SurfaceMountingManager {
 
     // The View has been removed from the View hierarchy; now it
     // and all of its children, if any, need to be deleted, recursively.
-    // We want to maintain the legacy ordering: delete (and call onViewStateDeleted)
-    // for leaf nodes, and then parents, recursively.
     // Schedule the Runnable first, to detect if we need to schedule a Runnable at all.
     // Since this current function and the Runnable both run on the UI thread, there is
     // no race condition here.
-    runDeferredTagRemovalAndDeletion();
-    mReactTagsToRemove.push(tag);
-  }
-
-  @UiThread
-  private void runDeferredTagRemovalAndDeletion() {
     if (mReactTagsToRemove.empty()) {
       if (mRemoveDeleteTreeUIFrameCallback == null) {
         mRemoveDeleteTreeUIFrameCallback = new RemoveDeleteTreeUIFrameCallback(mThemedReactContext);
@@ -792,6 +770,7 @@ public class SurfaceMountingManager {
           .postFrameCallback(
               ReactChoreographer.CallbackType.IDLE_EVENT, mRemoveDeleteTreeUIFrameCallback);
     }
+    mReactTagsToRemove.push(tag);
   }
 
   @UiThread
@@ -852,10 +831,7 @@ public class SurfaceMountingManager {
 
     if (isLayoutable) {
       viewManager =
-          props instanceof ReadableMapBuffer
-              ? ReactMapBufferViewManager.INSTANCE
-              : new ReactViewManagerWrapper.DefaultViewManager(
-                  mViewManagerRegistry.get(componentName));
+          new ReactViewManagerWrapper.DefaultViewManager(mViewManagerRegistry.get(componentName));
       // View Managers are responsible for dealing with initial state and props.
       view =
           viewManager.createView(
@@ -1455,19 +1431,20 @@ public class SurfaceMountingManager {
           ViewState thisViewState = getNullableViewState(reactTag);
           if (thisViewState != null) {
             View thisView = thisViewState.mView;
-            int numChildren = 0;
-
-            // Children are managed by React Native if both of the following are true:
-            // 1) There are 1 or more children of this View, which must be a ViewGroup
-            // 2) Those children are managed by RN (this is not the case for certain native
-            // components, like embedded Litho hierarchies)
-            boolean childrenAreManaged = false;
-
             if (thisView instanceof ViewGroup) {
-              View nextChild = null;
+              IViewGroupManager viewManager = getViewGroupManager(thisViewState);
+
+              // Children are managed by React Native if both of the following are true:
+              // 1) There are 1 or more children of this View, which must be a ViewGroup
+              // 2) Those children are managed by RN (this is not the case for certain native
+              // components, like embedded Litho hierarchies)
+              boolean childrenAreManaged = false;
+
               // For reasons documented elsewhere in this class, getChildCount is not
               // necessarily reliable, and so we rely instead on requesting children directly.
-              while ((nextChild = ((ViewGroup) thisView).getChildAt(numChildren)) != null) {
+              View nextChild = null;
+              int numChildren = 0;
+              while ((nextChild = viewManager.getChildAt(thisView, numChildren)) != null) {
                 int childId = nextChild.getId();
                 childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
                 localChildren.push(nextChild.getId());
@@ -1487,16 +1464,17 @@ public class SurfaceMountingManager {
                   // In debug mode, the SoftException will cause a crash. In production it
                   // will not. This should give good visibility into whether or not this is
                   // a problem without causing user-facing errors.
-                  ((ViewGroup) thisView).removeAllViews();
+                  viewManager.removeAllViews(thisView);
                 } catch (RuntimeException e) {
                   childrenAreManaged = false;
                   ReactSoftExceptionLogger.logSoftException(TAG, e);
                 }
               }
-            }
-            if (childrenAreManaged) {
-              // Push tags onto the stack so we process all children
-              mReactTagsToRemove.addAll(localChildren);
+
+              if (childrenAreManaged) {
+                // Push tags onto the stack so we process all children
+                mReactTagsToRemove.addAll(localChildren);
+              }
             }
 
             // Immediately remove tag and notify listeners.

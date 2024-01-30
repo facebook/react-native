@@ -12,6 +12,10 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
+const {
+  generateSupportedApplePlatformsMacro,
+} = require('./ComponentsProviderUtils');
+
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
@@ -60,13 +64,19 @@ const LookupMapTemplate = ({
     {"${className}", ${className}Cls}, // ${libraryName}`;
 
 module.exports = {
-  generate(schemas: {[string]: SchemaType}): FilesOutput {
+  generate(
+    schemas: {[string]: SchemaType},
+    supportedApplePlatforms?: {[string]: {[string]: boolean}},
+  ): FilesOutput {
     const fileName = 'RCTThirdPartyFabricComponentsProvider.mm';
 
     const lookupMap = Object.keys(schemas)
       .map(libraryName => {
         const schema = schemas[libraryName];
-        return Object.keys(schema.modules)
+        const librarySupportedApplePlatforms =
+          supportedApplePlatforms?.[libraryName];
+
+        const generatedLookup = Object.keys(schema.modules)
           .map(moduleName => {
             const module = schema.modules[moduleName];
             if (module.type !== 'Component') {
@@ -98,7 +108,13 @@ module.exports = {
 
             return componentTemplates.length > 0 ? componentTemplates : null;
           })
-          .filter(Boolean);
+          .filter(Boolean)
+          .join('\n');
+
+        return generateSupportedApplePlatformsMacro(
+          generatedLookup,
+          librarySupportedApplePlatforms,
+        );
       })
       .join('\n');
 

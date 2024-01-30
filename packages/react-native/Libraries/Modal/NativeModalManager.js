@@ -8,14 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  // RCTEventEmitter
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('ModalManager'): ?Spec);
+export * from '../../src/private/specs/modules/NativeModalManager';
+import NativeModalManager from '../../src/private/specs/modules/NativeModalManager';
+export default NativeModalManager;

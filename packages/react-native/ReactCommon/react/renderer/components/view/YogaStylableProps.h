@@ -29,11 +29,6 @@ class YogaStylableProps : public Props {
       const char* propName,
       const RawValue& value);
 
-#ifdef ANDROID
-  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
-      const override;
-#endif
-
 #pragma mark - Props
   yoga::Style yogaStyle{};
 
