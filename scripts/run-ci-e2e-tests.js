@@ -65,7 +65,7 @@ try {
   describe('Create react-native package');
   if (
     exec(
-      'node ./scripts/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
+      'node ./scripts/releases/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
     ).code
   ) {
     echo('Failed to set version and update package.json ready for release');

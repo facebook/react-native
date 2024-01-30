@@ -259,7 +259,7 @@ jobs:
       - run_yarn
       - run:
           name: Set React Native Version
-          command: node ./scripts/set-rn-version.js --build-type << parameters.release_type >>
+          command: node ./scripts/releases/set-rn-version.js --build-type << parameters.release_type >>
 
       - with_gradle_cache:
           steps:
@@ -303,7 +303,7 @@ jobs:
           name: Set React Native Version to "dry-run"
           # test_android executes only for dry-run builds. We need to bump the version for caching
           # reasons otherwise we won't reuse the artifacts from the build_android job.
-          command: node ./scripts/set-rn-version.js --build-type "dry-run"
+          command: node ./scripts/releases/set-rn-version.js --build-type "dry-run"
       - attach_workspace:
           at: .
 
@@ -566,7 +566,7 @@ jobs:
                         if [[ << parameters.architecture >> == "NewArch" ]]; then
                           export RCT_NEW_ARCH_ENABLED=1
                         fi
-                        
+
                         cd packages/rn-tester
 
                         bundle install

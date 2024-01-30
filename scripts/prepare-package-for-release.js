@@ -74,7 +74,7 @@ if (version == null) {
 
 if (
   exec(
-    `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
+    `node scripts/releases/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
   ).code
 ) {
   echo(`Failed to set React Native version to ${version}`);
