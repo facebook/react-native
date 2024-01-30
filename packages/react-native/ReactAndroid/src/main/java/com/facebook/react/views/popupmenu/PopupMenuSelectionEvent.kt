@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
+@file:Suppress("DEPRECATION") // We want to use RCTEventEmitter for interop purposes
 package com.facebook.react.views.popupmenu
 
 import com.facebook.react.bridge.Arguments

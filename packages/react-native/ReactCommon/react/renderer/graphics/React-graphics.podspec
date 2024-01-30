@@ -28,6 +28,8 @@ Pod::Spec.new do |s|
     "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fmt/include\""
   ]
 
   s.name                   = "React-graphics"
@@ -60,4 +62,6 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "React-Core/Default", version
   s.dependency "React-utils"
+  s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
 end
