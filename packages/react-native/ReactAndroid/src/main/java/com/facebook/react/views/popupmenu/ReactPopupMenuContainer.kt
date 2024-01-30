@@ -27,8 +27,7 @@ class ReactPopupMenuContainer(context: Context) : FrameLayout(context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
       val view = getChildAt(0)
       val popupMenu = PopupMenu(context, view)
-      var menu: Menu? = null
-      menu = popupMenu.menu
+      var menu = popupMenu.menu
       val items = menuItems
       if (items != null) {
         for (i in 0 until items.size()) {
