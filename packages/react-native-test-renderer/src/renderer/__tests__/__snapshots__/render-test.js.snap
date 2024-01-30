@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render toJSON returns expected JSON output based on renderer component 1`] = `
+"<>
+  <RCTView>
+    <RCTText accessible=true allowFontScaling=true ellipsizeMode="tail" isHighlighted=false selectionColor=null>
+      <RCTRawText text="Hello" />
+    </RCTText>
+    <RCTView />
+  </RCTView>
+</>"
+`;
