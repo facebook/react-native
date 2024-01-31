@@ -977,6 +977,25 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.16
+
+### Changed
+
+#### Android specific
+
+- Cherry-picking 'Call super.onRequestPermissionsResult in ReactActivity (#42478)' onto 0.71 ([8593306b34](https://github.com/facebook/react-native/commit/8593306b348da498f18984985bc70e3e32156655) by [@LimAlbert](https://github.com/LimAlbert))
+
+### Fixed
+
+- Symbolication stack fix (0.71.x) ([022a9f7835](https://github.com/facebook/react-native/commit/022a9f783561750be0f5c0e685d2ace8dd84d910) by [@joe-sam](https://github.com/joe-sam))
+
+#### iOS specific
+
+- Fix path to build-apple-framework ([9d6a740bf7](https://github.com/facebook/react-native/commit/9d6a740bf7620a3c66f241351b4885f09b4e7524) by [@hurali97](https://github.com/hurali97))
+- Disable bitcode for Hermes ([d6fe029858](https://github.com/facebook/react-native/commit/d6fe02985849ba4712968b5811eeaf460640f85d) by [@hurali97](https://github.com/hurali97))
+- Fix symbol not found _jump_fcontext with use_frameworks! ([bb592ef0dd](https://github.com/facebook/react-native/commit/bb592ef0dda30c7652b23b45843f636c6439278d) by [@hurali97](https://github.com/hurali97))
+- Fix flags ([c38cdb60ca](https://github.com/facebook/react-native/commit/c38cdb60cad8fb6b0015e5d57afa4dd346fd71d2) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.71.15
 
 ### Fixed
