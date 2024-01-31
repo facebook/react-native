@@ -180,6 +180,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Appearance/AppearanceExample'),
   },
   {
+    key: 'XRExample',
+    module: require('../examples/XR/XRExample'),
+  },
+  {
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
   },

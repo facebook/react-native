@@ -146,6 +146,13 @@
         "jsSrcsDir": "src"
       },
       {
+        "name": "FBReactNativeSpec_visionOS",
+        "type": "modules",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "src/private/specs/visionos_modules"
+      },
+      {
         "name": "rncore",
         "type": "components",
         "ios": {},

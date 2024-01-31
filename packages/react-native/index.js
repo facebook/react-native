@@ -91,6 +91,7 @@ import typeof Platform from './Libraries/Utilities/Platform';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof Vibration from './Libraries/Vibration/Vibration';
+import typeof XR from './Libraries/XR/XR';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce');
@@ -304,6 +305,9 @@ module.exports = {
   },
   get Share(): Share {
     return require('./Libraries/Share/Share');
+  },
+  get XR(): XR {
+    return require('./Libraries/XR/XR');
   },
   get StyleSheet(): StyleSheet {
     return require('./Libraries/StyleSheet/StyleSheet');

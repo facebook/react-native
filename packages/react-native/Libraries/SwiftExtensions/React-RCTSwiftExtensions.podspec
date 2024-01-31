@@ -24,4 +24,5 @@ Pod::Spec.new do |s|
   s.frameworks = ["UIKit", "SwiftUI"]
 
   s.dependency "React-Core"
+  s.dependency "React-RCTXR" 
 end

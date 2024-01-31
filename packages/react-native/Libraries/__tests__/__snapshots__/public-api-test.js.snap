@@ -9170,6 +9170,22 @@ exports[`public API should not change unintentionally Libraries/WebSocket/WebSoc
 
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketInterceptor.js 1`] = `"UNTYPED MODULE"`;
 
+exports[`public API should not change unintentionally Libraries/XR/NativeXRModule.js 1`] = `
+"export * from \\"../../src/private/specs/visionos_modules/NativeXRModule\\";
+declare export default typeof NativeXRModule;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/XR/XR.js 1`] = `
+"declare const XR: {
+  requestSession: (sessionId?: string) => Promise<void>,
+  endSession: () => Promise<void>,
+  get supportsMultipleScenes(): boolean,
+};
+declare module.exports: XR;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/YellowBox/YellowBoxDeprecated.js 1`] = `
 "declare const React: $FlowFixMe;
 type Props = $ReadOnly<{||}>;
@@ -9289,6 +9305,7 @@ declare module.exports: {
   get PushNotificationIOS(): PushNotificationIOS,
   get Settings(): Settings,
   get Share(): Share,
+  get XR(): XR,
   get StyleSheet(): StyleSheet,
   get Systrace(): Systrace,
   get ToastAndroid(): ToastAndroid,

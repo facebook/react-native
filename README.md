@@ -69,13 +69,109 @@ This is a prop on `<View />` component allowing to add hover effect. It's applie
 
 If you want to customize it you can use the `visionos_hoverEffect` prop, like so:
 
-```jsx
+```tsx
 <TouchableOpacity visionos_hoverEffect="lift">
   <Text>Click me</Text>
 </TouchableOpacity>
 ```
 
 The available options are: `lift` or `highlight`.
+
+### `XR` API 
+Manage Immersive Experiences.
+
+#### Methods
+**`requestSession`**
+```js
+requestSession: (sessionId?: string) => Promise<void>
+```
+Opens a new [`ImmersiveSpace`](https://developer.apple.com/documentation/swiftui/immersive-spaces) given it's unique `Id`.
+
+**`endSession`**
+```js
+endSession: () => Promise<void>
+```
+Closes currently open `ImmersiveSpace`.
+
+#### Constants
+**`supportsMultipleScenes`**
+```js
+supportsMultipleScenes: boolean
+```
+A Boolean value that indicates whether the app may display multiple scenes simultaneously. Returns the value of `UIApplicationSupportsMultipleScenes` key from `Info.plist`.
+
+### Example Usage
+
+1. Set `UIApplicationSupportsMultipleScenes` to `true` in `Info.plist`:
+```diff
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationPreferredDefaultSceneSessionRole</key>
+		<string>UIWindowSceneSessionRoleApplication</string>
+		<key>UIApplicationSupportsMultipleScenes</key>
+-   <false/>
++		<true/>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
+</dict>
+</plist>
+
+```
+
+
+1. Inside `App.swift` add new `ImmersiveSpace`:
+```diff
+@main
+struct HelloWorldApp: App {
+  @UIApplicationDelegateAdaptor var delegate: AppDelegate
++ @State private var immersionLevel: ImmersionStyle = .mixed
+  
+  var body: some Scene {
+    RCTMainWindow(moduleName: "HelloWorldApp")
++   ImmersiveSpace(id: "TestImmersiveSpace") {
++     // RealityKit content goes here
++   }
++    .immersionStyle(selection: $immersionLevel, in: .mixed, .progressive, .full)
+  }
+}
+```
+For more information about `ImmersiveSpace` API refer to [Apple documentation](https://developer.apple.com/documentation/swiftui/immersive-spaces).
+
+In the above example we set `ImmersiveSpace` id to `TestImmersiveSpace`.
+
+Now in our JS code, we can call: 
+
+```js
+import {XR} from "@callstack/react-native-visionos"
+//...
+const openXRSession = async () => {
+  try {
+    if (!XR.supportsMultipleScenes) {
+      Alert.alert('Error', 'Multiple scenes are not supported');
+      return;
+    }
+    await XR.requestSession('TestImmersiveSpace'); // Pass the same identifier from `App.swift`
+  } catch (e) {
+    Alert.alert('Error', e.message);
+  }
+};
+
+const closeXRSession = async () => {
+  await XR.endSession();
+};
+```
+> [!CAUTION]
+> Opening an `ImmersiveSpace` can fail in this secarios:
+> - `ImmersiveSpace` is not declared.
+> - `UIApplicationSupportsMultipleScenes` is set to `false`.
+> - User cancels the request.
+
+For a full example usage, refer to [`XRExample.js`](https://github.com/callstack/react-native-visionos/blob/main/packages/rn-tester/js/examples/XR/XRExample.js).
 
 ## Contributing
 

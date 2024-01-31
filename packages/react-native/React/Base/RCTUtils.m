@@ -571,6 +571,14 @@ UIWindow *__nullable RCTKeyWindow(void)
         ![scene isKindOfClass:[UIWindowScene class]]) {
       continue;
     }
+    
+#if TARGET_OS_VISION
+    /// Presenting scenes over Immersive Spaces leads to crash: "Presentations are not permitted within volumetric window scenes."
+    if (scene.session.role == UISceneSessionRoleImmersiveSpaceApplication) {
+      continue;
+    }
+#endif
+    
     UIWindowScene *windowScene = (UIWindowScene *)scene;
 
     for (UIWindow *window in windowScene.windows) {
