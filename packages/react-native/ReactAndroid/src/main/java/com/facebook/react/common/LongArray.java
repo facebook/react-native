@@ -7,7 +7,10 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Object wrapping an auto-expanding long[]. Like an ArrayList<Long> but without the autoboxing. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LongArray {
 
   private static final double INNER_ARRAY_GROWTH_FACTOR = 1.8;

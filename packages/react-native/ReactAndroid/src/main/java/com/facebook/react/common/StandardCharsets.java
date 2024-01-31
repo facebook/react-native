@@ -7,12 +7,14 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.nio.charset.Charset;
 
 /**
  * Not all versions of Android SDK have this class in nio package. This is the reason to have it
  * around.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated(
     since = "Deprecated class since v0.73.0, please use java.nio.charset.StandardCharsets instead.",
     forRemoval = true)

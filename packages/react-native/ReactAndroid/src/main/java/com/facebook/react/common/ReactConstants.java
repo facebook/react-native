@@ -7,6 +7,9 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactConstants {
 
   public static final String TAG = "ReactNative";
