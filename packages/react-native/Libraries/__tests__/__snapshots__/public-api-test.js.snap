@@ -8976,7 +8976,7 @@ declare export class PerformanceMeasure extends PerformanceEntry {
 declare export default class Performance {
   eventCounts: EventCounts;
   get memory(): MemoryInfo;
-  get reactNativeStartupTiming(): ReactNativeStartupTiming;
+  get rnStartupTiming(): ReactNativeStartupTiming;
   mark(markName: string, markOptions?: PerformanceMarkOptions): PerformanceMark;
   clearMarks(markName?: string): void;
   measure(
