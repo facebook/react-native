@@ -25,11 +25,9 @@
   "dependencies": {
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1"
-  },
-  "peerDependencies": {
+    "nullthrows": "^1.1.1",
     "react": "18.2.0",
-    "react-native": "*"
+    "react-native": "1000.0.0"
   },
   "codegenConfig": {
     "name": "AppSpecs",

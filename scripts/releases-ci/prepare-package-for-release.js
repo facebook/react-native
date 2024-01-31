@@ -95,8 +95,19 @@ async function main() {
   }
 
   // Release builds should commit the version bumps, and create tags.
+  echo('Updating RNTester react-native dependency...');
+  if (
+    exec(`source scripts/update_rn_tester.sh && update_package_json ${version}`)
+      .code
+  ) {
+    echo('Failed to update RNTester react-native dependency.');
+    echo('Fix the issue, revert and try again.');
+    exit(1);
+  }
+
+  // Release builds should commit the version bumps, and create tags.
   echo('Updating RNTester Podfile.lock...');
-  if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
+  if (exec('source scripts/update_rn_tester.sh && update_pods').code) {
     echo('Failed to update RNTester Podfile.lock.');
     echo('Fix the issue, revert and try again.');
     exit(1);

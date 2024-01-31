@@ -25,3 +25,15 @@ update_pods () {
   bundle exec pod install
   cd "$THIS_DIR" || exit
 }
+
+update_package_json () {
+  if [ $# -eq 0 ]
+  then
+    exit
+  fi
+  cd "$RNTESTER_DIR" || exit
+  VERSION=$1 || exit
+  contents=$(jq ".dependencies[\"react-native\"] = \"$VERSION\"" package.json) || exit
+  echo $contents > package.json || exit
+  cd "$THIS_DIR" || exit
+}

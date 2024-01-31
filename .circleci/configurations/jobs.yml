@@ -1160,6 +1160,8 @@ jobs:
             - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
       - brew_install:
           package: cmake
+      - brew_install:
+          package: jq
       - run:
           name: "Set new react-native version and commit changes"
           command: |
