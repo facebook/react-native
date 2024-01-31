@@ -124,7 +124,7 @@ public class ReactDelegate {
 
   public void onUserLeaveHint() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      mReactHost.onUserLeaveHint(mActivity);
+      mReactHost.onHostLeaveHint(mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onUserLeaveHint(mActivity);

@@ -284,7 +284,7 @@ public class ReactHostImpl implements ReactHost {
 
   @ThreadConfined(UI)
   @Override
-  public void onUserLeaveHint(final @Nullable Activity activity) {
+  public void onHostLeaveHint(final @Nullable Activity activity) {
     final String method = "onUserLeaveHint(activity)";
     log(method);
 
