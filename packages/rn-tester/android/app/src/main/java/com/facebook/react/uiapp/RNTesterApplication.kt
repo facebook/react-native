@@ -79,7 +79,6 @@ class RNTesterApplication : Application(), ReactApplication {
                                   false, // isCxxModule
                                   true // isTurboModule
                                   ),
-
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
@@ -89,7 +88,6 @@ class RNTesterApplication : Application(), ReactApplication {
                                   false, // isCxxModule
                                   false // isTurboModule
                                   ))
-
                     } else {
                       emptyMap()
                     }
