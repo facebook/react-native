@@ -5,6 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -54,7 +55,7 @@ let argv = yargs
     return true;
   }).argv;
 
-function exitIfNotOnReleaseBranch(branch) {
+function exitIfNotOnReleaseBranch(branch /*: string */) {
   if (!isReleaseBranch(branch)) {
     console.log(
       'This script must be run in a react-native git repository checkout and on a release branch',
@@ -64,7 +65,11 @@ function exitIfNotOnReleaseBranch(branch) {
 }
 
 const buildExecutor =
-  (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) =>
+  (
+    packageAbsolutePath /*: string */,
+    packageRelativePathFromRoot /*: string */,
+    packageManifest /*: $FlowFixMe */,
+  ) =>
   async () => {
     const {name: packageName} = packageManifest;
     if (packageManifest.private) {
@@ -109,7 +114,7 @@ async function exitIfUnreleasedPackages() {
   }
 }
 
-function triggerReleaseWorkflow(options) {
+function triggerReleaseWorkflow(options /*: $FlowFixMe */) {
   return new Promise((resolve, reject) => {
     request(options, function (error, response, body) {
       if (error) {
@@ -144,7 +149,9 @@ async function main() {
     exit(1);
   }
 
+  // $FlowFixMe[prop-missing]
   const token = argv.token;
+  // $FlowFixMe[prop-missing]
   const releaseVersion = argv.toVersion;
   failIfTagExists(releaseVersion, 'release');
 
@@ -155,6 +162,7 @@ async function main() {
   });
 
   if (!pushed) {
+    // $FlowFixMe[prop-missing]
     console.log(`Please run 'git push ${argv.remote} ${branch}'`);
     exit(1);
     return;
@@ -206,6 +214,7 @@ async function main() {
   // See response: https://circleci.com/docs/api/v2/#operation/triggerPipeline
   const body = await triggerReleaseWorkflow(options);
   console.log(
+    // $FlowFixMe[incompatible-use]
     `Monitor your release workflow: https://app.circleci.com/pipelines/github/facebook/react-native/${body.number}`,
   );
 
@@ -215,6 +224,7 @@ async function main() {
   // - Verify RN-diff publish is through
 }
 
+// $FlowFixMe[unused-promise]
 main().then(() => {
   exit(0);
 });

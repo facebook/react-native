@@ -5,9 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
+
+/*::
+import type {BuildType} from './releases/version-utils';
+*/
 
 const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
 const {getNpmInfo, publishPackage} = require('./npm-utils');
@@ -43,7 +48,7 @@ const yargs = require('yargs');
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-if (require.main === module) {
+async function main() {
   const argv = yargs
     .option('t', {
       alias: 'builtType',
@@ -53,12 +58,13 @@ if (require.main === module) {
     })
     .strict().argv;
 
+  // $FlowFixMe[prop-missing]
   const buildType = argv.builtType;
 
-  publishNpm(buildType);
+  await publishNpm(buildType);
 }
 
-function publishNpm(buildType) {
+async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
   if (buildType === 'prealpha') {
@@ -70,12 +76,13 @@ function publishNpm(buildType) {
   if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
     // Publish monorepo nightlies and prealphas if there are updates, returns the new version for each package
     const monorepoVersions =
+      // $FlowFixMe[incompatible-call]
       buildType === 'dry-run' ? null : getAndUpdatePackages(version, buildType);
 
     try {
       // Update the react-native and template packages with the react-native version
       // and nightly versions of monorepo deps
-      setReactNativeVersion(version, monorepoVersions, buildType);
+      await setReactNativeVersion(version, monorepoVersions, buildType);
     } catch (e) {
       console.error(`Failed to set version number to ${version}`);
       console.error(e);
@@ -96,6 +103,7 @@ function publishNpm(buildType) {
 
   const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
   const result = publishPackage(packagePath, {
+    // $FlowFixMe[incompatible-call]
     tags: [tag],
     otp: process.env.NPM_CONFIG_OTP,
   });
@@ -109,4 +117,11 @@ function publishNpm(buildType) {
   }
 }
 
-module.exports = publishNpm;
+module.exports = {
+  publishNpm,
+};
+
+if (require.main === module) {
+  // eslint-disable-next-line no-void
+  void main();
+}
