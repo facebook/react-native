@@ -14,12 +14,14 @@ import static com.facebook.react.fabric.mounting.mountitems.FabricNameComponentM
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 final class PreAllocateViewMountItem implements MountItem {
 
   private final @NonNull String mComponent;
