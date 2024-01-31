@@ -27,8 +27,6 @@ function MemoryExample(): React.Node {
   const onGetMemoryInfo = useCallback(() => {
     // performance.memory is not included in bom.js yet.
     // Once we release the change in flow this can be removed.
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[incompatible-call]
     setMemoryInfo(performance.memory);
   }, []);
   return (
@@ -58,9 +56,7 @@ function StartupTimingExample(): React.Node {
   const onGetStartupTiming = useCallback(() => {
     // performance.reactNativeStartupTiming is not included in bom.js yet.
     // Once we release the change in flow this can be removed.
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[incompatible-call]
-    setStartUpTiming(performance.reactNativeStartupTiming);
+    setStartUpTiming(performance.rnStartupTiming);
   }, []);
   return (
     <RNTesterPage noScroll={true} title="performance.reactNativeStartupTiming">

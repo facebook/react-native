@@ -141,7 +141,7 @@ export default class Performance {
   }
 
   // Startup metrics is not used in web, but only in React Native.
-  get reactNativeStartupTiming(): ReactNativeStartupTiming {
+  get rnStartupTiming(): ReactNativeStartupTiming {
     if (NativePerformance?.getReactNativeStartupTiming) {
       const {
         startTime,
