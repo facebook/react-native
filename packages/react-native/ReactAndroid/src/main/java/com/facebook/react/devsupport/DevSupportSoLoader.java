@@ -7,8 +7,10 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.soloader.SoLoader;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DevSupportSoLoader {
   private static volatile boolean sDidInit = false;
 
