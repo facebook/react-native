@@ -36,7 +36,7 @@ jobs:
     permissions:
       actions: write
     steps:
-      - if: ${{ !contains(fromJSON(env.allowed_users), github.actor.login) }}
+      - if: ${{ !contains(fromJSON(env.allowed_users), github.actor) }}
         run: |
           echo "Request from actor's login wasn't on the allowed_users list."
           curl -X POST \
