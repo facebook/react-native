@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -45,10 +46,18 @@ const argv = yargs
   }).argv;
 
 const branch = process.env.CIRCLE_BRANCH;
+// $FlowFixMe[prop-missing]
 const remote = argv.remote;
+// $FlowFixMe[prop-missing]
 const releaseVersion = argv.toVersion;
+// $FlowFixMe[prop-missing]
 const isLatest = argv.latest;
+// $FlowFixMe[prop-missing]
 const isDryRun = argv.dryRun;
+
+if (branch == null) {
+  throw new Error('process.env.CIRCLE_BRANCH is not set');
+}
 
 const buildType = isDryRun
   ? 'dry-run'

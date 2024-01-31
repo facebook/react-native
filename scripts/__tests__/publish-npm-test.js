@@ -44,7 +44,7 @@ jest
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
-const publishNpm = require('../publish-npm');
+const {publishNpm} = require('../publish-npm');
 let consoleError;
 
 describe('publish-npm', () => {
@@ -68,15 +68,15 @@ describe('publish-npm', () => {
 
   describe('publish-npm.js', () => {
     it('Fails when invalid build type is passed', () => {
-      expect(() => publishNpm('invalid')).toThrowError(
+      expect(publishNpm('invalid')).rejects.toThrow(
         'Unsupported build type: invalid',
       );
     });
   });
 
   describe('dry-run', () => {
-    it('should set version and not publish', () => {
-      publishNpm('dry-run');
+    it('should set version and not publish', async () => {
+      await publishNpm('dry-run');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(exitMock).toHaveBeenCalledWith(0);
@@ -93,13 +93,13 @@ describe('publish-npm', () => {
   });
 
   describe('nightly', () => {
-    it('should publish', () => {
+    it('should publish', async () => {
       execMock
         .mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0})
         .mockReturnValueOnce({code: 0});
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
 
-      publishNpm('nightly');
+      await publishNpm('nightly');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
@@ -116,14 +116,14 @@ describe('publish-npm', () => {
       expect(exitMock).toHaveBeenCalledWith(0);
     });
 
-    it('should fail to set version', () => {
+    it('should fail to set version', async () => {
       execMock.mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0});
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
       setReactNativeVersionMock.mockImplementation(() => {
         throw new Error('something went wrong');
       });
 
-      publishNpm('nightly');
+      await publishNpm('nightly');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
@@ -140,19 +140,19 @@ describe('publish-npm', () => {
   describe('release', () => {
     it('should fail with invalid release version', () => {
       process.env.CIRCLE_TAG = '1.0.1';
-      expect(() => {
-        publishNpm('release');
-      }).toThrow('Version 1.0.1 is not valid for Release');
+      expect(publishNpm('release')).rejects.toThrow(
+        'Version 1.0.1 is not valid for Release',
+      );
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
     });
 
-    it('should publish non-latest', () => {
+    it('should publish non-latest', async () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(false);
       process.env.CIRCLE_TAG = '0.81.1';
       process.env.NPM_CONFIG_OTP = 'otp';
 
-      publishNpm('release');
+      await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
@@ -171,13 +171,13 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should publish latest stable', () => {
+    it('should publish latest stable', async () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.1';
       process.env.NPM_CONFIG_OTP = 'otp';
 
-      publishNpm('release');
+      await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
@@ -196,13 +196,13 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should fail to publish latest stable', () => {
+    it('should fail to publish latest stable', async () => {
       execMock.mockReturnValueOnce({code: 1});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.1';
       process.env.NPM_CONFIG_OTP = 'otp';
 
-      publishNpm('release');
+      await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.1';
@@ -219,13 +219,13 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should publish next', () => {
+    it('should publish next', async () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.0-rc.4';
       process.env.NPM_CONFIG_OTP = 'otp';
 
-      publishNpm('release');
+      await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       const expectedVersion = '0.81.0-rc.4';
