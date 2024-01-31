@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // We want to use ReactFeatureFlags here specifically
+
 package com.facebook.react.defaults
 
 import com.facebook.react.common.annotations.VisibleForTesting
@@ -25,7 +27,6 @@ import com.facebook.react.config.ReactFeatureFlags
 object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   @JvmOverloads
-  @Suppress("DEPRECATION")
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
