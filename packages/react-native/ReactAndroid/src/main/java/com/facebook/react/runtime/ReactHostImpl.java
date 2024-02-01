@@ -276,8 +276,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onHostResume(final @Nullable Activity activity) {
-    final String method = "onHostResume(activity)";
-    log(method);
+    log("onHostResume(activity)");
 
     setCurrentActivity(activity);
     ReactContext currentContext = getCurrentReactContext();
@@ -288,9 +287,19 @@ public class ReactHostImpl implements ReactHost {
 
   @ThreadConfined(UI)
   @Override
+  public void onHostLeaveHint(final @Nullable Activity activity) {
+    log("onUserLeaveHint(activity)");
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onUserLeaveHint(activity);
+    }
+  }
+
+  @ThreadConfined(UI)
+  @Override
   public void onHostPause(final @Nullable Activity activity) {
-    final String method = "onHostPause(activity)";
-    log(method);
+    log("onHostPause(activity)");
 
     ReactContext currentContext = getCurrentReactContext();
 
@@ -317,8 +326,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onHostPause() {
-    final String method = "onHostPause()";
-    log(method);
+    log("onHostPause()");
 
     ReactContext currentContext = getCurrentReactContext();
 
@@ -331,8 +339,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onHostDestroy() {
-    final String method = "onHostDestroy()";
-    log(method);
+    log("onHostDestroy()");
 
     // TODO(T137233065): Disable DevSupportManager here
     moveToHostDestroy(getCurrentReactContext());
@@ -341,8 +348,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onHostDestroy(@Nullable Activity activity) {
-    final String method = "onHostDestroy(activity)";
-    log(method);
+    log("onHostDestroy(activity)");
 
     Activity currentActivity = getCurrentActivity();
 
@@ -475,12 +481,11 @@ public class ReactHostImpl implements ReactHost {
    */
   @Override
   public TaskInterface<Void> destroy(String reason, @Nullable Exception ex) {
-    final String method = "destroy()";
     return Task.call(
             () -> {
               if (mReloadTask != null) {
                 log(
-                    method,
+                    "destroy()",
                     "Reloading React Native. Waiting for reload to finish before destroying React Native.");
                 return mReloadTask.continueWithTask(
                     task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
@@ -641,17 +646,15 @@ public class ReactHostImpl implements ReactHost {
    */
   /* package */ Task<Boolean> callFunctionOnModule(
       final String moduleName, final String methodName, final NativeArray args) {
-    final String method = "callFunctionOnModule(\"" + moduleName + "\", \"" + methodName + "\")";
     return callWithExistingReactInstance(
-        method,
+        "callFunctionOnModule(\"" + moduleName + "\", \"" + methodName + "\")",
         reactInstance -> {
           reactInstance.callFunctionOnModule(moduleName, methodName, args);
         });
   }
 
   /* package */ void attachSurface(ReactSurfaceImpl surface) {
-    final String method = "attachSurface(surfaceId = " + surface.getSurfaceID() + ")";
-    log(method);
+    log("attachSurface(surfaceId = " + surface.getSurfaceID() + ")");
 
     synchronized (mAttachedSurfaces) {
       mAttachedSurfaces.add(surface);
@@ -659,8 +662,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ void detachSurface(ReactSurfaceImpl surface) {
-    final String method = "detachSurface(surfaceId = " + surface.getSurfaceID() + ")";
-    log(method);
+    log("detachSurface(surfaceId = " + surface.getSurfaceID() + ")");
 
     synchronized (mAttachedSurfaces) {
       mAttachedSurfaces.remove(surface);
@@ -707,9 +709,8 @@ public class ReactHostImpl implements ReactHost {
 
   @ThreadConfined("ReactHost")
   private Task<Void> getOrCreateStartTask() {
-    final String method = "getOrCreateStartTask()";
     if (mStartTask == null) {
-      log(method, "Schedule");
+      log("getOrCreateStartTask()", "Schedule");
       mStartTask =
           waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(
@@ -756,7 +757,6 @@ public class ReactHostImpl implements ReactHost {
 
   private Task<Boolean> callWithExistingReactInstance(
       final String callingMethod, final VeniceThenable<ReactInstance> continuation) {
-    final String method = "callWithExistingReactInstance(" + callingMethod + ")";
 
     return mReactInstanceTaskRef
         .get()
@@ -764,7 +764,9 @@ public class ReactHostImpl implements ReactHost {
             task -> {
               final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
-                raiseSoftException(method, "Execute: ReactInstance null. Dropping work.");
+                raiseSoftException(
+                    "callWithExistingReactInstance(" + callingMethod + ")",
+                    "Execute: ReactInstance null. Dropping work.");
                 return FALSE;
               }
 
@@ -776,7 +778,6 @@ public class ReactHostImpl implements ReactHost {
 
   private Task<Void> callAfterGetOrCreateReactInstance(
       final String callingMethod, final VeniceThenable<ReactInstance> runnable) {
-    final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
     return getOrCreateReactInstance()
         .onSuccess(
@@ -784,7 +785,9 @@ public class ReactHostImpl implements ReactHost {
                 task -> {
                   final ReactInstance reactInstance = task.getResult();
                   if (reactInstance == null) {
-                    raiseSoftException(method, "Execute: ReactInstance is null");
+                    raiseSoftException(
+                        "callAfterGetOrCreateReactInstance(" + callingMethod + ")",
+                        "Execute: ReactInstance is null");
                     return null;
                   }
 
@@ -803,10 +806,9 @@ public class ReactHostImpl implements ReactHost {
   }
 
   private BridgelessReactContext getOrCreateReactContext() {
-    final String method = "getOrCreateReactContext()";
     return mBridgelessReactContextRef.getOrCreate(
         () -> {
-          log(method, "Creating BridgelessReactContext");
+          log("getOrCreateReactContext()", "Creating BridgelessReactContext");
           return new BridgelessReactContext(mContext, ReactHostImpl.this);
         });
   }
@@ -929,7 +931,7 @@ public class ReactHostImpl implements ReactHost {
                     final boolean isManagerResumed =
                         mReactLifecycleStateManager.getLifecycleState() == LifecycleState.RESUMED;
 
-                    /**
+                    /*
                      * ReactContext.onHostResume() should only be called when the user navigates to
                      * the first React Native screen.
                      *
@@ -953,7 +955,7 @@ public class ReactHostImpl implements ReactHost {
                       mReactLifecycleStateManager.moveToOnHostResume(
                           reactContext, getCurrentActivity());
                     } else {
-                      /**
+                      /*
                        * Call ReactContext.onHostResume() only when already in the resumed state
                        * which aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
                        */
@@ -979,8 +981,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   private Task<JSBundleLoader> getJsBundleLoader() {
-    final String method = "getJSBundleLoader()";
-    log(method);
+    log("getJSBundleLoader()");
 
     if (DEV && mAllowPackagerServerAccess) {
       return isMetroRunning()
@@ -1012,7 +1013,7 @@ public class ReactHostImpl implements ReactHost {
 
   private Task<Boolean> isMetroRunning() {
     final String method = "isMetroRunning()";
-    log(method);
+    log("isMetroRunning()");
 
     final TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
     final DevSupportManager asyncDevSupportManager = getDevSupportManager();
