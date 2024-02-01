@@ -10,7 +10,7 @@ file(GLOB react_featureflagsjni_SRCS CONFIGURE_DEPENDS *.cpp)
 add_library(
         react_featureflagsjni
         SHARED
-        ${featureflagsjni_SRCS}
+        ${react_featureflagsjni_SRCS}
 )
 
 target_include_directories(react_featureflagsjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
