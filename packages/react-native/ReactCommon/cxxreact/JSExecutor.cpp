@@ -36,8 +36,10 @@ double JSExecutor::performanceNow() {
 
 std::unique_ptr<jsinspector_modern::RuntimeAgent>
 JSExecutor::createRuntimeAgent(
-    jsinspector_modern::FrontendChannel frontendChannel) {
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState) {
   (void)frontendChannel;
+  (void)sessionState;
   return nullptr;
 }
 

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "SessionState.h"
+
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 
@@ -41,7 +43,8 @@ class InstanceTargetDelegate {
    * debugging.
    */
   virtual std::unique_ptr<RuntimeAgent> createRuntimeAgent(
-      FrontendChannel channel) = 0;
+      FrontendChannel channel,
+      SessionState& sessionState) = 0;
   virtual ~InstanceTargetDelegate();
 };
 
@@ -62,7 +65,9 @@ class InstanceTarget {
   InstanceTarget& operator=(const InstanceTarget&) = delete;
   InstanceTarget& operator=(InstanceTarget&&) = delete;
 
-  std::unique_ptr<InstanceAgent> createAgent(FrontendChannel channel);
+  std::unique_ptr<InstanceAgent> createAgent(
+      FrontendChannel channel,
+      SessionState& sessionState);
 
  private:
   InstanceTargetDelegate& delegate_;

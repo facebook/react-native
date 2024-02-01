@@ -345,8 +345,10 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
 std::unique_ptr<jsinspector_modern::RuntimeAgent>
 NativeToJsBridge::createRuntimeAgent(
-    jsinspector_modern::FrontendChannel frontendChannel) {
-  auto agent = m_executor->createRuntimeAgent(std::move(frontendChannel));
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState) {
+  auto agent =
+      m_executor->createRuntimeAgent(std::move(frontendChannel), sessionState);
   return agent;
 }
 

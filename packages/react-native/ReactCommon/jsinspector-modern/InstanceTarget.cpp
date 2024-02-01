@@ -6,6 +6,7 @@
  */
 
 #include "InstanceAgent.h"
+#include "SessionState.h"
 
 #include <jsinspector-modern/InstanceTarget.h>
 
@@ -19,8 +20,9 @@ InstanceTarget::InstanceTarget(InstanceTargetDelegate& delegate)
 InstanceTargetDelegate::~InstanceTargetDelegate() {}
 
 std::unique_ptr<InstanceAgent> InstanceTarget::createAgent(
-    FrontendChannel channel) {
-  auto runtimeAgent = delegate_.createRuntimeAgent(channel);
+    FrontendChannel channel,
+    SessionState& sessionState) {
+  auto runtimeAgent = delegate_.createRuntimeAgent(channel, sessionState);
   return std::make_unique<InstanceAgent>(
       channel, *this, std::move(runtimeAgent));
 }
