@@ -12,7 +12,6 @@
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {Button as ButtonType} from './Button.flow';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -429,4 +428,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = (Button: ButtonType);
+export default Button;
