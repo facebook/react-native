@@ -237,7 +237,10 @@ export type TextContentType =
   | 'birthdate'
   | 'birthdateDay'
   | 'birthdateMonth'
-  | 'birthdateYear';
+  | 'birthdateYear'
+  | 'dateTime'
+  | 'flightNumber'
+  | 'shipmentTrackingNumber';
 
 export type enterKeyHintType =
   // Cross Platform

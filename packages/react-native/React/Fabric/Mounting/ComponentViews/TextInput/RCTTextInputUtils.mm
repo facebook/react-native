@@ -233,6 +233,16 @@ UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
       }];
     }
 #endif
+      
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+    if (@available(iOS 15.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"dateTime" : UITextContentTypeDateTime,
+        @"flightNumber" : UITextContentTypeFlightNumber,
+        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
+      }];
+    }
+#endif
 
     contentTypeMap = mutableContentTypeMap;
   });
