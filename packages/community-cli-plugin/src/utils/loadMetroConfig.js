@@ -54,6 +54,19 @@ function getOverrideConfig(
     );
   }
 
+  // Always include the project root as a watch folder, since Metro expects this
+  const watchFolders = [config.projectRoot];
+
+  if (typeof config.watchFolders !== 'undefined') {
+    watchFolders.push(...config.watchFolders);
+  } else {
+    // Fallback to inferring a workspace root
+    const workspaceRoot = getWorkspaceRoot(ctx.root);
+    if (typeof workspaceRoot === 'string') {
+      watchFolders.push(workspaceRoot);
+    }
+  }
+
   const overrides: InputConfigT = {
     resolver,
     serializer: {
@@ -71,16 +84,8 @@ function getOverrideConfig(
         ),
       ],
     },
+    watchFolders,
   };
-
-  // Applying the heuristic of appending workspace root as watch folder,
-  // only if no other watch folder (beside the project root) has been given.
-  if (!config.watchFolders.some(folder => folder !== ctx.root)) {
-    const workspaceRoot = getWorkspaceRoot(ctx.root);
-    if (typeof workspaceRoot === 'string') {
-      overrides.watchFolders = [...config.watchFolders, workspaceRoot];
-    }
-  }
 
   return overrides;
 }
