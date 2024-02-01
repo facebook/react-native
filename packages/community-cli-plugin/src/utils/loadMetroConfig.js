@@ -119,10 +119,16 @@ This warning will be removed in future (https://github.com/facebook/metro/issues
     }
   }
 
-  const config = await loadConfig({
-    cwd,
-    ...options,
-  });
+  const config = await loadConfig(
+    {
+      cwd,
+      ...options,
+    },
+    {
+      // Enables users to explicitly specify watchFolders
+      watchFolders: undefined,
+    },
+  );
 
   const overrideConfig = getOverrideConfig(ctx, config);
 
