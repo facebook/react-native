@@ -227,6 +227,48 @@ function findExternalLibraries(pkgJson) {
   });
 }
 
+function findLibrariesFromReactNativeConfig(projectRoot) {
+  const rnConfigFileName = 'react-native.config.js';
+
+  console.log(
+    `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
+  );
+
+  const rnConfigFilePath = path.resolve(projectRoot, rnConfigFileName);
+
+  if (!fs.existsSync(rnConfigFilePath)) {
+    return [];
+  }
+  const rnConfig = require(rnConfigFilePath);
+
+  if (rnConfig.dependencies == null) {
+    return [];
+  }
+  return Object.keys(rnConfig.dependencies).flatMap(name => {
+    const dependencyConfig = rnConfig.dependencies[name];
+
+    if (!dependencyConfig.root) {
+      return [];
+    }
+    const codegenConfigFileDir = path.resolve(
+      projectRoot,
+      dependencyConfig.root,
+    );
+    let configFile;
+    try {
+      configFile = readPkgJsonInDirectory(codegenConfigFileDir);
+    } catch {
+      return [];
+    }
+
+    return extractLibrariesFromJSON(
+      configFile,
+      configFile.name,
+      codegenConfigFileDir,
+    );
+  });
+}
+
 function findProjectRootLibraries(pkgJson, projectRoot) {
   console.log('[Codegen] Searching for codegen-enabled libraries in the app.');
 
@@ -447,7 +489,11 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot) {
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     return projectLibraries;
   } else {
-    return [...projectLibraries, ...findExternalLibraries(pkgJson)];
+    return [
+      ...projectLibraries,
+      ...findExternalLibraries(pkgJson),
+      ...findLibrariesFromReactNativeConfig(projectRoot),
+    ];
   }
 }
 
