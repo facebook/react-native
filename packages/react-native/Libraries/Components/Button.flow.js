@@ -6,7 +6,6 @@
  *
  * @format
  * @flow strict-local
- * @generate-docs
  */
 
 'use strict';
