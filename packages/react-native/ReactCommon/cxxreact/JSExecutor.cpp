@@ -10,6 +10,7 @@
 #include "RAMBundleRegistry.h"
 
 #include <folly/Conv.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #include <chrono>
 
@@ -38,9 +39,8 @@ std::unique_ptr<jsinspector_modern::RuntimeAgent>
 JSExecutor::createRuntimeAgent(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState) {
-  (void)frontendChannel;
-  (void)sessionState;
-  return nullptr;
+  return std::make_unique<jsinspector_modern::FallbackRuntimeAgent>(
+      std::move(frontendChannel), sessionState, getDescription());
 }
 
 } // namespace facebook::react

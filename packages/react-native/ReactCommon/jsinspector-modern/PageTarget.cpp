@@ -79,8 +79,8 @@ class PageTargetSession {
   /**
    * Replace the current instance agent inside pageAgent_ with a new one
    * connected to the new InstanceTarget.
-   * \param instance The new instance target. May be nullptr to indicate there's
-   * no current instance.
+   * \param instance The new instance target. May be nullptr to indicate
+   * there's no current instance.
    */
   void setCurrentInstance(InstanceTarget* instance) {
     if (instance) {

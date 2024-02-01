@@ -22,9 +22,8 @@ std::unique_ptr<jsinspector_modern::RuntimeAgent>
 JSIRuntimeHolder::createInspectorAgent(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState) {
-  (void)frontendChannel;
-  (void)sessionState;
-  return nullptr;
+  return std::make_unique<jsinspector_modern::FallbackRuntimeAgent>(
+      std::move(frontendChannel), sessionState, runtime_->description());
 }
 
 } // namespace facebook::react
