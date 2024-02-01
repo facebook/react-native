@@ -8,7 +8,7 @@
  * @noformat
  */
 
-/*:: import type {ConfigT} from 'metro-config'; */
+/*:: import type {InputConfigT} from 'metro-config'; */
 
 const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
 
@@ -41,7 +41,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  */
 function getDefaultConfig(
   projectRoot /*: string */
-) /*: ConfigT */ {
+) /*: InputConfigT */ {
   const config = {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
@@ -82,14 +82,17 @@ function getDefaultConfig(
         },
       }),
     },
-    watchFolders: [],
   };
 
   // Set global hook so that the CLI can detect when this config has been loaded
   global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
 
+  const defaults /* :InputConfigT */ = {...getBaseConfig.getDefaultValues(projectRoot)};
+  // Deleting default empty watchFolders array allow a developer to explicitly specify it
+  delete defaults.watchFolders;
+
   return mergeConfig(
-    getBaseConfig.getDefaultValues(projectRoot),
+    defaults,
     config,
   );
 }
