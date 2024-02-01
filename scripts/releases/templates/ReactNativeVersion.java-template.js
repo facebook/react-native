@@ -10,7 +10,7 @@
  */
 
 /*::
-import type {Version} from '../version-utils';
+import type {Version} from '../utils/version-utils';
 */
 
 module.exports = ({version} /*: {version: Version} */) /*: string */ => `/**

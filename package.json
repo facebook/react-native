@@ -38,7 +38,7 @@
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib  packages/react-native/types",
     "test-typescript": "dtslint packages/react-native/types",
     "test": "jest",
-    "trigger-react-native-release": "node ./scripts/trigger-react-native-release.js",
+    "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
     "update-lock": "npx yarn-deduplicate"
   },
   "workspaces": [

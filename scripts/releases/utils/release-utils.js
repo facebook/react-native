@@ -6,13 +6,14 @@
  *
  * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
 'use strict';
 
 const {
   createHermesPrebuiltArtifactsTarball,
-} = require('../packages/react-native/scripts/hermes/hermes-utils');
+} = require('../../../packages/react-native/scripts/hermes/hermes-utils');
 const {echo, env, exec, exit, popd, pushd, test} = require('shelljs');
 
 /*::

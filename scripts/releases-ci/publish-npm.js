@@ -4,27 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
 /*::
-import type {BuildType} from './releases/version-utils';
+import type {BuildType} from '../releases/utils/version-utils';
 */
 
-const getAndUpdatePackages = require('./monorepo/get-and-update-packages');
-const {getNpmInfo, publishPackage} = require('./npm-utils');
+const getAndUpdatePackages = require('../monorepo/get-and-update-packages');
+const {getNpmInfo, publishPackage} = require('../npm-utils');
+const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
+const {setReactNativeVersion} = require('../releases/set-rn-version');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
-} = require('./release-utils');
-const removeNewArchFlags = require('./releases/remove-new-arch-flags');
-const {setReactNativeVersion} = require('./releases/set-rn-version');
+} = require('../releases/utils/release-utils');
 const path = require('path');
 const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
+
+const REPO_ROOT = path.resolve(__dirname, '../..');
 
 /**
  * This script prepares a release version of react-native and may publish to NPM.
@@ -101,7 +104,7 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   // NPM publishing is done just after.
   publishAndroidArtifactsToMaven(version, buildType);
 
-  const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
+  const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {
     // $FlowFixMe[incompatible-call]
     tags: [tag],

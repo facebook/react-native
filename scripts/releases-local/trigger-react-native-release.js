@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -7,16 +6,20 @@
  *
  * @flow
  * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const detectPackageUnreleasedChanges = require('./monorepo/bump-all-updated-packages/bump-utils.js');
-const checkForGitChanges = require('./monorepo/check-for-git-changes');
-const forEachPackage = require('./monorepo/for-each-package');
-const {failIfTagExists} = require('./release-utils');
-const {isReleaseBranch, parseVersion} = require('./releases/version-utils');
-const {exitIfNotOnGit, getBranchName} = require('./scm-utils');
+const detectPackageUnreleasedChanges = require('../monorepo/bump-all-updated-packages/bump-utils.js');
+const checkForGitChanges = require('../monorepo/check-for-git-changes');
+const forEachPackage = require('../monorepo/for-each-package');
+const {failIfTagExists} = require('../releases/utils/release-utils');
+const {
+  isReleaseBranch,
+  parseVersion,
+} = require('../releases/utils/version-utils');
+const {exitIfNotOnGit, getBranchName} = require('../scm-utils');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const path = require('path');
