@@ -10,26 +10,9 @@
  */
 
 import {getWorkspaceRoot} from '../getWorkspaceRoot';
+import {createTempPackage} from './temporary-package';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
-
-function createTempPackage(
-  packageJson: {...},
-  packagePath: string = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-metro-config-test-'),
-  ),
-) {
-  fs.mkdirSync(packagePath, {recursive: true});
-  if (typeof packageJson === 'object') {
-    fs.writeFileSync(
-      path.join(packagePath, 'package.json'),
-      JSON.stringify(packageJson),
-      'utf8',
-    );
-  }
-  return packagePath;
-}
 
 describe('getWorkspaceRoot', () => {
   test('returns null if not in a workspace', () => {
