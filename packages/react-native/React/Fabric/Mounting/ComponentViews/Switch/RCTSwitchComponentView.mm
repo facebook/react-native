@@ -100,6 +100,8 @@ using namespace facebook::react;
       .onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - Native Commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args

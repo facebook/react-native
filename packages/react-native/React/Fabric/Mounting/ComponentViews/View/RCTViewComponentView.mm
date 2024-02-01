@@ -100,6 +100,8 @@ using namespace facebook::react;
   }
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

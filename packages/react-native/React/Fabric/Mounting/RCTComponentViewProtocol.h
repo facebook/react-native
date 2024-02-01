@@ -125,6 +125,11 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
 - (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 
+/*
+ * Mark component view should be recycled.
+ */
++ (void)setShouldBeRecycled:(bool)shouldBeRecycled;
+
 @end
 
 NS_ASSUME_NONNULL_END

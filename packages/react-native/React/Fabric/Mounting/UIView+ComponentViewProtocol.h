@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
 
++ (void)setShouldBeRecycled:(bool)shouldBeRecycled;
+
 @end
 
 NS_ASSUME_NONNULL_END

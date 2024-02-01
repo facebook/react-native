@@ -43,6 +43,8 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<DebuggingOverlayComponentDescriptor>();
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - Native commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args

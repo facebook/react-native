@@ -115,6 +115,8 @@ using namespace facebook::react;
   _accessibilityProvider = nil;
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 - (void)drawRect:(CGRect)rect
 {
   if (!_state) {

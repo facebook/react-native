@@ -64,6 +64,8 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 @end
 
 Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void)

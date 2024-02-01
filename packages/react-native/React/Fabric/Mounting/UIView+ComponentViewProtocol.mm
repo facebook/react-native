@@ -168,4 +168,9 @@ using namespace facebook::react;
   }
 }
 
++ (void)setShouldBeRecycled:(bool)shouldBeRecycled
+{
+  // Default implementation does nothing.
+}
+
 @end

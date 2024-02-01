@@ -281,6 +281,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   [childComponentView removeFromSuperview];
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 @end
 
 #ifdef __cplusplus

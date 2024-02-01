@@ -125,6 +125,8 @@ using namespace facebook::react;
   _imageView.image = nil;
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - RCTImageResponseDelegate
 
 - (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(const void *)observer

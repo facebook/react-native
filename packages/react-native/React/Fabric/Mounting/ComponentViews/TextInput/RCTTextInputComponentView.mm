@@ -265,6 +265,8 @@ using namespace facebook::react;
   [_backedTextInputView resignFirstResponder];
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing

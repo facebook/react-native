@@ -430,6 +430,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   [super prepareForRecycle];
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 #pragma mark - UIScrollViewDelegate
 
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view

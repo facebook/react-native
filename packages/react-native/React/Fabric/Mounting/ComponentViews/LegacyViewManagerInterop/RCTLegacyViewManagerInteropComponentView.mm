@@ -266,6 +266,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   updatePropsIfNeeded(updateMask);
 }
 
+RCTComponentViewShouldBeRecycled(true);
+
 - (void)_setPropsWithUpdateMask:(RNComponentViewUpdateMask)updateMask
 {
   if (updateMask & RNComponentViewUpdateMaskProps) {

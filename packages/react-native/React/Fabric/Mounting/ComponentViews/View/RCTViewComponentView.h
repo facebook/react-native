@@ -19,6 +19,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define RCTComponentViewShouldBeRecycled(recycled)    \
+  static bool _shouldBeRecycled = recycled;           \
+  +(bool)shouldBeRecycled                             \
+  {                                                   \
+    return _shouldBeRecycled;                         \
+  }                                                   \
+                                                      \
+  +(void)setShouldBeRecycled : (bool)shouldBeRecycled \
+  {                                                   \
+    _shouldBeRecycled = shouldBeRecycled;             \
+  }
+
 /**
  * UIView class for <View> component.
  */
