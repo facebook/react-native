@@ -99,7 +99,6 @@ public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/
 	protected fun onPause ()V
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)V
 	protected fun onResume ()V
-	public fun onUserLeaveHint ()V
 	public fun onWindowFocusChanged (Z)V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
 }
@@ -131,7 +130,6 @@ public class com/facebook/react/ReactActivityDelegate {
 	protected fun onPause ()V
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)V
 	protected fun onResume ()V
-	protected fun onUserLeaveHint ()V
 	public fun onWindowFocusChanged (Z)V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
 }
@@ -156,7 +154,6 @@ public class com/facebook/react/ReactDelegate {
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
-	public fun onUserLeaveHint ()V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
 }
 
@@ -202,7 +199,6 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun onBackPressed ()Z
 	public abstract fun onHostDestroy ()V
 	public abstract fun onHostDestroy (Landroid/app/Activity;)V
-	public abstract fun onHostLeaveHint (Landroid/app/Activity;)V
 	public abstract fun onHostPause ()V
 	public abstract fun onHostPause (Landroid/app/Activity;)V
 	public abstract fun onHostResume (Landroid/app/Activity;)V
@@ -244,7 +240,6 @@ public class com/facebook/react/ReactInstanceManager {
 	public fun onHostResume (Landroid/app/Activity;)V
 	public fun onHostResume (Landroid/app/Activity;Lcom/facebook/react/modules/core/DefaultHardwareBackBtnHandler;)V
 	public fun onNewIntent (Landroid/content/Intent;)V
-	public fun onUserLeaveHint (Landroid/app/Activity;)V
 	public fun onWindowFocusChange (Z)V
 	public fun recreateReactContextInBackground ()V
 	public fun removeReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
@@ -479,7 +474,6 @@ public class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebo
 public abstract interface class com/facebook/react/bridge/ActivityEventListener {
 	public abstract fun onActivityResult (Landroid/app/Activity;IILandroid/content/Intent;)V
 	public abstract fun onNewIntent (Landroid/content/Intent;)V
-	public fun onUserLeaveHint (Landroid/app/Activity;)V
 }
 
 public class com/facebook/react/bridge/Arguments {
@@ -1098,7 +1092,6 @@ public class com/facebook/react/bridge/ReactContext : android/content/ContextWra
 	public fun onHostPause ()V
 	public fun onHostResume (Landroid/app/Activity;)V
 	public fun onNewIntent (Landroid/app/Activity;Landroid/content/Intent;)V
-	public fun onUserLeaveHint (Landroid/app/Activity;)V
 	public fun onWindowFocusChange (Z)V
 	public fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
 	public fun removeActivityEventListener (Lcom/facebook/react/bridge/ActivityEventListener;)V
@@ -3628,7 +3621,6 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun onBackPressed ()Z
 	public fun onHostDestroy ()V
 	public fun onHostDestroy (Landroid/app/Activity;)V
-	public fun onHostLeaveHint (Landroid/app/Activity;)V
 	public fun onHostPause ()V
 	public fun onHostPause (Landroid/app/Activity;)V
 	public fun onHostResume (Landroid/app/Activity;)V
