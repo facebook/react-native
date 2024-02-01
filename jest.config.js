@@ -48,6 +48,7 @@ module.exports = {
       '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
   },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
+  modulePathIgnorePatterns: ['scripts/.*/__fixtures__/'],
   unmockedModulePathPatterns: [
     'node_modules/react/',
     'packages/react-native/Libraries/Renderer',

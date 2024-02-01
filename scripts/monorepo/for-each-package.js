@@ -4,48 +4,54 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 const {readdirSync, readFileSync} = require('fs');
 const path = require('path');
 
-const ROOT_LOCATION = path.join(__dirname, '..', '..');
-const PACKAGES_LOCATION = path.join(ROOT_LOCATION, 'packages');
+const REPO_ROOT = path.join(path.dirname(__filename), '..', '..');
+const PACKAGES_LOCATION = path.join(REPO_ROOT, 'packages');
 
-const DEFAULT_OPTIONS = {includeReactNative: false};
+const DEFAULT_OPTIONS /*: Options */ = {includeReactNative: false};
+
+/*::
+type PackageJSON = {
+  name: string,
+  private?: ?boolean,
+  version: string,
+  dependencies: {[string]: string},
+  devDependencies: {[string]: string},
+  ...
+};
+
+type Options = {
+  includeReactNative?: ?boolean,
+};
+*/
 
 /**
  * Function, which returns an array of all directories inside specified location
- *
- * @param {string} source Path to directory, where this should be executed
- * @returns {string[]} List of directories names
  */
-const getDirectories = source =>
+const getDirectories = (source /*: string */) /*: Array<string> */ =>
   readdirSync(source, {withFileTypes: true})
     .filter(file => file.isDirectory())
-    .map(directory => directory.name);
-
-/**
- * @callback forEachPackageCallback
- * @param {string} packageAbsolutePath
- * @param {string} packageRelativePathFromRoot
- * @param {Object} packageManifest
- */
-
+    .map(directory => directory.name.toString());
 /**
  * Iterate through every package inside /packages (ignoring react-native) and call provided callback for each of them
- *
- * @param {forEachPackageCallback} callback The callback which will be called for each package
- * @param {{includeReactNative: (boolean|undefined)}} [options={}] description
  */
-const forEachPackage = (callback, options = DEFAULT_OPTIONS) => {
+const forEachPackage = (
+  callback /*: (string, string, PackageJSON) => void */,
+  options /*: Options */ = DEFAULT_OPTIONS,
+) => {
   const {includeReactNative} = options;
 
   // We filter react-native package on purpose, so that no CI's script will be executed for this package in future
   // Unless includeReactNative options is provided
   const packagesDirectories = getDirectories(PACKAGES_LOCATION).filter(
-    directoryName => directoryName !== 'react-native' || includeReactNative,
+    directoryName =>
+      directoryName !== 'react-native' || includeReactNative === true,
   );
 
   packagesDirectories.forEach(packageDirectory => {
@@ -53,7 +59,7 @@ const forEachPackage = (callback, options = DEFAULT_OPTIONS) => {
     const packageRelativePathFromRoot = path.join('packages', packageDirectory);
 
     const packageManifest = JSON.parse(
-      readFileSync(path.join(packageAbsolutePath, 'package.json')),
+      readFileSync(path.join(packageAbsolutePath, 'package.json')).toString(),
     );
 
     callback(packageAbsolutePath, packageRelativePathFromRoot, packageManifest);

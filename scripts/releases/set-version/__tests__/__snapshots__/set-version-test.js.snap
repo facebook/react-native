@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`setVersion updates all public packages to version: monorepo-pkg-a 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-a\\",
+  \\"version\\": \\"0.80.0\\",
+  \\"description\\": \\"@monorepo/pkg-a\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-b\\": \\"0.80.0\\",
+    \\"@monorepo/other\\": \\"0.0.1\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-c\\": \\"0.80.0\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates all public packages to version: monorepo-pkg-b 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-b\\",
+  \\"version\\": \\"0.80.0\\",
+  \\"description\\": \\"@monorepo/pkg-b\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-c\\": \\"0.80.0\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates all public packages to version: monorepo-pkg-c 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-c\\",
+  \\"version\\": \\"0.80.0\\",
+  \\"description\\": \\"@monorepo/pkg-c\\",
+  \\"dependencies\\": {
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates all public packages to version: react-native 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"0.80.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.0\\",
+    \\"@monorepo/pkg-b\\": \\"0.80.0\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.0\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates all public packages to version: template 1`] = `
+"{
+  \\"name\\": \\"react-native-test-template\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.2.0\\",
+    \\"react-native\\": \\"0.80.0\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.80.0\\",
+    \\"@monorepo/pkg-c\\": \\"0.80.0\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
+  }
+}
+"
+`;
