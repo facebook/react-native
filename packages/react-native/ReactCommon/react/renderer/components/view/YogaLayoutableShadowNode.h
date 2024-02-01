@@ -26,9 +26,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared = std::vector<Shared>;
 
-  static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
-
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode(
@@ -87,6 +84,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void layout(LayoutContext layoutContext) override;
 
   Rect getContentBounds() const;
+
+  static void filterRawProps(RawProps& rawProps);
 
  protected:
   /*

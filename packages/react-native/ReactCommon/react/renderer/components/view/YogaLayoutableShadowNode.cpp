@@ -14,7 +14,6 @@
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/CoreFeatures.h>
@@ -24,6 +23,8 @@
 #include <memory>
 
 namespace facebook::react {
+
+static_assert(RawPropsFilterable<YogaLayoutableShadowNode>);
 
 static int FabricDefaultYogaLog(
     const YGConfigConstRef /*unused*/,
@@ -61,16 +62,6 @@ static int FabricDefaultYogaLog(
 }
 
 thread_local LayoutContext threadLocalLayoutContext;
-
-ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
-  auto traits = LayoutableShadowNode::BaseTraits();
-  traits.set(IdentifierTrait());
-  return traits;
-}
-
-ShadowNodeTraits::Trait YogaLayoutableShadowNode::IdentifierTrait() {
-  return ShadowNodeTraits::Trait::YogaLayoutableKind;
-}
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const ShadowNodeFragment& fragment,
@@ -123,8 +114,10 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     for (auto& child : getChildren()) {
-      if (auto layoutableChild = traitCast<YogaLayoutableShadowNode>(child)) {
-        yogaLayoutableChildren_.push_back(layoutableChild);
+      if (auto layoutableChild =
+              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                  child)) {
+        yogaLayoutableChildren_.push_back(std::move(layoutableChild));
       }
     }
   }
@@ -210,7 +203,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
   auto& childNode =
-      traitCast<const YogaLayoutableShadowNode&>(*getChildren().at(index));
+      dynamic_cast<const YogaLayoutableShadowNode&>(*getChildren().at(index));
 
   if (childNode.yogaNode_.getOwner() == nullptr) {
     // The child node is not owned.
@@ -243,7 +236,8 @@ void YogaLayoutableShadowNode::appendChild(
   }
 
   if (auto yogaLayoutableChild =
-          traitCast<YogaLayoutableShadowNode>(childNode)) {
+          std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+              childNode)) {
     // Here we don't have information about the previous structure of the node
     // (if it that existed before), so we don't have anything to compare the
     // Yoga node with (like a previous version of this node). Therefore we must
@@ -273,8 +267,9 @@ void YogaLayoutableShadowNode::replaceChild(
   ensureYogaChildrenLookFine();
 
   auto layoutableOldChild =
-      traitCast<const YogaLayoutableShadowNode*>(&oldChild);
-  auto layoutableNewChild = traitCast<YogaLayoutableShadowNode>(newChild);
+      dynamic_cast<const YogaLayoutableShadowNode*>(&oldChild);
+  auto layoutableNewChild =
+      std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(newChild);
 
   if (layoutableOldChild == nullptr && layoutableNewChild == nullptr) {
     // No need to mutate yogaLayoutableChildren_
@@ -349,7 +344,8 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   for (size_t i = 0; i < getChildren().size(); i++) {
     if (auto yogaLayoutableChild =
-            traitCast<YogaLayoutableShadowNode>(getChildren()[i])) {
+            std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                getChildren()[i])) {
       appendYogaChild(yogaLayoutableChild);
       adoptYogaChild(i);
 
@@ -496,7 +492,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
 }
 
 YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
-  if (auto viewShadowNode = traitCast<const ViewShadowNode*>(this)) {
+  if (auto viewShadowNode = dynamic_cast<const ViewShadowNode*>(this)) {
     const auto& props = viewShadowNode->getConcreteProps();
     switch (props.experimental_layoutConformance) {
       case LayoutConformance::Classic:
@@ -745,7 +741,7 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
-      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
+      auto viewChildNode = dynamic_cast<const ViewShadowNode*>(&childNode);
       auto hitSlop = viewChildNode != nullptr
           ? viewChildNode->getConcreteProps().hitSlop
           : EdgeInsets{};
@@ -774,6 +770,13 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
   }
 
   return contentBounds;
+}
+
+/*static*/ void YogaLayoutableShadowNode::filterRawProps(RawProps& rawProps) {
+  if (CoreFeatures::excludeYogaFromRawProps) {
+    // TODO: this shouldn't live in RawProps
+    rawProps.filterYogaStylePropsInDynamicConversion();
+  }
 }
 
 #pragma mark - Yoga Connectors
@@ -837,7 +840,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
     YGNodeConstRef yogaNode) {
-  return traitCast<YogaLayoutableShadowNode&>(
+  return dynamic_cast<YogaLayoutableShadowNode&>(
       *static_cast<ShadowNode*>(YGNodeGetContext(yogaNode)));
 }
 
@@ -1014,7 +1017,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
     auto& child = children.at(i);
     react_native_assert(
         yogaChild->getContext() ==
-        traitCast<const YogaLayoutableShadowNode*>(child.get()));
+        dynamic_cast<const YogaLayoutableShadowNode*>(child.get()));
   }
 #endif
 }

@@ -13,7 +13,6 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
@@ -31,7 +30,7 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   auto& sourceParagraphShadowNode =
-      traitCast<ParagraphShadowNode const&>(sourceShadowNode);
+      dynamic_cast<const ParagraphShadowNode&>(sourceShadowNode);
   if (!fragment.children && !fragment.props &&
       sourceParagraphShadowNode.getIsLayoutClean()) {
     // This ParagraphShadowNode was cloned but did not change
@@ -84,7 +83,7 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 
   for (const auto& attachment : content.attachments) {
     auto laytableShadowNode =
-        traitCast<const LayoutableShadowNode*>(attachment.shadowNode);
+        dynamic_cast<const LayoutableShadowNode*>(attachment.shadowNode);
 
     if (laytableShadowNode == nullptr) {
       continue;
@@ -213,7 +212,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   for (size_t i = 0; i < content.attachments.size(); i++) {
     auto& attachment = content.attachments.at(i);
 
-    if (traitCast<const LayoutableShadowNode*>(attachment.shadowNode) ==
+    if (dynamic_cast<const LayoutableShadowNode*>(attachment.shadowNode) ==
         nullptr) {
       // Not a layoutable `ShadowNode`, no need to lay it out.
       continue;
@@ -231,7 +230,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         static_cast<ParagraphShadowNode*>(paragraphOwningShadowNode.get());
 
     auto& layoutableShadowNode =
-        traitCast<LayoutableShadowNode&>(*clonedShadowNode);
+        dynamic_cast<LayoutableShadowNode&>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
     auto attachmentSize = roundToPixel<&ceil>(

@@ -12,7 +12,6 @@
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -322,7 +321,7 @@ ShadowNode::Shared UIManager::getNewestPositionedAncestorOfShadowNode(
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
     const auto layoutableAncestorShadowNode =
-        traitCast<const LayoutableShadowNode*>(&(it->first.get()));
+        dynamic_cast<const LayoutableShadowNode*>(&(it->first.get()));
     if (layoutableAncestorShadowNode == nullptr) {
       return nullptr;
     }
@@ -439,7 +438,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   }
 
   auto layoutableAncestorShadowNode =
-      traitCast<const LayoutableShadowNode*>(ancestorShadowNode);
+      dynamic_cast<const LayoutableShadowNode*>(ancestorShadowNode);
 
   if (layoutableAncestorShadowNode == nullptr) {
     return EmptyLayoutMetrics;
