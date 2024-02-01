@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2828ad8eb7ea0a0ea9cb0240eadedeb8>>
+ * @generated SignedSource<<646e0d7982b7e72f9ff227c80d4c2a49>>
  */
 
 /**
@@ -30,6 +30,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableMicrotasks() = 0;
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool enableSpannableBuildingUnification() = 0;
+  virtual bool enableCustomDrawOrderFabric() = 0;
 };
 
 } // namespace facebook::react

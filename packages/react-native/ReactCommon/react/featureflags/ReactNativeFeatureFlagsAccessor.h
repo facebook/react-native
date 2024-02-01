@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<938f1f3ad6aa3343beb3ad7707a49a87>>
+ * @generated SignedSource<<f85ebb4efba429a4c943dc26e5a70541>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableMicrotasks();
   bool batchRenderingUpdatesInEventLoop();
   bool enableSpannableBuildingUnification();
+  bool enableCustomDrawOrderFabric();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -47,6 +48,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::optional<bool> enableMicrotasks_;
   std::optional<bool> batchRenderingUpdatesInEventLoop_;
   std::optional<bool> enableSpannableBuildingUnification_;
+  std::optional<bool> enableCustomDrawOrderFabric_;
 };
 
 } // namespace facebook::react

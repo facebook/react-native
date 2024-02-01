@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d68bc5fec0897ad698014c938e4ab21e>>
+ * @generated SignedSource<<c43dd1db78ac69ca3c39577d45a04071>>
  * @flow strict-local
  */
 
@@ -44,6 +44,7 @@ export type ReactNativeFeatureFlags = {
   enableMicrotasks: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
+  enableCustomDrawOrderFabric: Getter<boolean>,
 }
 
 /**
@@ -101,6 +102,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * Uses new, deduplicated logic for constructing Android Spannables from text fragments
  */
 export const enableSpannableBuildingUnification: Getter<boolean> = createNativeFlagGetter('enableSpannableBuildingUnification', false);
+/**
+ * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+ */
+export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
 
 /**
  * Overrides the feature flags with the provided methods.

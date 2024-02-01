@@ -19,6 +19,10 @@
     "enableSpannableBuildingUnification": {
       "description": "Uses new, deduplicated logic for constructing Android Spannables from text fragments",
       "defaultValue": false
+    },
+    "enableCustomDrawOrderFabric": {
+      "description": "When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).",
+      "defaultValue": false
     }
   },
   "jsOnly": {

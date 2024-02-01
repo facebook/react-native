@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6444bb426632dfb672312df3384127f>>
+ * @generated SignedSource<<1642f4bbd50bb535c369642dd3a647ad>>
  */
 
 /**
@@ -39,6 +39,8 @@ class NativeReactNativeFeatureFlags
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+
+  bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

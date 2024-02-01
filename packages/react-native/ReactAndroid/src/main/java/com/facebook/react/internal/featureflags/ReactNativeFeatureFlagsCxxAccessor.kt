@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<881b7f9eb6b1765764b70719155a457c>>
+ * @generated SignedSource<<126de7eafa27c27df31d9d4e984ab96c>>
  */
 
 /**
@@ -25,6 +25,7 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
+  private var enableCustomDrawOrderFabricCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -67,6 +68,15 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableSpannableBuildingUnification()
       enableSpannableBuildingUnificationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCustomDrawOrderFabric(): Boolean {
+    var cached = enableCustomDrawOrderFabricCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableCustomDrawOrderFabric()
+      enableCustomDrawOrderFabricCache = cached
     }
     return cached
   }

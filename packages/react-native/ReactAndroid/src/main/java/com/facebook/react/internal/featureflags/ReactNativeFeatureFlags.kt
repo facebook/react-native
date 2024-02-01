@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82a7973a820b75c46977931a8b178493>>
+ * @generated SignedSource<<fccbff20f478efc0778ed7991065d189>>
  */
 
 /**
@@ -57,6 +57,12 @@ object ReactNativeFeatureFlags {
    */
   @JvmStatic
   fun enableSpannableBuildingUnification() = accessor.enableSpannableBuildingUnification()
+
+  /**
+   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   */
+  @JvmStatic
+  fun enableCustomDrawOrderFabric() = accessor.enableCustomDrawOrderFabric()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

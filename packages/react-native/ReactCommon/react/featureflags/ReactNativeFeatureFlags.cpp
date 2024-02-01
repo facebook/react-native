@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<809c23db6d36e18d448554900e462aa0>>
+ * @generated SignedSource<<a9ddd8a35e80c21c36fd57526a58ae84>>
  */
 
 /**
@@ -39,6 +39,10 @@ bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
 
 bool ReactNativeFeatureFlags::enableSpannableBuildingUnification() {
   return getAccessor().enableSpannableBuildingUnification();
+}
+
+bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
+  return getAccessor().enableCustomDrawOrderFabric();
 }
 
 void ReactNativeFeatureFlags::override(

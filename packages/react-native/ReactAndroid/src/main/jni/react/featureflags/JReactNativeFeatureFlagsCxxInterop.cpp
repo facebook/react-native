@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36acddfcb6c038dbf523ad669bcedeba>>
+ * @generated SignedSource<<1ba33b527792e241891e821b18b11000>>
  */
 
 /**
@@ -48,6 +48,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification(
   return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -80,6 +85,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSpannableBuildingUnification",
         JReactNativeFeatureFlagsCxxInterop::enableSpannableBuildingUnification),
+      makeNativeMethod(
+        "enableCustomDrawOrderFabric",
+        JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
   });
 }
 

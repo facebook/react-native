@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<44159bbcf15dc403e40656c71d84516a>>
+ * @generated SignedSource<<53537c2dcc2f4e298822eaa92b5c507f>>
  */
 
 /**
@@ -32,4 +32,6 @@ open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvider {
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
   override fun enableSpannableBuildingUnification(): Boolean = false
+
+  override fun enableCustomDrawOrderFabric(): Boolean = false
 }

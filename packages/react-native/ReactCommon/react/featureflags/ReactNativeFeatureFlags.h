@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea6c88fb2c3fcaa35b5886b8f8ceb769>>
+ * @generated SignedSource<<479f3a75128ee7e9ea60af544b69e0d7>>
  */
 
 /**
@@ -56,6 +56,11 @@ class ReactNativeFeatureFlags {
    * Uses new, deduplicated logic for constructing Android Spannables from text fragments
    */
   static bool enableSpannableBuildingUnification();
+
+  /**
+   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   */
+  static bool enableCustomDrawOrderFabric();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
