@@ -54,7 +54,7 @@ type PackageMetadata = {|
  * is an object that contains the absolute path to the package and the packageJson.
  */
 function getPackagesToPublish() /*: PackageMap */ {
-  let packages = {};
+  let packages /*: PackageMap */ = {};
 
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
