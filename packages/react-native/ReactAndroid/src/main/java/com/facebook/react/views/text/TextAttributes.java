@@ -177,6 +177,7 @@ public class TextAttributes {
         : DEFAULT_MAX_FONT_SIZE_MULTIPLIER;
   }
 
+  @Override
   public String toString() {
     return ("TextAttributes {"
         + "\n  getAllowFontScaling(): "
