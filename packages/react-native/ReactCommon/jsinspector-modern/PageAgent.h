@@ -8,6 +8,7 @@
 #pragma once
 
 #include "PageTarget.h"
+#include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
@@ -37,11 +38,14 @@ class PageAgent {
    * \param targetController An interface to the PageTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
    * PageTargetDelegate and underlying PageTarget both outlive the agent.
+   * \param sessionMetadata Metadata about the session that created this agent.
+   * \param sessionState The state of the session that created this agent.
    */
   PageAgent(
       FrontendChannel frontendChannel,
       PageTargetController& targetController,
-      PageTarget::SessionMetadata sessionMetadata);
+      PageTarget::SessionMetadata sessionMetadata,
+      SessionState& sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -74,7 +78,12 @@ class PageAgent {
   PageTargetController& targetController_;
   const PageTarget::SessionMetadata sessionMetadata_;
   std::unique_ptr<InstanceAgent> instanceAgent_;
-  bool runtimeEnabled_{false};
+
+  /**
+   * A shared reference to the session's state. This is only safe to access
+   * during handleRequest and other method calls on the same thread.
+   */
+  SessionState& sessionState_;
 };
 
 } // namespace facebook::react::jsinspector_modern

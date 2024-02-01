@@ -11,6 +11,7 @@
 #include "InstanceTarget.h"
 #include "PageAgent.h"
 #include "Parsing.h"
+#include "SessionState.h"
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
@@ -39,7 +40,8 @@ class PageTargetSession {
         pageAgent_(
             frontendChannel_,
             targetController,
-            std::move(sessionMetadata)) {}
+            std::move(sessionMetadata),
+            state_) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -83,7 +85,7 @@ class PageTargetSession {
   void setCurrentInstance(InstanceTarget* instance) {
     if (instance) {
       pageAgent_.setCurrentInstanceAgent(
-          instance->createAgent(frontendChannel_));
+          instance->createAgent(frontendChannel_, state_));
     } else {
       pageAgent_.setCurrentInstanceAgent(nullptr);
     }
@@ -94,6 +96,7 @@ class PageTargetSession {
   std::shared_ptr<RAIIRemoteConnection> remote_;
   FrontendChannel frontendChannel_;
   PageAgent pageAgent_;
+  SessionState state_;
 };
 
 PageTarget::PageTarget(PageTargetDelegate& delegate) : delegate_(delegate) {}

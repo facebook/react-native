@@ -27,7 +27,9 @@ class JSRuntime {
    * \see InspectorTargetDelegate::createRuntimeAgent
    */
   virtual std::unique_ptr<jsinspector_modern::RuntimeAgent>
-  createInspectorAgent(jsinspector_modern::FrontendChannel frontendChannel) = 0;
+  createInspectorAgent(
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState) = 0;
 
   virtual ~JSRuntime() = default;
 };
@@ -50,7 +52,8 @@ class JSIRuntimeHolder : public JSRuntime {
  public:
   jsi::Runtime& getRuntime() noexcept override;
   std::unique_ptr<jsinspector_modern::RuntimeAgent> createInspectorAgent(
-      jsinspector_modern::FrontendChannel frontendChannel) override;
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState) override;
 
   explicit JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime);
 

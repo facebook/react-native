@@ -28,8 +28,10 @@ namespace {
 class PageTargetTest : public Test {
  protected:
   PageTargetTest() {
-    EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_))
-        .WillRepeatedly(runtimeAgents_.lazily_make_unique<FrontendChannel>());
+    EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_, _))
+        .WillRepeatedly(
+            runtimeAgents_
+                .lazily_make_unique<FrontendChannel, SessionState&>());
   }
 
   void connect() {
@@ -133,18 +135,17 @@ TEST_F(PageTargetProtocolTest, MalformedJson) {
 TEST_F(PageTargetProtocolTest, InjectLogsToIdentifyBackend) {
   InSequence s;
 
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "id": 1,
-                                               "result": null
-                                             })")))
-      .RetiresOnSaturation();
-
   EXPECT_CALL(
       fromPage(),
       onMessage(JsonParsed(AllOf(
           AtJsonPtr("/method", "Log.entryAdded"),
           AtJsonPtr("/params/entry", Not(IsEmpty()))))))
       .Times(2)
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
       .RetiresOnSaturation();
   toPage_->sendMessage(R"({
                            "id": 1,
@@ -385,7 +386,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgent) {
 TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgent) {
   InSequence s;
 
-  EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_))
+  EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_, _))
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
@@ -404,6 +405,43 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgent) {
                          })");
 
   page_.unregisterInstance(instanceTarget);
+}
+
+TEST_F(PageTargetProtocolTest, RuntimeAgentHasAccessToSessionState) {
+  InSequence s;
+
+  // Send Runtime.enable before registering the Instance (which in turns creates
+  // the RuntimeAgent).
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")));
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Runtime.enable"
+                         })");
+
+  page_.registerInstance(instanceTargetDelegate_);
+  ASSERT_TRUE(runtimeAgents_[0]);
+
+  EXPECT_TRUE(runtimeAgents_[0]->sessionState.isRuntimeDomainEnabled);
+
+  // Send Runtime.disable while the RuntimeAgent exists - it receives the
+  // message and can also observe the updated state.
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(Eq(cdp::preparse(R"({
+                                                                    "id": 2,
+                                                                    "method": "Runtime.disable"
+                                                                  })"))));
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 2,
+                                               "result": {}
+                                             })")));
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "Runtime.disable"
+                         })");
+
+  EXPECT_FALSE(runtimeAgents_[0]->sessionState.isRuntimeDomainEnabled);
 }
 
 } // namespace facebook::react::jsinspector_modern

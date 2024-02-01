@@ -153,7 +153,8 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
 
   // From InstanceTargetDelegate
   std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel frontendChannel) override;
+      jsinspector_modern::FrontendChannel channel,
+      jsinspector_modern::SessionState& sessionState) override;
 
   std::shared_ptr<InstanceCallback> callback_;
   std::shared_ptr<NativeToJsBridge> nativeToJsBridge_;

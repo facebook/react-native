@@ -13,7 +13,7 @@
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -144,7 +144,8 @@ class RN_EXPORT JSExecutor {
    * Create a RuntimeAgent that can be used to debug the JS VM instance.
    */
   virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel frontendChannel);
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState);
 };
 
 } // namespace facebook::react
