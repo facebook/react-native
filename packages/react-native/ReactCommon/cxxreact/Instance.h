@@ -151,6 +151,10 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
       std::unique_ptr<const JSBigString> startupScript,
       std::string startupScriptSourceURL);
 
+  // From InstanceTargetDelegate
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
+      jsinspector_modern::FrontendChannel frontendChannel) override;
+
   std::shared_ptr<InstanceCallback> callback_;
   std::shared_ptr<NativeToJsBridge> nativeToJsBridge_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;

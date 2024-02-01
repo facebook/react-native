@@ -34,4 +34,11 @@ double JSExecutor::performanceNow() {
   return duration / NANOSECONDS_IN_MILLISECOND;
 }
 
+std::unique_ptr<jsinspector_modern::RuntimeAgent>
+JSExecutor::createRuntimeAgent(
+    jsinspector_modern::FrontendChannel frontendChannel) {
+  (void)frontendChannel;
+  return nullptr;
+}
+
 } // namespace facebook::react

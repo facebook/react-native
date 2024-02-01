@@ -121,6 +121,29 @@ class MockPageTargetDelegate : public PageTargetDelegate {
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
-class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
+class MockInstanceTargetDelegate : public InstanceTargetDelegate {
+ public:
+  // InstanceTargetDelegate methods
+  MOCK_METHOD(
+      std::unique_ptr<RuntimeAgent>,
+      createRuntimeAgent,
+      (FrontendChannel channel),
+      (override));
+};
+
+class MockRuntimeAgent : public RuntimeAgent {
+ public:
+  inline MockRuntimeAgent(FrontendChannel frontendChannel)
+      : frontendChannel(std::move(frontendChannel)) {}
+
+  // RuntimeAgent methods
+  MOCK_METHOD(
+      bool,
+      handleRequest,
+      (const cdp::PreparsedRequest& req),
+      (override));
+
+  const FrontendChannel frontendChannel;
+};
 
 } // namespace facebook::react::jsinspector_modern
