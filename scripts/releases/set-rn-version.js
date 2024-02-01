@@ -13,6 +13,7 @@
 import type {BuildType, Version} from './utils/version-utils';
 */
 
+const {applyPackageVersions} = require('../npm-utils');
 const {getNpmInfo} = require('../npm-utils');
 const updateTemplatePackage = require('./update-template-package');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
@@ -20,6 +21,7 @@ const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
 
 const GRADLE_FILE_PATH = 'packages/react-native/ReactAndroid/gradle.properties';
+const REACT_NATIVE_PACKAGE_JSON = 'packages/react-native/package.json';
 
 const config = {
   options: {
@@ -77,7 +79,32 @@ async function setReactNativeVersion(
     'react-native': versionInfo.version,
   });
   await updateSourceFiles(versionInfo);
+  await setReactNativePackageVersion(versionInfo.version, dependencyVersions);
   await updateGradleFile(versionInfo.version);
+}
+
+async function setReactNativePackageVersion(
+  version /*: string */,
+  dependencyVersions /*: ?Record<string, string> */,
+) {
+  const originalPackageJsonContent = await fs.readFile(
+    REACT_NATIVE_PACKAGE_JSON,
+    'utf-8',
+  );
+  const originalPackageJson = JSON.parse(originalPackageJsonContent);
+
+  const packageJson =
+    dependencyVersions != null
+      ? applyPackageVersions(originalPackageJson, dependencyVersions)
+      : originalPackageJson;
+
+  packageJson.version = version;
+
+  await fs.writeFile(
+    'packages/react-native/package.json',
+    JSON.stringify(packageJson, null, 2),
+    'utf-8',
+  );
 }
 
 function updateSourceFiles(versionInfo /*: Version */) {

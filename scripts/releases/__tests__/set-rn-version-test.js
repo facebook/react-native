@@ -31,6 +31,15 @@ describe('setReactNativeVersion', () => {
       if (path === 'packages/react-native/ReactAndroid/gradle.properties') {
         return 'VERSION_NAME=1000.0.0\n';
       }
+      if (path === 'packages/react-native/package.json') {
+        return JSON.stringify({
+          name: 'react-native',
+          version: '1000.0.0',
+          dependencies: {
+            '@react-native/package-a': '1000.0.0',
+          },
+        });
+      }
     });
   });
 

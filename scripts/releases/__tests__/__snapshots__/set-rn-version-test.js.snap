@@ -121,6 +121,16 @@ constexpr struct {
 "
 `;
 
+exports[`setReactNativeVersion should set nightly version: packages/react-native/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"0.81.0-nightly-29282302-abcd1234\\",
+  \\"dependencies\\": {
+    \\"@react-native/package-a\\": \\"0.81.0-nightly-29282302-abcd1234\\"
+  }
+}"
+`;
+
 exports[`setReactNativeVersion should set release version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -240,4 +250,14 @@ constexpr struct {
 
 } // namespace facebook::react
 "
+`;
+
+exports[`setReactNativeVersion should set release version: packages/react-native/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"0.81.0\\",
+  \\"dependencies\\": {
+    \\"@react-native/package-a\\": \\"1000.0.0\\"
+  }
+}"
 `;
