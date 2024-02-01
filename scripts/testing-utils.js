@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -18,7 +19,7 @@ const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
 const {
   generateAndroidArtifacts,
   generateiOSArtifacts,
-} = require('./release-utils');
+} = require('./releases/utils/release-utils');
 const fs = require('fs');
 // $FlowIgnore[cannot-resolve-module]
 const {spawn} = require('node:child_process');

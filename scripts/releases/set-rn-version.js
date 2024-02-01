@@ -10,12 +10,12 @@
  */
 
 /*::
-import type {BuildType, Version} from './version-utils';
+import type {BuildType, Version} from './utils/version-utils';
 */
 
 const {getNpmInfo} = require('../npm-utils');
 const updateTemplatePackage = require('./update-template-package');
-const {parseVersion, validateBuildType} = require('./version-utils');
+const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
 

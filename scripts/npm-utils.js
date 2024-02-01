@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {parseVersion} = require('./releases/version-utils');
+const {parseVersion} = require('./releases/utils/version-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,

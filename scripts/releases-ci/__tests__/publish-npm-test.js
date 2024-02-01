@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @oncall react_native
  */
 
 const execMock = jest.fn();
@@ -23,24 +24,27 @@ jest
     echo: echoMock,
     exit: exitMock,
   }))
-  .mock('./../scm-utils', () => ({
+  .mock('./../../scm-utils', () => ({
     exitIfNotOnGit: command => command(),
     getCurrentCommit: () => 'currentco_mmit',
     isTaggedLatest: isTaggedLatestMock,
   }))
   .mock('path', () => ({
-    join: () => '../packages/react-native',
+    ...jest.requireActual('path'),
+    join: () => '../../packages/react-native',
   }))
   .mock('fs')
-  .mock('./../release-utils', () => ({
+  .mock('../../releases/utils/release-utils', () => ({
     generateAndroidArtifacts: jest.fn(),
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
-  .mock('./../releases/set-rn-version', () => ({
+  .mock('../../releases/set-rn-version', () => ({
     setReactNativeVersion: setReactNativeVersionMock,
   }))
-  .mock('../monorepo/get-and-update-packages')
-  .mock('../releases/remove-new-arch-flags', () => removeNewArchFlags);
+  .mock('../../monorepo/get-and-update-packages')
+  .mock('../../releases/remove-new-arch-flags', () => ({
+    removeNewArchFlags,
+  }));
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
@@ -67,8 +71,8 @@ describe('publish-npm', () => {
   });
 
   describe('publish-npm.js', () => {
-    it('Fails when invalid build type is passed', () => {
-      expect(publishNpm('invalid')).rejects.toThrow(
+    it('Fails when invalid build type is passed', async () => {
+      await expect(publishNpm('invalid')).rejects.toThrow(
         'Unsupported build type: invalid',
       );
     });
@@ -138,9 +142,9 @@ describe('publish-npm', () => {
   });
 
   describe('release', () => {
-    it('should fail with invalid release version', () => {
+    it('should fail with invalid release version', async () => {
       process.env.CIRCLE_TAG = '1.0.1';
-      expect(publishNpm('release')).rejects.toThrow(
+      await expect(publishNpm('release')).rejects.toThrow(
         'Version 1.0.1 is not valid for Release',
       );
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
@@ -162,7 +166,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag 0.81-stable --otp otp`,
-        {cwd: '../packages/react-native'},
+        {cwd: '../../packages/react-native'},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
@@ -187,7 +191,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../packages/react-native'},
+        {cwd: '../../packages/react-native'},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
@@ -212,7 +216,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../packages/react-native'},
+        {cwd: '../../packages/react-native'},
       );
       expect(echoMock).toHaveBeenCalledWith(`Failed to publish package to npm`);
       expect(exitMock).toHaveBeenCalledWith(1);
@@ -235,7 +239,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag next --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../packages/react-native'},
+        {cwd: '../../packages/react-native'},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
