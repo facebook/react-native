@@ -461,8 +461,10 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
 }
 
 std::unique_ptr<jsinspector_modern::RuntimeAgent>
-ReactInstance::createRuntimeAgent(jsinspector_modern::FrontendChannel channel) {
-  auto agent = runtime_->createInspectorAgent(std::move(channel));
+ReactInstance::createRuntimeAgent(
+    jsinspector_modern::FrontendChannel channel,
+    jsinspector_modern::SessionState& sessionState) {
+  auto agent = runtime_->createInspectorAgent(std::move(channel), sessionState);
   return agent;
 }
 

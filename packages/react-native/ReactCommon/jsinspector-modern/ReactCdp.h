@@ -10,3 +10,4 @@
 #include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/PageTarget.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/SessionState.h>
