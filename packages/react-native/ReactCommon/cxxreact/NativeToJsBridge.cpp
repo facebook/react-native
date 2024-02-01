@@ -343,4 +343,11 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
       m_delegate, std::move(nativeMethodCallInvoker));
 }
 
+std::unique_ptr<jsinspector_modern::RuntimeAgent>
+NativeToJsBridge::createRuntimeAgent(
+    jsinspector_modern::FrontendChannel frontendChannel) {
+  auto agent = m_executor->createRuntimeAgent(std::move(frontendChannel));
+  return agent;
+}
+
 } // namespace facebook::react

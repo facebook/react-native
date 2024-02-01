@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
-#include <jsinspector-modern/InstanceTarget.h>
-#include <jsinspector-modern/PageTarget.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+
+namespace facebook::react::jsinspector_modern {
+
+RuntimeAgent::~RuntimeAgent() {}
+
+} // namespace facebook::react::jsinspector_modern

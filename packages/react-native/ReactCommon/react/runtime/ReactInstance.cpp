@@ -460,4 +460,10 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
   }
 }
 
+std::unique_ptr<jsinspector_modern::RuntimeAgent>
+ReactInstance::createRuntimeAgent(jsinspector_modern::FrontendChannel channel) {
+  auto agent = runtime_->createInspectorAgent(std::move(channel));
+  return agent;
+}
+
 } // namespace facebook::react

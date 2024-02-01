@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jsi/jsi.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 namespace facebook::react {
 
@@ -19,6 +20,14 @@ namespace facebook::react {
 class JSRuntime {
  public:
   virtual jsi::Runtime& getRuntime() noexcept = 0;
+
+  /**
+   * Creates a new inspector agent for this runtime, if the runtime is
+   * inspectable. Returns nullptr otherwise.
+   * \see InspectorTargetDelegate::createRuntimeAgent
+   */
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent>
+  createInspectorAgent(jsinspector_modern::FrontendChannel frontendChannel) = 0;
 
   virtual ~JSRuntime() = default;
 };
@@ -40,6 +49,8 @@ class JSRuntimeFactory {
 class JSIRuntimeHolder : public JSRuntime {
  public:
   jsi::Runtime& getRuntime() noexcept override;
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createInspectorAgent(
+      jsinspector_modern::FrontendChannel frontendChannel) override;
 
   explicit JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime);
 

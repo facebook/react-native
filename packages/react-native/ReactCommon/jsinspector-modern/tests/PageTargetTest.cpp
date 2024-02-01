@@ -27,6 +27,11 @@ namespace {
 
 class PageTargetTest : public Test {
  protected:
+  PageTargetTest() {
+    EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_))
+        .WillRepeatedly(runtimeAgents_.lazily_make_unique<FrontendChannel>());
+  }
+
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a PageTargetTest.";
     toPage_ = page_.connect(
@@ -46,6 +51,10 @@ class PageTargetTest : public Test {
   }
 
   PageTarget page_{pageTargetDelegate_};
+
+  MockInstanceTargetDelegate instanceTargetDelegate_;
+
+  UniquePtrFactory<StrictMock<MockRuntimeAgent>> runtimeAgents_;
 
  private:
   UniquePtrFactory<StrictMock<MockRemoteConnection>> remoteConnections_;
@@ -183,17 +192,13 @@ TEST_F(PageTargetProtocolTest, PageReloadMethod) {
 }
 
 TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
-  MockInstanceTargetDelegate instanceTargetDelegate;
-
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate);
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
   page_.unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
-  MockInstanceTargetDelegate instanceTargetDelegate;
-
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate);
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
   connect();
 
@@ -212,26 +217,8 @@ TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
                            "method": "Runtime.enable"
                          })");
 
-  MockInstanceTargetDelegate instanceTargetDelegate;
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextCreated",
-                                               "params": {
-                                                 "context": {
-                                                   "id": 1,
-                                                   "origin": "",
-                                                   "name": "React Native"
-                                                 }
-                                               }
-                                             })")));
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate);
-
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextDestroyed",
-                                               "params": {
-                                                 "executionContextId": 1
-                                               }
-                                             })")));
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "method": "Runtime.executionContextsCleared"
                                              })")));
@@ -239,26 +226,20 @@ TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
 }
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
-  MockInstanceTargetDelegate instanceTargetDelegate;
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate);
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
   connect();
 
   InSequence s;
 
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(Eq(cdp::preparse(R"({
+                                                                    "id": 1,
+                                                                    "method": "Runtime.enable"
+                                                                  })"))))
+      .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
-                                             })")));
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextCreated",
-                                               "params": {
-                                                 "context": {
-                                                   "id": 1,
-                                                   "origin": "",
-                                                   "name": "React Native"
-                                                 }
-                                               }
                                              })")));
 
   toPage_->sendMessage(R"({
@@ -267,60 +248,162 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
                          })");
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "method": "Runtime.executionContextDestroyed",
-                                               "params": {
-                                                 "executionContextId": 1
-                                               }
-                                             })")));
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "method": "Runtime.executionContextsCleared"
                                              })")));
   page_.unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, RespondToHeapUsageMethodWhileInstanceExists) {
-  // NOTE: This test will be deleted once we add some real CDP method
-  // implementations to InstanceAgent.
+TEST_F(PageTargetProtocolTest, RuntimeAgentLifecycle) {
+  {
+    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
-  EXPECT_CALL(
-      fromPage(),
-      onMessage(JsonParsed(AllOf(
-          AtJsonPtr("/error/code", Eq(-32601)), AtJsonPtr("/id", Eq(1))))))
+    EXPECT_TRUE(runtimeAgents_[0]);
+
+    page_.unregisterInstance(instanceTarget);
+  }
+
+  EXPECT_FALSE(runtimeAgents_[0]);
+
+  {
+    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+
+    EXPECT_TRUE(runtimeAgents_[1]);
+
+    page_.unregisterInstance(instanceTarget);
+  }
+
+  EXPECT_FALSE(runtimeAgents_[1]);
+}
+
+TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgent) {
+  InSequence s;
+
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+
+  ASSERT_TRUE(runtimeAgents_[0]);
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
+      .WillOnce(Return(false))
       .RetiresOnSaturation();
-
+  EXPECT_CALL(
+      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
+      .RetiresOnSaturation();
   toPage_->sendMessage(R"({
                            "id": 1,
-                           "method": "Runtime.getHeapUsage"
-                         })");
-
-  MockInstanceTargetDelegate instanceTargetDelegate;
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate);
-
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                               "id": 2,
-                                               "result": {
-                                                 "usedSize": 0,
-                                                 "totalSize": 0
-                                               }
-                                             })")));
-
-  toPage_->sendMessage(R"({
-                           "id": 2,
-                           "method": "Runtime.getHeapUsage"
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
                          })");
 
   page_.unregisterInstance(instanceTarget);
+}
+
+TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgent) {
+  InSequence s;
+
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+
+  ASSERT_TRUE(runtimeAgents_[0]);
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
+      .WillOnce(Return(true))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
+
+  static constexpr auto kFooResponse = R"({
+    "id": 1,
+    "result": {
+      "fooValue": 42
+    }
+  })";
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(kFooResponse)))
+      .RetiresOnSaturation();
+  runtimeAgents_[0]->frontendChannel(kFooResponse);
+
+  page_.unregisterInstance(instanceTarget);
+}
+
+TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgent) {
+  InSequence s;
 
   EXPECT_CALL(
-      fromPage(),
-      onMessage(JsonParsed(AllOf(
-          AtJsonPtr("/error/code", Eq(-32601)), AtJsonPtr("/id", Eq(3))))))
+      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
       .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
 
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+
+  ASSERT_TRUE(runtimeAgents_[0]);
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
+      .WillOnce(Return(true))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
+
+  static constexpr auto kFooResponse = R"({
+    "id": 2,
+    "result": {
+      "fooValue": 42
+    }
+  })";
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(kFooResponse)))
+      .RetiresOnSaturation();
+  runtimeAgents_[0]->frontendChannel(kFooResponse);
+
+  page_.unregisterInstance(instanceTarget);
+
+  EXPECT_FALSE(runtimeAgents_[0]);
+
+  EXPECT_CALL(
+      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
+      .RetiresOnSaturation();
   toPage_->sendMessage(R"({
                            "id": 3,
-                           "method": "Runtime.getHeapUsage"
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
                          })");
+}
+
+TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgent) {
+  InSequence s;
+
+  EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_))
+      .WillRepeatedly(ReturnNull());
+
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+
+  EXPECT_FALSE(runtimeAgents_[0]);
+
+  EXPECT_CALL(
+      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
+
+  page_.unregisterInstance(instanceTarget);
 }
 
 } // namespace facebook::react::jsinspector_modern

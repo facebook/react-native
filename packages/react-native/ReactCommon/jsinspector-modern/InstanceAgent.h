@@ -9,6 +9,7 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/Parsing.h>
+#include <jsinspector-modern/RuntimeAgent.h>
 #include <functional>
 
 namespace facebook::react::jsinspector_modern {
@@ -27,10 +28,13 @@ class InstanceAgent {
    * \param target The InstanceTarget that this agent is attached to. The
    * caller is responsible for ensuring that the InstanceTarget outlives this
    * object.
+   * \param runtimeAgent The RuntimeAgent that this agent will use to
+   * communicate with the JS runtime.
    */
   explicit InstanceAgent(
       FrontendChannel frontendChannel,
-      InstanceTarget& target);
+      InstanceTarget& target,
+      std::unique_ptr<RuntimeAgent> runtimeAgent);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -39,16 +43,10 @@ class InstanceAgent {
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
 
-  /**
-   * Get the ID of the execution context that this agent is associated with.
-   * \see
-   * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-ExecutionContextId
-   */
-  int getExecutionContextId() const;
-
  private:
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;
+  std::unique_ptr<RuntimeAgent> runtimeAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern
