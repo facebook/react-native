@@ -15,6 +15,7 @@
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/JSExecutor.h>
+#include <jsinspector-modern/RuntimeAgent.h>
 
 namespace folly {
 struct dynamic;
@@ -105,6 +106,13 @@ class NativeToJsBridge {
    */
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
       std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
+
+  /**
+   * Create a RuntimeAgent that can be used to debug the underlying JS VM
+   * instance.
+   */
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
+      jsinspector_modern::FrontendChannel frontendChannel);
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

@@ -8,8 +8,10 @@
 #pragma once
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/RuntimeAgent.h>
 
 #include <list>
+#include <memory>
 #include <optional>
 
 namespace facebook::react::jsinspector_modern {
@@ -29,6 +31,17 @@ class InstanceTargetDelegate {
   InstanceTargetDelegate& operator=(const InstanceTargetDelegate&) = delete;
   InstanceTargetDelegate& operator=(InstanceTargetDelegate&&) = default;
 
+  /**
+   * Create a new RuntimeAgent that can be used to debug the underlying JS VM.
+   * The agent will be destroyed when the session ends or the InstanceTarget is
+   * unregistered from its PageTarget (whichever happens first).
+   * \param channel A thread-safe channel for sending CDP messages to the
+   * frontend.
+   * \returns The new agent, or nullptr if the target does not support JS
+   * debugging.
+   */
+  virtual std::unique_ptr<RuntimeAgent> createRuntimeAgent(
+      FrontendChannel channel) = 0;
   virtual ~InstanceTargetDelegate();
 };
 

@@ -20,6 +20,9 @@ InstanceTargetDelegate::~InstanceTargetDelegate() {}
 
 std::unique_ptr<InstanceAgent> InstanceTarget::createAgent(
     FrontendChannel channel) {
-  return std::make_unique<InstanceAgent>(channel, *this);
+  auto runtimeAgent = delegate_.createRuntimeAgent(channel);
+  return std::make_unique<InstanceAgent>(
+      channel, *this, std::move(runtimeAgent));
 }
+
 } // namespace facebook::react::jsinspector_modern
