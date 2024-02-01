@@ -16,33 +16,6 @@ import {
 
 export interface UIManagerStatic {
   /**
-   * Capture an image of the screen, window or an individual view. The image
-   * will be stored in a temporary file that will only exist for as long as the
-   * app is running.
-   *
-   * The `view` argument can be the literal string `window` if you want to
-   * capture the entire window, or it can be a reference to a specific
-   * React Native component.
-   *
-   * The `options` argument may include:
-   * - width/height (number) - the width and height of the image to capture.
-   * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
-   * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
-   *
-   * Returns a Promise<string> (tempFilePath)
-   * @platform ios
-   */
-  takeSnapshot: (
-    view?: 'window' | React.ReactElement | number,
-    options?: {
-      width?: number | undefined;
-      height?: number | undefined;
-      format?: 'png' | 'jpeg' | undefined;
-      quality?: number | undefined;
-    },
-  ) => Promise<string>;
-
-  /**
    * Determines the location on screen, width, and height of the given view and
    * returns the values via an async callback. If successful, the callback will
    * be called with the following arguments:
