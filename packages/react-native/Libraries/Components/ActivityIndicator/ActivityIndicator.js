@@ -6,7 +6,6 @@
  *
  * @format
  * @flow
- * @generate-docs
  */
 
 'use strict';
@@ -125,9 +124,9 @@ const ActivityIndicator = (
 /**
   Displays a circular loading indicator.
 
-  ```SnackPlayer name=ActivityIndicator%20Function%20Component%20Example
-  import React from "react";
-  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+  ```SnackPlayer name=ActivityIndicator%20Example
+  import React from 'react';
+  import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
   const App = () => (
     <View style={[styles.container, styles.horizontal]}>
@@ -141,47 +140,17 @@ const ActivityIndicator = (
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: "center"
+      justifyContent: 'center',
     },
     horizontal: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      padding: 10
-    }
-  });
-  export default App;
-  ```
-
-  ```SnackPlayer name=ActivityIndicator%20Class%20Component%20Example
-  import React, { Component } from "react";
-  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-
-  class App extends Component {
-    render() {
-      return (
-        <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator />
-          <ActivityIndicator size="large" />
-          <ActivityIndicator size="small" color="#0000ff" />
-          <ActivityIndicator size="large" color="#00ff00" />
-        </View>
-      );
-    }
-  }
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center"
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      padding: 10,
     },
-    horizontal: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      padding: 10
-    }
   });
+
   export default App;
-  ```
+```
 */
 
 const ActivityIndicatorWithRef: React.AbstractComponent<
