@@ -22,8 +22,11 @@ folly_version = folly_config[:version]
 socket_rocket_version = '0.7.0'
 
 header_search_paths = [
+  "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\"",
   "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
 ]
 
@@ -45,6 +48,8 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(" ")
                              }
   s.framework = "UIKit"
+  s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version

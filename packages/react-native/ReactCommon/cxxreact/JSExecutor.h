@@ -12,6 +12,8 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/RuntimeAgent.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -111,7 +113,8 @@ class RN_EXPORT JSExecutor {
 
   /**
    * Returns whether or not the underlying executor supports debugging via the
-   * Chrome remote debugging protocol.
+   * Chrome remote debugging protocol. If true, the executor should also
+   * override the \c createRuntimeAgent method.
    */
   virtual bool isInspectable() {
     return false;
@@ -136,6 +139,12 @@ class RN_EXPORT JSExecutor {
       const std::string& bundlePath);
 
   static double performanceNow();
+
+  /**
+   * Create a RuntimeAgent that can be used to debug the JS VM instance.
+   */
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
+      jsinspector_modern::FrontendChannel frontendChannel);
 };
 
 } // namespace facebook::react

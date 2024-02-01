@@ -72,6 +72,10 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void unregisterFromInspector();
 
  private:
+  // From InstanceTargetDelegate
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
+      jsinspector_modern::FrontendChannel channel) override;
+
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;

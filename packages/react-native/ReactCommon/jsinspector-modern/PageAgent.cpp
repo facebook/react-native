@@ -71,24 +71,15 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return;
   }
 
+  bool shouldSendOKResponse = false;
+
   if (req.method == "Runtime.enable") {
     runtimeEnabled_ = true;
 
-    folly::dynamic res = folly::dynamic::object("id", req.id)(
-        "result", folly::dynamic::object());
-    std::string json = folly::toJson(res);
-    frontendChannel_(json);
-
-    if (instanceAgent_) {
-      folly::dynamic params = folly::dynamic::object(
-          "context",
-          folly::dynamic::object("id", instanceAgent_->getExecutionContextId())(
-              "origin", "")("name", "React Native"));
-      folly::dynamic contextCreated = folly::dynamic::object(
-          "method", "Runtime.executionContextCreated")("params", params);
-      frontendChannel_(folly::toJson(contextCreated));
-    }
-    return;
+    // Fall through to letting the instance handle this request and send a
+    // response, but remember that we need to send a response in case the
+    // instance doesn't handle the request.
+    shouldSendOKResponse = true;
   }
   if (req.method == "Runtime.disable") {
     runtimeEnabled_ = false;
@@ -96,10 +87,22 @@ void PageAgent::handleRequest(const cdp::PreparsedRequest& req) {
         "result", folly::dynamic::object());
     std::string json = folly::toJson(res);
     frontendChannel_(json);
-    return;
+
+    // Fall through to letting the instance handle this request and send a
+    // response, but remember that we need to send a response in case the
+    // instance doesn't handle the request.
+    shouldSendOKResponse = true;
   }
 
   if (instanceAgent_ && instanceAgent_->handleRequest(req)) {
+    return;
+  }
+
+  if (shouldSendOKResponse) {
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
     return;
   }
 
@@ -133,12 +136,8 @@ void PageAgent::setCurrentInstanceAgent(
     return;
   }
   if (previousInstanceAgent != nullptr) {
-    auto executionContextId = previousInstanceAgent->getExecutionContextId();
-    folly::dynamic contextDestroyed =
-        folly::dynamic::object("method", "Runtime.executionContextDestroyed")(
-            "params",
-            folly::dynamic::object("executionContextId", executionContextId));
-    frontendChannel_(folly::toJson(contextDestroyed));
+    // TODO: Send Runtime.executionContextDestroyed here - at the moment we
+    // expect the runtime to do it for us.
 
     // Because we can only have a single instance, we can report all contexts
     // as cleared.
@@ -147,13 +146,8 @@ void PageAgent::setCurrentInstanceAgent(
     frontendChannel_(folly::toJson(contextsCleared));
   }
   if (instanceAgent_) {
-    folly::dynamic params = folly::dynamic::object(
-        "context",
-        folly::dynamic::object("id", instanceAgent_->getExecutionContextId())(
-            "origin", "")("name", "React Native"));
-    folly::dynamic contextCreated = folly::dynamic::object(
-        "method", "Runtime.executionContextCreated")("params", params);
-    frontendChannel_(folly::toJson(contextCreated));
+    // TODO: Send Runtime.executionContextCreated here - at the moment we expect
+    // the runtime to do it for us.
   }
 }
 

@@ -11,24 +11,19 @@ namespace facebook::react::jsinspector_modern {
 
 InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
-    InstanceTarget& target)
-    : frontendChannel_(frontendChannel), target_(target) {
+    InstanceTarget& target,
+    std::unique_ptr<RuntimeAgent> runtimeAgent)
+    : frontendChannel_(frontendChannel),
+      target_(target),
+      runtimeAgent_(std::move(runtimeAgent)) {
   (void)target_;
 }
 
 bool InstanceAgent::handleRequest(const cdp::PreparsedRequest& req) {
-  // NOTE: Our implementation of @cdp Runtime.getHeapUsage is a stub.
-  if (req.method == "Runtime.getHeapUsage") {
-    folly::dynamic res = folly::dynamic::object("id", req.id)(
-        "result", folly::dynamic::object("usedSize", 0)("totalSize", 0));
-    frontendChannel_(folly::toJson(res));
+  if (runtimeAgent_ && runtimeAgent_->handleRequest(req)) {
     return true;
   }
   return false;
-}
-
-int InstanceAgent::getExecutionContextId() const {
-  return 1;
 }
 
 } // namespace facebook::react::jsinspector_modern

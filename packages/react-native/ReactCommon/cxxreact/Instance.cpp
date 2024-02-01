@@ -316,4 +316,9 @@ void Instance::JSCallInvoker::scheduleAsync(
   }
 }
 
+std::unique_ptr<jsinspector_modern::RuntimeAgent> Instance::createRuntimeAgent(
+    jsinspector_modern::FrontendChannel frontendChannel) {
+  return nativeToJsBridge_->createRuntimeAgent(frontendChannel);
+}
+
 } // namespace facebook::react
