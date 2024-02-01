@@ -35,7 +35,7 @@ import com.facebook.soloader.SoLoader
 @DoNotStrip
 object ReactNativeFeatureFlagsCxxInterop {
   init {
-    SoLoader.loadLibrary("reactfeatureflagsjni")
+    SoLoader.loadLibrary("react_featureflagsjni")
   }
 
 ${Object.entries(config.common)

@@ -23,7 +23,7 @@ target_include_directories(rninstance PUBLIC .)
 target_link_libraries(
         rninstance
         fabricjni
-        featureflagsjni
+        react_featureflagsjni
         turbomodulejsijni
         fb
         jsi

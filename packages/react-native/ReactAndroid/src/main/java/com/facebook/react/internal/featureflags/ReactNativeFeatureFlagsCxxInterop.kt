@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b01e2f777839812437c60503ebe321b>>
+ * @generated SignedSource<<9638eb154fe6e488aebcf20c462f498e>>
  */
 
 /**
@@ -25,7 +25,7 @@ import com.facebook.soloader.SoLoader
 @DoNotStrip
 object ReactNativeFeatureFlagsCxxInterop {
   init {
-    SoLoader.loadLibrary("reactfeatureflagsjni")
+    SoLoader.loadLibrary("react_featureflagsjni")
   }
 
   @DoNotStrip @JvmStatic external fun commonTestFlag(): Boolean

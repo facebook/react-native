@@ -5,18 +5,18 @@
 
 cmake_minimum_required(VERSION 3.13)
 
-file(GLOB featureflagsjni_SRCS CONFIGURE_DEPENDS *.cpp)
+file(GLOB react_featureflagsjni_SRCS CONFIGURE_DEPENDS *.cpp)
 
 add_library(
-        featureflagsjni
+        react_featureflagsjni
         SHARED
         ${featureflagsjni_SRCS}
 )
 
-target_include_directories(featureflagsjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(react_featureflagsjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(
-        featureflagsjni
+        react_featureflagsjni
         fb
         fbjni
         react_featureflags
@@ -24,7 +24,7 @@ target_link_libraries(
 )
 
 target_compile_options(
-        featureflagsjni
+        react_featureflagsjni
         PRIVATE
         -DLOG_TAG=\"ReactNative\"
         -fexceptions
