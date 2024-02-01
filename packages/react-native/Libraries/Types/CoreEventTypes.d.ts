@@ -18,7 +18,10 @@ export interface LayoutRectangle {
 }
 
 // @see TextProps.onLayout
-export type LayoutChangeEvent = NativeSyntheticEvent<{layout: LayoutRectangle; target?: number | null}>;
+export type LayoutChangeEvent = NativeSyntheticEvent<{
+  layout: LayoutRectangle;
+  target: number | null | undefined;
+}>;
 
 interface TextLayoutLine {
   ascender: number;
