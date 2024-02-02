@@ -66,15 +66,6 @@ static void jni_YGConfigSetUseWebDefaultsJNI(
   YGConfigSetUseWebDefaults(config, useWebDefaults);
 }
 
-static void jni_YGConfigSetPrintTreeFlagJNI(
-    JNIEnv* /*env*/,
-    jobject /*obj*/,
-    jlong nativePointer,
-    jboolean enable) {
-  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  YGConfigSetPrintTreeFlag(config, enable);
-}
-
 static void jni_YGConfigSetPointScaleFactorJNI(
     JNIEnv* /*env*/,
     jobject /*obj*/,
@@ -690,18 +681,6 @@ static void jni_YGNodeSetAlwaysFormsContainingBlockJNI(
       _jlong2YGNodeRef(nativePointer), alwaysFormsContainingBlock);
 }
 
-static void
-jni_YGNodePrintJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
-#ifdef DEBUG
-  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  YGNodePrint(
-      node,
-      (YGPrintOptions)(YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
-#else
-  (void)nativePointer;
-#endif
-}
-
 static jlong
 jni_YGNodeCloneJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
   auto node = _jlong2YGNodeRef(nativePointer);
@@ -744,9 +723,6 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetUseWebDefaultsJNI",
      "(JZ)V",
      (void*)jni_YGConfigSetUseWebDefaultsJNI},
-    {"jni_YGConfigSetPrintTreeFlagJNI",
-     "(JZ)V",
-     (void*)jni_YGConfigSetPrintTreeFlagJNI},
     {"jni_YGConfigSetPointScaleFactorJNI",
      "(JF)V",
      (void*)jni_YGConfigSetPointScaleFactorJNI},
@@ -970,7 +946,6 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeSetAlwaysFormsContainingBlockJNI",
      "(JZ)V",
      (void*)jni_YGNodeSetAlwaysFormsContainingBlockJNI},
-    {"jni_YGNodePrintJNI", "(J)V", (void*)jni_YGNodePrintJNI},
     {"jni_YGNodeCloneJNI", "(J)J", (void*)jni_YGNodeCloneJNI},
 };
 

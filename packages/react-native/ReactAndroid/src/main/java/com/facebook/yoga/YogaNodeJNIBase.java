@@ -557,14 +557,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   /**
-   * Use the set logger (defaults to adb log) to print out the styles, children, and computed layout
-   * of the tree rooted at this node.
-   */
-  public void print() {
-    YogaNative.jni_YGNodePrintJNI(mNativePointer);
-  }
-
-  /**
    * This method replaces the child at childIndex position with the newNode received by parameter.
    * This is different than calling removeChildAt and addChildAt because this method ONLY replaces
    * the child in the mChildren datastructure. @DoNotStrip: called from JNI

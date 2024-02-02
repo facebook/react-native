@@ -11,7 +11,6 @@
 #include <yoga/algorithm/CalculateLayout.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
-#include <yoga/debug/NodeToString.h>
 #include <yoga/event/event.h>
 #include <yoga/node/Node.h>
 
@@ -329,12 +328,6 @@ void YGNodeSetAlwaysFormsContainingBlock(
     bool alwaysFormsContainingBlock) {
   resolveRef(node)->setAlwaysFormsContainingBlock(alwaysFormsContainingBlock);
 }
-
-#ifdef DEBUG
-void YGNodePrint(const YGNodeConstRef node, const YGPrintOptions options) {
-  yoga::print(resolveRef(node), scopedEnum(options));
-}
-#endif
 
 // TODO: This leaks internal details to the public API. Remove after removing
 // ComponentKit usage of it.

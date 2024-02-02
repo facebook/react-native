@@ -46,7 +46,3 @@
 // are logged to console before the `assert` is fired. More useful on Android vs
 // other platforms.
 //#define STUB_VIEW_TREE_VERBOSE 1
-
-// Verbose logging for certain Yoga-related things in the RN codebase (not Yoga
-// codebase). Useful for debugging layout.
-//#define RN_DEBUG_YOGA_LOGGER 1
