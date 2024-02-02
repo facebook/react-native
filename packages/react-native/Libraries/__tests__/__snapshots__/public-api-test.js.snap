@@ -1654,7 +1654,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/Button.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
 "type ButtonProps = $ReadOnly<{|
   title: string,
   onPress: (event?: PressEvent) => mixed,
@@ -1674,16 +1674,17 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+  \\"aria-busy\\"?: ?boolean,
+  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
+  \\"aria-disabled\\"?: ?boolean,
+  \\"aria-expanded\\"?: ?boolean,
+  \\"aria-selected\\"?: ?boolean,
   importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 |}>;
-export type Button = React.ComponentType<ButtonProps>;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
-"declare module.exports: ButtonType;
+declare const Button: React.AbstractComponent<ButtonProps>;
+declare export default typeof Button;
 "
 `;
 

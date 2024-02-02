@@ -112,7 +112,7 @@ module.exports = {
       .default;
   },
   get Button(): Button {
-    return require('./Libraries/Components/Button');
+    return require('./Libraries/Components/Button').default;
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
