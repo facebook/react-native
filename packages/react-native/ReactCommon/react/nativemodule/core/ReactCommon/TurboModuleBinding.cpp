@@ -126,24 +126,19 @@ void TurboModuleBinding::install(
           }));
 
   if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
-    if (legacyModuleProvider != nullptr) {
-      defineReadOnlyGlobal(runtime, "RN$TurboInterop", jsi::Value(true));
-      defineReadOnlyGlobal(
-          runtime,
-          "nativeModuleProxy",
-          jsi::Object::createFromHostObject(
-              runtime,
-              std::make_shared<BridgelessNativeModuleProxy>(
-                  std::make_unique<TurboModuleBinding>(
-                      std::move(legacyModuleProvider),
-                      longLivedObjectCollection))));
-    } else {
-      defineReadOnlyGlobal(
-          runtime,
-          "nativeModuleProxy",
-          jsi::Object::createFromHostObject(
-              runtime, std::make_shared<BridgelessNativeModuleProxy>(nullptr)));
-    }
+    bool rnTurboInterop = legacyModuleProvider != nullptr;
+    auto turboModuleBinding = legacyModuleProvider
+        ? std::make_unique<TurboModuleBinding>(
+              std::move(legacyModuleProvider), longLivedObjectCollection)
+        : nullptr;
+    auto nativeModuleProxy = std::make_shared<BridgelessNativeModuleProxy>(
+        std::move(turboModuleBinding));
+    defineReadOnlyGlobal(
+        runtime, "RN$TurboInterop", jsi::Value(rnTurboInterop));
+    defineReadOnlyGlobal(
+        runtime,
+        "nativeModuleProxy",
+        jsi::Object::createFromHostObject(runtime, nativeModuleProxy));
   }
 }
 
