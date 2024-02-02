@@ -69,6 +69,7 @@ module.exports = class ReactNativeEnvironment extends NodeEnv {
           getConstants: () => ({settings: {}}),
         },
         LinkingManager: {},
+        I18n: {getConstants: () => ({})},
       })[name];
   }
 };
