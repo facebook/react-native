@@ -193,11 +193,17 @@ function extractSupportedApplePlatforms(dependency, dependencyPath) {
     {},
   );
 
-  console.log(
-    `[Codegen] Supported Apple platforms: ${Object.keys(supportedPlatformsMap)
-      .filter(key => supportedPlatformsMap[key])
-      .join(', ')} for ${dependency}`,
+  const supportedPlatformsList = Object.keys(supportedPlatformsMap).filter(
+    key => supportedPlatformsMap[key],
   );
+
+  if (supportedPlatformsList.length > 0) {
+    console.log(
+      `[Codegen] Supported Apple platforms: ${supportedPlatformsList.join(
+        ', ',
+      )} for ${dependency}`,
+    );
+  }
 
   return supportedPlatformsMap;
 }
