@@ -43,6 +43,8 @@ struct PreparsedRequest {
   inline bool operator==(const PreparsedRequest& rhs) const {
     return id == rhs.id && method == rhs.method && params == rhs.params;
   }
+
+  std::string toJson() const;
 };
 
 /**

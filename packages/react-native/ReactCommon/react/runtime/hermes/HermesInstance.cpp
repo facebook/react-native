@@ -7,6 +7,7 @@
 
 #include "HermesInstance.h"
 
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgent.h>
 #include <jsi/jsilib.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -91,6 +92,47 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 #endif
 
+class HermesJSRuntime : public JSRuntime {
+ public:
+  HermesJSRuntime(
+      std::unique_ptr<HermesRuntime> runtime,
+      std::shared_ptr<MessageQueueThread> msgQueueThread)
+      : runtime_(std::move(runtime)),
+        msgQueueThread_(std::move(msgQueueThread)) {}
+
+  jsi::Runtime& getRuntime() noexcept override {
+    return *runtime_;
+  }
+
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createInspectorAgent(
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState) override {
+    return std::unique_ptr<jsinspector_modern::RuntimeAgent>(
+        new jsinspector_modern::HermesRuntimeAgent(
+            frontendChannel,
+            sessionState,
+            runtime_,
+            [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
+             runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
+              auto msgQueueThread = msgQueueThreadWeak.lock();
+              if (!msgQueueThread) {
+                return;
+              }
+              msgQueueThread->runOnQueue([runtimeWeak, fn]() {
+                auto runtime = runtimeWeak.lock();
+                if (!runtime) {
+                  return;
+                }
+                fn(*runtime);
+              });
+            }));
+  }
+
+ private:
+  std::shared_ptr<HermesRuntime> runtime_;
+  std::shared_ptr<MessageQueueThread> msgQueueThread_;
+};
+
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> cm,
@@ -142,7 +184,8 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
   }
 #endif
 
-  return std::make_unique<JSIRuntimeHolder>(std::move(hermesRuntime));
+  return std::make_unique<HermesJSRuntime>(
+      std::move(hermesRuntime), std::move(msgQueueThread));
 }
 
 } // namespace facebook::react

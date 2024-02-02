@@ -51,10 +51,18 @@ class HermesExecutor : public JSIExecutor {
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue,
       const JSIScopedTimeoutInvoker& timeoutInvoker,
-      RuntimeInstaller runtimeInstaller);
+      RuntimeInstaller runtimeInstaller,
+      hermes::HermesRuntime& hermesRuntime);
+
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState) override;
 
  private:
   JSIScopedTimeoutInvoker timeoutInvoker_;
+  std::shared_ptr<MessageQueueThread> jsQueue_;
+  std::shared_ptr<jsi::Runtime> runtime_;
+  hermes::HermesRuntime& hermesRuntime_;
 };
 
 } // namespace facebook::react

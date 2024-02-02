@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "reacthermes"
   s.dependency "React-cxxreact", version
   s.dependency "React-jsiexecutor", version
-  s.dependency "React-jsinspector", version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
@@ -50,4 +50,5 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "hermes-engine"
   s.dependency "React-jsi"
+  s.dependency "React-runtimeexecutor"
 end

@@ -24,6 +24,7 @@ target_link_libraries(bridgelesshermes
         hermes_executor_common
         bridgeless
         react_featureflags
+        jsinspector
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
