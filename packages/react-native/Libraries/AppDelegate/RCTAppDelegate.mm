@@ -39,8 +39,6 @@
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
 @interface RCTAppDelegate () <
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
@@ -53,9 +51,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
 {
   NSMutableDictionary *mutableProps = [initialProps mutableCopy] ?: [NSMutableDictionary new];
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
   return mutableProps;
 }
 

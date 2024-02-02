@@ -240,7 +240,6 @@ public class ReactDelegate {
       if (composedLaunchOptions == null) {
         composedLaunchOptions = new Bundle();
       }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
     }
     return composedLaunchOptions;
   }
