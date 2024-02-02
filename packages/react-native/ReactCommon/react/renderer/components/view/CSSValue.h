@@ -66,10 +66,52 @@ enum class CSSKeyword : uint8_t {
 
 /**
  * Unit for the CSS <length> type.
- * https://www.w3.org/TR/css-values-3/#lengths
+ * https://www.w3.org/TR/css-values-4/#lengths
  */
 enum class CSSLengthUnit : uint8_t {
+  Cap,
+  Ch,
+  Cm,
+  Dvb,
+  Dvh,
+  Dvi,
+  Dvmax,
+  Dvmin,
+  Dvw,
+  Em,
+  Ex,
+  Ic,
+  In,
+  Lh,
+  Lvb,
+  Lvh,
+  Lvi,
+  Lvmax,
+  Lvmin,
+  Lvw,
+  Mm,
+  Pc,
+  Pt,
   Px,
+  Q,
+  Rcap,
+  Rch,
+  Rem,
+  Rex,
+  Ric,
+  Rlh,
+  Svb,
+  Svh,
+  Svi,
+  Svmax,
+  Svmin,
+  Svw,
+  Vb,
+  Vh,
+  Vi,
+  Vmax,
+  Vmin,
+  Vw,
 };
 
 /**
