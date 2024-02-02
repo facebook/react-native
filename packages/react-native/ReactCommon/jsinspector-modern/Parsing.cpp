@@ -19,4 +19,14 @@ PreparsedRequest preparse(std::string_view message) {
       .params = parsed.count("params") ? parsed["params"] : nullptr};
 }
 
+std::string PreparsedRequest::toJson() const {
+  folly::dynamic obj = folly::dynamic::object;
+  obj["id"] = id;
+  obj["method"] = method;
+  if (params != nullptr) {
+    obj["params"] = params;
+  }
+  return folly::toJson(obj);
+}
+
 } // namespace facebook::react::jsinspector_modern::cdp
