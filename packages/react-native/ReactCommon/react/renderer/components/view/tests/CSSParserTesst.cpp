@@ -54,6 +54,14 @@ TEST(CSSParser, length_values) {
   EXPECT_EQ(cmValue.length.value, 453.0f);
   EXPECT_EQ(cmValue.length.unit, CSSLengthUnit::Cm);
 
+  auto unitlessZeroValue = parseCSSValue<CSSLengthValue>("0");
+  EXPECT_EQ(unitlessZeroValue.type, CSSValueType::Length);
+  EXPECT_EQ(unitlessZeroValue.length.value, 0.0f);
+  EXPECT_EQ(unitlessZeroValue.length.unit, CSSLengthUnit::Px);
+
+  auto unitlessNonzeroValue = parseCSSValue<CSSLengthValue>("123");
+  EXPECT_EQ(unitlessNonzeroValue.type, CSSValueType::Undefined);
+
   auto pctValue = parseCSSValue<CSSLengthValue>("-40%");
   EXPECT_EQ(pctValue.type, CSSValueType::Undefined);
 }
@@ -70,6 +78,14 @@ TEST(CSSParser, length_percentage_values) {
   EXPECT_EQ(pxValue.type, CSSValueType::Length);
   EXPECT_EQ(pxValue.length.value, 20.0f);
   EXPECT_EQ(pxValue.length.unit, CSSLengthUnit::Px);
+
+  auto unitlessZeroValue = parseCSSValue<CSSLengthPercentageValue>("0");
+  EXPECT_EQ(unitlessZeroValue.type, CSSValueType::Length);
+  EXPECT_EQ(unitlessZeroValue.length.value, 0.0f);
+  EXPECT_EQ(unitlessZeroValue.length.unit, CSSLengthUnit::Px);
+
+  auto unitlessNonzeroValue = parseCSSValue<CSSLengthPercentageValue>("123");
+  EXPECT_EQ(unitlessNonzeroValue.type, CSSValueType::Undefined);
 
   auto pctValue = parseCSSValue<CSSLengthPercentageValue>("-40%");
   EXPECT_EQ(pctValue.type, CSSValueType::Percent);

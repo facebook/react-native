@@ -229,6 +229,12 @@ CSSLengthValue parseCSSValue<CSSLengthValue>(std::string_view css) {
               CSSValueType::Length, {.length = {token.numericValue(), *unit}}};
         }
         break;
+      case CSSTokenType::Number:
+        if (token.numericValue() == 0) {
+          return CSSLengthValue{
+              CSSValueType::Length, {.length = {0, CSSLengthUnit::Px}}};
+        }
+        break;
       default:
         break;
     }
@@ -254,6 +260,12 @@ CSSLengthPercentageValue parseCSSValue<CSSLengthPercentageValue>(
               return CSSLengthPercentageValue{
                   CSSValueType::Length,
                   {.length = {token.numericValue(), *unit}}};
+            }
+            break;
+          case CSSTokenType::Number:
+            if (token.numericValue() == 0) {
+              return CSSLengthPercentageValue{
+                  CSSValueType::Length, {.length = {0, CSSLengthUnit::Px}}};
             }
             break;
           case CSSTokenType::Percent:
