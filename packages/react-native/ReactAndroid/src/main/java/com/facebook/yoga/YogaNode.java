@@ -221,8 +221,6 @@ public abstract class YogaNode implements YogaProps {
   @Nullable
   public abstract Object getData();
 
-  public abstract void print();
-
   public abstract YogaNode cloneWithoutChildren();
 
   public abstract YogaNode cloneWithChildren();

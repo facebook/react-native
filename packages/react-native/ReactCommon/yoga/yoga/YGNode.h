@@ -274,11 +274,6 @@ YG_EXPORT void YGNodeSetAlwaysFormsContainingBlock(
     bool alwaysFormsContainingBlock);
 
 /**
- * Print a node to log output.
- */
-YG_EXPORT void YGNodePrint(YGNodeConstRef node, YGPrintOptions options);
-
-/**
  * @deprecated
  */
 YG_DEPRECATED(

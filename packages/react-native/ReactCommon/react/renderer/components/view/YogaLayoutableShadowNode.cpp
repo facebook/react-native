@@ -855,9 +855,6 @@ yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     YGConfigSetErrata(&config, YGConfigGetErrata(previousConfig));
   }
 
-#ifdef RN_DEBUG_YOGA_LOGGER
-  YGConfigSetPrintTreeFlag(&config, true);
-#endif
   return config;
 }
 
