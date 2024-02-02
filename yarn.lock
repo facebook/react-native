@@ -3645,9 +3645,8 @@ __metadata:
     flow-enums-runtime: "npm:^0.0.6"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-  peerDependencies:
-    react: 18.2.0
-    react-native: "*"
+    react: "npm:18.2.0"
+    react-native-macos: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -12469,7 +12468,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-macos@workspace:packages/react-native":
+"react-native-macos@workspace:*, react-native-macos@workspace:packages/react-native":
   version: 0.0.0-use.local
   resolution: "react-native-macos@workspace:packages/react-native"
   dependencies:
