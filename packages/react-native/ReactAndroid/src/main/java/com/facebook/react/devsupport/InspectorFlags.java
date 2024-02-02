@@ -7,9 +7,11 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /** JNI wrapper for `jsinspector_modern::InspectorFlags`. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class InspectorFlags {
   static {
