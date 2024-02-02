@@ -11,10 +11,6 @@
       "@babel/preset-flow": "^7.20.0"
     },
     "dependencies": {},
-    "exports": {
-      ".": "./index.js",
-      "./jest-environment": "./dist/jest-environment/index.js",
-      "./jest-setup": "./dist/jest-setup/index.js"
-    },
+    "main": "src/index.js",
     "peerDependencies": { "jest": "^29.7.0" }
   }
