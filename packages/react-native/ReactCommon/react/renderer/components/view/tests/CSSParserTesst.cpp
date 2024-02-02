@@ -49,6 +49,11 @@ TEST(CSSParser, length_values) {
   EXPECT_EQ(pxValue.length.value, 20.0f);
   EXPECT_EQ(pxValue.length.unit, CSSLengthUnit::Px);
 
+  auto cmValue = parseCSSValue<CSSLengthValue>("453cm");
+  EXPECT_EQ(cmValue.type, CSSValueType::Length);
+  EXPECT_EQ(cmValue.length.value, 453.0f);
+  EXPECT_EQ(cmValue.length.unit, CSSLengthUnit::Cm);
+
   auto pctValue = parseCSSValue<CSSLengthValue>("-40%");
   EXPECT_EQ(pctValue.type, CSSValueType::Undefined);
 }
