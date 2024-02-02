@@ -16,25 +16,37 @@ import * as FabricUIManager from 'react-native/Libraries/ReactNative/__mocks__/F
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import {act} from 'react-test-renderer';
 
-type ReactNode = {
-  children: Array<ReactNode>,
-  props: {...},
-  viewName: string,
-  instanceHandle: {
-    memoizedProps: {testID: ?string, ...},
+type FiberPartial = {
+  pendingProps: {
+    children: $ReadOnlyArray<ReactNode>,
     ...
   },
+  ...
 };
 
-type RootReactNode = $ReadOnlyArray<ReactNode>;
+type ReactNode = {
+  children: $ReadOnlyArray<ReactNode>,
+  props: {text?: string | null, ...},
+  viewName: string,
+  instanceHandle: FiberPartial,
+  ...
+};
+
+type RenderedNodeJSON = {
+  type: string,
+  props: {[propName: string]: any, ...},
+  children: null | Array<RenderedJSON>,
+  $$typeof?: symbol, // Optional because we add it with defineProperty().
+};
+type RenderedJSON = RenderedNodeJSON | string;
 
 type RenderResult = {
-  toJSON: () => string,
+  toJSON: () => $ReadOnlyArray<RenderedJSON> | RenderedJSON | null,
 };
 
-function buildRenderResult(rootNode: RootReactNode): RenderResult {
+function buildRenderResult(rootNode: ReactNode): RenderResult {
   return {
-    toJSON: () => stringify(rootNode),
+    toJSON: () => toJSON(rootNode),
   };
 }
 
@@ -55,31 +67,30 @@ export function render(element: Element<ElementType>): RenderResult {
     throw new Error('No root found for containerTag ' + containerTag);
   }
 
-  return buildRenderResult(root);
+  return buildRenderResult(root[0]);
 }
 
-function stringify(
-  node: RootReactNode | ReactNode,
-  indent: string = '',
-): string {
-  const nextIndent = '  ' + indent;
-  if (Array.isArray(node)) {
-    return `<>
-${node.map(n => nextIndent + stringify(n, nextIndent)).join('\n')}
-</>`;
+function toJSON(node: ReactNode): RenderedJSON {
+  let renderedChildren = null;
+  if (node.children != null && node.children.length > 0) {
+    renderedChildren = node.children.map(c => toJSON(c));
   }
-  const children = node.children;
-  const props = node.props
-    ? Object.entries(node.props)
-        .map(([k, v]) => ` ${k}=${JSON.stringify(v) ?? ''}`)
-        .join('')
-    : '';
 
-  if (children.length > 0) {
-    return `<${node.viewName}${props}>
-${children.map(c => nextIndent + stringify(c, nextIndent)).join('\n')}
-${indent}</${node.viewName}>`;
-  } else {
-    return `<${node.viewName}${props} />`;
+  if (node.viewName === 'RCTRawText') {
+    return node.props.text ?? '';
   }
+
+  const {children: _children, ...props} =
+    node.instanceHandle?.pendingProps ?? {};
+  const json: RenderedNodeJSON = {
+    type: node.viewName,
+    props,
+    children: renderedChildren,
+  };
+
+  Object.defineProperty(json, '$$typeof', {
+    value: Symbol.for('react.test.json'),
+  });
+
+  return json;
 }
