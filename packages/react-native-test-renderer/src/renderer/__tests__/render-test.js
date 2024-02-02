@@ -24,10 +24,24 @@ function TestComponent() {
   );
 }
 
+function TestComponentWithProps() {
+  return (
+    <View pointerEvents="box-none">
+      <Text>Hello</Text>
+      <View style={{flex: 1}} />
+    </View>
+  );
+}
+
 describe('render', () => {
   describe('toJSON', () => {
     it('returns expected JSON output based on renderer component', () => {
       const result = ReactNativeTestRenderer.render(<TestComponent />);
+      expect(result.toJSON()).toMatchSnapshot();
+    });
+
+    it('renders View props', () => {
+      const result = ReactNativeTestRenderer.render(<TestComponentWithProps />);
       expect(result.toJSON()).toMatchSnapshot();
     });
   });
