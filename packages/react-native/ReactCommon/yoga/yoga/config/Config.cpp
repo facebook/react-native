@@ -32,14 +32,6 @@ bool Config::useWebDefaults() const {
   return useWebDefaults_;
 }
 
-void Config::setShouldPrintTree(bool printTree) {
-  printTree_ = printTree;
-}
-
-bool Config::shouldPrintTree() const {
-  return printTree_;
-}
-
 void Config::setExperimentalFeatureEnabled(
     ExperimentalFeature feature,
     bool enabled) {
