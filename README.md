@@ -11,6 +11,8 @@
 
 React Native visionOS allows you to write visionOS with full support for platform SDK. This is a full fork of the main repository with changes needed to support visionOS.
 
+![Screenshot](https://github.com/callstack/react-native-visionos/assets/52801365/0fcd5e5f-628c-49ef-84ab-d1d4675a011a)
+
 > [!CAUTION]
 > This project is still at an early stage of development and is not ready for production use.
 
@@ -77,7 +79,7 @@ If you want to customize it you can use the `visionos_hoverEffect` prop, like so
 
 The available options are: `lift` or `highlight`.
 
-### `XR` API 
+### `XR` API (_nightly_) 
 Manage Immersive Experiences.
 
 #### Methods
