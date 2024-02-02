@@ -105,48 +105,46 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary*)initialProperties launchOptions:(NSDictionary*)launchOptions {
-    BOOL fabricEnabled = self.fabricEnabled;
-    BOOL enableBridgeless = self.bridgelessEnabled;
-
-    NSDictionary *initProps = updateInitialProps(initialProperties, fabricEnabled);
+  BOOL fabricEnabled = self.fabricEnabled;
+  BOOL enableBridgeless = self.bridgelessEnabled;
+  
+  NSDictionary *initProps = updateInitialProps(initialProperties, fabricEnabled);
+  
+  UIView *rootView;
+  if (enableBridgeless) {
+    // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
+    RCTSetUseNativeViewConfigsInBridgelessMode(self.fabricEnabled);
     
-    UIView *rootView;
-    if (enableBridgeless) {
-      // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-      RCTSetUseNativeViewConfigsInBridgelessMode(self.fabricEnabled);
-
-      // Enable TurboModule interop by default in Bridgeless mode
-      RCTEnableTurboModuleInterop(YES);
-      RCTEnableTurboModuleInteropBridgeProxy(YES);
-
-      [self createReactHost];
-      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-      RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
-
-      RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-          initWithSurface:surface
-          sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
-
+    // Enable TurboModule interop by default in Bridgeless mode
+    RCTEnableTurboModuleInterop(YES);
+    RCTEnableTurboModuleInteropBridgeProxy(YES);
+    
+    [self createReactHost];
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
+    
+    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
+                                                                   initWithSurface:surface
+                                                                   sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+    
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
     rootView.backgroundColor = [UIColor systemBackgroundColor];
-  } else {
-    if (!self.bridge) {
-      self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
-    }
-    if ([self newArchEnabled]) {
-      self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
-                                                                   contextContainer:_contextContainer];
-      self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
-
-          [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-        }
-      }
-      rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
-    }
-
-    [self customizeRootView:(RCTRootView *)rootView];
+  }
+  if (!self.bridge) {
+    self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
+  }
+  if ([self newArchEnabled]) {
+    self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
+                                                                 contextContainer:_contextContainer];
+    self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
     
-    return rootView;
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+  }
+  rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
+  
+  [self customizeRootView:(RCTRootView *)rootView];
+  
+  return rootView;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

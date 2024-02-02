@@ -533,9 +533,7 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
-#if TARGET_OS_VISION
-  return;
-#endif
+#if !TARGET_OS_VISION
   // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
   // Set this property in the implementation of
   // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
@@ -574,6 +572,7 @@ RCT_EXPORT_METHOD(getInitialNotification
   }
 
   resolve((id)kCFNull);
+#endif
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)
