@@ -150,6 +150,37 @@ it('handles number colors properly', () => {
   expect(normalizeColor(0x01234567)).toBe(0x01234567);
 });
 
+it('handles color function properly', () => {
+  expect(normalizeColor('color(display-p3 1 0 0)')).toEqual({
+    space: 'display-p3',
+    r: 1,
+    g: 0,
+    b: 0,
+    a: 1,
+  });
+  expect(normalizeColor('color(display-p3 1 0 0 / 0.5)')).toEqual({
+    space: 'display-p3',
+    r: 1,
+    g: 0,
+    b: 0,
+    a: 0.5,
+  });
+  expect(normalizeColor('color(srgb 1 0 0)')).toEqual({
+    space: 'srgb',
+    r: 1,
+    g: 0,
+    b: 0,
+    a: 1,
+  });
+  expect(normalizeColor('color(srgb 1 0 0 / 0.5)')).toEqual({
+    space: 'srgb',
+    r: 1,
+    g: 0,
+    b: 0,
+    a: 0.5,
+  });
+});
+
 it('returns the same color when it is already normalized', () => {
   const normalizedColor = normalizeColor('red') || 0;
   expect(normalizeColor(normalizedColor)).toBe(normalizedColor);
