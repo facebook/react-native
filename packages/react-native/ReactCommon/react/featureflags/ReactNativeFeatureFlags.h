@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<479f3a75128ee7e9ea60af544b69e0d7>>
+ * @generated SignedSource<<d3e8b0cc31fd8e44c3f83d836485e6f6>>
  */
 
 /**
@@ -61,6 +61,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
    */
   static bool enableCustomDrawOrderFabric();
+
+  /**
+   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   */
+  static bool enableFixForClippedSubviewsCrash();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

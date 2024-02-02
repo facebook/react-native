@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ba33b527792e241891e821b18b11000>>
+ * @generated SignedSource<<dab6daf99192f983b7c8ad7633b43a33>>
  */
 
 /**
@@ -53,6 +53,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
   return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -88,6 +93,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCustomDrawOrderFabric",
         JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric),
+      makeNativeMethod(
+        "enableFixForClippedSubviewsCrash",
+        JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),
   });
 }
 

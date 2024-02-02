@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c43dd1db78ac69ca3c39577d45a04071>>
+ * @generated SignedSource<<559256ac71f23725dac2ed9aec1bd102>>
  * @flow strict-local
  */
 
@@ -45,6 +45,7 @@ export type ReactNativeFeatureFlags = {
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   enableSpannableBuildingUnification: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
+  enableFixForClippedSubviewsCrash: Getter<boolean>,
 }
 
 /**
@@ -106,6 +107,10 @@ export const enableSpannableBuildingUnification: Getter<boolean> = createNativeF
  * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
  */
 export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGetter('enableCustomDrawOrderFabric', false);
+/**
+ * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+ */
+export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFlagGetter('enableFixForClippedSubviewsCrash', false);
 
 /**
  * Overrides the feature flags with the provided methods.

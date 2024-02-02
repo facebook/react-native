@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fccbff20f478efc0778ed7991065d189>>
+ * @generated SignedSource<<f4268973a38ba972e68474cc31bab5a7>>
  */
 
 /**
@@ -63,6 +63,12 @@ object ReactNativeFeatureFlags {
    */
   @JvmStatic
   fun enableCustomDrawOrderFabric() = accessor.enableCustomDrawOrderFabric()
+
+  /**
+   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   */
+  @JvmStatic
+  fun enableFixForClippedSubviewsCrash() = accessor.enableFixForClippedSubviewsCrash()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

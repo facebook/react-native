@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<126de7eafa27c27df31d9d4e984ab96c>>
+ * @generated SignedSource<<5b653e8a53f557ffc0f46b3e81e99bed>>
  */
 
 /**
@@ -26,6 +26,7 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
+  private var enableFixForClippedSubviewsCrashCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -77,6 +78,15 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCustomDrawOrderFabric()
       enableCustomDrawOrderFabricCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFixForClippedSubviewsCrash(): Boolean {
+    var cached = enableFixForClippedSubviewsCrashCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableFixForClippedSubviewsCrash()
+      enableFixForClippedSubviewsCrashCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47d7a81b555e133f79db174f599a1940>>
+ * @generated SignedSource<<feb0342515d10b3519675cd91efa65dc>>
  */
 
 /**
@@ -60,6 +60,12 @@ bool ReactNativeFeatureFlagsProviderHolder::enableSpannableBuildingUnification()
 bool ReactNativeFeatureFlagsProviderHolder::enableCustomDrawOrderFabric() {
   static const auto method =
       getJClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
+  return method(javaProvider_);
+}
+
+bool ReactNativeFeatureFlagsProviderHolder::enableFixForClippedSubviewsCrash() {
+  static const auto method =
+      getJClass()->getMethod<jboolean()>("enableFixForClippedSubviewsCrash");
   return method(javaProvider_);
 }
 

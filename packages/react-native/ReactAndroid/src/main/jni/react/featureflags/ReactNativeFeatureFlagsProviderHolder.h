@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<228921c4374aa45bdcd496f0f10d653a>>
+ * @generated SignedSource<<879b0c096c4a2e9692a5e133bdfd8809>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsProviderHolder
   bool batchRenderingUpdatesInEventLoop() override;
   bool enableSpannableBuildingUnification() override;
   bool enableCustomDrawOrderFabric() override;
+  bool enableFixForClippedSubviewsCrash() override;
 
  private:
   jni::global_ref<jobject> javaProvider_;

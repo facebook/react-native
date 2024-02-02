@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f85ebb4efba429a4c943dc26e5a70541>>
+ * @generated SignedSource<<1514c04fb9d175308e106b84a14bc89d>>
  */
 
 /**
@@ -36,6 +36,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool batchRenderingUpdatesInEventLoop();
   bool enableSpannableBuildingUnification();
   bool enableCustomDrawOrderFabric();
+  bool enableFixForClippedSubviewsCrash();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -49,6 +50,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::optional<bool> batchRenderingUpdatesInEventLoop_;
   std::optional<bool> enableSpannableBuildingUnification_;
   std::optional<bool> enableCustomDrawOrderFabric_;
+  std::optional<bool> enableFixForClippedSubviewsCrash_;
 };
 
 } // namespace facebook::react

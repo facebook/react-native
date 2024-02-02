@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc95df7a5e58ca72e19a77e4d190225e>>
+ * @generated SignedSource<<7d50752c48503e31eccfe64d66ee2e99>>
  */
 
 /**
@@ -128,6 +128,23 @@ bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
   }
 
   return enableCustomDrawOrderFabric_.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
+  if (!enableFixForClippedSubviewsCrash_.has_value()) {
+    // Mark the flag as accessed.
+    static const char* flagName = "enableFixForClippedSubviewsCrash";
+    if (std::find(
+            accessedFeatureFlags_.begin(),
+            accessedFeatureFlags_.end(),
+            flagName) == accessedFeatureFlags_.end()) {
+      accessedFeatureFlags_.push_back(flagName);
+    }
+
+    enableFixForClippedSubviewsCrash_.emplace(currentProvider_->enableFixForClippedSubviewsCrash());
+  }
+
+  return enableFixForClippedSubviewsCrash_.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(

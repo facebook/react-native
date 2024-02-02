@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1642f4bbd50bb535c369642dd3a647ad>>
+ * @generated SignedSource<<994628655312f57c8ab774e9f119eb18>>
  */
 
 /**
@@ -41,6 +41,8 @@ class NativeReactNativeFeatureFlags
   bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
 
   bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
+
+  bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react
