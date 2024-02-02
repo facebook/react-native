@@ -9,11 +9,13 @@ package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.StateWrapper;
 
 /** Factory class that expose creation of {@link MountItem} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountItemFactory {
 
   /** @return a {@link DispatchCommandMountItem} for commands identified by an int */
