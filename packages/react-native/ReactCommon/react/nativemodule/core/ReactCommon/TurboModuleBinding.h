@@ -15,7 +15,29 @@
 
 namespace facebook::react {
 
-class BridgelessNativeModuleProxy;
+class BridgelessNativeModuleProxy : public jsi::HostObject {
+ public:
+  explicit BridgelessNativeModuleProxy(
+      std::unique_ptr<TurboModuleBinding> binding);
+
+  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
+
+  void set(
+      jsi::Runtime& runtime,
+      const jsi::PropNameID& /*name*/,
+      const jsi::Value& /*value*/) override;
+
+ private:
+  std::unique_ptr<TurboModuleBinding> binding_;
+};
+
+/**
+ * An app/platform-specific provider function to get an instance of a
+ * BridgelessNativeModuleProxy.
+ */
+using BridgelessNativeModuleProxyFactoryFunctionType =
+    std::function<std::shared_ptr<BridgelessNativeModuleProxy>(
+        std::unique_ptr<TurboModuleBinding> binding)>;
 
 /**
  * Represents the JavaScript binding for the TurboModule system.
@@ -31,7 +53,9 @@ class TurboModuleBinding {
       TurboModuleProviderFunctionType&& moduleProvider,
       TurboModuleProviderFunctionType&& legacyModuleProvider = nullptr,
       std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection =
-          nullptr);
+          nullptr,
+      BridgelessNativeModuleProxyFactoryFunctionType&&
+          nativeModuleProxyFactory = nullptr);
 
   TurboModuleBinding(
       TurboModuleProviderFunctionType&& moduleProvider,

@@ -16,51 +16,49 @@ using namespace facebook;
 
 namespace facebook::react {
 
-class BridgelessNativeModuleProxy : public jsi::HostObject {
-  std::unique_ptr<TurboModuleBinding> binding_;
+BridgelessNativeModuleProxy::BridgelessNativeModuleProxy(
+    std::unique_ptr<TurboModuleBinding> binding)
+    : binding_(std::move(binding)) {}
 
- public:
-  BridgelessNativeModuleProxy(std::unique_ptr<TurboModuleBinding> binding)
-      : binding_(std::move(binding)) {}
-
-  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override {
-    /**
-     * BatchedBridge/NativeModules.js contains this line:
-     *
-     * module.exports = global.nativeModuleProxy
-     *
-     * This means that NativeModuleProxy is exported as a module from
-     * 'NativeModules.js'. Whenever some JavaScript requires 'NativeModule.js',
-     * Metro checks this module's __esModule property to see if the module is an
-     * ES6 module.
-     *
-     * We return false from this property access, so that we can fail on the
-     * actual NativeModule require that happens later, which is more actionable.
-     */
-    std::string moduleName = name.utf8(runtime);
-    if (moduleName == "__esModule") {
-      return jsi::Value(false);
-    }
-
-    if (binding_) {
-      return binding_->getModule(runtime, moduleName);
-    }
-
-    throw jsi::JSError(
-        runtime,
-        "Tried to access NativeModule \"" + name.utf8(runtime) +
-            "\" from the bridge. This isn't allowed in Bridgeless mode.");
+jsi::Value BridgelessNativeModuleProxy::get(
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& name) {
+  /**
+   * BatchedBridge/NativeModules.js contains this line:
+   *
+   * module.exports = global.nativeModuleProxy
+   *
+   * This means that NativeModuleProxy is exported as a module from
+   * 'NativeModules.js'. Whenever some JavaScript requires 'NativeModule.js',
+   * Metro checks this module's __esModule property to see if the module is an
+   * ES6 module.
+   *
+   * We return false from this property access, so that we can fail on the
+   * actual NativeModule require that happens later, which is more actionable.
+   */
+  std::string moduleName = name.utf8(runtime);
+  if (moduleName == "__esModule") {
+    return jsi::Value(false);
   }
 
-  void set(
-      jsi::Runtime& runtime,
-      const jsi::PropNameID& /*name*/,
-      const jsi::Value& /*value*/) override {
-    throw jsi::JSError(
-        runtime,
-        "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
+  if (binding_) {
+    return binding_->getModule(runtime, moduleName);
   }
-};
+
+  throw jsi::JSError(
+      runtime,
+      "Tried to access NativeModule \"" + name.utf8(runtime) +
+          "\" from the bridge. This isn't allowed in Bridgeless mode.");
+}
+
+void BridgelessNativeModuleProxy::set(
+    jsi::Runtime& runtime,
+    const jsi::PropNameID& /*name*/,
+    const jsi::Value& /*value*/) {
+  throw jsi::JSError(
+      runtime,
+      "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
+}
 
 // TODO(148359183): Merge this with the Bridgeless defineReadOnlyGlobal util
 static void defineReadOnlyGlobal(
@@ -103,7 +101,8 @@ void TurboModuleBinding::install(
     jsi::Runtime& runtime,
     TurboModuleProviderFunctionType&& moduleProvider,
     TurboModuleProviderFunctionType&& legacyModuleProvider,
-    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection,
+    BridgelessNativeModuleProxyFactoryFunctionType&& nativeModuleProxyFactory) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -131,8 +130,10 @@ void TurboModuleBinding::install(
         ? std::make_unique<TurboModuleBinding>(
               std::move(legacyModuleProvider), longLivedObjectCollection)
         : nullptr;
-    auto nativeModuleProxy = std::make_shared<BridgelessNativeModuleProxy>(
-        std::move(turboModuleBinding));
+    auto nativeModuleProxy = nativeModuleProxyFactory
+        ? nativeModuleProxyFactory(std::move(turboModuleBinding))
+        : std::make_shared<BridgelessNativeModuleProxy>(
+              std::move(turboModuleBinding));
     defineReadOnlyGlobal(
         runtime, "RN$TurboInterop", jsi::Value(rnTurboInterop));
     defineReadOnlyGlobal(
