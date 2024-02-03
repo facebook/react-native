@@ -65,7 +65,7 @@ const getDefaultEventTypesCached = (function () {
  */
 const UIManagerJSOverridenAPIs = {
   measure: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (
       left: number,
       top: number,
@@ -78,14 +78,14 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measure');
   },
   measureInWindow: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (x: number, y: number, width: number, height: number) => void,
   ): void => {
     raiseSoftError('measureInWindow');
   },
   measureLayout: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -97,7 +97,7 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measureLayout');
   },
   measureLayoutRelativeToParent: (
-    reactTag: ?number,
+    reactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -109,7 +109,7 @@ const UIManagerJSOverridenAPIs = {
     raiseSoftError('measureLayoutRelativeToParent');
   },
   dispatchViewManagerCommand: (
-    reactTag: ?number,
+    reactTag: number,
     commandID: number,
     commandArgs: ?Array<string | number | boolean>,
   ): void => {
@@ -124,7 +124,7 @@ const UIManagerJSOverridenAPIs = {
  */
 const UIManagerJSUnusedInNewArchAPIs = {
   createView: (
-    reactTag: ?number,
+    reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: Object,
@@ -134,11 +134,11 @@ const UIManagerJSUnusedInNewArchAPIs = {
   updateView: (reactTag: number, viewName: string, props: Object): void => {
     raiseSoftError('updateView');
   },
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void => {
+  setChildren: (containerTag: number, reactTags: Array<number>): void => {
     raiseSoftError('setChildren');
   },
   manageChildren: (
-    containerTag: ?number,
+    containerTag: number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
     addChildReactTags: Array<number>,
@@ -147,7 +147,7 @@ const UIManagerJSUnusedInNewArchAPIs = {
   ): void => {
     raiseSoftError('manageChildren');
   },
-  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void => {
+  setJSResponder: (reactTag: number, blockNativeResponder: boolean): void => {
     raiseSoftError('setJSResponder');
   },
   clearJSResponder: (): void => {
@@ -163,7 +163,7 @@ const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
   android: {
     // TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
     showPopupMenu: (
-      reactTag: ?number,
+      reactTag: number,
       items: Array<string>,
       error: (error: Object) => void,
       success: (event: string, selected?: number) => void,
@@ -213,16 +213,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
         );
       }
     },
-    sendAccessibilityEvent: (reactTag: ?number, eventType: number): void => {
-      if (reactTag == null) {
-        console.error(
-          `sendAccessibilityEvent() dropping event: Cannot be called with ${String(
-            reactTag,
-          )} reactTag`,
-        );
-        return;
-      }
-
+    sendAccessibilityEvent: (reactTag: number, eventType: number): void => {
       // Keep this in sync with java:FabricUIManager.sendAccessibilityEventFromJS
       // and legacySendAccessibilityEvent.android.js
       const AccessibilityEvent = {
@@ -271,14 +262,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
       raiseSoftError('lazilyLoadView');
       return {};
     },
-    focus: (reactTag: ?number): void => {
-      if (reactTag == null) {
-        console.error(
-          `focus() noop: Cannot be called with ${String(reactTag)} reactTag`,
-        );
-        return;
-      }
-
+    focus: (reactTag: number): void => {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
@@ -288,14 +272,7 @@ const UIManagerJSPlatformAPIs = Platform.select({
       }
       FabricUIManager.dispatchCommand(shadowNode, 'focus', []);
     },
-    blur: (reactTag: ?number): void => {
-      if (reactTag == null) {
-        console.error(
-          `blur() noop: Cannot be called with ${String(reactTag)} reactTag`,
-        );
-        return;
-      }
-
+    blur: (reactTag: number): void => {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
@@ -344,7 +321,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     }
   },
   findSubviewIn: (
-    reactTag: ?number,
+    reactTag: number,
     point: Array<number>,
     callback: (
       nativeViewTag: number,
@@ -354,15 +331,6 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       height: number,
     ) => void,
   ): void => {
-    if (reactTag == null) {
-      console.error(
-        `findSubviewIn() noop: Cannot be called with ${String(
-          reactTag,
-        )} reactTag`,
-      );
-      return;
-    }
-
     const FabricUIManager = nullthrows(getFabricUIManager());
     const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
 
@@ -404,33 +372,15 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
     );
   },
   viewIsDescendantOf: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     callback: (result: Array<boolean>) => void,
   ): void => {
-    if (reactTag == null) {
-      console.error(
-        `viewIsDescendantOf() noop: Cannot be called with ${String(
-          reactTag,
-        )} reactTag`,
-      );
-      return;
-    }
-
     const FabricUIManager = nullthrows(getFabricUIManager());
     const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
     if (!shadowNode) {
       console.error(
         `viewIsDescendantOf() noop: Cannot find view with reactTag ${reactTag}`,
-      );
-      return;
-    }
-
-    if (ancestorReactTag == null) {
-      console.error(
-        `viewIsDescendantOf() noop: Cannot be called with ${String(
-          ancestorReactTag,
-        )} ancestorReactTag`,
       );
       return;
     }

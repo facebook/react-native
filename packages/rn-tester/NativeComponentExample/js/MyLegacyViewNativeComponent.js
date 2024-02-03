@@ -43,8 +43,13 @@ export function callNativeMethodToChangeBackgroundColor(
     console.log('viewRef is null');
     return;
   }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    reactTag,
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.changeBackgroundColor.toString(),
@@ -60,8 +65,14 @@ export function callNativeMethodToAddOverlays(
     console.log('viewRef is null');
     return;
   }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    reactTag,
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.addOverlays.toString(),
@@ -76,8 +87,14 @@ export function callNativeMethodToRemoveOverlays(
     console.log('viewRef is null');
     return;
   }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
+    reactTag,
     UIManager.getViewManagerConfig(
       'RNTMyLegacyNativeView',
     ).Commands.removeOverlays.toString(),
