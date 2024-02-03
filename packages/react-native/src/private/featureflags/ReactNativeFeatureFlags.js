@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c43dd1db78ac69ca3c39577d45a04071>>
+ * @generated SignedSource<<f804aa82b9eb799f281a1d752974cc4a>>
  * @flow strict-local
  */
 
@@ -33,6 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAccessToHostTreeInFabric: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
+  shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
 };
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
@@ -81,6 +82,11 @@ export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaSc
  * Enables use of setNativeProps in JS driven animations.
  */
 export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
+
+/**
+ * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
+ */
+export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = createJavaScriptFlagGetter('shouldUseRemoveClippedSubviewsAsDefaultOnIOS', false);
 
 /**
  * Common flag for testing. Do NOT modify.
