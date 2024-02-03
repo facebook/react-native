@@ -16,6 +16,8 @@
 #import "RCTParserUtils.h"
 #import "RCTUtils.h"
 
+#import <react/renderer/graphics/ColorComponents.h>
+
 @implementation RCTConvert
 
 RCT_CONVERTER(id, id, self)
@@ -439,7 +441,7 @@ RCT_ENUM_CONVERTER(
     mapping = temporaryMapping;
   });
 
-  UIKeyboardType type = RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
+  UIKeyboardType type = (UIKeyboardType)RCTConvertEnumValue("UIKeyboardType", mapping, @(UIKeyboardTypeDefault), json).integerValue;
   return type;
 }
 
@@ -844,7 +846,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
     RCTAssert([UIColor respondsToSelector:selector], @"RCTUIColor does not respond to a semantic color selector.");
     Class klass = [UIColor class];
     IMP imp = [klass methodForSelector:selector];
-    id (*getSemanticColorObject)(id, SEL) = (void *)imp;
+    id (*getSemanticColorObject)(id, SEL) = (id (*)(id, SEL))imp;
     id colorObject = getSemanticColorObject(klass, selector);
     if ([colorObject isKindOfClass:[UIColor class]]) {
       color = colorObject;
@@ -878,6 +880,38 @@ static NSString *RCTSemanticColorNames(void)
   return names;
 }
 
+static RCTColorSpace defaultColorSpace = (RCTColorSpace)facebook::react::getDefaultColorSpace();
+RCTColorSpace RCTGetDefaultColorSpace(void)
+{
+  return (RCTColorSpace)facebook::react::getDefaultColorSpace();
+}
+void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
+{
+  facebook::react::setDefaultColorSpace((facebook::react::ColorSpace)colorSpace);
+}
+
++ (UIColor *)createColorFrom:(CGFloat)r green:(CGFloat)g blue:(CGFloat)b alpha:(CGFloat)a
+{
+  RCTColorSpace space = RCTGetDefaultColorSpace();
+  return [self createColorFrom:r green:g blue:b alpha:a andColorSpace:space];
+}
++ (UIColor *)createColorFrom:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha andColorSpace:(RCTColorSpace)colorSpace
+{
+  if (colorSpace == RCTColorSpaceDisplayP3) {
+    return [UIColor colorWithDisplayP3Red:red green:green blue:blue alpha:alpha];
+  }
+  return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+}
+
++ (RCTColorSpace)colorSpaceFromString:(NSString *)colorSpace {
+  if ([colorSpace isEqualToString:@"display-p3"]) {
+    return RCTColorSpaceDisplayP3;
+  } else if ([colorSpace isEqualToString:@"srgb"]) {
+    return RCTColorSpaceSRGB;
+  }
+  return RCTGetDefaultColorSpace();
+}
+
 + (UIColor *)UIColor:(id)json
 {
   if (!json) {
@@ -886,7 +920,7 @@ static NSString *RCTSemanticColorNames(void)
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
-    return [UIColor colorWithRed:[self CGFloat:components[0]]
+    return [self createColorFrom:[self CGFloat:components[0]]
                            green:[self CGFloat:components[1]]
                             blue:[self CGFloat:components[2]]
                            alpha:alpha];
@@ -896,11 +930,19 @@ static NSString *RCTSemanticColorNames(void)
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
-    return [UIColor colorWithRed:r green:g blue:b alpha:a];
+    return [self createColorFrom:r green:g blue:b alpha:a];
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
-    if ((value = [dictionary objectForKey:@"semantic"])) {
+    NSString *rawColorSpace = [dictionary objectForKey: @"space"];
+    if ([@[@"display-p3", @"srgb"] containsObject:rawColorSpace]) {
+      CGFloat r = [[dictionary objectForKey:@"r"] floatValue];
+      CGFloat g = [[dictionary objectForKey:@"g"] floatValue];
+      CGFloat b = [[dictionary objectForKey:@"b"] floatValue];
+      CGFloat a = [[dictionary objectForKey:@"a"] floatValue];
+      RCTColorSpace colorSpace = [self colorSpaceFromString: rawColorSpace];
+      return [self createColorFrom:r green:g blue:b alpha:a andColorSpace:colorSpace];
+    } else if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
         UIColor *color = [UIColor colorNamed:semanticName];
