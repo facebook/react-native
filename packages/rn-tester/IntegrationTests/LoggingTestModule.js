@@ -10,7 +10,7 @@
 'use strict';
 
 const invariant = require('invariant');
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const {registerCallableModule} = require('react-native');
 
 const LoggingTestModule = {
   logToConsole: function (str) {
@@ -35,6 +35,6 @@ const LoggingTestModule = {
   },
 };
 
-BatchedBridge.registerCallableModule('LoggingTestModule', LoggingTestModule);
+registerCallableModule('LoggingTestModule', LoggingTestModule);
 
 module.exports = LoggingTestModule;

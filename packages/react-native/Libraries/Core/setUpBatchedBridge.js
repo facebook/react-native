@@ -10,50 +10,34 @@
 
 'use strict';
 
-let registerModule;
-if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
-  registerModule = global.RN$registerCallableModule;
-} else {
-  const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-  registerModule = (
-    moduleName:
-      | $TEMPORARY$string<'GlobalPerformanceLogger'>
-      | $TEMPORARY$string<'HMRClient'>
-      | $TEMPORARY$string<'HeapCapture'>
-      | $TEMPORARY$string<'JSTimers'>
-      | $TEMPORARY$string<'RCTDeviceEventEmitter'>
-      | $TEMPORARY$string<'RCTLog'>
-      | $TEMPORARY$string<'RCTNativeAppEventEmitter'>
-      | $TEMPORARY$string<'SamplingProfiler'>
-      | $TEMPORARY$string<'Systrace'>,
-    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
-     * Flow's LTI update could not be added via codemod */
-    factory,
-  ) => BatchedBridge.registerLazyCallableModule(moduleName, factory);
-}
+import registerCallableModule from './registerCallableModule';
 
-registerModule('Systrace', () => require('../Performance/Systrace'));
+registerCallableModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
-  registerModule('JSTimers', () => require('./Timers/JSTimers'));
+  registerCallableModule('JSTimers', () => require('./Timers/JSTimers'));
 }
-registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));
-registerModule('SamplingProfiler', () =>
+registerCallableModule('HeapCapture', () =>
+  require('../HeapCapture/HeapCapture'),
+);
+registerCallableModule('SamplingProfiler', () =>
   require('../Performance/SamplingProfiler'),
 );
-registerModule('RCTLog', () => require('../Utilities/RCTLog'));
-registerModule(
+registerCallableModule('RCTLog', () => require('../Utilities/RCTLog'));
+registerCallableModule(
   'RCTDeviceEventEmitter',
   () => require('../EventEmitter/RCTDeviceEventEmitter').default,
 );
-registerModule('RCTNativeAppEventEmitter', () =>
+registerCallableModule('RCTNativeAppEventEmitter', () =>
   require('../EventEmitter/RCTNativeAppEventEmitter'),
 );
-registerModule('GlobalPerformanceLogger', () =>
+registerCallableModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),
 );
 
 if (__DEV__) {
-  registerModule('HMRClient', () => require('../Utilities/HMRClient'));
+  registerCallableModule('HMRClient', () => require('../Utilities/HMRClient'));
 } else {
-  registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));
+  registerCallableModule('HMRClient', () =>
+    require('../Utilities/HMRClientProdShim'),
+  );
 }
