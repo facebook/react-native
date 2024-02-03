@@ -35,6 +35,7 @@ import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IViewGroupManager;
@@ -49,6 +50,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
+import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManagerWrapper;
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -387,8 +389,25 @@ public class SurfaceMountingManager {
       // should be impossible - we mark this as a "readded" View and
       // thus prevent the RemoveDeleteTree worker from deleting this
       // View in the future.
-      if (viewParent instanceof ViewGroup) {
-        ((ViewGroup) viewParent).removeView(view);
+      if (ReactNativeFeatureFlags.enableFixForClippedSubviewsCrash()) {
+        if (viewParent instanceof ReactViewGroup) {
+          ReactViewGroup viewParentGroup = (ReactViewGroup) viewParent;
+          // If the parent group has subview clipping enabled, we need to use the specialized
+          // method.
+          // Otherwise, ReactViewGroup's member variables managing subview clipping
+          // will get out of sync with Android's view hierarchy, leading to a crash.
+          if (viewParentGroup.getRemoveClippedSubviews()) {
+            viewParentGroup.removeViewWithSubviewClippingEnabled(view);
+          } else {
+            viewParentGroup.removeView(view);
+          }
+        } else if (viewParent instanceof ViewGroup) {
+          ((ViewGroup) viewParent).removeView(view);
+        }
+      } else {
+        if (viewParent instanceof ViewGroup) {
+          ((ViewGroup) viewParent).removeView(view);
+        }
       }
       mErroneouslyReaddedReactTags.add(tag);
     }
