@@ -754,7 +754,6 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  // This method also sets the child's mParent to null
   private void removeFromArray(int index) {
     final View[] children = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;
