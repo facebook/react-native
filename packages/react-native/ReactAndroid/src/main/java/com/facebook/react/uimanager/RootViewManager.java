@@ -9,8 +9,10 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** View manager for ReactRootView components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RootViewManager extends ViewGroupManager<ViewGroup> {
 
   public static final String REACT_CLASS = "RootView";

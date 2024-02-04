@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
@@ -22,6 +23,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
  * need to call handleTouchEvent from onTouchEvent and onInterceptTouchEvent. It will correctly find
  * the right view to handle the touch and also dispatch the appropriate event to JS
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JSTouchDispatcher {
 
   private int mTargetTag = -1;

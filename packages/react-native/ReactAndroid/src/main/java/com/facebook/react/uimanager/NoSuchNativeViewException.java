@@ -7,10 +7,13 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Exception thrown when a class tries to access a native view by a tag that has no native view
  * associated with it.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class NoSuchNativeViewException extends IllegalViewOperationException {
 
   public NoSuchNativeViewException(String detailMessage) {

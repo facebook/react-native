@@ -7,10 +7,12 @@
 
 package com.facebook.react.uimanager;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaErrata;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactYogaConfigProvider {
 
   private static YogaConfig YOGA_CONFIG;
