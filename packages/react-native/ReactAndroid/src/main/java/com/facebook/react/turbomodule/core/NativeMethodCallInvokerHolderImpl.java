@@ -7,6 +7,7 @@
 
 package com.facebook.react.turbomodule.core;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.FrameworkAPI;
@@ -19,6 +20,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  * class so that we may pass it from CatalystInstance, through Java, to
  * TurboModuleManager::initHybrid.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @FrameworkAPI
 public class NativeMethodCallInvokerHolderImpl implements NativeMethodCallInvokerHolder {
 
