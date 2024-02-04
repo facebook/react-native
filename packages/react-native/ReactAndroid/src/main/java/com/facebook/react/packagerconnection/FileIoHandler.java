@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import org.json.JSONObject;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FileIoHandler implements Runnable {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
   private static final long FILE_TTL = 30 * 1000;
