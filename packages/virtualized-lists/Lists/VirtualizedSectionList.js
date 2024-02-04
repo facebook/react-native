@@ -595,7 +595,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
   const renderSeparator = leadingSeparator || separator;
   return (
-    <View>
+    <>
       {renderSeparator
         ? inverted === false
           ? leadingSeparator
@@ -607,7 +607,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
           ? separator
           : leadingSeparator
         : null}
-    </View>
+    </>
   );
 }
 
