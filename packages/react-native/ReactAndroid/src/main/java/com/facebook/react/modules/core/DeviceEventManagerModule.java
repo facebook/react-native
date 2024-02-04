@@ -11,6 +11,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeDeviceEventManagerSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -20,6 +21,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module that handles device hardware events like hardware back presses. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeDeviceEventManagerSpec.NAME)
 public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
   @DoNotStrip

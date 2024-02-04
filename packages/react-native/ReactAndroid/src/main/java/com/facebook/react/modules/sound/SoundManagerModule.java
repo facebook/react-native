@@ -10,11 +10,13 @@ package com.facebook.react.modules.sound;
 import android.content.Context;
 import android.media.AudioManager;
 import com.facebook.fbreact.specs.NativeSoundManagerSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** {@link NativeModule} that allows Playing device sounds from JS. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeSoundManagerSpec.NAME)
 public class SoundManagerModule extends NativeSoundManagerSpec {
 
