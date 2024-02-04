@@ -10,6 +10,9 @@ package com.facebook.react.uimanager.common;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewUtil {
 
   public static final int NO_SURFACE_ID = -1;
