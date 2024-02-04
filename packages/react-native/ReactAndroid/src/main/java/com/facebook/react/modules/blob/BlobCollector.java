@@ -7,11 +7,13 @@
 
 package com.facebook.react.modules.blob;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.soloader.SoLoader;
 
-/* package */ class BlobCollector {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class BlobCollector {
   static {
     SoLoader.loadLibrary("reactnativeblob");
   }

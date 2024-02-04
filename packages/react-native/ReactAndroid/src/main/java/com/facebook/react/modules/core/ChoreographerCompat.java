@@ -8,7 +8,9 @@
 package com.facebook.react.modules.core;
 
 import android.view.Choreographer;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ChoreographerCompat {
   /** @deprecated Use Choreographer.FrameCallback instead */
   @Deprecated

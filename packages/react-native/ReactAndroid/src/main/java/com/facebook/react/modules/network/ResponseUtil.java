@@ -8,6 +8,7 @@
 package com.facebook.react.modules.network;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
@@ -15,6 +16,7 @@ import com.facebook.react.bridge.WritableMap;
 import java.net.SocketTimeoutException;
 
 /** Util methods to send network responses to JS. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ResponseUtil {
   public static void onDataSend(
       @Nullable ReactApplicationContext reactContext, int requestId, long progress, long total) {

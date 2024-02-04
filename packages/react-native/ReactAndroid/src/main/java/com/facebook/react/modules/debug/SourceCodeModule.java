@@ -9,6 +9,7 @@ package com.facebook.react.modules.debug;
 
 import com.facebook.fbreact.specs.NativeSourceCodeSpec;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeSourceCodeSpec.NAME)
 public class SourceCodeModule extends NativeSourceCodeSpec {
 
