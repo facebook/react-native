@@ -8,7 +8,9 @@
 package com.facebook.react.views.debuggingoverlay;
 
 import android.graphics.RectF;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class TraceUpdate {
 
   private final int mId;

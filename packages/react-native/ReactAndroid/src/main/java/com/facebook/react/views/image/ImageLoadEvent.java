@@ -9,6 +9,7 @@ package com.facebook.react.views.image;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
@@ -16,6 +17,7 @@ import com.facebook.react.uimanager.events.Event;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @IntDef({ON_ERROR, ON_LOAD, ON_LOAD_END, ON_LOAD_START, ON_PROGRESS})
   @Retention(RetentionPolicy.SOURCE)
