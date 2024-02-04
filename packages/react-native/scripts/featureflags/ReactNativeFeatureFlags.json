@@ -57,6 +57,10 @@
     "shouldUseSetNativePropsInFabric": {
       "description": "Enables use of setNativeProps in JS driven animations.",
       "defaultValue": true
+    },
+    "shouldUseRemoveClippedSubviewsAsDefaultOnIOS": {
+      "description": "removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android",
+      "defaultValue": false
     }
   }
 }
