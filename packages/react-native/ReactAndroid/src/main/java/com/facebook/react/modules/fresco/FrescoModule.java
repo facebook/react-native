@@ -14,6 +14,7 @@ import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFact
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -34,6 +35,7 @@ import okhttp3.OkHttpClient;
  *
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule
     implements ModuleDataCleaner.Cleanable, LifecycleEventListener, TurboModule {

@@ -10,6 +10,7 @@ package com.facebook.react.modules.toast;
 import android.view.Gravity;
 import android.widget.Toast;
 import com.facebook.fbreact.specs.NativeToastAndroidSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -18,6 +19,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
 /** {@link NativeModule} that allows JS to show an Android Toast. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeToastAndroidSpec.NAME)
 public class ToastModule extends NativeToastAndroidSpec {
 
