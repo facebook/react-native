@@ -7,10 +7,13 @@
 
 package com.facebook.react.module.model;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Data holder class holding native module specifications. {@link ReactModuleSpecProcessor} creates
  * these so Java modules don't have to be instantiated at React Native start up.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactModuleInfo {
 
   private final String mName;

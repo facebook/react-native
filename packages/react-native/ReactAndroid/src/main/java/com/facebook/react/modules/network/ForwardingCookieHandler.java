@@ -10,6 +10,7 @@ package com.facebook.react.modules.network;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.Map;
  * <p>This class relies on CookieManager to persist cookies to disk so cookies may be lost if the
  * application is terminated before it syncs.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ForwardingCookieHandler extends CookieHandler {
   private static final String VERSION_ZERO_HEADER = "Set-cookie";
   private static final String VERSION_ONE_HEADER = "Set-cookie2";

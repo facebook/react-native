@@ -8,6 +8,7 @@
 package com.facebook.react.modules.appstate;
 
 import com.facebook.fbreact.specs.NativeAppStateSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeAppStateSpec.NAME)
 public class AppStateModule extends NativeAppStateSpec
     implements LifecycleEventListener, WindowFocusChangeListener {
