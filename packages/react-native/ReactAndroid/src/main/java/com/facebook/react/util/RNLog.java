@@ -11,6 +11,7 @@ import android.util.Log;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import javax.annotation.Nullable;
 
 /** Logging wrapper for FLog with LogBox support. */
 public class RNLog {
@@ -31,7 +32,7 @@ public class RNLog {
    *
    * @param message The message to log.
    */
-  public static void l(String message) {
+  public static void l(@Nullable String message) {
     FLog.i(ReactConstants.TAG, message);
   }
 
@@ -40,7 +41,7 @@ public class RNLog {
    *
    * @param message The message to log.
    */
-  public static void t(String message) {
+  public static void t(@Nullable String message) {
     FLog.i(ReactConstants.TAG, message);
   }
 
@@ -50,7 +51,7 @@ public class RNLog {
    *
    * @param message The message to log.
    */
-  public static void a(String message) {
+  public static void a(@Nullable String message) {
     FLog.w(ReactConstants.TAG, "(ADVICE)" + message);
   }
 
@@ -60,7 +61,7 @@ public class RNLog {
    * @param context The React context of the application use to display the warning.
    * @param message The message to log.
    */
-  public static void w(ReactContext context, String message) {
+  public static void w(@Nullable ReactContext context, @Nullable String message) {
     logInternal(context, message, WARN);
     FLog.w(ReactConstants.TAG, message);
   }
@@ -71,7 +72,7 @@ public class RNLog {
    * @param context The React context of the application use to display the error.
    * @param message The message to log.
    */
-  public static void e(ReactContext context, String message) {
+  public static void e(@Nullable ReactContext context, @Nullable String message) {
     logInternal(context, message, ERROR);
     FLog.e(ReactConstants.TAG, message);
   }
@@ -82,11 +83,11 @@ public class RNLog {
    *
    * @param message The message to log.
    */
-  public static void e(String message) {
+  public static void e(@Nullable String message) {
     FLog.e(ReactConstants.TAG, message);
   }
 
-  private static void logInternal(ReactContext context, String message, int level) {
+  private static void logInternal(@Nullable ReactContext context, @Nullable String message, int level) {
     if (level >= MINIMUM_LEVEL_FOR_UI) {
       if (context != null && context.hasActiveReactInstance() && message != null) {
         context.getJSModule(RCTLog.class).logIfNoNativeHook(levelToString(level), message);
