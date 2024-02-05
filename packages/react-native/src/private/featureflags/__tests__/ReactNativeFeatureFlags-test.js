@@ -75,4 +75,18 @@ describe('ReactNativeFeatureFlags', () => {
       'Feature flags were accessed before being overridden: commonTestFlag',
     );
   });
+
+  it('should throw an error when trying to set overrides twice', () => {
+    const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
+
+    ReactNativeFeatureFlags.override({
+      jsOnlyTestFlag: () => true,
+    });
+
+    expect(() =>
+      ReactNativeFeatureFlags.override({
+        jsOnlyTestFlag: () => false,
+      }),
+    ).toThrow('Feature flags cannot be overridden more than once');
+  });
 });

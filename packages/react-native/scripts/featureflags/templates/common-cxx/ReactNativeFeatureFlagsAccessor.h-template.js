@@ -53,6 +53,8 @@ ${Object.entries(definitions.common)
   void ensureFlagsNotAccessed();
 
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
+  bool wasOverridden_;
+
   std::array<std::atomic<const char*>, ${
     Object.keys(definitions.common).length
   }> accessedFeatureFlags_;
