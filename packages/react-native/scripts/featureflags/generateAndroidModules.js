@@ -4,65 +4,49 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {GeneratorConfig, GeneratorResult} from './types';
 
-const JReactNativeFeatureFlagsCxxInteropCPP = require('./templates/android/JReactNativeFeatureFlagsCxxInterop.cpp-template');
-const JReactNativeFeatureFlagsCxxInteropH = require('./templates/android/JReactNativeFeatureFlagsCxxInterop.h-template');
-const ReactNativeFeatureFlagsKt = require('./templates/android/ReactNativeFeatureFlags.kt-template');
-const ReactNativeFeatureFlagsCxxAccessorKt = require('./templates/android/ReactNativeFeatureFlagsCxxAccessor.kt-template');
-const ReactNativeFeatureFlagsCxxInteropKt = require('./templates/android/ReactNativeFeatureFlagsCxxInterop.kt-template');
-const ReactNativeFeatureFlagsDefaultsKt = require('./templates/android/ReactNativeFeatureFlagsDefaults.kt-template');
-const ReactNativeFeatureFlagsLocalAccessorKt = require('./templates/android/ReactNativeFeatureFlagsLocalAccessor.kt-template');
-const ReactNativeFeatureFlagsProviderKt = require('./templates/android/ReactNativeFeatureFlagsProvider.kt-template');
-const ReactNativeFeatureFlagsProviderHolderCPP = require('./templates/android/ReactNativeFeatureFlagsProviderHolder.cpp-template');
-const ReactNativeFeatureFlagsProviderHolderH = require('./templates/android/ReactNativeFeatureFlagsProviderHolder.h-template');
-const path = require('path');
+import JReactNativeFeatureFlagsCxxInteropCPP from './templates/android/JReactNativeFeatureFlagsCxxInterop.cpp-template';
+import JReactNativeFeatureFlagsCxxInteropH from './templates/android/JReactNativeFeatureFlagsCxxInterop.h-template';
+import ReactNativeFeatureFlagsKt from './templates/android/ReactNativeFeatureFlags.kt-template';
+import ReactNativeFeatureFlagsCxxAccessorKt from './templates/android/ReactNativeFeatureFlagsCxxAccessor.kt-template';
+import ReactNativeFeatureFlagsCxxInteropKt from './templates/android/ReactNativeFeatureFlagsCxxInterop.kt-template';
+import ReactNativeFeatureFlagsDefaultsKt from './templates/android/ReactNativeFeatureFlagsDefaults.kt-template';
+import ReactNativeFeatureFlagsLocalAccessorKt from './templates/android/ReactNativeFeatureFlagsLocalAccessor.kt-template';
+import ReactNativeFeatureFlagsProviderKt from './templates/android/ReactNativeFeatureFlagsProvider.kt-template';
+import ReactNativeFeatureFlagsProviderHolderCPP from './templates/android/ReactNativeFeatureFlagsProviderHolder.cpp-template';
+import ReactNativeFeatureFlagsProviderHolderH from './templates/android/ReactNativeFeatureFlagsProviderHolder.h-template';
+import path from 'path';
 
-module.exports = function generateandroidModules(
-  generatorConfig,
-  featureFlagsConfig,
-) {
+export default function generateAndroidModules(
+  generatorConfig: GeneratorConfig,
+): GeneratorResult {
+  const {androidPath, androidJniPath, featureFlagDefinitions} = generatorConfig;
+
   return {
-    [path.join(generatorConfig.androidPath, 'ReactNativeFeatureFlags.kt')]:
-      ReactNativeFeatureFlagsKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidPath,
-      'ReactNativeFeatureFlagsCxxAccessor.kt',
-    )]: ReactNativeFeatureFlagsCxxAccessorKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidPath,
-      'ReactNativeFeatureFlagsLocalAccessor.kt',
-    )]: ReactNativeFeatureFlagsLocalAccessorKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidPath,
-      'ReactNativeFeatureFlagsCxxInterop.kt',
-    )]: ReactNativeFeatureFlagsCxxInteropKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidPath,
-      'ReactNativeFeatureFlagsDefaults.kt',
-    )]: ReactNativeFeatureFlagsDefaultsKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidPath,
-      'ReactNativeFeatureFlagsProvider.kt',
-    )]: ReactNativeFeatureFlagsProviderKt(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidJniPath,
-      'ReactNativeFeatureFlagsProviderHolder.h',
-    )]: ReactNativeFeatureFlagsProviderHolderH(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidJniPath,
-      'ReactNativeFeatureFlagsProviderHolder.cpp',
-    )]: ReactNativeFeatureFlagsProviderHolderCPP(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidJniPath,
-      'JReactNativeFeatureFlagsCxxInterop.h',
-    )]: JReactNativeFeatureFlagsCxxInteropH(featureFlagsConfig),
-    [path.join(
-      generatorConfig.androidJniPath,
-      'JReactNativeFeatureFlagsCxxInterop.cpp',
-    )]: JReactNativeFeatureFlagsCxxInteropCPP(featureFlagsConfig),
+    [path.join(androidPath, 'ReactNativeFeatureFlags.kt')]:
+      ReactNativeFeatureFlagsKt(featureFlagDefinitions),
+    [path.join(androidPath, 'ReactNativeFeatureFlagsCxxAccessor.kt')]:
+      ReactNativeFeatureFlagsCxxAccessorKt(featureFlagDefinitions),
+    [path.join(androidPath, 'ReactNativeFeatureFlagsLocalAccessor.kt')]:
+      ReactNativeFeatureFlagsLocalAccessorKt(featureFlagDefinitions),
+    [path.join(androidPath, 'ReactNativeFeatureFlagsCxxInterop.kt')]:
+      ReactNativeFeatureFlagsCxxInteropKt(featureFlagDefinitions),
+    [path.join(androidPath, 'ReactNativeFeatureFlagsDefaults.kt')]:
+      ReactNativeFeatureFlagsDefaultsKt(featureFlagDefinitions),
+    [path.join(androidPath, 'ReactNativeFeatureFlagsProvider.kt')]:
+      ReactNativeFeatureFlagsProviderKt(featureFlagDefinitions),
+    [path.join(androidJniPath, 'ReactNativeFeatureFlagsProviderHolder.h')]:
+      ReactNativeFeatureFlagsProviderHolderH(featureFlagDefinitions),
+    [path.join(androidJniPath, 'ReactNativeFeatureFlagsProviderHolder.cpp')]:
+      ReactNativeFeatureFlagsProviderHolderCPP(featureFlagDefinitions),
+    [path.join(androidJniPath, 'JReactNativeFeatureFlagsCxxInterop.h')]:
+      JReactNativeFeatureFlagsCxxInteropH(featureFlagDefinitions),
+    [path.join(androidJniPath, 'JReactNativeFeatureFlagsCxxInterop.cpp')]:
+      JReactNativeFeatureFlagsCxxInteropCPP(featureFlagDefinitions),
   };
-};
+}
