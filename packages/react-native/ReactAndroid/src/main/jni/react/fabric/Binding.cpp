@@ -414,8 +414,6 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::enableDefaultAsyncBatchedPriority =
-      getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
   CoreFeatures::enableClonelessStateProgression =
       getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =

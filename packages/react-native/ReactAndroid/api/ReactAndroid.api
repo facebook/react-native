@@ -1896,7 +1896,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableBridgelessArchitectureSoftExceptions Z
 	public static field enableClonelessStateProgression Z
 	public static field enableCppPropsIteratorSetter Z
-	public static field enableDefaultAsyncBatchedPriority Z
 	public static field enableEagerRootViewAttachment Z
 	public static field enableFabricLogs Z
 	public static field enableFabricPendingEventQueue Z
