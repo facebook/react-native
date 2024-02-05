@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad8bfca49acda85e56fea1c124b5bc8a>>
+ * @generated SignedSource<<ef51a5a7152e6f4fe0556b17aec2c0c2>>
  */
 
 /**
@@ -18,9 +18,9 @@
  */
 
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
-#include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include "ReactNativeFeatureFlags.h"
 
 namespace facebook::react {
@@ -37,9 +37,7 @@ bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "commonTestFlag";
-    markFlagAsAccessed(0, flagName);
+    markFlagAsAccessed(0, "commonTestFlag");
 
     flagValue = currentProvider_->commonTestFlag();
     commonTestFlag_ = flagValue;
@@ -57,9 +55,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "useModernRuntimeScheduler";
-    markFlagAsAccessed(1, flagName);
+    markFlagAsAccessed(1, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
@@ -77,9 +73,7 @@ bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "enableMicrotasks";
-    markFlagAsAccessed(2, flagName);
+    markFlagAsAccessed(2, "enableMicrotasks");
 
     flagValue = currentProvider_->enableMicrotasks();
     enableMicrotasks_ = flagValue;
@@ -97,9 +91,7 @@ bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "batchRenderingUpdatesInEventLoop";
-    markFlagAsAccessed(3, flagName);
+    markFlagAsAccessed(3, "batchRenderingUpdatesInEventLoop");
 
     flagValue = currentProvider_->batchRenderingUpdatesInEventLoop();
     batchRenderingUpdatesInEventLoop_ = flagValue;
@@ -117,9 +109,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "enableSpannableBuildingUnification";
-    markFlagAsAccessed(4, flagName);
+    markFlagAsAccessed(4, "enableSpannableBuildingUnification");
 
     flagValue = currentProvider_->enableSpannableBuildingUnification();
     enableSpannableBuildingUnification_ = flagValue;
@@ -137,9 +127,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "enableCustomDrawOrderFabric";
-    markFlagAsAccessed(5, flagName);
+    markFlagAsAccessed(5, "enableCustomDrawOrderFabric");
 
     flagValue = currentProvider_->enableCustomDrawOrderFabric();
     enableCustomDrawOrderFabric_ = flagValue;
@@ -157,9 +145,7 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "enableFixForClippedSubviewsCrash";
-    markFlagAsAccessed(6, flagName);
+    markFlagAsAccessed(6, "enableFixForClippedSubviewsCrash");
 
     flagValue = currentProvider_->enableFixForClippedSubviewsCrash();
     enableFixForClippedSubviewsCrash_ = flagValue;
@@ -181,8 +167,6 @@ void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
 }
 
 void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
-  std::string accessedFeatureFlagNames;
-
   std::ostringstream featureFlagListBuilder;
   for (const auto& featureFlagName : accessedFeatureFlags_) {
     if (featureFlagName != nullptr) {
@@ -190,7 +174,7 @@ void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
     }
   }
 
-  accessedFeatureFlagNames = featureFlagListBuilder.str();
+  std::string accessedFeatureFlagNames = featureFlagListBuilder.str();
   if (!accessedFeatureFlagNames.empty()) {
     accessedFeatureFlagNames =
         accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);

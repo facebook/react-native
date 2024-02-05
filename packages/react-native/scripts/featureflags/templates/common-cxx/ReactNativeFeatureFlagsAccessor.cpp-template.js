@@ -28,9 +28,9 @@ module.exports = config =>
 ${DO_NOT_MODIFY_COMMENT}
 
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
-#include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include "ReactNativeFeatureFlags.h"
 
 namespace facebook::react {
@@ -52,9 +52,7 @@ ${Object.entries(config.common)
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    // Mark the flag as accessed.
-    static const char* flagName = "${flagName}";
-    markFlagAsAccessed(${flagPosition}, flagName);
+    markFlagAsAccessed(${flagPosition}, "${flagName}");
 
     flagValue = currentProvider_->${flagName}();
     ${flagName}_ = flagValue;
@@ -78,8 +76,6 @@ void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
 }
 
 void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
-  std::string accessedFeatureFlagNames;
-
   std::ostringstream featureFlagListBuilder;
   for (const auto& featureFlagName : accessedFeatureFlags_) {
     if (featureFlagName != nullptr) {
@@ -87,7 +83,7 @@ void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
     }
   }
 
-  accessedFeatureFlagNames = featureFlagListBuilder.str();
+  std::string accessedFeatureFlagNames = featureFlagListBuilder.str();
   if (!accessedFeatureFlagNames.empty()) {
     accessedFeatureFlagNames =
         accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);

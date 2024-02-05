@@ -34,7 +34,6 @@ ${DO_NOT_MODIFY_COMMENT}
 #include <atomic>
 #include <memory>
 #include <optional>
-#include <vector>
 
 namespace facebook::react {
 
