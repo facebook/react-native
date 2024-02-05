@@ -530,23 +530,26 @@ using namespace facebook::react;
 
 #if TARGET_OS_VISION
 - (void) updateHoverEffect:(NSString*)hoverEffect withCornerRadius:(CGFloat)cornerRadius {
-    if (hoverEffect == nil || [hoverEffect isEqualToString:@""]) {
-        self.hoverStyle = nil;
-        return;
-    }
-    
-    UIShape *shape = [UIShape rectShapeWithCornerRadius:cornerRadius];
-    id<UIHoverEffect> effect;
-    
-    if ([hoverEffect isEqualToString:@"lift"]) {
-        effect = [UIHoverLiftEffect effect];
-    } else if ([hoverEffect isEqualToString:@"highlight"]) {
-        effect = [UIHoverHighlightEffect effect];
-    }
-    
-    if (hoverEffect != nil) {
-        self.hoverStyle = [UIHoverStyle styleWithEffect:effect shape:shape];
-    }
+  if (hoverEffect == nil) {
+    self.hoverStyle = nil;
+    return;
+  }
+  
+  UIShape *shape = [UIShape rectShapeWithCornerRadius:cornerRadius];
+  id<UIHoverEffect> effect;
+  
+  if ([hoverEffect isEqualToString:@"lift"]) {
+    effect = [UIHoverLiftEffect effect];
+  } else if ([hoverEffect isEqualToString:@"highlight"]) {
+    effect = [UIHoverHighlightEffect effect];
+  }
+  
+  if (effect == nil) {
+    self.hoverStyle = nil;
+    return;
+  }
+  
+  self.hoverStyle = [UIHoverStyle styleWithEffect:effect shape:shape];
 }
 #endif
 
