@@ -50,9 +50,8 @@ export function callNativeMethodToChangeBackgroundColor(
   }
   UIManager.dispatchViewManagerCommand(
     reactTag,
-    UIManager.getViewManagerConfig(
-      'RNTMyLegacyNativeView',
-    ).Commands.changeBackgroundColor.toString(),
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .changeBackgroundColor,
     [color],
   );
 }
@@ -73,9 +72,8 @@ export function callNativeMethodToAddOverlays(
 
   UIManager.dispatchViewManagerCommand(
     reactTag,
-    UIManager.getViewManagerConfig(
-      'RNTMyLegacyNativeView',
-    ).Commands.addOverlays.toString(),
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .addOverlays,
     [overlayColors],
   );
 }
@@ -95,9 +93,8 @@ export function callNativeMethodToRemoveOverlays(
 
   UIManager.dispatchViewManagerCommand(
     reactTag,
-    UIManager.getViewManagerConfig(
-      'RNTMyLegacyNativeView',
-    ).Commands.removeOverlays.toString(),
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .removeOverlays,
     [],
   );
 }
