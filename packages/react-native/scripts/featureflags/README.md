@@ -47,7 +47,8 @@ Example:
 ```
 
 After any changes to this definitions, the code that provides access to them
-must be regenerated executing the `update` script in this directory.
+must be regenerated running `yarn featureflags-update` from the `react-native`
+repository.
 
 ## Access
 
