@@ -66,6 +66,7 @@ function getOverrideConfig(
         ...outOfTreePlatforms.map(platform =>
           require.resolve(
             `${ctx.platforms[platform].npmPackageName}/Libraries/Core/InitializeCore`,
+            {paths: [ctx.root]},
           ),
         ),
       ],
