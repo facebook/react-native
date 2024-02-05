@@ -18,8 +18,6 @@ import ReactNativeFeatureFlagsCxxInteropKt from './templates/android/ReactNative
 import ReactNativeFeatureFlagsDefaultsKt from './templates/android/ReactNativeFeatureFlagsDefaults.kt-template';
 import ReactNativeFeatureFlagsLocalAccessorKt from './templates/android/ReactNativeFeatureFlagsLocalAccessor.kt-template';
 import ReactNativeFeatureFlagsProviderKt from './templates/android/ReactNativeFeatureFlagsProvider.kt-template';
-import ReactNativeFeatureFlagsProviderHolderCPP from './templates/android/ReactNativeFeatureFlagsProviderHolder.cpp-template';
-import ReactNativeFeatureFlagsProviderHolderH from './templates/android/ReactNativeFeatureFlagsProviderHolder.h-template';
 import path from 'path';
 
 export default function generateAndroidModules(
@@ -40,10 +38,6 @@ export default function generateAndroidModules(
       ReactNativeFeatureFlagsDefaultsKt(featureFlagDefinitions),
     [path.join(androidPath, 'ReactNativeFeatureFlagsProvider.kt')]:
       ReactNativeFeatureFlagsProviderKt(featureFlagDefinitions),
-    [path.join(androidJniPath, 'ReactNativeFeatureFlagsProviderHolder.h')]:
-      ReactNativeFeatureFlagsProviderHolderH(featureFlagDefinitions),
-    [path.join(androidJniPath, 'ReactNativeFeatureFlagsProviderHolder.cpp')]:
-      ReactNativeFeatureFlagsProviderHolderCPP(featureFlagDefinitions),
     [path.join(androidJniPath, 'JReactNativeFeatureFlagsCxxInterop.h')]:
       JReactNativeFeatureFlagsCxxInteropH(featureFlagDefinitions),
     [path.join(androidJniPath, 'JReactNativeFeatureFlagsCxxInterop.cpp')]:

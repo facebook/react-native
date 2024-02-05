@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e570b62b4a208b2526169361c3a6be6a>>
+ * @generated SignedSource<<18e31d0833fda8cfb3f31b449479297a>>
  */
 
 /**
@@ -19,9 +19,71 @@
 
 #include "JReactNativeFeatureFlagsCxxInterop.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsProviderHolder.h>
 
 namespace facebook::react {
+
+static jni::alias_ref<jni::JClass> getReactNativeFeatureFlagsProviderJavaClass() {
+  static const auto jClass = facebook::jni::findClassStatic(
+      "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider");
+  return jClass;
+}
+
+/**
+ * Implementation of ReactNativeFeatureFlagsProvider that wraps a
+ * ReactNativeFeatureFlagsProvider Java object.
+ */
+class ReactNativeFeatureFlagsProviderHolder
+    : public ReactNativeFeatureFlagsProvider {
+ public:
+  explicit ReactNativeFeatureFlagsProviderHolder(
+      jni::alias_ref<jobject> javaProvider)
+      : javaProvider_(make_global(javaProvider)){};
+
+  bool commonTestFlag() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
+    return method(javaProvider_);
+  }
+
+  bool useModernRuntimeScheduler() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
+    return method(javaProvider_);
+  }
+
+  bool enableMicrotasks() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
+    return method(javaProvider_);
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("batchRenderingUpdatesInEventLoop");
+    return method(javaProvider_);
+  }
+
+  bool enableSpannableBuildingUnification() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSpannableBuildingUnification");
+    return method(javaProvider_);
+  }
+
+  bool enableCustomDrawOrderFabric() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomDrawOrderFabric");
+    return method(javaProvider_);
+  }
+
+  bool enableFixForClippedSubviewsCrash() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForClippedSubviewsCrash");
+    return method(javaProvider_);
+  }
+
+ private:
+  jni::global_ref<jobject> javaProvider_;
+};
 
 bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {

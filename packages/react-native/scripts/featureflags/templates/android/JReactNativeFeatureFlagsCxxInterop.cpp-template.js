@@ -27,9 +27,42 @@ ${DO_NOT_MODIFY_COMMENT}
 
 #include "JReactNativeFeatureFlagsCxxInterop.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsProviderHolder.h>
 
 namespace facebook::react {
+
+static jni::alias_ref<jni::JClass> getReactNativeFeatureFlagsProviderJavaClass() {
+  static const auto jClass = facebook::jni::findClassStatic(
+      "com/facebook/react/internal/featureflags/ReactNativeFeatureFlagsProvider");
+  return jClass;
+}
+
+/**
+ * Implementation of ReactNativeFeatureFlagsProvider that wraps a
+ * ReactNativeFeatureFlagsProvider Java object.
+ */
+class ReactNativeFeatureFlagsProviderHolder
+    : public ReactNativeFeatureFlagsProvider {
+ public:
+  explicit ReactNativeFeatureFlagsProviderHolder(
+      jni::alias_ref<jobject> javaProvider)
+      : javaProvider_(make_global(javaProvider)){};
+
+${Object.entries(definitions.common)
+  .map(
+    ([flagName, flagConfig]) =>
+      `  ${getCxxTypeFromDefaultValue(
+        flagConfig.defaultValue,
+      )} ${flagName}() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("${flagName}");
+    return method(javaProvider_);
+  }`,
+  )
+  .join('\n\n')}
+
+ private:
+  jni::global_ref<jobject> javaProvider_;
+};
 
 ${Object.entries(definitions.common)
   .map(
