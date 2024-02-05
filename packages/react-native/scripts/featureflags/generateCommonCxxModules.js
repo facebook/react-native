@@ -4,43 +4,37 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {GeneratorConfig, GeneratorResult} from './types';
 
-const ReactNativeFeatureFlagsCPP = require('./templates/common-cxx/ReactNativeFeatureFlags.cpp-template');
-const ReactNativeFeatureFlagsH = require('./templates/common-cxx/ReactNativeFeatureFlags.h-template');
-const ReactNativeFeatureFlagsAccessorCPP = require('./templates/common-cxx/ReactNativeFeatureFlagsAccessor.cpp-template');
-const ReactNativeFeatureFlagsAccessorH = require('./templates/common-cxx/ReactNativeFeatureFlagsAccessor.h-template');
-const ReactNativeFeatureFlagsDefaultsH = require('./templates/common-cxx/ReactNativeFeatureFlagsDefaults.h-template');
-const ReactNativeFeatureFlagsProviderH = require('./templates/common-cxx/ReactNativeFeatureFlagsProvider.h-template');
-const path = require('path');
+import ReactNativeFeatureFlagsCPP from './templates/common-cxx/ReactNativeFeatureFlags.cpp-template';
+import ReactNativeFeatureFlagsH from './templates/common-cxx/ReactNativeFeatureFlags.h-template';
+import ReactNativeFeatureFlagsAccessorCPP from './templates/common-cxx/ReactNativeFeatureFlagsAccessor.cpp-template';
+import ReactNativeFeatureFlagsAccessorH from './templates/common-cxx/ReactNativeFeatureFlagsAccessor.h-template';
+import ReactNativeFeatureFlagsDefaultsH from './templates/common-cxx/ReactNativeFeatureFlagsDefaults.h-template';
+import ReactNativeFeatureFlagsProviderH from './templates/common-cxx/ReactNativeFeatureFlagsProvider.h-template';
+import path from 'path';
 
-module.exports = function generateCommonCxxModules(
-  generatorConfig,
-  featureFlagsConfig,
-) {
+export default function generateCommonCxxModules(
+  generatorConfig: GeneratorConfig,
+): GeneratorResult {
+  const {commonCxxPath, featureFlagDefinitions} = generatorConfig;
+
   return {
-    [path.join(generatorConfig.commonCxxPath, 'ReactNativeFeatureFlags.h')]:
-      ReactNativeFeatureFlagsH(featureFlagsConfig),
-    [path.join(generatorConfig.commonCxxPath, 'ReactNativeFeatureFlags.cpp')]:
-      ReactNativeFeatureFlagsCPP(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonCxxPath,
-      'ReactNativeFeatureFlagsAccessor.h',
-    )]: ReactNativeFeatureFlagsAccessorH(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonCxxPath,
-      'ReactNativeFeatureFlagsAccessor.cpp',
-    )]: ReactNativeFeatureFlagsAccessorCPP(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonCxxPath,
-      'ReactNativeFeatureFlagsDefaults.h',
-    )]: ReactNativeFeatureFlagsDefaultsH(featureFlagsConfig),
-    [path.join(
-      generatorConfig.commonCxxPath,
-      'ReactNativeFeatureFlagsProvider.h',
-    )]: ReactNativeFeatureFlagsProviderH(featureFlagsConfig),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlags.h')]:
+      ReactNativeFeatureFlagsH(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlags.cpp')]:
+      ReactNativeFeatureFlagsCPP(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsAccessor.h')]:
+      ReactNativeFeatureFlagsAccessorH(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsAccessor.cpp')]:
+      ReactNativeFeatureFlagsAccessorCPP(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsDefaults.h')]:
+      ReactNativeFeatureFlagsDefaultsH(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsProvider.h')]:
+      ReactNativeFeatureFlagsProviderH(featureFlagDefinitions),
   };
-};
+}
