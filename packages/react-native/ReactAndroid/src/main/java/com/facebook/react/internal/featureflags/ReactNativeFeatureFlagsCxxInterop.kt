@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<41a2646126f7f448be8c8397b1698a4a>>
+ * @generated SignedSource<<045ff1b11b0336f4bac5ed966ba2e379>>
  */
 
 /**
@@ -41,6 +41,8 @@ object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic external fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip @JvmStatic external fun enableFixForClippedSubviewsCrash(): Boolean
+
+  @DoNotStrip @JvmStatic external fun enablePropIteratorSetter(): Boolean
 
   @DoNotStrip @JvmStatic external fun override(provider: Any)
 

@@ -48,6 +48,11 @@ const definitions: FeatureFlagDefinitions = {
         'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
       defaultValue: false,
     },
+    enablePropIteratorSetter: {
+      description:
+        'Specifies whether the iterator-style prop parsing is enabled.',
+      defaultValue: false,
+    },
   },
 
   jsOnly: {

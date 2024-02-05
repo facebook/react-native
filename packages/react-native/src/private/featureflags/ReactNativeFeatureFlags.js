@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52b25f675aa8d5ae45941f0ee951358a>>
+ * @generated SignedSource<<d9af1563ff315d2a2b851f47221e4cd4>>
  * @flow strict-local
  */
 
@@ -47,6 +47,7 @@ export type ReactNativeFeatureFlags = {
   enableSpannableBuildingUnification: Getter<boolean>,
   enableCustomDrawOrderFabric: Getter<boolean>,
   enableFixForClippedSubviewsCrash: Getter<boolean>,
+  enablePropIteratorSetter: Getter<boolean>,
 }
 
 /**
@@ -117,6 +118,10 @@ export const enableCustomDrawOrderFabric: Getter<boolean> = createNativeFlagGett
  * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
  */
 export const enableFixForClippedSubviewsCrash: Getter<boolean> = createNativeFlagGetter('enableFixForClippedSubviewsCrash', false);
+/**
+ * Specifies whether the iterator-style prop parsing is enabled.
+ */
+export const enablePropIteratorSetter: Getter<boolean> = createNativeFlagGetter('enablePropIteratorSetter', false);
 
 /**
  * Overrides the feature flags with the provided methods.

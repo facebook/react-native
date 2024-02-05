@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f5d5bb65068bb515d33da8bff665dfd2>>
+ * @generated SignedSource<<0da2d8576e351c9467058dbaa369d0b5>>
  */
 
 /**
@@ -69,6 +69,12 @@ object ReactNativeFeatureFlags {
    */
   @JvmStatic
   fun enableFixForClippedSubviewsCrash() = accessor.enableFixForClippedSubviewsCrash()
+
+  /**
+   * Specifies whether the iterator-style prop parsing is enabled.
+   */
+  @JvmStatic
+  fun enablePropIteratorSetter() = accessor.enablePropIteratorSetter()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

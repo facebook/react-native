@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18e31d0833fda8cfb3f31b449479297a>>
+ * @generated SignedSource<<3e2c80e599d0a6852be41255b6b3c4da>>
  */
 
 /**
@@ -81,6 +81,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enablePropIteratorSetter() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropIteratorSetter");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -118,6 +124,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCustomDrawOrderFabric(
 bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enablePropIteratorSetter(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enablePropIteratorSetter();
 }
 
 void JReactNativeFeatureFlagsCxxInterop::override(
@@ -158,6 +169,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFixForClippedSubviewsCrash",
         JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),
+      makeNativeMethod(
+        "enablePropIteratorSetter",
+        JReactNativeFeatureFlagsCxxInterop::enablePropIteratorSetter),
   });
 }
 

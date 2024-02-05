@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ccda927120cc579c0ccbc42c32b17e0>>
+ * @generated SignedSource<<d4d9f8a283fa0ba52ea51c425aeaa3a5>>
  */
 
 /**
@@ -38,6 +38,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableSpannableBuildingUnification();
   bool enableCustomDrawOrderFabric();
   bool enableFixForClippedSubviewsCrash();
+  bool enablePropIteratorSetter();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -48,7 +49,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 7> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 8> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
@@ -57,6 +58,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
   std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
   std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
+  std::atomic<std::optional<bool>> enablePropIteratorSetter_;
 };
 
 } // namespace facebook::react

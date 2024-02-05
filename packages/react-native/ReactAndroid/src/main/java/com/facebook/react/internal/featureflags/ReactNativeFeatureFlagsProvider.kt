@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<49a63388fa661d81b9cec735ac705bd0>>
+ * @generated SignedSource<<960ab52a914f5b399c1e00daec69be94>>
  */
 
 /**
@@ -36,4 +36,6 @@ interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip fun enableCustomDrawOrderFabric(): Boolean
 
   @DoNotStrip fun enableFixForClippedSubviewsCrash(): Boolean
+
+  @DoNotStrip fun enablePropIteratorSetter(): Boolean
 }

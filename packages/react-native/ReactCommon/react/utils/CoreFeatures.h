@@ -16,9 +16,6 @@ namespace facebook::react {
  */
 class CoreFeatures {
  public:
-  // Specifies whether the iterator-style prop parsing is enabled.
-  static bool enablePropIteratorSetter;
-
   // Yoga might measure multiple times the same Text with the same constraints
   // This flag enables a caching mechanism to avoid subsequents measurements
   // of the same Text with the same constrainst.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6542bcfd6e42bb1142a3682a15edb80>>
+ * @generated SignedSource<<092cbc7d84b35bdeea1543c95158ab2e>>
  */
 
 /**
@@ -150,6 +150,24 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
 
     flagValue = currentProvider_->enableFixForClippedSubviewsCrash();
     enableFixForClippedSubviewsCrash_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enablePropIteratorSetter() {
+  auto flagValue = enablePropIteratorSetter_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(7, "enablePropIteratorSetter");
+
+    flagValue = currentProvider_->enablePropIteratorSetter();
+    enablePropIteratorSetter_ = flagValue;
   }
 
   return flagValue.value();

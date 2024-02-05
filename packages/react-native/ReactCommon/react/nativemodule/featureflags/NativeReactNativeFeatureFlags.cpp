@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19dba0cacd4599408a2adeeeb1dce6f2>>
+ * @generated SignedSource<<359f833799694c092a15196afe5ce442>>
  */
 
 /**
@@ -68,6 +68,11 @@ bool NativeReactNativeFeatureFlags::enableCustomDrawOrderFabric(
 bool NativeReactNativeFeatureFlags::enableFixForClippedSubviewsCrash(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
+}
+
+bool NativeReactNativeFeatureFlags::enablePropIteratorSetter(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePropIteratorSetter();
 }
 
 } // namespace facebook::react

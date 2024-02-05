@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f97b884f948b3ebf00df11b30cfe3ea4>>
+ * @generated SignedSource<<2aa53f9149ce7321c1b8eec4ce510c4b>>
  */
 
 /**
@@ -52,6 +52,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFixForClippedSubviewsCrash() override {
+    return false;
+  }
+
+  bool enablePropIteratorSetter() override {
     return false;
   }
 };

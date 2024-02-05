@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c0d0f4bb2eb2dbf385d56f58444fb16a>>
+ * @generated SignedSource<<9de8edbaa80b92efb68c2bcd2673eb6e>>
  */
 
 /**
@@ -67,6 +67,11 @@ class ReactNativeFeatureFlags {
    * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
    */
   static bool enableFixForClippedSubviewsCrash();
+
+  /**
+   * Specifies whether the iterator-style prop parsing is enabled.
+   */
+  static bool enablePropIteratorSetter();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
