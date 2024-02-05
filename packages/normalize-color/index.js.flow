@@ -21,4 +21,4 @@ export type RgbaValue = {
   ...
 };
 
-declare module.exports: (color: ?(string | number)) => null | number | RgbaValue;
+declare module.exports: (color: ?(string | number | RgbaValue)) => null | number | RgbaValue;

@@ -20,6 +20,16 @@ function normalizeColor(color) {
     return null;
   }
 
+  if (
+    typeof color === 'object' &&
+    'r' in color &&
+    'g' in color &&
+    'b' in color &&
+    'a' in color
+  ) {
+    return color;
+  }
+
   if (typeof color !== 'string') {
     return null;
   }

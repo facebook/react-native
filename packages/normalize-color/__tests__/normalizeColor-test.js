@@ -48,8 +48,6 @@ it('refuses non-spec compliant colors', () => {
   expect(normalizeColor('rgb (0, 1, 2)')).toBe(null);
   expect(normalizeColor('rgba(0 0 0 0.0)')).toBe(null);
   expect(normalizeColor('hsv(0, 1, 2)')).toBe(null);
-  // $FlowExpectedError - Intentionally malformed argument.
-  expect(normalizeColor({r: 10, g: 10, b: 10})).toBe(null);
   expect(normalizeColor('hsl(1%, 2, 3)')).toBe(null);
   expect(normalizeColor('rgb(1%, 2%, 3%)')).toBe(null);
 });
@@ -184,4 +182,7 @@ it('handles color function properly', () => {
 it('returns the same color when it is already normalized', () => {
   const normalizedColor = normalizeColor('red') || 0;
   expect(normalizeColor(normalizedColor)).toBe(normalizedColor);
+
+  const normalizedColorFunc = normalizeColor('color(display-p3 1 0 0)');
+  expect(normalizeColor(normalizedColorFunc)).toBe(normalizedColorFunc);
 });
