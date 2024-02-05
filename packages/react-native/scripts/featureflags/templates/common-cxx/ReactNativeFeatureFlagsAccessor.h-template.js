@@ -54,7 +54,7 @@ ${Object.entries(definitions.common)
 
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   std::array<std::atomic<const char*>, ${
-    Object.keys(config.common).length
+    Object.keys(definitions.common).length
   }> accessedFeatureFlags_;
 
 ${Object.entries(definitions.common)

@@ -11,39 +11,25 @@ everywhere.
 
 ## Definition
 
-The source of truth for the definition of the flags is the file `ReactNativeFeatureFlags.json`
-in this directory. That JSON file should have the following structure:
+The source of truth for the definition of the flags is the file
+`ReactNativeFeatureFlags.config.js` in this directory.
 
-```flow
-type Config = {
-  common: FeatureFlagsList,
-  jsOnly: FeatureFlagsList,
-};
-
-type FeatureFlagsList = {
-  [flagName: string]: {
-    description: string,
-    defaultValue: boolean | number | string,
-  },
-};
-```
-
-Example:
-```json
-{
-  "common": {
-    "enableMicrotasks": {
-      "description": "Enable the use of microtasks in the JS runtime.",
-      "defaultValue": false
+Example contents:
+```javascript
+module.exports = {
+  common: {
+    enableMicrotasks: {
+      description: 'Enable the use of microtasks in the JS runtime.',
+      defaultValue: false
     }
   },
-  "jsOnly": {
-    "enableAccessToHostTreeInFabric": {
-      "description": "Enables access to the host tree in Fabric using DOM-compatible APIs.",
-      "defaultValue": false
+  jsOnly: {
+    enableAccessToHostTreeInFabric: {
+      description: 'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+      defaultValue: false
     }
   }
-}
+};
 ```
 
 After any changes to this definitions, the code that provides access to them
@@ -51,6 +37,16 @@ must be regenerated running `yarn featureflags-update` from the `react-native`
 repository.
 
 ## Access
+
+You can access the common feature flags from anywhere in your application using
+the `ReactNativeFeatureFlags` interface (available in C++/Objective-C++,
+Kotlin/Java and JavaScript). JS-only feature flags can only be accessed from
+JavaScript.
+
+**Accessing feature flags should be considered fast for all use cases**.
+Feature flags are cached at every layer, which prevents having to go through JNI
+when accessing the values from Kotlin and through JSI when accessing the values
+from JavaScript.
 
 ### C++ / Objective-C
 
@@ -89,6 +85,15 @@ if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
 ```
 
 ## Customization
+
+Feature flags provide the default values defined in the configuration unless
+overrides are applied at the application level. Overrides for common feature
+flags can only be defined in native, while overrides for JS-ony flags can only
+be defined in JavaScript.
+
+Overrides must be applied before any of the available feature flags has been
+accessed. This prevents having inconsistent behavior during the lifecycle of the
+application.
 
 ### C++/Objective-C
 
