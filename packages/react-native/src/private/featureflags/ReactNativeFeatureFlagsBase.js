@@ -16,7 +16,7 @@ import type {
 import NativeReactNativeFeatureFlags from './NativeReactNativeFeatureFlags';
 
 const accessedFeatureFlags: Set<string> = new Set();
-const overrides: ReactNativeFeatureFlagsJsOnlyOverrides = {};
+let overrides: ?ReactNativeFeatureFlagsJsOnlyOverrides;
 
 export type Getter<T> = () => T;
 
@@ -44,7 +44,7 @@ export function createJavaScriptFlagGetter<
 ): Getter<ReturnType<ReactNativeFeatureFlagsJsOnly[K]>> {
   return createGetter(
     configName,
-    () => overrides[configName]?.(),
+    () => overrides?.[configName]?.(),
     defaultValue,
   );
 }
@@ -69,6 +69,10 @@ export function getOverrides(): ?ReactNativeFeatureFlagsJsOnlyOverrides {
 export function setOverrides(
   newOverrides: ReactNativeFeatureFlagsJsOnlyOverrides,
 ): void {
+  if (overrides != null) {
+    throw new Error('Feature flags cannot be overridden more than once');
+  }
+
   if (accessedFeatureFlags.size > 0) {
     const accessedFeatureFlagsStr = Array.from(accessedFeatureFlags).join(', ');
     throw new Error(
@@ -76,5 +80,5 @@ export function setOverrides(
     );
   }
 
-  Object.assign(overrides, newOverrides);
+  overrides = newOverrides;
 }

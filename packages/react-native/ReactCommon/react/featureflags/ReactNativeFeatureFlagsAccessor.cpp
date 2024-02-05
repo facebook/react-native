@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f2ef778c97b1928fde0245008015227>>
+ * @generated SignedSource<<b6542bcfd6e42bb1142a3682a15edb80>>
  */
 
 /**
@@ -26,7 +26,8 @@
 namespace facebook::react {
 
 ReactNativeFeatureFlagsAccessor::ReactNativeFeatureFlagsAccessor()
-    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()) {}
+    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()),
+      wasOverridden_(false) {}
 
 bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
   auto flagValue = commonTestFlag_.load();
@@ -156,7 +157,13 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
 
 void ReactNativeFeatureFlagsAccessor::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  if (wasOverridden_) {
+    throw std::runtime_error(
+        "Feature flags cannot be overridden more than once");
+  }
+
   ensureFlagsNotAccessed();
+  wasOverridden_ = true;
   currentProvider_ = std::move(provider);
 }
 
