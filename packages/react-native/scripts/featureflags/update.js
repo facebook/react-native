@@ -9,7 +9,7 @@
  */
 
 import generateFiles from './generateFiles';
-import fs from 'fs';
+import featureFlagDefinitions from './ReactNativeFeatureFlags.config';
 import path from 'path';
 
 const REACT_NATIVE_PACKAGE_ROOT = path.join(__dirname, '..', '..');
@@ -17,12 +17,7 @@ const REACT_NATIVE_PACKAGE_ROOT = path.join(__dirname, '..', '..');
 export default function update(verifyUnchanged: boolean): void {
   generateFiles(
     {
-      featureFlagDefinitions: JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, 'ReactNativeFeatureFlags.json'),
-          'utf8',
-        ),
-      ),
+      featureFlagDefinitions,
       jsPath: path.join(
         REACT_NATIVE_PACKAGE_ROOT,
         'src',
