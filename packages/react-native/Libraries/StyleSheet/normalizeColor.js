@@ -18,16 +18,17 @@ import _normalizeColor from '@react-native/normalize-colors';
 function normalizeColor(
   color: ?(ColorValue | ProcessedColorValue),
 ): ?ProcessedColorValue {
+  if (typeof color === 'string' || typeof color === 'number') {
+    /* $FlowExpectedError[incompatible-return] */
+    return _normalizeColor(color);
+  }
+
   if (typeof color === 'object' && color != null) {
     const {normalizeColorObject} = require('./PlatformColorValueTypes');
     const normalizedColor = normalizeColorObject(color);
     if (normalizedColor != null) {
       return normalizedColor;
     }
-  }
-
-  if (typeof color === 'string' || typeof color === 'number') {
-    return _normalizeColor(color);
   }
 }
 
