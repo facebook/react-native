@@ -4,16 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {FeatureFlagDefinitions} from '../../types';
 
-const {DO_NOT_MODIFY_COMMENT} = require('../../utils');
-const signedsource = require('signedsource');
+import {DO_NOT_MODIFY_COMMENT} from '../../utils';
+import signedsource from 'signedsource';
 
-module.exports = config =>
-  signedsource.signFile(`/**
+export default function (definitions: FeatureFlagDefinitions): string {
+  return signedsource.signFile(`/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -30,7 +31,7 @@ import type {TurboModule} from '../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-${Object.entries(config.common)
+${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  +${flagName}?: () => ${typeof flagConfig.defaultValue};`,
@@ -44,3 +45,4 @@ const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(
 
 export default NativeReactNativeFeatureFlags;
 `);
+}

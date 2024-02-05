@@ -4,49 +4,37 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-const generateAndroidModules = require('./generateAndroidModules');
-const generateCommonCxxModules = require('./generateCommonCxxModules');
-const generateJavaScriptModules = require('./generateJavaScriptModules');
-const fs = require('fs');
+import type {GeneratorConfig, GeneratorOptions} from './types';
 
-module.exports = function generateFiles(generatorConfig, generatorOptions) {
-  const userDefinedFeatureFlagsConfig = JSON.parse(
-    fs.readFileSync(generatorConfig.configPath, 'utf8'),
-  );
+import generateAndroidModules from './generateAndroidModules';
+import generateCommonCxxModules from './generateCommonCxxModules';
+import generateJavaScriptModules from './generateJavaScriptModules';
+import fs from 'fs';
 
-  const featureFlagsConfig = Object.assign(
-    {jsOnly: {}, common: {}},
-    userDefinedFeatureFlagsConfig,
-  );
-
+export default function generateFiles(
+  generatorConfig: GeneratorConfig,
+  generatorOptions: GeneratorOptions,
+): void {
   fs.mkdirSync(generatorConfig.jsPath, {recursive: true});
   fs.mkdirSync(generatorConfig.commonCxxPath, {recursive: true});
   fs.mkdirSync(generatorConfig.commonNativeModuleCxxPath, {recursive: true});
   fs.mkdirSync(generatorConfig.androidPath, {recursive: true});
   fs.mkdirSync(generatorConfig.androidJniPath, {recursive: true});
 
-  const jsModules = generateJavaScriptModules(
-    generatorConfig,
-    featureFlagsConfig,
-  );
+  const jsModules = generateJavaScriptModules(generatorConfig);
 
-  const commonCxxModules = generateCommonCxxModules(
-    generatorConfig,
-    featureFlagsConfig,
-  );
+  const commonCxxModules = generateCommonCxxModules(generatorConfig);
 
-  const androidModules = generateAndroidModules(
-    generatorConfig,
-    featureFlagsConfig,
-  );
+  const androidModules = generateAndroidModules(generatorConfig);
 
   const generatedFiles = {...jsModules, ...commonCxxModules, ...androidModules};
 
   if (generatorOptions.verifyUnchanged) {
-    const existingModules = {};
+    const existingModules: {[string]: string} = {};
     for (const moduleName of Object.keys(generatedFiles)) {
       const existingModule = fs.readFileSync(moduleName, 'utf8');
       existingModules[moduleName] = existingModule;
@@ -79,4 +67,4 @@ module.exports = function generateFiles(generatorConfig, generatorOptions) {
   for (const [modulePath, moduleContents] of Object.entries(generatedFiles)) {
     fs.writeFileSync(modulePath, moduleContents, 'utf8');
   }
-};
+}
