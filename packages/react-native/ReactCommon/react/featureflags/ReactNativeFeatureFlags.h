@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d3e8b0cc31fd8e44c3f83d836485e6f6>>
+ * @generated SignedSource<<252f46e2c95e08d1180f656c870087b7>>
  */
 
 /**
@@ -28,7 +28,8 @@ namespace facebook::react {
 /**
  * This class provides access to internal React Native feature flags.
  *
- * All the methods are thread-safe if you handle `override` correctly.
+ * All the methods are thread-safe (as long as the methods in the overridden
+ * provider are).
  */
 class ReactNativeFeatureFlags {
  public:

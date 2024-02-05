@@ -30,6 +30,8 @@ ${DO_NOT_MODIFY_COMMENT}
 #pragma once
 
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
+#include <array>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -50,15 +52,20 @@ ${Object.entries(config.common)
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
  private:
+  void markFlagAsAccessed(int position, const char* flagName);
+  void ensureFlagsNotAccessed();
+
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
-  std::vector<const char*> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, ${
+    Object.keys(config.common).length
+  }> accessedFeatureFlags_;
 
 ${Object.entries(config.common)
   .map(
     ([flagName, flagConfig]) =>
-      `  std::optional<${getCxxTypeFromDefaultValue(
+      `  std::atomic<std::optional<${getCxxTypeFromDefaultValue(
         flagConfig.defaultValue,
-      )}> ${flagName}_;`,
+      )}>> ${flagName}_;`,
   )
   .join('\n')}
 };

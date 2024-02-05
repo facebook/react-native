@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1514c04fb9d175308e106b84a14bc89d>>
+ * @generated SignedSource<<40315ae6cc418effd421dff2be6831c7>>
  */
 
 /**
@@ -20,6 +20,8 @@
 #pragma once
 
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
+#include <array>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -41,16 +43,19 @@ class ReactNativeFeatureFlagsAccessor {
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
  private:
-  std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
-  std::vector<const char*> accessedFeatureFlags_;
+  void markFlagAsAccessed(int position, const char* flagName);
+  void ensureFlagsNotAccessed();
 
-  std::optional<bool> commonTestFlag_;
-  std::optional<bool> useModernRuntimeScheduler_;
-  std::optional<bool> enableMicrotasks_;
-  std::optional<bool> batchRenderingUpdatesInEventLoop_;
-  std::optional<bool> enableSpannableBuildingUnification_;
-  std::optional<bool> enableCustomDrawOrderFabric_;
-  std::optional<bool> enableFixForClippedSubviewsCrash_;
+  std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
+  std::array<std::atomic<const char*>, 7> accessedFeatureFlags_;
+
+  std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
+  std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
+  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
+  std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
+  std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
 };
 
 } // namespace facebook::react
