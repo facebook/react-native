@@ -34,7 +34,8 @@ ${DO_NOT_MODIFY_COMMENT}
 namespace facebook::react {
 
 ReactNativeFeatureFlagsAccessor::ReactNativeFeatureFlagsAccessor()
-    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()) {}
+    : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()),
+      wasOverridden_(false) {}
 
 ${Object.entries(definitions.common)
   .map(
@@ -63,7 +64,13 @@ ${Object.entries(definitions.common)
 
 void ReactNativeFeatureFlagsAccessor::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  if (wasOverridden_) {
+    throw std::runtime_error(
+        "Feature flags cannot be overridden more than once");
+  }
+
   ensureFlagsNotAccessed();
+  wasOverridden_ = true;
   currentProvider_ = std::move(provider);
 }
 

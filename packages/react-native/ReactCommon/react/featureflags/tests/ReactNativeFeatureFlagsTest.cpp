@@ -63,6 +63,25 @@ TEST_F(ReactNativeFeatureFlagsTest, preventsOverridingAfterAccess) {
   EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), false);
 }
 
+TEST_F(ReactNativeFeatureFlagsTest, preventsOverridingAfterOverride) {
+  ReactNativeFeatureFlags::override(
+      std::make_unique<ReactNativeFeatureFlagsTestOverrides>());
+
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
+
+  try {
+    ReactNativeFeatureFlags::override(
+        std::make_unique<ReactNativeFeatureFlagsTestOverrides>());
+    FAIL()
+        << "Expected ReactNativeFeatureFlags::override() to throw an exception";
+  } catch (const std::runtime_error& e) {
+    EXPECT_STREQ("Feature flags cannot be overridden more than once", e.what());
+  }
+
+  // Original overrides should still work
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
+}
+
 TEST_F(ReactNativeFeatureFlagsTest, cachesValuesFromOverride) {
   ReactNativeFeatureFlags::override(
       std::make_unique<ReactNativeFeatureFlagsTestOverrides>());

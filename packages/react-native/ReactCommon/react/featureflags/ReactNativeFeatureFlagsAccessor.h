@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4de1ed8503548f440c1a0e4f903c80c7>>
+ * @generated SignedSource<<3ccda927120cc579c0ccbc42c32b17e0>>
  */
 
 /**
@@ -46,6 +46,8 @@ class ReactNativeFeatureFlagsAccessor {
   void ensureFlagsNotAccessed();
 
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
+  bool wasOverridden_;
+
   std::array<std::atomic<const char*>, 7> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
