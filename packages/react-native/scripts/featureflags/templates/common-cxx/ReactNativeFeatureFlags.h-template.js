@@ -38,7 +38,8 @@ namespace facebook::react {
 /**
  * This class provides access to internal React Native feature flags.
  *
- * All the methods are thread-safe if you handle \`override\` correctly.
+ * All the methods are thread-safe (as long as the methods in the overridden
+ * provider are).
  */
 class ReactNativeFeatureFlags {
  public:
