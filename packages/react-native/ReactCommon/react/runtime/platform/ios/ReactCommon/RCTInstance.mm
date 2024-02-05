@@ -63,7 +63,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTInstance () <RCTTurboModuleManagerDelegate>
+@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler>
 @end
 
 @implementation RCTInstance {
@@ -208,6 +208,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return nullptr;
 }
 
+#pragma mark - RCTTurboModuleManagerRuntimeHandler
+
+- (RuntimeExecutor)runtimeExecutorForTurboModuleManager:(RCTTurboModuleManager *)turboModuleManager
+{
+  if (_valid) {
+    return _reactInstance->getBufferedRuntimeExecutor();
+  }
+
+  return nullptr;
+}
+
 #pragma mark - Private
 
 - (void)_start
@@ -259,6 +270,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       bridgeModuleDecorator:_bridgeModuleDecorator
                    delegate:self
                   jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+  _turboModuleManager.runtimeHandler = self;
 
 #if RCT_DEV
   /**
