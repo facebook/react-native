@@ -77,7 +77,12 @@ class AssetSourceResolver {
     }
 
     if (Platform.OS === 'android') {
-      return this.isLoadedFromFileSystem()
+      // Bundle itself may be side-loaded from the file system, not from the 'assets://'
+      // path (such as in the OTA update scenarios), however this doesn't guarantee
+      // that images themselves, which are expected to originally be loaded from 'assets://'
+      // will be present at the same location as the bundle. Therefore, we want to still
+      // load these images from the 'assets://' path.
+      return this.isLoadedFromFileSystem() && !this.asset.__packager_asset
         ? this.drawableFolderInBundle()
         : this.resourceIdentifierWithoutScale();
     } else {
