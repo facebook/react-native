@@ -30,7 +30,7 @@ private constructor(
     cxxReactPackages: List<CxxReactPackage>,
 ) : ReactPackageTurboModuleManagerDelegate(context, packages, initHybrid(cxxReactPackages)) {
 
-  override fun initHybrid(): HybridData? {
+  override fun initHybrid(): HybridData {
     throw UnsupportedOperationException(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
@@ -72,6 +72,6 @@ private constructor(
 
     @DoNotStrip
     @JvmStatic
-    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData?
+    external fun initHybrid(cxxReactPackages: List<CxxReactPackage>): HybridData
   }
 }
