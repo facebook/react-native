@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<40315ae6cc418effd421dff2be6831c7>>
+ * @generated SignedSource<<b61bc487a077e9e1dc6ab2b176fd72cb>>
  */
 
 /**
@@ -24,7 +24,6 @@
 #include <atomic>
 #include <memory>
 #include <optional>
-#include <vector>
 
 namespace facebook::react {
 
