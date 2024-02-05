@@ -268,10 +268,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableMountHooks = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_default_async_batched_priority")) {
-    CoreFeatures::enableDefaultAsyncBatchedPriority = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
     CoreFeatures::enableClonelessStateProgression = true;
   }

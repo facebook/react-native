@@ -66,19 +66,11 @@ Scheduler::Scheduler(
               runtime, eventTarget, type, priority, payload);
         },
         runtime);
-
-    // We only want to run this per-event if we are not batching by default
-    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
-      if (runtimeScheduler != nullptr) {
-        runtimeScheduler->callExpiredTasks(runtime);
-      }
-    }
   };
 
   auto eventPipeConclusion =
       [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (CoreFeatures::enableDefaultAsyncBatchedPriority &&
-            runtimeScheduler != nullptr) {
+        if (runtimeScheduler != nullptr) {
           runtimeScheduler->callExpiredTasks(runtime);
         }
       };
