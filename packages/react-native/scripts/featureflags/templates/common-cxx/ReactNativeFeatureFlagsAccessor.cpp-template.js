@@ -40,47 +40,64 @@ ReactNativeFeatureFlagsAccessor::ReactNativeFeatureFlagsAccessor()
 
 ${Object.entries(config.common)
   .map(
-    ([flagName, flagConfig]) =>
+    ([flagName, flagConfig], flagPosition) =>
       `${getCxxTypeFromDefaultValue(
         flagConfig.defaultValue,
       )} ReactNativeFeatureFlagsAccessor::${flagName}() {
-  if (!${flagName}_.has_value()) {
+  auto flagValue = ${flagName}_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "${flagName}";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(${flagPosition}, flagName);
 
-    ${flagName}_.emplace(currentProvider_->${flagName}());
+    flagValue = currentProvider_->${flagName}();
+    ${flagName}_ = flagValue;
   }
 
-  return ${flagName}_.value();
+  return flagValue.value();
 }`,
   )
   .join('\n\n')}
 
 void ReactNativeFeatureFlagsAccessor::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
-  if (!accessedFeatureFlags_.empty()) {
-    std::ostringstream featureFlagListBuilder;
-    for (const auto& featureFlagName : accessedFeatureFlags_) {
+  ensureFlagsNotAccessed();
+  currentProvider_ = std::move(provider);
+}
+
+void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
+    int position,
+    const char* flagName) {
+  accessedFeatureFlags_[position] = flagName;
+}
+
+void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
+  std::string accessedFeatureFlagNames;
+
+  std::ostringstream featureFlagListBuilder;
+  for (const auto& featureFlagName : accessedFeatureFlags_) {
+    if (featureFlagName != nullptr) {
       featureFlagListBuilder << featureFlagName << ", ";
     }
-    std::string accessedFeatureFlagNames = featureFlagListBuilder.str();
-    if (!accessedFeatureFlagNames.empty()) {
-      accessedFeatureFlagNames = accessedFeatureFlagNames.substr(
-          0, accessedFeatureFlagNames.size() - 2);
-    }
+  }
 
+  accessedFeatureFlagNames = featureFlagListBuilder.str();
+  if (!accessedFeatureFlagNames.empty()) {
+    accessedFeatureFlagNames =
+        accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);
+  }
+
+  if (!accessedFeatureFlagNames.empty()) {
     throw std::runtime_error(
         "Feature flags were accessed before being overridden: " +
         accessedFeatureFlagNames);
   }
-
-  currentProvider_ = std::move(provider);
 }
 
 } // namespace facebook::react

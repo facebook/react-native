@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d50752c48503e31eccfe64d66ee2e99>>
+ * @generated SignedSource<<ad8bfca49acda85e56fea1c124b5bc8a>>
  */
 
 /**
@@ -29,143 +29,178 @@ ReactNativeFeatureFlagsAccessor::ReactNativeFeatureFlagsAccessor()
     : currentProvider_(std::make_unique<ReactNativeFeatureFlagsDefaults>()) {}
 
 bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
-  if (!commonTestFlag_.has_value()) {
+  auto flagValue = commonTestFlag_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "commonTestFlag";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(0, flagName);
 
-    commonTestFlag_.emplace(currentProvider_->commonTestFlag());
+    flagValue = currentProvider_->commonTestFlag();
+    commonTestFlag_ = flagValue;
   }
 
-  return commonTestFlag_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
-  if (!useModernRuntimeScheduler_.has_value()) {
+  auto flagValue = useModernRuntimeScheduler_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "useModernRuntimeScheduler";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(1, flagName);
 
-    useModernRuntimeScheduler_.emplace(currentProvider_->useModernRuntimeScheduler());
+    flagValue = currentProvider_->useModernRuntimeScheduler();
+    useModernRuntimeScheduler_ = flagValue;
   }
 
-  return useModernRuntimeScheduler_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
-  if (!enableMicrotasks_.has_value()) {
+  auto flagValue = enableMicrotasks_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "enableMicrotasks";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(2, flagName);
 
-    enableMicrotasks_.emplace(currentProvider_->enableMicrotasks());
+    flagValue = currentProvider_->enableMicrotasks();
+    enableMicrotasks_ = flagValue;
   }
 
-  return enableMicrotasks_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
-  if (!batchRenderingUpdatesInEventLoop_.has_value()) {
+  auto flagValue = batchRenderingUpdatesInEventLoop_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "batchRenderingUpdatesInEventLoop";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(3, flagName);
 
-    batchRenderingUpdatesInEventLoop_.emplace(currentProvider_->batchRenderingUpdatesInEventLoop());
+    flagValue = currentProvider_->batchRenderingUpdatesInEventLoop();
+    batchRenderingUpdatesInEventLoop_ = flagValue;
   }
 
-  return batchRenderingUpdatesInEventLoop_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
-  if (!enableSpannableBuildingUnification_.has_value()) {
+  auto flagValue = enableSpannableBuildingUnification_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "enableSpannableBuildingUnification";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(4, flagName);
 
-    enableSpannableBuildingUnification_.emplace(currentProvider_->enableSpannableBuildingUnification());
+    flagValue = currentProvider_->enableSpannableBuildingUnification();
+    enableSpannableBuildingUnification_ = flagValue;
   }
 
-  return enableSpannableBuildingUnification_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
-  if (!enableCustomDrawOrderFabric_.has_value()) {
+  auto flagValue = enableCustomDrawOrderFabric_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "enableCustomDrawOrderFabric";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(5, flagName);
 
-    enableCustomDrawOrderFabric_.emplace(currentProvider_->enableCustomDrawOrderFabric());
+    flagValue = currentProvider_->enableCustomDrawOrderFabric();
+    enableCustomDrawOrderFabric_ = flagValue;
   }
 
-  return enableCustomDrawOrderFabric_.value();
+  return flagValue.value();
 }
 
 bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
-  if (!enableFixForClippedSubviewsCrash_.has_value()) {
+  auto flagValue = enableFixForClippedSubviewsCrash_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
     // Mark the flag as accessed.
     static const char* flagName = "enableFixForClippedSubviewsCrash";
-    if (std::find(
-            accessedFeatureFlags_.begin(),
-            accessedFeatureFlags_.end(),
-            flagName) == accessedFeatureFlags_.end()) {
-      accessedFeatureFlags_.push_back(flagName);
-    }
+    markFlagAsAccessed(6, flagName);
 
-    enableFixForClippedSubviewsCrash_.emplace(currentProvider_->enableFixForClippedSubviewsCrash());
+    flagValue = currentProvider_->enableFixForClippedSubviewsCrash();
+    enableFixForClippedSubviewsCrash_ = flagValue;
   }
 
-  return enableFixForClippedSubviewsCrash_.value();
+  return flagValue.value();
 }
 
 void ReactNativeFeatureFlagsAccessor::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
-  if (!accessedFeatureFlags_.empty()) {
-    std::ostringstream featureFlagListBuilder;
-    for (const auto& featureFlagName : accessedFeatureFlags_) {
+  ensureFlagsNotAccessed();
+  currentProvider_ = std::move(provider);
+}
+
+void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
+    int position,
+    const char* flagName) {
+  accessedFeatureFlags_[position] = flagName;
+}
+
+void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
+  std::string accessedFeatureFlagNames;
+
+  std::ostringstream featureFlagListBuilder;
+  for (const auto& featureFlagName : accessedFeatureFlags_) {
+    if (featureFlagName != nullptr) {
       featureFlagListBuilder << featureFlagName << ", ";
     }
-    std::string accessedFeatureFlagNames = featureFlagListBuilder.str();
-    if (!accessedFeatureFlagNames.empty()) {
-      accessedFeatureFlagNames = accessedFeatureFlagNames.substr(
-          0, accessedFeatureFlagNames.size() - 2);
-    }
+  }
 
+  accessedFeatureFlagNames = featureFlagListBuilder.str();
+  if (!accessedFeatureFlagNames.empty()) {
+    accessedFeatureFlagNames =
+        accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);
+  }
+
+  if (!accessedFeatureFlagNames.empty()) {
     throw std::runtime_error(
         "Feature flags were accessed before being overridden: " +
         accessedFeatureFlagNames);
   }
-
-  currentProvider_ = std::move(provider);
 }
 
 } // namespace facebook::react
