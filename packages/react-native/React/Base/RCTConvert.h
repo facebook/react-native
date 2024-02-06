@@ -100,12 +100,12 @@ typedef NSURL RCTFileURL;
 
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
-+ (UIColor *)createColorFrom:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
-+ (UIColor *)createColorFrom:(CGFloat)red
-                       green:(CGFloat)green
-                        blue:(CGFloat)blue
-                       alpha:(CGFloat)alpha
-               andColorSpace:(RCTColorSpace)colorSpace;
++ (UIColor *)RCTCreateColorWith:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
++ (UIColor *)RCTCreateColorWith:(CGFloat)red
+                          green:(CGFloat)green
+                           blue:(CGFloat)blue
+                          alpha:(CGFloat)alpha
+                  andColorSpace:(RCTColorSpace)colorSpace;
 + (RCTColorSpace)colorSpaceFromString:(NSString *)colorSpace;
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;

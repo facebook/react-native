@@ -880,7 +880,6 @@ static NSString *RCTSemanticColorNames(void)
   return names;
 }
 
-static RCTColorSpace defaultColorSpace = (RCTColorSpace)facebook::react::getDefaultColorSpace();
 RCTColorSpace RCTGetDefaultColorSpace(void)
 {
   return (RCTColorSpace)facebook::react::getDefaultColorSpace();
@@ -890,12 +889,12 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
   facebook::react::setDefaultColorSpace((facebook::react::ColorSpace)colorSpace);
 }
 
-+ (UIColor *)createColorFrom:(CGFloat)r green:(CGFloat)g blue:(CGFloat)b alpha:(CGFloat)a
++ (UIColor *)RCTCreateColorWith:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
 {
   RCTColorSpace space = RCTGetDefaultColorSpace();
-  return [self createColorFrom:r green:g blue:b alpha:a andColorSpace:space];
+  return [self RCTCreateColorWith:red green:green blue:blue alpha:alpha andColorSpace:space];
 }
-+ (UIColor *)createColorFrom:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha andColorSpace:(RCTColorSpace)colorSpace
++ (UIColor *)RCTCreateColorWith:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha andColorSpace:(RCTColorSpace)colorSpace
 {
   if (colorSpace == RCTColorSpaceDisplayP3) {
     return [UIColor colorWithDisplayP3Red:red green:green blue:blue alpha:alpha];
@@ -920,17 +919,17 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
-    return [self createColorFrom:[self CGFloat:components[0]]
-                           green:[self CGFloat:components[1]]
-                            blue:[self CGFloat:components[2]]
-                           alpha:alpha];
+    return [self RCTCreateColorWith:[self CGFloat:components[0]]
+                              green:[self CGFloat:components[1]]
+                               blue:[self CGFloat:components[2]]
+                              alpha:alpha];
   } else if ([json isKindOfClass:[NSNumber class]]) {
     NSUInteger argb = [self NSUInteger:json];
     CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
-    return [self createColorFrom:r green:g blue:b alpha:a];
+    return [self RCTCreateColorWith:r green:g blue:b alpha:a];
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
@@ -941,7 +940,7 @@ void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
       CGFloat b = [[dictionary objectForKey:@"b"] floatValue];
       CGFloat a = [[dictionary objectForKey:@"a"] floatValue];
       RCTColorSpace colorSpace = [self colorSpaceFromString: rawColorSpace];
-      return [self createColorFrom:r green:g blue:b alpha:a andColorSpace:colorSpace];
+      return [self RCTCreateColorWith:r green:g blue:b alpha:a andColorSpace:colorSpace];
     } else if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
