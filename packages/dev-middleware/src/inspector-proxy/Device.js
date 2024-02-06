@@ -14,6 +14,7 @@ import type {
   CDPClientMessage,
   CDPRequest,
   CDPResponse,
+  CDPServerMessage,
 } from './cdp-types/messages';
 import type {
   MessageFromDevice,
@@ -231,8 +232,8 @@ export default class Device {
         frontendUserAgent: metadata.userAgent,
       });
       let processedReq = debuggerRequest;
-      if (!page || page.type === 'Legacy') {
-        processedReq = this.#interceptMessageFromDebuggerLegacy(
+      if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
+        processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
           debuggerInfo,
           socket,
@@ -419,6 +420,7 @@ export default class Device {
         this.#processMessageFromDeviceLegacy(
           parsedPayload,
           this.#debuggerConnection,
+          pageId,
         ).then(() => {
           const messageToSend = JSON.stringify(parsedPayload);
           debuggerSocket.send(messageToSend);
@@ -499,16 +501,27 @@ export default class Device {
 
   // Allows to make changes in incoming message from device.
   async #processMessageFromDeviceLegacy(
-    payload: {method: string, params: {sourceMapURL: string, url: string}},
+    payload: CDPServerMessage,
     debuggerInfo: DebuggerInfo,
+    pageId: ?string,
   ) {
+    // TODO(moti): Handle null case explicitly, or ideally associate a copy
+    // of the page metadata object with the connection so this can never be
+    // null.
+    const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
+
     // Replace Android addresses for scriptParsed event.
-    if (payload.method === 'Debugger.scriptParsed') {
-      const params = payload.params || {};
+    if (
+      (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) &&
+      payload.method === 'Debugger.scriptParsed' &&
+      payload.params != null
+    ) {
+      const params = payload.params;
       if ('sourceMapURL' in params) {
         for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
           const address = EMULATOR_LOCALHOST_ADDRESSES[i];
-          if (params.sourceMapURL.indexOf(address) >= 0) {
+          if (params.sourceMapURL.includes(address)) {
+            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL = params.sourceMapURL.replace(
               address,
               'localhost',
@@ -526,6 +539,7 @@ export default class Device {
           // message to the debug client.
           try {
             const sourceMap = await this.#fetchText(sourceMapURL);
+            // $FlowFixMe[cannot-write]
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
               new Buffer(sourceMap).toString('base64');
@@ -540,6 +554,7 @@ export default class Device {
         for (let i = 0; i < EMULATOR_LOCALHOST_ADDRESSES.length; ++i) {
           const address = EMULATOR_LOCALHOST_ADDRESSES[i];
           if (params.url.indexOf(address) >= 0) {
+            // $FlowFixMe[cannot-write]
             payload.params.url = params.url.replace(address, 'localhost');
             debuggerInfo.originalSourceURLAddress = address;
           }
@@ -550,6 +565,7 @@ export default class Device {
         // Chrome to not download source maps. In this case we want to prepend script ID
         // with 'file://' prefix.
         if (payload.params.url.match(/^[0-9a-z]+$/)) {
+          // $FlowFixMe[cannot-write]
           payload.params.url = FILE_PREFIX + payload.params.url;
           debuggerInfo.prependedFilePrefix = true;
         }
@@ -601,7 +617,7 @@ export default class Device {
    * original/replacement CDP message object, or `null` (will forward nothing
    * to the target).
    */
-  #interceptMessageFromDebuggerLegacy(
+  #interceptClientMessageForSourceFetching(
     req: CDPClientMessage,
     debuggerInfo: DebuggerInfo,
     socket: WS,

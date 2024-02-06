@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {TargetCapabilityFlags} from '../inspector-proxy/types';
+
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,
@@ -471,6 +473,77 @@ describe.each(['HTTP', 'HTTPS'])(
           }
         },
       );
+    });
+
+    describe.each([
+      ['for modern targets', {}],
+      [
+        "when target has 'nativeSourceMapFetching' capability flag",
+        {nativeSourceMapFetching: true},
+      ],
+    ])('disabled %s', (_, capabilities: TargetCapabilityFlags) => {
+      const pageDescription = {
+        app: 'bar-app',
+        id: 'page1',
+        title: 'bar-title',
+        type: 'Modern',
+        capabilities,
+        vm: 'bar-vm',
+      };
+
+      describe('Debugger.scriptParsed', () => {
+        test('should forward event directly to client (does not rewrite sourceMapURL host)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              method: 'Debugger.scriptParsed',
+              params: {
+                sourceMapURL: `${protocol.toLowerCase()}://10.0.2.2:${
+                  serverRef.port
+                }/source-map`,
+              },
+            };
+            await sendFromTargetToDebugger(device, debugger_, 'page1', message);
+
+            expect(debugger_.handle).toBeCalledWith(message);
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
+
+      describe('Debugger.getScriptSource', () => {
+        test('should forward request directly to device (does not read source from disk in proxy)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              id: 1,
+              method: 'Debugger.getScriptSource',
+              params: {
+                scriptId: 'script1',
+              },
+            };
+            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
+
+            expect(device.wrappedEventParsed).toBeCalledWith({
+              pageId: 'page1',
+              wrappedEvent: message,
+            });
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
     });
   },
 );
