@@ -153,6 +153,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       reactNative: {
         logicalDeviceId: deviceId,
         type: nullthrows(page.type),
+        capabilities: nullthrows(page.capabilities),
       },
     };
   }

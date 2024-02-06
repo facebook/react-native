@@ -15,7 +15,12 @@ import type {
   CDPRequest,
   CDPResponse,
 } from './cdp-types/messages';
-import type {MessageFromDevice, MessageToDevice, Page} from './types';
+import type {
+  MessageFromDevice,
+  MessageToDevice,
+  Page,
+  TargetCapabilityFlags,
+} from './types';
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
@@ -76,7 +81,7 @@ export default class Device {
   #lastConnectedLegacyReactNativePage: ?Page = null;
 
   // Whether we are in the middle of a reload in the REACT_NATIVE_RELOADABLE_PAGE.
-  #isReloading: boolean = false;
+  #isLegacyPageReloading: boolean = false;
 
   // The previous "GetPages" message, for deduplication in debug logs.
   #lastGetPagesMessage: string = '';
@@ -162,6 +167,7 @@ export default class Device {
         vm: "don't use",
         app: this.#app,
         type: 'Legacy',
+        capabilities: {},
       };
       return [...this.#pages.values(), reactNativeReloadablePage];
     } else {
@@ -298,6 +304,14 @@ export default class Device {
     }
   }
 
+  /**
+   * Returns `true` if a page reports `type: 'Modern'` or supports the given
+   * target capability flag.
+   */
+  #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
+    return page.type === 'Modern' || page.capabilities[flag] === true;
+  }
+
   // Handles messages received from device:
   // 1. For getPages responses updates local #pages list.
   // 2. All other messages are forwarded to debugger as wrappedEvent.
@@ -308,11 +322,12 @@ export default class Device {
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       this.#pages = new Map(
-        message.payload.map(({type, ...page}) => [
+        message.payload.map(({type, capabilities, ...page}) => [
           page.id,
           {
             ...page,
             type: type ?? 'Legacy',
+            capabilities: capabilities ?? {},
           },
         ]),
       );
@@ -339,7 +354,11 @@ export default class Device {
       // TODO(hypuk): It is better for VM to send update event when new page is
       // created instead of manually checking this on every getPages result.
       for (const page of this.#pages.values()) {
-        if (page.type === 'Legacy' && page.title.indexOf('React') >= 0) {
+        if (this.#pageHasCapability(page, 'nativePageReloads')) {
+          continue;
+        }
+
+        if (page.title.includes('React')) {
           if (page.id !== this.#lastConnectedLegacyReactNativePage?.id) {
             this.#newLegacyReactNativePage(page);
             break;
@@ -353,14 +372,18 @@ export default class Device {
       // TODO(moti): Handle null case explicitly, e.g. swallow disconnect events
       // for unknown pages.
       const page: ?Page = this.#pages.get(pageId);
+
+      if (page != null && this.#pageHasCapability(page, 'nativePageReloads')) {
+        return;
+      }
+
       const debuggerSocket = this.#debuggerConnection
         ? this.#debuggerConnection.socket
         : null;
       if (debuggerSocket && debuggerSocket.readyState === WS.OPEN) {
         if (
           this.#debuggerConnection != null &&
-          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID &&
-          (!page || page.type === 'Legacy')
+          this.#debuggerConnection.pageId !== REACT_NATIVE_RELOADABLE_PAGE_ID
         ) {
           debug(`Legacy page ${pageId} is reloading.`);
           debuggerSocket.send(JSON.stringify({method: 'reload'}));
@@ -383,10 +406,6 @@ export default class Device {
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
       const pageId = this.#debuggerConnection?.pageId ?? null;
-      // TODO(moti): Handle null case explicitly, or ideally associate a copy
-      // of the page metadata object with the connection so this can never be
-      // null.
-      const page: ?Page = pageId != null ? this.#pages.get(pageId) : null;
       if ('id' in parsedPayload) {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
@@ -394,7 +413,7 @@ export default class Device {
         });
       }
 
-      if (this.#debuggerConnection && (!page || page.type === 'Legacy')) {
+      if (this.#debuggerConnection != null) {
         // Wrapping just to make flow happy :)
         // $FlowFixMe[unused-promise]
         this.#processMessageFromDeviceLegacy(
@@ -435,7 +454,7 @@ export default class Device {
     }
     const oldPageId = this.#lastConnectedLegacyReactNativePage?.id;
     this.#lastConnectedLegacyReactNativePage = page;
-    this.#isReloading = true;
+    this.#isLegacyPageReloading = true;
 
     // We already had a debugger connected to React Native page and a
     // new one appeared - in this case we need to emulate execution context
@@ -544,7 +563,7 @@ export default class Device {
 
     if (
       payload.method === 'Runtime.executionContextCreated' &&
-      this.#isReloading
+      this.#isLegacyPageReloading
     ) {
       // The new context is ready. First notify Chrome that we've reloaded so
       // it'll resend its breakpoints. If we do this earlier, we may not be
@@ -573,7 +592,7 @@ export default class Device {
         },
       });
 
-      this.#isReloading = false;
+      this.#isLegacyPageReloading = false;
     }
   }
 
