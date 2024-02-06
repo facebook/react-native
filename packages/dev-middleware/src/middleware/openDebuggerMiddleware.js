@@ -63,6 +63,7 @@ export default function openDebuggerMiddleware({
         // Only use targets with better reloading support
         app =>
           app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true ||
           app.reactNative.type === 'Modern',
       );
 
