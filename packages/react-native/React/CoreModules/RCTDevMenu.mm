@@ -299,6 +299,14 @@ RCT_EXPORT_MODULE()
                            devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
                          }]];
   }
+  
+  id perfMonitorItemOpaque = [_moduleRegistry moduleForName:"PerfMonitor"];
+  SEL devMenuItem = NSSelectorFromString(@"devMenuItem");
+  if ([perfMonitorItemOpaque respondsToSelector:devMenuItem]) {
+    RCTDevMenuItem *perfMonitorItem = [perfMonitorItemOpaque performSelector:devMenuItem];
+    [items addObject:perfMonitorItem];
+  }
+  
 
   [items
       addObject:[RCTDevMenuItem
