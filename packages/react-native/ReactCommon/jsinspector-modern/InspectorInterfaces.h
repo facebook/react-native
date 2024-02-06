@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -31,25 +33,19 @@ class IDestructible {
   virtual ~IDestructible() = 0;
 };
 
-enum class InspectorPageType {
-  Legacy,
-  Modern,
+struct InspectorTargetCapabilities {
+  const bool nativePageReloads = false;
+  const bool nativeSourceCodeFetching = false;
 };
 
-inline const char* pageTypeToString(InspectorPageType type) {
-  switch (type) {
-    case InspectorPageType::Legacy:
-      return "Legacy";
-    case InspectorPageType::Modern:
-      return "Modern";
-  }
-}
+const folly::dynamic targetCapabilitiesToDynamic(
+    const InspectorTargetCapabilities& capabilities);
 
 struct InspectorPageDescription {
   const int id;
   const std::string title;
   const std::string vm;
-  const InspectorPageType type;
+  const InspectorTargetCapabilities capabilities;
 };
 
 // Alias for backwards compatibility.
@@ -106,7 +102,7 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
       const std::string& title,
       const std::string& vm,
       ConnectFunc connectFunc,
-      InspectorPageType type = InspectorPageType::Legacy) = 0;
+      InspectorTargetCapabilities capabilities = {}) = 0;
 
   /// removePage is called by the VM to remove a page from the list of
   /// debuggable pages.
