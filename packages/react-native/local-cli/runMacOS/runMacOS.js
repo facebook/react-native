@@ -9,6 +9,7 @@
 /**
  * @typedef {{
  *   configuration: string;
+ *   mode: string;
  *   packager: boolean;
  *   port: number;
  *   projectPath: string;
@@ -47,6 +48,16 @@ function runMacOS(_, _ctx, args) {
     );
   }
 
+  if (args.configuration) {
+    logger.warn(
+      'Argument --configuration has been deprecated and will be removed in a future release, please use --mode instead.',
+    );
+
+    if (!args.mode) {
+      args.mode = args.configuration;
+    }
+  }
+
   process.chdir(args.projectPath);
 
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
@@ -78,11 +89,7 @@ function runMacOS(_, _ctx, args) {
 async function run(xcodeProject, scheme, args) {
   await buildProject(xcodeProject, scheme, args);
 
-  const buildSettings = getBuildSettings(
-    xcodeProject,
-    args.configuration,
-    scheme,
-  );
+  const buildSettings = getBuildSettings(xcodeProject, args.mode, scheme);
   const appPath = path.join(
     buildSettings.TARGET_BUILD_DIR,
     buildSettings.FULL_PRODUCT_NAME,
@@ -127,7 +134,7 @@ function buildProject(xcodeProject, scheme, args) {
       xcodeProject.isWorkspace ? '-workspace' : '-project',
       xcodeProject.name,
       '-configuration',
-      args.configuration,
+      args.mode,
       '-scheme',
       scheme,
     ];
@@ -278,12 +285,19 @@ module.exports = {
   options: [
     {
       name: '--configuration [string]',
-      description: 'Explicitly set the scheme configuration to use',
+      description:
+        '[Deprecated] Explicitly set the scheme configuration to use',
       default: 'Debug',
     },
     {
+      name: '--mode [string]',
+      description:
+        'Explicitly set the scheme configuration to use, corresponds to `--configuration` in `xcodebuild` command, e.g. Debug, Release.',
+    },
+    {
       name: '--scheme [string]',
-      description: 'Explicitly set Xcode scheme to use',
+      description:
+        'Explicitly set Xcode scheme to use, corresponds to `--scheme` in `xcodebuild` command.',
     },
     {
       name: '--project-path [string]',
