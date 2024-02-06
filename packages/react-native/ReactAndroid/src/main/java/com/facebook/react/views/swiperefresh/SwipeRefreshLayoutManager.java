@@ -83,9 +83,13 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
   }
 
   @Override
-  @ReactProp(name = "progressBackgroundColor", customType = "Color")
   public void setProgressBackgroundColor(ReactSwipeRefreshLayout view, Integer color) {
     view.setProgressBackgroundColorSchemeColor(color == null ? Color.TRANSPARENT : color);
+  }
+
+  @ReactProp(name = "progressBackgroundColor", customType = "Color")
+  public void setProgressBackgroundColor(ReactSwipeRefreshLayout view, Long color) {
+    view.setProgressBackgroundColorSchemeColor(color == null ? Color.TRANSPARENT : Color.toArgb(color));
   }
 
   // TODO(T46143833): Remove this method once the 'size' prop has been migrated to String in JS.

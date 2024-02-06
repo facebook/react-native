@@ -8,6 +8,7 @@
 package com.facebook.react.views.progressbar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,9 +89,13 @@ public class ReactProgressBarViewManager
   }
 
   @Override
-  @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(ProgressBarContainerView view, @Nullable Integer color) {
     view.setColor(color);
+  }
+
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
+  public void setColor(ProgressBarContainerView view, @Nullable Long color) {
+    view.setColor(Color.toArgb(color));
   }
 
   @Override

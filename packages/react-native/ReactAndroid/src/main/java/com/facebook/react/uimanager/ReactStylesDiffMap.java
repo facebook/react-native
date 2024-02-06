@@ -70,6 +70,10 @@ public class ReactStylesDiffMap {
     return mBackingMap.isNull(name) ? restoreNullToDefaultValue : mBackingMap.getInt(name);
   }
 
+  public long getLong(String name, long restoreNullToDefaultValue) {
+    return mBackingMap.isNull(name) ? restoreNullToDefaultValue : mBackingMap.getLong(name);
+  }
+
   @Nullable
   public String getString(String name) {
     return mBackingMap.getString(name);

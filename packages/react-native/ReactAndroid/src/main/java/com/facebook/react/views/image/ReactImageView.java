@@ -239,9 +239,17 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
-  public void setBorderColor(int borderColor) {
+  public void setBackgroundColor(long backgroundColor) {
+    if (mBackgroundColor != backgroundColor) {
+      mBackgroundColor = Color.toArgb(backgroundColor);
+      mBackgroundImageDrawable = new RoundedColorDrawable(Color.toArgb(backgroundColor));
+      mIsDirty = true;
+    }
+  }
+
+  public void setBorderColor(long borderColor) {
     if (mBorderColor != borderColor) {
-      mBorderColor = borderColor;
+      mBorderColor = Color.toArgb(borderColor);
       mIsDirty = true;
     }
   }

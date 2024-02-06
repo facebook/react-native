@@ -218,7 +218,9 @@ import java.util.Map;
       }
 
       Color color = ColorPropConverter.getColorInstance(value, context);
-      if (mPropName.contains("border") || mPropName.contains("background") ) {
+      if (
+        mPropName.contains("background") || mPropName.contains("border") || mPropName.contains("cursor") ||  mPropName.contains("overlay") || mPropName.contains("placeholder") || mPropName.contains("selection") || mPropName.contains("shadow") || mPropName.contains("tint") || mPropName.contains("underline")
+      ) {
         return color.pack();
       } else {
         return color.toArgb();
@@ -354,7 +356,9 @@ import java.util.Map;
       if (value != null) {
         Color color = ColorPropConverter.getColorInstance(value, context);
         // return color.pack();
-        if (mPropName.contains("border") || mPropName.contains("background") ) {
+        if (
+          mPropName.contains("background") || mPropName.contains("border") || mPropName.contains("cursor") ||  mPropName.contains("overlay") || mPropName.contains("placeholder") || mPropName.contains("selection") || mPropName.contains("shadow") || mPropName.contains("tint") || mPropName.contains("underline")
+        ) {
           return color.pack();
         } else {
           return color.toArgb();

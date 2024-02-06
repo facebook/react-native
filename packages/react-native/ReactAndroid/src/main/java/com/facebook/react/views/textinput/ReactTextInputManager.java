@@ -510,32 +510,32 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "placeholderTextColor", customType = "Color")
-  public void setPlaceholderTextColor(ReactEditText view, @Nullable Integer color) {
+  public void setPlaceholderTextColor(ReactEditText view, @Nullable Long color) {
     if (color == null) {
       view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
     } else {
-      view.setHintTextColor(color);
+      view.setHintTextColor(Color.toArgb(color));
     }
   }
 
   @ReactProp(name = "selectionColor", customType = "Color")
-  public void setSelectionColor(ReactEditText view, @Nullable Integer color) {
+  public void setSelectionColor(ReactEditText view, @Nullable Long color) {
     if (color == null) {
       view.setHighlightColor(
           DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
     } else {
-      view.setHighlightColor(color);
+      view.setHighlightColor(Color.toArgb(color));
     }
   }
 
   @ReactProp(name = "selectionHandleColor", customType = "Color")
-  public void setSelectionHandleColor(ReactEditText view, @Nullable Integer color) {
+  public void setSelectionHandleColor(ReactEditText view, @Nullable Long color) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable drawableCenter = view.getTextSelectHandle().mutate();
       Drawable drawableLeft = view.getTextSelectHandleLeft().mutate();
       Drawable drawableRight = view.getTextSelectHandleRight().mutate();
       if (color != null) {
-        BlendModeColorFilter filter = new BlendModeColorFilter(color, BlendMode.SRC_IN);
+        BlendModeColorFilter filter = new BlendModeColorFilter(Color.toArgb(color), BlendMode.SRC_IN);
         drawableCenter.setColorFilter(filter);
         drawableLeft.setColorFilter(filter);
         drawableRight.setColorFilter(filter);
@@ -570,7 +570,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
         if (color != null) {
-          drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+          drawable.setColorFilter(Color.toArgb(color), PorterDuff.Mode.SRC_IN);
         } else {
           drawable.clearColorFilter();
         }
@@ -589,12 +589,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "cursorColor", customType = "Color")
-  public void setCursorColor(ReactEditText view, @Nullable Integer color) {
+  public void setCursorColor(ReactEditText view, @Nullable Long color) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       Drawable cursorDrawable = view.getTextCursorDrawable();
       if (cursorDrawable != null) {
         if (color != null) {
-          cursorDrawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+          cursorDrawable.setColorFilter(new BlendModeColorFilter(Color.toArgb(color), BlendMode.SRC_IN));
         } else {
           cursorDrawable.clearColorFilter();
         }
@@ -624,7 +624,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId).mutate();
       if (color != null) {
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        drawable.setColorFilter(Color.toArgb(color), PorterDuff.Mode.SRC_IN);
       } else {
         drawable.clearColorFilter();
       }
@@ -694,9 +694,29 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setTextColor(color);
     }
   }
+  
+  public void setColor(ReactEditText view, @Nullable Long color) {
+    if (color == null) {
+      ColorStateList defaultContextTextColor =
+          DefaultStyleValuesUtil.getDefaultTextColor(view.getContext());
+
+      if (defaultContextTextColor != null) {
+        view.setTextColor(defaultContextTextColor);
+      } else {
+        Context c = view.getContext();
+        ReactSoftExceptionLogger.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "Could not get default text color from View Context: "
+                    + (c != null ? c.getClass().getCanonicalName() : "null")));
+      }
+    } else {
+      view.getPaint().setColor(color);
+    }
+  }
 
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
-  public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
+  public void setUnderlineColor(ReactEditText view, @Nullable Long underlineColor) {
     // Drawable.mutate() can sometimes crash due to an AOSP bug:
     // See https://code.google.com/p/android/issues/detail?id=191754 for more info
     Drawable background = view.getBackground();
@@ -721,11 +741,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
       if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
         long bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
-        setBorderColor(view, Spacing.START, Color.pack(underlineColor));
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        setBorderColor(view, Spacing.START, underlineColor);
+        drawableToMutate.setColorFilter(Color.toArgb(underlineColor), PorterDuff.Mode.SRC_IN);
         setBorderColor(view, Spacing.START, bottomBorderColor);
       } else {
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+        drawableToMutate.setColorFilter(Color.toArgb(underlineColor), PorterDuff.Mode.SRC_IN);
       }
     }
   }
@@ -1040,7 +1060,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       },
       customType = "Color")
   public void setBorderColor(ReactEditText view, int index, Long color) {
-    view.setBorderColor(SPACING_TYPES[index], color);
+    long borderColor = color == null ? 0 : color;
+    view.setBorderColor(SPACING_TYPES[index], borderColor);
   }
 
   @Override

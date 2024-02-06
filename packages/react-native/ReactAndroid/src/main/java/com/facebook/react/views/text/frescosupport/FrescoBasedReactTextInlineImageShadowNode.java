@@ -9,6 +9,7 @@ package com.facebook.react.views.text.frescosupport;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -75,8 +76,8 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
   }
 
   @ReactProp(name = "tintColor", customType = "Color")
-  public void setTintColor(int tintColor) {
-    mTintColor = tintColor;
+  public void setTintColor(long tintColor) {
+    mTintColor = Color.toArgb(tintColor);
   }
 
   /** Besides width/height, all other layout props on inline images are ignored */

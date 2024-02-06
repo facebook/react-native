@@ -165,12 +165,16 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   public void setKeyboardDismissMode(ReactDrawerLayout view, @Nullable String value) {}
 
   @Override
-  @ReactProp(name = "drawerBackgroundColor", customType = "Color")
   public void setDrawerBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
+  @ReactProp(name = "drawerBackgroundColor", customType = "Color")
+  public void setDrawerBackgroundColor(ReactDrawerLayout view, @Nullable Long value) {}
+
   @Override
-  @ReactProp(name = "statusBarBackgroundColor", customType = "Color")
   public void setStatusBarBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
+
+  @ReactProp(name = "statusBarBackgroundColor", customType = "Color")
+  public void setStatusBarBackgroundColor(ReactDrawerLayout view, @Nullable Long value) {}
 
   @Override
   public void setElevation(@NonNull ReactDrawerLayout view, float elevation) {

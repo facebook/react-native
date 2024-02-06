@@ -9,6 +9,7 @@
 package com.facebook.react.views.switchview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
@@ -142,33 +143,53 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
   }
 
   @Override
-  @ReactProp(name = "thumbTintColor", customType = "Color")
   public void setThumbTintColor(ReactSwitch view, @Nullable Integer color) {
     this.setThumbColor(view, color);
   }
 
+  @ReactProp(name = "thumbTintColor", customType = "Color")
+  public void setThumbTintColor(ReactSwitch view, @Nullable Long color) {
+    this.setThumbColor(view, Color.toArgb(color));
+  }
+
   @Override
-  @ReactProp(name = "thumbColor", customType = "Color")
   public void setThumbColor(ReactSwitch view, @Nullable Integer color) {
     view.setThumbColor(color);
   }
 
+  @ReactProp(name = "thumbColor", customType = "Color")
+  public void setThumbColor(ReactSwitch view, @Nullable Long color) {
+    view.setThumbColor(Color.toArgb(color));
+  }
+
   @Override
-  @ReactProp(name = "trackColorForFalse", customType = "Color")
   public void setTrackColorForFalse(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColorForFalse(color);
   }
 
+  @ReactProp(name = "trackColorForFalse", customType = "Color")
+  public void setTrackColorForFalse(ReactSwitch view, @Nullable Long color) {
+    view.setTrackColorForFalse(Color.toArgb(color));
+  }
+
   @Override
-  @ReactProp(name = "trackColorForTrue", customType = "Color")
   public void setTrackColorForTrue(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColorForTrue(color);
   }
 
+  @ReactProp(name = "trackColorForTrue", customType = "Color")
+  public void setTrackColorForTrue(ReactSwitch view, @Nullable Long color) {
+    view.setTrackColorForTrue(Color.toArgb(color));
+  }
+
   @Override
-  @ReactProp(name = "trackTintColor", customType = "Color")
   public void setTrackTintColor(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColor(color);
+  }
+
+  @ReactProp(name = "trackTintColor", customType = "Color")
+  public void setTrackTintColor(ReactSwitch view, @Nullable Long color) {
+    view.setTrackColor(Color.toArgb(color));
   }
 
   @Override
