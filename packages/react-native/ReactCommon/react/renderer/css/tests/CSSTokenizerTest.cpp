@@ -6,8 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <react/renderer/components/view/CSSTokenizer.h>
-#include <deque>
+#include <react/renderer/css/CSSTokenizer.h>
 
 namespace facebook::react {
 
