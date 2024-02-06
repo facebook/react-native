@@ -25,11 +25,10 @@ type FiberPartial = {
 };
 
 type ReactNode = {
-  children: $ReadOnlyArray<ReactNode>,
+  children: ?Array<ReactNode>,
   props: {text?: string | null, ...},
   viewName: string,
   instanceHandle: FiberPartial,
-  ...
 };
 
 type RenderedNodeJSON = {
@@ -41,12 +40,14 @@ type RenderedNodeJSON = {
 type RenderedJSON = RenderedNodeJSON | string;
 
 type RenderResult = {
-  toJSON: () => $ReadOnlyArray<RenderedJSON> | RenderedJSON | null,
+  toJSON: () => Array<RenderedJSON> | RenderedJSON | null,
+  findAll: (predicate: (ReactNode) => boolean) => Array<ReactNode>,
 };
 
 function buildRenderResult(rootNode: ReactNode): RenderResult {
   return {
     toJSON: () => toJSON(rootNode),
+    findAll: (predicate: ReactNode => boolean) => findAll(rootNode, predicate),
   };
 }
 
@@ -61,7 +62,7 @@ export function render(element: Element<ElementType>): RenderResult {
   });
 
   // $FlowFixMe
-  const root: RootReactNode = manager.getRoot(containerTag);
+  const root: [ReactNode] = manager.getRoot(containerTag);
 
   if (root == null) {
     throw new Error('No root found for containerTag ' + containerTag);
@@ -93,4 +94,23 @@ function toJSON(node: ReactNode): RenderedJSON {
   });
 
   return json;
+}
+
+function findAll(
+  node: ReactNode,
+  predicate: ReactNode => boolean,
+): Array<ReactNode> {
+  const results = [];
+
+  if (predicate(node)) {
+    results.push(node);
+  }
+
+  if (node.children != null && node.children.length > 0) {
+    for (const child of node.children) {
+      results.push(...findAll(child, predicate));
+    }
+  }
+
+  return results;
 }
