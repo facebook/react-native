@@ -13,7 +13,7 @@
 
 const render = require('../../../../jest/renderer');
 const View = require('../../View/View');
-const InputAccessoryView = require('../InputAccessoryView');
+const InputAccessoryView = require('../InputAccessoryView').default;
 const React = require('react');
 
 describe('<InputAccessoryView />', () => {
