@@ -167,7 +167,6 @@ export default class Device {
         title: 'React Native Experimental (Improved Chrome Reloads)',
         vm: "don't use",
         app: this.#app,
-        type: 'Legacy',
         capabilities: {},
       };
       return [...this.#pages.values(), reactNativeReloadablePage];
@@ -306,11 +305,10 @@ export default class Device {
   }
 
   /**
-   * Returns `true` if a page reports `type: 'Modern'` or supports the given
-   * target capability flag.
+   * Returns `true` if a page supports the given target capability flag.
    */
   #pageHasCapability(page: Page, flag: $Keys<TargetCapabilityFlags>): boolean {
-    return page.type === 'Modern' || page.capabilities[flag] === true;
+    return page.capabilities[flag] === true;
   }
 
   // Handles messages received from device:
@@ -323,11 +321,10 @@ export default class Device {
   #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       this.#pages = new Map(
-        message.payload.map(({type, capabilities, ...page}) => [
+        message.payload.map(({capabilities, ...page}) => [
           page.id,
           {
             ...page,
-            type: type ?? 'Legacy',
             capabilities: capabilities ?? {},
           },
         ]),
