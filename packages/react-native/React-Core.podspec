@@ -134,6 +134,8 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "RCTDeprecation")
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+
 
   if use_hermes
     s.dependency 'React-hermes'
