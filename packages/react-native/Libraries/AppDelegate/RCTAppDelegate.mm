@@ -78,6 +78,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return self;
 }
 
+/** TEST IGNORE
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTSetNewArchEnabled([self newArchEnabled]);
@@ -131,6 +132,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
   return YES;
 }
+END IGNORE */
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
