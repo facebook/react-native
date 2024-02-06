@@ -7,6 +7,7 @@
 
 #import "RCTTurboModuleManager.h"
 #import "RCTInteropTurboModule.h"
+#import "RCTRuntimeExecutor.h"
 
 #import <atomic>
 #import <cassert>
@@ -24,8 +25,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
-#import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -674,6 +675,13 @@ static Class getFallbackClassFromName(const char *name)
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
+  }
+
+  // This is a more performant alternative for conformsToProtocol:@protocol(RCTRuntimeExecutorModule)
+  if ([module respondsToSelector:@selector(setRuntimeExecutor:)]) {
+    RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
+        initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
+    [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
   }
 
   /**
