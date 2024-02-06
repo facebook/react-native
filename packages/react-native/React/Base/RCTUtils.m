@@ -596,16 +596,6 @@ UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
   return RCTKeyWindow().windowScene.statusBarManager;
 }
 
-#if TARGET_OS_VISION
-UIWindow *__nullable RCTForegroundWindow(void)
-{
-    // React native only supports single scene apps.
-    NSSet *scenes = RCTSharedApplication().connectedScenes;
-    UIWindowScene *firstScene = [scenes anyObject];
-    return [[UIWindow alloc] initWithWindowScene:firstScene];
-}
-#endif
-
 UIViewController *__nullable RCTPresentedViewController(void)
 {
   if ([RCTUtilsUIOverride hasPresentedViewController]) {

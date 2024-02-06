@@ -95,11 +95,6 @@ RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 // or view controller
 RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
 
-#if TARGET_OS_VISION
-// Returns the current active UIWindow based on UIWindowScene
-RCT_EXTERN UIWindow *__nullable RCTForegroundWindow(void);
-#endif
-
 // Returns the presented view controller, useful if you need
 // e.g. to present a modal view controller or alert over it
 RCT_EXTERN UIViewController *__nullable RCTPresentedViewController(void);
