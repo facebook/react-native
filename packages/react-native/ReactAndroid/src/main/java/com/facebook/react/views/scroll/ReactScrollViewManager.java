@@ -173,7 +173,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
    * @param color
    */
   @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setBottomFillColor(ReactScrollView view, int color) {
+  public void setBottomFillColor(ReactScrollView view, long color) {
     view.setEndFillColor(color);
   }
 
@@ -272,10 +272,9 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactScrollView view, int index, Integer color) {
-    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactScrollView view, int index, Long color) {
+    long borderColor = color == null ? 0 : color;
+    view.setBorderColor(SPACING_TYPES[index], borderColor);
   }
 
   @ReactProp(name = "overflow")

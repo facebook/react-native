@@ -57,6 +57,14 @@ public class ReactViewBackgroundManager {
     }
   }
 
+  public void setBackgroundColor(long color) {
+    if (color == Color.pack(Color.TRANSPARENT) && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
   public int getBackgroundColor() {
     return mColor;
   }
@@ -65,11 +73,11 @@ public class ReactViewBackgroundManager {
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, long color) {
+    getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 
-  public int getBorderColor(int position) {
+  public long getBorderColor(int position) {
     return getOrCreateReactViewBackground().getBorderColor(position);
   }
 
