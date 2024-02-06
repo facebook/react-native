@@ -2405,6 +2405,18 @@ declare export default HostComponent<NativeProps>;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Components/TextInput/InputAccessoryView.js 1`] = `
+"type Props = $ReadOnly<{|
+  +children: React.Node,
+  nativeID?: ?string,
+  style?: ?ViewStyleProp,
+  backgroundColor?: ?ColorValue,
+|}>;
+declare const InputAccessoryView: React.AbstractComponent<Props>;
+declare module.exports: InputAccessoryView;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTInputAccessoryViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs/components/RCTInputAccessoryViewNativeComponent\\";
 declare export default typeof RCTInputAccessoryViewNativeComponent;
