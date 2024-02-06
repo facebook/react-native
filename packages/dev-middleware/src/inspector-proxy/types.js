@@ -95,49 +95,6 @@ export type JsonVersionResponse = $ReadOnly<{
   'Protocol-Version': string,
 }>;
 
-/**
- * Types were exported from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
- */
-
-export type SetBreakpointByUrlRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.setBreakpointByUrl',
-  params: $ReadOnly<{
-    lineNumber: number,
-    url?: string,
-    urlRegex?: string,
-    scriptHash?: string,
-    columnNumber?: number,
-    condition?: string,
-  }>,
-}>;
-
-export type GetScriptSourceRequest = $ReadOnly<{
-  id: number,
-  method: 'Debugger.getScriptSource',
-  params: {
-    scriptId: string,
-  },
-}>;
-
-export type GetScriptSourceResponse = $ReadOnly<{
-  scriptSource: string,
-  /**
-   * Wasm bytecode.
-   */
-  bytecode?: string,
-}>;
-
-export type ErrorResponse = $ReadOnly<{
-  error: $ReadOnly<{
-    message: string,
-  }>,
-}>;
-
-export type DebuggerRequest =
-  | SetBreakpointByUrlRequest
-  | GetScriptSourceRequest;
-
 export type JSONSerializable =
   | boolean
   | number
