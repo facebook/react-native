@@ -359,8 +359,8 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
           return;
         }
 
-        let nativeViewTag = (instanceHandle.stateNode.canonical
-          .nativeTag: number);
+        let nativeViewTag: number =
+          instanceHandle.stateNode.canonical.nativeTag;
 
         FabricUIManager.measure(
           node,

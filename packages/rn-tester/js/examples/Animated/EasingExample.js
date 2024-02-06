@@ -136,7 +136,7 @@ function EasingExample(props: Props): React.Node {
       <SectionList
         sections={easingSections}
         renderItem={info => {
-          const item = (info.item: EasingListItem);
+          const item: EasingListItem = info.item;
 
           return (
             <EasingItem
