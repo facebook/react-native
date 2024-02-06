@@ -15,6 +15,7 @@ namespace facebook::react {
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);
 constexpr uint32_t DOUBLE_SIZE = sizeof(double);
 constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
+constexpr uint64_t LONG_SIZE = sizeof(uint64_t);
 
 MapBuffer MapBufferBuilder::EMPTY() {
   return MapBufferBuilder(0).build();
@@ -74,6 +75,14 @@ void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
       MapBuffer::DataType::Int,
       reinterpret_cast<const uint8_t*>(&value),
       INT_SIZE);
+}
+
+void MapBufferBuilder::putLong(MapBuffer::Key key, int64_t value) {
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Long,
+      reinterpret_cast<const uint8_t*>(&value),
+      LONG_SIZE);
 }
 
 void MapBufferBuilder::putString(MapBuffer::Key key, const std::string& value) {

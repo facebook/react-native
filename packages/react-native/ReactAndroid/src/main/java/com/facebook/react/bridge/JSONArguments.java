@@ -39,7 +39,7 @@ public class JSONArguments {
       } else if (val instanceof Double) {
         result.putDouble(key, (Double) val);
       } else if (val instanceof Long) {
-        result.putInt(key, ((Long) val).intValue());
+        result.putLong(key, (Long) val);
       } else if (obj.isNull(key)) {
         result.putNull(key);
       } else {
@@ -86,7 +86,7 @@ public class JSONArguments {
       } else if (val instanceof Double) {
         result.pushDouble((Double) val);
       } else if (val instanceof Long) {
-        result.pushInt(((Long) val).intValue());
+        result.pushLong((Long) val);
       } else if (arr.isNull(i)) {
         result.pushNull();
       } else {

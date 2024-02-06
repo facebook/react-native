@@ -161,6 +161,12 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
+  public long getLong(@NonNull String name) {
+    // All numbers coming out of native are doubles, so cast here then truncate
+    return getValue(name, Double.class).longValue();
+  }
+
+  @Override
   public @Nullable String getString(@NonNull String name) {
     return getNullableValue(name, String.class);
   }
