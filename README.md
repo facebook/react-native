@@ -13,6 +13,14 @@ React Native visionOS allows you to write visionOS with full support for platfor
 
 ![Screenshot](https://github.com/callstack/react-native-visionos/assets/52801365/0fcd5e5f-628c-49ef-84ab-d1d4675a011a)
 
+## How is it different from running app in compatibility mode?
+
+React Native visionOS unlocks full capabilities of the platform, giving your app transparent look that feels right at home next to other visionOS apps. It allows you to leverage the power of `ImmersiveSpace`s and multi-window apps. 
+
+Side by side comparison of running the same app: React Native visionOS vs React Native iOS (Compatibility mode).
+
+https://github.com/callstack/react-native-visionos/assets/52801365/dd5d6351-3843-4f4a-ae67-541c068ac7be
+
 > [!CAUTION]
 > This project is still at an early stage of development and is not ready for production use.
 
