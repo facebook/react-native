@@ -7,11 +7,14 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Enum representing the different view properties that can be used when animating layout for view
  * creation.
  */
-/* package */ enum AnimatedPropertyType {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+enum AnimatedPropertyType {
   OPACITY,
   SCALE_X,
   SCALE_Y,
