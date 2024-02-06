@@ -9,6 +9,22 @@
  * @oncall react_native
  */
 
+/**
+ * A capability flag disables a specific feature/hack in the InspectorProxy
+ * layer by indicating that the target supports one or more modern CDP features.
+ */
+export type TargetCapabilityFlags = $ReadOnly<{
+  /**
+   * The target supports a stable page representation across reloads.
+   *
+   * In the proxy, this disables legacy page reload emulation and the
+   * additional '(Experimental)' target in `/json/list`.
+   *
+   * In the launch flow, this allows targets to be matched directly by `appId`.
+   */
+  nativePageReloads?: boolean,
+}>;
+
 // Page information received from the device. New page is created for
 // each new instance of VM and can appear when user reloads React Native
 // application.
@@ -19,6 +35,7 @@ export type PageFromDevice = $ReadOnly<{
   vm: string,
   app: string,
   type?: 'Legacy' | 'Modern',
+  capabilities?: TargetCapabilityFlags,
 }>;
 
 export type Page = Required<PageFromDevice>;
@@ -83,6 +100,7 @@ export type PageDescription = $ReadOnly<{
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
     type: $NonMaybeType<Page['type']>,
+    capabilities: Page['capabilities'],
   }>,
 }>;
 
