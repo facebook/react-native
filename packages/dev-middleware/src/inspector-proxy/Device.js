@@ -11,15 +11,11 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {
-  DebuggerRequest,
-  ErrorResponse,
-  GetScriptSourceRequest,
-  GetScriptSourceResponse,
-  MessageFromDevice,
-  MessageToDevice,
-  Page,
-  SetBreakpointByUrlRequest,
-} from './types';
+  CDPClientMessage,
+  CDPRequest,
+  CDPResponse,
+} from './cdp-types/messages';
+import type {MessageFromDevice, MessageToDevice, Page} from './types';
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
@@ -581,27 +577,32 @@ export default class Device {
     }
   }
 
-  // Allows to make changes in incoming messages from debugger. Returns a boolean
-  // indicating whether the message has been handled locally (i.e. does not need
-  // to be forwarded to the target).
+  /**
+   * Intercept an incoming message from a connected debugger. Returns either an
+   * original/replacement CDP message object, or `null` (will forward nothing
+   * to the target).
+   */
   #interceptMessageFromDebuggerLegacy(
-    req: DebuggerRequest,
+    req: CDPClientMessage,
     debuggerInfo: DebuggerInfo,
     socket: WS,
-  ): ?DebuggerRequest {
-    if (req.method === 'Debugger.setBreakpointByUrl') {
-      return this.#processDebuggerSetBreakpointByUrl(req, debuggerInfo);
-    } else if (req.method === 'Debugger.getScriptSource') {
-      this.#processDebuggerGetScriptSource(req, socket);
-      return null;
+  ): CDPClientMessage | null {
+    switch (req.method) {
+      case 'Debugger.setBreakpointByUrl':
+        return this.#processDebuggerSetBreakpointByUrl(req, debuggerInfo);
+      case 'Debugger.getScriptSource':
+        // Sends response to debugger via side-effect
+        this.#processDebuggerGetScriptSource(req, socket);
+        return null;
+      default:
+        return req;
     }
-    return req;
   }
 
   #processDebuggerSetBreakpointByUrl(
-    req: SetBreakpointByUrlRequest,
+    req: CDPRequest<'Debugger.setBreakpointByUrl'>,
     debuggerInfo: DebuggerInfo,
-  ): SetBreakpointByUrlRequest {
+  ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
     if (debuggerInfo.originalSourceURLAddress != null) {
       const processedReq = {...req, params: {...req.params}};
@@ -635,10 +636,16 @@ export default class Device {
     return req;
   }
 
-  #processDebuggerGetScriptSource(req: GetScriptSourceRequest, socket: WS) {
+  #processDebuggerGetScriptSource(
+    req: CDPRequest<'Debugger.getScriptSource'>,
+    socket: WS,
+  ): void {
     const sendSuccessResponse = (scriptSource: string) => {
-      const result: GetScriptSourceResponse = {scriptSource};
-      const response = {id: req.id, result};
+      const result = {scriptSource};
+      const response: CDPResponse<'Debugger.getScriptSource'> = {
+        id: req.id,
+        result,
+      };
       socket.send(JSON.stringify(response));
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
         pageId: this.#debuggerConnection?.pageId ?? null,
@@ -647,7 +654,7 @@ export default class Device {
     };
     const sendErrorResponse = (error: string) => {
       // Tell the client that the request failed
-      const result: ErrorResponse = {error: {message: error}};
+      const result = {error: {message: error}};
       const response = {id: req.id, result};
       socket.send(JSON.stringify(response));
 
