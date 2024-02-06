@@ -1267,11 +1267,17 @@ export class ImageTest extends React.Component {
         }
       });
 
+    const promise1: Promise<any> = Image.getSize(uri).then(({width, height}) =>
+      console.log(width, height),
+    );
     Image.getSize(uri, (width, height) => console.log(width, height));
     Image.getSize(
       uri,
       (width, height) => console.log(width, height),
       error => console.error(error),
+    );
+    const promise2: Promise<any> = Image.getSizeWithHeaders(uri, headers).then(
+      ({width, height}) => console.log(width, height),
     );
     Image.getSizeWithHeaders(uri, headers, (width, height) =>
       console.log(width, height),
