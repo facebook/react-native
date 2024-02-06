@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
@@ -16,6 +17,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.systrace.Systrace;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchesHelper {
   @Deprecated public static final String TARGET_KEY = "target";
 
