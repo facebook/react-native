@@ -430,7 +430,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                   .integrationName = "iOS Bridge (RCTBridge)",
               });
         },
-        facebook::react::jsinspector_modern::InspectorPageType::Modern);
+        {.nativePageReloads = true});
   }
 
   Class bridgeClass = self.bridgeClass;
