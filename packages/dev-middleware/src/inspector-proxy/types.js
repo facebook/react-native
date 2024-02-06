@@ -23,6 +23,13 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * In the launch flow, this allows targets to be matched directly by `appId`.
    */
   nativePageReloads?: boolean,
+
+  /**
+   * The target supports fetching source code and source maps.
+   *
+   * In the proxy, this disables source fetching emulation and host rewrites.
+   */
+  nativeSourceCodeFetching?: boolean,
 }>;
 
 // Page information received from the device. New page is created for

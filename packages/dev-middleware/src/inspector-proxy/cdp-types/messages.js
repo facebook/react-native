@@ -41,5 +41,12 @@ export type CDPRequestError = $ReadOnly<{
 
 export type CDPClientMessage =
   | CDPRequest<'Debugger.getScriptSource'>
+  | CDPRequest<'Debugger.scriptParsed'>
   | CDPRequest<'Debugger.setBreakpointByUrl'>
   | CDPRequest<>;
+
+export type CDPServerMessage =
+  | CDPEvent<'Debugger.scriptParsed'>
+  | CDPEvent<>
+  | CDPResponse<'Debugger.getScriptSource'>
+  | CDPResponse<>;

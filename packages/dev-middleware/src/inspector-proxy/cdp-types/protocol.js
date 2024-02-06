@@ -11,6 +11,8 @@
 
 // Adapted from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
 
+type integer = number;
+
 export interface Debugger {
   GetScriptSourceParams: $ReadOnly<{
     /**
@@ -35,7 +37,7 @@ export interface Debugger {
     /**
      * Line number to set breakpoint at.
      */
-    lineNumber: number,
+    lineNumber: integer,
 
     /**
      * URL of the resources to set breakpoint on.
@@ -56,7 +58,7 @@ export interface Debugger {
     /**
      * Offset in the line to set breakpoint at.
      */
-    columnNumber?: number,
+    columnNumber?: integer,
 
     /**
      * Expression to use as a breakpoint condition. When specified, debugger will only stop on the
@@ -64,9 +66,27 @@ export interface Debugger {
      */
     condition?: string,
   }>;
+
+  ScriptParsedEvent: $ReadOnly<{
+    /**
+     * Identifier of the script parsed.
+     */
+    scriptId: string,
+
+    /**
+     * URL or name of the script parsed (if any).
+     */
+    url: string,
+
+    /**
+     * URL of source map associated with script (if any).
+     */
+    sourceMapURL: string,
+  }>;
 }
 
 export type Events = {
+  'Debugger.scriptParsed': Debugger['ScriptParsedEvent'],
   [method: string]: mixed,
 };
 
@@ -75,12 +95,10 @@ export type Commands = {
     paramsType: Debugger['GetScriptSourceParams'],
     resultType: Debugger['GetScriptSourceResult'],
   },
-
   'Debugger.setBreakpointByUrl': {
     paramsType: Debugger['SetBreakpointByUrlParams'],
     resultType: void,
   },
-
   [method: string]: {
     paramsType: mixed,
     resultType: mixed,
