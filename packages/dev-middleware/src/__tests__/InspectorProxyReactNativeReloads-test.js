@@ -397,13 +397,7 @@ describe('inspector proxy React Native reloads', () => {
     }
   });
 
-  test.each([
-    ['for modern targets', {}],
-    [
-      "when target has 'nativePageReloads' capability flag",
-      {nativePageReloads: true},
-    ],
-  ])('disabled %s', async (_, capabilities) => {
+  test("disabled when target has 'nativePageReloads' capability flag", async () => {
     let device1;
     try {
       /***
@@ -420,8 +414,9 @@ describe('inspector proxy React Native reloads', () => {
           // NOTE: 'React' is a magic string used to detect React Native pages
           // in legacy mode.
           title: 'React Native (mock)',
-          type: 'Modern',
-          capabilities,
+          capabilities: {
+            nativePageReloads: true,
+          },
           vm: 'vm',
         },
       ]);
@@ -456,8 +451,9 @@ describe('inspector proxy React Native reloads', () => {
           id: 'originalPage-updated',
           // NOTE: 'React' is a magic string used to detect React Native pages.
           title: 'React Native (mock)',
-          type: 'Modern',
-          capabilities,
+          capabilities: {
+            nativePageReloads: true,
+          },
           vm: 'vm',
         },
       ]);

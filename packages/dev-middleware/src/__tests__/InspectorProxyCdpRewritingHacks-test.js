@@ -475,19 +475,14 @@ describe.each(['HTTP', 'HTTPS'])(
       );
     });
 
-    describe.each([
-      ['for modern targets', {}],
-      [
-        "when target has 'nativeSourceMapFetching' capability flag",
-        {nativeSourceMapFetching: true},
-      ],
-    ])('disabled %s', (_, capabilities: TargetCapabilityFlags) => {
+    describe("disabled when target has 'nativeSourceCodeFetching' capability flag", () => {
       const pageDescription = {
         app: 'bar-app',
         id: 'page1',
         title: 'bar-title',
-        type: 'Modern',
-        capabilities,
+        capabilities: {
+          nativeSourceCodeFetching: true,
+        },
         vm: 'bar-vm',
       };
 

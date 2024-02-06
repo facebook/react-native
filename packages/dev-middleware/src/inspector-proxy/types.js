@@ -41,7 +41,6 @@ export type PageFromDevice = $ReadOnly<{
   title: string,
   vm: string,
   app: string,
-  type?: 'Legacy' | 'Modern',
   capabilities?: TargetCapabilityFlags,
 }>;
 
@@ -106,7 +105,6 @@ export type PageDescription = $ReadOnly<{
   // Metadata specific to React Native
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
-    type: $NonMaybeType<Page['type']>,
     capabilities: Page['capabilities'],
   }>,
 }>;
