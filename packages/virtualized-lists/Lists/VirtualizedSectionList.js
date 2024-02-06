@@ -594,15 +594,15 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     />
   );
 
-  const shouldRenderSeparator = leadingSeparator || separator;
+  const RenderSeparator = leadingSeparator || separator;
   const firstSeparator = inverted === false ? leadingSeparator : separator;
   const secondSeparator = inverted === false ? separator : leadingSeparator;
 
   return (
     <>
-      {shouldRenderSeparator ? firstSeparator : null}
+      {RenderSeparator ? firstSeparator : null}
       {element}
-      {shouldRenderSeparator ? secondSeparator : null}
+      {RenderSeparator ? secondSeparator : null}
     </>
   );
 }
