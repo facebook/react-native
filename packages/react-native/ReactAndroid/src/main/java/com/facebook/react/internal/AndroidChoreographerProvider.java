@@ -7,9 +7,11 @@
 
 package com.facebook.react.internal;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 
 /** An implementation of ChoreographerProvider that directly uses android.view.Choreographer. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class AndroidChoreographerProvider implements ChoreographerProvider {
 
   public static final class AndroidChoreographer implements ChoreographerProvider.Choreographer {
