@@ -164,23 +164,25 @@ public class TouchesHelper {
           break;
       }
 
-      for (WritableMap touchData : changedTouches) {
-        WritableMap eventData = touchData.copy();
-        WritableArray changedTouchesArray =
-            getWritableArray(/* copyObjects */ true, changedTouches);
-        WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
+      if (changedTouches != null) {
+        for (WritableMap touchData : changedTouches) {
+          WritableMap eventData = touchData.copy();
+          WritableArray changedTouchesArray =
+              getWritableArray(/* copyObjects */ true, changedTouches);
+          WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
 
-        eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
-        eventData.putArray(TOUCHES_KEY, touchesArray);
+          eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
+          eventData.putArray(TOUCHES_KEY, touchesArray);
 
-        eventEmitter.receiveEvent(
-            event.getSurfaceId(),
-            event.getViewTag(),
-            event.getEventName(),
-            event.canCoalesce(),
-            0,
-            eventData,
-            event.getEventCategory());
+          eventEmitter.receiveEvent(
+              event.getSurfaceId(),
+              event.getViewTag(),
+              event.getEventName(),
+              event.canCoalesce(),
+              0,
+              eventData,
+              event.getEventCategory());
+        }
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
