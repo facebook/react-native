@@ -75,132 +75,128 @@ concept CSSKeywordSet = std::is_enum_v<T> && requires {
     __VA_ARGS__                                   \
   };
 
-/**
- * CSS-wide keywords.
- * https://www.w3.org/TR/css-values-4/#common-keywords
- */
-CSS_DEFINE_KEYWORD_SET(CSSWideKeyword)
+namespace CSSKeywords {
+  /**
+   * CSS-wide keywords.
+   * https://www.w3.org/TR/css-values-4/#common-keywords
+   */
+  CSS_DEFINE_KEYWORD_SET(Global)
 
-/**
- * CSS-wide keywords along with a context-dependent "auto" keyword.
- */
-CSS_DEFINE_KEYWORD_SET(CSSAutoKeyword, Auto = to_underlying(CSSKeyword::Auto))
+  /**
+   * Keywords for the CSS "align-content" property.
+   * https://www.w3.org/TR/css-flexbox-1/#align-content-property
+   * https://www.w3.org/TR/css-align-3/#align-justify-content
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      AlignContent,
+      Center = to_underlying(CSSKeyword::Center),
+      FlexEnd = to_underlying(CSSKeyword::FlexEnd),
+      FlexStart = to_underlying(CSSKeyword::FlexStart),
+      SpaceAround = to_underlying(CSSKeyword::SpaceAround),
+      SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
+      SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly),
+      Stretch = to_underlying(CSSKeyword::Stretch))
 
-/**
- * Keywords for the CSS "align-content" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-content-property
- * https://www.w3.org/TR/css-align-3/#align-justify-content
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignContent,
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    SpaceAround = to_underlying(CSSKeyword::SpaceAround),
-    SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
-    SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly),
-    Stretch = to_underlying(CSSKeyword::Stretch))
+  /**
+   * Keywords for the CSS "align-items" property.
+   * https://www.w3.org/TR/css-flexbox-1/#align-items-property
+   * https://www.w3.org/TR/css-align-3/#align-items-property
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      AlignItems,
+      Baseline = to_underlying(CSSKeyword::Baseline),
+      Center = to_underlying(CSSKeyword::Center),
+      FlexEnd = to_underlying(CSSKeyword::FlexEnd),
+      FlexStart = to_underlying(CSSKeyword::FlexStart),
+      Stretch = to_underlying(CSSKeyword::Stretch))
 
-/**
- * Keywords for the CSS "align-items" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-items-property
- * https://www.w3.org/TR/css-align-3/#align-items-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignItems,
-    Baseline = to_underlying(CSSKeyword::Baseline),
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    Stretch = to_underlying(CSSKeyword::Stretch))
+  /**
+   * Keywords for the CSS "align-items" property.
+   * https://www.w3.org/TR/css-flexbox-1/#align-self-property
+   * https://www.w3.org/TR/css-align-3/#align-self-property
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      AlignSelf,
+      Auto = to_underlying(CSSKeyword::Auto),
+      Baseline = to_underlying(CSSKeyword::Baseline),
+      Center = to_underlying(CSSKeyword::Center),
+      FlexEnd = to_underlying(CSSKeyword::FlexEnd),
+      FlexStart = to_underlying(CSSKeyword::FlexStart),
+      Stretch = to_underlying(CSSKeyword::Stretch))
 
-/**
- * Keywords for the CSS "align-items" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-self-property
- * https://www.w3.org/TR/css-align-3/#align-self-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignSelf,
-    Auto = to_underlying(CSSKeyword::Auto),
-    Baseline = to_underlying(CSSKeyword::Baseline),
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    Stretch = to_underlying(CSSKeyword::Stretch))
+  /**
+   * Keywords for the CSS "display" property.
+   * https://www.w3.org/TR/css-display-3/#display-type
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      Display,
+      Inline = to_underlying(CSSKeyword::Inline),
+      None = to_underlying(CSSKeyword::None))
 
-/**
- * Keywords for the CSS "direction" property.
- * https://www.w3.org/TR/css-writing-modes-3/#direction
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSDirection,
-    Ltr = to_underlying(CSSKeyword::Ltr),
-    Rtl = to_underlying(CSSKeyword::Rtl))
+  /**
+   * Keywords for the CSS "direction" property.
+   * https://www.w3.org/TR/css-writing-modes-3/#direction
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      Direction,
+      Ltr = to_underlying(CSSKeyword::Ltr),
+      Rtl = to_underlying(CSSKeyword::Rtl))
 
-/**
- * Keywords for the CSS "display" property.
- * https://www.w3.org/TR/css-display-3/#display-type
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSDisplay,
-    Flex = to_underlying(CSSKeyword::Flex),
-    Inline = to_underlying(CSSKeyword::Inline),
-    None = to_underlying(CSSKeyword::None))
+  /**
+   * Keywords for the CSS "flex-direction" property.
+   * https://www.w3.org/TR/css-flexbox-1/#flex-direction-property
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      FlexDirection,
+      Column = to_underlying(CSSKeyword::Column),
+      ColumnReverse = to_underlying(CSSKeyword::ColumnReverse),
+      Row = to_underlying(CSSKeyword::Row),
+      RowReverse = to_underlying(CSSKeyword::RowReverse))
 
-/**
- * Keywords for the CSS "flex-direction" property.
- * https://www.w3.org/TR/css-flexbox-1/#flex-direction-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSFlexDirection,
-    Column = to_underlying(CSSKeyword::Column),
-    ColumnReverse = to_underlying(CSSKeyword::ColumnReverse),
-    Row = to_underlying(CSSKeyword::Row),
-    RowReverse = to_underlying(CSSKeyword::RowReverse))
+  /**
+   * Keywords for the CSS "flex-wrap" property.
+   * https://www.w3.org/TR/css-flexbox-1/#flex-wrap-property
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      FlexWrap,
+      NoWrap = to_underlying(CSSKeyword::NoWrap),
+      Wrap = to_underlying(CSSKeyword::Wrap),
+      WrapReverse = to_underlying(CSSKeyword::WrapReverse))
 
-/**
- * Keywords for the CSS "flex-wrap" property.
- * https://www.w3.org/TR/css-flexbox-1/#flex-wrap-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSFlexWrap,
-    NoWrap = to_underlying(CSSKeyword::NoWrap),
-    Wrap = to_underlying(CSSKeyword::Wrap),
-    WrapReverse = to_underlying(CSSKeyword::WrapReverse))
+  /**
+   * Keywords for the CSS "justify-content" property.
+   * https://www.w3.org/TR/css-flexbox-1/#justify-content-property
+   * https://www.w3.org/TR/css-align-3/#align-justify-content
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      JustifyContent,
+      Center = to_underlying(CSSKeyword::Center),
+      FlexEnd = to_underlying(CSSKeyword::FlexEnd),
+      FlexStart = to_underlying(CSSKeyword::FlexStart),
+      SpaceAround = to_underlying(CSSKeyword::SpaceAround),
+      SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
+      SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly))
 
-/**
- * Keywords for the CSS "justify-content" property.
- * https://www.w3.org/TR/css-flexbox-1/#justify-content-property
- * https://www.w3.org/TR/css-align-3/#align-justify-content
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSJustifyContent,
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    SpaceAround = to_underlying(CSSKeyword::SpaceAround),
-    SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
-    SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly))
+  /**
+   * Keywords for the CSS "overflow" property.
+   * https://www.w3.org/TR/css-overflow-3/#overflow-control
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      Overflow,
+      Hidden = to_underlying(CSSKeyword::Hidden),
+      Scroll = to_underlying(CSSKeyword::Scroll),
+      Visible = to_underlying(CSSKeyword::Visible))
 
-/**
- * Keywords for the CSS "overflow" property.
- * https://www.w3.org/TR/css-overflow-3/#overflow-control
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSOverflow,
-    Hidden = to_underlying(CSSKeyword::Hidden),
-    Scroll = to_underlying(CSSKeyword::Scroll),
-    Visible = to_underlying(CSSKeyword::Visible))
-
-/**
- * Keywords for the CSS "position" property.
- * https://www.w3.org/TR/css-position-3/#position-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSPosition,
-    Absolute = to_underlying(CSSKeyword::Absolute),
-    Relative = to_underlying(CSSKeyword::Relative),
-    Static = to_underlying(CSSKeyword::Static))
+  /**
+   * Keywords for the CSS "position" property.
+   * https://www.w3.org/TR/css-position-3/#position-property
+   */
+  CSS_DEFINE_KEYWORD_SET(
+      Position,
+      Absolute = to_underlying(CSSKeyword::Absolute),
+      Relative = to_underlying(CSSKeyword::Relative),
+      Static = to_underlying(CSSKeyword::Static))
+} // namespace CSSKeywords
 
 /**
  * Compare two keywords of any representation

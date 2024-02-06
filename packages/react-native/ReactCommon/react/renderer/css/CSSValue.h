@@ -178,12 +178,11 @@ class CSSValueVariant {
 };
 #pragma pack(pop)
 
-static_assert(sizeof(CSSValueVariant<CSSFlexDirection>) == 2);
-static_assert(sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength>) == 6);
+static_assert(sizeof(CSSValueVariant<CSSKeyword>) == 2);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSLength>) == 6);
 static_assert(
-    sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength, CSSPercentage>) == 6);
-static_assert(sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber>) == 5);
-static_assert(
-    sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber, CSSRatio>) == 9);
+    sizeof(CSSValueVariant<CSSKeyword, CSSLength, CSSPercentage>) == 6);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSNumber>) == 5);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSNumber, CSSRatio>) == 9);
 
 } // namespace facebook::react

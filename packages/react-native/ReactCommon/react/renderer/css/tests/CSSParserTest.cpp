@@ -23,16 +23,17 @@ TEST(CSSParser, keyword_values) {
   EXPECT_EQ(autoCapsValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(autoCapsValue.getKeyword(), CSSKeyword::Auto);
 
-  auto autoDisallowedValue = parseCSSComponentValue<CSSFlexDirection>("auto");
+  auto autoDisallowedValue =
+      parseCSSComponentValue<CSSKeywords::FlexDirection>("auto");
   EXPECT_EQ(autoDisallowedValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(autoDisallowedValue.getKeyword(), CSSKeyword::Unset);
 
   auto whitespaceValue =
-      parseCSSComponentValue<CSSAlignItems>(" flex-start   ");
+      parseCSSComponentValue<CSSKeywords::AlignItems>(" flex-start   ");
   EXPECT_EQ(whitespaceValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(whitespaceValue.getKeyword(), CSSAlignItems::FlexStart);
+  EXPECT_EQ(whitespaceValue.getKeyword(), CSSKeyword::FlexStart);
 
-  auto badIdentValue = parseCSSComponentValue<CSSWideKeyword>("bad");
+  auto badIdentValue = parseCSSComponentValue<CSSKeyword>("bad");
   EXPECT_EQ(badIdentValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(badIdentValue.getKeyword(), CSSKeyword::Unset);
 
@@ -46,59 +47,58 @@ TEST(CSSParser, keyword_values) {
 }
 
 TEST(CSSParser, length_values) {
-  auto emptyValue = parseCSSComponentValue<CSSAutoKeyword, CSSLength>("");
+  auto emptyValue = parseCSSComponentValue<CSSKeyword, CSSLength>("");
   EXPECT_EQ(emptyValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(emptyValue.getKeyword(), CSSKeyword::Unset);
 
-  auto autoValue = parseCSSComponentValue<CSSAutoKeyword, CSSLength>("auto");
+  auto autoValue = parseCSSComponentValue<CSSKeyword, CSSLength>("auto");
   EXPECT_EQ(autoValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(autoValue.getKeyword(), CSSKeyword::Auto);
 
-  auto pxValue = parseCSSComponentValue<CSSAutoKeyword, CSSLength>("20px");
+  auto pxValue = parseCSSComponentValue<CSSKeyword, CSSLength>("20px");
   EXPECT_EQ(pxValue.type(), CSSValueType::Length);
   EXPECT_EQ(pxValue.getLength().value, 20.0f);
   EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
 
-  auto cmValue = parseCSSComponentValue<CSSAutoKeyword, CSSLength>("453cm");
+  auto cmValue = parseCSSComponentValue<CSSKeyword, CSSLength>("453cm");
   EXPECT_EQ(cmValue.type(), CSSValueType::Length);
   EXPECT_EQ(cmValue.getLength().value, 453.0f);
   EXPECT_EQ(cmValue.getLength().unit, CSSLengthUnit::Cm);
 
-  auto unitlessZeroValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength>("0");
+  auto unitlessZeroValue = parseCSSComponentValue<CSSKeyword, CSSLength>("0");
   EXPECT_EQ(unitlessZeroValue.type(), CSSValueType::Length);
   EXPECT_EQ(unitlessZeroValue.getLength().value, 0.0f);
   EXPECT_EQ(unitlessZeroValue.getLength().unit, CSSLengthUnit::Px);
 
   auto unitlessNonzeroValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength>("123");
+      parseCSSComponentValue<CSSKeyword, CSSLength>("123");
   EXPECT_EQ(unitlessNonzeroValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(unitlessNonzeroValue.getKeyword(), CSSKeyword::Unset);
 
-  auto pctValue = parseCSSComponentValue<CSSAutoKeyword, CSSLength>("-40%");
+  auto pctValue = parseCSSComponentValue<CSSKeyword, CSSLength>("-40%");
   EXPECT_EQ(pctValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(pctValue.getKeyword(), CSSKeyword::Unset);
 }
 
 TEST(CSSParser, length_percentage_values) {
   auto emptyValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength, CSSPercentage>("");
+      parseCSSComponentValue<CSSKeyword, CSSLength, CSSPercentage>("");
   EXPECT_EQ(emptyValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(emptyValue.getKeyword(), CSSKeyword::Unset);
 
   auto autoValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength, CSSPercentage>("auto");
+      parseCSSComponentValue<CSSKeyword, CSSLength, CSSPercentage>("auto");
   EXPECT_EQ(autoValue.type(), CSSValueType::Keyword);
   EXPECT_EQ(autoValue.getKeyword(), CSSKeyword::Auto);
 
   auto pxValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength, CSSPercentage>("20px");
+      parseCSSComponentValue<CSSKeyword, CSSLength, CSSPercentage>("20px");
   EXPECT_EQ(pxValue.type(), CSSValueType::Length);
   EXPECT_EQ(pxValue.getLength().value, 20.0f);
   EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
 
   auto pctValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength, CSSPercentage>("-40%");
+      parseCSSComponentValue<CSSKeyword, CSSLength, CSSPercentage>("-40%");
   EXPECT_EQ(pctValue.type(), CSSValueType::Percentage);
   EXPECT_EQ(pctValue.getPercentage().value, -40.0f);
 }
@@ -121,7 +121,7 @@ TEST(CSSParser, number_values) {
   EXPECT_EQ(numberValue.getNumber().value, 123.456f);
 
   auto unitlessZeroValue =
-      parseCSSComponentValue<CSSAutoKeyword, CSSLength, CSSNumber>("0");
+      parseCSSComponentValue<CSSKeyword, CSSLength, CSSNumber>("0");
   EXPECT_EQ(unitlessZeroValue.type(), CSSValueType::Number);
   EXPECT_EQ(unitlessZeroValue.getNumber().value, 0.0f);
 }
