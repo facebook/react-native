@@ -9,11 +9,13 @@ package com.facebook.react.util;
 
 import android.util.Log;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import javax.annotation.Nullable;
 
 /** Logging wrapper for FLog with LogBox support. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RNLog {
   public static final int MINIMUM_LEVEL_FOR_UI = Log.WARN;
 
