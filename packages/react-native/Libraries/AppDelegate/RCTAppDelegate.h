@@ -42,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
  *   - (UIViewController *)createRootViewController;
  *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
  * New Architecture:
- *   - (BOOL)concurrentRootEnabled
  *   - (BOOL)turboModuleEnabled;
  *   - (BOOL)fabricEnabled;
  *   - (NSDictionary *)prepareInitialProps
