@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f5d5bb65068bb515d33da8bff665dfd2>>
+ * @generated SignedSource<<435993f24b4bdc9740491d5540232a9c>>
  */
 
 /**
@@ -84,6 +84,7 @@ object ReactNativeFeatureFlags {
    * })
    * ```
    */
+  @JvmStatic
   fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
 
   /**
@@ -95,6 +96,7 @@ object ReactNativeFeatureFlags {
    * call `dangerouslyReset` after destroying the runtime and `override`
    * again before initializing the new one.
    */
+  @JvmStatic
   fun dangerouslyReset() {
     // This is necessary when the accessor interops with C++ and we need to
     // remove the overrides set there.
