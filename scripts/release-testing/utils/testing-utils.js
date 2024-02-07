@@ -14,12 +14,12 @@
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
-} = require('../packages/react-native/scripts/hermes/hermes-utils.js');
-const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
+} = require('../../../packages/react-native/scripts/hermes/hermes-utils.js');
 const {
   generateAndroidArtifacts,
   generateiOSArtifacts,
-} = require('./releases/utils/release-utils');
+} = require('../../releases/utils/release-utils');
+const circleCIArtifactsUtils = require('./circle-ci-artifacts-utils.js');
 const fs = require('fs');
 // $FlowIgnore[cannot-resolve-module]
 const {spawn} = require('node:child_process');

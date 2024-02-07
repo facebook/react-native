@@ -29,7 +29,7 @@
  *   - an option to uninstall the apps (RNTester, RNTestProject) from emulators
  */
 
-const {isPackagerRunning} = require('./testing-utils');
+const {isPackagerRunning} = require('./utils/testing-utils');
 const {exec, exit} = require('shelljs');
 
 console.info('\n** Starting the clean up process **\n');

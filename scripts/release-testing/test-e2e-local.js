@@ -17,14 +17,14 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const updateTemplatePackage = require('./releases/update-template-package');
+const updateTemplatePackage = require('../releases/update-template-package');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
   maybeLaunchAndroidEmulator,
   prepareArtifacts,
   setupCircleCIArtifacts,
-} = require('./testing-utils');
+} = require('./utils/testing-utils');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
 const yargs = require('yargs');
