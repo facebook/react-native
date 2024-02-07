@@ -2413,7 +2413,7 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   backgroundColor?: ?ColorValue,
 |}>;
 declare const InputAccessoryView: React.AbstractComponent<Props>;
-declare module.exports: InputAccessoryView;
+declare export default typeof InputAccessoryView;
 "
 `;
 
