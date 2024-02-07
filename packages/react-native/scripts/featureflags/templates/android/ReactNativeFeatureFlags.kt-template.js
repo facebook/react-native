@@ -61,6 +61,7 @@ ${Object.entries(definitions.common)
    * })
    * \`\`\`
    */
+  @JvmStatic
   fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
 
   /**
@@ -72,6 +73,7 @@ ${Object.entries(definitions.common)
    * call \`dangerouslyReset\` after destroying the runtime and \`override\`
    * again before initializing the new one.
    */
+  @JvmStatic
   fun dangerouslyReset() {
     // This is necessary when the accessor interops with C++ and we need to
     // remove the overrides set there.
