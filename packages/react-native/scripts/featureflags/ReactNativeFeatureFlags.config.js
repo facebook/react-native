@@ -18,6 +18,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
     },
 
+    enableBackgroundExecutor: {
+      description:
+        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
+      defaultValue: false,
+    },
     useModernRuntimeScheduler: {
       description:
         'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',

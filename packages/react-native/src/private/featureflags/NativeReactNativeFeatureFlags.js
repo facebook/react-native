@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1164fd870a4f1540d9b8c956af2b678>>
+ * @generated SignedSource<<a0f497548a69374d354e92d146ef9766>>
  * @flow strict-local
  */
 
@@ -24,6 +24,7 @@ import * as TurboModuleRegistry from '../../../Libraries/TurboModule/TurboModule
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
+  +enableBackgroundExecutor?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;

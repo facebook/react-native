@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52b25f675aa8d5ae45941f0ee951358a>>
+ * @generated SignedSource<<3a6103a7180e8db957a6c37b91d4b150>>
  * @flow strict-local
  */
 
@@ -41,6 +41,7 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  enableBackgroundExecutor: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
@@ -93,6 +94,10 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
+/**
+ * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+ */
+export const enableBackgroundExecutor: Getter<boolean> = createNativeFlagGetter('enableBackgroundExecutor', false);
 /**
  * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
  */

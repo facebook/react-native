@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19dba0cacd4599408a2adeeeb1dce6f2>>
+ * @generated SignedSource<<97f5135efc2e76f0a055a3d55000925c>>
  */
 
 /**
@@ -38,6 +38,11 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
 bool NativeReactNativeFeatureFlags::commonTestFlag(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::commonTestFlag();
+}
+
+bool NativeReactNativeFeatureFlags::enableBackgroundExecutor(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableBackgroundExecutor();
 }
 
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
