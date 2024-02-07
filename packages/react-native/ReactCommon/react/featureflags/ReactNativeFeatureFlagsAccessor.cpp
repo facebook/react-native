@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6542bcfd6e42bb1142a3682a15edb80>>
+ * @generated SignedSource<<efdef45f0de4ebc9002f6315f3bfbe64>>
  */
 
 /**
@@ -47,6 +47,24 @@ bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::enableBackgroundExecutor() {
+  auto flagValue = enableBackgroundExecutor_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(1, "enableBackgroundExecutor");
+
+    flagValue = currentProvider_->enableBackgroundExecutor();
+    enableBackgroundExecutor_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
   auto flagValue = useModernRuntimeScheduler_.load();
 
@@ -56,7 +74,7 @@ bool ReactNativeFeatureFlagsAccessor::useModernRuntimeScheduler() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(1, "useModernRuntimeScheduler");
+    markFlagAsAccessed(2, "useModernRuntimeScheduler");
 
     flagValue = currentProvider_->useModernRuntimeScheduler();
     useModernRuntimeScheduler_ = flagValue;
@@ -74,7 +92,7 @@ bool ReactNativeFeatureFlagsAccessor::enableMicrotasks() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(2, "enableMicrotasks");
+    markFlagAsAccessed(3, "enableMicrotasks");
 
     flagValue = currentProvider_->enableMicrotasks();
     enableMicrotasks_ = flagValue;
@@ -92,7 +110,7 @@ bool ReactNativeFeatureFlagsAccessor::batchRenderingUpdatesInEventLoop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(3, "batchRenderingUpdatesInEventLoop");
+    markFlagAsAccessed(4, "batchRenderingUpdatesInEventLoop");
 
     flagValue = currentProvider_->batchRenderingUpdatesInEventLoop();
     batchRenderingUpdatesInEventLoop_ = flagValue;
@@ -110,7 +128,7 @@ bool ReactNativeFeatureFlagsAccessor::enableSpannableBuildingUnification() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(4, "enableSpannableBuildingUnification");
+    markFlagAsAccessed(5, "enableSpannableBuildingUnification");
 
     flagValue = currentProvider_->enableSpannableBuildingUnification();
     enableSpannableBuildingUnification_ = flagValue;
@@ -128,7 +146,7 @@ bool ReactNativeFeatureFlagsAccessor::enableCustomDrawOrderFabric() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(5, "enableCustomDrawOrderFabric");
+    markFlagAsAccessed(6, "enableCustomDrawOrderFabric");
 
     flagValue = currentProvider_->enableCustomDrawOrderFabric();
     enableCustomDrawOrderFabric_ = flagValue;
@@ -146,7 +164,7 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForClippedSubviewsCrash() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(6, "enableFixForClippedSubviewsCrash");
+    markFlagAsAccessed(7, "enableFixForClippedSubviewsCrash");
 
     flagValue = currentProvider_->enableFixForClippedSubviewsCrash();
     enableFixForClippedSubviewsCrash_ = flagValue;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ccda927120cc579c0ccbc42c32b17e0>>
+ * @generated SignedSource<<bc8468ec0183add47aba700f87448b38>>
  */
 
 /**
@@ -32,6 +32,7 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
+  bool enableBackgroundExecutor();
   bool useModernRuntimeScheduler();
   bool enableMicrotasks();
   bool batchRenderingUpdatesInEventLoop();
@@ -48,9 +49,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 7> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 8> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;

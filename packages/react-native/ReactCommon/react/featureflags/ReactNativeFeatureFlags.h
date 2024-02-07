@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c0d0f4bb2eb2dbf385d56f58444fb16a>>
+ * @generated SignedSource<<979ad8a28efe3ca5d775596dc8b298d8>>
  */
 
 /**
@@ -37,6 +37,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   static bool commonTestFlag();
+
+  /**
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   */
+  static bool enableBackgroundExecutor();
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.

@@ -112,9 +112,6 @@ public class ReactFeatureFlags {
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
-  /** Disable the background executor for layout in Fabric */
-  public static boolean enableBackgroundExecutor = false;
-
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
 

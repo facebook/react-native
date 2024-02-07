@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<356873b4021fcfe9a2afa79417813975>>
+ * @generated SignedSource<<a06796ea8a786672459bcdbcc25e9b69>>
  */
 
 /**
@@ -31,6 +31,9 @@ class JReactNativeFeatureFlagsCxxInterop
       "Lcom/facebook/react/internal/featureflags/ReactNativeFeatureFlagsCxxInterop;";
 
   static bool commonTestFlag(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableBackgroundExecutor(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useModernRuntimeScheduler(

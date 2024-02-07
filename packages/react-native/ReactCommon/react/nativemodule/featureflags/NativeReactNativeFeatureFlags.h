@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4ce1b29660d13ea8dfe09777d9907f3f>>
+ * @generated SignedSource<<47a7bf435a971206c55592e877619435>>
  */
 
 /**
@@ -31,6 +31,8 @@ class NativeReactNativeFeatureFlags
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
+
+  bool enableBackgroundExecutor(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 

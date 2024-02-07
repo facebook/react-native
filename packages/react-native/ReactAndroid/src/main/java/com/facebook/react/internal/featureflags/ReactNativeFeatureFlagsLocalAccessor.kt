@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77fc4d6577fc0e2e9a0500cc762bba77>>
+ * @generated SignedSource<<0aac45f1506afa2f20ad730c53755abd>>
  */
 
 /**
@@ -25,6 +25,7 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
+  private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
@@ -38,6 +39,16 @@ class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundExecutor(): Boolean {
+    var cached = enableBackgroundExecutorCache
+    if (cached == null) {
+      cached = currentProvider.enableBackgroundExecutor()
+      accessedFeatureFlags.add("enableBackgroundExecutor")
+      enableBackgroundExecutorCache = cached
     }
     return cached
   }

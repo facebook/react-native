@@ -83,6 +83,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-nativeconfig")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-ImageManager")
+  add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils")
   add_dependency(s, "React-rendererdebug")

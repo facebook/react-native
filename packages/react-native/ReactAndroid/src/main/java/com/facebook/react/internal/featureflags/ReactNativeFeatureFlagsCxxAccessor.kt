@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4ece56f9329579346fbfe08f7681632>>
+ * @generated SignedSource<<1741a8a82b193bf389f45d104ae295fb>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
@@ -33,6 +34,15 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundExecutor(): Boolean {
+    var cached = enableBackgroundExecutorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableBackgroundExecutor()
+      enableBackgroundExecutorCache = cached
     }
     return cached
   }
