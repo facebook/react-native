@@ -6,6 +6,7 @@
  */
 
 #import "RCTAppSetupUtils.h"
+#import "RCTURLRequestHandlerProvider.h"
 
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -64,6 +65,27 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
+id _getModuleIfValidURLHandler(NSString *className, RCTModuleRegistry *moduleRegistry)
+{
+  id urlHandlerClass = NSClassFromString(className);
+  if (urlHandlerClass == NULL) {
+    return NULL;
+  }
+
+  if (![urlHandlerClass conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
+    return NULL;
+  }
+
+  // RCTURLRequestHandler implies RCTBridgeModule, but it does not implies RCTTurboModule
+  BOOL isModule = [urlHandlerClass conformsToProtocol:@protocol(RCTBridgeModule)] ||
+      [urlHandlerClass conformsToProtocol:@protocol(RCTTurboModule)];
+  if (!isModule) {
+    return NULL;
+  }
+
+  return [moduleRegistry moduleForName:[className cStringUsingEncoding:NSUTF8StringEncoding]];
+}
+
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.
@@ -78,11 +100,27 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   } else if (moduleClass == RCTNetworking.class) {
     return [[moduleClass alloc]
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return [NSArray arrayWithObjects:[RCTHTTPRequestHandler new],
-                                           [RCTDataRequestHandler new],
-                                           [RCTFileRequestHandler new],
-                                           [moduleRegistry moduleForName:"BlobModule"],
-                                           nil];
+          NSMutableArray *requestHandlers = [NSMutableArray new];
+
+          // Known requestHandlers that we need to add.
+          [requestHandlers addObjectsFromArray:@[
+            [RCTHTTPRequestHandler new],
+            [RCTDataRequestHandler new],
+            [RCTFileRequestHandler new],
+            [moduleRegistry moduleForName:"BlobModule"],
+          ]];
+
+          NSArray<NSString *> *customHandlerClassNames =
+              [RCTURLRequestHandlerProvider customURLRequestHandlerClassNames];
+
+          for (NSString *className in customHandlerClassNames) {
+            id urlHandlerModule = _getModuleIfValidURLHandler(className, moduleRegistry);
+            if (urlHandlerModule) {
+              [requestHandlers addObject:urlHandlerModule];
+            }
+          }
+
+          return requestHandlers;
         }];
   }
   // No custom initializer here.
