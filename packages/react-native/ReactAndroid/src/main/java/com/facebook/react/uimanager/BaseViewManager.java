@@ -43,6 +43,7 @@ import java.util.Map;
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> implements BaseViewManagerInterface<T>, View.OnLayoutChangeListener {
 
+  private static final String TAG = "BaseViewManager";
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
 
@@ -178,10 +179,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       Method setBackgroundColorMethod = view.getClass().getMethod("setBackgroundColor", long.class);
       setBackgroundColorMethod.invoke(view, backgroundColor);
     } catch (NoSuchMethodException e) {
-      FLog.e("RYAN", "setBackgroundColor(long) method not found in the view class");
+      FLog.e(TAG, "setBackgroundColor(long) method not found in view class", e);
       view.setBackgroundColor(Color.toArgb(backgroundColor));
     } catch (Exception e) {
-      FLog.e("RYAN", "Error invoking setBackgroundColor(long): " + e.getMessage());
+      FLog.e(TAG, "Failed to invoke setBackgroundColor(long)", e);
     }
   }
 
