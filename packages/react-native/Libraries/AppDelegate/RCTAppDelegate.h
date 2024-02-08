@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)bridgelessEnabled;
 
 /// Return the bundle URL for the main bundle.
-- (NSURL *)bundleURL;
+- (NSURL *__nullable)bundleURL;
 
 @end
 
