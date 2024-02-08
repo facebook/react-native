@@ -10,9 +10,11 @@ package com.facebook.react;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Window;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
@@ -99,6 +101,9 @@ public class ReactActivityDelegate {
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
+    if (isWideColorGamutEnabled()) {
+      mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+    }
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       mReactDelegate =
           new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
@@ -238,5 +243,14 @@ public class ReactActivityDelegate {
    */
   protected boolean isFabricEnabled() {
     return ReactFeatureFlags.enableFabricRenderer;
+  }
+
+  /**
+   * Override this method if you wish to selectively toggle wide color gamut for a specific surface.
+   *
+   * @return true if wide gamut is enabled for this Activity, false otherwise.
+   */
+  protected boolean isWideColorGamutEnabled() {
+    return false;
   }
 }
