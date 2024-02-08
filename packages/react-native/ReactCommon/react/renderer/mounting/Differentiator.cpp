@@ -1556,7 +1556,7 @@ static void calculateShadowViewMutationsV2(
 /**
  * Only used by unit tests currently.
  */
-static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
+static void sliceChildShadowNodeViewPairsRecursivelyForTesting(
     ShadowViewNodePair::OwningList& pairList,
     Point layoutOffset,
     const ShadowNode& shadowNode) {
@@ -1587,7 +1587,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
         pairList.push_back({shadowView, &childShadowNode});
       }
 
-      sliceChildShadowNodeViewPairsRecursivelyLegacy(
+      sliceChildShadowNodeViewPairsRecursivelyForTesting(
           pairList, origin, childShadowNode);
     }
   }
@@ -1596,7 +1596,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
 /**
  * Only used by unit tests currently.
  */
-ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
+ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsForTesting(
     const ShadowNode& shadowNode) {
   auto pairList = ShadowViewNodePair::OwningList{};
 
@@ -1606,7 +1606,8 @@ ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
     return pairList;
   }
 
-  sliceChildShadowNodeViewPairsRecursivelyLegacy(pairList, {0, 0}, shadowNode);
+  sliceChildShadowNodeViewPairsRecursivelyForTesting(
+      pairList, {0, 0}, shadowNode);
 
   return pairList;
 }
