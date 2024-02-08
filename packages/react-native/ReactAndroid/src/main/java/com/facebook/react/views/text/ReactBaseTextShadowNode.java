@@ -427,7 +427,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
   protected TextAttributes mTextAttributes;
 
   protected boolean mIsColorSet = false;
-  protected int mColor;
+  protected long mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected long mBackgroundColor;
 
@@ -580,7 +580,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public int getColor() {
+  public long getColor() {
     return mColor;
   }
 
@@ -599,8 +599,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public int getBackgroundColor() {
-    return Color.toArgb(mBackgroundColor);
+  public long getBackgroundColor() {
+    return mBackgroundColor;
   }
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
@@ -795,8 +795,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public int getTextShadowColor() {
-    return Color.toArgb(mTextShadowColor);
+  public long getTextShadowColor() {
+    return mTextShadowColor;
   }
 
   @ReactProp(name = PROP_SHADOW_COLOR, defaultInt = DEFAULT_TEXT_SHADOW_COLOR, customType = "Color")
