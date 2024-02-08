@@ -194,7 +194,6 @@ import java.util.Map;
   private static class ColorPropSetter extends PropSetter {
 
     private final int mDefaultValue;
-    private ReactProp mProp = null;
 
     public ColorPropSetter(ReactProp prop, Method setter) {
       this(prop, setter, 0);
@@ -203,7 +202,6 @@ import java.util.Map;
     public ColorPropSetter(ReactProp prop, Method setter, int defaultValue) {
       super(prop, "mixed", setter);
       mDefaultValue = defaultValue;
-      mProp = prop;
     }
 
     public ColorPropSetter(ReactPropGroup prop, Method setter, int index, int defaultValue) {
@@ -213,18 +211,12 @@ import java.util.Map;
 
     @Override
     protected Object getValueOrDefault(Object value, Context context) {
-      if (value == null) {
+      Color color = ColorPropConverter.getColorInstance(value, context);
+      if (color == null) {
         return mDefaultValue;
       }
 
-      Color color = ColorPropConverter.getColorInstance(value, context);
-      if (
-        mPropName.contains("background") || mPropName.contains("border") || mPropName.contains("cursor") ||  mPropName.contains("overlay") || mPropName.contains("placeholder") || mPropName.contains("selection") || mPropName.contains("shadow") || mPropName.contains("tint") || mPropName.contains("underline")
-      ) {
-        return color.pack();
-      } else {
-        return color.toArgb();
-      }
+      return color.pack();
     }
   }
 
@@ -340,11 +332,9 @@ import java.util.Map;
   }
 
   private static class BoxedColorPropSetter extends PropSetter {
-    private ReactProp mProp = null;
 
     public BoxedColorPropSetter(ReactProp prop, Method setter) {
       super(prop, "mixed", setter);
-      mProp = prop;
     }
 
     public BoxedColorPropSetter(ReactPropGroup prop, Method setter, int index) {
@@ -353,18 +343,11 @@ import java.util.Map;
 
     @Override
     protected @Nullable Object getValueOrDefault(Object value, Context context) {
-      if (value != null) {
-        Color color = ColorPropConverter.getColorInstance(value, context);
-        // return color.pack();
-        if (
-          mPropName.contains("background") || mPropName.contains("border") || mPropName.contains("cursor") ||  mPropName.contains("overlay") || mPropName.contains("placeholder") || mPropName.contains("selection") || mPropName.contains("shadow") || mPropName.contains("tint") || mPropName.contains("underline")
-        ) {
-          return color.pack();
-        } else {
-          return color.toArgb();
-        }
+      Color color = ColorPropConverter.getColorInstance(value, context);
+      if (color == null) {
+        return null;
       }
-      return null;
+      return color.pack();
     }
   }
 

@@ -675,26 +675,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  public void setColor(ReactEditText view, @Nullable Integer color) {
-    if (color == null) {
-      ColorStateList defaultContextTextColor =
-          DefaultStyleValuesUtil.getDefaultTextColor(view.getContext());
-
-      if (defaultContextTextColor != null) {
-        view.setTextColor(defaultContextTextColor);
-      } else {
-        Context c = view.getContext();
-        ReactSoftExceptionLogger.logSoftException(
-            TAG,
-            new IllegalStateException(
-                "Could not get default text color from View Context: "
-                    + (c != null ? c.getClass().getCanonicalName() : "null")));
-      }
-    } else {
-      view.setTextColor(color);
-    }
-  }
-  
   public void setColor(ReactEditText view, @Nullable Long color) {
     if (color == null) {
       ColorStateList defaultContextTextColor =
@@ -711,7 +691,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                     + (c != null ? c.getClass().getCanonicalName() : "null")));
       }
     } else {
-      view.getPaint().setColor(color);
+      view.setTextColor(Color.toArgb(color));
     }
   }
 
