@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <AppSpecs.h>
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
 #include <NativeCxxModuleExample.h>
@@ -13,6 +12,10 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
+
+#ifdef REACT_NATIVE_APP_CODEGEN_HEADER
+#include REACT_NATIVE_APP_CODEGEN_HEADER
+#endif
 
 namespace facebook {
 namespace react {
@@ -37,14 +40,16 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
 std::shared_ptr<TurboModule> javaModuleProvider(
     const std::string& name,
     const JavaTurboModule::InitParams& params) {
-  auto module = AppSpecs_ModuleProvider(name, params);
-  if (module != nullptr) {
-    return module;
-  }
-  module = SampleTurboModuleSpec_ModuleProvider(name, params);
+  auto module = SampleTurboModuleSpec_ModuleProvider(name, params);
   if (module != nullptr) {
     return module;
   };
+#ifdef REACT_NATIVE_APP_MODULE_PROVIDER
+  module = REACT_NATIVE_APP_MODULE_PROVIDER(name, params);
+  if (module != nullptr) {
+    return module;
+  }
+#endif
   return nullptr;
 }
 

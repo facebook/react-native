@@ -134,4 +134,13 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)
         get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ PROPERTY BUILDSYSTEM_TARGETS)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${APP_CODEGEN_TARGET})
         target_link_libraries(${APP_CODEGEN_TARGET} common_flags)
+
+        # We need to pass the generated header and module provider to the OnLoad.cpp file so
+        # local app modules can properly be linked.
+        string(REGEX REPLACE "react_codegen_" "" APP_CODEGEN_HEADER "${APP_CODEGEN_TARGET}")
+        target_compile_options(${CMAKE_PROJECT_NAME}
+                PRIVATE
+                -DREACT_NATIVE_APP_CODEGEN_HEADER="${APP_CODEGEN_HEADER}.h"
+                -DREACT_NATIVE_APP_MODULE_PROVIDER=${APP_CODEGEN_HEADER}_ModuleProvider
+        )
 endif()
