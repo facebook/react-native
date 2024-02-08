@@ -48,23 +48,23 @@ inline Color hostPlatformColorFromComponents(ColorComponents components) {
 }
 
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
-  ColorComponents components;
   if ((color & 0x3f) == 7) {
     int ratio = 15360;
-    components.red = static_cast<double>((color >> 48) & 0xffff) / ratio;
-    components.green = static_cast<double>((color >> 32) & 0xffff) / ratio;
-    components.blue = static_cast<double>((color >> 16) & 0xffff) / ratio;
-    components.alpha = static_cast<double>((color >> 6) & 0x3ff) / 0x3ff;
-    components.colorSpace = ColorSpace::DisplayP3;
+    return ColorComponents{
+      (float)((color >> 48) & 0xffff) / ratio,
+      (float)((color >> 32) & 0xffff) / ratio,
+      (float)((color >> 16) & 0xffff) / ratio,
+      (float)((color >> 6) & 0x3ff) / ratio,
+      ColorSpace::DisplayP3};
   } else {
     int ratio = 255;
-    components.alpha = static_cast<double>((color >> 56) & 0xff) / ratio;
-    components.red = static_cast<double>((color >> 48) & 0xff) / ratio;
-    components.green = static_cast<double>((color >> 40) & 0xff) / ratio;
-    components.blue = static_cast<double>((color >> 32) & 0xff) / ratio;
-    components.colorSpace = ColorSpace::sRGB;
+    return ColorComponents{
+      (float)((color >> 48) & 0xff) / ratio,
+      (float)((color >> 40) & 0xff) / ratio,
+      (float)((color >> 32) & 0xff) / ratio,
+      (float)((color >> 56) & 0xff) / ratio,
+      ColorSpace::sRGB};
   }
-  return components;
 }
 
 } // namespace facebook::react
