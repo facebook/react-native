@@ -38,6 +38,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
@@ -542,7 +543,8 @@ public class ReactHostImpl implements ReactHost {
     return reactInstance.getEventDispatcher();
   }
 
-  /* package */ @Nullable
+  /* package */
+  @Nullable
   FabricUIManager getUIManager() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance == null) {
@@ -567,7 +569,8 @@ public class ReactHostImpl implements ReactHost {
     return new ArrayList<>();
   }
 
-  /* package */ @Nullable
+  /* package */
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (nativeModuleInterface == UIManagerModule.class) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
@@ -579,6 +582,16 @@ public class ReactHostImpl implements ReactHost {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleInterface);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
+  RuntimeExecutor getRuntimeExecutor() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getBufferedRuntimeExecutor();
     }
     return null;
   }
@@ -699,6 +712,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ interface VeniceThenable<T> {
+
     void then(T t);
   }
 
@@ -913,6 +927,7 @@ public class ReactHostImpl implements ReactHost {
                         });
 
                     class Result {
+
                       final ReactInstance mInstance = instance;
                       final ReactContext mContext = reactContext;
                       final boolean mIsReloading = mReloadTask != null;
@@ -1087,6 +1102,7 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable Task<ReactInstance> mReloadTask = null;
 
   private interface ReactInstanceTaskUnwrapper {
+
     @Nullable
     ReactInstance unwrap(Task<ReactInstance> task, String stage);
   }

@@ -19,6 +19,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -148,6 +149,14 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   @Override
   public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mReactHost.getNativeModule(nativeModuleInterface);
+  }
+  /**
+   * @return the RuntimeExecutor, a thread-safe handler for accessing the runtime. If the runtime is
+   *     not initialized yet, it will return null.
+   */
+  @Override
+  public @Nullable RuntimeExecutor getRuntimeExecutor() {
+    return mReactHost.getRuntimeExecutor();
   }
 
   @Override

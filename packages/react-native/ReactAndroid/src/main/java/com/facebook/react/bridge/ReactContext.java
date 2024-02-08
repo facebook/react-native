@@ -206,6 +206,15 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
 
+  /** @return the RuntimeExecutor, a thread-safe handler for accessing the runtime. */
+  @Nullable
+  public RuntimeExecutor getRuntimeExecutor() {
+    if (mCatalystInstance == null) {
+      raiseCatalystInstanceMissingException();
+    }
+    return mCatalystInstance.getRuntimeExecutor();
+  }
+
   /**
    * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
    * arguments.

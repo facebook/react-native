@@ -471,7 +471,7 @@ final class ReactInstance {
 
   private native RuntimeExecutor getUnbufferedRuntimeExecutor();
 
-  private native RuntimeExecutor getBufferedRuntimeExecutor();
+  /* package */ native RuntimeExecutor getBufferedRuntimeExecutor();
 
   private native RuntimeScheduler getRuntimeScheduler();
 
