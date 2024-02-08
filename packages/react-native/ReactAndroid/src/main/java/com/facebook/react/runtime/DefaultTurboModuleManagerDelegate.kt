@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.defaults
+package com.facebook.react.runtime
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
@@ -14,6 +14,7 @@ import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
+import com.facebook.soloader.SoLoader
 
 /**
  * A utility class that allows you to simplify the setup of a
@@ -67,7 +68,8 @@ private constructor(
 
   companion object {
     init {
-      DefaultSoLoader.maybeLoadSoLibrary()
+      // loads the DefaultTurboModuleManagerDelegate.cpp
+      SoLoader.loadLibrary("react_defaults")
     }
 
     @DoNotStrip

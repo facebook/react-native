@@ -18,6 +18,7 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.runtime.DefaultTurboModuleManagerDelegate
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 

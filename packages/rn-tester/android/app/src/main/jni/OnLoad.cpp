@@ -6,8 +6,8 @@
  */
 
 #include <DefaultComponentsRegistry.h>
-#include <DefaultTurboModuleManagerDelegate.h>
 #include <NativeCxxModuleExample.h>
+#include <ReactCommon/DefaultTurboModuleManagerDelegate.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>

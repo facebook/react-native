@@ -1968,23 +1968,6 @@ public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/f
 	public final fun toReactHost (Landroid/content/Context;)Lcom/facebook/react/ReactHost;
 }
 
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
-	public static final field Companion Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
-}
-
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder : com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
-	public fun <init> ()V
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
-	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-}
-
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion {
-	public final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
-}
-
 public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
 	public fun handleReloadJS ()V
@@ -3592,6 +3575,23 @@ public final class com/facebook/react/runtime/BindingsInstaller$Companion {
 public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
 	public fun <init> ()V
 	public fun getReactModuleInfos ()Ljava/util/Map;
+}
+
+public final class com/facebook/react/runtime/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
+	public static final field Companion Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Companion;
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
+}
+
+public final class com/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder : com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
+	public fun <init> ()V
+	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder;
+	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder;
+	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
+}
+
+public final class com/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Companion {
+	public final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
 }
 
 public class com/facebook/react/runtime/JSCInstance : com/facebook/react/runtime/JSRuntimeFactory {

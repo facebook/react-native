@@ -101,6 +101,8 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "react_cxxreactpackage", Pair("src/main/jni/react/runtime/cxxreactpackage", "")),
               PrefabPreprocessingEntry(
+                  "react_defaults", Pair("src/main/jni/react/runtime/defaults", "")),
+              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -532,6 +534,7 @@ android {
             "react_render_componentregistry",
             "react_newarchdefaults",
             "react_cxxreactpackage",
+            "react_defaults",
             "react_render_animations",
             "react_render_core",
             "react_render_graphics",
@@ -650,6 +653,7 @@ android {
     create("react_cxxreactpackage") {
       headers = File(prefabHeadersDir, "react_cxxreactpackage").absolutePath
     }
+    create("react_defaults") { headers = File(prefabHeadersDir, "react_defaults").absolutePath }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
     }
