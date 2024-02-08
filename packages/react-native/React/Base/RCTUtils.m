@@ -579,6 +579,11 @@ UIWindow *__nullable RCTKeyWindow(void)
   return nil;
 }
 
+UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
+{
+  return RCTKeyWindow().windowScene.statusBarManager;
+}
+
 UIViewController *__nullable RCTPresentedViewController(void)
 {
   if ([RCTUtilsUIOverride hasPresentedViewController]) {
