@@ -3585,8 +3585,7 @@ public final class com/facebook/react/runtime/DefaultTurboModuleManagerDelegate 
 
 public final class com/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder : com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
 	public fun <init> ()V
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder;
-	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder;
+	public final fun addCxxReactPackages (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/runtime/DefaultTurboModuleManagerDelegate$Builder;
 	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 }
 

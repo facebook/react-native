@@ -193,8 +193,8 @@ final class ReactInstance {
     mReactPackages.addAll(mDelegate.getReactPackages());
 
     TurboModuleManagerDelegate turboModuleManagerDelegate =
-        mDelegate
-            .getTurboModuleManagerDelegateBuilder()
+        new DefaultTurboModuleManagerDelegate.Builder()
+            .addCxxReactPackages(mDelegate.getCxxReactPackages())
             .setPackages(mReactPackages)
             .setReactApplicationContext(mBridgelessReactContext)
             .build();
