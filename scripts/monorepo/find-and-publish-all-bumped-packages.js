@@ -12,23 +12,32 @@
 const {publishPackage} = require('../npm-utils');
 const {PUBLISH_PACKAGES_TAG} = require('./constants');
 const forEachPackage = require('./for-each-package');
-const {spawnSync} = require('child_process');
+const {execSync, spawnSync} = require('child_process');
 const path = require('path');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
-function getTagsFromCommitMessage(msg /*: string */) /*: Array<string> */ {
-  // ex message we're trying to parse tags out of
-  // `_some_message_here_${PUBLISH_PACKAGES_TAG}&tagA&tagB\n`;
-  return msg
-    .substring(msg.indexOf(PUBLISH_PACKAGES_TAG))
-    .trim()
-    .split('&')
-    .slice(1);
-}
-
 async function findAndPublishAllBumpedPackages() {
+  let commitMessage;
+
+  try {
+    commitMessage = execSync('git log -1 --pretty=%B').toString();
+  } catch {
+    console.error('Failed to read Git commit message, exiting.');
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!commitMessage.includes(PUBLISH_PACKAGES_TAG)) {
+    console.log(
+      'Current commit does not include #publish-packages-to-npm keyword, skipping.',
+    );
+    return;
+  }
+
+  const tags = getTagsFromCommitMessage(commitMessage);
+
   console.log('Traversing all packages inside /packages...');
 
   forEachPackage(
@@ -70,37 +79,6 @@ async function findAndPublishAllBumpedPackages() {
         return;
       }
 
-      const {stdout, stderr: commitMessageStderr} = spawnSync(
-        'git',
-        [
-          'log',
-          '-n',
-          '1',
-          '--format=format:%B',
-          `${packageRelativePathFromRoot}/package.json`,
-        ],
-        {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
-      );
-      const commitMessage = stdout.toString();
-
-      if (commitMessageStderr) {
-        console.log(
-          `\u274c Failed to get latest commit message for ${packageManifest.name}:`,
-        );
-        console.log(commitMessageStderr);
-
-        process.exit(1);
-      }
-
-      const hasSpecificPublishTag =
-        commitMessage.includes(PUBLISH_PACKAGES_TAG);
-
-      if (!hasSpecificPublishTag) {
-        throw new Error(
-          `Package ${packageManifest.name} was updated, but not through CI script`,
-        );
-      }
-
       const [, previousVersion] = previousVersionPatternMatches;
       const nextVersion = packageManifest.version;
 
@@ -113,8 +91,6 @@ async function findAndPublishAllBumpedPackages() {
           `Package version expected to be 0.x.y, but received ${nextVersion}`,
         );
       }
-
-      const tags = getTagsFromCommitMessage(commitMessage);
 
       const result = publishPackage(packageAbsolutePath, {
         tags,
@@ -134,6 +110,16 @@ async function findAndPublishAllBumpedPackages() {
       }
     },
   );
+}
+
+function getTagsFromCommitMessage(msg /*: string */) /*: Array<string> */ {
+  // ex message we're trying to parse tags out of
+  // `_some_message_here_${PUBLISH_PACKAGES_TAG}&tagA&tagB\n`;
+  return msg
+    .substring(msg.indexOf(PUBLISH_PACKAGES_TAG))
+    .trim()
+    .split('&')
+    .slice(1);
 }
 
 if (require.main === module) {
