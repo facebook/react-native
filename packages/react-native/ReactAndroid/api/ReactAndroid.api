@@ -1896,7 +1896,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableFabricPendingEventQueue Z
 	public static field enableFabricRenderer Z
 	public static field enableFabricRendererExclusively Z
-	public static field enableFabricSharedEventPipeline Z
 	public static field enableMountHooks Z
 	public static field enableOnDemandReactChoreographer Z
 	public static field enableRemoveDeleteTreeInstruction Z

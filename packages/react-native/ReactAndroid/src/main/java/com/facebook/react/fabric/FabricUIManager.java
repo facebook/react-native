@@ -80,7 +80,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -219,11 +218,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    if (ReactFeatureFlags.enableFabricSharedEventPipeline) {
-      mEventDispatcher = new FabricEventDispatcher(reactContext);
-    } else {
-      mEventDispatcher = new EventDispatcherImpl(reactContext);
-    }
+    mEventDispatcher = new FabricEventDispatcher(reactContext);
     mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
