@@ -29,7 +29,7 @@ import com.facebook.react.uimanager.ViewManagerResolver
  * providing the default TurboModuleManagerDelegateBuilder and the default JSIModulePackage,
  * provided the name of the dynamic library to load.
  */
-abstract class DefaultReactNativeHost
+public abstract class DefaultReactNativeHost
 protected constructor(
     application: Application,
 ) : ReactNativeHost(application) {
@@ -98,7 +98,7 @@ protected constructor(
    *
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
-  fun toReactHost(context: Context): ReactHost =
+  public fun toReactHost(context: Context): ReactHost =
       DefaultReactHost.getDefaultReactHost(
           context,
           packages,

@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.AndroidPopupMenuManagerInterface
 
 @ReactModule(name = ReactPopupMenuManager.REACT_CLASS)
-class ReactPopupMenuManager() :
+public class ReactPopupMenuManager :
     ViewGroupManager<ReactPopupMenuContainer>(),
     AndroidPopupMenuManagerInterface<ReactPopupMenuContainer> {
   override fun createViewInstance(reactContext: ThemedReactContext): ReactPopupMenuContainer {
@@ -48,7 +48,7 @@ class ReactPopupMenuManager() :
     popupMenu.showPopupMenu()
   }
 
-  companion object {
-    const val REACT_CLASS: String = "AndroidPopupMenu"
+  public companion object {
+    public const val REACT_CLASS: String = "AndroidPopupMenu"
   }
 }

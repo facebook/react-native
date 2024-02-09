@@ -23,7 +23,7 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  * is hosted inside the React Native framework
  */
 @OptIn(UnstableReactNativeAPI::class)
-class DefaultTurboModuleManagerDelegate
+public class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
     packages: List<ReactPackage>,
@@ -35,13 +35,13 @@ private constructor(
         "DefaultTurboModuleManagerDelegate.initHybrid() must never be called!")
   }
 
-  class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
+  public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
     private var cxxReactPackageProviders:
         MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
         mutableListOf()
 
     fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
-      cxxReactPackageProviders.add({ _ -> provider() })
+      cxxReactPackageProviders.add { _ -> provider() }
       return this
     }
 
@@ -65,7 +65,7 @@ private constructor(
     }
   }
 
-  companion object {
+  private companion object {
     init {
       DefaultSoLoader.maybeLoadSoLibrary()
     }

@@ -20,7 +20,7 @@ import android.view.ViewParent
  *
  * Single [CatalystInstance] should reuse same instance of this class.
  */
-class JSResponderHandler : OnInterceptTouchEventListener {
+public class JSResponderHandler : OnInterceptTouchEventListener {
 
   @Volatile private var currentJSResponder = JS_RESPONDER_UNSET
   // We're holding on to the ViewParent that blocked native responders so that we can clear it
@@ -28,7 +28,7 @@ class JSResponderHandler : OnInterceptTouchEventListener {
 
   private var viewParentBlockingNativeResponder: ViewParent? = null
 
-  fun setJSResponder(tag: Int, viewParentBlockingNativeResponder: ViewParent?) {
+  public fun setJSResponder(tag: Int, viewParentBlockingNativeResponder: ViewParent?) {
     currentJSResponder = tag
     // We need to unblock the native responder first, otherwise we can get in a bad state: a
     // ViewParent sets requestDisallowInterceptTouchEvent to true, which sets this setting to true
@@ -42,7 +42,7 @@ class JSResponderHandler : OnInterceptTouchEventListener {
     }
   }
 
-  fun clearJSResponder() {
+  public fun clearJSResponder() {
     currentJSResponder = JS_RESPONDER_UNSET
     maybeUnblockNativeResponder()
   }

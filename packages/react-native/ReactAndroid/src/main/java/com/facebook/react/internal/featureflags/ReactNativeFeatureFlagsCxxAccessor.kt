@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1741a8a82b193bf389f45d104ae295fb>>
+ * @generated SignedSource<<8d6196766629d3361922502553fd1d2b>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
   private var enableBackgroundExecutorCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
@@ -101,8 +101,8 @@ class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
     return cached
   }
 
-  override fun override(provider: ReactNativeFeatureFlagsProvider) =
+  override fun override(provider: ReactNativeFeatureFlagsProvider): Unit =
       ReactNativeFeatureFlagsCxxInterop.override(provider as Any)
 
-  override fun dangerouslyReset() = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
+  override fun dangerouslyReset(): Unit = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
 }

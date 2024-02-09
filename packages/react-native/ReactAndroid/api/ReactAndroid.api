@@ -1859,7 +1859,6 @@ public final class com/facebook/react/common/mapbuffer/ReadableMapBuffer$Compani
 }
 
 public final class com/facebook/react/common/mapbuffer/WritableMapBuffer : com/facebook/react/common/mapbuffer/MapBuffer {
-	public static final field Companion Lcom/facebook/react/common/mapbuffer/WritableMapBuffer$Companion;
 	public fun <init> ()V
 	public fun contains (I)Z
 	public fun entryAt (I)Lcom/facebook/react/common/mapbuffer/MapBuffer$Entry;
@@ -1878,9 +1877,6 @@ public final class com/facebook/react/common/mapbuffer/WritableMapBuffer : com/f
 	public final fun put (ILcom/facebook/react/common/mapbuffer/MapBuffer;)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (ILjava/lang/String;)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
 	public final fun put (IZ)Lcom/facebook/react/common/mapbuffer/WritableMapBuffer;
-}
-
-public final class com/facebook/react/common/mapbuffer/WritableMapBuffer$Companion {
 }
 
 public class com/facebook/react/common/network/OkHttpCallUtil {
@@ -1969,7 +1965,6 @@ public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/f
 }
 
 public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate : com/facebook/react/ReactPackageTurboModuleManagerDelegate {
-	public static final field Companion Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion;
 	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
 }
@@ -1979,10 +1974,6 @@ public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate
 	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function0;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
 	public final fun addCxxReactPackage (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Builder;
 	public synthetic fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-}
-
-public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate$Companion {
-	public final fun initHybrid (Ljava/util/List;)Lcom/facebook/jni/HybridData;
 }
 
 public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {
@@ -2505,15 +2496,11 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 }
 
 public final class com/facebook/react/fabric/EmptyReactNativeConfig : com/facebook/react/fabric/ReactNativeConfig {
-	public static final field Companion Lcom/facebook/react/fabric/EmptyReactNativeConfig$Companion;
 	public fun <init> ()V
 	public fun getBool (Ljava/lang/String;)Z
 	public fun getDouble (Ljava/lang/String;)D
 	public fun getInt64 (Ljava/lang/String;)J
 	public fun getString (Ljava/lang/String;)Ljava/lang/String;
-}
-
-public final class com/facebook/react/fabric/EmptyReactNativeConfig$Companion {
 }
 
 public class com/facebook/react/fabric/FabricComponents {
@@ -2795,13 +2782,8 @@ public abstract interface class com/facebook/react/interfaces/fabric/SurfaceHand
 }
 
 public final class com/facebook/react/jscexecutor/JSCExecutor : com/facebook/react/bridge/JavaScriptExecutor {
-	public static final field Companion Lcom/facebook/react/jscexecutor/JSCExecutor$Companion;
 	public fun getName ()Ljava/lang/String;
 	public static final fun loadLibrary ()V
-}
-
-public final class com/facebook/react/jscexecutor/JSCExecutor$Companion {
-	public final fun loadLibrary ()V
 }
 
 public final class com/facebook/react/jscexecutor/JSCExecutorFactory : com/facebook/react/bridge/JavaScriptExecutorFactory {
@@ -3582,11 +3564,7 @@ public abstract class com/facebook/react/perflogger/NativeModulePerfLogger {
 }
 
 public abstract class com/facebook/react/runtime/BindingsInstaller {
-	public static final field Companion Lcom/facebook/react/runtime/BindingsInstaller$Companion;
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
-}
-
-public final class com/facebook/react/runtime/BindingsInstaller$Companion {
 }
 
 public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
@@ -3664,9 +3642,6 @@ public class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/Re
 	protected fun onMeasure (II)V
 	public fun requestDisallowInterceptTouchEvent (Z)V
 	public fun setIsFabric (Z)V
-}
-
-public final class com/facebook/react/runtime/cxxreactpackage/CxxReactPackage$Companion {
 }
 
 public final class com/facebook/react/runtime/hermes/HermesInstance : com/facebook/react/runtime/JSRuntimeFactory {
@@ -6177,7 +6152,6 @@ public final class com/facebook/react/views/popupmenu/PopupMenuSelectionEvent : 
 	public fun <init> (III)V
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun getEventName ()Ljava/lang/String;
-	public final fun getItem ()I
 }
 
 public final class com/facebook/react/views/popupmenu/PopupMenuSelectionEvent$Companion {
@@ -7716,10 +7690,6 @@ public final class com/facebook/react/views/view/ReactViewManagerWrapper$Default
 	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateProperties (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateState (Landroid/view/View;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-}
-
-public final class com/facebook/react/views/view/ReactViewReturnTypeException : java/lang/Exception {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 }
 
 public class com/facebook/react/views/view/ViewGroupClickEvent : com/facebook/react/uimanager/events/Event {

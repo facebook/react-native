@@ -17,10 +17,10 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 
 /** Temporary to help trace the cause of T151032868 */
-class ReactViewReturnTypeException(message: String, e: Throwable) : Exception(message, e)
+internal class ReactViewReturnTypeException(message: String, e: Throwable) : Exception(message, e)
 
-interface ReactViewManagerWrapper {
-  fun createView(
+public interface ReactViewManagerWrapper {
+  public fun createView(
       reactTag: Int,
       reactContext: ThemedReactContext,
       props: Any?,
@@ -28,25 +28,25 @@ interface ReactViewManagerWrapper {
       jsResponderHandler: JSResponderHandler
   ): View
 
-  fun updateProperties(viewToUpdate: View, props: Any?)
+  public fun updateProperties(viewToUpdate: View, props: Any?)
 
-  fun receiveCommand(root: View, commandId: String, args: ReadableArray?)
+  public fun receiveCommand(root: View, commandId: String, args: ReadableArray?)
 
-  fun receiveCommand(root: View, commandId: Int, args: ReadableArray?)
+  public fun receiveCommand(root: View, commandId: Int, args: ReadableArray?)
 
-  fun setPadding(view: View, left: Int, top: Int, right: Int, bottom: Int)
+  public fun setPadding(view: View, left: Int, top: Int, right: Int, bottom: Int)
 
-  fun updateState(view: View, props: Any?, stateWrapper: StateWrapper?): Any?
+  public fun updateState(view: View, props: Any?, stateWrapper: StateWrapper?): Any?
 
-  fun updateExtraData(root: View, extraData: Any?)
+  public fun updateExtraData(root: View, extraData: Any?)
 
-  fun onDropViewInstance(view: View)
+  public fun onDropViewInstance(view: View)
 
-  fun getName(): String
+  public fun getName(): String
 
-  val viewGroupManager: IViewGroupManager<*>
+  public val viewGroupManager: IViewGroupManager<*>
 
-  class DefaultViewManager(private val viewManager: ViewManager<View, *>) :
+  public class DefaultViewManager(private val viewManager: ViewManager<View, *>) :
       ReactViewManagerWrapper {
     override fun createView(
         reactTag: Int,

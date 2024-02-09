@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * is providing support for the `receiveEvent` method, so that non-Fabric ViewManagers can continue
  * to deliver events also when Fabric is turned on.
  */
-class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
   private var eventDispatcherOverride: EventDispatcher? = null
 
   @Deprecated("Deprecated in Java")
@@ -49,7 +49,7 @@ class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmit
   }
 
   @VisibleForTesting
-  fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
+  public fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
     this.eventDispatcherOverride = eventDispatcherOverride
   }
 }

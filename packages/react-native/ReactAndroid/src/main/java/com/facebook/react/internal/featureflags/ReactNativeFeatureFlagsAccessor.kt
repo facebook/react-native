@@ -7,8 +7,8 @@
 
 package com.facebook.react.internal.featureflags
 
-interface ReactNativeFeatureFlagsAccessor : ReactNativeFeatureFlagsProvider {
-  fun override(provider: ReactNativeFeatureFlagsProvider)
+public interface ReactNativeFeatureFlagsAccessor : ReactNativeFeatureFlagsProvider {
+  public fun override(provider: ReactNativeFeatureFlagsProvider)
 
-  fun dangerouslyReset()
+  public fun dangerouslyReset()
 }

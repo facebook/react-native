@@ -19,7 +19,7 @@ import com.facebook.react.fabric.ComponentFactory
  * is hosted inside the React Native framework
  */
 @DoNotStrip
-class DefaultComponentsRegistry
+public class DefaultComponentsRegistry
 @DoNotStrip
 private constructor(componentFactory: ComponentFactory) {
 
@@ -29,13 +29,14 @@ private constructor(componentFactory: ComponentFactory) {
 
   @DoNotStrip private external fun initHybrid(componentFactory: ComponentFactory): HybridData
 
-  companion object {
+  public companion object {
     init {
       DefaultSoLoader.maybeLoadSoLibrary()
     }
 
     @JvmStatic
     @DoNotStrip
-    fun register(componentFactory: ComponentFactory) = DefaultComponentsRegistry(componentFactory)
+    public fun register(componentFactory: ComponentFactory): DefaultComponentsRegistry =
+        DefaultComponentsRegistry(componentFactory)
   }
 }

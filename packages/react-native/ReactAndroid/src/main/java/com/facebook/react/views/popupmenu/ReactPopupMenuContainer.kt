@@ -16,14 +16,14 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.UIManagerHelper
 
-class ReactPopupMenuContainer(context: Context) : FrameLayout(context) {
+public class ReactPopupMenuContainer(context: Context) : FrameLayout(context) {
   private var menuItems: ReadableArray? = null
 
-  fun setMenuItems(items: ReadableArray?) {
+  public fun setMenuItems(items: ReadableArray?) {
     menuItems = items
   }
 
-  fun showPopupMenu() {
+  public fun showPopupMenu() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
       val view = getChildAt(0)
       val popupMenu = PopupMenu(context, view)

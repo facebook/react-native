@@ -30,7 +30,7 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var currentProvider: ReactNativeFeatureFlagsProvider = ReactNativeFeatureFlagsDefaults()
 
   private val accessedFeatureFlags = mutableSetOf<String>()
