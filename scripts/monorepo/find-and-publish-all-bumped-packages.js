@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
+ * @oncall react_native
  */
 
 const {publishPackage} = require('../npm-utils');
@@ -16,7 +18,7 @@ const path = require('path');
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
-function getTagsFromCommitMessage(msg) {
+function getTagsFromCommitMessage(msg /*: string */) /*: Array<string> */ {
   // ex message we're trying to parse tags out of
   // `_some_message_here_${PUBLISH_PACKAGES_TAG}&tagA&tagB\n`;
   return msg
@@ -26,12 +28,12 @@ function getTagsFromCommitMessage(msg) {
     .slice(1);
 }
 
-const findAndPublishAllBumpedPackages = () => {
+async function findAndPublishAllBumpedPackages() {
   console.log('Traversing all packages inside /packages...');
 
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
-      if (packageManifest.private) {
+      if (packageManifest.private === true) {
         console.log(`\u23ED Skipping private package ${packageManifest.name}`);
 
         return;
@@ -58,9 +60,9 @@ const findAndPublishAllBumpedPackages = () => {
         process.exit(1);
       }
 
-      const previousVersionPatternMatches = diff.match(
-        /- {2}"version": "([0-9]+.[0-9]+.[0-9]+)"/,
-      );
+      const previousVersionPatternMatches = diff
+        .toString()
+        .match(/- {2}"version": "([0-9]+.[0-9]+.[0-9]+)"/);
 
       if (!previousVersionPatternMatches) {
         console.log(`\uD83D\uDD0E No version bump for ${packageManifest.name}`);
@@ -68,7 +70,7 @@ const findAndPublishAllBumpedPackages = () => {
         return;
       }
 
-      const {stdout: commitMessage, stderr: commitMessageStderr} = spawnSync(
+      const {stdout, stderr: commitMessageStderr} = spawnSync(
         'git',
         [
           'log',
@@ -79,6 +81,7 @@ const findAndPublishAllBumpedPackages = () => {
         ],
         {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
       );
+      const commitMessage = stdout.toString();
 
       if (commitMessageStderr) {
         console.log(
@@ -131,12 +134,11 @@ const findAndPublishAllBumpedPackages = () => {
       }
     },
   );
-
-  process.exit(0);
-};
+}
 
 if (require.main === module) {
-  findAndPublishAllBumpedPackages();
+  // eslint-disable-next-line no-void
+  void findAndPublishAllBumpedPackages();
 }
 
 module.exports = {
