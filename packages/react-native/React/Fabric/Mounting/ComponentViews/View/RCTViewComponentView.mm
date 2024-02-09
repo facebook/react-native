@@ -28,7 +28,7 @@ using namespace facebook::react;
 
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
-  CALayer *_borderLayer;
+  __weak CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -397,9 +397,7 @@ using namespace facebook::react;
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
 
-  if (_borderLayer) {
-    _borderLayer.frame = self.layer.bounds;
-  }
+  _borderLayer.frame = self.layer.bounds;
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
@@ -601,10 +599,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
-    if (_borderLayer) {
-      [_borderLayer removeFromSuperlayer];
-      _borderLayer = nil;
-    }
+    [_borderLayer removeFromSuperlayer];
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
@@ -617,11 +612,12 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {
-      _borderLayer = [CALayer new];
-      _borderLayer.zPosition = -1024.0f;
-      _borderLayer.frame = layer.bounds;
-      _borderLayer.magnificationFilter = kCAFilterNearest;
-      [layer addSublayer:_borderLayer];
+      CALayer *borderLayer = [CALayer new];
+      borderLayer.zPosition = -1024.0f;
+      borderLayer.frame = layer.bounds;
+      borderLayer.magnificationFilter = kCAFilterNearest;
+      [layer addSublayer:borderLayer];
+      _borderLayer = borderLayer;
     }
 
     layer.backgroundColor = nil;
@@ -661,6 +657,10 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         _borderLayer.contentsCenter = CGRect{CGPoint{0.0, 0.0}, CGSize{1.0, 1.0}};
       }
     }
+
+    // If mutations are applied inside of Animation block, it may cause _borderLayer to be animated.
+    // To stop that, imperatively remove all animations from _borderLayer.
+    [_borderLayer removeAllAnimations];
 
     // Stage 2.5. Custom Clipping Mask
     CAShapeLayer *maskLayer = nil;
