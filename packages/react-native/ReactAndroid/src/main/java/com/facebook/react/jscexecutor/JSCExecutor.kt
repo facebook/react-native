@@ -14,13 +14,13 @@ import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
-class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
+public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
     JavaScriptExecutor(initHybrid(jscConfig)) {
   override fun getName(): String {
     return "JSCExecutor"
   }
 
-  companion object {
+  private companion object {
     init {
       loadLibrary()
     }

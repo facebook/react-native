@@ -30,7 +30,7 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
-open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvider {
+public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvider {
   // We could use JNI to get the defaults from C++,
   // but that is more expensive than just duplicating the defaults here.
 

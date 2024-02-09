@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4fc58cba11db962f828efc4e20391303>>
+ * @generated SignedSource<<28e35777aa2f03b7bd07472ce80aade2>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 package com.facebook.react.internal.featureflags
 
-open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvider {
+public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvider {
   // We could use JNI to get the defaults from C++,
   // but that is more expensive than just duplicating the defaults here.
 

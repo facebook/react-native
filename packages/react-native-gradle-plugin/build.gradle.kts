@@ -67,7 +67,7 @@ kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
-    apiVersion = "1.5"
+    apiVersion = "1.6"
     // See comment above on JDK 11 support
     jvmTarget = "11"
     allWarningsAsErrors = true

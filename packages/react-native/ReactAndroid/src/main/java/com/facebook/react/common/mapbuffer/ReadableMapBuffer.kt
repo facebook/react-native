@@ -25,7 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe
 @StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-class ReadableMapBuffer : MapBuffer {
+public class ReadableMapBuffer : MapBuffer {
 
   // Hybrid data must be kept in the `mHybridData` field for fbjni to work
   @field:DoNotStrip private val mHybridData: HybridData?
@@ -33,7 +33,7 @@ class ReadableMapBuffer : MapBuffer {
   // Byte data of the mapBuffer
   private val buffer: ByteBuffer
   // Amount of items serialized on the ByteBuffer
-  override var count = 0
+  override var count: Int = 0
     private set
 
   @DoNotStrip
@@ -299,7 +299,7 @@ class ReadableMapBuffer : MapBuffer {
       }
   }
 
-  companion object {
+  public companion object {
     // Value used to verify if the data is serialized with LittleEndian order.
     private const val ALIGNMENT = 0xFE
 

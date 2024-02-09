@@ -14,11 +14,11 @@ import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
 @StableReactNativeAPI
-object MapBufferSoLoader {
+public object MapBufferSoLoader {
   @Volatile private var didInit = false
 
   @JvmStatic
-  fun staticInit() {
+  public fun staticInit() {
     if (didInit) {
       return
     }

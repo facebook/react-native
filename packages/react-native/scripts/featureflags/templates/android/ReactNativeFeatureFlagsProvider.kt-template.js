@@ -33,11 +33,11 @@ package com.facebook.react.internal.featureflags
 import com.facebook.proguard.annotations.DoNotStrip
 
 @DoNotStrip
-interface ReactNativeFeatureFlagsProvider {
+public interface ReactNativeFeatureFlagsProvider {
 ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
-      `  @DoNotStrip fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
+      `  @DoNotStrip public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
         flagConfig.defaultValue,
       )}`,
   )

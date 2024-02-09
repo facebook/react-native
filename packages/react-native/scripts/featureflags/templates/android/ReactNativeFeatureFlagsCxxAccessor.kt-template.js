@@ -30,7 +30,7 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
 ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
@@ -53,10 +53,10 @@ ${Object.entries(definitions.common)
   )
   .join('\n\n')}
 
-  override fun override(provider: ReactNativeFeatureFlagsProvider) =
+  override fun override(provider: ReactNativeFeatureFlagsProvider): Unit =
       ReactNativeFeatureFlagsCxxInterop.override(provider as Any)
 
-  override fun dangerouslyReset() = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
+  override fun dangerouslyReset(): Unit = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
 }
 `);
 }

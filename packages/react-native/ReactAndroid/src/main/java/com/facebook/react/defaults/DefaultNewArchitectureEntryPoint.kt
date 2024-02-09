@@ -24,10 +24,10 @@ import com.facebook.react.config.ReactFeatureFlags
  * By default it also enables both TurboModules, Fabric and Concurrent React (aka React 18), and
  * Bridgeless
  */
-object DefaultNewArchitectureEntryPoint {
+public object DefaultNewArchitectureEntryPoint {
   @JvmStatic
   @JvmOverloads
-  fun load(
+  public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
       bridgelessEnabled: Boolean = true
@@ -54,26 +54,26 @@ object DefaultNewArchitectureEntryPoint {
 
   private var privateFabricEnabled: Boolean = false
   @JvmStatic
-  val fabricEnabled: Boolean
+  public val fabricEnabled: Boolean
     get() = privateFabricEnabled
 
   private var privateTurboModulesEnabled: Boolean = false
   @JvmStatic
-  val turboModulesEnabled: Boolean
+  public val turboModulesEnabled: Boolean
     get() = privateTurboModulesEnabled
 
   private var privateConcurrentReactEnabled: Boolean = false
   @JvmStatic
-  val concurrentReactEnabled: Boolean
+  public val concurrentReactEnabled: Boolean
     get() = privateConcurrentReactEnabled
 
   private var privateBridgelessEnabled: Boolean = false
   @JvmStatic
-  val bridgelessEnabled: Boolean
+  public val bridgelessEnabled: Boolean
     get() = privateBridgelessEnabled
 
   @VisibleForTesting
-  fun isConfigurationValid(
+  public fun isConfigurationValid(
       turboModulesEnabled: Boolean,
       fabricEnabled: Boolean,
       bridgelessEnabled: Boolean

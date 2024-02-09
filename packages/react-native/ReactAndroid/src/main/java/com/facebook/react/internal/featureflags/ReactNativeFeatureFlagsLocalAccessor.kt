@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0aac45f1506afa2f20ad730c53755abd>>
+ * @generated SignedSource<<c93726acf1130457c9350eb08e703b8d>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 package com.facebook.react.internal.featureflags
 
-class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
+public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var currentProvider: ReactNativeFeatureFlagsProvider = ReactNativeFeatureFlagsDefaults()
 
   private val accessedFeatureFlags = mutableSetOf<String>()

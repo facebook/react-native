@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ec82b003df6f3743305f6161c301360>>
+ * @generated SignedSource<<f0af7f056044feda3e7618f72f61f7d0>>
  */
 
 /**
@@ -22,20 +22,20 @@ package com.facebook.react.internal.featureflags
 import com.facebook.proguard.annotations.DoNotStrip
 
 @DoNotStrip
-interface ReactNativeFeatureFlagsProvider {
-  @DoNotStrip fun commonTestFlag(): Boolean
+public interface ReactNativeFeatureFlagsProvider {
+  @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip fun enableBackgroundExecutor(): Boolean
+  @DoNotStrip public fun enableBackgroundExecutor(): Boolean
 
-  @DoNotStrip fun useModernRuntimeScheduler(): Boolean
+  @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
-  @DoNotStrip fun enableMicrotasks(): Boolean
+  @DoNotStrip public fun enableMicrotasks(): Boolean
 
-  @DoNotStrip fun batchRenderingUpdatesInEventLoop(): Boolean
+  @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
-  @DoNotStrip fun enableSpannableBuildingUnification(): Boolean
+  @DoNotStrip public fun enableSpannableBuildingUnification(): Boolean
 
-  @DoNotStrip fun enableCustomDrawOrderFabric(): Boolean
+  @DoNotStrip public fun enableCustomDrawOrderFabric(): Boolean
 
-  @DoNotStrip fun enableFixForClippedSubviewsCrash(): Boolean
+  @DoNotStrip public fun enableFixForClippedSubviewsCrash(): Boolean
 }

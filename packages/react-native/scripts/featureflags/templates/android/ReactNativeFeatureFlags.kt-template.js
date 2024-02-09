@@ -3,6 +3,13 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ */
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
  * @format
@@ -10,7 +17,10 @@
 
 import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getKotlinTypeFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 export default function (definitions: FeatureFlagDefinitions): string {
@@ -32,7 +42,7 @@ package com.facebook.react.internal.featureflags
  *
  * All the methods are thread-safe if you handle \`override\` correctly.
  */
-object ReactNativeFeatureFlags {
+public object ReactNativeFeatureFlags {
   private var accessorProvider: () -> ReactNativeFeatureFlagsAccessor = { ReactNativeFeatureFlagsCxxAccessor() }
   private var accessor: ReactNativeFeatureFlagsAccessor = accessorProvider()
 
@@ -43,7 +53,7 @@ ${Object.entries(definitions.common)
    * ${flagConfig.description}
    */
   @JvmStatic
-  fun ${flagName}() = accessor.${flagName}()`,
+  public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(flagConfig.defaultValue)} = accessor.${flagName}()`,
   )
   .join('\n\n')}
 
@@ -62,7 +72,7 @@ ${Object.entries(definitions.common)
    * \`\`\`
    */
   @JvmStatic
-  fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
+  public fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
 
   /**
    * Removes the overridden feature flags and makes the API return default
@@ -74,7 +84,7 @@ ${Object.entries(definitions.common)
    * again before initializing the new one.
    */
   @JvmStatic
-  fun dangerouslyReset() {
+  public fun dangerouslyReset() {
     // This is necessary when the accessor interops with C++ and we need to
     // remove the overrides set there.
     accessor.dangerouslyReset()

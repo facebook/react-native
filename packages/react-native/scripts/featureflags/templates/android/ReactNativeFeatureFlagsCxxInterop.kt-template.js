@@ -34,7 +34,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
-object ReactNativeFeatureFlagsCxxInterop {
+public object ReactNativeFeatureFlagsCxxInterop {
   init {
     SoLoader.loadLibrary("react_featureflagsjni")
   }
@@ -42,7 +42,7 @@ object ReactNativeFeatureFlagsCxxInterop {
 ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
-      `  @DoNotStrip @JvmStatic external fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
+      `  @DoNotStrip @JvmStatic public external fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
         flagConfig.defaultValue,
       )}`,
   )

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b555581d91d1a59b7bfccd9c3d700df>>
+ * @generated SignedSource<<6e7270533df9a6ad0f3c5efc8645dd2b>>
  */
 
 /**
@@ -23,26 +23,26 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
-object ReactNativeFeatureFlagsCxxInterop {
+public object ReactNativeFeatureFlagsCxxInterop {
   init {
     SoLoader.loadLibrary("react_featureflagsjni")
   }
 
-  @DoNotStrip @JvmStatic external fun commonTestFlag(): Boolean
+  @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableBackgroundExecutor(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
 
-  @DoNotStrip @JvmStatic external fun useModernRuntimeScheduler(): Boolean
+  @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableMicrotasks(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
 
-  @DoNotStrip @JvmStatic external fun batchRenderingUpdatesInEventLoop(): Boolean
+  @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableSpannableBuildingUnification(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableSpannableBuildingUnification(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableCustomDrawOrderFabric(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableCustomDrawOrderFabric(): Boolean
 
-  @DoNotStrip @JvmStatic external fun enableFixForClippedSubviewsCrash(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
 
   @DoNotStrip @JvmStatic external fun override(provider: Any)
 
