@@ -216,7 +216,7 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
       view.layer.shouldRasterize ? view.traitCollection.displayScale : defaultView.layer.rasterizationScale;
 }
 
-RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
+RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, NSArray)
 RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
