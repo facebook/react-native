@@ -585,7 +585,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  public void setColor(@Nullable Integer color) {
+  public void setColor(@Nullable Long color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
