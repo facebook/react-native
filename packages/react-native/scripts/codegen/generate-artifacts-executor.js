@@ -32,7 +32,13 @@ const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
 
 const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${REACT_NATIVE_PACKAGE_ROOT_FOLDER}/../${CODEGEN_DEPENDENCY_NAME}`;
+// This is a change for 0.73-stable only since this piece of code was replaced:
+// https://github.com/facebook/react-native/commit/9071a3a0b0e11ad711927651bcb2412f553b6fe9
+const CODEGEN_NPM_PATH = path.dirname(
+  require.resolve(path.join(CODEGEN_DEPENDENCY_NAME, 'package.json'), {
+    paths: [REACT_NATIVE_PACKAGE_ROOT_FOLDER],
+  }),
+);
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
