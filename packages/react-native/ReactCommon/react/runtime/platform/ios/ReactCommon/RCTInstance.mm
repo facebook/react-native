@@ -12,6 +12,7 @@
 
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
@@ -263,6 +264,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
               [strongSelf registerSegmentWithId:segmentId path:path];
             }
           }];
+  [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
   _turboModuleManager = [[RCTTurboModuleManager alloc]
