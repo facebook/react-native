@@ -41,7 +41,7 @@ struct InstanceCallback {
 
 class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
  public:
-  ~Instance();
+  ~Instance() override;
   void initializeBridge(
       std::unique_ptr<InstanceCallback> callback,
       std::shared_ptr<JSExecutorFactory> jsef,
