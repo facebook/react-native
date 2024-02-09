@@ -14,14 +14,16 @@ const {
   getTagsFromCommitMessage,
 } = require('../find-and-publish-all-bumped-packages');
 
+const getPackagesMock = jest.fn();
 const execSync = jest.fn();
 const spawnSync = jest.fn();
-const forEachPackage = jest.fn();
 const execMock = jest.fn();
 
 jest.mock('child_process', () => ({execSync, spawnSync}));
 jest.mock('shelljs', () => ({exec: execMock}));
-jest.mock('../for-each-package', () => forEachPackage);
+jest.mock('../../releases/utils/monorepo', () => ({
+  getPackages: getPackagesMock,
+}));
 
 const BUMP_COMMIT_MESSAGE =
   'bumped packages versions\n\n#publish-packages-to-npm';
@@ -82,11 +84,13 @@ describe('findAndPublishAllBumpedPackages', () => {
       }
     });
     const mockedPackageNewVersion = '1.0.0';
-
-    forEachPackage.mockImplementationOnce(callback => {
-      callback('absolute/path/to/package', 'to/package', {
-        version: mockedPackageNewVersion,
-      });
+    getPackagesMock.mockResolvedValue({
+      '@react-native/package-a': {
+        path: 'absolute/path/to/package-a',
+        packageJson: {
+          version: mockedPackageNewVersion,
+        },
+      },
     });
 
     spawnSync.mockImplementationOnce(() => ({
@@ -105,17 +109,25 @@ describe('findAndPublishAllBumpedPackages', () => {
           return BUMP_COMMIT_MESSAGE;
       }
     });
-
-    forEachPackage.mockImplementationOnce(callback => {
-      callback('absolute/path/to/package-a', 'to/package-a', {
-        version: '0.72.1',
-      });
-      callback('absolute/path/to/package-b', 'to/package-b', {
-        version: '0.72.1',
-      });
-      callback('absolute/path/to/package-c', 'to/package-b', {
-        version: '0.72.0',
-      });
+    getPackagesMock.mockResolvedValue({
+      '@react-native/package-a': {
+        path: 'absolute/path/to/package-a',
+        packageJson: {
+          version: '0.72.1',
+        },
+      },
+      '@react-native/package-b': {
+        path: 'absolute/path/to/package-b',
+        packageJson: {
+          version: '0.72.1',
+        },
+      },
+      '@react-native/package-c': {
+        path: 'absolute/path/to/package-c',
+        packageJson: {
+          version: '0.72.0',
+        },
+      },
     });
 
     spawnSync.mockImplementationOnce(() => ({

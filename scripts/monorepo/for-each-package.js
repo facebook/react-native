@@ -40,6 +40,8 @@ const getDirectories = (source /*: string */) /*: Array<string> */ =>
     .map(directory => directory.name.toString());
 /**
  * Iterate through every package inside /packages (ignoring react-native) and call provided callback for each of them
+ *
+ * @deprecated Use scripts/releases/utils/monorepo.js#getPackages instead
  */
 const forEachPackage = (
   callback /*: (string, string, PackageJSON) => void */,
