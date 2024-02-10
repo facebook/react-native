@@ -37,16 +37,12 @@ export type Version = {
  */
 function parseVersion(
   versionStr /*: string */,
-  buildType /*: BuildType */,
+  buildType /*: ?BuildType */,
 ) /*: Version */ {
-  if (!validateBuildType(buildType)) {
-    throw new Error(`Unsupported build type: ${buildType}`);
-  }
-
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
 
-  const versionObject = {
+  const parsedVersion = {
     version,
     major,
     minor,
@@ -54,9 +50,14 @@ function parseVersion(
     prerelease,
   };
 
-  validateVersion(versionObject, buildType);
+  if (buildType != null) {
+    if (!validateBuildType(buildType)) {
+      throw new Error(`Unsupported build type: ${buildType}`);
+    }
+    validateVersion(parsedVersion, buildType);
+  }
 
-  return versionObject;
+  return parsedVersion;
 }
 
 function validateBuildType(

@@ -19,9 +19,17 @@ const updateTemplatePackage = require('./update-template-package');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
+const path = require('path');
 
-const GRADLE_FILE_PATH = 'packages/react-native/ReactAndroid/gradle.properties';
-const REACT_NATIVE_PACKAGE_JSON = 'packages/react-native/package.json';
+const REPO_ROOT = path.join(path.dirname(__filename), '..', '..');
+const GRADLE_FILE_PATH = path.join(
+  REPO_ROOT,
+  'packages/react-native/ReactAndroid/gradle.properties',
+);
+const REACT_NATIVE_PACKAGE_JSON = path.join(
+  REPO_ROOT,
+  'packages/react-native/package.json',
+);
 
 const config = {
   options: {
@@ -101,36 +109,47 @@ async function setReactNativePackageVersion(
   packageJson.version = version;
 
   await fs.writeFile(
-    'packages/react-native/package.json',
+    path.join(REPO_ROOT, 'packages/react-native/package.json'),
     JSON.stringify(packageJson, null, 2),
     'utf-8',
   );
 }
 
-function updateSourceFiles(versionInfo /*: Version */) {
+function updateSourceFiles(
+  versionInfo /*: Version */,
+) /*: Promise<Array<void>>*/ {
   const templateData = {version: versionInfo};
 
   return Promise.all([
     fs.writeFile(
-      'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+      path.join(
+        REPO_ROOT,
+        'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+      ),
       require('./templates/ReactNativeVersion.java-template')(templateData),
     ),
     fs.writeFile(
-      'packages/react-native/React/Base/RCTVersion.m',
+      path.join(REPO_ROOT, 'packages/react-native/React/Base/RCTVersion.m'),
       require('./templates/RCTVersion.m-template')(templateData),
     ),
     fs.writeFile(
-      'packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h',
+      path.join(
+        REPO_ROOT,
+        'packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h',
+      ),
       require('./templates/ReactNativeVersion.h-template')(templateData),
     ),
     fs.writeFile(
-      'packages/react-native/Libraries/Core/ReactNativeVersion.js',
+      path.join(
+        REPO_ROOT,
+        'packages/react-native/Libraries/Core/ReactNativeVersion.js',
+      ),
       require('./templates/ReactNativeVersion.js-template')(templateData),
     ),
   ]);
 }
 
-async function updateGradleFile(version /*: string */) {
+async function updateGradleFile(version /*: string */) /*: Promise<void> */ {
   const contents = await fs.readFile(GRADLE_FILE_PATH, 'utf-8');
 
   return fs.writeFile(
@@ -141,6 +160,8 @@ async function updateGradleFile(version /*: string */) {
 
 module.exports = {
   setReactNativeVersion,
+  updateGradleFile,
+  updateSourceFiles,
 };
 
 if (require.main === module) {

@@ -28,17 +28,34 @@ describe('setVersion', () => {
 
       return {
         ...originalFs,
-        writeFileSync: (packagePath, content) => {
-          expect(content).toMatchSnapshot(
-            path.basename(path.join(packagePath, '..')),
-          );
+        promises: {
+          ...originalFs.promises,
+          writeFile: (filePath, content) => {
+            expect(content).toMatchSnapshot(
+              // Make snapshot names resilient to platform path sep differences
+              path
+                .relative(path.join(__dirname, '__fixtures__'), filePath)
+                .split(path.sep)
+                .join('/'),
+            );
+          },
         },
       };
     });
   });
-  test('updates all public packages to version', () => {
-    setVersion('0.80.0');
+
+  test('updates monorepo for release-candidate', async () => {
+    await setVersion('0.80.0-rc.3');
   });
+
+  test('updates monorepo for stable version', async () => {
+    await setVersion('0.80.1');
+  });
+
+  test('updates monorepo for nightly', async () => {
+    await setVersion('0.81.0-nightly-29282302-abcd1234');
+  });
+
   afterAll(() => {
     jest.unmock('path');
     jest.unmock('fs');
