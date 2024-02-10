@@ -612,10 +612,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return true;
   }
 
+  @Override
   public void addUIManagerEventListener(UIManagerListener listener) {
     mListeners.add(listener);
   }
 
+  @Override
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mListeners.remove(listener);
   }
