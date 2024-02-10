@@ -12,6 +12,8 @@
 
 import type {SchemaType} from '../../CodegenSchema';
 
+const {IncludeTemplate} = require('./CppHelpers');
+
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
@@ -33,7 +35,7 @@ const FileTemplate = ({
 
 #pragma once
 
-#include <${headerPrefix}ShadowNodes.h>
+${IncludeTemplate({headerPrefix, file: 'ShadowNodes.h'})}
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook::react {
