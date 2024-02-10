@@ -15,10 +15,9 @@
 import type {BuildType} from '../releases/utils/version-utils';
 */
 
-const getAndUpdatePackages = require('../monorepo/get-and-update-packages');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
-const {setReactNativeVersion} = require('../releases/set-rn-version');
+const setVersion = require('../releases/set-version');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -74,18 +73,11 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     removeNewArchFlags();
   }
 
-  // Here we update the react-native package and template package with the right versions
-  // For releases, CircleCI job `prepare_package_for_release` handles this
+  // Set same version for all monorepo packages
+  // For stable releases, CircleCI job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
-    // Publish monorepo nightlies and prealphas if there are updates, returns the new version for each package
-    const monorepoVersions =
-      // $FlowFixMe[incompatible-call]
-      buildType === 'dry-run' ? null : getAndUpdatePackages(version, buildType);
-
     try {
-      // Update the react-native and template packages with the react-native version
-      // and nightly versions of monorepo deps
-      await setReactNativeVersion(version, monorepoVersions, buildType);
+      await setVersion(version);
     } catch (e) {
       console.error(`Failed to set version number to ${version}`);
       console.error(e);
