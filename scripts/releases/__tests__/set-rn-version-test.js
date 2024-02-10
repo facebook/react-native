@@ -24,14 +24,25 @@ jest.mock('fs', () => ({
 jest.mock('./../update-template-package', () => updateTemplatePackageMock);
 
 const {setReactNativeVersion} = require('../set-rn-version');
+const path = require('path');
+
+const REPO_ROOT = path.resolve(__filename, '../../../..');
 
 describe('setReactNativeVersion', () => {
   beforeAll(() => {
-    readFileMock.mockImplementation(path => {
-      if (path === 'packages/react-native/ReactAndroid/gradle.properties') {
+    readFileMock.mockImplementation(filePath => {
+      if (
+        filePath ===
+        path.join(
+          REPO_ROOT,
+          'packages/react-native/ReactAndroid/gradle.properties',
+        )
+      ) {
         return 'VERSION_NAME=1000.0.0\n';
       }
-      if (path === 'packages/react-native/package.json') {
+      if (
+        filePath === path.join(REPO_ROOT, 'packages/react-native/package.json')
+      ) {
         return JSON.stringify({
           name: 'react-native',
           version: '1000.0.0',
@@ -60,7 +71,10 @@ describe('setReactNativeVersion', () => {
     });
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
-      expect(formatGeneratedFile(contents)).toMatchSnapshot(filePath);
+      // Make snapshot names resilient to platform path sep differences
+      expect(formatGeneratedFile(contents)).toMatchSnapshot(
+        path.relative(REPO_ROOT, filePath).split(path.sep).join('/'),
+      );
     }
   });
 
@@ -73,7 +87,10 @@ describe('setReactNativeVersion', () => {
     });
 
     for (const [filePath, contents] of writeFileMock.mock.calls) {
-      expect(formatGeneratedFile(contents)).toMatchSnapshot(filePath);
+      // Make snapshot names resilient to platform path sep differences
+      expect(formatGeneratedFile(contents)).toMatchSnapshot(
+        path.relative(REPO_ROOT, filePath).split(path.sep).join('/'),
+      );
     }
   });
 });

@@ -12,7 +12,9 @@
 'use strict';
 
 const forEachPackage = require('../../monorepo/for-each-package');
-const {readFileSync, writeFileSync} = require('fs');
+const {updateGradleFile, updateSourceFiles} = require('../set-rn-version');
+const {parseVersion} = require('../utils/version-utils');
+const {promises: fs, readFileSync} = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
@@ -30,8 +32,9 @@ function getPublicPackages() {
   return packages;
 }
 
-function setVersion(version /*: string */) {
+function updatePackages(version /*: string */) {
   const publicPackages = getPublicPackages();
+  const writes = [];
 
   forEachPackage(
     (packageAbsolutePath, _, packageJson) => {
@@ -57,10 +60,12 @@ function setVersion(version /*: string */) {
         }
       }
 
-      writeFileSync(
-        path.join(packageAbsolutePath, 'package.json'),
-        JSON.stringify(packageJson, null, 2) + '\n',
-        'utf-8',
+      writes.push(
+        fs.writeFile(
+          path.join(packageAbsolutePath, 'package.json'),
+          JSON.stringify(packageJson, null, 2) + '\n',
+          'utf-8',
+        ),
       );
 
       // Update template package.json
@@ -92,18 +97,36 @@ function setVersion(version /*: string */) {
             }
           }
         }
-        writeFileSync(
-          templatePackageJsonPath,
-          JSON.stringify(templatePackageJson, null, 2) + '\n',
-          'utf-8',
+        writes.push(
+          fs.writeFile(
+            templatePackageJsonPath,
+            JSON.stringify(templatePackageJson, null, 2) + '\n',
+            'utf-8',
+          ),
         );
       }
     },
     {includeReactNative: true},
   );
+
+  return Promise.all(writes);
 }
 
-module.exports = setVersion;
+async function setVersion(version /*: string */) {
+  const parsedVersion = parseVersion(version);
+
+  await updateSourceFiles(parsedVersion);
+  await updateGradleFile(parsedVersion.version);
+  await updatePackages(parsedVersion.version);
+}
+
+/*
+ Sets a singular version for the entire monorepo (including `react-native` package)
+ * Update all public npm packages under `<root>/packages` to specified version
+ * Update all npm dependencies of a `<root>/packages` package to specified version
+ * Update npm dependencies of the template app (`packages/react-native/template`) to specified version
+ * Update `packages/react-native` native source and build files to specified version
+ */
 
 if (require.main === module) {
   const {toVersion} = yargs(process.argv.slice(2))
@@ -113,10 +136,18 @@ if (require.main === module) {
       args =>
         args.positional('to-version', {
           type: 'string',
-          description: 'Set the version of all packages to this value',
+          description: 'Sets entire monorepo to version provided',
           required: true,
         }),
     )
     .parseSync();
-  setVersion(toVersion);
+  setVersion(toVersion).then(
+    () => process.exit(0),
+    error => {
+      console.error(`Failed to set version ${toVersion}\n`, error);
+      process.exit(1);
+    },
+  );
 }
+
+module.exports = setVersion;

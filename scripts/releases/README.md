@@ -6,14 +6,18 @@ Scripts related to creating a React Native release. These are the lower level en
 
 For information on command arguments, run `node <command> --help`.
 
-### `remove-new-arch-flags.js`
+### `remove-new-arch-flags`
 
 Updates native build files to disable the New Architecture.
 
-### `set-rn-version.js`
+### `set-version`
+
+Sets a singular version for the entire monorepo (including `react-native` package)
+
+### `set-rn-version`
 
 Updates relevant files in the `react-native` package and template to materialize the given release version.
 
-### `update-template-package.js`
+### `update-template-package`
 
-Updates local dependencies in the template `package.json`.
+Updates workspace dependencies in the template app`package.json`
