@@ -16,14 +16,16 @@ const {
 
 const getPackagesMock = jest.fn();
 const execSync = jest.fn();
-const spawnSync = jest.fn();
 const execMock = jest.fn();
+const fetchMock = jest.fn();
 
-jest.mock('child_process', () => ({execSync, spawnSync}));
+jest.mock('child_process', () => ({execSync}));
 jest.mock('shelljs', () => ({exec: execMock}));
 jest.mock('../../releases/utils/monorepo', () => ({
   getPackages: getPackagesMock,
 }));
+// $FlowIgnore[cannot-write]
+global.fetch = fetchMock;
 
 const BUMP_COMMIT_MESSAGE =
   'bumped packages versions\n\n#publish-packages-to-npm';
@@ -76,7 +78,7 @@ describe('findAndPublishAllBumpedPackages', () => {
     `);
   });
 
-  test('should throw an error if updated version is not 0.x.y', async () => {
+  test('should throw an error if updated version is not 0.x.x', async () => {
     execSync.mockImplementation((command: string) => {
       switch (command) {
         case 'git log -1 --pretty=%B':
@@ -93,16 +95,16 @@ describe('findAndPublishAllBumpedPackages', () => {
       },
     });
 
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: `-  "version": "0.72.0"\n+  "version": "${mockedPackageNewVersion}"\n`,
-    }));
+    fetchMock.mockResolvedValueOnce({
+      json: () => Promise.resolve({versions: {}}),
+    });
 
     await expect(findAndPublishAllBumpedPackages()).rejects.toThrow(
-      `Package version expected to be 0.x.y, but received ${mockedPackageNewVersion}`,
+      `Package version expected to be 0.x.x, but received ${mockedPackageNewVersion}`,
     );
   });
 
-  test('should publish all changed packages', async () => {
+  test('should publish all updated packages', async () => {
     execSync.mockImplementation((command: string) => {
       switch (command) {
         case 'git log -1 --pretty=%B':
@@ -111,39 +113,48 @@ describe('findAndPublishAllBumpedPackages', () => {
     });
     getPackagesMock.mockResolvedValue({
       '@react-native/package-a': {
+        name: '@react-native/package-a',
         path: 'absolute/path/to/package-a',
         packageJson: {
           version: '0.72.1',
         },
       },
       '@react-native/package-b': {
+        name: '@react-native/package-b',
         path: 'absolute/path/to/package-b',
         packageJson: {
           version: '0.72.1',
         },
       },
       '@react-native/package-c': {
+        name: '@react-native/package-c',
         path: 'absolute/path/to/package-c',
         packageJson: {
           version: '0.72.0',
         },
       },
     });
-
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: `-  "version": "0.72.0"\n+  "version": "0.72.1"\n`,
-    }));
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: `-  "version": "0.72.0"\n+  "version": "0.72.1"\n`,
-    }));
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: '\n',
-    }));
-
+    fetchMock.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          versions: {'0.72.0': {}},
+        }),
+    });
     execMock.mockImplementation(() => ({code: 0}));
+
+    const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     await findAndPublishAllBumpedPackages();
 
+    expect(consoleLog.mock.calls.flat().join('\n')).toMatchInlineSnapshot(`
+      "Discovering updated packages
+      - Skipping @react-native/package-c (0.72.0 already present on npm)
+      Done ✅
+      Publishing updated packages to npm
+      - Publishing @react-native/package-a (0.72.1)
+      - Publishing @react-native/package-b (0.72.1)
+      Done ✅"
+    `);
     expect(execMock.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
