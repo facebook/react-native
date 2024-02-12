@@ -32,7 +32,10 @@ function getPublicPackages() {
   return packages;
 }
 
-function updatePackages(version /*: string */) {
+function updatePackages(
+  version /*: string */,
+  skipReactNativeVersion /*: ?boolean */,
+) {
   const publicPackages = getPublicPackages();
   const writes = [];
 
@@ -42,7 +45,15 @@ function updatePackages(version /*: string */) {
         return;
       }
 
-      packageJson.version = version;
+      if (
+        packageJson.name === 'react-native' &&
+        skipReactNativeVersion === true
+      ) {
+        // Don't set react-native's version if skipReactNativeVersion
+        // but still update its dependencies
+      } else {
+        packageJson.version = version;
+      }
 
       if (packageJson.dependencies != null) {
         for (const dependency of Object.keys(packageJson.dependencies)) {
@@ -82,6 +93,14 @@ function updatePackages(version /*: string */) {
           for (const dependency of Object.keys(
             templatePackageJson.dependencies,
           )) {
+            if (
+              dependency === 'react-native' &&
+              skipReactNativeVersion === true
+            ) {
+              // Skip updating react-native version in template package.json
+              continue;
+            }
+
             if (publicPackages.has(dependency)) {
               templatePackageJson.dependencies[dependency] = version;
             }
@@ -112,24 +131,34 @@ function updatePackages(version /*: string */) {
   return Promise.all(writes);
 }
 
-async function setVersion(version /*: string */) {
+/**
+ * Sets a singular version for the entire monorepo.
+ *
+ * Set `skipReactNativeVersion` to true when we don't want to update the version of react-native.
+ * The use-case is when we update versions on `main` after a release cut. The version of react-native
+ * stays 1000.0.0.
+ *
+ * This script does the following:
+ * - Update all public npm packages under `<root>/packages` to specified version
+ * - Update all npm dependencies of a `<root>/packages` package to specified version
+ * - Update npm dependencies of the template app (`packages/react-native/template`) to specified version
+ * - Update `packages/react-native` native source and build files to specified version if relevant
+ */
+async function setVersion(
+  version /*: string */,
+  skipReactNativeVersion /*: ?boolean */,
+) {
   const parsedVersion = parseVersion(version);
 
-  await updateSourceFiles(parsedVersion);
-  await updateGradleFile(parsedVersion.version);
-  await updatePackages(parsedVersion.version);
+  if (skipReactNativeVersion !== true) {
+    await updateSourceFiles(parsedVersion);
+    await updateGradleFile(parsedVersion.version);
+  }
+  await updatePackages(parsedVersion.version, skipReactNativeVersion);
 }
 
-/*
- Sets a singular version for the entire monorepo (including `react-native` package)
- * Update all public npm packages under `<root>/packages` to specified version
- * Update all npm dependencies of a `<root>/packages` package to specified version
- * Update npm dependencies of the template app (`packages/react-native/template`) to specified version
- * Update `packages/react-native` native source and build files to specified version
- */
-
 if (require.main === module) {
-  const {toVersion} = yargs(process.argv.slice(2))
+  const {toVersion, skipReactNativeVersion} = yargs(process.argv.slice(2))
     .command(
       '$0 <to-version>',
       'Update all monorepo packages to <to-version>',
@@ -140,8 +169,12 @@ if (require.main === module) {
           required: true,
         }),
     )
+    .option('skip-react-native-version', {
+      description: "Don't update the version of the react-native package",
+      type: 'boolean',
+    })
     .parseSync();
-  setVersion(toVersion).then(
+  setVersion(toVersion, !!skipReactNativeVersion).then(
     () => process.exit(0),
     error => {
       console.error(`Failed to set version ${toVersion}\n`, error);

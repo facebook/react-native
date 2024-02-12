@@ -596,3 +596,81 @@ exports[`setVersion updates monorepo for stable version: packages/react-native/t
 }
 "
 `;
+
+exports[`setVersion updates monorepo on main after release cut: packages/monorepo-pkg-a/package.json 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-a\\",
+  \\"version\\": \\"0.82.0-main\\",
+  \\"description\\": \\"@monorepo/pkg-a\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-b\\": \\"0.82.0-main\\",
+    \\"@monorepo/other\\": \\"0.0.1\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-c\\": \\"0.82.0-main\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo on main after release cut: packages/monorepo-pkg-b/package.json 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-b\\",
+  \\"version\\": \\"0.82.0-main\\",
+  \\"description\\": \\"@monorepo/pkg-b\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo on main after release cut: packages/monorepo-pkg-c/package.json 1`] = `
+"{
+  \\"name\\": \\"@monorepo/pkg-c\\",
+  \\"version\\": \\"0.82.0-main\\",
+  \\"description\\": \\"@monorepo/pkg-c\\",
+  \\"dependencies\\": {
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo on main after release cut: packages/react-native/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.82.0-main\\",
+    \\"@monorepo/pkg-b\\": \\"0.82.0-main\\",
+    \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
+    \\"metro-config\\": \\"^0.80.3\\",
+    \\"metro-runtime\\": \\"^0.80.3\\"
+  }
+}
+"
+`;
+
+exports[`setVersion updates monorepo on main after release cut: packages/react-native/template/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native-test-template\\",
+  \\"version\\": \\"0.0.1\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"react\\": \\"18.2.0\\",
+    \\"react-native\\": \\"1000.0.0\\"
+  },
+  \\"devDependencies\\": {
+    \\"@monorepo/pkg-a\\": \\"0.82.0-main\\",
+    \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
+    \\"@types/react\\": \\"^18.2.6\\",
+    \\"@types/react-test-renderer\\": \\"^18.0.0\\"
+  }
+}
+"
+`;

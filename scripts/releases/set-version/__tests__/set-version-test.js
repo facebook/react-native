@@ -11,7 +11,26 @@
 const setVersion = require('../index');
 const path = require('path');
 
+let customWriteFileExpect = null;
+const writeFileMock = jest.fn().mockImplementation((filePath, content) => {
+  if (customWriteFileExpect != null) {
+    customWriteFileExpect(filePath, content);
+  }
+
+  expect(content).toMatchSnapshot(
+    // Make snapshot names resilient to platform path sep differences
+    path
+      .relative(path.join(__dirname, '__fixtures__'), filePath)
+      .split(path.sep)
+      .join('/'),
+  );
+});
+
 describe('setVersion', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   beforeAll(() => {
     jest.mock('path', () => {
       // $FlowIgnore[underconstrained-implicit-instantiation]
@@ -30,15 +49,7 @@ describe('setVersion', () => {
         ...originalFs,
         promises: {
           ...originalFs.promises,
-          writeFile: (filePath, content) => {
-            expect(content).toMatchSnapshot(
-              // Make snapshot names resilient to platform path sep differences
-              path
-                .relative(path.join(__dirname, '__fixtures__'), filePath)
-                .split(path.sep)
-                .join('/'),
-            );
-          },
+          writeFile: writeFileMock,
         },
       };
     });
@@ -54,6 +65,36 @@ describe('setVersion', () => {
 
   test('updates monorepo for nightly', async () => {
     await setVersion('0.81.0-nightly-29282302-abcd1234');
+  });
+
+  test('updates monorepo on main after release cut', async () => {
+    customWriteFileExpect = (filePath /*: string */, content /*: string */) => {
+      const reactNativePath = path.join('react-native', 'package.json');
+      if (filePath.endsWith(reactNativePath)) {
+        expect(JSON.parse(content).version).toBe('1000.0.0');
+      }
+      const templatePath = path.join(
+        'react-native',
+        'template',
+        'package.json',
+      );
+      if (filePath.endsWith(templatePath)) {
+        expect(JSON.parse(content).dependencies['react-native']).toBe(
+          '1000.0.0',
+        );
+      }
+    };
+
+    await setVersion('0.82.0-main', true);
+
+    // Make sure we don't update any react-native source or build files
+    writeFileMock.mock.calls.forEach(([filePath, content]) => {
+      if (!filePath.endsWith('package.json')) {
+        throw new Error(
+          `set-version should not update any react-native source or build files. Updated ${filePath}`,
+        );
+      }
+    });
   });
 
   afterAll(() => {
