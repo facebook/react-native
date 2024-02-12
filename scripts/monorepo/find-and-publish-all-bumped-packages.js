@@ -12,10 +12,8 @@
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../releases/utils/monorepo');
 const {PUBLISH_PACKAGES_TAG} = require('./constants');
-const {execSync, spawnSync} = require('child_process');
-const path = require('path');
+const {execSync} = require('child_process');
 
-const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 async function findAndPublishAllBumpedPackages() {
@@ -36,76 +34,66 @@ async function findAndPublishAllBumpedPackages() {
     return;
   }
 
-  const tags = getTagsFromCommitMessage(commitMessage);
-
-  console.log('Traversing all packages inside /packages...');
+  console.log('Discovering updated packages');
 
   const packages = await getPackages({
     includeReactNative: false,
   });
+  const packagesToUpdate = [];
 
-  for (const package of Object.values(packages)) {
-    const {stdout: diff, stderr: commitDiffStderr} = spawnSync(
-      'git',
-      [
-        'log',
-        '-p',
-        '--format=""',
-        'HEAD~1..HEAD',
-        `${package.path}/package.json`,
-      ],
-      {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
-    );
+  await Promise.all(
+    Object.values(packages).map(async package => {
+      const version = package.packageJson.version;
 
-    if (commitDiffStderr) {
-      console.log(
-        `\u274c Failed to get latest committed changes for ${package.name}:`,
+      if (!version.startsWith('0.')) {
+        throw new Error(
+          `Package version expected to be 0.x.x, but received ${version}`,
+        );
+      }
+
+      const response = await fetch(
+        'https://registry.npmjs.org/' + package.name,
       );
-      console.log(commitDiffStderr);
+      const {versions: versionsInRegistry} = await response.json();
 
-      process.exit(1);
-    }
+      if (version in versionsInRegistry) {
+        console.log(
+          `- Skipping ${package.name} (${version} already present on npm)`,
+        );
+        return;
+      }
 
-    const previousVersionPatternMatches = diff
-      .toString()
-      .match(/- {2}"version": "([0-9]+.[0-9]+.[0-9]+)"/);
+      packagesToUpdate.push(package.name);
+    }),
+  );
 
-    if (!previousVersionPatternMatches) {
-      console.log(`\uD83D\uDD0E No version bump for ${package.name}`);
+  console.log('Done ✅');
+  console.log('Publishing updated packages to npm');
 
-      return;
-    }
+  const tags = getTagsFromCommitMessage(commitMessage);
 
-    const [, previousVersion] = previousVersionPatternMatches;
-    const nextVersion = package.packageJson.version;
-
+  for (const packageName of packagesToUpdate) {
+    const package = packages[packageName];
     console.log(
-      `\uD83D\uDCA1 ${package.name} was updated: ${previousVersion} -> ${nextVersion}`,
+      `- Publishing ${package.name} (${package.packageJson.version})`,
     );
-
-    if (!nextVersion.startsWith('0.')) {
-      throw new Error(
-        `Package version expected to be 0.x.y, but received ${nextVersion}`,
-      );
-    }
 
     const result = publishPackage(package.path, {
       tags,
       otp: NPM_CONFIG_OTP,
     });
-    if (result.code !== 0) {
-      console.log(
-        `\u274c Failed to publish version ${nextVersion} of ${package.name}. npm publish exited with code ${result.code}:`,
-      );
-      console.log(result.stderr);
 
-      process.exit(1);
-    } else {
-      console.log(
-        `\u2705 Successfully published new version of ${package.name}`,
+    if (result.code !== 0) {
+      console.error(
+        `Failed to publish ${package.name}. npm publish exited with code ${result.code}:`,
       );
+      console.error(result.stderr);
+      process.exitCode = 1;
+      return;
     }
   }
+
+  console.log('Done ✅');
 }
 
 function getTagsFromCommitMessage(msg /*: string */) /*: Array<string> */ {
