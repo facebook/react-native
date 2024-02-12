@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e7270533df9a6ad0f3c5efc8645dd2b>>
+ * @generated SignedSource<<42f8526cf5c3ca10ac068c3bc30433ca>>
  */
 
 /**
@@ -44,7 +44,7 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableFixForClippedSubviewsCrash(): Boolean
 
-  @DoNotStrip @JvmStatic external fun override(provider: Any)
+  @DoNotStrip @JvmStatic public external fun override(provider: Any)
 
-  @DoNotStrip @JvmStatic external fun dangerouslyReset()
+  @DoNotStrip @JvmStatic public external fun dangerouslyReset()
 }

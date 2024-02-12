@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f3eba4807f850a67572c0ea0ff33dbd>>
+ * @generated SignedSource<<de038facca377ff545878c7eba4141df>>
  */
 
 /**
@@ -91,7 +91,7 @@ public object ReactNativeFeatureFlags {
    * ```
    */
   @JvmStatic
-  public fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
+  public fun override(provider: ReactNativeFeatureFlagsProvider): Unit = accessor.override(provider)
 
   /**
    * Removes the overridden feature flags and makes the API return default
