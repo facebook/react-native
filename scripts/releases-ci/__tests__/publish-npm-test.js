@@ -13,7 +13,7 @@ const echoMock = jest.fn();
 const exitMock = jest.fn();
 const consoleErrorMock = jest.fn();
 const isTaggedLatestMock = jest.fn();
-const setReactNativeVersionMock = jest.fn();
+const setVersionMock = jest.fn();
 const publishAndroidArtifactsToMavenMock = jest.fn();
 const removeNewArchFlags = jest.fn();
 const env = process.env;
@@ -29,19 +29,11 @@ jest
     getCurrentCommit: () => 'currentco_mmit',
     isTaggedLatest: isTaggedLatestMock,
   }))
-  .mock('path', () => ({
-    ...jest.requireActual('path'),
-    join: () => '../../packages/react-native',
-  }))
-  .mock('fs')
   .mock('../../releases/utils/release-utils', () => ({
     generateAndroidArtifacts: jest.fn(),
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
-  .mock('../../releases/set-rn-version', () => ({
-    setReactNativeVersion: setReactNativeVersionMock,
-  }))
-  .mock('../../monorepo/get-and-update-packages')
+  .mock('../../releases/set-version', () => setVersionMock)
   .mock('../../releases/remove-new-arch-flags', () => ({
     removeNewArchFlags,
   }));
@@ -49,6 +41,10 @@ jest
 const date = new Date('2023-04-20T23:52:39.543Z');
 
 const {publishNpm} = require('../publish-npm');
+const path = require('path');
+
+const REPO_ROOT = path.resolve(__filename, '../../../..');
+
 let consoleError;
 
 describe('publish-npm', () => {
@@ -88,11 +84,7 @@ describe('publish-npm', () => {
       expect(echoMock).toHaveBeenCalledWith(
         'Skipping `npm publish` because --dry-run is set.',
       );
-      expect(setReactNativeVersionMock).toBeCalledWith(
-        '1000.0.0-currentco',
-        null,
-        'dry-run',
-      );
+      expect(setVersionMock).toBeCalledWith('1000.0.0-currentco');
     });
   });
 
@@ -106,6 +98,7 @@ describe('publish-npm', () => {
       await publishNpm('nightly');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
+      expect(setVersionMock).toBeCalledWith(expectedVersion);
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'nightly',
@@ -123,7 +116,7 @@ describe('publish-npm', () => {
     it('should fail to set version', async () => {
       execMock.mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0});
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
-      setReactNativeVersionMock.mockImplementation(() => {
+      setVersionMock.mockImplementation(() => {
         throw new Error('something went wrong');
       });
 
@@ -166,7 +159,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag 0.81-stable --otp otp`,
-        {cwd: '../../packages/react-native'},
+        {cwd: path.join(REPO_ROOT, 'packages/react-native')},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
@@ -191,7 +184,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../../packages/react-native'},
+        {cwd: path.join(REPO_ROOT, 'packages/react-native')},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
@@ -216,7 +209,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag latest --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../../packages/react-native'},
+        {cwd: path.join(REPO_ROOT, 'packages/react-native')},
       );
       expect(echoMock).toHaveBeenCalledWith(`Failed to publish package to npm`);
       expect(exitMock).toHaveBeenCalledWith(1);
@@ -239,7 +232,7 @@ describe('publish-npm', () => {
       );
       expect(execMock).toHaveBeenCalledWith(
         `npm publish --tag next --otp ${process.env.NPM_CONFIG_OTP}`,
-        {cwd: '../../packages/react-native'},
+        {cwd: path.join(REPO_ROOT, 'packages/react-native')},
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
