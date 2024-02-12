@@ -20,14 +20,18 @@ export default function getDevToolsFrontendUrl(
   devServerUrl: string,
 ): string {
   const scheme = new URL(webSocketDebuggerUrl).protocol.slice(0, -1);
-  const appUrl = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
   const webSocketUrlWithoutProtocol = encodeURIComponent(
     webSocketDebuggerUrl.replace(/^wss?:\/\//, ''),
   );
+  const appUrl = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
 
-  const devToolsUrl = `${appUrl}?${scheme}=${webSocketUrlWithoutProtocol}&sources.hide_add_folder=true`;
+  const searchParams = new URLSearchParams([
+    [scheme, webSocketUrlWithoutProtocol],
+    ['sources.hide_add_folder', 'true'],
+  ]);
+  if (experiments.enableNetworkInspector) {
+    searchParams.append('unstable_enableNetworkPanel', 'true');
+  }
 
-  return experiments.enableNetworkInspector
-    ? `${devToolsUrl}&unstable_enableNetworkPanel=true`
-    : devToolsUrl;
+  return appUrl + '?' + searchParams.toString();
 }
