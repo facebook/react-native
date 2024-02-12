@@ -675,12 +675,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             return View.NO_ID;
           }
 
+          @NonNull
           @Override
           public String toString() {
             String propsString =
-                IS_DEVELOPMENT_ENVIRONMENT
-                    ? (props != null ? props.toHashMap().toString() : "<null>")
-                    : "<hidden>";
+                IS_DEVELOPMENT_ENVIRONMENT ? props.toHashMap().toString() : "<hidden>";
             return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
           }
         };
@@ -972,7 +971,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   private void postChoreographerCallbackIfNecessary() {
-    if (ReactFeatureFlags.enableOnDemandReactChoreographer == false) {
+    if (!ReactFeatureFlags.enableOnDemandReactChoreographer) {
       return;
     }
 
@@ -1159,6 +1158,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             return View.NO_ID;
           }
 
+          @NonNull
           @Override
           public String toString() {
             return "CLEAR_JS_RESPONDER";
@@ -1245,7 +1245,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
                     }
 
                     // Collect surface IDs for all the mount items
-                    List<Integer> surfaceIds = new ArrayList();
+                    List<Integer> surfaceIds = new ArrayList<>();
                     for (MountItem mountItem : mountItems) {
                       if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
                         surfaceIds.add(mountItem.getSurfaceId());
