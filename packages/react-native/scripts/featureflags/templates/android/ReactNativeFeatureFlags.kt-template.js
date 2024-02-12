@@ -72,7 +72,7 @@ ${Object.entries(definitions.common)
    * \`\`\`
    */
   @JvmStatic
-  public fun override(provider: ReactNativeFeatureFlagsProvider) = accessor.override(provider)
+  public fun override(provider: ReactNativeFeatureFlagsProvider): Unit = accessor.override(provider)
 
   /**
    * Removes the overridden feature flags and makes the API return default

@@ -48,9 +48,9 @@ ${Object.entries(definitions.common)
   )
   .join('\n\n')}
 
-  @DoNotStrip @JvmStatic external fun override(provider: Any)
+  @DoNotStrip @JvmStatic public external fun override(provider: Any)
 
-  @DoNotStrip @JvmStatic external fun dangerouslyReset()
+  @DoNotStrip @JvmStatic public external fun dangerouslyReset()
 }
 `);
 }

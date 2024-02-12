@@ -40,12 +40,12 @@ private constructor(
         MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
         mutableListOf()
 
-    fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
+    public fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
       cxxReactPackageProviders.add { _ -> provider() }
       return this
     }
 
-    fun addCxxReactPackage(
+    public fun addCxxReactPackage(
         provider: (context: ReactApplicationContext) -> CxxReactPackage
     ): Builder {
       cxxReactPackageProviders.add(provider)
