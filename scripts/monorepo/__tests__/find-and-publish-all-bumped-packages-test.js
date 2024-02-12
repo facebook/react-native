@@ -172,6 +172,98 @@ describe('findAndPublishAllBumpedPackages', () => {
       ]
     `);
   });
+
+  describe('retry behaviour', () => {
+    beforeEach(() => {
+      execSync.mockImplementation((command: string) => {
+        switch (command) {
+          case 'git log -1 --pretty=%B':
+            return BUMP_COMMIT_MESSAGE;
+        }
+      });
+      getPackagesMock.mockResolvedValue({
+        '@react-native/package-a': {
+          name: '@react-native/package-a',
+          path: 'absolute/path/to/package-a',
+          packageJson: {
+            version: '0.72.1',
+          },
+        },
+        '@react-native/package-b': {
+          name: '@react-native/package-b',
+          path: 'absolute/path/to/package-b',
+          packageJson: {
+            version: '0.72.1',
+          },
+        },
+      });
+      fetchMock.mockResolvedValue({
+        json: () =>
+          Promise.resolve({
+            versions: {'0.72.0': {}},
+          }),
+      });
+    });
+
+    test('should retry once if `npm publish` fails', async () => {
+      execMock.mockImplementationOnce(() => ({code: 0}));
+      execMock.mockImplementationOnce(() => ({
+        code: 1,
+        stderr: '503 Service Unavailable',
+      }));
+      execMock.mockImplementationOnce(() => ({code: 0}));
+
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      await findAndPublishAllBumpedPackages();
+
+      expect(consoleError.mock.calls.flat().join('\n')).toMatchInlineSnapshot(`
+        "Failed to publish @react-native/package-b. npm publish exited with code 1:
+        503 Service Unavailable"
+      `);
+      expect(execMock.mock.calls).toMatchInlineSnapshot(`
+        Array [
+          Array [
+            "npm publish",
+            Object {
+              "cwd": "absolute/path/to/package-a",
+            },
+          ],
+          Array [
+            "npm publish",
+            Object {
+              "cwd": "absolute/path/to/package-b",
+            },
+          ],
+          Array [
+            "npm publish",
+            Object {
+              "cwd": "absolute/path/to/package-b",
+            },
+          ],
+        ]
+      `);
+    });
+
+    test('should exit with error if one or more packages fail after retry', async () => {
+      execMock.mockImplementationOnce(() => ({code: 0}));
+      execMock.mockImplementation(() => ({
+        code: 1,
+        stderr: '503 Service Unavailable',
+      }));
+
+      const consoleLog = jest
+        .spyOn(console, 'log')
+        .mockImplementation(() => {});
+
+      await findAndPublishAllBumpedPackages();
+
+      expect(consoleLog).toHaveBeenLastCalledWith('--- Retrying once! ---');
+      expect(process.exitCode).toBe(1);
+    });
+  });
 });
 
 describe('getTagsFromCommitMessage', () => {

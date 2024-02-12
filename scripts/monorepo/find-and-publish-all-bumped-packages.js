@@ -71,6 +71,7 @@ async function findAndPublishAllBumpedPackages() {
   console.log('Publishing updated packages to npm');
 
   const tags = getTagsFromCommitMessage(commitMessage);
+  const failedPackages = [];
 
   for (const packageName of packagesToUpdate) {
     const package = packages[packageName];
@@ -78,19 +79,21 @@ async function findAndPublishAllBumpedPackages() {
       `- Publishing ${package.name} (${package.packageJson.version})`,
     );
 
-    const result = publishPackage(package.path, {
-      tags,
-      otp: NPM_CONFIG_OTP,
-    });
-
-    if (result.code !== 0) {
-      console.error(
-        `Failed to publish ${package.name}. npm publish exited with code ${result.code}:`,
-      );
-      console.error(result.stderr);
-      process.exitCode = 1;
-      return;
+    try {
+      runPublish(package.name, package.path, tags);
+    } catch {
+      console.log('--- Retrying once! ---');
+      try {
+        runPublish(package.name, package.path, tags);
+      } catch (e) {
+        failedPackages.push(package.name);
+      }
     }
+  }
+
+  if (failedPackages.length) {
+    process.exitCode = 1;
+    return;
   }
 
   console.log('Done ✅');
@@ -104,6 +107,25 @@ function getTagsFromCommitMessage(msg /*: string */) /*: Array<string> */ {
     .trim()
     .split('&')
     .slice(1);
+}
+
+function runPublish(
+  packageName /*: string */,
+  packagePath /*: string */,
+  tags /*: Array<string> */,
+) {
+  const result = publishPackage(packagePath, {
+    tags,
+    otp: NPM_CONFIG_OTP,
+  });
+
+  if (result.code !== 0) {
+    console.error(
+      `Failed to publish ${packageName}. npm publish exited with code ${result.code}:`,
+    );
+    console.error(result.stderr);
+    throw new Error(result.stderr);
+  }
 }
 
 if (require.main === module) {
