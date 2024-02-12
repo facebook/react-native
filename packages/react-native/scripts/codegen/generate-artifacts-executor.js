@@ -195,33 +195,34 @@ function handleThirdPartyLibraries(
   codegenConfigKey,
 ) {
   // Determine which of these are codegen-enabled libraries
-  const configDir =
-    baseCodegenConfigFileDir ||
-    path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, '..');
+  const configDir = baseCodegenConfigFileDir || process.cwd();
   console.log(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${configDir}`,
   );
 
   // Handle third-party libraries
+  const resolveOptions = {paths: [configDir]};
   Object.keys(dependencies).forEach(dependency => {
     if (dependency === REACT_NATIVE_DEPENDENCY_NAME) {
       // react-native should already be added.
       return;
     }
-    const codegenConfigFileDir = path.join(configDir, dependency);
-    const configFilePath = path.join(
-      codegenConfigFileDir,
-      codegenConfigFilename,
-    );
-    if (fs.existsSync(configFilePath)) {
+
+    try {
+      const configFilePath = require.resolve(
+        `${dependency}/${codegenConfigFilename}`,
+        resolveOptions,
+      );
       const configFile = JSON.parse(fs.readFileSync(configFilePath));
       extractLibrariesFromJSON(
         configFile,
         libraries,
         codegenConfigKey,
         dependency,
-        codegenConfigFileDir,
+        path.dirname(configFilePath),
       );
+    } catch (_) {
+      // ignore
     }
   });
 }
