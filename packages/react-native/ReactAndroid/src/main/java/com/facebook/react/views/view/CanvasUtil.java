@@ -10,6 +10,7 @@ package com.facebook.react.views.view;
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.os.Build;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
@@ -19,6 +20,7 @@ import javax.annotation.Nullable;
  * href="https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/ui/ui-graphics/src/androidMain/kotlin/androidx/compose/ui/graphics/CanvasUtils.android.kt;drc=3b2dde134afab8d58b9c39ad4820eaf9a6e014a9">
  * Compose canvas utils </a>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class CanvasUtil {
 
   private CanvasUtil() {}

@@ -7,11 +7,13 @@
 
 package com.facebook.react.views.drawer.events;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
 
   public static final String EVENT_NAME = "topDrawerOpen";

@@ -9,6 +9,7 @@ package com.facebook.react.views.debuggingoverlay;
 
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -22,6 +23,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
 public class DebuggingOverlayManager extends SimpleViewManager<DebuggingOverlay> {
 
