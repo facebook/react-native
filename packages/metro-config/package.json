@@ -18,7 +18,13 @@
   "engines": {
     "node": ">=18"
   },
-  "exports": "./index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@react-native/js-polyfills": "0.74.0",
     "@react-native/metro-babel-transformer": "0.74.0",

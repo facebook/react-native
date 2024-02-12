@@ -4,13 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
- * @noformat
+ * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
-/*:: import type {ConfigT} from 'metro-config'; */
+import type {ConfigT} from 'metro-config';
 
-const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
+import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
@@ -36,12 +37,12 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
   ].join('|'),
 );
 
+export {mergeConfig} from 'metro-config';
+
 /**
  * Get the base Metro configuration for a React Native project.
  */
-function getDefaultConfig(
-  projectRoot /*: string */
-) /*: ConfigT */ {
+export function getDefaultConfig(projectRoot: string): ConfigT {
   const config = {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
@@ -53,15 +54,16 @@ function getDefaultConfig(
       getModulesRunBeforeMainModule: () => [
         require.resolve('react-native/Libraries/Core/InitializeCore'),
       ],
+      // $FlowFixMe[untyped-import]
       getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {
       port: Number(process.env.RCT_METRO_PORT) || 8081,
     },
     symbolicator: {
-      customizeFrame: (frame /*: $ReadOnly<{file: ?string, ...}>*/) => {
+      customizeFrame: (frame: $ReadOnly<{file: ?string, ...}>) => {
         const collapse = Boolean(
-          frame.file && INTERNAL_CALLSITES_REGEX.test(frame.file),
+          frame.file != null && INTERNAL_CALLSITES_REGEX.test(frame.file),
         );
         return {collapse};
       },
@@ -88,10 +90,5 @@ function getDefaultConfig(
   // Set global hook so that the CLI can detect when this config has been loaded
   global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
 
-  return mergeConfig(
-    getBaseConfig.getDefaultValues(projectRoot),
-    config,
-  );
+  return mergeConfig(getBaseConfig.getDefaultValues(projectRoot), config);
 }
-
-module.exports = {getDefaultConfig, mergeConfig};
