@@ -9,25 +9,77 @@
  * @oncall react_native
  */
 
-const {PUBLISH_PACKAGES_TAG} = require('../constants');
 const {
   findAndPublishAllBumpedPackages,
 } = require('../find-and-publish-all-bumped-packages');
 
+const execSync = jest.fn();
 const spawnSync = jest.fn();
 const forEachPackage = jest.fn();
 const execMock = jest.fn();
 
-jest.mock('child_process', () => ({spawnSync}));
+jest.mock('child_process', () => ({execSync, spawnSync}));
 jest.mock('shelljs', () => ({exec: execMock}));
 jest.mock('../for-each-package', () => forEachPackage);
+
+const BUMP_COMMIT_MESSAGE =
+  'bumped packages versions\n\n#publish-packages-to-npm';
 
 describe('findAndPublishAllBumpedPackages', () => {
   beforeEach(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.resetAllMocks();
+  });
+
+  test('should exit with error if not in a Git repo', async () => {
+    execSync.mockImplementation((command: string) => {
+      switch (command) {
+        case 'git log -1 --pretty=%B':
+          throw new Error();
+      }
+    });
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    await findAndPublishAllBumpedPackages();
+
+    expect(consoleError.mock.calls).toMatchInlineSnapshot(`
+      Array [
+        Array [
+          "Failed to read Git commit message, exiting.",
+        ],
+      ]
+    `);
+  });
+
+  test("should exit when commit message does not include '#publish-packages-to-npm'", async () => {
+    execSync.mockImplementation((command: string) => {
+      switch (command) {
+        case 'git log -1 --pretty=%B':
+          return 'A non-bumping commit';
+      }
+    });
+    const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await findAndPublishAllBumpedPackages();
+
+    expect(consoleLog.mock.calls).toMatchInlineSnapshot(`
+      Array [
+        Array [
+          "Current commit does not include #publish-packages-to-npm keyword, skipping.",
+        ],
+      ]
+    `);
   });
 
   test('should throw an error if updated version is not 0.x.y', async () => {
+    execSync.mockImplementation((command: string) => {
+      switch (command) {
+        case 'git log -1 --pretty=%B':
+          return BUMP_COMMIT_MESSAGE;
+      }
+    });
     const mockedPackageNewVersion = '1.0.0';
 
     forEachPackage.mockImplementationOnce(callback => {
@@ -40,16 +92,19 @@ describe('findAndPublishAllBumpedPackages', () => {
       stdout: `-  "version": "0.72.0"\n+  "version": "${mockedPackageNewVersion}"\n`,
     }));
 
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: `This is my commit message\n\n${PUBLISH_PACKAGES_TAG}`,
-    }));
-
     await expect(findAndPublishAllBumpedPackages()).rejects.toThrow(
       `Package version expected to be 0.x.y, but received ${mockedPackageNewVersion}`,
     );
   });
 
   test('should publish all changed packages', async () => {
+    execSync.mockImplementation((command: string) => {
+      switch (command) {
+        case 'git log -1 --pretty=%B':
+          return BUMP_COMMIT_MESSAGE;
+      }
+    });
+
     forEachPackage.mockImplementationOnce(callback => {
       callback('absolute/path/to/package-a', 'to/package-a', {
         version: '0.72.1',
@@ -66,19 +121,10 @@ describe('findAndPublishAllBumpedPackages', () => {
       stdout: `-  "version": "0.72.0"\n+  "version": "0.72.1"\n`,
     }));
     spawnSync.mockImplementationOnce(() => ({
-      stdout: `This is my commit message\n\n${PUBLISH_PACKAGES_TAG}`,
-    }));
-    spawnSync.mockImplementationOnce(() => ({
       stdout: `-  "version": "0.72.0"\n+  "version": "0.72.1"\n`,
     }));
     spawnSync.mockImplementationOnce(() => ({
-      stdout: `This is my commit message\n\n${PUBLISH_PACKAGES_TAG}`,
-    }));
-    spawnSync.mockImplementationOnce(() => ({
       stdout: '\n',
-    }));
-    spawnSync.mockImplementationOnce(() => ({
-      stdout: `This is my commit message\n\n${PUBLISH_PACKAGES_TAG}`,
     }));
 
     execMock.mockImplementation(() => ({code: 0}));

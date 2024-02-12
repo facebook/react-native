@@ -14,12 +14,30 @@ const {spawnSync} = require('child_process');
 
 const {PUBLISH_PACKAGES_TAG} = require('./constants');
 const forEachPackage = require('./for-each-package');
-const {publishPackage} = require('../npm-utils');
+const {execSync, spawnSync} = require('child_process');
+const path = require('path');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 async function findAndPublishAllBumpedPackages() {
+  let commitMessage;
+
+  try {
+    commitMessage = execSync('git log -1 --pretty=%B').toString();
+  } catch {
+    console.error('Failed to read Git commit message, exiting.');
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!commitMessage.includes(PUBLISH_PACKAGES_TAG)) {
+    console.log(
+      'Current commit does not include #publish-packages-to-npm keyword, skipping.',
+    );
+    return;
+  }
+
   console.log('Traversing all packages inside /packages...');
 
   forEachPackage(
@@ -59,37 +77,6 @@ async function findAndPublishAllBumpedPackages() {
         console.log(`\uD83D\uDD0E No version bump for ${packageManifest.name}`);
 
         return;
-      }
-
-      const {stdout, stderr: commitMessageStderr} = spawnSync(
-        'git',
-        [
-          'log',
-          '-n',
-          '1',
-          '--format=format:%B',
-          `${packageRelativePathFromRoot}/package.json`,
-        ],
-        {cwd: ROOT_LOCATION, shell: true, stdio: 'pipe', encoding: 'utf-8'},
-      );
-      const commitMessage = stdout.toString();
-
-      if (commitMessageStderr) {
-        console.log(
-          `\u274c Failed to get latest commit message for ${packageManifest.name}:`,
-        );
-        console.log(commitMessageStderr);
-
-        process.exit(1);
-      }
-
-      const hasSpecificPublishTag =
-        commitMessage.includes(PUBLISH_PACKAGES_TAG);
-
-      if (!hasSpecificPublishTag) {
-        throw new Error(
-          `Package ${packageManifest.name} was updated, but not through CI script`,
-        );
       }
 
       const [, previousVersion] = previousVersionPatternMatches;
