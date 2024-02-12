@@ -18,10 +18,14 @@ const {IncludeTemplate} = require('./CppHelpers');
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
-  componentDescriptors,
+  libraryName,
+  componentDefinitions,
+  componentRegistrations,
   headerPrefix,
 }: {
-  componentDescriptors: string,
+  libraryName: string,
+  componentDefinitions: string,
+  componentRegistrations: string,
   headerPrefix: string,
 }) => `
 /**
@@ -37,17 +41,29 @@ const FileTemplate = ({
 
 ${IncludeTemplate({headerPrefix, file: 'ShadowNodes.h'})}
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
 namespace facebook::react {
 
-${componentDescriptors}
+${componentDefinitions}
+
+void ${libraryName}_registerComponentDescriptorsFromCodegen(
+  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
+${componentRegistrations}
+}
 
 } // namespace facebook::react
 `;
 
-const ComponentTemplate = ({className}: {className: string}) =>
+const ComponentDefinitionTemplate = ({className}: {className: string}) =>
   `
 using ${className}ComponentDescriptor = ConcreteComponentDescriptor<${className}ShadowNode>;
+`.trim();
+
+const ComponentRegistrationTemplate = ({className}: {className: string}) =>
+  `
+registry->add(concreteComponentDescriptorProvider<${className}ComponentDescriptor>());
 `.trim();
 
 module.exports = {
@@ -60,7 +76,7 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';
 
-    const componentDescriptors = Object.keys(schema.modules)
+    const componentDefinitions = Object.keys(schema.modules)
       .map(moduleName => {
         const module = schema.modules[moduleName];
         if (module.type !== 'Component') {
@@ -79,7 +95,33 @@ module.exports = {
               return;
             }
 
-            return ComponentTemplate({className: componentName});
+            return ComponentDefinitionTemplate({className: componentName});
+          })
+          .join('\n');
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    const componentRegistrations = Object.keys(schema.modules)
+      .map(moduleName => {
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
+        // No components in this module
+        if (components == null) {
+          return null;
+        }
+
+        return Object.keys(components)
+          .map(componentName => {
+            if (components[componentName].interfaceOnly === true) {
+              return;
+            }
+
+            return ComponentRegistrationTemplate({className: componentName});
           })
           .join('\n');
       })
@@ -87,7 +129,9 @@ module.exports = {
       .join('\n');
 
     const replacedTemplate = FileTemplate({
-      componentDescriptors,
+      libraryName,
+      componentDefinitions,
+      componentRegistrations,
       headerPrefix: headerPrefix ?? '',
     });
 
