@@ -30,6 +30,21 @@ std::shared_ptr<InstanceAgent> InstanceTarget::createAgent(
   return instanceAgent;
 }
 
+void InstanceTarget::removeExpiredAgents() {
+  // Remove all expired agents.
+  forEachAgent([](auto&) {});
+}
+
+InstanceTarget::~InstanceTarget() {
+  removeExpiredAgents();
+
+  // Agents are owned by the session, not by InstanceTarget, but
+  // they hold an InstanceTarget& that we must guarantee is valid.
+  assert(
+      agents_.empty() &&
+      "InstanceAgent objects must be destroyed before their InstanceTarget. Did you call PageTarget::unregisterInstance()?");
+}
+
 RuntimeTarget& InstanceTarget::registerRuntime(
     RuntimeTargetDelegate& delegate) {
   assert(!currentRuntime_ && "Only one Runtime allowed");
