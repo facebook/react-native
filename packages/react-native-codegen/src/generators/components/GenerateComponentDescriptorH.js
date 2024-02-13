@@ -18,12 +18,10 @@ const {IncludeTemplate} = require('./CppHelpers');
 type FilesOutput = Map<string, string>;
 
 const FileTemplate = ({
-  libraryName,
-  componentDefinitions,
+  componentDescriptors,
   headerPrefix,
 }: {
-  libraryName: string,
-  componentDefinitions: string,
+  componentDescriptors: string,
   headerPrefix: string,
 }) => `
 /**
@@ -39,19 +37,15 @@ const FileTemplate = ({
 
 ${IncludeTemplate({headerPrefix, file: 'ShadowNodes.h'})}
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
 namespace facebook::react {
 
-${componentDefinitions}
-
-void ${libraryName}_registerComponentDescriptorsFromCodegen(
-  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
+${componentDescriptors}
 
 } // namespace facebook::react
 `;
 
-const ComponentDefinitionTemplate = ({className}: {className: string}) =>
+const ComponentTemplate = ({className}: {className: string}) =>
   `
 using ${className}ComponentDescriptor = ConcreteComponentDescriptor<${className}ShadowNode>;
 `.trim();
@@ -66,7 +60,7 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';
 
-    const componentDefinitions = Object.keys(schema.modules)
+    const componentDescriptors = Object.keys(schema.modules)
       .map(moduleName => {
         const module = schema.modules[moduleName];
         if (module.type !== 'Component') {
@@ -85,7 +79,7 @@ module.exports = {
               return;
             }
 
-            return ComponentDefinitionTemplate({className: componentName});
+            return ComponentTemplate({className: componentName});
           })
           .join('\n');
       })
@@ -93,8 +87,7 @@ module.exports = {
       .join('\n');
 
     const replacedTemplate = FileTemplate({
-      libraryName,
-      componentDefinitions,
+      componentDescriptors,
       headerPrefix: headerPrefix ?? '',
     });
 
