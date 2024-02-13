@@ -19,6 +19,7 @@ const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
 const setVersion = require('../releases/set-version');
+const {getPackages} = require('../releases/utils/monorepo');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -67,6 +68,32 @@ async function main() {
   await publishNpm(buildType);
 }
 
+async function publishMonorepoPackages(tag /*: ?string */) {
+  const projectInfo = await getPackages({
+    includePrivate: false,
+    includeReactNative: false,
+  });
+
+  for (const packageInfo of Object.values(projectInfo)) {
+    console.log(`Publishing ${packageInfo.name}...`);
+    const result = publishPackage(packageInfo.path, {
+      // $FlowFixMe[incompatible-call]
+      tags: [tag],
+      otp: process.env.NPM_CONFIG_OTP,
+    });
+
+    const spec = `${packageInfo.name}@${packageInfo.packageJson.version}`;
+
+    if (result.code) {
+      echo(`Failed to publish ${spec} to npm. Stopping all nightly publishes`);
+      exit(1);
+    } else {
+      echo(`Published ${spec} to npm`);
+      exit(0);
+    }
+  }
+}
+
 async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
@@ -80,6 +107,7 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
       if (buildType === 'nightly') {
         // Set same version for all monorepo packages
         await setVersion(version);
+        await publishMonorepoPackages(tag);
       } else {
         await setReactNativeVersion(version, null, buildType);
       }

@@ -19,6 +19,9 @@ const publishAndroidArtifactsToMavenMock = jest.fn();
 const removeNewArchFlags = jest.fn();
 const env = process.env;
 
+const publishPackageMock = jest.fn();
+const getNpmInfoMock = jest.fn();
+
 jest
   .mock('shelljs', () => ({
     exec: execMock,
@@ -96,10 +99,34 @@ describe('publish-npm', () => {
   });
 
   describe('nightly', () => {
+    let consoleLog;
+    beforeAll(() => {
+      consoleLog = console.log;
+      console.log = jest.fn();
+      jest.mock('../../npm-utils', () => ({
+        ...jest.requireActual('../../npm-utils'),
+        publishPackage: publishPackageMock,
+        getNpmInfo: getNpmInfoMock,
+      }));
+    });
+
+    afterAll(() => {
+      console.log = consoleLog;
+      jest.unmock('../../npm-utils');
+    });
+
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     it('should publish', async () => {
-      execMock
-        .mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0})
-        .mockReturnValueOnce({code: 0});
+      publishPackageMock.mockImplementation(() => ({
+        code: 0,
+      }));
+      getNpmInfoMock.mockImplementation(() => ({
+        version: expectedVersion,
+        tag: 'nightly',
+      }));
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
 
       await publishNpm('nightly');
@@ -110,10 +137,16 @@ describe('publish-npm', () => {
         expectedVersion,
         'nightly',
       );
-      expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native@next version`,
+      publishPackageMock.mock.calls.forEach(params => {
+        expect(params[1]).toEqual({
+          tags: ['nightly'],
+          otp: undefined,
+        });
+      });
+      expect(publishPackageMock).toHaveBeenCalledWith(
+        path.join(REPO_ROOT, 'packages/react-native'),
+        {otp: undefined, tags: ['nightly']},
       );
-      expect(execMock.mock.calls[1][0]).toBe('npm publish --tag nightly');
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
       );
@@ -121,8 +154,14 @@ describe('publish-npm', () => {
     });
 
     it('should fail to set version', async () => {
-      execMock.mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0});
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
+      publishPackageMock.mockImplementation(() => ({
+        code: 0,
+      }));
+      getNpmInfoMock.mockImplementation(() => ({
+        version: expectedVersion,
+        tag: 'nightly',
+      }));
       setVersionMock.mockImplementation(() => {
         throw new Error('something went wrong');
       });
@@ -131,13 +170,39 @@ describe('publish-npm', () => {
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
-      expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native@next version`,
-      );
       expect(consoleErrorMock).toHaveBeenCalledWith(
         `Failed to set version number to ${expectedVersion}`,
       );
       expect(exitMock).toHaveBeenCalledWith(1);
+    });
+    it('should fail to publish react-native if some monorepo packages fail', async () => {
+      publishPackageMock.mockImplementation(packagePath => ({
+        code: 1,
+      }));
+
+      getNpmInfoMock.mockImplementation(() => ({
+        version: expectedVersion,
+        tag: 'nightly',
+      }));
+
+      const expectedVersion = '0.82.0-nightly-20230420-currentco';
+
+      await publishNpm('nightly');
+
+      expect(removeNewArchFlags).not.toHaveBeenCalled();
+      expect(setVersionMock).toBeCalledWith(expectedVersion);
+      expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'nightly',
+      );
+      expect(exitMock).toHaveBeenCalledWith(1);
+      publishPackageMock.mock.calls.forEach(params => {
+        expect(params[1]).toEqual({
+          tags: ['nightly'],
+          otp: undefined,
+        });
+      });
+      expect(echoMock).toHaveBeenCalledWith('Failed to publish package to npm');
     });
   });
 
