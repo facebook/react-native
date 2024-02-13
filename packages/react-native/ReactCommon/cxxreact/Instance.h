@@ -151,11 +151,6 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
       std::unique_ptr<const JSBigString> startupScript,
       std::string startupScriptSourceURL);
 
-  // From InstanceTargetDelegate
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel channel,
-      jsinspector_modern::SessionState& sessionState) override;
-
   std::shared_ptr<InstanceCallback> callback_;
   std::shared_ptr<NativeToJsBridge> nativeToJsBridge_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
@@ -185,6 +180,7 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
 
   jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react
