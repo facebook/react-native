@@ -53,6 +53,7 @@ class InstanceTarget {
   InstanceTarget(InstanceTarget&&) = delete;
   InstanceTarget& operator=(const InstanceTarget&) = delete;
   InstanceTarget& operator=(InstanceTarget&&) = delete;
+  ~InstanceTarget();
 
   std::shared_ptr<InstanceAgent> createAgent(
       FrontendChannel channel,
