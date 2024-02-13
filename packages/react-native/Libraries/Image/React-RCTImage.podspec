@@ -51,8 +51,11 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
-  s.ios.framework              = ["Accelerate", "UIKit"] # [macOS] Restrict UIKit to iOS
-  s.osx.framework              = ["Accelerate"] # [macOS]
+  # [macOS Restrict UIKit to iOS and visionOS
+  s.ios.framework              = ["Accelerate", "UIKit"] 
+  s.visionos.framework         = ["Accelerate", "UIKit"]
+  s.osx.framework              = ["Accelerate"]
+  # macOS]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version
