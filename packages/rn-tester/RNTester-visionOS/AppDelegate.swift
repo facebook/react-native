@@ -8,6 +8,6 @@ class AppDelegate: RCTAppDelegate {
   }
   
   override func bundleURL() -> URL? {
-    RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "js/RNTesterApp.ios")
+    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "js/RNTesterApp.ios")
   }
 }
