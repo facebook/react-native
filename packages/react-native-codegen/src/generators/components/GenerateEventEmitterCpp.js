@@ -369,9 +369,10 @@ function generateEvent(
   // In order to migrate to this new system we have to support the current
   // naming scheme. We should delete this once we are able to control this name
   // throughout the system.
-  const dispatchEventName = `${event.name[2].toLowerCase()}${event.name.slice(
-    3,
-  )}`;
+  const dispatchEventName =
+    event.paperTopLevelNameDeprecated != null
+      ? event.paperTopLevelNameDeprecated
+      : `${event.name[2].toLowerCase()}${event.name.slice(3)}`;
 
   if (event.typeAnnotation.argument) {
     const implementation = `
