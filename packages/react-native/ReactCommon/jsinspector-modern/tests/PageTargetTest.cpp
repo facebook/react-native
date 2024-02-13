@@ -28,7 +28,7 @@ namespace {
 class PageTargetTest : public Test {
  protected:
   PageTargetTest() {
-    EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_, _))
+    EXPECT_CALL(runtimeTargetDelegate_, createAgent(_, _))
         .WillRepeatedly(
             runtimeAgents_
                 .lazily_make_unique<FrontendChannel, SessionState&>());
@@ -55,6 +55,7 @@ class PageTargetTest : public Test {
   PageTarget page_{pageTargetDelegate_};
 
   MockInstanceTargetDelegate instanceTargetDelegate_;
+  MockRuntimeTargetDelegate runtimeTargetDelegate_;
 
   UniquePtrFactory<StrictMock<MockRuntimeAgent>> runtimeAgents_;
 
@@ -233,11 +234,6 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
 
   InSequence s;
 
-  EXPECT_CALL(*runtimeAgents_[0], handleRequest(Eq(cdp::preparse(R"({
-                                                                    "id": 1,
-                                                                    "method": "Runtime.enable"
-                                                                  })"))))
-      .RetiresOnSaturation();
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
@@ -254,55 +250,13 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
   page_.unregisterInstance(instanceTarget);
 }
 
-TEST_F(PageTargetProtocolTest, RuntimeAgentLifecycle) {
-  {
-    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-
-    EXPECT_TRUE(runtimeAgents_[0]);
-
-    page_.unregisterInstance(instanceTarget);
-  }
-
-  EXPECT_FALSE(runtimeAgents_[0]);
-
-  {
-    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-
-    EXPECT_TRUE(runtimeAgents_[1]);
-
-    page_.unregisterInstance(instanceTarget);
-  }
-
-  EXPECT_FALSE(runtimeAgents_[1]);
-}
-
-TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgent) {
-  InSequence s;
-
+TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
-  ASSERT_TRUE(runtimeAgents_[0]);
-  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
-      .WillOnce(Return(false))
-      .RetiresOnSaturation();
-  EXPECT_CALL(
-      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
-      .RetiresOnSaturation();
-  toPage_->sendMessage(R"({
-                           "id": 1,
-                           "method": "CustomRuntimeDomain.Foo",
-                           "params": {
-                             "expression": "42"
-                           }
-                         })");
+  connect();
 
-  page_.unregisterInstance(instanceTarget);
-}
-
-TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgent) {
   InSequence s;
-
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
 
   ASSERT_TRUE(runtimeAgents_[0]);
   EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
@@ -326,6 +280,92 @@ TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgent) {
       .RetiresOnSaturation();
   runtimeAgents_[0]->frontendChannel(kFooResponse);
 
+  instanceTarget.unregisterRuntime(runtimeTarget);
+  page_.unregisterInstance(instanceTarget);
+}
+
+TEST_F(PageTargetProtocolTest, RuntimeAgentLifecycle) {
+  {
+    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+    auto& runtimeTarget =
+        instanceTarget.registerRuntime(runtimeTargetDelegate_);
+
+    EXPECT_TRUE(runtimeAgents_[0]);
+
+    instanceTarget.unregisterRuntime(runtimeTarget);
+    page_.unregisterInstance(instanceTarget);
+  }
+
+  EXPECT_FALSE(runtimeAgents_[0]);
+
+  {
+    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+    auto& runtimeTarget =
+        instanceTarget.registerRuntime(runtimeTargetDelegate_);
+
+    EXPECT_TRUE(runtimeAgents_[1]);
+
+    instanceTarget.unregisterRuntime(runtimeTarget);
+    page_.unregisterInstance(instanceTarget);
+  }
+
+  EXPECT_FALSE(runtimeAgents_[1]);
+}
+
+TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgent) {
+  InSequence s;
+
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+
+  ASSERT_TRUE(runtimeAgents_[0]);
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
+      .WillOnce(Return(false))
+      .RetiresOnSaturation();
+  EXPECT_CALL(
+      fromPage(), onMessage(JsonParsed(AtJsonPtr("/error/code", Eq(-32601)))))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
+
+  instanceTarget.unregisterRuntime(runtimeTarget);
+  page_.unregisterInstance(instanceTarget);
+}
+
+TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgent) {
+  InSequence s;
+
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+
+  ASSERT_TRUE(runtimeAgents_[0]);
+  EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
+      .WillOnce(Return(true))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "CustomRuntimeDomain.Foo",
+                           "params": {
+                             "expression": "42"
+                           }
+                         })");
+
+  static constexpr auto kFooResponse = R"({
+    "id": 1,
+    "result": {
+      "fooValue": 42
+    }
+  })";
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(kFooResponse)))
+      .RetiresOnSaturation();
+  runtimeAgents_[0]->frontendChannel(kFooResponse);
+
+  instanceTarget.unregisterRuntime(runtimeTarget);
   page_.unregisterInstance(instanceTarget);
 }
 
@@ -344,6 +384,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgent) {
                          })");
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   ASSERT_TRUE(runtimeAgents_[0]);
   EXPECT_CALL(*runtimeAgents_[0], handleRequest(_))
@@ -367,6 +408,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgent) {
       .RetiresOnSaturation();
   runtimeAgents_[0]->frontendChannel(kFooResponse);
 
+  instanceTarget.unregisterRuntime(runtimeTarget);
   page_.unregisterInstance(instanceTarget);
 
   EXPECT_FALSE(runtimeAgents_[0]);
@@ -386,10 +428,11 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgent) {
 TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgent) {
   InSequence s;
 
-  EXPECT_CALL(instanceTargetDelegate_, createRuntimeAgent(_, _))
+  EXPECT_CALL(runtimeTargetDelegate_, createAgent(_, _))
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   EXPECT_FALSE(runtimeAgents_[0]);
 
@@ -404,6 +447,7 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgent) {
                            }
                          })");
 
+  instanceTarget.unregisterRuntime(runtimeTarget);
   page_.unregisterInstance(instanceTarget);
 }
 
@@ -421,7 +465,8 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentHasAccessToSessionState) {
                            "method": "Runtime.enable"
                          })");
 
-  page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  instanceTarget.registerRuntime(runtimeTargetDelegate_);
   ASSERT_TRUE(runtimeAgents_[0]);
 
   EXPECT_TRUE(runtimeAgents_[0]->sessionState.isRuntimeDomainEnabled);

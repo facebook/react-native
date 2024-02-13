@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "RuntimeTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -33,18 +34,6 @@ class InstanceTargetDelegate {
   InstanceTargetDelegate& operator=(const InstanceTargetDelegate&) = delete;
   InstanceTargetDelegate& operator=(InstanceTargetDelegate&&) = default;
 
-  /**
-   * Create a new RuntimeAgent that can be used to debug the underlying JS VM.
-   * The agent will be destroyed when the session ends or the InstanceTarget is
-   * unregistered from its PageTarget (whichever happens first).
-   * \param channel A thread-safe channel for sending CDP messages to the
-   * frontend.
-   * \returns The new agent, or nullptr if the target does not support JS
-   * debugging.
-   */
-  virtual std::unique_ptr<RuntimeAgent> createRuntimeAgent(
-      FrontendChannel channel,
-      SessionState& sessionState) = 0;
   virtual ~InstanceTargetDelegate();
 };
 
@@ -65,12 +54,35 @@ class InstanceTarget {
   InstanceTarget& operator=(const InstanceTarget&) = delete;
   InstanceTarget& operator=(InstanceTarget&&) = delete;
 
-  std::unique_ptr<InstanceAgent> createAgent(
+  std::shared_ptr<InstanceAgent> createAgent(
       FrontendChannel channel,
       SessionState& sessionState);
 
+  RuntimeTarget& registerRuntime(RuntimeTargetDelegate& delegate);
+  void unregisterRuntime(RuntimeTarget& runtime);
+
  private:
   InstanceTargetDelegate& delegate_;
+  std::optional<RuntimeTarget> currentRuntime_{std::nullopt};
+  std::list<std::weak_ptr<InstanceAgent>> agents_;
+
+  /**
+   * Call the given function for every active agent, and clean up any
+   * references to inactive agents.
+   */
+  template <typename Fn>
+  void forEachAgent(Fn&& fn) {
+    for (auto it = agents_.begin(); it != agents_.end();) {
+      if (auto agent = it->lock()) {
+        fn(*agent);
+        ++it;
+      } else {
+        it = agents_.erase(it);
+      }
+    }
+  }
+
+  void removeExpiredAgents();
 };
 
 } // namespace facebook::react::jsinspector_modern
