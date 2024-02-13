@@ -14,8 +14,8 @@ namespace facebook::react::jsinspector_modern {
 struct SessionState {
  public:
   // TODO: Generalise this to arbitrary domains
-  bool isLogDomainEnabled;
-  bool isRuntimeDomainEnabled;
+  bool isLogDomainEnabled{false};
+  bool isRuntimeDomainEnabled{false};
 
   // Here, we will eventually allow RuntimeAgents to store their own arbitrary
   // state (e.g. some sort of K/V storage of folly::dynamic?)
