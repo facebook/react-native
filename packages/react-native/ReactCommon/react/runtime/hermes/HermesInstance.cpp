@@ -104,7 +104,7 @@ class HermesJSRuntime : public JSRuntime {
     return *runtime_;
   }
 
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createInspectorAgent(
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createAgent(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState) override {
     return std::unique_ptr<jsinspector_modern::RuntimeAgent>(
