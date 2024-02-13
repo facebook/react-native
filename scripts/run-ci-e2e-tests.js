@@ -20,7 +20,7 @@
  */
 
 const forEachPackage = require('./monorepo/for-each-package');
-const setupVerdaccio = require('./setup-verdaccio');
+const setupVerdaccio = require('./template/setup-verdaccio');
 const tryExecNTimes = require('./try-n-times');
 const {execFileSync, spawn} = require('child_process');
 const path = require('path');
