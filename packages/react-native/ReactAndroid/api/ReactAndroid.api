@@ -2520,6 +2520,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public field mDevToolsReactPerfLogger Lcom/facebook/react/fabric/DevToolsReactPerfLogger;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
+	public fun addUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public fun attachRootView (Lcom/facebook/react/interfaces/fabric/SurfaceHandler;Landroid/view/View;)V
 	public fun clearJSResponder ()V
@@ -2541,6 +2542,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun onHostPause ()V
 	public fun onHostResume ()V
 	public fun onRequestEventBeat ()V
+	public fun prependUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun profileNextBatch ()V
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
@@ -2631,6 +2633,14 @@ public class com/facebook/react/fabric/events/FabricEventEmitter : com/facebook/
 	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
 	public fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
+}
+
+public abstract interface class com/facebook/react/fabric/interop/UIBlock {
+	public abstract fun execute (Lcom/facebook/react/fabric/interop/UIBlockViewResolver;)V
+}
+
+public abstract interface class com/facebook/react/fabric/interop/UIBlockViewResolver {
+	public abstract fun resolveView (I)Landroid/view/View;
 }
 
 public abstract interface class com/facebook/react/fabric/mounting/LayoutMetricsConversions {

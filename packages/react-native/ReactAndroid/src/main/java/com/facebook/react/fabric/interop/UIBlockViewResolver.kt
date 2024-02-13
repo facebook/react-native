@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.fabric.interop
+
+import android.view.View
+
+/**
+ * This interface is used as receiver parameter for [UIBlock].
+ *
+ * Users can invoke [resolveView] on this instance to get an Android [View] from the view tag.
+ *
+ * @deprecated When developing new libraries for Fabric you should instead use [UIManagerListener]
+ *   or View Commands to achieve a same results.
+ */
+@Deprecated("Use UIManagerListener or View Commands instead of addUIBlock and prependUIBlock.")
+public interface UIBlockViewResolver {
+  public fun resolveView(reactTag: Int): View?
+}
