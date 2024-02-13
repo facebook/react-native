@@ -128,7 +128,7 @@ void PageAgent::sendInfoLogEntry(std::string_view text) {
 }
 
 void PageAgent::setCurrentInstanceAgent(
-    std::unique_ptr<InstanceAgent> instanceAgent) {
+    std::shared_ptr<InstanceAgent> instanceAgent) {
   auto previousInstanceAgent = std::move(instanceAgent_);
   instanceAgent_ = std::move(instanceAgent);
   if (!sessionState_.isRuntimeDomainEnabled) {

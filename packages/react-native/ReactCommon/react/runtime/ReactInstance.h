@@ -72,10 +72,6 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void unregisterFromInspector();
 
  private:
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel channel,
-      jsinspector_modern::SessionState& sessionState) override;
-
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
@@ -88,6 +84,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<bool> hasFatalJsError_;
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
   jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
 };
 
