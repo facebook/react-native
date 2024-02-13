@@ -11,21 +11,22 @@
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
 
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
 #include REACT_NATIVE_APP_CODEGEN_HEADER
+#endif
+#ifdef REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
 #endif
 
 namespace facebook {
 namespace react {
 
-extern const char RNTMyNativeViewName[] = "RNTMyLegacyNativeView";
-
 void registerComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
-  registry->add(concreteComponentDescriptorProvider<
-                RNTMyNativeViewComponentDescriptor>());
+#ifdef REACT_NATIVE_APP_COMPONENT_REGISTRATION
+  REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
+#endif
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
