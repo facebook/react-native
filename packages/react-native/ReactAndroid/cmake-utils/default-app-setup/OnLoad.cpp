@@ -36,6 +36,9 @@
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
 #include REACT_NATIVE_APP_CODEGEN_HEADER
 #endif
+#ifdef REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
+#endif
 
 namespace facebook::react {
 
@@ -47,7 +50,12 @@ void registerComponents(
   // providerRegistry->add(concreteComponentDescriptorProvider<
   //        MyComponentDescriptor>());
 
-  // By default we just use the components autolinked by RN CLI
+  // We link app local components if available
+#ifdef REACT_NATIVE_APP_COMPONENT_REGISTRATION
+  REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
+#endif
+
+  // And we fallback to the components autolinked by RN CLI
   rncli_registerProviders(registry);
 }
 
