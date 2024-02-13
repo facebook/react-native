@@ -360,7 +360,7 @@ jobs:
           command: |
             REPO_ROOT=$(pwd)
             node ./scripts/releases/update-template-package.js "{\"react-native\":\"file:$REPO_ROOT/build/$(cat build/react-native-package-version)\"}"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
+            node ./scripts/template/initialize.js --projectName $PROJECT_NAME --templatePath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - with_gradle_cache:
           steps:
             - run:
@@ -458,7 +458,7 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/releases/update-template-package.js "{\"react-native\":\"file:$PATH_TO_PACKAGE\"}"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
+            node ./scripts/template/initialize.js --projectName $PROJECT_NAME --templatePath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - with_xcodebuild_cache:
           podfile_lock_path: << parameters.podfile_lock_path >>
           pods_build_folder: << parameters.pods_build_folder >>

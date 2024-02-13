@@ -4,52 +4,64 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
+ * @oncall react_native
  */
 
 'use strict';
 
 const {retry} = require('../circleci/retry');
 const forEachPackage = require('../monorepo/for-each-package');
-const setupVerdaccio = require('../setup-verdaccio');
+const setupVerdaccio = require('./setup-verdaccio');
+const {parseArgs} = require('@pkgjs/parseargs');
 const {execSync} = require('child_process');
 const path = require('path');
-const yargs = require('yargs');
-
-const {argv} = yargs
-  .option('r', {
-    alias: 'reactNativeRootPath',
-    describe: 'Path to root folder of react-native',
-    required: true,
-  })
-  .option('n', {
-    alias: 'templateName',
-    describe: 'Template App name',
-    required: true,
-  })
-  .option('tcp', {
-    alias: 'templateConfigPath',
-    describe: 'Path to folder containing template config',
-    required: true,
-  })
-  .option('d', {
-    alias: 'directory',
-    describe: 'Path to template application folder',
-    required: true,
-  })
-  .strict();
-
-const {reactNativeRootPath, templateName, templateConfigPath, directory} = argv;
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
-const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/.circleci/verdaccio.yml`;
+const VERDACCIO_CONFIG_PATH = `${REPO_ROOT}/.circleci/verdaccio.yml`;
 const NPM_REGISTRY_SERVER = 'http://localhost:4873';
 
-async function install() {
-  const VERDACCIO_PID = setupVerdaccio(
-    reactNativeRootPath,
-    VERDACCIO_CONFIG_PATH,
-  );
+const config = {
+  options: {
+    projectName: {type: 'string'},
+    templatePath: {type: 'string'},
+    directory: {type: 'string'},
+    help: {type: 'boolean'},
+  },
+};
+
+async function main() {
+  const {
+    values: {help, projectName, templatePath, directory},
+  } = parseArgs(config);
+
+  if (help) {
+    console.log(`
+  Usage: node ./scripts/template/initialize.js [OPTIONS]
+
+  Bootstraps and runs \`react-native init\`, using the currently checked out
+  repository as the source of truth for the react-native package and
+  dependencies.
+
+  - Configures and starts a local npm proxy (Verdaccio).
+  - Builds and publishes all in-repo dependencies to the local npm proxy.
+  - Runs \`react-native init\` with the local npm proxy configured.
+  - Does NOT install CocoaPods dependencies.
+
+  Note: This script will mutate the contents of some package files, which
+  should not be committed.
+
+  Options:
+    --projectName      The name of the new React Native project.
+    --templatePath     The absolute path to the folder containing the template.
+    --directory        The absolute path to the target project directory.
+    `);
+    return;
+  }
+
+  const VERDACCIO_PID = setupVerdaccio(REPO_ROOT, VERDACCIO_CONFIG_PATH);
+
   try {
     process.stdout.write('Bootstrapped Verdaccio \u2705\n');
 
@@ -83,9 +95,14 @@ async function install() {
     process.stdout.write('Published every package \u2705\n');
 
     execSync(
-      `node cli.js init ${templateName} --directory ${directory} --template ${templateConfigPath} --verbose --skip-install --yarn-config-options npmRegistryServer="${NPM_REGISTRY_SERVER}"`,
+      `node cli.js init ${projectName} \
+        --directory ${directory} \
+        --template ${templatePath} \
+        --verbose \
+        --skip-install \
+        --yarn-config-options npmRegistryServer="${NPM_REGISTRY_SERVER}"`,
       {
-        cwd: `${reactNativeRootPath}/packages/react-native`,
+        cwd: `${REPO_ROOT}/packages/react-native`,
         stdio: [process.stdin, process.stdout, process.stderr],
       },
     );
@@ -121,10 +138,13 @@ async function install() {
     process.stdout.write(`Killing verdaccio. PID — ${VERDACCIO_PID}...\n`);
     execSync(`kill -9 ${VERDACCIO_PID}`);
     process.stdout.write('Killed Verdaccio process \u2705\n');
+    // TODO(huntie): Fix memory leak from `spawn` in `setupVerdaccio` (above
+    // kill command does not wait for kill success).
+    process.exit(0);
   }
 }
 
-install().then(() => {
-  console.log('Done with preparing the project.');
-  process.exit();
-});
+if (require.main === module) {
+  // eslint-disable-next-line no-void
+  void main();
+}
