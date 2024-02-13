@@ -9,9 +9,7 @@
  * @oncall react_native
  */
 
-const {
-  findAndPublishAllBumpedPackages,
-} = require('../find-and-publish-all-bumped-packages');
+const {publishUpdatedPackages} = require('../publish-updated-packages');
 
 const getPackagesMock = jest.fn();
 const execSync = jest.fn();
@@ -29,7 +27,7 @@ global.fetch = fetchMock;
 const BUMP_COMMIT_MESSAGE =
   'bumped packages versions\n\n#publish-packages-to-npm';
 
-describe('findAndPublishAllBumpedPackages', () => {
+describe('publishUpdatedPackages', () => {
   beforeEach(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.resetAllMocks();
@@ -46,7 +44,7 @@ describe('findAndPublishAllBumpedPackages', () => {
       .spyOn(console, 'error')
       .mockImplementation(() => {});
 
-    await findAndPublishAllBumpedPackages();
+    await publishUpdatedPackages();
 
     expect(consoleError.mock.calls).toMatchInlineSnapshot(`
       Array [
@@ -66,7 +64,7 @@ describe('findAndPublishAllBumpedPackages', () => {
     });
     const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-    await findAndPublishAllBumpedPackages();
+    await publishUpdatedPackages();
 
     expect(consoleLog.mock.calls).toMatchInlineSnapshot(`
       Array [
@@ -98,7 +96,7 @@ describe('findAndPublishAllBumpedPackages', () => {
       json: () => Promise.resolve({versions: {}}),
     });
 
-    await expect(findAndPublishAllBumpedPackages()).rejects.toThrow(
+    await expect(publishUpdatedPackages()).rejects.toThrow(
       `Package version expected to be 0.x.x, but received ${mockedPackageNewVersion}`,
     );
   });
@@ -143,7 +141,7 @@ describe('findAndPublishAllBumpedPackages', () => {
 
     const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-    await findAndPublishAllBumpedPackages();
+    await publishUpdatedPackages();
 
     expect(consoleLog.mock.calls.flat().join('\n')).toMatchInlineSnapshot(`
       "Discovering updated packages
@@ -216,7 +214,7 @@ describe('findAndPublishAllBumpedPackages', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      await findAndPublishAllBumpedPackages();
+      await publishUpdatedPackages();
 
       expect(consoleError.mock.calls.flat().join('\n')).toMatchInlineSnapshot(`
         "Failed to publish @react-native/package-b. npm publish exited with code 1:
@@ -257,7 +255,7 @@ describe('findAndPublishAllBumpedPackages', () => {
         .spyOn(console, 'log')
         .mockImplementation(() => {});
 
-      await findAndPublishAllBumpedPackages();
+      await publishUpdatedPackages();
 
       expect(consoleLog).toHaveBeenLastCalledWith('--- Retrying once! ---');
       expect(process.exitCode).toBe(1);
