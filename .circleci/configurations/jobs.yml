@@ -629,16 +629,6 @@ jobs:
           name: Enable Yarn with corepack
           command: corepack enable
 
-      # it looks like that, last week, envinfo released version 7.9.0 which does not works
-      # with Windows. I have opened an issue here: https://github.com/tabrindle/envinfo/issues/238
-      # TODO: T156811874 - Revert this to npx envinfo@latest when the issue is addressed
-      - run:
-          name: Display Environment info
-          command: |
-            npm install -g envinfo
-            envinfo -v
-            envinfo
-
       - restore_cache:
           keys:
             - *windows_yarn_cache_key
