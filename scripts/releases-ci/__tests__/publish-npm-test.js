@@ -14,6 +14,7 @@ const exitMock = jest.fn();
 const consoleErrorMock = jest.fn();
 const isTaggedLatestMock = jest.fn();
 const setVersionMock = jest.fn();
+const setReactNativeVersionMock = jest.fn();
 const publishAndroidArtifactsToMavenMock = jest.fn();
 const removeNewArchFlags = jest.fn();
 const env = process.env;
@@ -34,6 +35,9 @@ jest
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
   .mock('../../releases/set-version', () => setVersionMock)
+  .mock('../../releases/set-rn-version', () => ({
+    setReactNativeVersion: setReactNativeVersionMock,
+  }))
   .mock('../../releases/remove-new-arch-flags', () => ({
     removeNewArchFlags,
   }));
@@ -51,6 +55,7 @@ describe('publish-npm', () => {
   beforeAll(() => {
     jest.setSystemTime(date);
   });
+
   beforeEach(() => {
     consoleError = console.error;
     console.error = consoleErrorMock;
@@ -59,9 +64,6 @@ describe('publish-npm', () => {
   afterEach(() => {
     process.env = env;
     console.error = consoleError;
-  });
-
-  afterEach(() => {
     jest.resetModules();
     jest.resetAllMocks();
   });
@@ -84,7 +86,12 @@ describe('publish-npm', () => {
       expect(echoMock).toHaveBeenCalledWith(
         'Skipping `npm publish` because --dry-run is set.',
       );
-      expect(setVersionMock).toBeCalledWith('1000.0.0-currentco');
+      expect(setReactNativeVersionMock).toBeCalledWith(
+        '1000.0.0-currentco',
+        null,
+        'dry-run',
+      );
+      expect(setVersionMock).not.toBeCalled();
     });
   });
 

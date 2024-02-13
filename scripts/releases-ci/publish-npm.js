@@ -17,6 +17,7 @@ import type {BuildType} from '../releases/utils/version-utils';
 
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
+const {setReactNativeVersion} = require('../releases/set-rn-version');
 const setVersion = require('../releases/set-version');
 const {
   generateAndroidArtifacts,
@@ -73,11 +74,15 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     removeNewArchFlags();
   }
 
-  // Set same version for all monorepo packages
   // For stable releases, CircleCI job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
     try {
-      await setVersion(version);
+      if (buildType === 'nightly') {
+        // Set same version for all monorepo packages
+        await setVersion(version);
+      } else {
+        await setReactNativeVersion(version, null, buildType);
+      }
     } catch (e) {
       console.error(`Failed to set version number to ${version}`);
       console.error(e);
