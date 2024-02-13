@@ -9,6 +9,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
@@ -116,12 +117,22 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 // Required for the remoteNotificationReceived and localNotificationReceived events
 // Called when a notification is tapped from background. (Foreground notification will not be shown per
-// the presentation option selected above.)
+// the presentation option selected above).
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RCTPushNotificationManager didReceiveNotification:response.notification];
+  UNNotification *notification = response.notification;
+
+  // This condition will be true if tapping the notification launched the app.
+  if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+    RCTPushNotificationManager *pushNotificationManager = [self.bridge moduleForName:@"PushNotificationManager"
+                                                               lazilyLoadIfNecessary:YES];
+    // This can be retrieved with getInitialNotification.
+    pushNotificationManager.initialNotification = notification;
+  }
+
+  [RCTPushNotificationManager didReceiveNotification:notification];
   completionHandler();
 }
 
