@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2154292f89306f25289583537833a065>>
+ * @generated SignedSource<<94d6891851ba8d96e9049e9a4eb727ca>>
  */
 
 /**
@@ -204,6 +204,24 @@ bool ReactNativeFeatureFlagsAccessor::inspectorEnableModernCDPRegistry() {
 
     flagValue = currentProvider_->inspectorEnableModernCDPRegistry();
     inspectorEnableModernCDPRegistry_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enablePropIteratorSetter() {
+  auto flagValue = enablePropIteratorSetter_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(10, "enablePropIteratorSetter");
+
+    flagValue = currentProvider_->enablePropIteratorSetter();
+    enablePropIteratorSetter_ = flagValue;
   }
 
   return flagValue.value();

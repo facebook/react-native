@@ -257,10 +257,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
-    CoreFeatures::enablePropIteratorSetter = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
