@@ -75,7 +75,7 @@ class GenerateCodegenArtifactsTaskTest {
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
         }
 
-    task.setupCommandLine("example-test", "com.example.test")
+    task.setupCommandLine("example-test", "com.example.test", "Module:Module.h")
 
     assertEquals(
         listOf(
@@ -91,6 +91,8 @@ class GenerateCodegenArtifactsTaskTest {
             "example-test",
             "--javaPackageName",
             "com.example.test",
+            "--cxxModules",
+            "Module:Module.h",
         ),
         task.commandLine.toMutableList())
   }
@@ -109,7 +111,7 @@ class GenerateCodegenArtifactsTaskTest {
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
         }
 
-    task.setupCommandLine("example-test", "com.example.test")
+    task.setupCommandLine("example-test", "com.example.test", "Module:Module.h")
 
     assertEquals(
         listOf(
@@ -129,6 +131,8 @@ class GenerateCodegenArtifactsTaskTest {
             "example-test",
             "--javaPackageName",
             "com.example.test",
+            "--cxxModules",
+            "Module:Module.h",
         ),
         task.commandLine.toMutableList())
   }
@@ -141,7 +145,7 @@ class GenerateCodegenArtifactsTaskTest {
           writeText(
               """
         {
-            "name": "@a/libray",
+            "name": "@a/library",
             "codegenConfig": {
                 "name": "an-awesome-library",
                 "android": {
@@ -164,6 +168,44 @@ class GenerateCodegenArtifactsTaskTest {
 
     assertEquals("an-awesome-library", libraryName)
     assertEquals("com.awesome.package", javaPackageName)
+  }
+
+  @Test
+  fun resolveTaskParameters_withCxxModules_parsesIt() {
+    val packageJsonFile =
+        tempFolder.newFile("package.json").apply {
+          // language=JSON
+          writeText(
+              """
+        {
+            "name": "@a/library",
+            "codegenConfig": {
+                "name": "an-awesome-library",
+                "android": {
+                      "javaPackageName": "com.awesome.package"
+                },
+                "cxxModules": [
+                    {
+                        "name": "Module1",
+                        "headerPath": "Module1.h"
+                    },
+                    {
+                        "name": "Module2",
+                        "headerPath": "another/header/path/Module2.h"
+                    }
+                ]
+            }
+        }
+        """
+                  .trimIndent())
+        }
+
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask> { it.packageJsonFile.set(packageJsonFile) }
+
+    val (_, _, cxxModules) = task.resolveTaskParameters()
+
+    assertEquals("Module1:Module1.h:Module2:another/header/path/Module2.h", cxxModules)
   }
 
   @Test
