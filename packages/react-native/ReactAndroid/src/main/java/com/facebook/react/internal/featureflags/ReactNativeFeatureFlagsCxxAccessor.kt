@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d6196766629d3361922502553fd1d2b>>
+ * @generated SignedSource<<11824621ee7ca5dbdf2f09bdf1a1f983>>
  */
 
 /**
@@ -28,6 +28,8 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableSpannableBuildingUnificationCache: Boolean? = null
   private var enableCustomDrawOrderFabricCache: Boolean? = null
   private var enableFixForClippedSubviewsCrashCache: Boolean? = null
+  private var inspectorEnableCxxInspectorPackagerConnectionCache: Boolean? = null
+  private var inspectorEnableModernCDPRegistryCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -97,6 +99,24 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFixForClippedSubviewsCrash()
       enableFixForClippedSubviewsCrashCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean {
+    var cached = inspectorEnableCxxInspectorPackagerConnectionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableCxxInspectorPackagerConnection()
+      inspectorEnableCxxInspectorPackagerConnectionCache = cached
+    }
+    return cached
+  }
+
+  override fun inspectorEnableModernCDPRegistry(): Boolean {
+    var cached = inspectorEnableModernCDPRegistryCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.inspectorEnableModernCDPRegistry()
+      inspectorEnableModernCDPRegistryCache = cached
     }
     return cached
   }

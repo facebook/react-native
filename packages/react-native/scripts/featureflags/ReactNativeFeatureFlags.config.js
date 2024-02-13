@@ -53,6 +53,16 @@ const definitions: FeatureFlagDefinitions = {
         'Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix',
       defaultValue: false,
     },
+    inspectorEnableCxxInspectorPackagerConnection: {
+      description:
+        'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
+      defaultValue: false,
+    },
+    inspectorEnableModernCDPRegistry: {
+      description:
+        'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+      defaultValue: false,
+    },
   },
 
   jsOnly: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28d4d1d52be9cb5dccd5a3802df64fc3>>
+ * @generated SignedSource<<82f226df2b3824d03b755a042b20bec5>>
  */
 
 /**
@@ -51,6 +51,14 @@ bool ReactNativeFeatureFlags::enableCustomDrawOrderFabric() {
 
 bool ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash() {
   return getAccessor().enableFixForClippedSubviewsCrash();
+}
+
+bool ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection() {
+  return getAccessor().inspectorEnableCxxInspectorPackagerConnection();
+}
+
+bool ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry() {
+  return getAccessor().inspectorEnableModernCDPRegistry();
 }
 
 void ReactNativeFeatureFlags::override(

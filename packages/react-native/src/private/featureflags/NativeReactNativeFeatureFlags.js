@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a0f497548a69374d354e92d146ef9766>>
+ * @generated SignedSource<<8509d5ee87efb5aa8da7efcd2085d0a2>>
  * @flow strict-local
  */
 
@@ -31,6 +31,8 @@ export interface Spec extends TurboModule {
   +enableSpannableBuildingUnification?: () => boolean;
   +enableCustomDrawOrderFabric?: () => boolean;
   +enableFixForClippedSubviewsCrash?: () => boolean;
+  +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
+  +inspectorEnableModernCDPRegistry?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de038facca377ff545878c7eba4141df>>
+ * @generated SignedSource<<c526fb1c44f00f5b032684396246e4d4>>
  */
 
 /**
@@ -75,6 +75,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
+
+  /**
+   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = accessor.inspectorEnableCxxInspectorPackagerConnection()
+
+  /**
+   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

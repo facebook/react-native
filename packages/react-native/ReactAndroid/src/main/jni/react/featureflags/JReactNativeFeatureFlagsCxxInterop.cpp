@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e388f7ac501dba65bee597ccf8305453>>
+ * @generated SignedSource<<f40d52242f2c758ed616f1e5d8c3a082>>
  */
 
 /**
@@ -87,6 +87,18 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool inspectorEnableCxxInspectorPackagerConnection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableCxxInspectorPackagerConnection");
+    return method(javaProvider_);
+  }
+
+  bool inspectorEnableModernCDPRegistry() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableModernCDPRegistry");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -131,6 +143,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash(
   return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -172,6 +194,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFixForClippedSubviewsCrash",
         JReactNativeFeatureFlagsCxxInterop::enableFixForClippedSubviewsCrash),
+      makeNativeMethod(
+        "inspectorEnableCxxInspectorPackagerConnection",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection),
+      makeNativeMethod(
+        "inspectorEnableModernCDPRegistry",
+        JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
   });
 }
 

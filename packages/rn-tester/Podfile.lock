@@ -989,7 +989,7 @@ PODS:
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
-    - React-nativeconfig
+    - React-featureflags
   - React-jsitracing (1000.0.0):
     - React-jsi
   - React-logger (1000.0.0):
@@ -1030,7 +1030,6 @@ PODS:
     - React-Fabric
     - React-graphics
     - React-hermes
-    - React-jsinspector
     - React-nativeconfig
     - React-NativeModulesApple
     - React-RCTFabric
