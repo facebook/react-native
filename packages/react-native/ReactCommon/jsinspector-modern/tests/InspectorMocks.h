@@ -127,21 +127,21 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
  public:
   // RuntimeTargetDelegate methods
   MOCK_METHOD(
-      std::unique_ptr<RuntimeAgent>,
-      createAgent,
+      std::unique_ptr<RuntimeAgentDelegate>,
+      createAgentDelegate,
       (FrontendChannel channel, SessionState& sessionState),
       (override));
 };
 
-class MockRuntimeAgent : public RuntimeAgent {
+class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
-  inline MockRuntimeAgent(
+  inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState) {}
 
-  // RuntimeAgent methods
+  // RuntimeAgentDelegate methods
   MOCK_METHOD(
       bool,
       handleRequest,
