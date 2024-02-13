@@ -107,13 +107,7 @@ class NativeToJsBridge {
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
       std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
 
-  /**
-   * Create a RuntimeAgent that can be used to debug the underlying JS VM
-   * instance.
-   */
-  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createRuntimeAgent(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState);
+  jsinspector_modern::RuntimeTargetDelegate& getInspectorTargetDelegate();
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

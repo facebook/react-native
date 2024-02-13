@@ -121,12 +121,14 @@ class MockPageTargetDelegate : public PageTargetDelegate {
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
 };
 
-class MockInstanceTargetDelegate : public InstanceTargetDelegate {
+class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
+
+class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
  public:
-  // InstanceTargetDelegate methods
+  // RuntimeTargetDelegate methods
   MOCK_METHOD(
       std::unique_ptr<RuntimeAgent>,
-      createRuntimeAgent,
+      createAgent,
       (FrontendChannel channel, SessionState& sessionState),
       (override));
 };
