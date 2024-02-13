@@ -207,19 +207,18 @@ class Modal extends React.Component<Props, State> {
       this._eventSubscription = ModalEventEmitter.addListener(
         'modalDismissed',
         event => {
-          if (event.modalID === this._identifier && this.props.onDismiss) {
-            this.setState({isRendered: false}, () => {
-              if (this.props.onDismiss) {
-                this.props.onDismiss();
-              }
-            });
-          }
+          this.setState({isRendered: false}, () => {
+            if (event.modalID === this._identifier && this.props.onDismiss) {
+              this.props.onDismiss();
+            }
+          });
         },
       );
     }
   }
 
   componentWillUnmount() {
+    this.setState({isRendered: false});
     if (this._eventSubscription) {
       this._eventSubscription.remove();
     }
