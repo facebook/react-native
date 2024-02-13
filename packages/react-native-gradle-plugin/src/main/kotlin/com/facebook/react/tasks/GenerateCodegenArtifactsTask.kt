@@ -45,12 +45,12 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:OutputDirectory val generatedJniFiles: Provider<Directory> = generatedSrcDir.dir("jni")
 
   override fun exec() {
-    val (resolvedLibraryName, resolvedCodegenJavaPackageName) = resolveTaskParameters()
-    setupCommandLine(resolvedLibraryName, resolvedCodegenJavaPackageName)
+    val (resolvedLibraryName, resolvedCodegenJavaPackageName, cxxModules) = resolveTaskParameters()
+    setupCommandLine(resolvedLibraryName, resolvedCodegenJavaPackageName, cxxModules)
     super.exec()
   }
 
-  internal fun resolveTaskParameters(): Pair<String, String> {
+  internal fun resolveTaskParameters(): List<String> {
     val parsedPackageJson =
         if (packageJsonFile.isPresent && packageJsonFile.get().asFile.exists()) {
           JsonUtils.fromPackageJson(packageJsonFile.get().asFile)
@@ -60,24 +60,40 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
     val resolvedLibraryName = parsedPackageJson?.codegenConfig?.name ?: libraryName.get()
     val resolvedCodegenJavaPackageName =
         parsedPackageJson?.codegenConfig?.android?.javaPackageName ?: codegenJavaPackageName.get()
-    return resolvedLibraryName to resolvedCodegenJavaPackageName
+    val cxxModules = parsedPackageJson?.codegenConfig?.cxxModules ?: emptyList()
+    val separatedCxxModules = cxxModules.joinToString(":") { "${it.name}:${it.headerPath}" }
+    return listOf(resolvedLibraryName, resolvedCodegenJavaPackageName, separatedCxxModules)
   }
 
-  internal fun setupCommandLine(libraryName: String, codegenJavaPackageName: String) {
+  internal fun setupCommandLine(
+      libraryName: String,
+      codegenJavaPackageName: String,
+      cxxModules: String
+  ) {
     val workingDir = project.projectDir
-    commandLine(
+    val generateSpecsCli =
         windowsAwareCommandLine(
-            *nodeExecutableAndArgs.get().toTypedArray(),
-            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.cliPath(workingDir),
-            "--platform",
-            "android",
-            "--schemaPath",
-            generatedSchemaFile.get().asFile.cliPath(workingDir),
-            "--outputDir",
-            generatedSrcDir.get().asFile.cliPath(workingDir),
-            "--libraryName",
-            libraryName,
-            "--javaPackageName",
-            codegenJavaPackageName))
+                *nodeExecutableAndArgs.get().toTypedArray(),
+                reactNativeDir
+                    .file("scripts/generate-specs-cli.js")
+                    .get()
+                    .asFile
+                    .cliPath(workingDir),
+                "--platform",
+                "android",
+                "--schemaPath",
+                generatedSchemaFile.get().asFile.cliPath(workingDir),
+                "--outputDir",
+                generatedSrcDir.get().asFile.cliPath(workingDir),
+                "--libraryName",
+                libraryName,
+                "--javaPackageName",
+                codegenJavaPackageName)
+            .toMutableList()
+    if (cxxModules.isNotBlank()) {
+      generateSpecsCli.add("--cxxModules")
+      generateSpecsCli.add(cxxModules)
+    }
+    commandLine(generateSpecsCli)
   }
 }

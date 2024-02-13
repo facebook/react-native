@@ -72,6 +72,7 @@ function generateSpecFromInMemorySchema(
   packageName,
   libraryType,
   useLocalIncludePaths,
+  cxxModules,
 ) {
   validateLibraryType(libraryType);
   createOutputDirectoryIfNeeded(outputDirectory, libraryName);
@@ -111,6 +112,7 @@ function generateSpec(
   libraryName,
   packageName,
   libraryType,
+  cxxModules,
 ) {
   generateSpecFromInMemorySchema(
     platform,
