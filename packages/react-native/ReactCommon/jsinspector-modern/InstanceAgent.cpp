@@ -6,16 +6,17 @@
  */
 
 #include <jsinspector-modern/InstanceAgent.h>
+#include "RuntimeTarget.h"
 
 namespace facebook::react::jsinspector_modern {
 
 InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
     InstanceTarget& target,
-    std::unique_ptr<RuntimeAgent> runtimeAgent)
+    SessionState& sessionState)
     : frontendChannel_(frontendChannel),
       target_(target),
-      runtimeAgent_(std::move(runtimeAgent)) {
+      sessionState_(sessionState) {
   (void)target_;
 }
 
@@ -24,6 +25,14 @@ bool InstanceAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return true;
   }
   return false;
+}
+
+void InstanceAgent::setCurrentRuntime(RuntimeTarget* runtimeTarget) {
+  if (runtimeTarget) {
+    runtimeAgent_ = runtimeTarget->createAgent(frontendChannel_, sessionState_);
+  } else {
+    runtimeAgent_.reset();
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

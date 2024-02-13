@@ -17,19 +17,9 @@ namespace facebook::react {
 /**
  * An interface that represents an instance of a JS VM
  */
-class JSRuntime {
+class JSRuntime : public jsinspector_modern::RuntimeTargetDelegate {
  public:
   virtual jsi::Runtime& getRuntime() noexcept = 0;
-
-  /**
-   * Creates a new inspector agent for this runtime, if the runtime is
-   * inspectable. Returns nullptr otherwise.
-   * \see InspectorTargetDelegate::createRuntimeAgent
-   */
-  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent>
-  createInspectorAgent(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState) = 0;
 
   virtual ~JSRuntime() = default;
 };
@@ -51,7 +41,7 @@ class JSRuntimeFactory {
 class JSIRuntimeHolder : public JSRuntime {
  public:
   jsi::Runtime& getRuntime() noexcept override;
-  std::unique_ptr<jsinspector_modern::RuntimeAgent> createInspectorAgent(
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createAgent(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState) override;
 

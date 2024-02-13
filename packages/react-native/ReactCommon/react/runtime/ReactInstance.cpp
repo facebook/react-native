@@ -39,6 +39,7 @@ ReactInstance::ReactInstance(
       parentInspectorTarget_(parentInspectorTarget) {
   if (parentInspectorTarget_) {
     inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+    runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(*runtime_);
   }
   auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
@@ -102,6 +103,8 @@ ReactInstance::ReactInstance(
 
 void ReactInstance::unregisterFromInspector() {
   if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
     assert(parentInspectorTarget_);
     parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
     inspectorTarget_ = nullptr;
@@ -458,14 +461,6 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
                    << ") received by JS VM, unrecognized pressure level";
       break;
   }
-}
-
-std::unique_ptr<jsinspector_modern::RuntimeAgent>
-ReactInstance::createRuntimeAgent(
-    jsinspector_modern::FrontendChannel channel,
-    jsinspector_modern::SessionState& sessionState) {
-  auto agent = runtime_->createInspectorAgent(std::move(channel), sessionState);
-  return agent;
 }
 
 } // namespace facebook::react

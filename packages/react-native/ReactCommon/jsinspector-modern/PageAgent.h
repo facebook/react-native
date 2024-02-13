@@ -60,7 +60,7 @@ class PageAgent {
    * \param agent The new InstanceAgent. May be null to signify that there is
    * currently no active instance.
    */
-  void setCurrentInstanceAgent(std::unique_ptr<InstanceAgent> agent);
+  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
  private:
   /**
@@ -77,7 +77,7 @@ class PageAgent {
   FrontendChannel frontendChannel_;
   PageTargetController& targetController_;
   const PageTarget::SessionMetadata sessionMetadata_;
-  std::unique_ptr<InstanceAgent> instanceAgent_;
+  std::shared_ptr<InstanceAgent> instanceAgent_;
 
   /**
    * A shared reference to the session's state. This is only safe to access
