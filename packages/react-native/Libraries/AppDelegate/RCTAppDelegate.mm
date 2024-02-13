@@ -82,7 +82,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
-  RCTAppSetupPrepareApp(application, enableTM, *_reactNativeConfig);
+  RCTAppSetupPrepareApp(application, enableTM);
 
   UIView *rootView;
   if (enableBridgeless) {
