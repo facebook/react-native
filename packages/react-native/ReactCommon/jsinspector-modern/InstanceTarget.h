@@ -8,6 +8,7 @@
 #pragma once
 
 #include "RuntimeTarget.h"
+#include "ScopedExecutor.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -40,14 +41,20 @@ class InstanceTargetDelegate {
 /**
  * A Target that represents a single instance of React Native.
  */
-class InstanceTarget final {
+class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
  public:
   /**
+   * Constructs a new InstanceTarget.
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
+   * \param executor An executor that may be used to call methods on this
+   * InstanceTarget while it exists. \c create additionally guarantees that the
+   * executor will not be called after the InstanceTarget is destroyed.
    */
-  explicit InstanceTarget(InstanceTargetDelegate& delegate);
+  static std::shared_ptr<InstanceTarget> create(
+      InstanceTargetDelegate& delegate,
+      VoidExecutor executor);
 
   InstanceTarget(const InstanceTarget&) = delete;
   InstanceTarget(InstanceTarget&&) = delete;
@@ -65,8 +72,17 @@ class InstanceTarget final {
   void unregisterRuntime(RuntimeTarget& runtime);
 
  private:
+  /**
+   * Constructs a new InstanceTarget. The caller must call setExecutor
+   * immediately afterwards.
+   * \param delegate The object that will receive events from this target.
+   * The caller is responsible for ensuring that the delegate outlives this
+   * object.
+   */
+  InstanceTarget(InstanceTargetDelegate& delegate);
+
   InstanceTargetDelegate& delegate_;
-  std::optional<RuntimeTarget> currentRuntime_{std::nullopt};
+  std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
   std::list<std::weak_ptr<InstanceAgent>> agents_;
 
   /**
