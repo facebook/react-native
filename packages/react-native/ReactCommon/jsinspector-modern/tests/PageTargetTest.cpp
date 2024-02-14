@@ -6,6 +6,7 @@
  */
 
 #include <folly/dynamic.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -26,6 +27,8 @@ namespace facebook::react::jsinspector_modern {
 namespace {
 
 class PageTargetTest : public Test {
+  folly::QueuedImmediateExecutor immediateExecutor_;
+
  protected:
   PageTargetTest() {
     EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _))
@@ -36,7 +39,7 @@ class PageTargetTest : public Test {
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a PageTargetTest.";
-    toPage_ = page_.connect(
+    toPage_ = page_->connect(
         remoteConnections_.make_unique(),
         {.integrationName = "PageTargetTest"});
 
@@ -52,7 +55,12 @@ class PageTargetTest : public Test {
     return *remoteConnections_[0];
   }
 
-  PageTarget page_{pageTargetDelegate_};
+  VoidExecutor inspectorExecutor_ = [this](auto callback) {
+    immediateExecutor_.add(callback);
+  };
+
+  std::shared_ptr<PageTarget> page_ =
+      PageTarget::create(pageTargetDelegate_, inspectorExecutor_);
 
   MockInstanceTargetDelegate instanceTargetDelegate_;
   MockRuntimeTargetDelegate runtimeTargetDelegate_;
@@ -197,17 +205,17 @@ TEST_F(PageTargetProtocolTest, PageReloadMethod) {
 }
 
 TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   connect();
 
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
@@ -222,16 +230,16 @@ TEST_F(PageTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
                            "method": "Runtime.enable"
                          })");
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "method": "Runtime.executionContextsCleared"
                                              })")));
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
 
   connect();
 
@@ -250,11 +258,11 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "method": "Runtime.executionContextsCleared"
                                              })")));
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
@@ -285,32 +293,32 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
   runtimeAgentDelegates_[0]->frontendChannel(kFooResponse);
 
   instanceTarget.unregisterRuntime(runtimeTarget);
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   {
-    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+    auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
     auto& runtimeTarget = instanceTarget.registerRuntime(
         runtimeTargetDelegate_, runtimeExecutor_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[0]);
 
     instanceTarget.unregisterRuntime(runtimeTarget);
-    page_.unregisterInstance(instanceTarget);
+    page_->unregisterInstance(instanceTarget);
   }
 
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
   {
-    auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+    auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
     auto& runtimeTarget = instanceTarget.registerRuntime(
         runtimeTargetDelegate_, runtimeExecutor_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[1]);
 
     instanceTarget.unregisterRuntime(runtimeTarget);
-    page_.unregisterInstance(instanceTarget);
+    page_->unregisterInstance(instanceTarget);
   }
 
   EXPECT_FALSE(runtimeAgentDelegates_[1]);
@@ -319,7 +327,7 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
 TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
   InSequence s;
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
@@ -339,13 +347,13 @@ TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
                          })");
 
   instanceTarget.unregisterRuntime(runtimeTarget);
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   InSequence s;
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
@@ -372,7 +380,7 @@ TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   runtimeAgentDelegates_[0]->frontendChannel(kFooResponse);
 
   instanceTarget.unregisterRuntime(runtimeTarget);
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
@@ -389,7 +397,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
                            }
                          })");
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
@@ -416,7 +424,7 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
   runtimeAgentDelegates_[0]->frontendChannel(kFooResponse);
 
   instanceTarget.unregisterRuntime(runtimeTarget);
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
@@ -438,7 +446,7 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _))
       .WillRepeatedly(ReturnNull());
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   auto& runtimeTarget =
       instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
@@ -456,7 +464,7 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
                          })");
 
   instanceTarget.unregisterRuntime(runtimeTarget);
-  page_.unregisterInstance(instanceTarget);
+  page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
@@ -473,7 +481,7 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
                            "method": "Runtime.enable"
                          })");
 
-  auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
   instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
 
