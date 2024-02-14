@@ -23,6 +23,7 @@ namespace facebook::react {
  * https://www.w3.org/TR/css-values-4/#component-types
  */
 enum class CSSValueType : uint8_t {
+  CSSWideKeyword,
   Keyword,
   Length,
   Number,
@@ -31,11 +32,11 @@ enum class CSSValueType : uint8_t {
 };
 
 /**
- * Concrete representation for a CSS basic data type.
+ * Concrete representation for a CSS basic data type, or keywords
  * https://www.w3.org/TR/css-values-4/#component-types
  */
 template <typename T>
-concept CSSBasicDataType = std::is_trivially_destructible_v<T> &&
+concept CSSDataType = std::is_trivially_destructible_v<T> &&
     std::is_default_constructible_v<T> && requires() {
   sizeof(T);
 };
@@ -88,9 +89,9 @@ struct CSSRatio {
  * set of values.
  */
 #pragma pack(push, 1)
-template <typename KeywordT, CSSBasicDataType... Rest>
+template <CSSDataType... AllowedTypesT>
 class CSSValueVariant {
-  template <CSSValueType Type, CSSBasicDataType ValueT>
+  template <CSSValueType Type, CSSDataType ValueT>
   constexpr ValueT getIf() const {
     if (type_ == Type) {
       return *std::launder(reinterpret_cast<const ValueT*>(data_.data()));
@@ -99,16 +100,49 @@ class CSSValueVariant {
     }
   }
 
-  template <CSSBasicDataType ValueT>
+  template <CSSDataType ValueT>
   static constexpr bool canRepresent() {
-    return traits::containsType<ValueT, KeywordT, Rest...>();
+    return traits::containsType<ValueT, AllowedTypesT...>();
   }
 
- public:
-  constexpr CSSValueVariant()
-      : CSSValueVariant(CSSValueType::Keyword, KeywordT::Unset) {}
+  template <CSSDataType T, CSSDataType... Rest>
+  static constexpr bool hasKeywordSet() {
+    if constexpr (CSSKeywordSet<T> && !std::is_same_v<T, CSSWideKeyword>) {
+      return true;
+    } else if constexpr (sizeof...(Rest) == 0) {
+      return false;
+    } else {
+      return hasKeywordSet<Rest...>();
+    }
+  }
 
-  static constexpr CSSValueVariant keyword(KeywordT keyword) {
+  template <typename... T>
+  struct PackedKeywordSet {
+    using Type = void;
+  };
+
+  template <typename T, typename... RestT>
+  struct PackedKeywordSet<T, RestT...> {
+    using Type = std::conditional_t<
+        hasKeywordSet<T>(),
+        T,
+        typename PackedKeywordSet<RestT...>::Type>;
+  };
+
+ public:
+  using Keyword = typename PackedKeywordSet<AllowedTypesT...>::Type;
+
+  constexpr CSSValueVariant() requires(canRepresent<CSSWideKeyword>())
+      : CSSValueVariant(CSSValueType::CSSWideKeyword, CSSWideKeyword::Unset) {}
+
+  static constexpr CSSValueVariant cssWideKeyword(CSSWideKeyword keyword) {
+    return CSSValueVariant(
+        CSSValueType::CSSWideKeyword, CSSWideKeyword{keyword});
+  }
+
+  template <CSSKeywordSet KeywordT>
+  static constexpr CSSValueVariant keyword(KeywordT keyword) requires(
+      canRepresent<KeywordT>()) {
     return CSSValueVariant(CSSValueType::Keyword, KeywordT{keyword});
   }
 
@@ -139,8 +173,14 @@ class CSSValueVariant {
     return type_;
   }
 
-  constexpr KeywordT getKeyword() const {
-    return getIf<CSSValueType::Keyword, KeywordT>();
+  constexpr CSSWideKeyword getCSSWideKeyword() const
+      requires(canRepresent<CSSWideKeyword>()) {
+    return getIf<CSSValueType::CSSWideKeyword, CSSWideKeyword>();
+  }
+
+  constexpr Keyword getKeyword() const
+      requires(hasKeywordSet<AllowedTypesT...>()) {
+    return getIf<CSSValueType::Keyword, Keyword>();
   }
 
   constexpr CSSLength getLength() const requires(canRepresent<CSSLength>()) {
@@ -160,30 +200,29 @@ class CSSValueVariant {
     return getIf<CSSValueType::Ratio, CSSRatio>();
   }
 
-  constexpr operator bool() const {
+  constexpr operator bool() const requires(canRepresent<CSSWideKeyword>()) {
     return *this != CSSValueVariant{};
   }
 
   constexpr bool operator==(const CSSValueVariant& rhs) const = default;
 
  private:
-  constexpr CSSValueVariant(CSSValueType type, CSSBasicDataType auto&& value)
+  constexpr CSSValueVariant(CSSValueType type, CSSDataType auto&& value)
       : type_(type) {
     new (data_.data()) std::remove_cvref_t<decltype(value)>{
         std::forward<decltype(value)>(value)};
   }
 
   CSSValueType type_;
-  std::array<std::byte, traits::maxSizeof<KeywordT, Rest...>()> data_;
+  std::array<std::byte, traits::maxSizeof<AllowedTypesT...>()> data_;
 };
 #pragma pack(pop)
 
-static_assert(sizeof(CSSValueVariant<CSSFlexDirection>) == 2);
-static_assert(sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength>) == 6);
+static_assert(sizeof(CSSValueVariant<CSSKeyword>) == 2);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSLength>) == 6);
 static_assert(
-    sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength, CSSPercentage>) == 6);
-static_assert(sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber>) == 5);
-static_assert(
-    sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber, CSSRatio>) == 9);
+    sizeof(CSSValueVariant<CSSKeyword, CSSLength, CSSPercentage>) == 6);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSNumber>) == 5);
+static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSNumber, CSSRatio>) == 9);
 
 } // namespace facebook::react
