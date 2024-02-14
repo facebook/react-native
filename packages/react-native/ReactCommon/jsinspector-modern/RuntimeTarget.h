@@ -11,6 +11,7 @@
 #include "RuntimeAgent.h"
 #include "SessionState.h"
 
+#include <list>
 #include <memory>
 
 #ifndef JSINSPECTOR_EXPORT
@@ -59,6 +60,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget final {
   RuntimeTarget(RuntimeTarget&&) = delete;
   RuntimeTarget& operator=(const RuntimeTarget&) = delete;
   RuntimeTarget& operator=(RuntimeTarget&&) = delete;
+  ~RuntimeTarget();
 
   /**
    * Create a new RuntimeAgent that can be used to debug the underlying JS VM.
@@ -69,12 +71,31 @@ class JSINSPECTOR_EXPORT RuntimeTarget final {
    * frontend.
    * \returns The new agent, or nullptr if the runtime is not debuggable.
    */
-  std::unique_ptr<RuntimeAgent> createAgent(
+  std::shared_ptr<RuntimeAgent> createAgent(
       FrontendChannel channel,
       SessionState& sessionState);
 
  private:
   RuntimeTargetDelegate& delegate_;
+  std::list<std::weak_ptr<RuntimeAgent>> agents_;
+
+  /**
+   * Call the given function for every active agent, and clean up any
+   * references to inactive agents.
+   */
+  template <typename Fn>
+  void forEachAgent(Fn&& fn) {
+    for (auto it = agents_.begin(); it != agents_.end();) {
+      if (auto agent = it->lock()) {
+        fn(*agent);
+        ++it;
+      } else {
+        it = agents_.erase(it);
+      }
+    }
+  }
+
+  void removeExpiredAgents();
 };
 
 } // namespace facebook::react::jsinspector_modern
