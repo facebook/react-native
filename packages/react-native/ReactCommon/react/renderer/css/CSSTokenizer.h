@@ -21,7 +21,7 @@ enum class CSSTokenType {
   EndOfFile,
   Ident,
   Number,
-  Percent,
+  Percentage,
   WhiteSpace,
 };
 
