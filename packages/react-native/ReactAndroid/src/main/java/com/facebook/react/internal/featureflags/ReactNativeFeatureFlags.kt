@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e0feebb19816cd356ba2f28d3bec937a>>
+ * @generated SignedSource<<c526fb1c44f00f5b032684396246e4d4>>
  */
 
 /**
@@ -87,12 +87,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
-
-  /**
-   * Specifies whether the iterator-style prop parsing is enabled.
-   */
-  @JvmStatic
-  public fun enablePropIteratorSetter(): Boolean = accessor.enablePropIteratorSetter()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

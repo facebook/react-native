@@ -28,7 +28,6 @@ target_link_libraries(rrc_textinput
         glog_init
         jsi
         react_debug
-        react_featureflags
         react_render_attributedstring
         react_render_componentregistry
         react_render_core

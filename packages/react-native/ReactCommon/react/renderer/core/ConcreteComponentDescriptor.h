@@ -11,7 +11,6 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -118,7 +117,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
-    if (ReactNativeFeatureFlags::enablePropIteratorSetter()) {
+    if (CoreFeatures::enablePropIteratorSetter) {
       rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
                                      const char* propName,
                                      const RawValue& fn) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98243d4cb18b03d4a2273416879f1081>>
+ * @generated SignedSource<<3bfae310dfd28040f4b80d1a1df8b7b3>>
  */
 
 /**
@@ -82,11 +82,6 @@ class ReactNativeFeatureFlags {
    * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
    */
   static bool inspectorEnableModernCDPRegistry();
-
-  /**
-   * Specifies whether the iterator-style prop parsing is enabled.
-   */
-  static bool enablePropIteratorSetter();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

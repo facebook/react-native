@@ -63,11 +63,6 @@ const definitions: FeatureFlagDefinitions = {
         'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
       defaultValue: false,
     },
-    enablePropIteratorSetter: {
-      description:
-        'Specifies whether the iterator-style prop parsing is enabled.',
-      defaultValue: false,
-    },
   },
 
   jsOnly: {
