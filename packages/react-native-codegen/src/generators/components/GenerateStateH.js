@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -65,13 +66,8 @@ public:
 `.trim();
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, libraryName} = parameters;
     const fileName = 'States.h';
 
     const stateClasses = Object.keys(schema.modules)

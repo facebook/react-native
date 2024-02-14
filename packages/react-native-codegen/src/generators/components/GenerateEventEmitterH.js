@@ -17,6 +17,7 @@ import type {
   NamedShape,
   SchemaType,
 } from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {indent, toSafeCppString} = require('../Utils');
 const {
@@ -306,13 +307,8 @@ function generateEvents(
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema} = parameters;
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
         const module = schema.modules[moduleName];

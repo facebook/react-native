@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../../src/generators/Utils';
+
 const generator = require('../../../src/generators/components/GenerateComponentDescriptorH');
 const {FlowParser} = require('../../../src/parsers/flow/parser');
 const fs = require('fs');
@@ -23,15 +25,14 @@ const parser = new FlowParser();
 
 fixtures.forEach(fixture => {
   it(`GenerateComponentDescriptorH can generate for '${fixture}'`, () => {
-    const libName = 'RNCodegenModuleFixtures';
-    const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(
-      libName,
-      schema,
-      undefined,
-      false,
-      `react/renderer/components/${libName}/`,
-    );
+    const libraryName = 'RNCodegenModuleFixtures';
+    const schemaType = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
+    const params: GeneratorParameters = {
+      libraryName: libraryName,
+      schema: schemaType,
+      headerPrefix: `react/renderer/components/${libraryName}/`,
+    };
+    const output = generator.generate(params);
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

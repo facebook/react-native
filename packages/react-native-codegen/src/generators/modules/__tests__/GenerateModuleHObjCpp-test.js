@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../Utils';
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateModuleObjCpp');
 
@@ -21,12 +23,13 @@ describe('GenerateModuleHObjCpp', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        const output = generator.generate(
-          fixtureName,
-          fixture,
-          'com.facebook.fbreact.specs',
-          false,
-        );
+        const params: GeneratorParameters = {
+          libraryName: fixtureName,
+          schema: fixture,
+          packageName: 'com.facebook.fbreact.specs',
+          assumeNonnull: false,
+        };
+        const output = generator.generate(params);
         expect(
           new Map([[`${fixtureName}.h`, output.get(`${fixtureName}.h`)]]),
         ).toMatchSnapshot();

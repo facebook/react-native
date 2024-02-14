@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {IncludeTemplate} = require('./CppHelpers');
 
@@ -48,13 +49,8 @@ extern const char ${className}ComponentName[] = "${className}";
 `.trim();
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, headerPrefix} = parameters;
     const fileName = 'ShadowNodes.cpp';
 
     const componentNames = Object.keys(schema.modules)

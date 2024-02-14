@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {getModules} = require('./Utils');
 
@@ -117,13 +118,8 @@ target_compile_options(
 };
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, libraryName} = parameters;
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
       .filter(hasteModuleName => {

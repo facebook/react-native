@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {
   IncludeTemplate,
@@ -103,13 +104,8 @@ function getClassExtendString(component: ComponentShape): string {
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, headerPrefix} = parameters;
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
       '#include <react/renderer/core/propsConversions.h>',

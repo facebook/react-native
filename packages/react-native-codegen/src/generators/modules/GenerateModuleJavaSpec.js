@@ -19,6 +19,7 @@ import type {
   Nullable,
   SchemaType,
 } from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
@@ -430,13 +431,8 @@ function buildGetConstantsMethod(
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, packageName} = parameters;
     const files = new Map<string, string>();
     const nativeModules = getModules(schema);
 

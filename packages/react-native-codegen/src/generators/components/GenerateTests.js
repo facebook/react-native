@@ -11,6 +11,7 @@
 'use strict';
 import type {ComponentShape, PropTypeAnnotation} from '../../CodegenSchema';
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {toSafeCppString} = require('../Utils');
 const {getImports} = require('./CppHelpers');
@@ -166,13 +167,8 @@ function generateTestsString(name: string, component: ComponentShape) {
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, libraryName} = parameters;
     const fileName = 'Tests.cpp';
     const allImports = new Set([
       '#include <react/renderer/core/propsConversions.h>',

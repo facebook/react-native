@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../../src/generators/Utils';
+
 const generator = require('../../../src/generators/components/GenerateEventEmitterCpp');
 const {FlowParser} = require('../../../src/parsers/flow/parser');
 const fs = require('fs');
@@ -25,13 +27,12 @@ fixtures.forEach(fixture => {
   it(`GenerateEventEmitterCpp can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(
-      libName,
-      schema,
-      undefined,
-      false,
-      `react/renderer/components/${libName}/`,
-    );
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: schema,
+      headerPrefix: `react/renderer/components/${libName}/`,
+    };
+    const output = generator.generate(params);
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

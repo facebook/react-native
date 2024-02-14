@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../Utils';
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GeneratePropsJavaPojo');
 
@@ -21,7 +23,11 @@ describe('GeneratePropsJavaPojo', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
+        const params: GeneratorParameters = {
+          libraryName: fixtureName,
+          schema: fixture,
+        };
+        expect(generator.generate(params)).toMatchSnapshot();
       });
     });
 });

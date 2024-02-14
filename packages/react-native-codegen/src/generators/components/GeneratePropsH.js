@@ -16,6 +16,7 @@ import type {
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {getEnumName, toSafeCppString} = require('../Utils');
 const {
@@ -701,13 +702,8 @@ function generateStruct(
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema} = parameters;
     const fileName = 'Props.h';
 
     const allImports: Set<string> = new Set();

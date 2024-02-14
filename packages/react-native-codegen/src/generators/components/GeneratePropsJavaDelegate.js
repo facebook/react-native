@@ -17,6 +17,7 @@ import type {
   PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {
   getDelegateJavaClassName,
@@ -292,13 +293,8 @@ function generateMethods(
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema} = parameters;
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';
     const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;

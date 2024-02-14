@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const {IncludeTemplate} = require('./CppHelpers');
 
@@ -68,13 +69,8 @@ using ${className}ShadowNode = ConcreteViewShadowNode<
 `.trim();
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, headerPrefix} = parameters;
     const fileName = 'ShadowNodes.h';
 
     const moduleResults = Object.keys(schema.modules)

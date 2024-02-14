@@ -12,6 +12,7 @@
 'use strict';
 
 import type {SchemaType} from '../../../src/CodegenSchema';
+import type {GeneratorParameters} from '../../../src/generators/Utils';
 
 const generator = require('../../../src/generators/modules/GenerateModuleCpp');
 const {FlowParser} = require('../../../src/parsers/flow/parser');
@@ -40,13 +41,23 @@ function getModules(): SchemaType {
 describe('GenerateModuleCpp', () => {
   it('can generate an implementation file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), undefined, false);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: getModules(),
+      assumeNonnull: false,
+    };
+    const output = generator.generate(params);
     expect(output.get(libName + 'JSI-generated.cpp')).toMatchSnapshot();
   });
 
   it('can generate a header file NativeModule specs with assume nonnull enabled', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), undefined, true);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: getModules(),
+      assumeNonnull: true,
+    };
+    const output = generator.generate(params);
     expect(output.get(libName + 'JSI-generated.cpp')).toMatchSnapshot();
   });
 });

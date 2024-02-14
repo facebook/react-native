@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../Utils';
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateViewConfigJs.js');
 
@@ -21,13 +23,18 @@ describe('GenerateViewConfigJs', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
+        const params: GeneratorParameters = {
+          libraryName: fixtureName,
+          schema: fixture,
+        };
+        expect(generator.generate(params)).toMatchSnapshot();
       });
     });
 
   it('can generate fixture with a deprecated view config name', () => {
-    expect(
-      generator.generate('DEPRECATED_VIEW_CONFIG_NAME', {
+    const params: GeneratorParameters = {
+      libraryName: 'DEPRECATED_VIEW_CONFIG_NAME',
+      schema: {
         modules: {
           Component: {
             type: 'Component',
@@ -47,7 +54,8 @@ describe('GenerateViewConfigJs', () => {
             },
           },
         },
-      }),
-    ).toMatchSnapshot();
+      },
+    };
+    expect(generator.generate(params)).toMatchSnapshot();
   });
 });

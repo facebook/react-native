@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../../CodegenSchema';
+import type {GeneratorParameters} from '../../Utils';
 
 const {capitalize} = require('../../Utils');
 const PojoCollector = require('./PojoCollector');
@@ -19,11 +20,8 @@ const {serializePojo} = require('./serializePojo');
 type FilesOutput = Map<string, string>;
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema} = parameters;
     const pojoCollector = new PojoCollector();
     const basePackageName = 'com.facebook.react.viewmanagers';
 

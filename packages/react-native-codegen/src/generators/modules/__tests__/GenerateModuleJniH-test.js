@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../Utils';
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateModuleJniH.js');
 
@@ -21,13 +23,12 @@ describe('GenerateModuleJniH', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(
-          generator.generate(
-            fixtureName,
-            fixture,
-            'com.facebook.fbreact.specs',
-          ),
-        ).toMatchSnapshot();
+        const params: GeneratorParameters = {
+          libraryName: fixtureName,
+          schema: fixture,
+          packageName: 'com.facebook.fbreact.specs',
+        };
+        expect(generator.generate(params)).toMatchSnapshot();
       });
     });
 });

@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../Utils';
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateShadowNodeH.js');
 
@@ -21,15 +23,13 @@ describe('GenerateShadowNodeH', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(
-          generator.generate(
-            fixtureName,
-            fixture,
-            '',
-            false,
-            `react/renderer/components/${fixtureName}/`,
-          ),
-        ).toMatchSnapshot();
+        const params: GeneratorParameters = {
+          libraryName: fixtureName,
+          schema: fixture,
+          assumeNonnull: false,
+          headerPrefix: `react/renderer/components/${fixtureName}/`,
+        };
+        expect(generator.generate(params)).toMatchSnapshot();
       });
     });
 });

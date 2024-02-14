@@ -11,6 +11,7 @@
 'use strict';
 import type {NativeModulePropertyShape} from '../../../CodegenSchema';
 import type {SchemaType} from '../../../CodegenSchema';
+import type {GeneratorParameters} from '../../Utils';
 import type {MethodSerializationOutput} from './serializeMethod';
 
 const {createAliasResolver, getModules} = require('../Utils');
@@ -113,13 +114,8 @@ ${moduleImplementations}
 `;
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, libraryName, assumeNonnull} = parameters;
     const nativeModules = getModules(schema);
 
     const moduleDeclarations: Array<string> = [];
@@ -199,7 +195,7 @@ module.exports = {
     const headerFile = HeaderFileTemplate({
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
-      assumeNonnull,
+      assumeNonnull: assumeNonnull || false,
     });
 
     const sourceFileName = `${libraryName}-generated.mm`;

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {SchemaType} from '../CodegenSchema';
+
 function capitalize(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -43,6 +45,14 @@ function getEnumName(moduleName: string, origEnumName: string): string {
   const uppercasedPropName = toSafeCppString(origEnumName);
   return `${moduleName}${uppercasedPropName}`;
 }
+
+export type GeneratorParameters = {
+  libraryName: string,
+  schema: SchemaType,
+  packageName?: string,
+  assumeNonnull?: boolean,
+  headerPrefix?: string,
+};
 
 module.exports = {
   capitalize,

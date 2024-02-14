@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {GeneratorParameters} from '../../../src/generators/Utils';
+
 const generator = require('../../../src/generators/components/GenerateEventEmitterH');
 const {FlowParser} = require('../../../src/parsers/flow/parser');
 const fs = require('fs');
@@ -25,7 +27,11 @@ fixtures.forEach(fixture => {
   it(`GenerateEventEmitterH can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
-    const output = generator.generate(libName, schema);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: schema,
+    };
+    const output = generator.generate(params);
     expect(Object.fromEntries(output)).toMatchSnapshot();
   });
 });

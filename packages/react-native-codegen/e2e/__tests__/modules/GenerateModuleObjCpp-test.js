@@ -12,6 +12,7 @@
 'use strict';
 
 import type {SchemaType} from '../../../src/CodegenSchema';
+import type {GeneratorParameters} from '../../../src/generators/Utils';
 
 const generator = require('../../../src/generators/modules/GenerateModuleObjCpp');
 const {FlowParser} = require('../../../src/parsers/flow/parser');
@@ -40,19 +41,34 @@ function getModules(): SchemaType {
 describe('GenerateModuleObjCpp', () => {
   it('can generate a header file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), undefined, false);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: getModules(),
+      assumeNonnull: false,
+    };
+    const output = generator.generate(params);
     expect(output.get(libName + '.h')).toMatchSnapshot();
   });
 
   it('can generate a header file NativeModule specs with assume nonnull enabled', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), undefined, true);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: getModules(),
+      assumeNonnull: true,
+    };
+    const output = generator.generate(params);
     expect(output.get(libName + '.h')).toMatchSnapshot();
   });
 
   it('can generate an implementation file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
-    const output = generator.generate(libName, getModules(), undefined, false);
+    const params: GeneratorParameters = {
+      libraryName: libName,
+      schema: getModules(),
+      assumeNonnull: false,
+    };
+    const output = generator.generate(params);
     expect(output.get(libName + '-generated.mm')).toMatchSnapshot();
   });
 });

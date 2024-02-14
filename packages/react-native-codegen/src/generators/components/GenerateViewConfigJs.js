@@ -15,6 +15,7 @@ import type {
   PropTypeAnnotation,
 } from '../../CodegenSchema';
 import type {SchemaType} from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 const j = require('jscodeshift');
 
@@ -402,7 +403,8 @@ function buildCommands(
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema, libraryName} = parameters;
     try {
       const fileName = `${libraryName}NativeViewConfig.js`;
       const imports: Set<string> = new Set();

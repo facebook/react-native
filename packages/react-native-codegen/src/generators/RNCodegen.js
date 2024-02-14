@@ -17,6 +17,7 @@ TODO:
 */
 
 import type {SchemaType} from '../CodegenSchema';
+import type {GeneratorParameters} from './Utils';
 
 const schemaValidator = require('../SchemaValidator.js');
 const generateComponentDescriptorCpp = require('./components/GenerateComponentDescriptorCpp.js');
@@ -274,21 +275,25 @@ module.exports = {
 
     const generatedFiles: Array<CodeGenFile> = [];
 
+    const generatorParameters: GeneratorParameters = {
+      libraryName,
+      schema,
+      packageName,
+      assumeNonnull,
+      headerPrefix,
+    };
+
     for (const name of generators) {
       for (const generator of LIBRARY_GENERATORS[name]) {
-        generator(
-          libraryName,
-          schema,
-          packageName,
-          assumeNonnull,
-          headerPrefix,
-        ).forEach((contents: string, fileName: string) => {
-          generatedFiles.push({
-            name: fileName,
-            content: contents,
-            outputDir: outputFoldersForGenerators[name],
-          });
-        });
+        generator(generatorParameters).forEach(
+          (contents: string, fileName: string) => {
+            generatedFiles.push({
+              name: fileName,
+              content: contents,
+              outputDir: outputFoldersForGenerators[name],
+            });
+          },
+        );
       }
     }
     return checkOrWriteFiles(generatedFiles, test);
@@ -321,10 +326,11 @@ module.exports = {
   generateViewConfig({libraryName, schema}: LibraryOptions): string {
     schemaValidator.validate(schema);
 
-    const result = generateViewConfigJs
-      .generate(libraryName, schema)
-      .values()
-      .next();
+    const params: GeneratorParameters = {
+      libraryName: libraryName,
+      schema: schema,
+    };
+    const result = generateViewConfigJs.generate(params).values().next();
 
     if (typeof result.value !== 'string') {
       throw new Error(`Failed to generate view config for ${libraryName}`);

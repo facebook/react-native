@@ -17,6 +17,7 @@ import type {
   NamedShape,
   SchemaType,
 } from '../../CodegenSchema';
+import type {GeneratorParameters} from '../Utils';
 
 type FilesOutput = Map<string, string>;
 
@@ -375,13 +376,8 @@ function generateCommandHandler(
 }
 
 module.exports = {
-  generate(
-    libraryName: string,
-    schema: SchemaType,
-    packageName?: string,
-    assumeNonnull: boolean = false,
-    headerPrefix?: string,
-  ): FilesOutput {
+  generate(parameters: GeneratorParameters): FilesOutput {
+    const {schema} = parameters;
     const fileName = 'RCTComponentViewHelpers.h';
 
     const componentContent = Object.keys(schema.modules)
