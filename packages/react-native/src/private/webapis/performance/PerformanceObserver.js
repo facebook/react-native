@@ -10,7 +10,7 @@
 
 import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 
-import warnOnce from '../Utilities/warnOnce';
+import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
