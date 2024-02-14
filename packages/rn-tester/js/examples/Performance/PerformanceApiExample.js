@@ -10,13 +10,13 @@
  */
 
 'use strict';
-import type MemoryInfo from 'react-native/Libraries/WebPerformance/MemoryInfo';
-import type ReactNativeStartupTiming from 'react-native/Libraries/WebPerformance/ReactNativeStartupTiming';
+import type MemoryInfo from 'react-native/src/private/webapis/performance/MemoryInfo';
+import type ReactNativeStartupTiming from 'react-native/src/private/webapis/performance/ReactNativeStartupTiming';
 
 import RNTesterPage from '../../components/RNTesterPage';
 import * as React from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
-import Performance from 'react-native/Libraries/WebPerformance/Performance';
+import Performance from 'react-native/src/private/webapis/performance/Performance';
 
 const {useState, useCallback} = React;
 const performance = new Performance();

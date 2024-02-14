@@ -13,7 +13,7 @@
 import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
 import type {PerformanceEntryList} from './PerformanceObserver';
 
-import warnOnce from '../Utilities/warnOnce';
+import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
