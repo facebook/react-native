@@ -25,9 +25,15 @@ enum class CSSKeyword : uint8_t {
   Absolute,
   Auto,
   Baseline,
+  Block,
   Center,
+  Clip,
   Column,
   ColumnReverse,
+  Content,
+  Contents,
+  End,
+  Fixed,
   Flex,
   FlexEnd,
   FlexStart,
@@ -35,8 +41,16 @@ enum class CSSKeyword : uint8_t {
   Inherit,
   Initial,
   Inline,
+  InlineBlock,
+  InlineFlex,
+  InlineGrid,
   Ltr,
+  Grid,
+  MaxContent,
+  Medium,
+  MinContent,
   None,
+  Normal,
   NoWrap,
   Relative,
   Row,
@@ -46,8 +60,12 @@ enum class CSSKeyword : uint8_t {
   SpaceAround,
   SpaceBetween,
   SpaceEvenly,
+  Start,
   Static,
+  Sticky,
   Stretch,
+  Thick,
+  Thin,
   Unset,
   Visible,
   Wrap,
@@ -55,159 +73,21 @@ enum class CSSKeyword : uint8_t {
 };
 
 /**
- * Represents a set of CSS keywords, including CSS-wide keywords.
+ * Represents a contrained set of CSS keywords.
  */
 template <typename T>
-concept CSSKeywordSet = std::is_enum_v<T> && requires {
-  { T::Inherit } -> std::same_as<T>;
-  { T::Initial } -> std::same_as<T>;
-  { T::Unset } -> std::same_as<T>;
-};
-
-/**
- * Defines a new set of CSS keywords
- */
-#define CSS_DEFINE_KEYWORD_SET(name, ...)         \
-  enum class name : uint8_t {                     \
-    Inherit = to_underlying(CSSKeyword::Inherit), \
-    Initial = to_underlying(CSSKeyword::Initial), \
-    Unset = to_underlying(CSSKeyword::Unset),     \
-    __VA_ARGS__                                   \
-  };
+concept CSSKeywordSet = std::is_enum_v<T> && std::
+    is_same_v<std::underlying_type_t<T>, std::underlying_type_t<CSSKeyword>>;
 
 /**
  * CSS-wide keywords.
  * https://www.w3.org/TR/css-values-4/#common-keywords
  */
-CSS_DEFINE_KEYWORD_SET(CSSWideKeyword)
-
-/**
- * CSS-wide keywords along with a context-dependent "auto" keyword.
- */
-CSS_DEFINE_KEYWORD_SET(CSSAutoKeyword, Auto = to_underlying(CSSKeyword::Auto))
-
-/**
- * Keywords for the CSS "align-content" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-content-property
- * https://www.w3.org/TR/css-align-3/#align-justify-content
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignContent,
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    SpaceAround = to_underlying(CSSKeyword::SpaceAround),
-    SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
-    SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly),
-    Stretch = to_underlying(CSSKeyword::Stretch))
-
-/**
- * Keywords for the CSS "align-items" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-items-property
- * https://www.w3.org/TR/css-align-3/#align-items-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignItems,
-    Baseline = to_underlying(CSSKeyword::Baseline),
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    Stretch = to_underlying(CSSKeyword::Stretch))
-
-/**
- * Keywords for the CSS "align-items" property.
- * https://www.w3.org/TR/css-flexbox-1/#align-self-property
- * https://www.w3.org/TR/css-align-3/#align-self-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSAlignSelf,
-    Auto = to_underlying(CSSKeyword::Auto),
-    Baseline = to_underlying(CSSKeyword::Baseline),
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    Stretch = to_underlying(CSSKeyword::Stretch))
-
-/**
- * Keywords for the CSS "direction" property.
- * https://www.w3.org/TR/css-writing-modes-3/#direction
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSDirection,
-    Ltr = to_underlying(CSSKeyword::Ltr),
-    Rtl = to_underlying(CSSKeyword::Rtl))
-
-/**
- * Keywords for the CSS "display" property.
- * https://www.w3.org/TR/css-display-3/#display-type
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSDisplay,
-    Flex = to_underlying(CSSKeyword::Flex),
-    Inline = to_underlying(CSSKeyword::Inline),
-    None = to_underlying(CSSKeyword::None))
-
-/**
- * Keywords for the CSS "flex-direction" property.
- * https://www.w3.org/TR/css-flexbox-1/#flex-direction-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSFlexDirection,
-    Column = to_underlying(CSSKeyword::Column),
-    ColumnReverse = to_underlying(CSSKeyword::ColumnReverse),
-    Row = to_underlying(CSSKeyword::Row),
-    RowReverse = to_underlying(CSSKeyword::RowReverse))
-
-/**
- * Keywords for the CSS "flex-wrap" property.
- * https://www.w3.org/TR/css-flexbox-1/#flex-wrap-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSFlexWrap,
-    NoWrap = to_underlying(CSSKeyword::NoWrap),
-    Wrap = to_underlying(CSSKeyword::Wrap),
-    WrapReverse = to_underlying(CSSKeyword::WrapReverse))
-
-/**
- * Keywords for the CSS "justify-content" property.
- * https://www.w3.org/TR/css-flexbox-1/#justify-content-property
- * https://www.w3.org/TR/css-align-3/#align-justify-content
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSJustifyContent,
-    Center = to_underlying(CSSKeyword::Center),
-    FlexEnd = to_underlying(CSSKeyword::FlexEnd),
-    FlexStart = to_underlying(CSSKeyword::FlexStart),
-    SpaceAround = to_underlying(CSSKeyword::SpaceAround),
-    SpaceBetween = to_underlying(CSSKeyword::SpaceBetween),
-    SpaceEvenly = to_underlying(CSSKeyword::SpaceEvenly))
-
-/**
- * Keywords for the CSS "overflow" property.
- * https://www.w3.org/TR/css-overflow-3/#overflow-control
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSOverflow,
-    Hidden = to_underlying(CSSKeyword::Hidden),
-    Scroll = to_underlying(CSSKeyword::Scroll),
-    Visible = to_underlying(CSSKeyword::Visible))
-
-/**
- * Keywords for the CSS "position" property.
- * https://www.w3.org/TR/css-position-3/#position-property
- */
-CSS_DEFINE_KEYWORD_SET(
-    CSSPosition,
-    Absolute = to_underlying(CSSKeyword::Absolute),
-    Relative = to_underlying(CSSKeyword::Relative),
-    Static = to_underlying(CSSKeyword::Static))
-
-/**
- * Compare two keywords of any representation
- */
-constexpr bool operator==(CSSKeywordSet auto lhs, CSSKeywordSet auto rhs) {
-  return to_underlying(lhs) == to_underlying(rhs);
-}
+enum class CSSWideKeyword : std::underlying_type_t<CSSKeyword> {
+  Inherit = to_underlying(CSSKeyword::Inherit),
+  Initial = to_underlying(CSSKeyword::Initial),
+  Unset = to_underlying(CSSKeyword::Unset),
+};
 
 /**
  * Defines a concept for whether an enum has a given member.
@@ -221,18 +101,32 @@ constexpr bool operator==(CSSKeywordSet auto lhs, CSSKeywordSet auto rhs) {
 CSS_DEFINE_KEYWORD_CONEPTS(Absolute)
 CSS_DEFINE_KEYWORD_CONEPTS(Auto)
 CSS_DEFINE_KEYWORD_CONEPTS(Baseline)
+CSS_DEFINE_KEYWORD_CONEPTS(Block)
 CSS_DEFINE_KEYWORD_CONEPTS(Center)
+CSS_DEFINE_KEYWORD_CONEPTS(Clip)
 CSS_DEFINE_KEYWORD_CONEPTS(Column)
 CSS_DEFINE_KEYWORD_CONEPTS(ColumnReverse)
+CSS_DEFINE_KEYWORD_CONEPTS(Content)
+CSS_DEFINE_KEYWORD_CONEPTS(Contents)
+CSS_DEFINE_KEYWORD_CONEPTS(End)
+CSS_DEFINE_KEYWORD_CONEPTS(Fixed)
 CSS_DEFINE_KEYWORD_CONEPTS(Flex)
 CSS_DEFINE_KEYWORD_CONEPTS(FlexEnd)
 CSS_DEFINE_KEYWORD_CONEPTS(FlexStart)
+CSS_DEFINE_KEYWORD_CONEPTS(Grid)
 CSS_DEFINE_KEYWORD_CONEPTS(Hidden)
 CSS_DEFINE_KEYWORD_CONEPTS(Inherit)
 CSS_DEFINE_KEYWORD_CONEPTS(Initial)
 CSS_DEFINE_KEYWORD_CONEPTS(Inline)
+CSS_DEFINE_KEYWORD_CONEPTS(InlineBlock)
+CSS_DEFINE_KEYWORD_CONEPTS(InlineFlex)
+CSS_DEFINE_KEYWORD_CONEPTS(InlineGrid)
 CSS_DEFINE_KEYWORD_CONEPTS(Ltr)
+CSS_DEFINE_KEYWORD_CONEPTS(MaxContent)
+CSS_DEFINE_KEYWORD_CONEPTS(Medium)
+CSS_DEFINE_KEYWORD_CONEPTS(MinContent)
 CSS_DEFINE_KEYWORD_CONEPTS(None)
+CSS_DEFINE_KEYWORD_CONEPTS(Normal)
 CSS_DEFINE_KEYWORD_CONEPTS(NoWrap)
 CSS_DEFINE_KEYWORD_CONEPTS(Relative)
 CSS_DEFINE_KEYWORD_CONEPTS(Row)
@@ -242,8 +136,12 @@ CSS_DEFINE_KEYWORD_CONEPTS(Scroll)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceAround)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceBetween)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceEvenly)
+CSS_DEFINE_KEYWORD_CONEPTS(Start)
 CSS_DEFINE_KEYWORD_CONEPTS(Static)
+CSS_DEFINE_KEYWORD_CONEPTS(Sticky)
 CSS_DEFINE_KEYWORD_CONEPTS(Stretch)
+CSS_DEFINE_KEYWORD_CONEPTS(Thick)
+CSS_DEFINE_KEYWORD_CONEPTS(Thin)
 CSS_DEFINE_KEYWORD_CONEPTS(Unset)
 CSS_DEFINE_KEYWORD_CONEPTS(Visible)
 CSS_DEFINE_KEYWORD_CONEPTS(Wrap)
@@ -279,9 +177,19 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Baseline;
       }
       break;
+    case fnv1a("block"):
+      if constexpr (detail::hasBlock<KeywordT>) {
+        return KeywordT::Block;
+      }
+      break;
     case fnv1a("center"):
       if constexpr (detail::hasCenter<KeywordT>) {
         return KeywordT::Center;
+      }
+      break;
+    case fnv1a("clip"):
+      if constexpr (detail::hasClip<KeywordT>) {
+        return KeywordT::Clip;
       }
       break;
     case fnv1a("column"):
@@ -294,6 +202,25 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::ColumnReverse;
       }
       break;
+    case fnv1a("content"):
+      if constexpr (detail::hasContent<KeywordT>) {
+        return KeywordT::Content;
+      }
+      break;
+    case fnv1a("contents"):
+      if constexpr (detail::hasContents<KeywordT>) {
+        return KeywordT::Contents;
+      }
+      break;
+    case fnv1a("end"):
+      if constexpr (detail::hasEnd<KeywordT>) {
+        return KeywordT::End;
+      }
+      break;
+    case fnv1a("fixed"):
+      if constexpr (detail::hasFixed<KeywordT>) {
+        return KeywordT::Fixed;
+      }
     case fnv1a("flex"):
       if constexpr (detail::hasFlex<KeywordT>) {
         return KeywordT::Flex;
@@ -307,6 +234,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     case fnv1a("flex-start"):
       if constexpr (detail::hasFlexStart<KeywordT>) {
         return KeywordT::FlexStart;
+      }
+      break;
+    case fnv1a("grid"):
+      if constexpr (detail::hasGrid<KeywordT>) {
+        return KeywordT::Grid;
       }
       break;
     case fnv1a("hidden"):
@@ -324,9 +256,39 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Inline;
       }
       break;
+    case fnv1a("inline-block"):
+      if constexpr (detail::hasInlineBlock<KeywordT>) {
+        return KeywordT::InlineBlock;
+      }
+      break;
+    case fnv1a("inline-flex"):
+      if constexpr (detail::hasInlineFlex<KeywordT>) {
+        return KeywordT::InlineFlex;
+      }
+      break;
+    case fnv1a("inline-grid"):
+      if constexpr (detail::hasInlineGrid<KeywordT>) {
+        return KeywordT::InlineGrid;
+      }
+      break;
     case fnv1a("ltr"):
       if constexpr (detail::hasLtr<KeywordT>) {
         return KeywordT::Ltr;
+      }
+      break;
+    case fnv1a("max-content"):
+      if constexpr (detail::hasMaxContent<KeywordT>) {
+        return KeywordT::MaxContent;
+      }
+      break;
+    case fnv1a("medium"):
+      if constexpr (detail::hasMedium<KeywordT>) {
+        return KeywordT::Medium;
+      }
+      break;
+    case fnv1a("min-content"):
+      if constexpr (detail::hasMinContent<KeywordT>) {
+        return KeywordT::MinContent;
       }
       break;
     case fnv1a("none"):
@@ -334,7 +296,12 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::None;
       }
       break;
-    case fnv1a("no-wrap"):
+    case fnv1a("normal"):
+      if constexpr (detail::hasNormal<KeywordT>) {
+        return KeywordT::Normal;
+      }
+      break;
+    case fnv1a("nowrap"):
       if constexpr (detail::hasNoWrap<KeywordT>) {
         return KeywordT::NoWrap;
       }
@@ -379,14 +346,33 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Scroll;
       }
       break;
+    case fnv1a("start"):
+      if constexpr (detail::hasStart<KeywordT>) {
+        return KeywordT::Start;
+      }
     case fnv1a("static"):
       if constexpr (detail::hasStatic<KeywordT>) {
         return KeywordT::Static;
       }
       break;
+    case fnv1a("sticky"):
+      if constexpr (detail::hasSticky<KeywordT>) {
+        return KeywordT::Sticky;
+      }
+      break;
     case fnv1a("stretch"):
       if constexpr (detail::hasStretch<KeywordT>) {
         return KeywordT::Stretch;
+      }
+      break;
+    case fnv1a("thick"):
+      if constexpr (detail::hasThick<KeywordT>) {
+        return KeywordT::Thick;
+      }
+      break;
+    case fnv1a("thin"):
+      if constexpr (detail::hasThin<KeywordT>) {
+        return KeywordT::Thin;
       }
       break;
     case fnv1a("unset"):

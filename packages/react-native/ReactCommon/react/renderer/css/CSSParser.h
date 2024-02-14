@@ -11,6 +11,7 @@
 
 #include <react/renderer/css/CSSKeywords.h>
 #include <react/renderer/css/CSSLengthUnit.h>
+#include <react/renderer/css/CSSProperties.h>
 #include <react/renderer/css/CSSTokenizer.h>
 #include <react/renderer/css/CSSValue.h>
 #include <react/utils/PackTraits.h>
@@ -23,13 +24,13 @@ class CSSParser {
   explicit constexpr CSSParser(std::string_view css)
       : tokenizer_{css}, currentToken_(tokenizer_.next()) {}
 
-  template <CSSKeywordSet KeywordT, CSSBasicDataType... AllowedTypesT>
-  constexpr CSSValueVariant<KeywordT, AllowedTypesT...>
-  consumeComponentValue() {
-    using CSSValueT = CSSValueVariant<KeywordT, AllowedTypesT...>;
+  template <CSSDataType... AllowedTypesT>
+  constexpr CSSValueVariant<AllowedTypesT...> consumeComponentValue() {
+    using CSSValueT = CSSValueVariant<AllowedTypesT...>;
     switch (peek().type()) {
       case CSSTokenType::Ident:
-        if (auto keywordValue = consumeIdentToken<CSSValueT, KeywordT>()) {
+        if (auto keywordValue =
+                consumeIdentToken<CSSValueT, AllowedTypesT...>()) {
           return *keywordValue;
         }
         break;
@@ -80,16 +81,26 @@ class CSSParser {
     return prevToken;
   }
 
-  template <typename CSSValueT, CSSKeywordSet KeywordT>
+  template <typename CSSValueT, CSSDataType... AllowedTypesT>
   constexpr std::optional<CSSValueT> consumeIdentToken() {
-    if (auto keyword =
-            parseCSSKeyword<KeywordT>(consumeToken().stringValue())) {
-      return CSSValueT::keyword(*keyword);
+    if constexpr (!std::is_same_v<typename CSSValueT::Keyword, void>) {
+      if (auto keyword = parseCSSKeyword<typename CSSValueT::Keyword>(
+              peek().stringValue())) {
+        consumeToken();
+        return CSSValueT::keyword(*keyword);
+      }
+    }
+    if constexpr (traits::containsType<CSSWideKeyword, AllowedTypesT...>()) {
+      if (auto keyword =
+              parseCSSKeyword<CSSWideKeyword>(peek().stringValue())) {
+        consumeToken();
+        return CSSValueT::cssWideKeyword(*keyword);
+      }
     }
     return {};
   }
 
-  template <typename CSSValueT, CSSBasicDataType... AllowedTypesT>
+  template <typename CSSValueT, CSSDataType... AllowedTypesT>
   constexpr std::optional<CSSValueT> consumeDimensionToken() {
     if constexpr (traits::containsType<CSSLength, AllowedTypesT...>()) {
       if (auto unit = parseCSSLengthUnit(peek().unit())) {
@@ -99,7 +110,7 @@ class CSSParser {
     return {};
   }
 
-  template <typename CSSValueT, CSSBasicDataType... AllowedTypesT>
+  template <typename CSSValueT, CSSDataType... AllowedTypesT>
   constexpr std::optional<CSSValueT> consumePercentageToken() {
     if constexpr (traits::containsType<CSSPercentage, AllowedTypesT...>()) {
       return CSSValueT::percentage(consumeToken().numericValue());
@@ -107,7 +118,7 @@ class CSSParser {
     return {};
   }
 
-  template <typename CSSValueT, CSSBasicDataType... AllowedTypesT>
+  template <typename CSSValueT, CSSDataType... AllowedTypesT>
   constexpr std::optional<CSSValueT> consumeNumberToken() {
     // <ratio> = <number [0,∞]> [ / <number [0,∞]> ]?
     // https://www.w3.org/TR/css-values-4/#ratio
@@ -174,20 +185,36 @@ class CSSParser {
  *
  * https://www.w3.org/TR/css-syntax-3/#parse-component-value
  */
-template <CSSKeywordSet KeywordT, CSSBasicDataType... AllowedTypesT>
-constexpr CSSValueVariant<KeywordT, AllowedTypesT...> parseCSSComponentValue(
-    std::string_view css) {
+template <CSSDataType... AllowedTypesT>
+constexpr void parseCSSComponentValue(
+    std::string_view css,
+    CSSValueVariant<AllowedTypesT...>& value) {
   detail::CSSParser parser(css);
 
   parser.consumeWhitespace();
-  auto value = parser.consumeComponentValue<KeywordT, AllowedTypesT...>();
+  auto componentValue = parser.consumeComponentValue<AllowedTypesT...>();
   parser.consumeWhitespace();
 
   if (parser.hasMoreTokens()) {
-    return {};
+    value = {};
   } else {
-    return value;
+    value = componentValue;
   }
+};
+
+template <CSSDataType... AllowedTypesT>
+CSSValueVariant<AllowedTypesT...> parseCSSComponentValue(std::string_view css) {
+  CSSValueVariant<AllowedTypesT...> value;
+  parseCSSComponentValue<AllowedTypesT...>(css, value);
+  return value;
+};
+
+template <CSSProp Prop>
+constexpr auto parseCSSProp(std::string_view css) {
+  // For now we only allow parsing props composed of a single component value.
+  CSSSpecifiedValue<Prop> value;
+  parseCSSComponentValue(css, value);
+  return value;
 }
 
 } // namespace facebook::react
