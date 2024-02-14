@@ -55,7 +55,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  fun put(key: Int, value: Long): WritableMapBuffer = putInternal(key, value)
+  public fun put(key: Int, value: Long): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds a double value for given key to the MapBuffer.

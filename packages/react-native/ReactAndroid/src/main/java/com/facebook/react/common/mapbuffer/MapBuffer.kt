@@ -118,7 +118,7 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getLong(key: Int): Long
+  public fun getLong(key: Int): Long
 
   /**
    * Provides parsed [Double] value if the entry for given key exists with [DataType.DOUBLE] type
@@ -191,7 +191,7 @@ public interface MapBuffer : Iterable<MapBuffer.Entry> {
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.LONG]
      */
-    val longValue: Long
+    public val longValue: Long
 
     /**
      * Entry value represented as [Double]
