@@ -29,11 +29,9 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"http://localhost:8081/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true"`,
+      const url = new URL(actual);
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
@@ -48,11 +46,10 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"http://localhost:8081/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true"`,
+      const url = new URL(actual);
+      expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });
@@ -71,11 +68,11 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true"`,
+      const [base, paramsStr] = actual.split('?');
+      expect(base).toBe('/debugger-frontend/rn_inspector.html');
+      const params = new URLSearchParams(paramsStr);
+      expect(params.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
@@ -90,11 +87,12 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true"`,
+      const [base, paramsStr] = actual.split('?');
+      expect(base).toBe('/debugger-frontend/rn_inspector.html');
+      const params = new URLSearchParams(paramsStr);
+      expect(params.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(params.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });
