@@ -122,6 +122,17 @@ TEST(CSSTokenizer, mixed_values) {
        CSSToken{CSSTokenType::EndOfFile}});
 }
 
+TEST(CSSTokenizer, ratio_values) {
+  expectTokens(
+      "16 / 9",
+      {CSSToken{CSSTokenType::Number, 16.0f},
+       CSSToken{CSSTokenType::WhiteSpace},
+       CSSToken{CSSTokenType::Delim, "/"},
+       CSSToken{CSSTokenType::WhiteSpace},
+       CSSToken{CSSTokenType::Number, 9.0f},
+       CSSToken{CSSTokenType::EndOfFile}});
+}
+
 TEST(CSSTokenizer, invalid_values) {
   expectTokens(
       "100*",
