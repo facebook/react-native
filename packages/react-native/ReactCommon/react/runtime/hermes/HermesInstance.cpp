@@ -7,7 +7,7 @@
 
 #include "HermesInstance.h"
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgent.h>
 #include <jsi/jsilib.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -104,11 +104,11 @@ class HermesJSRuntime : public JSRuntime {
     return *runtime_;
   }
 
-  std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
+  std::unique_ptr<jsinspector_modern::RuntimeAgent> createAgent(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState) override {
-    return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-        new jsinspector_modern::HermesRuntimeAgentDelegate(
+    return std::unique_ptr<jsinspector_modern::RuntimeAgent>(
+        new jsinspector_modern::HermesRuntimeAgent(
             frontendChannel,
             sessionState,
             runtime_,
