@@ -20,18 +20,38 @@ enum class CSSProp {
   AlignItems,
   AlignSelf,
   AspectRatio,
+  BorderBlockEndStyle,
   BorderBlockEndWidth,
+  BorderBlockStartStyle,
   BorderBlockStartWidth,
+  BorderBlockStyle,
   BorderBlockWidth,
+  BorderBottomLeftRadius,
+  BorderBottomRightRadius,
+  BorderBottomStyle,
   BorderBottomWidth,
+  BorderEndEndRadius,
+  BorderEndStartRadius,
   BorderEndWidth,
   BorderHorizontalWidth,
+  BorderInlineEndStyle,
   BorderInlineEndWidth,
+  BorderInlineStartStyle,
   BorderInlineStartWidth,
+  BorderInlineStyle,
   BorderInlineWidth,
+  BorderLeftStyle,
   BorderLeftWidth,
+  BorderRadius,
+  BorderRightStyle,
   BorderRightWidth,
+  BorderStartEndRadius,
+  BorderStartStartRadius,
   BorderStartWidth,
+  BorderStyle,
+  BorderTopLeftRadius,
+  BorderTopRightRadius,
+  BorderTopStyle,
   BorderTopWidth,
   BorderVerticalWidth,
   BorderWidth,
@@ -76,6 +96,7 @@ enum class CSSProp {
   MaxWidth,
   MinHeight,
   MinWidth,
+  Opacity,
   Overflow,
   Padding,
   PaddingBlock,
@@ -122,6 +143,12 @@ using CSSSpecifiedValue = typename CSSPropDefinition<P>::SpecifiedValue;
 template <CSSProp P>
 using CSSComputedValue = typename CSSPropDefinition<P>::ComputedValue;
 
+struct CSSComputeContext {
+  bool isRTL{false};
+  bool useWebDefaults{false};
+  bool swapLeftAndRight{false};
+};
+
 /**
  * CSS "align-content" property.
  * https://www.w3.org/TR/css-flexbox-1/#align-content-property
@@ -143,6 +170,15 @@ struct CSSPropDefinition<CSSProp::AlignContent> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Stretch)
+                              : SpecifiedValue::keyword(Keyword::FlexStart);
+  }
 };
 
 /**
@@ -164,10 +200,18 @@ struct CSSPropDefinition<CSSProp::AlignItems> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Stretch);
+  }
 };
 
 /**
- * CSS "align-items" property.
+ * CSS "align-self" property.
  * https://www.w3.org/TR/css-flexbox-1/#propdef-align-self
  * https://www.w3.org/TR/css-align-3/#align-self-property
  */
@@ -186,6 +230,14 @@ struct CSSPropDefinition<CSSProp::AlignSelf> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Auto);
+  }
 };
 
 /**
@@ -200,7 +252,138 @@ struct CSSPropDefinition<CSSProp::AspectRatio> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSRatio>;
   using ComputedValue = CSSValueVariant<Keyword, CSSRatio>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Auto);
+  }
 };
+
+/**
+ * CSS "border-radius" properties
+ * https://www.w3.org/TR/css-backgrounds-3/#border-radius
+ */
+template <>
+struct CSSPropDefinition<CSSProp::BorderRadius> {
+  using SpecifiedValue =
+      CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
+  using ComputedValue = CSSValueVariant<CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  }
+};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderTopLeftRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderTopRightRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBottomLeftRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBottomRightRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderStartStartRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderStartEndRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderEndStartRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderEndEndRadius>
+    : CSSPropDefinition<CSSProp::BorderRadius> {};
+
+/**
+ * CSS "border-style" properties
+ * https://www.w3.org/TR/css-backgrounds-3/#border-style
+ */
+template <>
+struct CSSPropDefinition<CSSProp::BorderStyle> {
+  enum class Keyword : std::underlying_type_t<CSSKeyword> {
+    None = to_underlying(CSSKeyword::None),
+    Hidden = to_underlying(CSSKeyword::Hidden),
+    Dotted = to_underlying(CSSKeyword::Dotted),
+    Dashed = to_underlying(CSSKeyword::Dashed),
+    Solid = to_underlying(CSSKeyword::Solid),
+    Double = to_underlying(CSSKeyword::Double),
+    Groove = to_underlying(CSSKeyword::Groove),
+    Ridge = to_underlying(CSSKeyword::Ridge),
+    Inset = to_underlying(CSSKeyword::Inset),
+    Outset = to_underlying(CSSKeyword::Outset),
+  };
+
+  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::None)
+                              : SpecifiedValue::keyword(Keyword::Solid);
+  }
+};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBlockEndStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBlockStartStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBlockStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderBottomStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderInlineEndStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderInlineStartStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderInlineStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderLeftStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderRightStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
+
+template <>
+struct CSSPropDefinition<CSSProp::BorderTopStyle>
+    : CSSPropDefinition<CSSProp::BorderStyle> {};
 
 /**
  * CSS "border-width" properties
@@ -216,6 +399,15 @@ struct CSSPropDefinition<CSSProp::BorderWidth> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
   using ComputedValue = CSSValueVariant<CSSLength>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Medium)
+                              : SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  }
 };
 
 template <>
@@ -287,6 +479,14 @@ struct CSSPropDefinition<CSSProp::Direction> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return true;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Ltr);
+  }
 };
 
 /**
@@ -309,13 +509,23 @@ struct CSSPropDefinition<CSSProp::Display> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Inline)
+                              : SpecifiedValue::keyword(Keyword::Flex);
+  }
 };
 
 /**
  * CSS "flex" shorthand property.
  * https://www.w3.org/TR/css-flexbox-1/#flex-property
  *
- * React Native's interpretation of this prop is currently different than in CSS
+ * React Native's interpretation of this prop is currently different than in
+ * CSS. https://reactnative.dev/docs/layout-props#flex
  */
 template <>
 struct CSSPropDefinition<CSSProp::Flex> {
@@ -326,6 +536,14 @@ struct CSSPropDefinition<CSSProp::Flex> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSNumber>;
   using ComputedValue = CSSValueVariant<Keyword, CSSNumber>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::number(0.0f);
+  }
 };
 
 /**
@@ -342,6 +560,14 @@ struct CSSPropDefinition<CSSProp::FlexBasis> {
   using SpecifiedValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Auto);
+  }
 };
 
 /**
@@ -359,6 +585,15 @@ struct CSSPropDefinition<CSSProp::FlexDirection> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Row)
+                              : SpecifiedValue::keyword(Keyword::Column);
+  }
 };
 
 /**
@@ -369,6 +604,14 @@ template <>
 struct CSSPropDefinition<CSSProp::FlexGrow> {
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::number(0.0f);
+  }
 };
 
 /**
@@ -379,6 +622,15 @@ template <>
 struct CSSPropDefinition<CSSProp::FlexShrink> {
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::number(1.0f)
+                              : SpecifiedValue::number(0.0f);
+  }
 };
 
 /**
@@ -395,6 +647,14 @@ struct CSSPropDefinition<CSSProp::FlexWrap> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::NoWrap);
+  }
 };
 
 /**
@@ -409,6 +669,14 @@ struct CSSPropDefinition<CSSProp::Gap> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Normal);
+  }
 };
 
 template <>
@@ -433,6 +701,14 @@ struct CSSPropDefinition<CSSProp::Height> {
   using SpecifiedValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Auto);
+  }
 };
 
 template <>
@@ -468,6 +744,14 @@ struct CSSPropDefinition<CSSProp::Inset> {
   using SpecifiedValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Auto);
+  }
 };
 
 template <>
@@ -533,6 +817,14 @@ struct CSSPropDefinition<CSSProp::JustifyContent> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::FlexStart);
+  }
 };
 
 /**
@@ -548,6 +840,14 @@ struct CSSPropDefinition<CSSProp::Margin> {
   using SpecifiedValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  }
 };
 
 template <>
@@ -607,6 +907,24 @@ struct CSSPropDefinition<CSSProp::MarginVertical>
     : CSSPropDefinition<CSSProp::Margin> {};
 
 /**
+ * CSS "opacity" property
+ * https://www.w3.org/TR/css-color-3/#transparency
+ */
+template <>
+struct CSSPropDefinition<CSSProp::Opacity> {
+  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using ComputedValue = CSSValueVariant<CSSNumber>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::number(1.0f);
+  }
+};
+
+/**
  * CSS "overflow" property.
  * https://www.w3.org/TR/css-overflow-3/#overflow-control
  */
@@ -622,6 +940,14 @@ struct CSSPropDefinition<CSSProp::Overflow> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::keyword(Keyword::Visible);
+  }
 };
 
 /**
@@ -633,6 +959,14 @@ struct CSSPropDefinition<CSSProp::Padding> {
   using SpecifiedValue =
       CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<CSSLength, CSSPercentage>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
+    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  }
 };
 
 template <>
@@ -707,6 +1041,15 @@ struct CSSPropDefinition<CSSProp::Position> {
 
   using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
+
+  constexpr static bool isInherited() {
+    return false;
+  }
+
+  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
+    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Static)
+                              : SpecifiedValue::keyword(Keyword::Relative);
+  }
 };
 
 } // namespace facebook::react
