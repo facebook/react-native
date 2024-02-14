@@ -20,18 +20,19 @@ namespace facebook::react {
 
 /**
  * Represents a CSS component value type.
- * https://www.w3.org/TR/css-values-3/#component-types
+ * https://www.w3.org/TR/css-values-4/#component-types
  */
 enum class CSSValueType : uint8_t {
   Keyword,
   Length,
   Number,
   Percentage,
+  Ratio,
 };
 
 /**
  * Concrete representation for a CSS basic data type.
- * https://www.w3.org/TR/css-values-3/#component-types
+ * https://www.w3.org/TR/css-values-4/#component-types
  */
 template <typename T>
 concept CSSBasicDataType = std::is_trivially_destructible_v<T> &&
@@ -42,36 +43,42 @@ concept CSSBasicDataType = std::is_trivially_destructible_v<T> &&
 #pragma pack(push, 1)
 /**
  * Representation of CSS <length> data type
- * https://www.w3.org/TR/css-values-3/#lengths
+ * https://www.w3.org/TR/css-values-4/#lengths
  */
 struct CSSLength {
   float value{};
   CSSLengthUnit unit{CSSLengthUnit::Px};
-  constexpr bool operator==(const CSSLength& rhs) const = default;
 };
 #pragma pack(pop)
 
 /**
  * Representation of CSS <percentage> data type
- * https://www.w3.org/TR/css-values-3/#percentages
+ * https://www.w3.org/TR/css-values-4/#percentages
  */
 struct CSSPercentage {
   float value{};
-  constexpr bool operator==(const CSSPercentage& rhs) const = default;
 };
 
 /**
  * Representation of CSS <number> data type
- * https://www.w3.org/TR/css-values-3/#numbers
+ * https://www.w3.org/TR/css-values-4/#numbers
  */
 struct CSSNumber {
   float value{};
-  constexpr bool operator==(const CSSNumber& rhs) const = default;
+};
+
+/**
+ * Representation of CSS <ratio> data type
+ * https://www.w3.org/TR/css-values-4/#ratios
+ */
+struct CSSRatio {
+  float numerator{};
+  float denominator{};
 };
 
 /**
  * CSSValueVariant represents a CSS component value:
- * https://www.w3.org/TR/css-values-3/#component-types
+ * https://www.w3.org/TR/css-values-4/#component-types
  *
  * A CSSValueVariant must be constrained to the set of possible CSS types it may
  * encounter. E.g. a dimension which accepts a CSS-wide keywords, "auto" or a
@@ -121,6 +128,13 @@ class CSSValueVariant {
     return CSSValueVariant(CSSValueType::Percentage, CSSPercentage{value});
   }
 
+  static constexpr CSSValueVariant ratio(
+      float numerator,
+      float denominator) requires(canRepresent<CSSRatio>()) {
+    return CSSValueVariant(
+        CSSValueType::Ratio, CSSRatio{numerator, denominator});
+  }
+
   constexpr CSSValueType type() const {
     return type_;
   }
@@ -140,6 +154,10 @@ class CSSValueVariant {
   constexpr CSSPercentage getPercentage() const
       requires(canRepresent<CSSPercentage>()) {
     return getIf<CSSValueType::Percentage, CSSPercentage>();
+  }
+
+  constexpr CSSRatio getRatio() const requires(canRepresent<CSSRatio>()) {
+    return getIf<CSSValueType::Ratio, CSSRatio>();
   }
 
   constexpr operator bool() const {
@@ -164,6 +182,8 @@ static_assert(sizeof(CSSValueVariant<CSSFlexDirection>) == 2);
 static_assert(sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength>) == 6);
 static_assert(
     sizeof(CSSValueVariant<CSSAutoKeyword, CSSLength, CSSPercentage>) == 6);
-static_assert(sizeof(CSSValueVariant<CSSKeyword, CSSNumber>) == 5);
+static_assert(sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber>) == 5);
+static_assert(
+    sizeof(CSSValueVariant<CSSWideKeyword, CSSNumber, CSSRatio>) == 9);
 
 } // namespace facebook::react
