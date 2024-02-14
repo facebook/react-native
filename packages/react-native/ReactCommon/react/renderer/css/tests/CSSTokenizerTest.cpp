@@ -104,12 +104,12 @@ TEST(CSSTokenizer, dimension_values) {
 TEST(CSSTokenizer, percent_values) {
   expectTokens(
       "12%",
-      {CSSToken{CSSTokenType::Percent, 12.0f},
+      {CSSToken{CSSTokenType::Percentage, 12.0f},
        CSSToken{CSSTokenType::EndOfFile}});
 
   expectTokens(
       "-28.5%",
-      {CSSToken{CSSTokenType::Percent, -28.5f},
+      {CSSToken{CSSTokenType::Percentage, -28.5f},
        CSSToken{CSSTokenType::EndOfFile}});
 }
 
