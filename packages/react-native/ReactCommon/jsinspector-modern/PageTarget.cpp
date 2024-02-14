@@ -99,6 +99,14 @@ class PageTargetSession {
   SessionState state_;
 };
 
+std::shared_ptr<PageTarget> PageTarget::create(
+    PageTargetDelegate& delegate,
+    VoidExecutor executor) {
+  std::shared_ptr<PageTarget> pageTarget{new PageTarget(delegate)};
+  pageTarget->setExecutor(executor);
+  return pageTarget;
+}
+
 PageTarget::PageTarget(PageTargetDelegate& delegate) : delegate_(delegate) {}
 
 std::unique_ptr<ILocalConnection> PageTarget::connect(
@@ -106,7 +114,7 @@ std::unique_ptr<ILocalConnection> PageTarget::connect(
     SessionMetadata sessionMetadata) {
   auto session = std::make_shared<PageTargetSession>(
       std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
-  session->setCurrentInstance(currentInstance_ ? &*currentInstance_ : nullptr);
+  session->setCurrentInstance(currentInstance_.get());
   sessions_.push_back(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
       [session](std::string message) { (*session)(message); });
@@ -131,7 +139,8 @@ PageTargetDelegate::~PageTargetDelegate() {}
 
 InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
-  currentInstance_.emplace(delegate);
+  currentInstance_ =
+      InstanceTarget::create(delegate, makeVoidExecutor(executorFromThis()));
   forEachSession(
       [currentInstance = &*currentInstance_](PageTargetSession& session) {
         session.setCurrentInstance(currentInstance);
@@ -141,7 +150,7 @@ InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
 
 void PageTarget::unregisterInstance(InstanceTarget& instance) {
   assert(
-      currentInstance_.has_value() && &currentInstance_.value() == &instance &&
+      currentInstance_ && currentInstance_.get() == &instance &&
       "Invalid unregistration");
   forEachSession(
       [](PageTargetSession& session) { session.setCurrentInstance(nullptr); });

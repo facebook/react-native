@@ -67,8 +67,10 @@ void Instance::initializeBridge(
 
         if (parentInspectorTarget) {
           inspectorTarget_ = &parentInspectorTarget->registerInstance(*this);
+          RuntimeExecutor runtimeExecutorIfJsi = getRuntimeExecutor();
           runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-              nativeToJsBridge_->getInspectorTargetDelegate());
+              nativeToJsBridge_->getInspectorTargetDelegate(),
+              runtimeExecutorIfJsi ? runtimeExecutorIfJsi : [](auto) {});
         }
 
         /**

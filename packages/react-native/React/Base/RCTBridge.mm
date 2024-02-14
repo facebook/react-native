@@ -209,7 +209,7 @@ class RCTBridgePageTargetDelegate : public facebook::react::jsinspector_modern::
   NSURL *_delegateBundleURL;
 
   std::unique_ptr<RCTBridgePageTargetDelegate> _inspectorPageDelegate;
-  std::unique_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
+  std::shared_ptr<facebook::react::jsinspector_modern::PageTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
 }
 
@@ -412,7 +412,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
   if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
-    _inspectorTarget = std::make_unique<facebook::react::jsinspector_modern::PageTarget>(*_inspectorPageDelegate);
+    _inspectorTarget =
+        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+          RCTExecuteOnMainQueue(^{
+            callback();
+          });
+        });
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
         "React Native Bridge (Experimental)",

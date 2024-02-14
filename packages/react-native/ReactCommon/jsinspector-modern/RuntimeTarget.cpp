@@ -8,8 +8,21 @@
 #include <jsinspector-modern/RuntimeTarget.h>
 
 namespace facebook::react::jsinspector_modern {
-RuntimeTarget::RuntimeTarget(RuntimeTargetDelegate& delegate)
-    : delegate_(delegate) {}
+
+std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
+    RuntimeTargetDelegate& delegate,
+    RuntimeExecutor jsExecutor,
+    VoidExecutor selfExecutor) {
+  std::shared_ptr<RuntimeTarget> runtimeTarget{
+      new RuntimeTarget(delegate, jsExecutor)};
+  runtimeTarget->setExecutor(selfExecutor);
+  return runtimeTarget;
+}
+
+RuntimeTarget::RuntimeTarget(
+    RuntimeTargetDelegate& delegate,
+    RuntimeExecutor jsExecutor)
+    : delegate_(delegate), jsExecutor_(jsExecutor) {}
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
     FrontendChannel channel,

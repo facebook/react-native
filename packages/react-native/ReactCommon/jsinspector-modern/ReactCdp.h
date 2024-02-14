@@ -11,4 +11,5 @@
 #include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/PageTarget.h>
 #include <jsinspector-modern/RuntimeTarget.h>
+#include <jsinspector-modern/ScopedExecutor.h>
 #include <jsinspector-modern/SessionState.h>

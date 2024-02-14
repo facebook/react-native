@@ -12,6 +12,14 @@
 
 namespace facebook::react::jsinspector_modern {
 
+std::shared_ptr<InstanceTarget> InstanceTarget::create(
+    InstanceTargetDelegate& delegate,
+    VoidExecutor executor) {
+  std::shared_ptr<InstanceTarget> instanceTarget{new InstanceTarget(delegate)};
+  instanceTarget->setExecutor(executor);
+  return instanceTarget;
+}
+
 InstanceTarget::InstanceTarget(InstanceTargetDelegate& delegate)
     : delegate_(delegate) {
   (void)delegate_;
@@ -24,8 +32,7 @@ std::shared_ptr<InstanceAgent> InstanceTarget::createAgent(
     SessionState& sessionState) {
   auto instanceAgent =
       std::make_shared<InstanceAgent>(channel, *this, sessionState);
-  instanceAgent->setCurrentRuntime(
-      currentRuntime_.has_value() ? &*currentRuntime_ : nullptr);
+  instanceAgent->setCurrentRuntime(currentRuntime_.get());
   agents_.push_back(instanceAgent);
   return instanceAgent;
 }
@@ -46,9 +53,12 @@ InstanceTarget::~InstanceTarget() {
 }
 
 RuntimeTarget& InstanceTarget::registerRuntime(
-    RuntimeTargetDelegate& delegate) {
+    RuntimeTargetDelegate& delegate,
+    RuntimeExecutor jsExecutor) {
   assert(!currentRuntime_ && "Only one Runtime allowed");
-  currentRuntime_.emplace(delegate);
+  currentRuntime_ = RuntimeTarget::create(
+      delegate, jsExecutor, makeVoidExecutor(executorFromThis()));
+
   forEachAgent([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
   });
@@ -57,7 +67,7 @@ RuntimeTarget& InstanceTarget::registerRuntime(
 
 void InstanceTarget::unregisterRuntime(RuntimeTarget& Runtime) {
   assert(
-      currentRuntime_.has_value() && &currentRuntime_.value() == &Runtime &&
+      currentRuntime_ && currentRuntime_.get() == &Runtime &&
       "Invalid unregistration");
   forEachAgent([](InstanceAgent& agent) { agent.setCurrentRuntime(nullptr); });
   currentRuntime_.reset();

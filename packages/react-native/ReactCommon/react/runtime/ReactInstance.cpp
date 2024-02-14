@@ -37,10 +37,6 @@ ReactInstance::ReactInstance(
       jsErrorHandler_(jsErrorHandlingFunc),
       hasFatalJsError_(std::make_shared<bool>(false)),
       parentInspectorTarget_(parentInspectorTarget) {
-  if (parentInspectorTarget_) {
-    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
-    runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(*runtime_);
-  }
   auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
@@ -87,6 +83,12 @@ ReactInstance::ReactInstance(
           });
     }
   };
+
+  if (parentInspectorTarget_) {
+    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+    runtimeInspectorTarget_ =
+        &inspectorTarget_->registerRuntime(*runtime_, runtimeExecutor);
+  }
 
   runtimeScheduler_ =
       std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
