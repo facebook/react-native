@@ -12,8 +12,8 @@
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
 #include "SessionState.h"
+#include "WeakList.h"
 
-#include <list>
 #include <memory>
 
 #ifndef JSINSPECTOR_EXPORT
@@ -106,25 +106,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
 
   RuntimeTargetDelegate& delegate_;
   RuntimeExecutor jsExecutor_;
-  std::list<std::weak_ptr<RuntimeAgent>> agents_;
-
-  /**
-   * Call the given function for every active agent, and clean up any
-   * references to inactive agents.
-   */
-  template <typename Fn>
-  void forEachAgent(Fn&& fn) {
-    for (auto it = agents_.begin(); it != agents_.end();) {
-      if (auto agent = it->lock()) {
-        fn(*agent);
-        ++it;
-      } else {
-        it = agents_.erase(it);
-      }
-    }
-  }
-
-  void removeExpiredAgents();
+  WeakList<RuntimeAgent> agents_;
 };
 
 } // namespace facebook::react::jsinspector_modern

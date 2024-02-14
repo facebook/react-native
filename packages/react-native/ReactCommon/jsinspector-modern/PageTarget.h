@@ -8,11 +8,11 @@
 #pragma once
 
 #include "ScopedExecutor.h"
+#include "WeakList.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceTarget.h>
 
-#include <list>
 #include <optional>
 #include <string>
 
@@ -164,27 +164,9 @@ class JSINSPECTOR_EXPORT PageTarget
   PageTarget(PageTargetDelegate& delegate);
 
   PageTargetDelegate& delegate_;
-  std::list<std::weak_ptr<PageTargetSession>> sessions_;
+  WeakList<PageTargetSession> sessions_;
   PageTargetController controller_{*this};
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
-
-  /**
-   * Call the given function for every active session, and clean up any
-   * references to inactive sessions.
-   */
-  template <typename Fn>
-  void forEachSession(Fn&& fn) {
-    for (auto it = sessions_.begin(); it != sessions_.end();) {
-      if (auto session = it->lock()) {
-        fn(*session);
-        ++it;
-      } else {
-        it = sessions_.erase(it);
-      }
-    }
-  }
-
-  void removeExpiredSessions();
 
   inline PageTargetDelegate& getDelegate() {
     return delegate_;

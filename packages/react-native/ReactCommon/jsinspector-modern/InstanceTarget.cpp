@@ -33,18 +33,11 @@ std::shared_ptr<InstanceAgent> InstanceTarget::createAgent(
   auto instanceAgent =
       std::make_shared<InstanceAgent>(channel, *this, sessionState);
   instanceAgent->setCurrentRuntime(currentRuntime_.get());
-  agents_.push_back(instanceAgent);
+  agents_.insert(instanceAgent);
   return instanceAgent;
 }
 
-void InstanceTarget::removeExpiredAgents() {
-  // Remove all expired agents.
-  forEachAgent([](auto&) {});
-}
-
 InstanceTarget::~InstanceTarget() {
-  removeExpiredAgents();
-
   // Agents are owned by the session, not by InstanceTarget, but
   // they hold an InstanceTarget& that we must guarantee is valid.
   assert(
@@ -59,7 +52,7 @@ RuntimeTarget& InstanceTarget::registerRuntime(
   currentRuntime_ = RuntimeTarget::create(
       delegate, jsExecutor, makeVoidExecutor(executorFromThis()));
 
-  forEachAgent([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
+  agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
   });
   return *currentRuntime_;
@@ -69,7 +62,8 @@ void InstanceTarget::unregisterRuntime(RuntimeTarget& Runtime) {
   assert(
       currentRuntime_ && currentRuntime_.get() == &Runtime &&
       "Invalid unregistration");
-  forEachAgent([](InstanceAgent& agent) { agent.setCurrentRuntime(nullptr); });
+  agents_.forEach(
+      [](InstanceAgent& agent) { agent.setCurrentRuntime(nullptr); });
   currentRuntime_.reset();
 }
 

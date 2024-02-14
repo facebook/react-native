@@ -32,18 +32,11 @@ std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
       *this,
       sessionState,
       delegate_.createAgentDelegate(channel, sessionState));
-  agents_.push_back(runtimeAgent);
+  agents_.insert(runtimeAgent);
   return runtimeAgent;
 }
 
-void RuntimeTarget::removeExpiredAgents() {
-  // Remove all expired agents.
-  forEachAgent([](auto&) {});
-}
-
 RuntimeTarget::~RuntimeTarget() {
-  removeExpiredAgents();
-
   // Agents are owned by the session, not by RuntimeTarget, but
   // they hold a RuntimeTarget& that we must guarantee is valid.
   assert(
