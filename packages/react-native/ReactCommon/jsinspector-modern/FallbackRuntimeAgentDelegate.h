@@ -15,10 +15,10 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
- * A RuntimeAgent that handles requests from the Chrome DevTools Protocol for
- * a JavaScript runtime that does not support debugging.
+ * A RuntimeAgentDelegate that handles requests from the Chrome DevTools
+ * Protocol for a JavaScript runtime that does not support debugging.
  */
-class FallbackRuntimeAgent : public RuntimeAgent {
+class FallbackRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
@@ -27,7 +27,7 @@ class FallbackRuntimeAgent : public RuntimeAgent {
    * \param engineDescription A description of the JavaScript engine being
    * debugged. This string will be used in messages sent to the frontend.
    */
-  FallbackRuntimeAgent(
+  FallbackRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       const SessionState& sessionState,
       std::string engineDescription);

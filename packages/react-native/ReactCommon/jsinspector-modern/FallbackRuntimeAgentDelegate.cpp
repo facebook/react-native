@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/FallbackRuntimeAgent.h>
+#include "FallbackRuntimeAgentDelegate.h"
 
 #include <chrono>
 #include <string>
@@ -22,7 +22,7 @@ namespace facebook::react::jsinspector_modern {
 #define ANSI_STYLE_RESET "\x1B[23m"
 #define ANSI_COLOR_BG_YELLOW "\x1B[48;2;253;247;231m"
 
-FallbackRuntimeAgent::FallbackRuntimeAgent(
+FallbackRuntimeAgentDelegate::FallbackRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     const SessionState& sessionState,
     std::string engineDescription)
@@ -32,7 +32,8 @@ FallbackRuntimeAgent::FallbackRuntimeAgent(
   }
 }
 
-bool FallbackRuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
+bool FallbackRuntimeAgentDelegate::handleRequest(
+    const cdp::PreparsedRequest& req) {
   if (req.method == "Log.enable") {
     sendFallbackRuntimeWarning();
 
@@ -44,7 +45,7 @@ bool FallbackRuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
   return false;
 }
 
-void FallbackRuntimeAgent::sendFallbackRuntimeWarning() {
+void FallbackRuntimeAgentDelegate::sendFallbackRuntimeWarning() {
   sendWarningLogEntry(
       "The current JavaScript engine, " ANSI_STYLE_ITALIC + engineDescription_ +
       ANSI_STYLE_RESET
@@ -52,7 +53,7 @@ void FallbackRuntimeAgent::sendFallbackRuntimeWarning() {
       "See https://reactnative.dev/docs/debugging for more information.");
 }
 
-void FallbackRuntimeAgent::sendWarningLogEntry(std::string_view text) {
+void FallbackRuntimeAgentDelegate::sendWarningLogEntry(std::string_view text) {
   frontendChannel_(
       folly::toJson(folly::dynamic::object("method", "Log.entryAdded")(
           "params",

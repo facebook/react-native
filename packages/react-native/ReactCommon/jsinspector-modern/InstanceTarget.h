@@ -40,7 +40,7 @@ class InstanceTargetDelegate {
 /**
  * A Target that represents a single instance of React Native.
  */
-class InstanceTarget {
+class InstanceTarget final {
  public:
   /**
    * \param delegate The object that will receive events from this target.

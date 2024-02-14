@@ -54,7 +54,8 @@ class HermesExecutor : public JSIExecutor {
       RuntimeInstaller runtimeInstaller,
       hermes::HermesRuntime& hermesRuntime);
 
-  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createAgent(
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+  createAgentDelegate(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState) override;
 
