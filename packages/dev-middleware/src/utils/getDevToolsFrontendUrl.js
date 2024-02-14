@@ -20,8 +20,9 @@ export default function getDevToolsFrontendUrl(
   devServerUrl: string,
 ): string {
   const scheme = new URL(webSocketDebuggerUrl).protocol.slice(0, -1);
-  const webSocketUrlWithoutProtocol = encodeURIComponent(
-    webSocketDebuggerUrl.replace(/^wss?:\/\//, ''),
+  const webSocketUrlWithoutProtocol = webSocketDebuggerUrl.replace(
+    /^wss?:\/\//,
+    '',
   );
   const appUrl = `${devServerUrl}/debugger-frontend/rn_inspector.html`;
 
