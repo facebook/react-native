@@ -810,11 +810,6 @@ void FabricMountingManager::preallocateShadowView(
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
   jni::local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
-  SharedEventEmitter eventEmitter = shadowView.eventEmitter;
-  if (eventEmitter != nullptr) {
-    javaEventEmitter =
-        EventEmitterWrapper::newObjectCxxArgs(shadowView.eventEmitter);
-  }
 
   jni::local_ref<jobject> props = getProps({}, shadowView);
 
