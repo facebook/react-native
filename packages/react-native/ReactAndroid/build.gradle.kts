@@ -80,6 +80,9 @@ val preparePrefab by
       input.set(
           listOf(
               PrefabPreprocessingEntry(
+                  "react_render_css",
+                  Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/")),
+              PrefabPreprocessingEntry(
                   "react_render_debug",
                   Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/")),
               PrefabPreprocessingEntry(
@@ -632,6 +635,7 @@ android {
     create("react_render_debug") {
       headers = File(prefabHeadersDir, "react_render_debug").absolutePath
     }
+    create("react_render_css") { headers = File(prefabHeadersDir, "react_render_css").absolutePath }
     create("turbomodulejsijni") {
       headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
     }
