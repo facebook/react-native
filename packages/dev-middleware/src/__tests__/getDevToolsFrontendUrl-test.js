@@ -29,11 +29,11 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"http://localhost:8081/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true"`,
+      const url = new URL(actual);
+      expect(url.host).toBe('localhost:8081');
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
@@ -48,17 +48,28 @@ describe('getDevToolsFrontendUrl', () => {
         webSocketDebuggerUrl,
         devServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"http://localhost:8081/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true"`,
+      const url = new URL(actual);
+      expect(url.host).toBe('localhost:8081');
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });
 
   describe('given a relative devServerUrl', () => {
-    const devServerUrl = '';
+    const relativeDevServerUrl = '';
+
+    function assertValidRelativeURL(relativeURL: string): URL {
+      const anyBaseURL = new URL('https://www.example.com');
+      try {
+        // By definition, a valid relative URL must be valid when combined with any base URL
+        return new URL(relativeURL, anyBaseURL);
+      } catch (e) {
+        throw new Error(`Relative URL is invalid: ${relativeURL}`, {cause: e});
+      }
+    }
 
     it('should return a valid url for all experiments off', async () => {
       const experiments = {
@@ -69,13 +80,12 @@ describe('getDevToolsFrontendUrl', () => {
       const actual = getDevToolsFrontendUrl(
         experiments,
         webSocketDebuggerUrl,
-        devServerUrl,
+        relativeDevServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true"`,
+      const url = assertValidRelativeURL(actual);
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
 
@@ -88,13 +98,13 @@ describe('getDevToolsFrontendUrl', () => {
       const actual = getDevToolsFrontendUrl(
         experiments,
         webSocketDebuggerUrl,
-        devServerUrl,
+        relativeDevServerUrl,
       );
-      const decoded = decodeURIComponent(actual);
-      const doubleDecoded = decodeURIComponent(decoded);
-      expect(decoded).toBe(doubleDecoded);
-      expect(actual).toMatchInlineSnapshot(
-        `"/debugger-frontend/rn_inspector.html?ws=localhost%3A8081%2Finspector%2Fdebug%3Fdevice%3D1a9372c%26page%3D-1&sources.hide_add_folder=true&unstable_enableNetworkPanel=true"`,
+      const url = assertValidRelativeURL(actual);
+      expect(url.pathname).toBe('/debugger-frontend/rn_inspector.html');
+      expect(url.searchParams.get('unstable_enableNetworkPanel')).toBe('true');
+      expect(url.searchParams.get('ws')).toBe(
+        'localhost:8081/inspector/debug?device=1a9372c&page=-1',
       );
     });
   });
