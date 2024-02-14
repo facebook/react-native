@@ -11,7 +11,9 @@ import org.gradle.configurationcache.extensions.serviceOf
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  alias(libs.plugins.kotlin.jvm)
+  // kotlin-dsl implies embedded Kotlin and is recommended for Kotlin Gradle plugins
+  // https://docs.gradle.org/current/userguide/kotlin_dsl.html#sec:kotlin-dsl_plugin
+  `kotlin-dsl`
   id("java-gradle-plugin")
 }
 
