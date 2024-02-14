@@ -225,11 +225,6 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.subspec "css" do |ss|
-    ss.source_files         = "react/renderer/css/*.{cpp,h}"
-    ss.header_dir           = "react/renderer/css"
-  end
-
   s.subspec "imagemanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
