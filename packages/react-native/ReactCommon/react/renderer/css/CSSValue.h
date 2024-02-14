@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <array>
 #include <cstdint>
 #include <string_view>
 #include <type_traits>
@@ -91,15 +90,6 @@ struct CSSRatio {
 #pragma pack(push, 1)
 template <CSSDataType... AllowedTypesT>
 class CSSValueVariant {
-  template <CSSValueType Type, CSSDataType ValueT>
-  constexpr ValueT getIf() const {
-    if (type_ == Type) {
-      return *std::launder(reinterpret_cast<const ValueT*>(data_.data()));
-    } else {
-      return ValueT{};
-    }
-  }
-
   template <CSSDataType ValueT>
   static constexpr bool canRepresent() {
     return traits::containsType<ValueT, AllowedTypesT...>();
@@ -201,20 +191,81 @@ class CSSValueVariant {
   }
 
   constexpr operator bool() const requires(canRepresent<CSSWideKeyword>()) {
-    return *this != CSSValueVariant{};
+    return type() != CSSValueType::CSSWideKeyword ||
+        getCSSWideKeyword() != CSSWideKeyword::Unset;
   }
 
-  constexpr bool operator==(const CSSValueVariant& rhs) const = default;
+  constexpr bool operator==(const CSSValueVariant& other) const {
+    if (type() != other.type()) {
+      return false;
+    }
+    switch (type()) {
+      case CSSValueType::CSSWideKeyword:
+        return getCSSWideKeyword() == other.getCSSWideKeyword();
+      case CSSValueType::Keyword:
+        return getKeyword() == other.getKeyword();
+      case CSSValueType::Length:
+        return getLength() == other.getLength();
+      case CSSValueType::Number:
+        return getNumber() == other.getNumber();
+      case CSSValueType::Percentage:
+        return getPercentage() == other.getPercentage();
+      case CSSValueType::Ratio:
+        return getRatio() == other.getRatio();
+    }
+
+    return false;
+  }
 
  private:
-  constexpr CSSValueVariant(CSSValueType type, CSSDataType auto&& value)
-      : type_(type) {
-    new (data_.data()) std::remove_cvref_t<decltype(value)>{
-        std::forward<decltype(value)>(value)};
+  template <CSSValueType Type, CSSDataType ValueT>
+  constexpr ValueT getIf() const {
+    if (type_ == Type) {
+      return getFromUnion<ValueT>(data_);
+    } else {
+      return ValueT{};
+    }
+  }
+
+  template <CSSDataType ValueT, CSSDataType... RestT>
+  union RecursiveUnion {
+    ValueT first;
+    RecursiveUnion<RestT...> rest;
+  };
+
+  template <CSSDataType ValueT>
+  union RecursiveUnion<ValueT> {
+    ValueT first;
+  };
+
+  template <CSSDataType ValueT, typename UnionT>
+  constexpr const ValueT& getFromUnion(const UnionT& u) const {
+    if constexpr (std::is_same_v<ValueT, decltype(u.first)>) {
+      return u.first;
+    } else {
+      return getFromUnion<ValueT>(u.rest);
+    }
+  }
+
+  template <CSSDataType DataTypeT>
+  constexpr CSSValueVariant(CSSValueType type, DataTypeT&& value)
+      : type_{type},
+        data_{constructIntoUnion<decltype(data_)>(
+            std::forward<DataTypeT>(value))} {}
+
+  template <typename UnionT, CSSDataType DataTypeT>
+  constexpr UnionT constructIntoUnion(DataTypeT&& value) {
+    if constexpr (std::is_same_v<DataTypeT, decltype(UnionT{}.first)>) {
+      return UnionT{.first = std::forward<DataTypeT>(value)};
+    } else {
+      return UnionT{
+          .rest = constructIntoUnion<decltype(UnionT{}.rest)>(
+              std::forward<DataTypeT>(value))};
+    }
   }
 
   CSSValueType type_;
-  std::array<std::byte, traits::maxSizeof<AllowedTypesT...>()> data_;
+  RecursiveUnion<AllowedTypesT...> data_;
 };
 #pragma pack(pop)
 
