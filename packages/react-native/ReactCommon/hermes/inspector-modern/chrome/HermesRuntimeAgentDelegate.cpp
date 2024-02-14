@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "HermesRuntimeAgent.h"
+#include "HermesRuntimeAgentDelegate.h"
 
 // If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
 // CDPHandler headers or types.
@@ -14,7 +14,7 @@
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/CDPHandler.h>
 #else // HERMES_ENABLE_DEBUGGER
-#include <jsinspector-modern/FallbackRuntimeAgent.h>
+#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
 #endif // HERMES_ENABLE_DEBUGGER
 
 #include <hermes/hermes.h>
@@ -30,12 +30,12 @@ namespace {
 
 /**
  * An implementation of the Hermes RuntimeAdapter interface (part of
- * Hermes's CDPHandler API) for use within a React Native RuntimeAgent.
+ * Hermes's CDPHandler API) for use within a React Native RuntimeAgentDelegate.
  */
-class HermesRuntimeAgentAdapter
+class HermesRuntimeAgentDelegateAdapter
     : public hermes::inspector_modern::RuntimeAdapter {
  public:
-  HermesRuntimeAgentAdapter(
+  HermesRuntimeAgentDelegateAdapter(
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor)
       : runtime_(runtime), runtimeExecutor_(runtimeExecutor) {}
@@ -60,10 +60,10 @@ class HermesRuntimeAgentAdapter
 } // namespace
 
 /**
- * A RuntimeAgent that handles requests from the Chrome DevTools Protocol for
- * an instance of Hermes.
+ * A RuntimeAgentDelegate that handles requests from the Chrome DevTools
+ * Protocol for an instance of Hermes.
  */
-class HermesRuntimeAgent::Impl final : public RuntimeAgent {
+class HermesRuntimeAgentDelegate::Impl final : public RuntimeAgentDelegate {
   using HermesCDPHandler = hermes::inspector_modern::chrome::CDPHandler;
 
  public:
@@ -84,7 +84,7 @@ class HermesRuntimeAgent::Impl final : public RuntimeAgent {
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor runtimeExecutor)
       : hermes_(HermesCDPHandler::create(
-            std::make_unique<HermesRuntimeAgentAdapter>(
+            std::make_unique<HermesRuntimeAgentDelegateAdapter>(
                 runtime,
                 runtimeExecutor),
             /* waitForDebugger */ false,
@@ -133,17 +133,18 @@ class HermesRuntimeAgent::Impl final : public RuntimeAgent {
 #else // !HERMES_ENABLE_DEBUGGER
 
 /**
- * A stub for HermesRuntimeAgent when Hermes is compiled without debugging
- * support.
+ * A stub for HermesRuntimeAgentDelegate when Hermes is compiled without
+ * debugging support.
  */
-class HermesRuntimeAgent::Impl final : public FallbackRuntimeAgent {
+class HermesRuntimeAgentDelegate::Impl final
+    : public FallbackRuntimeAgentDelegate {
  public:
   Impl(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
       std::shared_ptr<hermes::HermesRuntime> runtime,
       RuntimeExecutor)
-      : FallbackRuntimeAgent(
+      : FallbackRuntimeAgentDelegate(
             std::move(frontendChannel),
             sessionState,
             runtime->description()) {}
@@ -151,7 +152,7 @@ class HermesRuntimeAgent::Impl final : public FallbackRuntimeAgent {
 
 #endif // HERMES_ENABLE_DEBUGGER
 
-HermesRuntimeAgent::HermesRuntimeAgent(
+HermesRuntimeAgentDelegate::HermesRuntimeAgentDelegate(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
     std::shared_ptr<hermes::HermesRuntime> runtime,
@@ -162,7 +163,8 @@ HermesRuntimeAgent::HermesRuntimeAgent(
           std::move(runtime),
           std::move(runtimeExecutor))) {}
 
-bool HermesRuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
+bool HermesRuntimeAgentDelegate::handleRequest(
+    const cdp::PreparsedRequest& req) {
   return impl_->handleRequest(req);
 }
 
