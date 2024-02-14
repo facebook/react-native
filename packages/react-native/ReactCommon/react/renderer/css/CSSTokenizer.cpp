@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/CSSTokenizer.h>
+#include <react/renderer/css/CSSTokenizer.h>
 
 namespace facebook::react {
 
