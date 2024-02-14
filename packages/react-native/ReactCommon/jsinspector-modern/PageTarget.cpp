@@ -115,19 +115,12 @@ std::unique_ptr<ILocalConnection> PageTarget::connect(
   auto session = std::make_shared<PageTargetSession>(
       std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
   session->setCurrentInstance(currentInstance_.get());
-  sessions_.push_back(std::weak_ptr(session));
+  sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
       [session](std::string message) { (*session)(message); });
 }
 
-void PageTarget::removeExpiredSessions() {
-  // Remove all expired sessions.
-  forEachSession([](auto&) {});
-}
-
 PageTarget::~PageTarget() {
-  removeExpiredSessions();
-
   // Sessions are owned by InspectorPackagerConnection, not by PageTarget, but
   // they hold a PageTarget& that we must guarantee is valid.
   assert(
@@ -141,7 +134,7 @@ InstanceTarget& PageTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
   currentInstance_ =
       InstanceTarget::create(delegate, makeVoidExecutor(executorFromThis()));
-  forEachSession(
+  sessions_.forEach(
       [currentInstance = &*currentInstance_](PageTargetSession& session) {
         session.setCurrentInstance(currentInstance);
       });
@@ -152,7 +145,7 @@ void PageTarget::unregisterInstance(InstanceTarget& instance) {
   assert(
       currentInstance_ && currentInstance_.get() == &instance &&
       "Invalid unregistration");
-  forEachSession(
+  sessions_.forEach(
       [](PageTargetSession& session) { session.setCurrentInstance(nullptr); });
   currentInstance_.reset();
 }
