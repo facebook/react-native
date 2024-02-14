@@ -23,6 +23,7 @@ static NSString *const kRemoteNotificationsRegistered = @"RemoteNotificationsReg
 static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificationRegistrationFailed";
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
+static UNNotification *kInitialNotification = nil;
 
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
@@ -261,6 +262,11 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
++ (void)setInitialNotification:(UNNotification *)notification
+{
+  kInitialNotification = notification;
+}
+
 // Deprecated
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
@@ -276,6 +282,18 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
                                                     userInfo:userInfo];
+}
+
+- (void)invalidate
+{
+  [super invalidate];
+
+  kInitialNotification = nil;
+}
+
+- (void)dealloc
+{
+  kInitialNotification = nil;
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
@@ -532,10 +550,10 @@ RCT_EXPORT_METHOD(getInitialNotification
   // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
   // Set this property in the implementation of
   // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
-  if (self.initialNotification) {
+  if (kInitialNotification) {
     NSDictionary<NSString *, id> *notificationDict =
-        RCTFormatUNNotificationContent(self.initialNotification.request.content);
-    if (IsNotificationRemote(self.initialNotification)) {
+        RCTFormatUNNotificationContent(kInitialNotification.request.content);
+    if (IsNotificationRemote(kInitialNotification)) {
       // For backwards compatibility, remote notifications only returns a userInfo dict.
       NSMutableDictionary<NSString *, id> *userInfoCopy = [notificationDict[@"userInfo"] mutableCopy];
       userInfoCopy[@"remote"] = @YES;
