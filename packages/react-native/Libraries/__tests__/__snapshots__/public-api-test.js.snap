@@ -4626,10 +4626,8 @@ declare module.exports: resolveAssetSource;
 exports[`public API should not change unintentionally Libraries/Inspector/Inspector.js 1`] = `
 "declare const React: $FlowFixMe;
 export type InspectedElementFrame = TouchedViewDataAtPoint[\\"frame\\"];
-export type InspectedElementSource = InspectorData[\\"source\\"];
 export type InspectedElement = $ReadOnly<{
   frame: InspectedElementFrame,
-  source?: InspectedElementSource,
   style?: ViewStyleProp,
 }>;
 export type ElementsHierarchy = InspectorData[\\"hierarchy\\"];
