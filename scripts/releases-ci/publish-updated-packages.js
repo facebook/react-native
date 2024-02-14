@@ -9,14 +9,39 @@
  * @oncall react_native
  */
 
+const {PUBLISH_PACKAGES_TAG} = require('../monorepo/constants');
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../releases/utils/monorepo');
-const {PUBLISH_PACKAGES_TAG} = require('./constants');
+const {parseArgs} = require('@pkgjs/parseargs');
 const {execSync} = require('child_process');
 
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
-async function findAndPublishAllBumpedPackages() {
+const config = {
+  options: {
+    help: {type: 'boolean'},
+  },
+};
+
+async function main() {
+  const {
+    values: {help},
+  } = parseArgs(config);
+
+  if (help) {
+    console.log(`
+  Usage: node ./scripts/releases/publish-updated-packages.js
+
+  Publishes all updated packages (excluding react-native) to npm. This script
+  is intended to run from a CI workflow.
+    `);
+    return;
+  }
+
+  await publishUpdatedPackages();
+}
+
+async function publishUpdatedPackages() {
   let commitMessage;
 
   try {
@@ -130,10 +155,10 @@ function runPublish(
 
 if (require.main === module) {
   // eslint-disable-next-line no-void
-  void findAndPublishAllBumpedPackages();
+  void main();
 }
 
 module.exports = {
-  findAndPublishAllBumpedPackages,
   getTagsFromCommitMessage,
+  publishUpdatedPackages,
 };

@@ -1315,4 +1315,4 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
       - run:
           name: Find and publish all bumped packages
-          command: node ./scripts/monorepo/find-and-publish-all-bumped-packages.js
+          command: node ./scripts/releases-ci/publish-updated-packages.js
