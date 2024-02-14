@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
+#include "ScopedExecutor.h"
 #include "SessionState.h"
 
 #include <list>
@@ -48,18 +49,27 @@ class RuntimeTargetDelegate {
 /**
  * A Target corresponding to a JavaScript runtime.
  */
-class JSINSPECTOR_EXPORT RuntimeTarget final {
+class JSINSPECTOR_EXPORT RuntimeTarget
+    : public EnableExecutorFromThis<RuntimeTarget> {
  public:
   /**
+   * Constructs a new RuntimeTarget. The caller must call setExecutor
+   * immediately afterwards.
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
-   * \param executor A RuntimeExecutor that can be used to schedule work on
+   * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
    * constructor should be executed before any user code is run).
+   * \param selfExecutor An executor that may be used to call methods on this
+   * RuntimeTarget while it exists. \c create additionally guarantees that the
+   * executor will not be called after the RuntimeTarget is destroyed.
    */
-  RuntimeTarget(RuntimeTargetDelegate& delegate, RuntimeExecutor executor);
+  static std::shared_ptr<RuntimeTarget> create(
+      RuntimeTargetDelegate& delegate,
+      RuntimeExecutor jsExecutor,
+      VoidExecutor selfExecutor);
 
   RuntimeTarget(const RuntimeTarget&) = delete;
   RuntimeTarget(RuntimeTarget&&) = delete;
@@ -81,8 +91,21 @@ class JSINSPECTOR_EXPORT RuntimeTarget final {
       SessionState& sessionState);
 
  private:
+  /**
+   * Constructs a new RuntimeTarget. The caller must call setExecutor
+   * immediately afterwards.
+   * \param delegate The object that will receive events from this target.
+   * The caller is responsible for ensuring that the delegate outlives this
+   * object.
+   * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
+   * the JS runtime's thread. The executor's queue should be empty when
+   * RuntimeTarget is constructed (i.e. anything scheduled during the
+   * constructor should be executed before any user code is run).
+   */
+  RuntimeTarget(RuntimeTargetDelegate& delegate, RuntimeExecutor jsExecutor);
+
   RuntimeTargetDelegate& delegate_;
-  RuntimeExecutor executor_;
+  RuntimeExecutor jsExecutor_;
   std::list<std::weak_ptr<RuntimeAgent>> agents_;
 
   /**
