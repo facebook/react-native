@@ -22,4 +22,5 @@ target_link_libraries(jsinspector
         folly_runtime
         glog
         react_featureflags
+        runtimeexecutor
 )

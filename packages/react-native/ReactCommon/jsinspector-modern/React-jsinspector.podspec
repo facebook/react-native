@@ -51,4 +51,5 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-featureflags"
   s.dependency "DoubleConversion"
+  s.dependency "React-runtimeexecutor", version
 end

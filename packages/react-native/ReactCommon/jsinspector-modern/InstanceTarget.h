@@ -59,7 +59,9 @@ class InstanceTarget final {
       FrontendChannel channel,
       SessionState& sessionState);
 
-  RuntimeTarget& registerRuntime(RuntimeTargetDelegate& delegate);
+  RuntimeTarget& registerRuntime(
+      RuntimeTargetDelegate& delegate,
+      RuntimeExecutor executor);
   void unregisterRuntime(RuntimeTarget& runtime);
 
  private:

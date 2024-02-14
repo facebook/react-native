@@ -56,6 +56,9 @@ class PageTargetTest : public Test {
 
   MockInstanceTargetDelegate instanceTargetDelegate_;
   MockRuntimeTargetDelegate runtimeTargetDelegate_;
+  // We don't have access to a jsi::Runtime in these tests, so just use an
+  // executor that never runs the scheduled callbacks.
+  RuntimeExecutor runtimeExecutor_ = [](auto) {};
 
   UniquePtrFactory<StrictMock<MockRuntimeAgentDelegate>> runtimeAgentDelegates_;
 
@@ -252,7 +255,8 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
 
 TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
   connect();
 
@@ -287,8 +291,8 @@ TEST_F(PageTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
 TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   {
     auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-    auto& runtimeTarget =
-        instanceTarget.registerRuntime(runtimeTargetDelegate_);
+    auto& runtimeTarget = instanceTarget.registerRuntime(
+        runtimeTargetDelegate_, runtimeExecutor_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[0]);
 
@@ -300,8 +304,8 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
 
   {
     auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-    auto& runtimeTarget =
-        instanceTarget.registerRuntime(runtimeTargetDelegate_);
+    auto& runtimeTarget = instanceTarget.registerRuntime(
+        runtimeTargetDelegate_, runtimeExecutor_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[1]);
 
@@ -316,7 +320,8 @@ TEST_F(PageTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
   InSequence s;
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -341,7 +346,8 @@ TEST_F(PageTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   InSequence s;
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -384,7 +390,8 @@ TEST_F(PageTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
                          })");
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -432,7 +439,8 @@ TEST_F(PageTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
       .WillRepeatedly(ReturnNull());
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
 
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
@@ -466,7 +474,7 @@ TEST_F(PageTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
                          })");
 
   auto& instanceTarget = page_.registerInstance(instanceTargetDelegate_);
-  instanceTarget.registerRuntime(runtimeTargetDelegate_);
+  instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
 
   EXPECT_TRUE(runtimeAgentDelegates_[0]->sessionState.isRuntimeDomainEnabled);
