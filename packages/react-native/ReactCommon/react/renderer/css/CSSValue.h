@@ -36,9 +36,7 @@ enum class CSSValueType : uint8_t {
  */
 template <typename T>
 concept CSSDataType = std::is_trivially_destructible_v<T> &&
-    std::is_default_constructible_v<T> && requires() {
-  sizeof(T);
-};
+    std::is_copy_constructible_v<T> && std::is_default_constructible_v<T>;
 
 #pragma pack(push, 1)
 /**

@@ -212,7 +212,7 @@ CSSValueVariant<AllowedTypesT...> parseCSSComponentValue(std::string_view css) {
 template <CSSProp Prop>
 constexpr auto parseCSSProp(std::string_view css) {
   // For now we only allow parsing props composed of a single component value.
-  CSSSpecifiedValue<Prop> value;
+  CSSDeclaredValue<Prop> value;
   parseCSSComponentValue(css, value);
   return value;
 }
