@@ -15,10 +15,10 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
- * A RuntimeAgent that handles requests from the Chrome DevTools Protocol for
- * an instance of Hermes.
+ * A RuntimeAgentDelegate that handles requests from the Chrome DevTools
+ * Protocol for an instance of Hermes.
  */
-class HermesRuntimeAgent : public RuntimeAgent {
+class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the
@@ -31,7 +31,7 @@ class HermesRuntimeAgent : public RuntimeAgent {
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
    * first.
    */
-  HermesRuntimeAgent(
+  HermesRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
       std::shared_ptr<hermes::HermesRuntime> runtime,

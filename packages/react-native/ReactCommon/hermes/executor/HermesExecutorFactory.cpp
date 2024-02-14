@@ -15,7 +15,7 @@
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgent.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
@@ -257,12 +257,13 @@ HermesExecutor::HermesExecutor(
       runtime_(runtime),
       hermesRuntime_(hermesRuntime) {}
 
-std::unique_ptr<jsinspector_modern::RuntimeAgent> HermesExecutor::createAgent(
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+HermesExecutor::createAgentDelegate(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState) {
   std::shared_ptr<HermesRuntime> hermesRuntimeShared(runtime_, &hermesRuntime_);
-  return std::unique_ptr<jsinspector_modern::RuntimeAgent>(
-      new jsinspector_modern::HermesRuntimeAgent(
+  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
+      new jsinspector_modern::HermesRuntimeAgentDelegate(
           frontendChannel,
           sessionState,
           hermesRuntimeShared,

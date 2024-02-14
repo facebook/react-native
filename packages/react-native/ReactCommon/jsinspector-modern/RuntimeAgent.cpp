@@ -5,10 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/RuntimeAgent.h>
+#include "RuntimeAgent.h"
 
 namespace facebook::react::jsinspector_modern {
 
-RuntimeAgent::~RuntimeAgent() {}
+RuntimeAgent::RuntimeAgent(
+    FrontendChannel frontendChannel,
+    RuntimeTarget& target,
+    SessionState& sessionState,
+    std::unique_ptr<RuntimeAgentDelegate> delegate)
+    : frontendChannel_(std::move(frontendChannel)),
+      target_(target),
+      sessionState_(sessionState),
+      delegate_(std::move(delegate)) {
+  (void)target_;
+  (void)sessionState_;
+}
+
+bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
+  if (delegate_) {
+    return delegate_->handleRequest(req);
+  }
+  return false;
+}
 
 } // namespace facebook::react::jsinspector_modern

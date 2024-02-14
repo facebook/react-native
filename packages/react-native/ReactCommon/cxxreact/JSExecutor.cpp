@@ -35,10 +35,11 @@ double JSExecutor::performanceNow() {
   return duration / NANOSECONDS_IN_MILLISECOND;
 }
 
-std::unique_ptr<jsinspector_modern::RuntimeAgent> JSExecutor::createAgent(
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+JSExecutor::createAgentDelegate(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState) {
-  return std::make_unique<jsinspector_modern::FallbackRuntimeAgent>(
+  return std::make_unique<jsinspector_modern::FallbackRuntimeAgentDelegate>(
       std::move(frontendChannel), sessionState, getDescription());
 }
 

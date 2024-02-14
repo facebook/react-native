@@ -30,7 +30,7 @@ class InstanceTarget;
  * same thread, which is also the thread where the associated PageTarget is
  * constructed and managed.
  */
-class PageAgent {
+class PageAgent final {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the

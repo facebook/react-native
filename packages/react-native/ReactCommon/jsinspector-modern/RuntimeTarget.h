@@ -27,6 +27,9 @@
 
 namespace facebook::react::jsinspector_modern {
 
+class RuntimeAgent;
+class RuntimeAgentDelegate;
+
 /**
  * Receives events from a RuntimeTarget. This is a shared interface that
  * each React Native platform needs to implement in order to integrate with
@@ -35,7 +38,7 @@ namespace facebook::react::jsinspector_modern {
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
-  virtual std::unique_ptr<RuntimeAgent> createAgent(
+  virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
       FrontendChannel channel,
       SessionState& sessionState) = 0;
 };
@@ -43,7 +46,7 @@ class RuntimeTargetDelegate {
 /**
  * A Target corresponding to a JavaScript runtime.
  */
-class JSINSPECTOR_EXPORT RuntimeTarget {
+class JSINSPECTOR_EXPORT RuntimeTarget final {
  public:
   /**
    * \param delegate The object that will receive events from this target.
