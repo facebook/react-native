@@ -293,6 +293,11 @@ TEST(CSSParser, parse_prop) {
   auto invalidKeywordValue = parseCSSProp<CSSProp::Width>("flex-start");
   EXPECT_EQ(invalidKeywordValue.type(), CSSValueType::CSSWideKeyword);
   EXPECT_EQ(invalidKeywordValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+
+  auto keywordlessValue = parseCSSProp<CSSProp::BorderRadius>("50px");
+  EXPECT_EQ(keywordlessValue.type(), CSSValueType::Length);
+  EXPECT_EQ(keywordlessValue.getLength().value, 50.0f);
+  EXPECT_EQ(keywordlessValue.getLength().unit, CSSLengthUnit::Px);
 }
 
 } // namespace facebook::react
