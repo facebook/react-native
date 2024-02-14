@@ -535,13 +535,14 @@ RCT_EXPORT_METHOD(getInitialNotification
   if (self.initialNotification) {
     NSDictionary<NSString *, id> *notificationDict =
         RCTFormatUNNotificationContent(self.initialNotification.request.content);
-    NSDictionary *userInfo = notificationDict[@"userInfo"];
     if (IsNotificationRemote(self.initialNotification)) {
-      NSMutableDictionary<NSString *, id> *userInfoCopy = [userInfo mutableCopy];
+      // For backwards compatibility, remote notifications only returns a userInfo dict.
+      NSMutableDictionary<NSString *, id> *userInfoCopy = [notificationDict[@"userInfo"] mutableCopy];
       userInfoCopy[@"remote"] = @YES;
       resolve(userInfoCopy);
     } else {
-      resolve(userInfo);
+      // For backwards compatibility, local notifications return the notification.
+      resolve(notificationDict);
     }
     return;
   }
