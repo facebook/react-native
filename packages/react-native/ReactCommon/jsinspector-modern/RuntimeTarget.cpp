@@ -14,11 +14,7 @@ RuntimeTarget::RuntimeTarget(RuntimeTargetDelegate& delegate)
 std::unique_ptr<RuntimeAgent> RuntimeTarget::createAgent(
     FrontendChannel channel,
     SessionState& sessionState) {
-  return std::make_unique<RuntimeAgent>(
-      channel,
-      *this,
-      sessionState,
-      delegate_.createAgentDelegate(channel, sessionState));
+  return delegate_.createAgent(channel, sessionState);
 }
 
 } // namespace facebook::react::jsinspector_modern

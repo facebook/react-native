@@ -78,7 +78,7 @@ class PageTargetDelegate {
  * The limited interface that PageTarget exposes to its associated
  * sessions/agents.
  */
-class PageTargetController final {
+class PageTargetController {
  public:
   explicit PageTargetController(PageTarget& target);
 
@@ -95,7 +95,7 @@ class PageTargetController final {
  * "Host" in React Native's architecture - the entity that manages the
  * lifecycle of a React Instance.
  */
-class JSINSPECTOR_EXPORT PageTarget final {
+class JSINSPECTOR_EXPORT PageTarget {
  public:
   struct SessionMetadata {
     std::optional<std::string> integrationName;

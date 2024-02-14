@@ -24,7 +24,7 @@ class InstanceTarget;
  * An Agent that handles requests from the Chrome DevTools Protocol for the
  * given InstanceTarget.
  */
-class InstanceAgent final {
+class InstanceAgent {
  public:
   /**
    * \param frontendChannel A channel used to send responses and events to the

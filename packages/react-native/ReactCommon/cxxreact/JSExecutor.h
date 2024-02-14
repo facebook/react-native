@@ -114,7 +114,7 @@ class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
   /**
    * Returns whether or not the underlying executor supports debugging via the
    * Chrome remote debugging protocol. If true, the executor should also
-   * override the \c createAgentDelegate method.
+   * override the \c createAgent method.
    */
   virtual bool isInspectable() {
     return false;
@@ -141,10 +141,9 @@ class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
   static double performanceNow();
 
   /**
-   * Create a RuntimeAgentDelegate that can be used to debug the JS VM instance.
+   * Create a RuntimeAgent that can be used to debug the JS VM instance.
    */
-  virtual std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
-  createAgentDelegate(
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgent> createAgent(
       jsinspector_modern::FrontendChannel frontendChannel,
       jsinspector_modern::SessionState& sessionState) override;
 };
