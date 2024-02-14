@@ -130,7 +130,7 @@ class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
   virtual void handleMemoryPressure([[maybe_unused]] int pressureLevel) {}
 
   virtual void destroy() {}
-  virtual ~JSExecutor() {}
+  virtual ~JSExecutor() override {}
 
   virtual void flush() {}
 
