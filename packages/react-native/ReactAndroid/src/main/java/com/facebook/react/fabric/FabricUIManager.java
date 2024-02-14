@@ -56,6 +56,8 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
+import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
+import com.facebook.react.fabric.interop.UIBlock;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -208,6 +210,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           mMountItemDispatcher.dispatchMountItems(items);
         }
       };
+
+  // Interop UIManagerListener used to support addUIBlock and prependUIBlock.
+  // It's initialized only when addUIBlock or prependUIBlock is called the first time.
+  @Nullable private InteropUIBlockListener mInteropUIBlockListener;
 
   public FabricUIManager(
       @NonNull ReactApplicationContext reactContext,
@@ -444,6 +450,37 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (!ReactFeatureFlags.enableBridgelessArchitecture) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
+  }
+
+  /**
+   * Method added to Fabric for backward compatibility reasons, as users on Paper could call
+   * [addUiBlock] and [prependUiBlock] on UIManagerModule.
+   */
+  public void addUIBlock(UIBlock block) {
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropUIBlockListener listener = getInteropUIBlockListener();
+      listener.addUIBlock(block);
+    }
+  }
+
+  /**
+   * Method added to Fabric for backward compatibility reasons, as users on Paper could call
+   * [addUiBlock] and [prependUiBlock] on UIManagerModule.
+   */
+  public void prependUIBlock(UIBlock block) {
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropUIBlockListener listener = getInteropUIBlockListener();
+      listener.prependUIBlock(block);
+    }
+  }
+
+  @NonNull
+  private InteropUIBlockListener getInteropUIBlockListener() {
+    if (mInteropUIBlockListener == null) {
+      mInteropUIBlockListener = new InteropUIBlockListener();
+      addUIManagerEventListener(mInteropUIBlockListener);
+    }
+    return mInteropUIBlockListener;
   }
 
   @SuppressWarnings("unused")
