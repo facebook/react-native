@@ -257,13 +257,12 @@ HermesExecutor::HermesExecutor(
       runtime_(runtime),
       hermesRuntime_(hermesRuntime) {}
 
-std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
-HermesExecutor::createAgentDelegate(
+std::unique_ptr<jsinspector_modern::RuntimeAgent> HermesExecutor::createAgent(
     jsinspector_modern::FrontendChannel frontendChannel,
     jsinspector_modern::SessionState& sessionState) {
   std::shared_ptr<HermesRuntime> hermesRuntimeShared(runtime_, &hermesRuntime_);
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new jsinspector_modern::HermesRuntimeAgentDelegate(
+  return std::unique_ptr<jsinspector_modern::RuntimeAgent>(
+      new jsinspector_modern::HermesRuntimeAgent(
           frontendChannel,
           sessionState,
           hermesRuntimeShared,
