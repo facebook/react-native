@@ -57,7 +57,7 @@ class InstanceAgent final {
  private:
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;
-  std::unique_ptr<RuntimeAgent> runtimeAgent_;
+  std::shared_ptr<RuntimeAgent> runtimeAgent_;
   SessionState& sessionState_;
 };
 
