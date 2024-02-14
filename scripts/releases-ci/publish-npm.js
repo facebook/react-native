@@ -89,7 +89,6 @@ async function publishMonorepoPackages(tag /*: ?string */) {
       exit(1);
     } else {
       echo(`Published ${spec} to npm`);
-      exit(0);
     }
   }
 }
