@@ -19,7 +19,7 @@ namespace facebook::react {
 
 /**
  * One of any predefined CSS keywords.
- * https://www.w3.org/TR/css-values-3/#keywords
+ * https://www.w3.org/TR/css-values-4/#keywords
  */
 enum class CSSKeyword : uint8_t {
   Absolute,
