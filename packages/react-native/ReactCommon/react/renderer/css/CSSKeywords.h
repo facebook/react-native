@@ -32,11 +32,16 @@ enum class CSSKeyword : uint8_t {
   ColumnReverse,
   Content,
   Contents,
+  Dashed,
+  Dotted,
+  Double,
   End,
   Fixed,
   Flex,
   FlexEnd,
   FlexStart,
+  Grid,
+  Groove,
   Hidden,
   Inherit,
   Initial,
@@ -44,19 +49,22 @@ enum class CSSKeyword : uint8_t {
   InlineBlock,
   InlineFlex,
   InlineGrid,
+  Inset,
   Ltr,
-  Grid,
   MaxContent,
   Medium,
   MinContent,
   None,
   Normal,
   NoWrap,
+  Outset,
   Relative,
+  Ridge,
   Row,
   RowReverse,
   Rtl,
   Scroll,
+  Solid,
   SpaceAround,
   SpaceBetween,
   SpaceEvenly,
@@ -108,12 +116,16 @@ CSS_DEFINE_KEYWORD_CONEPTS(Column)
 CSS_DEFINE_KEYWORD_CONEPTS(ColumnReverse)
 CSS_DEFINE_KEYWORD_CONEPTS(Content)
 CSS_DEFINE_KEYWORD_CONEPTS(Contents)
+CSS_DEFINE_KEYWORD_CONEPTS(Dashed)
+CSS_DEFINE_KEYWORD_CONEPTS(Dotted)
+CSS_DEFINE_KEYWORD_CONEPTS(Double)
 CSS_DEFINE_KEYWORD_CONEPTS(End)
 CSS_DEFINE_KEYWORD_CONEPTS(Fixed)
 CSS_DEFINE_KEYWORD_CONEPTS(Flex)
 CSS_DEFINE_KEYWORD_CONEPTS(FlexEnd)
 CSS_DEFINE_KEYWORD_CONEPTS(FlexStart)
 CSS_DEFINE_KEYWORD_CONEPTS(Grid)
+CSS_DEFINE_KEYWORD_CONEPTS(Groove)
 CSS_DEFINE_KEYWORD_CONEPTS(Hidden)
 CSS_DEFINE_KEYWORD_CONEPTS(Inherit)
 CSS_DEFINE_KEYWORD_CONEPTS(Initial)
@@ -121,6 +133,7 @@ CSS_DEFINE_KEYWORD_CONEPTS(Inline)
 CSS_DEFINE_KEYWORD_CONEPTS(InlineBlock)
 CSS_DEFINE_KEYWORD_CONEPTS(InlineFlex)
 CSS_DEFINE_KEYWORD_CONEPTS(InlineGrid)
+CSS_DEFINE_KEYWORD_CONEPTS(Inset)
 CSS_DEFINE_KEYWORD_CONEPTS(Ltr)
 CSS_DEFINE_KEYWORD_CONEPTS(MaxContent)
 CSS_DEFINE_KEYWORD_CONEPTS(Medium)
@@ -128,11 +141,14 @@ CSS_DEFINE_KEYWORD_CONEPTS(MinContent)
 CSS_DEFINE_KEYWORD_CONEPTS(None)
 CSS_DEFINE_KEYWORD_CONEPTS(Normal)
 CSS_DEFINE_KEYWORD_CONEPTS(NoWrap)
+CSS_DEFINE_KEYWORD_CONEPTS(Outset)
 CSS_DEFINE_KEYWORD_CONEPTS(Relative)
+CSS_DEFINE_KEYWORD_CONEPTS(Ridge)
 CSS_DEFINE_KEYWORD_CONEPTS(Row)
 CSS_DEFINE_KEYWORD_CONEPTS(RowReverse)
 CSS_DEFINE_KEYWORD_CONEPTS(Rtl)
 CSS_DEFINE_KEYWORD_CONEPTS(Scroll)
+CSS_DEFINE_KEYWORD_CONEPTS(Solid)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceAround)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceBetween)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceEvenly)
@@ -212,6 +228,21 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Contents;
       }
       break;
+    case fnv1a("dashed"):
+      if constexpr (detail::hasDashed<KeywordT>) {
+        return KeywordT::Dashed;
+      }
+      break;
+    case fnv1a("dotted"):
+      if constexpr (detail::hasDotted<KeywordT>) {
+        return KeywordT::Dotted;
+      }
+      break;
+    case fnv1a("double"):
+      if constexpr (detail::hasDouble<KeywordT>) {
+        return KeywordT::Double;
+      }
+      break;
     case fnv1a("end"):
       if constexpr (detail::hasEnd<KeywordT>) {
         return KeywordT::End;
@@ -239,6 +270,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     case fnv1a("grid"):
       if constexpr (detail::hasGrid<KeywordT>) {
         return KeywordT::Grid;
+      }
+      break;
+    case fnv1a("groove"):
+      if constexpr (detail::hasGroove<KeywordT>) {
+        return KeywordT::Groove;
       }
       break;
     case fnv1a("hidden"):
@@ -306,9 +342,19 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::NoWrap;
       }
       break;
+    case fnv1a("outset"):
+      if constexpr (detail::hasOutset<KeywordT>) {
+        return KeywordT::Outset;
+      }
+      break;
     case fnv1a("relative"):
       if constexpr (detail::hasRelative<KeywordT>) {
         return KeywordT::Relative;
+      }
+      break;
+    case fnv1a("ridge"):
+      if constexpr (detail::hasRidge<KeywordT>) {
+        return KeywordT::Ridge;
       }
       break;
     case fnv1a("row"):
@@ -344,6 +390,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     case fnv1a("scroll"):
       if constexpr (detail::hasScroll<KeywordT>) {
         return KeywordT::Scroll;
+      }
+      break;
+    case fnv1a("solid"):
+      if constexpr (detail::hasSolid<KeywordT>) {
+        return KeywordT::Solid;
       }
       break;
     case fnv1a("start"):
