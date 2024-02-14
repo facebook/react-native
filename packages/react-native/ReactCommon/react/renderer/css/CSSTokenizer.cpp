@@ -141,7 +141,7 @@ CSSToken CSSTokenizer::consumeNumeric() {
   } else if (peek() == '%') {
     advance();
     consumeRunningValue();
-    return {CSSTokenType::Percent, numberToken.numericValue()};
+    return {CSSTokenType::Percentage, numberToken.numericValue()};
   } else {
     return numberToken;
   }
