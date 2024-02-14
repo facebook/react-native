@@ -62,7 +62,6 @@ target_compile_options(${CMAKE_PROJECT_NAME}
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)
-add_library(react_render_css ALIAS ReactAndroid::react_render_css)
 add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
 add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
 add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
@@ -103,7 +102,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_cxxreactpackage               # prefab ready
         react_render_componentregistry      # prefab ready
         react_render_core                   # prefab ready
-        react_render_css                    # prefab ready
         react_render_debug                  # prefab ready
         react_render_graphics               # prefab ready
         react_render_imagemanager           # prefab ready

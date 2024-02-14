@@ -31,7 +31,6 @@ target_link_libraries(
         react_render_attributedstring
         react_render_componentregistry
         react_render_core
-        react_render_css
         react_render_debug
         react_render_graphics
         react_render_imagemanager
