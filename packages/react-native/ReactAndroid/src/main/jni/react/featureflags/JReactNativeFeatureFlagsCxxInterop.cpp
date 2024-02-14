@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<faa13422c6380237c6a33f95f79302f2>>
+ * @generated SignedSource<<f40d52242f2c758ed616f1e5d8c3a082>>
  */
 
 /**
@@ -99,12 +99,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enablePropIteratorSetter() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropIteratorSetter");
-    return method(javaProvider_);
-  }
-
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -159,11 +153,6 @@ bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enablePropIteratorSetter(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enablePropIteratorSetter();
-}
-
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -211,9 +200,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "inspectorEnableModernCDPRegistry",
         JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
-      makeNativeMethod(
-        "enablePropIteratorSetter",
-        JReactNativeFeatureFlagsCxxInterop::enablePropIteratorSetter),
   });
 }
 

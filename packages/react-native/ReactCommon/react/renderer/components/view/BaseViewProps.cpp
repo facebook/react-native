@@ -9,12 +9,12 @@
 
 #include <algorithm>
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -55,16 +55,15 @@ BaseViewProps::BaseViewProps(
     : YogaStylableProps(context, sourceProps, rawProps),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.opacity
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "opacity",
-                    sourceProps.opacity,
-                    (Float)1.0)),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.opacity
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "opacity",
+                                                       sourceProps.opacity,
+                                                       (Float)1.0)),
       backgroundColor(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.backgroundColor
               : convertRawProp(
                     context,
@@ -73,65 +72,59 @@ BaseViewProps::BaseViewProps(
                     sourceProps.backgroundColor,
                     {})),
       borderRadii(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.borderRadii
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "border",
-                    "Radius",
-                    sourceProps.borderRadii,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderRadii
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Radius",
+                                                       sourceProps.borderRadii,
+                                                       {})),
       borderColors(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.borderColors
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "border",
-                    "Color",
-                    sourceProps.borderColors,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderColors
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Color",
+                                                       sourceProps.borderColors,
+                                                       {})),
       borderCurves(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.borderCurves
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "border",
-                    "Curve",
-                    sourceProps.borderCurves,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderCurves
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Curve",
+                                                       sourceProps.borderCurves,
+                                                       {})),
       borderStyles(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.borderStyles
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "border",
-                    "Style",
-                    sourceProps.borderStyles,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.borderStyles
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "border",
+                                                       "Style",
+                                                       sourceProps.borderStyles,
+                                                       {})),
       shadowColor(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.shadowColor
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "shadowColor",
-                    sourceProps.shadowColor,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowColor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowColor",
+                                                       sourceProps.shadowColor,
+                                                       {})),
       shadowOffset(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.shadowOffset
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "shadowOffset",
-                    sourceProps.shadowOffset,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowOffset
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowOffset",
+                                                       sourceProps.shadowOffset,
+                                                       {})),
       shadowOpacity(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.shadowOpacity
               : convertRawProp(
                     context,
@@ -140,25 +133,23 @@ BaseViewProps::BaseViewProps(
                     sourceProps.shadowOpacity,
                     {})),
       shadowRadius(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.shadowRadius
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "shadowRadius",
-                    sourceProps.shadowRadius,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowRadius
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "shadowRadius",
+                                                       sourceProps.shadowRadius,
+                                                       {})),
       transform(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.transform
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "transform",
-                    sourceProps.transform,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "transform",
+                                                       sourceProps.transform,
+                                                       {})),
       transformOrigin(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.transformOrigin
               : convertRawProp(
                     context,
@@ -167,7 +158,7 @@ BaseViewProps::BaseViewProps(
                     sourceProps.transformOrigin,
                     {})),
       backfaceVisibility(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.backfaceVisibility
               : convertRawProp(
                     context,
@@ -176,7 +167,7 @@ BaseViewProps::BaseViewProps(
                     sourceProps.backfaceVisibility,
                     {})),
       shouldRasterize(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.shouldRasterize
               : convertRawProp(
                     context,
@@ -185,16 +176,15 @@ BaseViewProps::BaseViewProps(
                     sourceProps.shouldRasterize,
                     {})),
       zIndex(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.zIndex
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "zIndex",
-                    sourceProps.zIndex,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.zIndex
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "zIndex",
+                                                       sourceProps.zIndex,
+                                                       {})),
       pointerEvents(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.pointerEvents
               : convertRawProp(
                     context,
@@ -203,38 +193,35 @@ BaseViewProps::BaseViewProps(
                     sourceProps.pointerEvents,
                     {})),
       hitSlop(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.hitSlop
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "hitSlop",
-                    sourceProps.hitSlop,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.hitSlop
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "hitSlop",
+                                                       sourceProps.hitSlop,
+                                                       {})),
       onLayout(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.onLayout
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "onLayout",
-                    sourceProps.onLayout,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.onLayout
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "onLayout",
+                                                       sourceProps.onLayout,
+                                                       {})),
       events(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.events
               : convertRawProp(context, rawProps, sourceProps.events, {})),
       collapsable(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.collapsable
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "collapsable",
-                    sourceProps.collapsable,
-                    true)),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.collapsable
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "collapsable",
+                                                       sourceProps.collapsable,
+                                                       true)),
       removeClippedSubviews(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.removeClippedSubviews
               : convertRawProp(
                     context,
@@ -243,7 +230,7 @@ BaseViewProps::BaseViewProps(
                     sourceProps.removeClippedSubviews,
                     false)),
       experimental_layoutConformance(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.experimental_layoutConformance
               : convertRawProp(
                     context,

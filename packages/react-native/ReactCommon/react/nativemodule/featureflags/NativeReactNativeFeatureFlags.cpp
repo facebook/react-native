@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<696e31d417b64aaf55f0b96b42706f88>>
+ * @generated SignedSource<<2466af777a1d69da2c3810e5a2d53a70>>
  */
 
 /**
@@ -83,11 +83,6 @@ bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnectio
 bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
-}
-
-bool NativeReactNativeFeatureFlags::enablePropIteratorSetter(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enablePropIteratorSetter();
 }
 
 } // namespace facebook::react

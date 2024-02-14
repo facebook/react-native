@@ -7,11 +7,13 @@
 
 #include "HostPlatformViewProps.h"
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <algorithm>
+
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -21,16 +23,15 @@ HostPlatformViewProps::HostPlatformViewProps(
     const RawProps& rawProps)
     : BaseViewProps(context, sourceProps, rawProps),
       elevation(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.elevation
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "elevation",
-                    sourceProps.elevation,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "elevation",
+                                                       sourceProps.elevation,
+                                                       {})),
       nativeBackground(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.nativeBackground
               : convertRawProp(
                     context,
@@ -39,7 +40,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.nativeBackground,
                     {})),
       nativeForeground(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.nativeForeground
               : convertRawProp(
                     context,
@@ -48,16 +49,15 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.nativeForeground,
                     {})),
       focusable(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
-              ? sourceProps.focusable
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "focusable",
-                    sourceProps.focusable,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.focusable
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "focusable",
+                                                       sourceProps.focusable,
+                                                       {})),
       hasTVPreferredFocus(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.hasTVPreferredFocus
               : convertRawProp(
                     context,
@@ -66,7 +66,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.hasTVPreferredFocus,
                     {})),
       needsOffscreenAlphaCompositing(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.needsOffscreenAlphaCompositing
               : convertRawProp(
                     context,
@@ -75,7 +75,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.needsOffscreenAlphaCompositing,
                     {})),
       renderToHardwareTextureAndroid(
-          ReactNativeFeatureFlags::enablePropIteratorSetter()
+          CoreFeatures::enablePropIteratorSetter
               ? sourceProps.renderToHardwareTextureAndroid
               : convertRawProp(
                     context,

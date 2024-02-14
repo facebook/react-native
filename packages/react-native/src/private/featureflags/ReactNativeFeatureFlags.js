@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<702649b31fb7da1880fcc4e2b8b8e656>>
+ * @generated SignedSource<<7c83d5613c3be517efe48378e6356e79>>
  * @flow strict-local
  */
 
@@ -50,7 +50,6 @@ export type ReactNativeFeatureFlags = {
   enableFixForClippedSubviewsCrash: Getter<boolean>,
   inspectorEnableCxxInspectorPackagerConnection: Getter<boolean>,
   inspectorEnableModernCDPRegistry: Getter<boolean>,
-  enablePropIteratorSetter: Getter<boolean>,
 }
 
 /**
@@ -133,10 +132,6 @@ export const inspectorEnableCxxInspectorPackagerConnection: Getter<boolean> = cr
  * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
  */
 export const inspectorEnableModernCDPRegistry: Getter<boolean> = createNativeFlagGetter('inspectorEnableModernCDPRegistry', false);
-/**
- * Specifies whether the iterator-style prop parsing is enabled.
- */
-export const enablePropIteratorSetter: Getter<boolean> = createNativeFlagGetter('enablePropIteratorSetter', false);
 
 /**
  * Overrides the feature flags with the provided methods.

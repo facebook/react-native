@@ -8,8 +8,8 @@
 #include "Props.h"
 
 #include <folly/dynamic.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -24,7 +24,7 @@ void Props::initialize(
     const PropsParserContext& context,
     const Props& sourceProps,
     const RawProps& rawProps) {
-  nativeId = ReactNativeFeatureFlags::enablePropIteratorSetter()
+  nativeId = CoreFeatures::enablePropIteratorSetter
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef ANDROID
