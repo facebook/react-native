@@ -8,7 +8,6 @@
 #pragma once
 
 #include <cstdint>
-#include <locale>
 #include <optional>
 #include <string_view>
 
@@ -172,8 +171,11 @@ CSS_DEFINE_KEYWORD_CONEPTS(WrapReverse)
 template <CSSKeywordSet KeywordT>
 constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
   struct LowerCaseTransform {
-    char operator()(char c) const {
-      return static_cast<char>(tolower(c));
+    constexpr char operator()(char c) const {
+      if (c >= 'A' && c <= 'Z') {
+        return c + static_cast<char>('a' - 'A');
+      }
+      return c;
     }
   };
 

@@ -13,15 +13,6 @@
 
 namespace facebook::react::traits {
 
-template <typename T, typename... RestT>
-static constexpr size_t maxSizeof() {
-  if constexpr (sizeof...(RestT) > 0) {
-    return std::max(sizeof(T), maxSizeof<RestT...>());
-  } else {
-    return sizeof(T);
-  }
-}
-
 template <typename ExpectedT>
 static constexpr bool containsType() {
   return false;
