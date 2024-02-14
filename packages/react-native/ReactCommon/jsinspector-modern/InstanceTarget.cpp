@@ -46,9 +46,10 @@ InstanceTarget::~InstanceTarget() {
 }
 
 RuntimeTarget& InstanceTarget::registerRuntime(
-    RuntimeTargetDelegate& delegate) {
+    RuntimeTargetDelegate& delegate,
+    RuntimeExecutor executor) {
   assert(!currentRuntime_ && "Only one Runtime allowed");
-  currentRuntime_.emplace(delegate);
+  currentRuntime_.emplace(delegate, executor);
   forEachAgent([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
   });

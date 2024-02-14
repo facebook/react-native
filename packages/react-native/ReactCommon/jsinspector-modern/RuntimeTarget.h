@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "SessionState.h"
@@ -53,8 +54,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget final {
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
+   * \param executor A RuntimeExecutor that can be used to schedule work on
+   * the JS runtime's thread. The executor's queue should be empty when
+   * RuntimeTarget is constructed (i.e. anything scheduled during the
+   * constructor should be executed before any user code is run).
    */
-  explicit RuntimeTarget(RuntimeTargetDelegate& delegate);
+  RuntimeTarget(RuntimeTargetDelegate& delegate, RuntimeExecutor executor);
 
   RuntimeTarget(const RuntimeTarget&) = delete;
   RuntimeTarget(RuntimeTarget&&) = delete;
@@ -77,6 +82,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget final {
 
  private:
   RuntimeTargetDelegate& delegate_;
+  RuntimeExecutor executor_;
   std::list<std::weak_ptr<RuntimeAgent>> agents_;
 
   /**
