@@ -138,15 +138,21 @@ template <CSSProp P>
 using CSSAllowedKeywords = typename CSSPropDefinition<P>::Keyword;
 
 template <CSSProp P>
+using CSSDeclaredValue = typename CSSPropDefinition<P>::DeclaredValue;
+
+template <CSSProp P>
 using CSSSpecifiedValue = typename CSSPropDefinition<P>::SpecifiedValue;
 
 template <CSSProp P>
 using CSSComputedValue = typename CSSPropDefinition<P>::ComputedValue;
 
-struct CSSComputeContext {
-  bool isRTL{false};
-  bool useWebDefaults{false};
-  bool swapLeftAndRight{false};
+/**
+ * Whether to behave in accordance with W3C specs, or to incorporate React
+ * Native specific tweaks to defaults and computation.
+ */
+enum class CSSFlavor {
+  W3C,
+  ReactNative,
 };
 
 /**
@@ -168,16 +174,18 @@ struct CSSPropDefinition<CSSProp::AlignContent> {
     End = to_underlying(CSSKeyword::End),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Stretch)
-                              : SpecifiedValue::keyword(Keyword::FlexStart);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C
+        ? DeclaredValue::keyword(Keyword::Stretch)
+        : DeclaredValue::keyword(Keyword::FlexStart);
   }
 };
 
@@ -198,15 +206,16 @@ struct CSSPropDefinition<CSSProp::AlignItems> {
     End = to_underlying(CSSKeyword::End),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Stretch);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Stretch);
   }
 };
 
@@ -228,15 +237,16 @@ struct CSSPropDefinition<CSSProp::AlignSelf> {
     End = to_underlying(CSSKeyword::End),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Auto);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Auto);
   }
 };
 
@@ -250,15 +260,16 @@ struct CSSPropDefinition<CSSProp::AspectRatio> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSRatio>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSRatio>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSRatio>;
   using ComputedValue = CSSValueVariant<Keyword, CSSRatio>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Auto);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Auto);
   }
 };
 
@@ -268,16 +279,17 @@ struct CSSPropDefinition<CSSProp::AspectRatio> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::BorderRadius> {
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::length(0.0f, CSSLengthUnit::Px);
   }
 };
 
@@ -332,16 +344,17 @@ struct CSSPropDefinition<CSSProp::BorderStyle> {
     Outset = to_underlying(CSSKeyword::Outset),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::None)
-                              : SpecifiedValue::keyword(Keyword::Solid);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C ? DeclaredValue::keyword(Keyword::None)
+                                    : DeclaredValue::keyword(Keyword::Solid);
   }
 };
 
@@ -397,16 +410,18 @@ struct CSSPropDefinition<CSSProp::BorderWidth> {
     Thick = to_underlying(CSSKeyword::Thick),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
+  using SpecifiedValue = CSSValueVariant<CSSLength, CSSKeyword>;
   using ComputedValue = CSSValueVariant<CSSLength>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Medium)
-                              : SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C
+        ? DeclaredValue::keyword(Keyword::Medium)
+        : DeclaredValue::length(0.0f, CSSLengthUnit::Px);
   }
 };
 
@@ -477,15 +492,16 @@ struct CSSPropDefinition<CSSProp::Direction> {
     Rtl = to_underlying(CSSKeyword::Rtl),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return true;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Ltr);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Ltr);
   }
 };
 
@@ -507,16 +523,17 @@ struct CSSPropDefinition<CSSProp::Display> {
     InlineGrid = to_underlying(CSSKeyword::InlineGrid),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Inline)
-                              : SpecifiedValue::keyword(Keyword::Flex);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C ? DeclaredValue::keyword(Keyword::Inline)
+                                    : DeclaredValue::keyword(Keyword::Flex);
   }
 };
 
@@ -534,15 +551,16 @@ struct CSSPropDefinition<CSSProp::Flex> {
     None = to_underlying(CSSKeyword::None),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSNumber>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSNumber>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSNumber>;
   using ComputedValue = CSSValueVariant<Keyword, CSSNumber>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::number(0.0f);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::number(0.0f);
   }
 };
 
@@ -557,16 +575,17 @@ struct CSSPropDefinition<CSSProp::FlexBasis> {
     Content = to_underlying(CSSKeyword::Content),
   };
 
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Auto);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Auto);
   }
 };
 
@@ -583,16 +602,17 @@ struct CSSPropDefinition<CSSProp::FlexDirection> {
     ColumnReverse = to_underlying(CSSKeyword::ColumnReverse),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Row)
-                              : SpecifiedValue::keyword(Keyword::Column);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C ? DeclaredValue::keyword(Keyword::Row)
+                                    : DeclaredValue::keyword(Keyword::Column);
   }
 };
 
@@ -602,15 +622,16 @@ struct CSSPropDefinition<CSSProp::FlexDirection> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexGrow> {
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::number(0.0f);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::number(0.0f);
   }
 };
 
@@ -620,16 +641,17 @@ struct CSSPropDefinition<CSSProp::FlexGrow> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::FlexShrink> {
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::number(1.0f)
-                              : SpecifiedValue::number(0.0f);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C ? DeclaredValue::number(1.0f)
+                                    : DeclaredValue::number(0.0f);
   }
 };
 
@@ -645,15 +667,16 @@ struct CSSPropDefinition<CSSProp::FlexWrap> {
     WrapReverse = to_underlying(CSSKeyword::WrapReverse),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::NoWrap);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::NoWrap);
   }
 };
 
@@ -667,15 +690,16 @@ struct CSSPropDefinition<CSSProp::Gap> {
     Normal = to_underlying(CSSKeyword::Normal),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword, CSSLength>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSLength>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Normal);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Normal);
   }
 };
 
@@ -698,16 +722,17 @@ struct CSSPropDefinition<CSSProp::Height> {
     MinContent = to_underlying(CSSKeyword::MinContent),
   };
 
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Auto);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Auto);
   }
 };
 
@@ -741,16 +766,17 @@ struct CSSPropDefinition<CSSProp::Inset> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
 
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Auto);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Auto);
   }
 };
 
@@ -815,15 +841,16 @@ struct CSSPropDefinition<CSSProp::JustifyContent> {
     End = to_underlying(CSSKeyword::End),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::FlexStart);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::FlexStart);
   }
 };
 
@@ -837,16 +864,17 @@ struct CSSPropDefinition<CSSProp::Margin> {
     Auto = to_underlying(CSSKeyword::Auto),
   };
 
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, Keyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<Keyword, CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::length(0.0f, CSSLengthUnit::Px);
   }
 };
 
@@ -912,15 +940,16 @@ struct CSSPropDefinition<CSSProp::MarginVertical>
  */
 template <>
 struct CSSPropDefinition<CSSProp::Opacity> {
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, CSSNumber>;
+  using SpecifiedValue = CSSValueVariant<CSSNumber>;
   using ComputedValue = CSSValueVariant<CSSNumber>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::number(1.0f);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::number(1.0f);
   }
 };
 
@@ -938,15 +967,16 @@ struct CSSPropDefinition<CSSProp::Overflow> {
     Visible = to_underlying(CSSKeyword::Visible),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::keyword(Keyword::Visible);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::keyword(Keyword::Visible);
   }
 };
 
@@ -956,16 +986,17 @@ struct CSSPropDefinition<CSSProp::Overflow> {
  */
 template <>
 struct CSSPropDefinition<CSSProp::Padding> {
-  using SpecifiedValue =
+  using DeclaredValue =
       CSSValueVariant<CSSWideKeyword, CSSLength, CSSPercentage>;
+  using SpecifiedValue = CSSValueVariant<CSSLength, CSSPercentage>;
   using ComputedValue = CSSValueVariant<CSSLength, CSSPercentage>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext&) {
-    return SpecifiedValue::length(0.0f, CSSLengthUnit::Px);
+  constexpr static DeclaredValue initialValue(CSSFlavor /*flavor*/) {
+    return DeclaredValue::length(0.0f, CSSLengthUnit::Px);
   }
 };
 
@@ -1039,16 +1070,17 @@ struct CSSPropDefinition<CSSProp::Position> {
     Sticky = to_underlying(CSSKeyword::Sticky),
   };
 
-  using SpecifiedValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using DeclaredValue = CSSValueVariant<CSSWideKeyword, Keyword>;
+  using SpecifiedValue = CSSValueVariant<Keyword>;
   using ComputedValue = CSSValueVariant<Keyword>;
 
   constexpr static bool isInherited() {
     return false;
   }
 
-  constexpr static SpecifiedValue initialValue(const CSSComputeContext& ctx) {
-    return ctx.useWebDefaults ? SpecifiedValue::keyword(Keyword::Static)
-                              : SpecifiedValue::keyword(Keyword::Relative);
+  constexpr static DeclaredValue initialValue(CSSFlavor flavor) {
+    return flavor == CSSFlavor::W3C ? DeclaredValue::keyword(Keyword::Static)
+                                    : DeclaredValue::keyword(Keyword::Relative);
   }
 };
 
