@@ -41,17 +41,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-  UIView *result = [super hitTest:point withEvent:event];
-
-  if (result == _adapter.paperView) {
-    return self;
-  }
-
-  return result;
-}
-
 - (RCTLegacyViewManagerInteropCoordinator *)_coordinator
 {
   if (_state != nullptr) {
