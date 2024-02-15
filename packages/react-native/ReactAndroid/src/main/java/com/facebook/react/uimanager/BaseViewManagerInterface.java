@@ -35,6 +35,7 @@ public interface BaseViewManagerInterface<T extends View> {
   void setViewState(T view, @Nullable ReadableMap accessibilityState);
 
   void setBackgroundColor(T view, int backgroundColor);
+  void setBackgroundColor(T view, long backgroundColor);
 
   void setBorderRadius(T view, float borderRadius);
 
@@ -49,6 +50,7 @@ public interface BaseViewManagerInterface<T extends View> {
   void setElevation(T view, float elevation);
 
   void setShadowColor(T view, int shadowColor);
+  void setShadowColor(T view, long shadowColor);
 
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);
 

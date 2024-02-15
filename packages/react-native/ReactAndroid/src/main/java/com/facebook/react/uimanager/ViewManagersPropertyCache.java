@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -219,6 +220,34 @@ import java.util.Map;
     }
   }
 
+  private static class ColorLongPropSetter extends PropSetter {
+
+    private final int mDefaultValue;
+
+    public ColorLongPropSetter(ReactProp prop, Method setter) {
+      this(prop, setter, 0);
+    }
+
+    public ColorLongPropSetter(ReactProp prop, Method setter, int defaultValue) {
+      super(prop, "mixed", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    public ColorLongPropSetter(ReactPropGroup prop, Method setter, int index, int defaultValue) {
+      super(prop, "mixed", setter, index);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object getValueOrDefault(Object value, Context context) {
+      Color color = ColorPropConverter.getColorInstance(value, context);
+      if (color == null) {
+        return mDefaultValue;
+      }
+      return color.pack();
+    }
+  }
+
   private static class BooleanPropSetter extends PropSetter {
 
     private final boolean mDefaultValue;
@@ -349,6 +378,26 @@ import java.util.Map;
     }
   }
 
+  private static class BoxedColorLongPropSetter extends PropSetter {
+
+    public BoxedColorLongPropSetter(ReactProp prop, Method setter) {
+      super(prop, "mixed", setter);
+    }
+
+    public BoxedColorLongPropSetter(ReactPropGroup prop, Method setter, int index) {
+      super(prop, "mixed", setter, index);
+    }
+
+    @Override
+    protected @Nullable Object getValueOrDefault(Object value, Context context) {
+      Color color = ColorPropConverter.getColorInstance(value, context);
+      if (color != null) {
+        return color.pack();
+      }
+      return null;
+    }
+  }
+
   /*package*/ static Map<String, String> getNativePropsForView(
       Class<? extends ViewManager> viewManagerTopClass,
       Class<? extends ReactShadowNode> shadowNodeTopClass) {
@@ -437,6 +486,8 @@ import java.util.Map;
         return new ColorPropSetter(annotation, method, annotation.defaultInt());
       }
       return new IntPropSetter(annotation, method, annotation.defaultInt());
+    } else if (propTypeClass == long.class && "Color".equals(annotation.customType())) {
+      return new ColorLongPropSetter(annotation, method, annotation.defaultInt());
     } else if (propTypeClass == float.class) {
       return new FloatPropSetter(annotation, method, annotation.defaultFloat());
     } else if (propTypeClass == double.class) {
@@ -450,6 +501,8 @@ import java.util.Map;
         return new BoxedColorPropSetter(annotation, method);
       }
       return new BoxedIntPropSetter(annotation, method);
+    } else if (propTypeClass == Long.class && "Color".equals(annotation.customType())) {
+      return new BoxedColorLongPropSetter(annotation, method);
     } else if (propTypeClass == ReadableArray.class) {
       return new ArrayPropSetter(annotation, method);
     } else if (propTypeClass == ReadableMap.class) {
@@ -483,6 +536,10 @@ import java.util.Map;
           props.put(names[i], new IntPropSetter(annotation, method, i, annotation.defaultInt()));
         }
       }
+    } else if (propTypeClass == long.class && "Color".equals(annotation.customType())) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(names[i], new ColorLongPropSetter(annotation, method, i, annotation.defaultInt()));
+      }
     } else if (propTypeClass == float.class) {
       for (int i = 0; i < names.length; i++) {
         props.put(names[i], new FloatPropSetter(annotation, method, i, annotation.defaultFloat()));
@@ -499,6 +556,10 @@ import java.util.Map;
         } else {
           props.put(names[i], new BoxedIntPropSetter(annotation, method, i));
         }
+      }
+    } else if (propTypeClass == Long.class && "Color".equals(annotation.customType())) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(names[i], new BoxedColorLongPropSetter(annotation, method, i));
       }
     } else {
       throw new RuntimeException(
