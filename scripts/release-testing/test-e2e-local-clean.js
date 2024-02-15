@@ -29,6 +29,7 @@
  *   - an option to uninstall the apps (RNTester, RNTestProject) from emulators
  */
 
+const {VERDACCIO_STORAGE_PATH} = require('../template/setup-verdaccio');
 const {isPackagerRunning} = require('./utils/testing-utils');
 const {exec, exit} = require('shelljs');
 
@@ -60,6 +61,9 @@ exec('rm -rf packages/rn-tester/Pods');
 // RNTestProject
 console.info('\n** Removing the RNTestProject folder **\n');
 exec('rm -rf /tmp/RNTestProject');
+
+console.info('\n** Removing Verdaccio storage directory **\n');
+exec(`rm -rf ${VERDACCIO_STORAGE_PATH}`);
 
 // final clean up
 console.info('\n** Final git level wipe **\n');
