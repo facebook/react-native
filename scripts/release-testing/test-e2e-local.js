@@ -18,6 +18,7 @@
  */
 
 const updateTemplatePackage = require('../releases/update-template-package');
+const {initNewProjectFromSource} = require('../template/initialize');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
@@ -25,6 +26,7 @@ const {
   prepareArtifacts,
   setupCircleCIArtifacts,
 } = require('./utils/testing-utils');
+const debug = require('debug')('test-e2e-local');
 const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
@@ -33,6 +35,8 @@ const yargs = require('yargs');
 /* ::
 type Unwrap<T> = T extends Promise<infer U> ? U : T;
 */
+
+const REPO_ROOT = path.resolve(__dirname, '../..');
 
 const argv = yargs
   .option('t', {
@@ -211,9 +215,7 @@ async function testRNTestProject(
   const releaseVersion = `1000.0.0-${shortCommit}`;
   const buildType = 'dry-run';
 
-  // Prepare some variables for later use
-  const repoRoot = pwd().toString();
-  const reactNativePackagePath = `${repoRoot}/packages/react-native`;
+  const reactNativePackagePath = `${REPO_ROOT}/packages/react-native`;
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
 
   const mavenLocalPath =
@@ -256,13 +258,16 @@ async function testRNTestProject(
   });
 
   pushd('/tmp/');
-  // need to avoid the pod install step - we'll do it later
-  exec(
-    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${reactNativePackagePath} --skip-install`,
-  );
+
+  debug('Creating RNTestProject from template');
+
+  await initNewProjectFromSource({
+    projectName: 'RNTestProject',
+    directory: '/tmp/RNTestProject',
+    templatePath: reactNativePackagePath,
+  });
 
   cd('RNTestProject');
-  exec('yarn install');
 
   // When using CircleCI artifacts, the CI will zip maven local into a
   // /tmp/maven-local subfolder struct.
@@ -336,5 +341,7 @@ async function main() {
   }
 }
 
-// $FlowIgnoreError[unused-promise]
-main();
+if (require.main === module) {
+  // eslint-disable-next-line no-void
+  void main();
+}

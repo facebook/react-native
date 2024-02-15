@@ -48,4 +48,8 @@ function setupVerdaccio() /*: number */ {
   return verdaccioProcess.pid;
 }
 
-module.exports = setupVerdaccio;
+module.exports = {
+  setupVerdaccio,
+  VERDACCIO_SERVER_URL,
+  VERDACCIO_STORAGE_PATH,
+};
