@@ -25,6 +25,7 @@ const {
   prepareArtifacts,
   setupCircleCIArtifacts,
 } = require('./utils/testing-utils');
+const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
 const yargs = require('yargs');
@@ -228,6 +229,27 @@ async function testRNTestProject(
     buildType,
     reactNativePackagePath,
   );
+
+  // If artifacts were built locally, we need to pack the react-native package
+  if (circleCIArtifacts == null) {
+    exec('npm pack --pack-destination ', {cwd: reactNativePackagePath});
+
+    // node pack does not creates a version of React Native with the right name on main.
+    // Let's add some defensive programming checks:
+    if (!fs.existsSync(localNodeTGZPath)) {
+      const tarfile = fs
+        .readdirSync(reactNativePackagePath)
+        .find(
+          name => name.startsWith('react-native-') && name.endsWith('.tgz'),
+        );
+      if (tarfile == null) {
+        throw new Error("Couldn't find a zipped version of react-native");
+      }
+      exec(
+        `cp ${path.join(reactNativePackagePath, tarfile)} ${localNodeTGZPath}`,
+      );
+    }
+  }
 
   updateTemplatePackage({
     'react-native': `file://${localNodeTGZPath}`,
