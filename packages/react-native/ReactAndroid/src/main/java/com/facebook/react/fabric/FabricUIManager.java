@@ -762,7 +762,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             rootTag,
             reactTag,
             componentName,
-            props,
+            (ReadableMap) props,
             (StateWrapper) stateWrapper,
             (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
