@@ -51,7 +51,7 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
   JsiIntegrationPortableTest() : engineAdapter_{immediateExecutor_} {
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_, engineAdapter_.getRuntimeExecutor());
+        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
   }
 
   ~JsiIntegrationPortableTest() override {
@@ -88,9 +88,11 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
       page_->unregisterInstance(*instance_);
       instance_ = nullptr;
     }
+    // Recreate the engine (e.g. to wipe any state in the inner jsi::Runtime)
+    engineAdapter_.emplace(immediateExecutor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_, engineAdapter_.getRuntimeExecutor());
+        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
   }
 
   MockRemoteConnection& fromPage() {
@@ -103,7 +105,7 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
   };
 
   jsi::Value eval(std::string_view code) {
-    return engineAdapter_.getRuntime().evaluateJavaScript(
+    return engineAdapter_->getRuntime().evaluateJavaScript(
         std::make_shared<jsi::StringBuffer>(std::string(code)), "<eval>");
   }
 
@@ -113,7 +115,7 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
   RuntimeTarget* runtimeTarget_{};
 
   MockInstanceTargetDelegate instanceTargetDelegate_;
-  EngineAdapter engineAdapter_;
+  std::optional<EngineAdapter> engineAdapter_;
 
  private:
   UniquePtrFactory<StrictMock<MockRemoteConnection>> remoteConnections_;
