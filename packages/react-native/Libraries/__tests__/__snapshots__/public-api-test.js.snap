@@ -7021,10 +7021,6 @@ type InspectorDataProps = $ReadOnly<{
   [propName: string]: string,
   ...
 }>;
-type InspectorDataSource = $ReadOnly<{
-  fileName?: string,
-  lineNumber?: number,
-}>;
 type InspectorDataGetter = (
   <TElementType: ElementType>(
     componentOrHandle: ElementRef<TElementType> | number
@@ -7032,7 +7028,6 @@ type InspectorDataGetter = (
 ) => $ReadOnly<{
   measure: (callback: MeasureOnSuccessCallback) => void,
   props: InspectorDataProps,
-  source: InspectorDataSource,
 }>;
 export type InspectorData = $ReadOnly<{
   closestInstance?: mixed,
@@ -7042,7 +7037,7 @@ export type InspectorData = $ReadOnly<{
   }>,
   selectedIndex: ?number,
   props: InspectorDataProps,
-  source: ?InspectorDataSource,
+  componentStack: string,
 }>;
 export type TouchedViewDataAtPoint = $ReadOnly<{
   pointerY: number,
