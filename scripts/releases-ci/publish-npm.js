@@ -25,7 +25,6 @@ const {
   publishAndroidArtifactsToMaven,
 } = require('../releases/utils/release-utils');
 const path = require('path');
-const {echo, exit} = require('shelljs');
 const yargs = require('yargs');
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
@@ -85,11 +84,11 @@ async function publishMonorepoPackages(tag /*: ?string */) {
     const spec = `${packageInfo.name}@${packageInfo.packageJson.version}`;
 
     if (result.code) {
-      echo(`Failed to publish ${spec} to npm. Stopping all nightly publishes`);
-      exit(1);
-    } else {
-      echo(`Published ${spec} to npm`);
+      throw new Error(
+        `Failed to publish ${spec} to npm. Stopping all nightly publishes`,
+      );
     }
+    console.log(`Published ${spec} to npm`);
   }
 }
 
@@ -102,26 +101,20 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
 
   // For stable releases, CircleCI job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
-    try {
-      if (buildType === 'nightly') {
-        // Set same version for all monorepo packages
-        await setVersion(version);
-        await publishMonorepoPackages(tag);
-      } else {
-        await setReactNativeVersion(version, null, buildType);
-      }
-    } catch (e) {
-      console.error(`Failed to set version number to ${version}`);
-      console.error(e);
-      return exit(1);
+    if (buildType === 'nightly') {
+      // Set same version for all monorepo packages
+      await setVersion(version);
+      await publishMonorepoPackages(tag);
+    } else {
+      await setReactNativeVersion(version, null, buildType);
     }
   }
 
   generateAndroidArtifacts(version);
 
   if (buildType === 'dry-run') {
-    echo('Skipping `npm publish` because --dry-run is set.');
-    return exit(0);
+    console.log('Skipping `npm publish` because --dry-run is set.');
+    return;
   }
 
   // We first publish on Maven Central all the necessary artifacts.
@@ -136,12 +129,9 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   });
 
   if (result.code) {
-    echo('Failed to publish package to npm');
-    return exit(1);
-  } else {
-    echo(`Published to npm ${version}`);
-    return exit(0);
+    throw new Error(`Failed to publish react-native@${version} to npm.`);
   }
+  console.log(`Published react-native@${version} to npm`);
 }
 
 module.exports = {
