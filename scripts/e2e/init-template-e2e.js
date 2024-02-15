@@ -17,7 +17,7 @@ const {
   VERDACCIO_SERVER_URL,
   VERDACCIO_STORAGE_PATH,
   setupVerdaccio,
-} = require('./setup-verdaccio');
+} = require('./utils/verdaccio');
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
@@ -42,7 +42,7 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/template/initialize.js [OPTIONS]
+  Usage: node ./scripts/e2e/init-template-e2e.js [OPTIONS]
 
   Bootstraps and runs \`react-native init\`, using the currently checked out
   repository as the source of truth for the react-native package and

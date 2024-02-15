@@ -17,8 +17,8 @@
  * and to make it more accessible for other devs to play around with.
  */
 
+const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
 const updateTemplatePackage = require('../releases/update-template-package');
-const {initNewProjectFromSource} = require('../template/initialize');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
