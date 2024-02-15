@@ -1432,8 +1432,9 @@ public class SurfaceMountingManager {
           ViewState thisViewState = getNullableViewState(reactTag);
           if (thisViewState != null) {
             View thisView = thisViewState.mView;
-            if (thisView instanceof ViewGroup) {
-              IViewGroupManager viewManager = getViewGroupManager(thisViewState);
+            ViewManager thisViewManager = thisViewState.mViewManager;
+            if (thisViewManager instanceof IViewGroupManager) {
+              IViewGroupManager viewManager = (IViewGroupManager) thisViewManager;
 
               // Children are managed by React Native if both of the following are true:
               // 1) There are 1 or more children of this View, which must be a ViewGroup
