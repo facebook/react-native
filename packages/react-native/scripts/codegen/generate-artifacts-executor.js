@@ -676,9 +676,9 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         );
 
         createComponentProvider(schemas, supportedApplePlatforms);
+        generateCustomURLHandlers(libraries, outputPath);
       }
 
-      generateCustomURLHandlers(libraries, outputPath);
       cleanupEmptyFilesAndFolders(outputPath);
     }
   } catch (err) {
