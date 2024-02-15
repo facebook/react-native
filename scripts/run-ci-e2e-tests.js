@@ -23,6 +23,7 @@ const forEachPackage = require('./monorepo/for-each-package');
 const setupVerdaccio = require('./template/setup-verdaccio');
 const tryExecNTimes = require('./try-n-times');
 const {execFileSync, spawn} = require('child_process');
+const fs = require('fs');
 const path = require('path');
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const argv = require('yargs').argv;
@@ -36,8 +37,6 @@ const REACT_NATIVE_TEMP_DIR = exec(
 ).stdout.trim();
 const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
-
-const VERDACCIO_CONFIG_PATH = path.join(ROOT, '.circleci/verdaccio.yml');
 
 let SERVER_PID;
 let APPIUM_PID;
@@ -85,7 +84,7 @@ try {
   );
 
   describe('Set up Verdaccio');
-  VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
+  VERDACCIO_PID = setupVerdaccio();
 
   describe('Build and publish packages');
   if (exec('node ./scripts/build/build.js', {cwd: ROOT}).code) {
@@ -117,6 +116,7 @@ try {
   mv('_eslintrc.js', '.eslintrc.js');
   mv('_prettierrc.js', '.prettierrc.js');
   mv('_watchmanconfig', '.watchmanconfig');
+  fs.writeFileSync('.npmrc', 'registry=http://localhost:4873');
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);
