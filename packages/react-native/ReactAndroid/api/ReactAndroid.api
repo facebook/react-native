@@ -2702,8 +2702,8 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun <init> (ILcom/facebook/react/touch/JSResponderHandler;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public fun addViewAt (III)V
 	public fun attachRootView (Landroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun createView (Ljava/lang/String;ILjava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
-	public fun createViewUnsafe (Ljava/lang/String;ILjava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
+	public fun createView (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
+	public fun createViewUnsafe (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
 	public fun deleteView (I)V
 	public fun enqueuePendingEvent (ILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
 	public fun getContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
@@ -2713,7 +2713,7 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun getViewExists (I)Z
 	public fun isRootViewAttached ()Z
 	public fun isStopped ()Z
-	public fun preallocateView (Ljava/lang/String;ILjava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
+	public fun preallocateView (Ljava/lang/String;ILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)V
 	public fun printSurfaceState ()V
 	public fun receiveCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -2727,7 +2727,7 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun updateLayout (IIIIIII)V
 	public fun updateOverflowInset (IIIII)V
 	public fun updatePadding (IIIII)V
-	public fun updateProps (ILjava/lang/Object;)V
+	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
 }
 
@@ -2751,7 +2751,7 @@ public class com/facebook/react/fabric/mounting/mountitems/MountItemFactory {
 	public static fun createDispatchCommandMountItem (IIILcom/facebook/react/bridge/ReadableArray;)Lcom/facebook/react/fabric/mounting/mountitems/DispatchCommandMountItem;
 	public static fun createDispatchCommandMountItem (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)Lcom/facebook/react/fabric/mounting/mountitems/DispatchCommandMountItem;
 	public static fun createIntBufferBatchMountItem (I[I[Ljava/lang/Object;I)Lcom/facebook/react/fabric/mounting/mountitems/MountItem;
-	public static fun createPreAllocateViewMountItem (IILjava/lang/String;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)Lcom/facebook/react/fabric/mounting/mountitems/MountItem;
+	public static fun createPreAllocateViewMountItem (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/fabric/events/EventEmitterWrapper;Z)Lcom/facebook/react/fabric/mounting/mountitems/MountItem;
 	public static fun createSendAccessibilityEventMountItem (III)Lcom/facebook/react/fabric/mounting/mountitems/MountItem;
 }
 
@@ -7671,33 +7671,6 @@ public class com/facebook/react/views/view/ReactViewManager$$PropsSetter : com/f
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/view/ReactViewManager;Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
-public abstract interface class com/facebook/react/views/view/ReactViewManagerWrapper {
-	public abstract fun createView (ILcom/facebook/react/uimanager/ThemedReactContext;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/touch/JSResponderHandler;)Landroid/view/View;
-	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun getViewGroupManager ()Lcom/facebook/react/uimanager/IViewGroupManager;
-	public abstract fun onDropViewInstance (Landroid/view/View;)V
-	public abstract fun receiveCommand (Landroid/view/View;ILcom/facebook/react/bridge/ReadableArray;)V
-	public abstract fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public abstract fun setPadding (Landroid/view/View;IIII)V
-	public abstract fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
-	public abstract fun updateProperties (Landroid/view/View;Ljava/lang/Object;)V
-	public abstract fun updateState (Landroid/view/View;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-}
-
-public final class com/facebook/react/views/view/ReactViewManagerWrapper$DefaultViewManager : com/facebook/react/views/view/ReactViewManagerWrapper {
-	public fun <init> (Lcom/facebook/react/uimanager/ViewManager;)V
-	public fun createView (ILcom/facebook/react/uimanager/ThemedReactContext;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/touch/JSResponderHandler;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-	public fun getViewGroupManager ()Lcom/facebook/react/uimanager/IViewGroupManager;
-	public fun onDropViewInstance (Landroid/view/View;)V
-	public fun receiveCommand (Landroid/view/View;ILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setPadding (Landroid/view/View;IIII)V
-	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
-	public fun updateProperties (Landroid/view/View;Ljava/lang/Object;)V
-	public fun updateState (Landroid/view/View;Ljava/lang/Object;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 }
 
 public class com/facebook/react/views/view/ViewGroupClickEvent : com/facebook/react/uimanager/events/Event {

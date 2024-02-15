@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.StateWrapper;
 
@@ -41,7 +42,7 @@ public class MountItemFactory {
       int surfaceId,
       int reactTag,
       @NonNull String component,
-      @Nullable Object props,
+      @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
