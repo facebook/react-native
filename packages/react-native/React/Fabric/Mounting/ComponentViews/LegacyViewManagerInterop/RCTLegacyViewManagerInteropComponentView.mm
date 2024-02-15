@@ -46,7 +46,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   UIView *result = [super hitTest:point withEvent:event];
 
   if (result == _adapter.paperView) {
-    return self;
+    return _adapter.paperView;
   }
 
   return result;
