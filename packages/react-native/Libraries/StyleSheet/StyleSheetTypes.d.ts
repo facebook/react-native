@@ -21,6 +21,7 @@ type FlexAlignType =
 export type DimensionValue =
   | number
   | 'auto'
+  | 'unset'
   | `${number}%`
   | Animated.AnimatedNode
   | null;
