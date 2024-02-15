@@ -28,6 +28,7 @@ using namespace facebook;
   RCTCallableJSModules *_callableJSModules;
   void (^_dispatchToJSThread)(dispatch_block_t);
   void (^_registerSegmentWithId)(NSNumber *, NSString *);
+  void *_runtime;
 }
 
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
@@ -36,15 +37,17 @@ using namespace facebook;
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
                registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
+                             runtime:(void *)runtime
 {
   self = [super self];
   if (self) {
-    self->_uiManagerProxy = [[RCTUIManagerProxy alloc] initWithViewRegistry:viewRegistry];
-    self->_moduleRegistry = moduleRegistry;
-    self->_bundleManager = bundleManager;
-    self->_callableJSModules = callableJSModules;
-    self->_dispatchToJSThread = dispatchToJSThread;
-    self->_registerSegmentWithId = registerSegmentWithId;
+    _uiManagerProxy = [[RCTUIManagerProxy alloc] initWithViewRegistry:viewRegistry];
+    _moduleRegistry = moduleRegistry;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
+    _dispatchToJSThread = dispatchToJSThread;
+    _registerSegmentWithId = registerSegmentWithId;
+    _runtime = runtime;
   }
   return self;
 }
@@ -75,10 +78,10 @@ using namespace facebook;
  * Used By:
  *  - RCTBlobCollector
  */
-- (jsi::Runtime *)runtime
+- (void *)runtime
 {
-  [self logWarning:@"This method is unsupported. Returning nullptr." cmd:_cmd];
-  return nullptr;
+  [self logWarning:@"Please migrate to C++ TurboModule or RuntimeExecutor." cmd:_cmd];
+  return _runtime;
 }
 
 /**
@@ -162,7 +165,7 @@ using namespace facebook;
 
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  self->_registerSegmentWithId(@(segmentId), path);
+  _registerSegmentWithId(@(segmentId), path);
 }
 
 - (id<RCTBridgeDelegate>)delegate

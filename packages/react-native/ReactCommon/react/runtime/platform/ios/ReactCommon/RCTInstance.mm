@@ -263,7 +263,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             if (strongSelf && strongSelf->_valid) {
               [strongSelf registerSegmentWithId:segmentId path:path];
             }
-          }];
+          }
+          runtime:_reactInstance->getJavaScriptContext()];
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
