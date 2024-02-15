@@ -19,7 +19,6 @@ const {execSync} = require('child_process');
 const path = require('path');
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
-const VERDACCIO_CONFIG_PATH = `${REPO_ROOT}/.circleci/verdaccio.yml`;
 const NPM_REGISTRY_SERVER = 'http://localhost:4873';
 
 const config = {
@@ -60,7 +59,7 @@ async function main() {
     return;
   }
 
-  const VERDACCIO_PID = setupVerdaccio(REPO_ROOT, VERDACCIO_CONFIG_PATH);
+  const VERDACCIO_PID = setupVerdaccio();
 
   try {
     process.stdout.write('Bootstrapped Verdaccio \u2705\n');
