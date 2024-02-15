@@ -23,6 +23,10 @@
 #import <React/RCTInspectorDevServerHelper.h>
 #endif
 
+@protocol RCTDevMenuItemProvider
+- (RCTDevMenuItem *)devMenuItem;
+@end
+
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
@@ -300,6 +304,13 @@ RCT_EXPORT_MODULE()
                          handler:^{
                            devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
                          }]];
+  }
+
+  id perfMonitorItemOpaque = [_moduleRegistry moduleForName:"PerfMonitor"];
+  SEL devMenuItem = @selector(devMenuItem);
+  if ([perfMonitorItemOpaque respondsToSelector:devMenuItem]) {
+    RCTDevMenuItem *perfMonitorItem = [perfMonitorItemOpaque devMenuItem];
+    [items addObject:perfMonitorItem];
   }
 
   [items
