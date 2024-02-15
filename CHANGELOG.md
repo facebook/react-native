@@ -1,6 +1,20 @@
 # Changelog
 
-## 0.73.3
+## v0.73.4
+
+### Fixed
+
+- Fix: cannot find module `react-native-*/Libraries/Core/InitializeCore` ([562447be47](https://github.com/facebook/react-native/commit/562447be4705c3e3338633ca108e7e67b9b01640) by [@tido64](https://github.com/tido64))
+
+#### Android
+
+- Ignore the one-time NullPointerException and print error log ([ca9b6b5038](https://github.com/facebook/react-native/commit/ca9b6b5038c419405a440fc8add7090be633654c))
+
+#### iOS
+
+- Fix warning when loading RCTUIManager and A11yManager ([f56bf1fa0a](https://github.com/facebook/react-native/commit/f56bf1fa0a0d0ca547cf7c3ff2e631efac1007ea) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.73.3
 
 ### Added
 
