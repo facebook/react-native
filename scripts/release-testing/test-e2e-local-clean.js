@@ -29,7 +29,7 @@
  *   - an option to uninstall the apps (RNTester, RNTestProject) from emulators
  */
 
-const {VERDACCIO_STORAGE_PATH} = require('../template/setup-verdaccio');
+const {VERDACCIO_STORAGE_PATH} = require('../e2e/utils/verdaccio');
 const {isPackagerRunning} = require('./utils/testing-utils');
 const {exec, exit} = require('shelljs');
 

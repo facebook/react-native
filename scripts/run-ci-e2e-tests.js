@@ -19,8 +19,8 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
+const {setupVerdaccio} = require('./e2e/utils/verdaccio');
 const forEachPackage = require('./monorepo/for-each-package');
-const {setupVerdaccio} = require('./template/setup-verdaccio');
 const tryExecNTimes = require('./try-n-times');
 const {execFileSync, spawn} = require('child_process');
 const fs = require('fs');

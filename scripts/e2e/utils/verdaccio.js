@@ -15,18 +15,16 @@ const {execSync, spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const REPO_ROOT = path.join(__dirname, '../..');
+const REPO_ROOT = path.join(__dirname, '../../..');
 const NPM_CONFIG_PATH = path.join(REPO_ROOT, '.npmrc');
-
-// TODO(huntie): Relocate (used by both local and CI scripts)
-const VERDACCIO_CONFIG_PATH = `${REPO_ROOT}/.circleci/verdaccio.yml`;
-const VERDACCIO_STORAGE_PATH = `${REPO_ROOT}/.circleci/storage`;
+const VERDACCIO_CONFIG_PATH = path.join(__dirname, '..', 'verdaccio.yml');
+const VERDACCIO_STORAGE_PATH = '/tmp/verdaccio';
 const VERDACCIO_SERVER_URL = 'http://localhost:4873';
 
 /**
  * Configure and run a local Verdaccio server. This is an npm proxy that can be
  * used with `npm publish` and `npm install`, configured in
- * `.circleci/verdaccio.yml`.
+ * `scripts/e2e/verdaccio.yml`.
  */
 function setupVerdaccio() /*: number */ {
   const {host} = new URL(VERDACCIO_SERVER_URL);
