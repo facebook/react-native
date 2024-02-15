@@ -105,6 +105,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
+
+  CGFloat _endDraggingSensitivityMultiplier;
+  CGFloat _endDraggingSensitivityVelocityMultiplier;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -134,6 +137,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     [self.scrollViewDelegateSplitter addDelegate:self];
 
     _scrollEventThrottle = 0;
+    _endDraggingSensitivityVelocityMultiplier = 0;
+    _endDraggingSensitivityMultiplier = 1;
   }
 
   return self;
@@ -229,6 +234,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   if (oldScrollViewProps.indicatorStyle != newScrollViewProps.indicatorStyle) {
     _scrollView.indicatorStyle = RCTUIScrollViewIndicatorStyleFromProps(newScrollViewProps);
   }
+
+  _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
+  _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
 
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
     // Zero means "send value only once per significant logical event".
@@ -431,6 +439,20 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 }
 
 #pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+  if (fabs(_endDraggingSensitivityMultiplier - 1) > 0.0001f ||
+      fabs(_endDraggingSensitivityVelocityMultiplier) > 0.0001f) {
+    if (targetContentOffset->y > 0) {
+      const CGFloat travel = targetContentOffset->y - scrollView.contentOffset.y;
+      targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier +
+          velocity.y * _endDraggingSensitivityVelocityMultiplier;
+    }
+  }
+}
 
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
 {
