@@ -71,6 +71,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
    */
   void unregisterFromInspector();
 
+  void* getJavaScriptContext();
+
  private:
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;

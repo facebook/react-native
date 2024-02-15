@@ -465,4 +465,8 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
   }
 }
 
+void* ReactInstance::getJavaScriptContext() {
+  return &runtime_->getRuntime();
+}
+
 } // namespace facebook::react

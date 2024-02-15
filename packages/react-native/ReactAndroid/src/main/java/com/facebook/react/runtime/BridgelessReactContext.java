@@ -12,6 +12,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeArray;
@@ -161,6 +162,13 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   @UnstableReactNativeAPI
   public @Nullable RuntimeExecutor getRuntimeExecutor() {
     return mReactHost.getRuntimeExecutor();
+  }
+
+  @Override
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mReactHost.getJavaScriptContextHolder();
   }
 
   @Override

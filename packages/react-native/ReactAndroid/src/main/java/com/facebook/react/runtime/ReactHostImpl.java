@@ -29,6 +29,7 @@ import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.MemoryPressureListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
@@ -596,6 +597,15 @@ public class ReactHostImpl implements ReactHost {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    return null;
+  }
+
+  @Nullable
+  JavaScriptContextHolder getJavaScriptContextHolder() {
+    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    if (reactInstance != null) {
+      return reactInstance.getJavaScriptContextHolder();
+    }
     return null;
   }
 
