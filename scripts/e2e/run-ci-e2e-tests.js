@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
+ * @oncall react_native
  */
 
 'use strict';
@@ -19,31 +21,32 @@
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
 
-const {setupVerdaccio} = require('./e2e/utils/verdaccio');
-const forEachPackage = require('./monorepo/for-each-package');
-const tryExecNTimes = require('./try-n-times');
+const forEachPackage = require('../monorepo/for-each-package');
+const tryExecNTimes = require('./utils/try-n-times');
+const {setupVerdaccio} = require('./utils/verdaccio');
 const {execFileSync, spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const argv = require('yargs').argv;
 
-const SCRIPTS = __dirname;
-const ROOT = path.normalize(path.join(__dirname, '..'));
-const REACT_NATIVE_PACKAGE_DIR = path.join(ROOT, 'packages/react-native');
+const SCRIPTS = path.join(__dirname, '..');
+const REPO_ROOT = path.join(__dirname, '../..');
+const REACT_NATIVE_PACKAGE_DIR = path.join(REPO_ROOT, 'packages/react-native');
 
 const REACT_NATIVE_TEMP_DIR = exec(
   'mktemp -d /tmp/react-native-XXXXXXXX',
 ).stdout.trim();
 const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
-const numberOfRetries = argv.retries || 1;
+// $FlowFixMe[incompatible-type]
+const numberOfRetries /*: number */ = argv.retries || 1;
 
 let SERVER_PID;
 let APPIUM_PID;
 let VERDACCIO_PID;
 let exitCode;
 
-function describe(message) {
+function describe(message /*: string */) {
   echo(`\n\n>>>>> ${message}\n\n\n`);
 }
 
@@ -55,9 +58,7 @@ try {
         './gradlew publishAllToMavenTempLocal -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
       ).code
     ) {
-      echo('Failed to compile Android binaries');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Failed to compile Android binaries');
     }
   }
 
@@ -67,15 +68,13 @@ try {
       'node ./scripts/releases/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
     ).code
   ) {
-    echo('Failed to set version and update package.json ready for release');
-    exitCode = 1;
-    throw Error(exitCode);
+    throw new Error(
+      'Failed to set version and update package.json ready for release',
+    );
   }
 
   if (exec('npm pack', {cwd: REACT_NATIVE_PACKAGE_DIR}).code) {
-    echo('Failed to pack react-native');
-    exitCode = 1;
-    throw Error(exitCode);
+    throw new Error('Failed to pack react-native');
   }
 
   const REACT_NATIVE_PACKAGE = path.join(
@@ -87,10 +86,8 @@ try {
   VERDACCIO_PID = setupVerdaccio();
 
   describe('Build and publish packages');
-  if (exec('node ./scripts/build/build.js', {cwd: ROOT}).code) {
-    exitCode = 1;
-    throw Error(exitCode);
-  }
+  exec('node ./scripts/build/build.js', {cwd: REPO_ROOT});
+
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {
@@ -107,7 +104,7 @@ try {
   describe('Scaffold a basic React Native app from template');
   execFileSync('rsync', [
     '-a',
-    `${ROOT}/packages/react-native/template`,
+    `${REPO_ROOT}/packages/react-native/template`,
     REACT_NATIVE_TEMP_DIR,
   ]);
   cd(REACT_NATIVE_APP_DIR);
@@ -131,10 +128,9 @@ try {
       () => exec('sleep 10s'),
     )
   ) {
-    echo('Failed to execute npm install');
-    echo('Most common reason is npm registry connectivity, try again');
-    exitCode = 1;
-    throw Error(exitCode);
+    throw new Error(
+      'Failed to execute npm install. Most common reason is npm registry connectivity, try again',
+    );
   }
   exec('rm -rf ./node_modules/react-native/template');
 
@@ -150,10 +146,9 @@ try {
         numberOfRetries,
       )
     ) {
-      echo('Failed to install appium');
-      echo('Most common reason is npm registry connectivity, try again');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error(
+        'Failed to install appium. Most common reason is npm registry connectivity, try again.',
+      );
     }
     cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
@@ -168,22 +163,20 @@ try {
         'keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"',
       ).code
     ) {
-      echo('Key could not be generated');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Key could not be generated');
     }
 
+    // $FlowFixMe[incompatible-type]
     describe(`Start appium server, ${APPIUM_PID}`);
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
 
     describe('Build the app');
     if (exec('react-native run-android').code) {
-      echo('could not execute react-native run-android');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Could not execute react-native run-android');
     }
 
+    // $FlowFixMe[incompatible-type]
     describe(`Start Metro, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('yarn', ['start', '--max-workers 1']);
@@ -200,10 +193,9 @@ try {
         () => exec('sleep 10s'),
       )
     ) {
-      echo('Failed to run Android end-to-end tests');
-      echo('Most likely the code is broken');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error(
+        'Failed to run Android end-to-end tests. Most likely the code is broken.',
+      );
     }
   }
 
@@ -211,6 +203,7 @@ try {
     cd('ios');
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
+    // $FlowFixMe[prop-missing]
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
     describe('Start Metro');
     const packagerProcess = spawn('yarn', ['start'], {
@@ -262,10 +255,9 @@ try {
         () => exec('sleep 10s'),
       )
     ) {
-      echo('Failed to run iOS end-to-end tests');
-      echo('Most likely the code is broken');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error(
+        'Failed to run iOS end-to-end tests. Most likely the code is broken.',
+      );
     }
     cd('..');
   }
@@ -278,9 +270,7 @@ try {
         'yarn react-native bundle --verbose --entry-file index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
       ).code
     ) {
-      echo('Could not build Android bundle');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Could not build Android bundle');
     }
 
     describe('Test: Verify packager can generate an iOS bundle');
@@ -289,23 +279,17 @@ try {
         'yarn react-native bundle --entry-file index.js --platform ios --dev true --bundle-output ios-bundle.js --max-workers 1',
       ).code
     ) {
-      echo('Could not build iOS bundle');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Could not build iOS bundle');
     }
 
     describe('Test: TypeScript typechecking');
     if (exec('yarn tsc').code) {
-      echo('Typechecking errors were found');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Typechecking errors were found');
     }
 
     describe('Test: Jest tests');
     if (exec('yarn test').code) {
-      echo('Jest tests failed');
-      exitCode = 1;
-      throw Error(exitCode);
+      throw new Error('Jest tests failed');
     }
 
     // TODO: ESLint infinitely hangs when running in the environment created by
