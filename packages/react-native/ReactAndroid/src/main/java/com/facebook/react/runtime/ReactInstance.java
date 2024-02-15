@@ -20,6 +20,7 @@ import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -94,6 +95,8 @@ final class ReactInstance {
   private final FabricUIManager mFabricUIManager;
   private final JavaTimerManager mJavaTimerManager;
   private final BridgelessViewManagerResolver mViewManagerResolver;
+
+  private JavaScriptContextHolder mJavaScriptContextHolder;
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
   @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
@@ -180,6 +183,8 @@ final class ReactInstance {
             reactExceptionManager,
             bindingsInstaller,
             isProfiling);
+
+    mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
     // Set up TurboModules
     Systrace.beginSection(
@@ -430,6 +435,10 @@ final class ReactInstance {
     mFabricUIManager.stopSurface(surface.getSurfaceHandler());
   }
 
+  /* package */ JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mJavaScriptContextHolder;
+  }
+
   /* --- Lifecycle methods --- */
   @ThreadConfined("ReactHost")
   /* package */ void destroy() {
@@ -440,6 +449,7 @@ final class ReactInstance {
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
     mUIConstantsProviderManager = null;
+    mJavaScriptContextHolder.clear();
   }
 
   /* --- Native methods --- */
@@ -474,6 +484,8 @@ final class ReactInstance {
   /* package */ native RuntimeExecutor getBufferedRuntimeExecutor();
 
   private native RuntimeScheduler getRuntimeScheduler();
+
+  private native long getJavaScriptContext();
 
   /* package */ native void callFunctionOnModule(
       String moduleName, String methodName, NativeArray args);

@@ -105,6 +105,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
+
+  jlong getJavaScriptContext();
 };
 
 } // namespace facebook::react

@@ -201,6 +201,10 @@ void JReactInstance::handleMemoryPressureJs(jint level) {
   instance_->handleMemoryPressureJs(level);
 }
 
+jlong JReactInstance::getJavaScriptContext() {
+  return (jlong)(intptr_t)instance_->getJavaScriptContext();
+}
+
 void JReactInstance::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactInstance::initHybrid),
@@ -230,6 +234,8 @@ void JReactInstance::registerNatives() {
           "registerSegmentNative", JReactInstance::registerSegment),
       makeNativeMethod(
           "handleMemoryPressureJs", JReactInstance::handleMemoryPressureJs),
+      makeNativeMethod(
+          "getJavaScriptContext", JReactInstance::getJavaScriptContext),
   });
 }
 
