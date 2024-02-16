@@ -65,11 +65,6 @@ async function install() {
           return;
         }
 
-        // TODO: Fix normalize-colors publishing in Verdaccio
-        if (packageManifest.name === '@react-native/normalize-colors') {
-          return;
-        }
-
         execSync(
           'npm publish --registry http://localhost:4873 --access public',
           {

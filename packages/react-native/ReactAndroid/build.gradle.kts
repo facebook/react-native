@@ -254,7 +254,7 @@ val downloadBoost by
     tasks.creating(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
-          "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
+          "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
@@ -524,6 +524,7 @@ android {
             "hermesinstancejni",
             "uimanagerjni",
             "jscinstance",
+            "react_devsupportjni",
             // prefab targets
             "reactnativejni",
             "react_render_debug",
@@ -747,17 +748,13 @@ dependencies {
   testImplementation(libs.mockito)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
-
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.androidx.test.rules)
-  androidTestImplementation(libs.mockito)
 }
 
 react {
   // TODO: The library name is chosen for parity with Fabric components & iOS
   // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
   libraryName = "rncore"
-  jsRootDir = file("../Libraries")
+  jsRootDir = file("../src")
 }
 
 // For build from source, we need to override the privateReact extension.

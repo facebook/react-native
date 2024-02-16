@@ -119,27 +119,11 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * - enableDev: Whether to keep or remove `__DEV__` blocks from the bundle.
  * - enableMinification: Enables or disables minification. Usually production bundles are minified and development
  *     bundles are not.
+ * - inlineSourceMap: When true, the bundler will inline the source map in the bundle
  * - modulesOnly: When true, will only send module definitions without polyfills and without the require-runtime.
  * - runModule: When true, will run the main module after defining all modules. This is used in the main bundle but not
  *     in split bundles.
  */
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-    __deprecated_msg(
-        "Use `jsBundleURLForBundleRoot:packagerHost:enableDev:enableMinification:inlineSourceMap:` instead");
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
-                     packagerScheme:(NSString *)scheme
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule
-    __deprecated_msg(
-        "Use jsBundleURLForBundleRoot:packagerHost:enableDev:enableMinification:inlineSourceMap:modulesOnly:runModule:`  instead");
-
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev

@@ -14,10 +14,26 @@
 const {
   combineSchemasInFileListAndWriteToFile,
 } = require('./combine-js-to-schema');
-const {parseArgs} = require('./combine-utils');
+const yargs = require('yargs');
 
-const parsedArgs = parseArgs(process.argv);
+const argv = yargs
+  .option('p', {
+    alias: 'platform',
+  })
+  .option('e', {
+    alias: 'exclude',
+  })
+  .parseSync();
 
-const {platform, outfile, fileList, exclude} = parsedArgs;
+const [outfile, ...fileList] = argv._;
+const platform: ?string = argv.platform;
+const exclude: string = argv.exclude;
+const excludeRegExp: ?RegExp =
+  exclude != null && exclude !== '' ? new RegExp(exclude) : null;
 
-combineSchemasInFileListAndWriteToFile(fileList, platform, outfile, exclude);
+combineSchemasInFileListAndWriteToFile(
+  fileList,
+  platform != null ? platform.toLowerCase() : platform,
+  outfile,
+  excludeRegExp,
+);

@@ -701,31 +701,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 }
 
 /**
- * A method to be called from JS, which takes a container ID and then releases
- * all subviews for that container upon receipt.
- */
-RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID : (nonnull NSNumber *)containerID)
-{
-  RCTLogWarn(
-      @"RCTUIManager.removeSubviewsFromContainerWithID method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  id<RCTComponent> container = _shadowViewRegistry[containerID];
-  RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
-
-  NSUInteger subviewsCount = [container reactSubviews].count;
-  NSMutableArray<NSNumber *> *indices = [[NSMutableArray alloc] initWithCapacity:subviewsCount];
-  for (NSUInteger childIndex = 0; childIndex < subviewsCount; childIndex++) {
-    [indices addObject:@(childIndex)];
-  }
-
-  [self manageChildren:containerID
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:nil
-           addAtIndices:nil
-        removeAtIndices:indices];
-}
-
-/**
  * Disassociates children from container. Doesn't remove from registries.
  * TODO: use [NSArray getObjects:buffer] to reuse same fast buffer each time.
  *
@@ -840,31 +815,6 @@ RCT_EXPORT_METHOD(removeRootView : (nonnull NSNumber *)rootReactTag)
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
     [(NSMutableDictionary *)viewRegistry removeObjectForKey:rootReactTag];
   }];
-}
-
-RCT_EXPORT_METHOD(replaceExistingNonRootView : (nonnull NSNumber *)reactTag withView : (nonnull NSNumber *)newReactTag)
-{
-  RCTLogWarn(
-      @"RCTUIManager.replaceExistingNonRootView method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
-
-  RCTShadowView *superShadowView = shadowView.superview;
-  if (!superShadowView) {
-    RCTAssert(NO, @"shadowView super (of ID %@) not found", reactTag);
-    return;
-  }
-
-  NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObjectIdenticalTo:shadowView];
-  RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
-  NSArray<NSNumber *> *removeAtIndices = @[ @(indexOfView) ];
-  NSArray<NSNumber *> *addTags = @[ newReactTag ];
-  [self manageChildren:superShadowView.reactTag
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:addTags
-           addAtIndices:removeAtIndices
-        removeAtIndices:removeAtIndices];
 }
 
 RCT_EXPORT_METHOD(setChildren : (nonnull NSNumber *)containerTag reactTags : (NSArray<NSNumber *> *)reactTags)

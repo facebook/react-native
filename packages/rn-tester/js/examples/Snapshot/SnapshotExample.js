@@ -11,6 +11,7 @@
 'use strict';
 
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
+const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Image, StyleSheet, Text, View} = require('react-native');
 
@@ -21,12 +22,21 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
 
   render(): React.Node {
     return (
-      <View style={style.container}>
-        <Text onPress={this.takeScreenshot} style={style.button}>
-          Click to take a screenshot
-        </Text>
-        <Image style={style.image} source={{uri: this.state.uri}} />
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View style={style.container}>
+            <Text
+              onPress={this.takeScreenshot}
+              style={[style.button, {color: theme.LabelColor}]}>
+              Click to take a screenshot
+            </Text>
+            <Image
+              style={[style.image, {backgroundColor: theme.LabelColor}]}
+              source={{uri: this.state.uri}}
+            />
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 
@@ -48,7 +58,6 @@ const style = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: 'contain',
-    backgroundColor: 'black',
   },
 });
 

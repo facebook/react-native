@@ -22,7 +22,7 @@ extern \\"C\\" {
 #endif
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
-
+#if RCT_NEW_ARCH_ENABLED
 #ifndef RCT_DYNAMIC_FRAMEWORKS
 
 Class<RCTComponentViewProtocol> NoPropsNoEventsComponentCls(void) __attribute__((used)); // NO_PROPS_NO_EVENTS
@@ -57,6 +57,7 @@ Class<RCTComponentViewProtocol> ExcludedAndroidComponentCls(void) __attribute__(
 
 Class<RCTComponentViewProtocol> MultiFileIncludedNativeComponentCls(void) __attribute__((used)); // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
 
+#endif
 #endif
 
 #ifdef __cplusplus

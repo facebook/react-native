@@ -125,6 +125,7 @@ add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
+add_react_android_subdir(src/main/jni/react/devsupport)
 
 # GTest dependencies
 add_executable(reactnative_unittest

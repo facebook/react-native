@@ -10,6 +10,8 @@
 @class RCTBridge;
 @protocol RCTBridgeModule;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTBridgeDelegate <NSObject>
 
 /**
@@ -77,3 +79,5 @@
 - (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
 
 @end
+
+NS_ASSUME_NONNULL_END

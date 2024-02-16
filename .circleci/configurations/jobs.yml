@@ -503,16 +503,16 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
-      architecture:
-        default: "OldArch"
-        description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
-        type: enum
-        enum: ["NewArch", "OldArch"]
       use_frameworks:
         default: "StaticLibraries"
         description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
         type: enum
         enum: ["StaticLibraries", "DynamicFrameworks"]
+      architecture:
+        default: "NewArch"
+        description: "The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup"
+        type: enum
+        enum: ["OldArch", "NewArch"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -550,11 +550,8 @@ jobs:
             - with_xcodebuild_cache:
                 steps:
                   - run:
-                      name: Install CocoaPods dependencies - Architecture << parameters.architecture >>
+                      name: Install CocoaPods dependencies
                       command: |
-                        if [[ << parameters.architecture >> == "NewArch" ]]; then
-                          export RCT_NEW_ARCH_ENABLED=1
-                        fi
 
                         if [[ << parameters.jsengine >> == "JSC" ]]; then
                           export USE_HERMES=0
@@ -564,6 +561,10 @@ jobs:
                           export USE_FRAMEWORKS=dynamic
                         fi
 
+                        if [[ << parameters.architecture >> == "NewArch" ]]; then
+                          export RCT_NEW_ARCH_ENABLED=1
+                        fi
+                        
                         cd packages/rn-tester
 
                         bundle install

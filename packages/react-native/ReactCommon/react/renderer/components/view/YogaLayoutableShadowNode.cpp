@@ -360,7 +360,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
             yogaLayoutableChildren_.at(yogaChildIndex)->yogaNode_;
 
         isClean = isClean && !newYogaChildNode.isDirty() &&
-            (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
+            (newYogaChildNode.style() == oldYogaChildNode.style());
       }
     }
   }
@@ -378,11 +378,16 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
-  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.getStyle())) {
+  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.style())) {
     yogaNode_.setDirty(true);
   }
 
   yogaNode_.setStyle(styleResult);
+  if (getTraits().check(ShadowNodeTraits::ViewKind)) {
+    auto& viewProps = static_cast<const ViewProps&>(*props_);
+    YGNodeSetAlwaysFormsContainingBlock(
+        &yogaNode_, viewProps.transform != Transform::Identity());
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
@@ -497,8 +502,7 @@ YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
       case LayoutConformance::Classic:
         return YGErrataAll;
       case LayoutConformance::Strict:
-        // This is temporary until the default position type is relative
-        return YGErrataPositionStaticBehavesLikeRelative;
+        return YGErrataNone;
       case LayoutConformance::Undefined:
         return defaultErrata;
     }
@@ -528,7 +532,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
 void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
   style.setDimension(yoga::Dimension::Width, yoga::value::points(size.width));
   style.setDimension(yoga::Dimension::Height, yoga::value::points(size.height));
   yogaNode_.setStyle(style);
@@ -538,7 +542,7 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
 
   auto leftPadding = yoga::value::points(padding.left);
   auto topPadding = yoga::value::points(padding.top);
@@ -562,7 +566,7 @@ void YogaLayoutableShadowNode::setPositionType(
     YGPositionType positionType) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
   style.setPositionType(yoga::scopedEnum(positionType));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
@@ -576,8 +580,7 @@ void YogaLayoutableShadowNode::layoutTree(
   SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
-      (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft ||
-       !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+      layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
     SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
@@ -614,7 +617,7 @@ void YogaLayoutableShadowNode::layoutTree(
   // `ownerHeight` to allow proper calculation of relative (e.g. specified in
   // percents) style values.
 
-  auto& yogaStyle = yogaNode_.getStyle();
+  auto& yogaStyle = yogaNode_.style();
 
   auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
@@ -695,8 +698,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
       newLayoutMetrics.wasLeftAndRightSwapped =
           layoutContext.swapLeftAndRightInRTL &&
-          (newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft ||
-           !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+          newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft;
 
       // Child node's layout has changed. When a node is added to
       // `affectedNodes`, onLayout event is called on the component. Comparing
@@ -715,7 +717,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
   }
 
-  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
+  if (yogaNode_.style().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the
@@ -867,7 +869,7 @@ void YogaLayoutableShadowNode::swapStyleLeftAndRight() {
 
 void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
     const YogaLayoutableShadowNode& shadowNode) {
-  auto yogaStyle = shadowNode.yogaNode_.getStyle();
+  auto yogaStyle = shadowNode.yogaNode_.style();
 
   // Swap Yoga node values, position, padding and margin.
 
@@ -975,7 +977,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -993,7 +995,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of

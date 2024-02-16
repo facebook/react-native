@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as we want to fake a RCTEventEmitter here
+
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.WritableArray

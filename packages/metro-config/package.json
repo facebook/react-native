@@ -20,9 +20,9 @@
   },
   "exports": "./index.js",
   "dependencies": {
-    "@react-native/metro-babel-transformer": "^0.74.0",
-    "@react-native/js-polyfills": "^0.74.0",
-    "metro-config": "^0.80.0",
-    "metro-runtime": "^0.80.0"
+    "@react-native/js-polyfills": "0.74.0",
+    "@react-native/metro-babel-transformer": "0.74.0",
+    "metro-config": "^0.80.3",
+    "metro-runtime": "^0.80.3"
   }
 }

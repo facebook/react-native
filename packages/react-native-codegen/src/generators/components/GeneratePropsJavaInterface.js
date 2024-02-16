@@ -237,6 +237,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean = false,
+    headerPrefix?: string,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

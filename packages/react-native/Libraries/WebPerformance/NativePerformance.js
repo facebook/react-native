@@ -8,26 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export type NativeMemoryInfo = {[key: string]: ?number};
-
-export type ReactNativeStartupTiming = {[key: string]: ?number};
-
-export interface Spec extends TurboModule {
-  +mark: (name: string, startTime: number) => void;
-  +measure: (
-    name: string,
-    startTime: number,
-    endTime: number,
-    duration?: number,
-    startMark?: string,
-    endMark?: string,
-  ) => void;
-  +getSimpleMemoryInfo: () => NativeMemoryInfo;
-  +getReactNativeStartupTiming: () => ReactNativeStartupTiming;
-}
-
-export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);
+export * from '../../src/private/specs/modules/NativePerformance';
+import NativePerformance from '../../src/private/specs/modules/NativePerformance';
+export default NativePerformance;

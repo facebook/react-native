@@ -60,8 +60,11 @@ AttributedString TextInputShadowNode::getAttributedString(
       layoutContext.fontSizeMultiplier);
   auto attributedString = AttributedString{};
 
-  attributedString.appendFragment(
-      AttributedString::Fragment{getConcreteProps().text, textAttributes});
+  attributedString.appendFragment(AttributedString::Fragment{
+      .string = getConcreteProps().text,
+      .textAttributes = textAttributes,
+      // TODO: Is this really meant to be by value?
+      .parentShadowView = ShadowView{}});
 
   auto attachments = Attachments{};
   BaseTextShadowNode::buildAttributedString(

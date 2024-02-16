@@ -88,7 +88,7 @@ describe('getAndUpdatePackages', () => {
     forEachPackageThatShouldBePublished(package => {
       expect(publishPackageMock).toHaveBeenCalledWith(
         package.packageAbsolutePath,
-        {otp: undefined, tag: 'nightly'},
+        {otp: undefined, tags: ['nightly']},
       );
     });
 
@@ -154,7 +154,7 @@ describe('getAndUpdatePackages', () => {
     forEachPackageThatShouldBePublished(package => {
       expect(publishPackageMock).toHaveBeenCalledWith(
         package.packageAbsolutePath,
-        {otp: undefined, tag: 'prealpha'},
+        {otp: undefined, tags: ['prealpha']},
       );
     });
 

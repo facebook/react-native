@@ -18,27 +18,29 @@ import type {
 
 const assert = require('assert');
 const fs = require('fs');
-const util = require('util');
+const yargs = require('yargs');
 
-const {values: args} = util.parseArgs({
-  options: {
-    platform: {
-      type: 'string',
-    },
-    output: {
-      type: 'string',
-    },
-    ['schema-query']: {
-      type: 'string',
-    },
-  },
-});
-if (!['iOS', 'android'].includes(args.platform)) {
-  throw new Error(`Invalid platform ${args.platform}`);
+const argv = yargs
+  .option('p', {
+    alias: 'platform',
+    type: 'string',
+    demandOption: true,
+  })
+  .option('o', {
+    alias: 'output',
+  })
+  .option('s', {
+    alias: 'schema-query',
+  })
+  .parseSync();
+
+const platform: string = argv.platform.toLowerCase();
+const output: string = argv.output;
+const schemaQuery: string = argv.s;
+
+if (!['ios', 'android'].includes(platform)) {
+  throw new Error(`Invalid platform ${platform}`);
 }
-const platform = args.platform;
-const output = args.output;
-const schemaQuery: string = args['schema-query'];
 
 if (!schemaQuery.startsWith('@')) {
   throw new Error(

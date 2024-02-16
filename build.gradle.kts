@@ -24,14 +24,13 @@ fun getListReactAndroidProperty(name: String) = reactAndroidProperties.getProper
 
 apiValidation {
   ignoredPackages.addAll(
-      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredPackages"))
-  ignoredClasses.addAll(
-      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.ignoredClasses"))
+      getListReactAndroidProperty("binaryCompatibilityValidator.ignoredPackages"))
+  ignoredClasses.addAll(getListReactAndroidProperty("binaryCompatibilityValidator.ignoredClasses"))
   nonPublicMarkers.addAll(
-      getListReactAndroidProperty("react.internal.binaryCompatibilityValidator.nonPublicMarkers"))
+      getListReactAndroidProperty("binaryCompatibilityValidator.nonPublicMarkers"))
   validationDisabled =
       reactAndroidProperties
-          .getProperty("react.internal.binaryCompatibilityValidator.validationDisabled")
+          .getProperty("binaryCompatibilityValidator.validationDisabled")
           ?.toBoolean() == true
 }
 

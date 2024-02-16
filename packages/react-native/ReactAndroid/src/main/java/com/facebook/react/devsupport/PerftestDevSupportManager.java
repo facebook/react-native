@@ -16,7 +16,6 @@ import android.content.Context;
 public final class PerftestDevSupportManager extends DisabledDevSupportManager {
   private final DevServerHelper mDevServerHelper;
   private final DevInternalSettings mDevSettings;
-  private final InspectorPackagerConnection.BundleStatus mBundleStatus;
 
   public PerftestDevSupportManager(Context applicationContext) {
     mDevSettings =
@@ -26,12 +25,10 @@ public final class PerftestDevSupportManager extends DisabledDevSupportManager {
               @Override
               public void onInternalSettingsChanged() {}
             });
-    mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
             mDevSettings,
             applicationContext.getPackageName(),
-            (InspectorPackagerConnection.BundleStatusProvider) () -> mBundleStatus,
             mDevSettings.getPackagerConnectionSettings());
   }
 

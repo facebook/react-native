@@ -681,6 +681,15 @@ static void jni_YGNodeSetHasBaselineFuncJNI(
       hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 
+static void jni_YGNodeSetAlwaysFormsContainingBlockJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer,
+    jboolean alwaysFormsContainingBlock) {
+  YGNodeSetAlwaysFormsContainingBlock(
+      _jlong2YGNodeRef(nativePointer), alwaysFormsContainingBlock);
+}
+
 static void
 jni_YGNodePrintJNI(JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {
 #ifdef DEBUG
@@ -958,6 +967,9 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeSetHasBaselineFuncJNI",
      "(JZ)V",
      (void*)jni_YGNodeSetHasBaselineFuncJNI},
+    {"jni_YGNodeSetAlwaysFormsContainingBlockJNI",
+     "(JZ)V",
+     (void*)jni_YGNodeSetAlwaysFormsContainingBlockJNI},
     {"jni_YGNodePrintJNI", "(J)V", (void*)jni_YGNodePrintJNI},
     {"jni_YGNodeCloneJNI", "(J)J", (void*)jni_YGNodeCloneJNI},
 };

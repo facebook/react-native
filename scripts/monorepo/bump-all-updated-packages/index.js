@@ -7,6 +7,9 @@
  * @format
  */
 
+const {getPackageVersionStrByTag} = require('../../npm-utils');
+const {getBranchName} = require('../../scm-utils');
+const {isReleaseBranch, parseVersion} = require('../../version-utils');
 const alignPackageVersions = require('../align-package-versions');
 const checkForGitChanges = require('../check-for-git-changes');
 const {
@@ -148,6 +151,58 @@ const main = async () => {
   alignPackageVersions();
   echo(chalk.green('Done!\n'));
 
+  // Figure out the npm dist-tags we want for all monorepo packages we're bumping
+  const branchName = getBranchName();
+  const choices = [];
+
+  if (branchName === 'main') {
+    choices.push({name: '"nightly"', value: 'nightly', checked: true});
+  } else if (isReleaseBranch(branchName)) {
+    choices.push({
+      name: `"${branchName}"`,
+      value: branchName,
+      checked: true,
+    });
+
+    const latestVersion = getPackageVersionStrByTag('react-native', 'latest');
+    const {major, minor} = parseVersion(latestVersion, 'release');
+    choices.push({
+      name: '"latest"',
+      value: 'latest',
+      checked: `${major}.${minor}-stable` === branchName,
+    });
+  } else {
+    echo(
+      'You should be running `yarn bump-all-updated-packages` only from release or main branch',
+    );
+    exit(1);
+  }
+
+  const {tags} = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'tags',
+      message: 'Select suggested npm tags.',
+      choices,
+      required: true,
+    },
+  ]);
+
+  const {confirm} = await inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: `Confirm these tags for *ALL* packages being bumped: ${tags
+      .map(t => `"${t}"`)
+      .join()}`,
+  });
+
+  if (!confirm) {
+    echo('Exiting without commiting...');
+    exit(0);
+  }
+
+  const tagString = '&' + tags.join('&');
+
   await inquirer
     .prompt([
       {
@@ -179,7 +234,7 @@ const main = async () => {
         }
 
         case COMMIT_WITH_GENERIC_MESSAGE_CHOICE: {
-          exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}"`, {
+          exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}${tagString}"`, {
             cwd: ROOT_LOCATION,
             silent: true,
           });
@@ -197,7 +252,7 @@ const main = async () => {
             silent: true,
           }).stdout.trim();
           const commitMessageWithTag =
-            enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}`;
+            enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}${tagString}`;
 
           exec(`git commit --amend -m "${commitMessageWithTag}"`, {
             cwd: ROOT_LOCATION,

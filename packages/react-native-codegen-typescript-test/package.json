@@ -19,7 +19,7 @@
     "prepare": "yarn run build"
   },
   "dependencies": {
-    "@react-native/codegen": "*"
+    "@react-native/codegen": "0.74.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

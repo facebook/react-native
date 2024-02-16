@@ -21,8 +21,8 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
-   * C++ CatalystInstanceImpl
+   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
+   * CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
@@ -106,18 +106,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /**
-   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
-   * state in Fabric SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
-
-  /**
-   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
-   * SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutation = false;
-
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
 
@@ -130,12 +118,6 @@ public class ReactFeatureFlags {
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
 
-  /** Only swap left and right on Android in RTL scripts. */
-  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
-
-  /** Clean yoga node when <Text /> does not change. */
-  public static boolean enableCleanParagraphYogaNode = false;
-
   /** Default state updates and events to async batched priority. */
   public static boolean enableDefaultAsyncBatchedPriority = false;
 
@@ -147,9 +129,6 @@ public class ReactFeatureFlags {
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
-
-  /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
-  public static boolean enableTurboModuleStableAPI = false;
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
@@ -171,9 +150,9 @@ public class ReactFeatureFlags {
 
   /*
    * When the app is completely migrated to Fabric, set this flag to true to
-   * disable parts of Paper infrastructre that are not needed anymore but consume
+   * disable parts of Paper infrastructure that are not needed anymore but consume
    * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
-   * longer work as they won't subscribe to ReactChoregrapher for updates.
+   * longer work as they won't subscribe to ReactChoreographer for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
 
@@ -183,6 +162,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableOnDemandReactChoreographer = false;
 
-  /** When enabled, the default value of the position style property is relative. */
-  public static boolean positionRelativeDefault = false;
+  /** Enables the new unified {@link android.text.Spannable} building logic. */
+  public static boolean enableSpannableBuildingUnification = false;
 }

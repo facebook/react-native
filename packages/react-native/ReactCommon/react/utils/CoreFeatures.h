@@ -41,12 +41,6 @@ class CoreFeatures {
   // Report mount operations from the host platform to notify mount hooks.
   static bool enableMountHooks;
 
-  // Only swap left and right on Android in RTL scripts.
-  static bool doNotSwapLeftAndRightOnAndroidInLTR;
-
-  // Clean yoga node when <Text /> does not change.
-  static bool enableCleanParagraphYogaNode;
-
   // When enabled, the renderer would only fail commits when they propagate
   // state and the last commit that updated state changed before committing.
   static bool enableGranularShadowTreeStateReconciliation;
@@ -67,9 +61,6 @@ class CoreFeatures {
   // Report paint time inside the Event Timing API implementation
   // (PerformanceObserver).
   static bool enableReportEventPaintTime;
-
-  // Sets the default position of nodes to be relative instead of static
-  static bool positionRelativeDefault;
 };
 
 } // namespace facebook::react

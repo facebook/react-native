@@ -8,19 +8,6 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-
-type NativeProps = $ReadOnly<{|
-  ...ViewProps,
-
-  removeClippedSubviews?: ?boolean,
-|}>;
-
-type NativeType = HostComponent<NativeProps>;
-
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidHorizontalScrollContentView',
-): NativeType);
+export * from '../../../src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent';
+import AndroidHorizontalScrollContentViewNativeComponent from '../../../src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent';
+export default AndroidHorizontalScrollContentViewNativeComponent;

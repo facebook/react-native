@@ -18,5 +18,5 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 fun interface UIManagerProvider {
 
   /* Provides a {@link com.facebook.react.bridge.UIManager} for the context received as a parameter. */
-  fun createUIManager(context: ReactApplicationContext): UIManager
+  fun createUIManager(context: ReactApplicationContext): UIManager?
 }

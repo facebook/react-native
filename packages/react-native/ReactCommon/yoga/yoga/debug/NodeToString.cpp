@@ -46,14 +46,18 @@ static void appendFloatOptionalIfDefined(
 static void appendNumberIfNotUndefined(
     std::string& base,
     const std::string key,
-    const YGValue number) {
-  if (number.unit != YGUnitUndefined) {
-    if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Undefined) {
+    if (number.unit() == Unit::Auto) {
       base.append(key + ": auto; ");
     } else {
-      std::string unit = number.unit == YGUnitPoint ? "px" : "%%";
+      std::string unit = number.unit() == Unit::Point ? "px" : "%%";
       appendFormattedString(
-          base, "%s: %g%s; ", key.c_str(), number.value, unit.c_str());
+          base,
+          "%s: %g%s; ",
+          key.c_str(),
+          number.value().unwrap(),
+          unit.c_str());
     }
   }
 }
@@ -61,8 +65,8 @@ static void appendNumberIfNotUndefined(
 static void appendNumberIfNotAuto(
     std::string& base,
     const std::string& key,
-    const YGValue number) {
-  if (number.unit != YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() != Unit::Auto) {
     appendNumberIfNotUndefined(base, key, number);
   }
 }
@@ -70,10 +74,10 @@ static void appendNumberIfNotAuto(
 static void appendNumberIfNotZero(
     std::string& base,
     const std::string& str,
-    const YGValue number) {
-  if (number.unit == YGUnitAuto) {
+    const Style::Length& number) {
+  if (number.unit() == Unit::Auto) {
     base.append(str + ": auto; ");
-  } else if (!yoga::inexactEquals(number.value, 0)) {
+  } else if (!yoga::inexactEquals(number.value().unwrap(), 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }
@@ -102,32 +106,32 @@ void nodeToString(
     appendFormattedString(
         str, "height: %g; ", node->getLayout().dimension(Dimension::Height));
     appendFormattedString(
-        str, "top: %g; ", node->getLayout().position(Edge::Top));
+        str, "top: %g; ", node->getLayout().position(PhysicalEdge::Top));
     appendFormattedString(
-        str, "left: %g;", node->getLayout().position(Edge::Left));
+        str, "left: %g;", node->getLayout().position(PhysicalEdge::Left));
     appendFormattedString(str, "\" ");
   }
 
   if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendFormattedString(str, "style=\"");
-    const auto& style = node->getStyle();
-    if (style.flexDirection() != yoga::Node{}.getStyle().flexDirection()) {
+    const auto& style = node->style();
+    if (style.flexDirection() != yoga::Style{}.flexDirection()) {
       appendFormattedString(
           str, "flex-direction: %s; ", toString(style.flexDirection()));
     }
-    if (style.justifyContent() != yoga::Node{}.getStyle().justifyContent()) {
+    if (style.justifyContent() != yoga::Style{}.justifyContent()) {
       appendFormattedString(
           str, "justify-content: %s; ", toString(style.justifyContent()));
     }
-    if (style.alignItems() != yoga::Node{}.getStyle().alignItems()) {
+    if (style.alignItems() != yoga::Style{}.alignItems()) {
       appendFormattedString(
           str, "align-items: %s; ", toString(style.alignItems()));
     }
-    if (style.alignContent() != yoga::Node{}.getStyle().alignContent()) {
+    if (style.alignContent() != yoga::Style{}.alignContent()) {
       appendFormattedString(
           str, "align-content: %s; ", toString(style.alignContent()));
     }
-    if (style.alignSelf() != yoga::Node{}.getStyle().alignSelf()) {
+    if (style.alignSelf() != yoga::Style{}.alignSelf()) {
       appendFormattedString(
           str, "align-self: %s; ", toString(style.alignSelf()));
     }
@@ -136,15 +140,15 @@ void nodeToString(
     appendNumberIfNotAuto(str, "flex-basis", style.flexBasis());
     appendFloatOptionalIfDefined(str, "flex", style.flex());
 
-    if (style.flexWrap() != yoga::Node{}.getStyle().flexWrap()) {
+    if (style.flexWrap() != yoga::Style{}.flexWrap()) {
       appendFormattedString(str, "flex-wrap: %s; ", toString(style.flexWrap()));
     }
 
-    if (style.overflow() != yoga::Node{}.getStyle().overflow()) {
+    if (style.overflow() != yoga::Style{}.overflow()) {
       appendFormattedString(str, "overflow: %s; ", toString(style.overflow()));
     }
 
-    if (style.display() != yoga::Node{}.getStyle().display()) {
+    if (style.display() != yoga::Style{}.display()) {
       appendFormattedString(str, "display: %s; ", toString(style.display()));
     }
     appendEdges<&Style::margin>(str, "margin", style);
@@ -169,7 +173,7 @@ void nodeToString(
     appendNumberIfNotAuto(
         str, "min-height", style.minDimension(Dimension::Height));
 
-    if (style.positionType() != yoga::Node{}.getStyle().positionType()) {
+    if (style.positionType() != yoga::Style{}.positionType()) {
       appendFormattedString(
           str, "position: %s; ", toString(style.positionType()));
     }

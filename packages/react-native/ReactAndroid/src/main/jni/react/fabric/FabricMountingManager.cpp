@@ -30,22 +30,10 @@
 
 namespace facebook::react {
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig>& config,
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
-    : javaUIManager_(javaUIManager),
-      reduceDeleteCreateMutation_(
-          getFeatureFlagValue("reduceDeleteCreateMutation")) {}
+    : javaUIManager_(javaUIManager) {}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -85,7 +73,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
 
 static inline void updateBufferSizes(
     CppMountItem::Type mountItemType,
-    int numInstructions,
+    size_t numInstructions,
     int& batchMountItemIntsSize,
     int& batchMountItemObjectsSize) {
   if (numInstructions == 0) {
@@ -182,7 +170,7 @@ static inline void computeBufferSizes(
 
 static inline void writeIntBufferTypePreamble(
     int mountItemType,
-    int numItems,
+    size_t numItems,
     _JNIEnv* env,
     jintArray& intBufferArray,
     int& intBufferPosition) {
@@ -193,7 +181,7 @@ static inline void writeIntBufferTypePreamble(
     intBufferPosition += 1;
   } else {
     temp[0] = mountItemType | CppMountItem::Type::Multiple;
-    temp[1] = numItems;
+    temp[1] = static_cast<jint>(numItems);
     env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
     intBufferPosition += 2;
   }
@@ -288,30 +276,6 @@ void FabricMountingManager::executeMount(
         case ShadowViewMutation::Create: {
           bool shouldCreateView =
               !allocatedViewTags.contains(newChildShadowView.tag);
-          if (reduceDeleteCreateMutation_) {
-            // Detect DELETE...CREATE situation on the same node and do NOT push
-            // back to the mount items. This is an edge case that may happen
-            // when for example animation runs while commit happened, and we
-            // want to filter them out here to capture all possible sources of
-            // such mutations. The re-ordering logic here assumes no
-            // DELETE...CREATE in the mutations, as we will re-order mutations
-            // and batch all DELETE instructions in the end.
-            auto it = std::remove_if(
-                cppDeleteMountItems.begin(),
-                cppDeleteMountItems.end(),
-                [&](auto& deletedMountItem) -> bool {
-                  return deletedMountItem.oldChildShadowView.tag ==
-                      newChildShadowView.tag;
-                });
-            bool hasDeletedViewsWithSameTag = it != cppDeleteMountItems.end();
-            cppDeleteMountItems.erase(it, cppDeleteMountItems.end());
-
-            if (hasDeletedViewsWithSameTag) {
-              shouldCreateView = false;
-              LOG(ERROR)
-                  << "XIN: Detect DELETE...CREATE on the same tag from mutations in the same batch. The DELETE and CREATE mutations are removed before sending to the native platforms";
-            }
-          }
 
           if (shouldCreateView) {
             cppCommonMountItems.push_back(

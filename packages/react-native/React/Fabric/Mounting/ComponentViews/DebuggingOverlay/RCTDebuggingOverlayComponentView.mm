@@ -50,9 +50,19 @@ using namespace facebook::react;
   RCTDebuggingOverlayHandleCommand(self, commandName, args);
 }
 
-- (void)draw:(NSString *)overlays
+- (void)highlightTraceUpdates:(NSArray *)updates
 {
-  [_overlay draw:overlays];
+  [_overlay highlightTraceUpdates:updates];
+}
+
+- (void)highlightElements:(NSArray *)elements
+{
+  [_overlay highlightElements:elements];
+}
+
+- (void)clearElementsHighlights
+{
+  [_overlay clearElementsHighlights];
 }
 
 @end

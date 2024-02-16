@@ -63,8 +63,6 @@ class FabricMountingManager final {
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  const bool reduceDeleteCreateMutation_{false};
-
   jni::local_ref<jobject> getProps(
       const ShadowView& oldShadowView,
       const ShadowView& newShadowView);

@@ -86,6 +86,42 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
+        projects = self.extract_projects(installer)
+
+        ccache_path = `command -v ccache`.strip
+        ccache_available = !ccache_path.empty?
+
+        message_prefix = "[Ccache]"
+
+        if ccache_available
+            Pod::UI.puts("#{message_prefix}: Ccache found at #{ccache_path}")
+        end
+
+        if ccache_available and ccache_enabled
+            Pod::UI.puts("#{message_prefix}: Setting CC, LD, CXX & LDPLUSPLUS build settings")
+            # Using scripts wrapping the ccache executable, to allow injection of configurations
+            ccache_clang_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang.sh')
+            ccache_clangpp_sh = File.join("$(REACT_NATIVE_PATH)", 'scripts', 'xcode', 'ccache-clang++.sh')
+
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    # Using the un-qualified names means you can swap in different implementations, for example ccache
+                    config.build_settings["CC"] = ccache_clang_sh
+                    config.build_settings["LD"] = ccache_clang_sh
+                    config.build_settings["CXX"] = ccache_clangpp_sh
+                    config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
+                end
+
+                project.save()
+            end
+        elsif ccache_available and !ccache_enabled
+            Pod::UI.puts("#{message_prefix}: Pass ':ccache_enabled => true' to 'react_native_post_install' in your Podfile or set environment variable 'USE_CCACHE=1' to increase the speed of subsequent builds")
+        elsif !ccache_available and ccache_enabled
+            Pod::UI.warn("#{message_prefix}: Install ccache or ensure your neither passing ':ccache_enabled => true' nor setting environment variable 'USE_CCACHE=1'")
+        end
+    end
+
     def self.fix_library_search_paths(installer)
         projects = self.extract_projects(installer)
 
@@ -136,7 +172,7 @@ class ReactNativePodsUtils
             project.build_configurations.each do |config|
                 # fix for weak linking
                 self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_or_greater(:xcodebuild_manager => xcodebuild_manager)
+                if self.is_using_xcode15_0(:xcodebuild_manager => xcodebuild_manager)
                     self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
                 else
                     self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
@@ -368,7 +404,7 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.is_using_xcode15_or_greater(xcodebuild_manager: Xcodebuild)
+    def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
         xcodebuild_version = xcodebuild_manager.version
 
         # The output of xcodebuild -version is something like
@@ -379,7 +415,8 @@ class ReactNativePodsUtils
         regex = /(\d+)\.(\d+)(?:\.(\d+))?/
         if match_data = xcodebuild_version.match(regex)
             major = match_data[1].to_i
-            return major >= 15
+            minor = match_data[2].to_i
+            return major == 15 && minor == 0
         end
 
         return false

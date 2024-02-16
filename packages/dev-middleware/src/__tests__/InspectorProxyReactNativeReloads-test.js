@@ -397,4 +397,86 @@ xdescribe('inspector proxy React Native reloads', () => {
       device.close();
     }
   });
+
+  test('disabled for modern targets', async () => {
+    let device1;
+    try {
+      /***
+       * Connect a device with one React Native page.
+       */
+      device1 = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      device1.getPages.mockImplementation(() => [
+        {
+          app: 'bar',
+          id: 'originalPage-initial',
+          // NOTE: 'React' is a magic string used to detect React Native pages
+          // in legacy mode.
+          title: 'React Native (mock)',
+          type: 'Modern',
+          vm: 'vm',
+        },
+      ]);
+      let pageList;
+      await until(async () => {
+        pageList = (await fetchJson(
+          `${serverRef.serverBaseUrl}/json`,
+          // $FlowIgnore[unclear-type]
+        ): any);
+        expect(pageList.length).toBeGreaterThan(0);
+      });
+      invariant(pageList != null, '');
+
+      /**
+       * The proxy reports just one page, without the synthetic page reported
+       * in legacy mode.
+       */
+
+      expect(pageList).toEqual([
+        expect.objectContaining({
+          id: expect.stringContaining('originalPage-initial'),
+          title: 'React Native (mock)',
+        }),
+      ]);
+
+      /**
+       * Replace our original page with a new one.
+       */
+      device1.getPages.mockImplementation(() => [
+        {
+          app: 'bar',
+          id: 'originalPage-updated',
+          // NOTE: 'React' is a magic string used to detect React Native pages.
+          title: 'React Native (mock)',
+          type: 'Modern',
+          vm: 'vm',
+        },
+      ]);
+      await until(async () => {
+        pageList = (await fetchJson(
+          `${serverRef.serverBaseUrl}/json`,
+          // $FlowIgnore[unclear-type]
+        ): any);
+        expect(pageList).toContainEqual(
+          expect.objectContaining({
+            id: expect.stringContaining('originalPage-updated'),
+          }),
+        );
+      });
+
+      /**
+       * There's still just one page reported.
+       */
+      expect(pageList).toEqual([
+        expect.objectContaining({
+          id: expect.stringContaining('originalPage-updated'),
+          title: 'React Native (mock)',
+        }),
+      ]);
+    } finally {
+      device1?.close();
+    }
+  });
 });

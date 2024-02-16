@@ -173,8 +173,8 @@ void UIManager::completeSurface(
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
               ShadowNodeFragment{
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .children = */ rootChildren,
+                  .props = ShadowNodeFragment::propsPlaceholder(),
+                  .children = rootChildren,
               });
         },
         commitOptions);
@@ -256,6 +256,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
 
   if (!ancestorShadowNode) {
     return nullptr;
+  }
+
+  // If the given shadow node is of the same family as the root shadow node,
+  // return the latest root shadow node
+  if (ShadowNode::sameFamily(*ancestorShadowNode, shadowNode)) {
+    return ancestorShadowNode;
   }
 
   auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);

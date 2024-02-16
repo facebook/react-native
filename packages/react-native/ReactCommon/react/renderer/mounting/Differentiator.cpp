@@ -210,6 +210,7 @@ static inline bool shadowNodeIsConcrete(const ShadowNode& shadowNode) {
 
 static void sliceChildShadowNodeViewPairsRecursivelyV2(
     ShadowViewNodePair::NonOwningList& pairList,
+    size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
     Point layoutOffset,
     const ShadowNode& shadowNode) {
@@ -247,11 +248,23 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
          areChildrenFlattened,
          isConcreteView,
          storedOrigin});
-    pairList.push_back(&scope.back());
 
-    if (areChildrenFlattened) {
-      sliceChildShadowNodeViewPairsRecursivelyV2(
-          pairList, scope, origin, childShadowNode);
+    if (shadowView.layoutMetrics.positionType == PositionType::Static) {
+      auto it = pairList.begin();
+      std::advance(it, startOfStaticIndex);
+      pairList.insert(it, &scope.back());
+      startOfStaticIndex++;
+      if (areChildrenFlattened) {
+        sliceChildShadowNodeViewPairsRecursivelyV2(
+            pairList, startOfStaticIndex, scope, origin, childShadowNode);
+      }
+    } else {
+      pairList.push_back(&scope.back());
+      if (areChildrenFlattened) {
+        size_t pairListSize = pairList.size();
+        sliceChildShadowNodeViewPairsRecursivelyV2(
+            pairList, pairListSize, scope, origin, childShadowNode);
+      }
     }
   }
 }
@@ -270,8 +283,9 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
     return pairList;
   }
 
+  size_t startOfStaticIndex = 0;
   sliceChildShadowNodeViewPairsRecursivelyV2(
-      pairList, scope, layoutOffset, shadowNode);
+      pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
 
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(pairList);

@@ -7,11 +7,12 @@
 
 #import "RCTAppDelegate.h"
 #import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <React/RCTUtils.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppSetupUtils.h"
-#import "RCTLegacyInteropComponents.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -22,7 +23,6 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
@@ -80,13 +80,14 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  RCTSetNewArchEnabled([self newArchEnabled]);
   BOOL enableTM = self.turboModuleEnabled;
-  BOOL enableBridgeless = self.bridgelessEnabled;
   BOOL fabricEnabled = self.fabricEnabled;
+  BOOL enableBridgeless = self.bridgelessEnabled;
 
   NSDictionary *initProps = updateInitialProps([self prepareInitialProps], fabricEnabled);
 
-  RCTAppSetupPrepareApp(application, enableTM);
+  RCTAppSetupPrepareApp(application, enableTM, *_reactNativeConfig);
 
   UIView *rootView;
   if (enableBridgeless) {
@@ -98,7 +99,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
     [self createReactHost];
-    [self unstable_registerLegacyComponents];
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName initialProperties:initProps];
 
@@ -116,12 +116,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                                                                    contextContainer:_contextContainer];
       self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
-      [self unstable_registerLegacyComponents];
       [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
     }
-
     rootView = [self createRootViewWithBridge:self.bridge moduleName:self.moduleName initProps:initProps];
   }
+  [self customizeRootView:(RCTRootView *)rootView];
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
@@ -130,6 +129,11 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [self.window makeKeyAndVisible];
 
   return YES;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  // Noop
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -149,16 +153,37 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return [[RCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
+- (void)customizeRootView:(RCTRootView *)rootView
+{
+  // Override point for customization after application launch.
+}
+
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
+  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
   BOOL enableFabric = self.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
+}
+
+// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
+- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
+{
+  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
+  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
+  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
+  if (currentClassImp != baseClassImp) {
+    NSString *warnMessage =
+        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
+         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
+         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
+    RCTLogWarn(@"%@", warnMessage);
+  }
 }
 
 - (UIViewController *)createRootViewController
@@ -207,7 +232,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (BOOL)newArchEnabled
 {
-#if USE_NEW_ARCH
+#if RCT_NEW_ARCH_ENABLED
   return YES;
 #else
   return NO;
@@ -266,13 +291,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 #pragma mark - New Arch Utilities
-
-- (void)unstable_registerLegacyComponents
-{
-  for (NSString *legacyComponent in [RCTLegacyInteropComponents legacyInteropComponents]) {
-    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:legacyComponent];
-  }
-}
 
 - (void)createReactHost
 {

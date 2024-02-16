@@ -375,47 +375,6 @@ module.exports = {
         'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
       );
   },
-  // Deprecated Prop Types
-  get ColorPropType(): $FlowFixMe {
-    console.error(
-      'ColorPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using ColorPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').ColorPropType;
-  },
-  get EdgeInsetsPropType(): $FlowFixMe {
-    console.error(
-      'EdgeInsetsPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using EdgeInsetsPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
-  },
-  get PointPropType(): $FlowFixMe {
-    console.error(
-      'PointPropType will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using PointPropType, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').PointPropType;
-  },
-  get ViewPropTypes(): $FlowFixMe {
-    console.error(
-      'ViewPropTypes will be removed from React Native, along with all ' +
-        'other PropTypes. We recommend that you migrate away from PropTypes ' +
-        'and switch to a type system like TypeScript. If you need to ' +
-        'continue using ViewPropTypes, migrate to the ' +
-        "'deprecated-react-native-prop-types' package.",
-    );
-    return require('deprecated-react-native-prop-types').ViewPropTypes;
-  },
 };
 
 if (__DEV__) {

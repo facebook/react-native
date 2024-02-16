@@ -83,6 +83,6 @@ describe('generateSpec', () => {
       libraryType,
     );
 
-    expect(mkdirpSyncInvoked).toBe(3);
+    expect(mkdirpSyncInvoked).toBe(1);
   });
 });

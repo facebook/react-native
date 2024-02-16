@@ -9,6 +9,7 @@
 
 #include <CoreComponentsRegistry.h>
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 
@@ -23,6 +24,10 @@ DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory* delegate)
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
 DefaultComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
+
+  react_native_assert(
+      DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint &&
+      "'registerComponentDescriptorsFromEntryPoint' was not initialized in 'JNI_OnLoad'");
 
   (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
       providerRegistry);
@@ -40,15 +45,17 @@ DefaultComponentsRegistry::initHybrid(
       [](const EventDispatcher::Weak& eventDispatcher,
          const ContextContainer::Shared& contextContainer)
       -> ComponentDescriptorRegistry::Shared {
+    ComponentDescriptorParameters params{
+        .eventDispatcher = eventDispatcher,
+        .contextContainer = contextContainer,
+        .flavor = nullptr};
+
     auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(
-                            {eventDispatcher, contextContainer});
+                        ->createComponentDescriptorRegistry(params);
 
     auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
     mutableRegistry.setFallbackComponentDescriptor(
-        std::make_shared<UnimplementedNativeViewComponentDescriptor>(
-            ComponentDescriptorParameters{
-                eventDispatcher, contextContainer, nullptr}));
+        std::make_shared<UnimplementedNativeViewComponentDescriptor>(params));
 
     return registry;
   };

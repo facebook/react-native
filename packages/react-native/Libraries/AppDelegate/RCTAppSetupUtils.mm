@@ -24,6 +24,9 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 
+// jsinspector-modern
+#import <jsinspector-modern/InspectorFlags.h>
+
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
   RCTEnableTurboModule(turboModuleEnabled);
@@ -33,6 +36,20 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
   // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
   application.idleTimerDisabled = YES;
 #endif
+}
+
+void RCTAppSetupPrepareApp(
+    UIApplication *application,
+    BOOL turboModuleEnabled,
+    const facebook::react::ReactNativeConfig &reactNativeConfig)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  RCTAppSetupPrepareApp(application, turboModuleEnabled);
+#pragma clang diagnostic pop
+
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  inspectorFlags.initFromConfig(reactNativeConfig);
 }
 
 UIView *
@@ -90,11 +107,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller(
           [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
             if (!bridge || !turboModuleManager) {
@@ -111,11 +128,11 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactory
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
-#if RCT_USE_HERMES
+#if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // end RCT_USE_HERMES
+#endif // USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;
