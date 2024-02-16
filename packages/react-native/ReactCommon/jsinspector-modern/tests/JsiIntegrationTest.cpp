@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/dynamic.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
+#include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -109,6 +111,22 @@ class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
         std::make_shared<jsi::StringBuffer>(std::string(code)), "<eval>");
   }
 
+  /**
+   * Expect a message matching the provided gmock \c matcher and return a holder
+   * that will eventually contain the parsed JSON payload.
+   */
+  template <typename Matcher>
+  std::shared_ptr<const std::optional<folly::dynamic>> expectMessageFromPage(
+      Matcher&& matcher) {
+    std::shared_ptr result =
+        std::make_shared<std::optional<folly::dynamic>>(std::nullopt);
+    EXPECT_CALL(fromPage(), onMessage(matcher))
+        .WillOnce(
+            ([result](auto message) { *result = folly::parseJson(message); }))
+        .RetiresOnSaturation();
+    return result;
+  }
+
   std::shared_ptr<PageTarget> page_ =
       PageTarget::create(*this, inspectorExecutor_);
   InstanceTarget* instance_{};
@@ -162,11 +180,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ConnectWithoutCrashing) {
 TYPED_TEST(JsiIntegrationPortableTest, ErrorOnUnknownMethod) {
   this->connect();
 
-  EXPECT_CALL(
-      this->fromPage(),
-      onMessage(JsonParsed(
-          AllOf(AtJsonPtr("/id", 1), AtJsonPtr("/error/code", -32601)))))
-      .RetiresOnSaturation();
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 1), AtJsonPtr("/error/code", -32601))));
 
   this->toPage_->sendMessage(R"({
                                  "id": 1,
@@ -179,65 +194,58 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
 
   InSequence s;
 
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextCreated",
-                                                     "params": {
-                                                       "context": {
-                                                         "id": 1,
-                                                         "origin": "",
-                                                         "name": "main"
-                                                       }
-                                                     }
-                                                   })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "id": 1,
-                                                     "result": {}
-                                                   })")));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextCreated",
+                                         "params": {
+                                           "context": {
+                                             "id": 1,
+                                             "origin": "",
+                                             "name": "main"
+                                           }
+                                         }
+                                       })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
   this->toPage_->sendMessage(R"({
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
 
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextDestroyed",
-                                                     "params": {
-                                                       "executionContextId": 1
-                                                     }
-                                                   })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextsCleared"
-                                                   })")))
-      .RetiresOnSaturation();
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextDestroyed",
+                                         "params": {
+                                           "executionContextId": 1
+                                         }
+                                       })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextsCleared"
+                                       })"));
 
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextCreated",
-                                                     "params": {
-                                                       "context": {
-                                                         "id": 2,
-                                                         "origin": "",
-                                                         "name": "main"
-                                                       }
-                                                     }
-                                                   })")))
-      .RetiresOnSaturation();
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextCreated",
+                                         "params": {
+                                           "context": {
+                                             "id": 2,
+                                             "origin": "",
+                                             "name": "main"
+                                           }
+                                         }
+                                       })"));
   // Simulate a reload triggered by the app (not by the debugger).
   this->reload();
 
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextDestroyed",
-                                                     "params": {
-                                                       "executionContextId": 2
-                                                     }
-                                                   })")))
-      .RetiresOnSaturation();
-
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "method": "Runtime.executionContextsCleared"
-                                                   })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextDestroyed",
+                                         "params": {
+                                           "executionContextId": 2
+                                         }
+                                       })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "method": "Runtime.executionContextsCleared"
+                                       })"));
+  this->expectMessageFromPage(JsonEq(R"({
                                                      "method": "Runtime.executionContextCreated",
                                                      "params": {
                                                        "context": {
@@ -246,17 +254,199 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
                                                          "name": "main"
                                                        }
                                                      }
-                                                   })")))
-      .RetiresOnSaturation();
-  EXPECT_CALL(this->fromPage(), onMessage(JsonEq(R"({
-                                                     "id": 2,
-                                                     "result": {}
-                                                   })")))
-      .RetiresOnSaturation();
+                                                   })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 2,
+                                         "result": {}
+                                       })"));
   this->toPage_->sendMessage(R"({
                                  "id": 2,
                                  "method": "Page.reload"
                                })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, AddBinding) {
+  this->connect();
+
+  InSequence s;
+
+  auto executionContextInfo = this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  auto executionContextId =
+      executionContextInfo->value()["params"]["context"]["id"];
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 2,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.bindingCalled"),
+      AtJsonPtr("/params/name", "foo"),
+      AtJsonPtr("/params/payload", "bar"),
+      AtJsonPtr("/params/executionContextId", executionContextId))));
+  this->eval("globalThis.foo('bar');");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, AddedBindingSurvivesReload) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->reload();
+
+  // Get the new context ID by sending Runtime.enable now.
+  auto executionContextInfo = this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  auto executionContextId =
+      executionContextInfo->value()["params"]["context"]["id"];
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.bindingCalled"),
+      AtJsonPtr("/params/name", "foo"),
+      AtJsonPtr("/params/payload", "bar"),
+      AtJsonPtr("/params/executionContextId", executionContextId))));
+  this->eval("globalThis.foo('bar');");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, RemovedBindingRemainsInstalled) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 2,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Runtime.removeBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->eval("globalThis.foo('bar');");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, RemovedBindingDoesNotSurviveReload) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 2,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Runtime.removeBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->reload();
+
+  EXPECT_TRUE(this->eval("typeof globalThis.foo === 'undefined'").getBool());
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, AddBindingClobbersExistingProperty) {
+  this->connect();
+
+  InSequence s;
+
+  this->eval(R"(
+    globalThis.foo = 'clobbered value';
+  )");
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.bindingCalled"),
+      AtJsonPtr("/params/name", "foo"),
+      AtJsonPtr("/params/payload", "bar"))));
+  this->eval("globalThis.foo('bar');");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
+  this->connect();
+
+  InSequence s;
+
+  this->eval(R"(
+    Object.defineProperty(globalThis, 'foo', {
+      get: function () { return 42; },
+      set: function () { throw new Error('nope'); },
+    });
+  )");
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+  EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,15 +454,15 @@ TYPED_TEST(JsiIntegrationPortableTest, ExecutionContextNotifications) {
 TEST_F(JsiIntegrationHermesTest, EvaluateExpression) {
   connect();
 
-  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
-                                             "id": 1,
-                                             "result": {
-                                               "result": {
-                                                 "type": "number",
-                                                 "value": 42
-                                               }
-                                              }
-                                            })")));
+  expectMessageFromPage(JsonEq(R"({
+                                   "id": 1,
+                                   "result": {
+                                     "result": {
+                                       "type": "number",
+                                       "value": 42
+                                     }
+                                   }
+                                 })"));
   toPage_->sendMessage(R"({
                            "id": 1,
                            "method": "Runtime.evaluate",

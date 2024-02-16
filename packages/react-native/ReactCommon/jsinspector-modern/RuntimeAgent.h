@@ -16,7 +16,7 @@
 
 namespace facebook::react::jsinspector_modern {
 
-class RuntimeTarget;
+class RuntimeTargetController;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol
@@ -30,9 +30,9 @@ class RuntimeAgent final {
   /**
    * \param frontendChannel A channel used to send responses and events to the
    * frontend.
-   * \param target The RuntimeTarget that this agent is attached to. The
-   * caller is responsible for ensuring that the RuntimeTarget outlives this
-   * object.
+   * \param targetController An interface to the RuntimeTarget that this agent
+   * is attached to. The caller is responsible for ensuring that the
+   * RuntimeTarget and controller outlive this object.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
@@ -43,7 +43,7 @@ class RuntimeAgent final {
    */
   RuntimeAgent(
       FrontendChannel frontendChannel,
-      RuntimeTarget& target,
+      RuntimeTargetController& targetController,
       const ExecutionContextDescription& executionContextDescription,
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate> delegate);
@@ -65,9 +65,13 @@ class RuntimeAgent final {
     return executionContextDescription_;
   }
 
+  void notifyBindingCalled(
+      const std::string& bindingName,
+      const std::string& payload);
+
  private:
   FrontendChannel frontendChannel_;
-  RuntimeTarget& target_;
+  RuntimeTargetController& targetController_;
   SessionState& sessionState_;
   const std::unique_ptr<RuntimeAgentDelegate> delegate_;
   const ExecutionContextDescription executionContextDescription_;

@@ -11,24 +11,65 @@ namespace facebook::react::jsinspector_modern {
 
 RuntimeAgent::RuntimeAgent(
     FrontendChannel frontendChannel,
-    RuntimeTarget& target,
+    RuntimeTargetController& targetController,
     const ExecutionContextDescription& executionContextDescription,
     SessionState& sessionState,
     std::unique_ptr<RuntimeAgentDelegate> delegate)
     : frontendChannel_(std::move(frontendChannel)),
-      target_(target),
+      targetController_(targetController),
       sessionState_(sessionState),
       delegate_(std::move(delegate)),
       executionContextDescription_(executionContextDescription) {
-  (void)target_;
-  (void)sessionState_;
+  for (auto& name : sessionState_.subscribedBindingNames) {
+    targetController_.installBindingHandler(name);
+  }
 }
 
 bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
+  if (req.method == "Runtime.addBinding") {
+    std::string bindingName = req.params["name"].getString();
+    // TODO: Respect @cdp Runtime.addBinding's executionContextId and
+    // executionContextName params.
+    sessionState_.subscribedBindingNames.emplace(bindingName);
+
+    targetController_.installBindingHandler(bindingName);
+
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
+
+    return true;
+  }
+  if (req.method == "Runtime.removeBinding") {
+    sessionState_.subscribedBindingNames.erase(req.params["name"].getString());
+
+    folly::dynamic res = folly::dynamic::object("id", req.id)(
+        "result", folly::dynamic::object());
+    std::string json = folly::toJson(res);
+    frontendChannel_(json);
+
+    return true;
+  }
   if (delegate_) {
     return delegate_->handleRequest(req);
   }
   return false;
+}
+
+void RuntimeAgent::notifyBindingCalled(
+    const std::string& bindingName,
+    const std::string& payload) {
+  if (!sessionState_.subscribedBindingNames.count(bindingName)) {
+    return;
+  }
+
+  frontendChannel_(
+      folly::toJson(folly::dynamic::object("method", "Runtime.bindingCalled")(
+          "params",
+          folly::dynamic::object(
+              "executionContextId", executionContextDescription_.id)(
+              "name", bindingName)("payload", payload))));
 }
 
 } // namespace facebook::react::jsinspector_modern

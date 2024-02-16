@@ -52,4 +52,5 @@ Pod::Spec.new do |s|
   s.dependency "React-featureflags"
   s.dependency "DoubleConversion"
   s.dependency "React-runtimeexecutor", version
+  s.dependency "React-jsi"
 end

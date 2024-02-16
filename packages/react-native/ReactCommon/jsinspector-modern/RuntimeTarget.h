@@ -34,6 +34,7 @@ namespace facebook::react::jsinspector_modern {
 
 class RuntimeAgent;
 class RuntimeAgentDelegate;
+class RuntimeTarget;
 
 /**
  * Receives events from a RuntimeTarget. This is a shared interface that
@@ -47,6 +48,24 @@ class RuntimeTargetDelegate {
       FrontendChannel channel,
       SessionState& sessionState,
       const ExecutionContextDescription& executionContextDescription) = 0;
+};
+
+/**
+ * The limited interface that RuntimeTarget exposes to its connected agents.
+ */
+class RuntimeTargetController {
+ public:
+  explicit RuntimeTargetController(RuntimeTarget& target);
+
+  /**
+   * Adds a function with the given name on the runtime's global object, that
+   * when called will send a Runtime.bindingCalled event through all connected
+   * sessions that have registered to receive binding events for that name.
+   */
+  void installBindingHandler(const std::string& bindingName);
+
+ private:
+  RuntimeTarget& target_;
 };
 
 /**
@@ -123,6 +142,19 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   RuntimeTargetDelegate& delegate_;
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;
+  RuntimeTargetController controller_{*this};
+
+  /**
+   * Adds a function with the given name on the runtime's global object, that
+   * when called will send a Runtime.bindingCalled event through all connected
+   * sessions that have registered to receive binding events for that name.
+   */
+  void installBindingHandler(const std::string& bindingName);
+
+  // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
+  // controlled way (i.e. only RuntimeTargetController gets friend access, while
+  // RuntimeAgent itself doesn't).
+  friend class RuntimeTargetController;
 };
 
 } // namespace facebook::react::jsinspector_modern
