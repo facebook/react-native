@@ -588,27 +588,12 @@ using namespace facebook::react;
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
+  NSAttributedString *oldAttributedString = _backedTextInputView.attributedText;
   if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
     return;
   }
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
-  BOOL previousScrollEnabled = _backedTextInputView.scrollEnabled;
-  NSInteger previousOffsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                        toPosition:selectedRange.start];
-  if (previousScrollEnabled && previousOffsetStart > 0 && attributedString.string.length >= previousOffsetStart) {
-    NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(previousOffsetStart - 1, 1)];
-    NSInteger previousOffsetFromEnd = oldTextLength - previousOffsetStart;
-    if (previousOffsetFromEnd > 0 && [lastChar isEqual:@"\n"]) {
-      _backedTextInputView.scrollEnabled = NO;
-    }
-  }
-
-  _backedTextInputView.attributedText = attributedString;
-  if (!_backedTextInputView.scrollEnabled && previousScrollEnabled) {
-    _backedTextInputView.scrollEnabled = YES;
-  }
-
   _backedTextInputView.attributedText = attributedString;
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
@@ -620,6 +605,13 @@ using namespace facebook::react;
                                                                    offset:newOffset];
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
+    NSInteger previousOffsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                                  toPosition:selectedRange.start];
+    // this could cause runtime (for ex. we move to position that is not reachable, like after our text length)
+    // add logic to handle any issue
+    [UIView setAnimationsEnabled:NO];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(previousOffsetStart - 1, 1)];
+    [UIView setAnimationsEnabled:YES];
   }
   [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;

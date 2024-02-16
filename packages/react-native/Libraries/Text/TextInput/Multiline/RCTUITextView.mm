@@ -163,6 +163,11 @@ static UIColor *defaultPlaceholderColor(void)
   [super setSelectedTextRange:selectedTextRange];
 }
 
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  [super scrollRangeToVisible:range];
+}
+
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;

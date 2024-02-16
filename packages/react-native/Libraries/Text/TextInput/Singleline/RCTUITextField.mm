@@ -201,6 +201,11 @@
   [super setSelectedTextRange:selectedTextRange];
 }
 
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  // do nothing
+}
+
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
