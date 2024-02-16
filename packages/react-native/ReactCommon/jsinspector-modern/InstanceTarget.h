@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ExecutionContextManager.h"
 #include "RuntimeTarget.h"
 #include "ScopedExecutor.h"
 #include "SessionState.h"
@@ -46,6 +47,7 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
  public:
   /**
    * Constructs a new InstanceTarget.
+   * \param executionContextManager Assigns unique execution context IDs.
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
@@ -54,6 +56,7 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * executor will not be called after the InstanceTarget is destroyed.
    */
   static std::shared_ptr<InstanceTarget> create(
+      std::shared_ptr<ExecutionContextManager> executionContextManager,
       InstanceTargetDelegate& delegate,
       VoidExecutor executor);
 
@@ -76,15 +79,19 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   /**
    * Constructs a new InstanceTarget. The caller must call setExecutor
    * immediately afterwards.
+   * \param executionContextManager Assigns unique execution context IDs.
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
    */
-  InstanceTarget(InstanceTargetDelegate& delegate);
+  InstanceTarget(
+      std::shared_ptr<ExecutionContextManager> executionContextManager,
+      InstanceTargetDelegate& delegate);
 
   InstanceTargetDelegate& delegate_;
   std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
   WeakList<InstanceAgent> agents_;
+  std::shared_ptr<ExecutionContextManager> executionContextManager_;
 };
 
 } // namespace facebook::react::jsinspector_modern
